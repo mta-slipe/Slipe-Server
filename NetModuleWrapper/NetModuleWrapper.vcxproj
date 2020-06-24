@@ -94,8 +94,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>cp ..\Debug\NetModuleWrapper.dll ..\MTAServerWrapper --force
-cp ..\Debug\NetModuleWrapper.dll ..\MtaServer.Net --force</Command>
+      <Command>cp ..\Debug\NetModuleWrapper.dll ..\MtaServer.Net --force</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
