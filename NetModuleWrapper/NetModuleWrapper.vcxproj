@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{4E64B22D-3CA5-47C0-9C69-A7CABCF7AA41}</ProjectGuid>
+    <RootNamespace>NetModuleWrapper</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;NOMINMAX;_TIMESPEC_DEFINED;MTA_DEBUG;WIN32;_WIN32;_WIN32_WINNT=0x601;_MSC_PLATFORM_TOOLSET=$(PlatformToolsetVersion);DEBUG</PreprocessorDefinitions>
+      <ConformanceMode>false</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\code\C#\.NET Core\MTAServerWrapper\NetModuleWrapper\mta\server\sdk;C:\code\C#\.NET Core\MTAServerWrapper\NetModuleWrapper\mta\shared\sdk;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <PostBuildEvent>
+      <Command>cp ..\Debug\NetModuleWrapper.dll ..\MTAServerWrapper --force
+cp ..\Debug\NetModuleWrapper.dll ..\MtaServer.Net --force</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;NOMINMAX;_TIMESPEC_DEFINED;MTA_DEBUG;WIN32;_WIN32;_WIN32_WINNT=0x601;_MSC_PLATFORM_TOOLSET=$(PlatformToolsetVersion);DEBUG</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\code\C#\.NET Core\MTAServerWrapper\NetModuleWrapper\mta\server\sdk;C:\code\C#\.NET Core\MTAServerWrapper\NetModuleWrapper\mta\shared\sdk;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <PostBuildEvent>
+      <Command>cp ..\Release\NetModuleWrapper.dll ..\MTAServerWrapper --force</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="MTANetWrapper.cpp" />
+    <ClCompile Include="mta\server\core\CDynamicLibrary.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="mta\server\build_overrides_s.h" />
+    <ClInclude Include="mta\server\core\CCrashHandler.h" />
+    <ClInclude Include="mta\server\core\CCrashHandlerAPI.h" />
+    <ClInclude Include="mta\server\core\CDynamicLibrary.h" />
+    <ClInclude Include="mta\server\core\CExceptionInformation_Impl.h" />
+    <ClInclude Include="mta\server\core\CModManagerImpl.h" />
+    <ClInclude Include="mta\server\core\CServerImpl.h" />
+    <ClInclude Include="mta\server\core\CThreadCommandQueue.h" />
+    <ClInclude Include="mta\server\core\ErrorCodes.h" />
+    <ClInclude Include="mta\server\core\StdInc.h" />
+    <ClInclude Include="mta\server\sdk\core\CExceptionInformation.h" />
+    <ClInclude Include="mta\server\sdk\core\CModManager.h" />
+    <ClInclude Include="mta\server\sdk\core\CServerBase.h" />
+    <ClInclude Include="mta\server\sdk\core\CServerInterface.h" />
+    <ClInclude Include="mta\server\sdk\MTAPlatform.h" />
+    <ClInclude Include="mta\server\sdk\net\CNetServer.h" />
+    <ClInclude Include="mta\server\sdk\net\ns_common.h" />
+    <ClInclude Include="mta\server\sdk\net\ns_playerid.h" />
+    <ClInclude Include="mta\server\version.h" />
+    <ClInclude Include="mta\shared\sdk\CBox.h" />
+    <ClInclude Include="mta\shared\sdk\CChecksum.h" />
+    <ClInclude Include="mta\shared\sdk\CDuplicateLineFilter.h" />
+    <ClInclude Include="mta\shared\sdk\CFastList.h" />
+    <ClInclude Include="mta\shared\sdk\CMatrix.h" />
+    <ClInclude Include="mta\shared\sdk\CMatrix4.h" />
+    <ClInclude Include="mta\shared\sdk\CMatrix_Pad.h" />
+    <ClInclude Include="mta\shared\sdk\CMtaVersion.h" />
+    <ClInclude Include="mta\shared\sdk\Common.h" />
+    <ClInclude Include="mta\shared\sdk\CRect2D.h" />
+    <ClInclude Include="mta\shared\sdk\CScriptArgReader.h" />
+    <ClInclude Include="mta\shared\sdk\CSphere.h" />
+    <ClInclude Include="mta\shared\sdk\CStringMap.h" />
+    <ClInclude Include="mta\shared\sdk\CVector.h" />
+    <ClInclude Include="mta\shared\sdk\CVector2D.h" />
+    <ClInclude Include="mta\shared\sdk\CVector4D.h" />
+    <ClInclude Include="mta\shared\sdk\net\bitstream.h" />
+    <ClInclude Include="mta\shared\sdk\net\CNetHTTPDownloadManagerInterface.h" />
+    <ClInclude Include="mta\shared\sdk\net\packetenums.h" />
+    <ClInclude Include="mta\shared\sdk\net\Packets.h" />
+    <ClInclude Include="mta\shared\sdk\net\rpc_enums.h" />
+    <ClInclude Include="mta\shared\sdk\net\SyncStructures.h" />
+    <ClInclude Include="mta\shared\sdk\profiler\SharedUtil.Profiler.h" />
+    <ClInclude Include="mta\shared\sdk\RTree.h" />
+    <ClInclude Include="mta\shared\sdk\sha1.h" />
+    <ClInclude Include="mta\shared\sdk\sha1.hpp" />
+    <ClInclude Include="mta\shared\sdk\sha2.h" />
+    <ClInclude Include="mta\shared\sdk\sha2.hpp" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.AllocTracking.h" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.AllocTracking.hpp" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.AsyncTaskScheduler.h" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.AsyncTaskScheduler.hpp" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.Buffer.h" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.ClassIdent.h" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.Crypto.h" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.Defines.h" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.FastHashMap.h" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.FastHashSet.h" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.File.h" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.File.hpp" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.Game.h" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.Game.hpp" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.h" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.Hash.h" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.Hash.hpp" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.HashMap.h" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.hpp" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.IntervalCounter.h" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.IntervalCounter.hpp" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.Legacy.h" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.Logging.h" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.Logging.hpp" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.Map.h" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.Math.h" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.MemAccess.h" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.MemAccess.hpp" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.Misc.h" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.Misc.hpp" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.Profiling.h" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.Profiling.hpp" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.SysInfo.h" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.SysInfo.hpp" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.Tests.hpp" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.Thread.h" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.ThreadPool.h" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.Time.h" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.Time.hpp" />
+    <ClInclude Include="mta\shared\sdk\SharedUtil.Win32Utf8FileHooks.hpp" />
+    <ClInclude Include="mta\shared\sdk\SString.h" />
+    <ClInclude Include="mta\shared\sdk\SString.hpp" />
+    <ClInclude Include="mta\shared\sdk\UTF8.h" />
+    <ClInclude Include="mta\shared\sdk\UTF8Detect.hpp" />
+    <ClInclude Include="mta\shared\sdk\WString.h" />
+    <ClInclude Include="mta\shared\sdk\WString.hpp" />
+    <ClInclude Include="mta\shared\sdk\xml\CXML.h" />
+    <ClInclude Include="mta\shared\sdk\xml\CXMLAttribute.h" />
+    <ClInclude Include="mta\shared\sdk\xml\CXMLAttributes.h" />
+    <ClInclude Include="mta\shared\sdk\xml\CXMLCommon.h" />
+    <ClInclude Include="mta\shared\sdk\xml\CXMLErrorCodes.h" />
+    <ClInclude Include="mta\shared\sdk\xml\CXMLFile.h" />
+    <ClInclude Include="mta\shared\sdk\xml\CXMLNode.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
