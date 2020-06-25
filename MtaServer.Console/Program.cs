@@ -44,6 +44,7 @@ namespace MtaServer.Console
                 }
             });
             server.Start();
+            Thread.Sleep(-1);
         }
 
         private void SetupTestConsole()

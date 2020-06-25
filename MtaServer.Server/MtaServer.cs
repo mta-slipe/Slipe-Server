@@ -65,6 +65,11 @@ namespace MtaServer.Server
             this.netWrapper.Start();
         }
 
+        public void Stop()
+        {
+            this.netWrapper.Stop();
+        }
+
         public void RegisterPacketQueueHandler(PacketId packetId, IQueueHandler queueHandler)
         {
             this.packetReducer.RegisterQueueHandler(packetId, queueHandler);

@@ -22,6 +22,9 @@ namespace MTAServerWrapper.Server
         [DllImport(wrapperDllpath, EntryPoint = "startNetWrapper")]
         private static extern void StartNetWrapper();
 
+        [DllImport(wrapperDllpath, EntryPoint = "stopNetWrapper")]
+        private static extern void StopNetWrapper();
+
         [DllImport(wrapperDllpath, EntryPoint = "sendPacket")]
         private static extern bool SendPacket(uint binaryAddress, byte packetId, IntPtr payload, uint payloadSize);
 
@@ -50,6 +53,11 @@ namespace MTAServerWrapper.Server
         public void Start()
         {
             StartNetWrapper();
+        }
+
+        public void Stop()
+        {
+            StopNetWrapper();
         }
 
         void SendPacket(uint binaryAddress, byte packetId, byte[] payload)
