@@ -5,4 +5,9 @@
     <Platforms>AnyCPU;x64;x86</Platforms>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Definitions\Lua\ElementRpc\Player\" />
+    <Folder Include="Definitions\Lua\ElementRpc\Ped\" />
+  </ItemGroup>
+
 </Project>
