@@ -28,6 +28,11 @@ namespace MtaServer.Server
             this.netWrapper = CreateNetWrapper(directory, netDllPath, host, port);
         }
 
+        public void Start()
+        {
+            this.netWrapper.Start();
+        }
+
         public void RegisterPacketQueueHandler(PacketId packetId, IQueueHandler queueHandler)
         {
             this.packetReducer.RegisterQueueHandler(packetId, queueHandler);

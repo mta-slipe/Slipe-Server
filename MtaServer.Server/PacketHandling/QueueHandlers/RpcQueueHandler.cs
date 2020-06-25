@@ -4,6 +4,7 @@ using MtaServer.Packets.Rpc;
 using MtaServer.Server.Elements;
 using MtaServer.Server.PacketHandling.Factories;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -45,7 +46,7 @@ namespace MtaServer.Server.PacketHandling.QueueHandlers
 
         private void HandleRpc(Client client, RpcPacket packet)
         {
-            Console.WriteLine($"Received RPC of type {packet.FunctionId}");
+            Debug.WriteLine($"Received RPC of type {packet.FunctionId}");
             switch (packet.FunctionId)
             {
                 case RpcFunctions.PLAYER_INGAME_NOTICE:

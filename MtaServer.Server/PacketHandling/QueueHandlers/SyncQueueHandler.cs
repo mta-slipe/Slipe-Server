@@ -2,6 +2,7 @@
 using MtaServer.Packets.Enums;
 using MtaServer.Server.Elements;
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace MtaServer.Server.PacketHandling.QueueHandlers
@@ -30,7 +31,6 @@ namespace MtaServer.Server.PacketHandling.QueueHandlers
                 {
                     try
                     { 
-                        Console.WriteLine(queueEntry.PacketId);
                         switch (queueEntry.PacketId)
                         {
                             case PacketId.PACKET_ID_CAMERA_SYNC:
@@ -46,9 +46,9 @@ namespace MtaServer.Server.PacketHandling.QueueHandlers
                         }
                     } catch (Exception e)
                     {
-                        Console.WriteLine("Handling packet failed");
-                        Console.WriteLine(string.Join(", ", queueEntry.Data));
-                        //Console.WriteLine($"{e.Message}\n{e.StackTrace}");
+                        Debug.WriteLine("Handling packet failed");
+                        Debug.WriteLine(string.Join(", ", queueEntry.Data));
+                        //Debug.WriteLine($"{e.Message}\n{e.StackTrace}");
                     }
                 }
                 await Task.Delay(this.sleepInterval);
@@ -57,7 +57,7 @@ namespace MtaServer.Server.PacketHandling.QueueHandlers
 
         private void HandleCameraSyncPacket(Client client, CameraSyncPacket packet)
         {
-            //Console.WriteLine($"client {client.Id} camera sync: isFixed: {packet.IsFixed}, position: {packet.Position}, lookAt: {packet.LookAt}, target: {packet.TargetId}");
+            //Debug.WriteLine($"client {client.Id} camera sync: isFixed: {packet.IsFixed}, position: {packet.Position}, lookAt: {packet.LookAt}, target: {packet.TargetId}");
         }
 
         private void HandlePlayerPureSyncPacket(Client client, PlayerPureSyncPacket packet)
@@ -76,26 +76,26 @@ namespace MtaServer.Server.PacketHandling.QueueHandlers
 
             client.Position = packet.Position;
 
-            //Console.WriteLine($"client {client.Id} pure sync: ");
-            //Console.WriteLine($"\tFlags:"); 
+            //Debug.WriteLine($"client {client.Id} pure sync: ");
+            //Debug.WriteLine($"\tFlags:"); 
 
-            //Console.WriteLine($"\t\tIsInWater: {packet.SyncFlags.IsInWater}");
-            //Console.WriteLine($"\t\tIsOnGround: {packet.SyncFlags.IsOnGround}");
-            //Console.WriteLine($"\t\tHasJetpack: {packet.SyncFlags.HasJetpack}");
-            //Console.WriteLine($"\t\tIsDucked: {packet.SyncFlags.IsDucked}");
-            //Console.WriteLine($"\t\tWearsGoggles: {packet.SyncFlags.WearsGoggles}");
-            //Console.WriteLine($"\t\tHasContact: {packet.SyncFlags.HasContact}");
-            //Console.WriteLine($"\t\tIsChoking: {packet.SyncFlags.IsChoking}");
-            //Console.WriteLine($"\t\tAkimboTargetUp: {packet.SyncFlags.AkimboTargetUp}");
-            //Console.WriteLine($"\t\tIsOnFire: {packet.SyncFlags.IsOnFire}");
-            //Console.WriteLine($"\t\tHasAWeapon: {packet.SyncFlags.HasAWeapon}");
-            //Console.WriteLine($"\t\tIsSyncingVelocity: {packet.SyncFlags.IsSyncingVelocity}");
-            //Console.WriteLine($"\t\tIsStealthAiming: {packet.SyncFlags.IsStealthAiming}");
+            //Debug.WriteLine($"\t\tIsInWater: {packet.SyncFlags.IsInWater}");
+            //Debug.WriteLine($"\t\tIsOnGround: {packet.SyncFlags.IsOnGround}");
+            //Debug.WriteLine($"\t\tHasJetpack: {packet.SyncFlags.HasJetpack}");
+            //Debug.WriteLine($"\t\tIsDucked: {packet.SyncFlags.IsDucked}");
+            //Debug.WriteLine($"\t\tWearsGoggles: {packet.SyncFlags.WearsGoggles}");
+            //Debug.WriteLine($"\t\tHasContact: {packet.SyncFlags.HasContact}");
+            //Debug.WriteLine($"\t\tIsChoking: {packet.SyncFlags.IsChoking}");
+            //Debug.WriteLine($"\t\tAkimboTargetUp: {packet.SyncFlags.AkimboTargetUp}");
+            //Debug.WriteLine($"\t\tIsOnFire: {packet.SyncFlags.IsOnFire}");
+            //Debug.WriteLine($"\t\tHasAWeapon: {packet.SyncFlags.HasAWeapon}");
+            //Debug.WriteLine($"\t\tIsSyncingVelocity: {packet.SyncFlags.IsSyncingVelocity}");
+            //Debug.WriteLine($"\t\tIsStealthAiming: {packet.SyncFlags.IsStealthAiming}");
 
-            Console.WriteLine($"\tposition: {packet.Position}, rotation: {packet.Rotation}");
-            //Console.WriteLine($"\tvelocity: {packet.Velocity}");
-            //Console.WriteLine($"\thealth: {packet.Health}, armour: {packet.Armour}");
-            //Console.WriteLine($"\tCamera rotation: {packet.CameraRotation}, position: {packet.CameraOrientation.CameraPosition}, forward: {packet.CameraOrientation.CameraForward}");
+            Debug.WriteLine($"\tposition: {packet.Position}, rotation: {packet.Rotation}");
+            //Debug.WriteLine($"\tvelocity: {packet.Velocity}");
+            //Debug.WriteLine($"\thealth: {packet.Health}, armour: {packet.Armour}");
+            //Debug.WriteLine($"\tCamera rotation: {packet.CameraRotation}, position: {packet.CameraOrientation.CameraPosition}, forward: {packet.CameraOrientation.CameraForward}");
         }
     }
 }

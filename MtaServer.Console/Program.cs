@@ -31,7 +31,7 @@ namespace MtaServer.Console
             SetupQueueHandlers();
             SetupTestLogic();
 
-            Thread.Sleep(-1);
+            server.Start();
         }
 
         private void SetupQueueHandlers()
