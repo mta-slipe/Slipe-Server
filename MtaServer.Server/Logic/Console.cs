@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace MtaServer.Server.Logic
 {
@@ -15,16 +13,17 @@ namespace MtaServer.Server.Logic
         public delegate void ConsoleInputHandler(ConsoleInputArgs args);
         public event ConsoleInputHandler ConsoleHandler;
 
-        public bool Output(string message)
+        public delegate void ConsoleOutputHandler(string message);
+        public event ConsoleOutputHandler ConsoleOutput;
+
+        public void Output(string message)
         {
-            System.Console.WriteLine(message);
-            return true;
+            ConsoleOutput(message);
         }
 
-        public bool Output(string message, params object[] vs)
+        public void Output(string message, params object[] vs)
         {
-            System.Console.WriteLine(message, vs);
-            return true;
+            ConsoleOutput(string.Format(message, vs));
         }
 
         public void HandleConsoleInput(string line)

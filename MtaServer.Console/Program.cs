@@ -32,6 +32,7 @@ namespace MtaServer.Console
 
             SetupQueueHandlers();
             SetupTestLogic();
+            SetupTestConsole();
 
             server.onNetStarted();
 
@@ -41,6 +42,11 @@ namespace MtaServer.Console
                 line = System.Console.ReadLine();
                 server.Console.HandleConsoleInput(line);
             }
+        }
+
+        private void SetupTestConsole()
+        {
+            server.Console.ConsoleOutput += message => System.Console.WriteLine(message);
         }
 
         private void SetupQueueHandlers()

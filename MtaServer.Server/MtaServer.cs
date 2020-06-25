@@ -20,6 +20,9 @@ namespace MtaServer.Server
         public Logic.Console Console { get; }
         public IElementRepository ElementRepository { get; private set; }
 
+        public delegate void ServerShuttingDownHandler();
+        public event ServerShuttingDownHandler OnServerShuttingDown;
+
         public MtaServer(string directory, string netDllPath, string host, ushort port, IElementRepository elementRepository)
         {
             this.ElementRepository = elementRepository;
@@ -32,18 +35,19 @@ namespace MtaServer.Server
             this.clients = new Dictionary<NetWrapper, Dictionary<uint, Client>>();
 
             this.netWrapper = CreateNetWrapper(directory, netDllPath, host, port);
+
+            OnServerShuttingDown += MtaServer_OnServerShuttingDown;
+        }
+
+        private void MtaServer_OnServerShuttingDown()
+        {
+            Console.Output("Server is shutting down...");
         }
 
         public void onNetStarted()
         {
             Console.Output("Server started and is ready to accept connection!");
             Console.Output("Type 'help' for a list of commands.");
-        }
-
-        public void OnServerShuttingDown()
-        {
-            Console.Output("Stopping server...");
-            Thread.Sleep(500);
         }
 
         public void Shutdown()
