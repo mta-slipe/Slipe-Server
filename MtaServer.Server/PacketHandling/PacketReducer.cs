@@ -2,6 +2,7 @@
 using MtaServer.Server.Elements;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace MtaServer.Server.PacketHandling
 {
@@ -33,7 +34,7 @@ namespace MtaServer.Server.PacketHandling
                 }
             } else
             {
-                Console.WriteLine($"Received unregistered packet {packetId}");
+                Debug.WriteLine($"Received unregistered packet {packetId}");
             }
         }
     }

@@ -34,7 +34,7 @@ namespace MtaServer.Console
             SetupTestLogic();
             SetupTestConsole();
 
-            server.onNetStarted();
+            server.Start();
 
             string line;
             while(true)
