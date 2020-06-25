@@ -8,38 +8,39 @@ namespace MtaServer.Server.Logic
         public string Line { set; get; }
     }
 
-    public class Console
+    public class ConsoleHandler
     {
         public delegate void ConsoleInputHandler(ConsoleInputArgs args);
-        public event ConsoleInputHandler ConsoleHandler;
 
         public delegate void ConsoleOutputHandler(string message);
-        public event ConsoleOutputHandler ConsoleOutput;
 
         public void Output(string message)
         {
-            ConsoleOutput(message);
+            ConsoleOutput?.Invoke(message);
         }
 
         public void Output(string message, params object[] vs)
         {
-            ConsoleOutput(string.Format(message, vs));
+            ConsoleOutput?.Invoke(string.Format(message, vs));
         }
 
         public void HandleConsoleInput(string line)
         {
             if(!string.IsNullOrEmpty(line))
             {
-                ConsoleHandler(new ConsoleInputArgs
+                ConsoleInput?.Invoke(new ConsoleInputArgs
                 {
                     Line = line
                 });
             }
         }
 
-        public Console()
+        public ConsoleHandler()
         {
 
         }
+
+        public event ConsoleInputHandler ConsoleInput;
+        public event ConsoleOutputHandler ConsoleOutput;
     }
 }

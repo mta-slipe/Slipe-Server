@@ -34,14 +34,16 @@ namespace MtaServer.Console
             SetupTestLogic();
             SetupTestConsole();
 
-            server.Start();
-
-            string line;
-            while(true)
+            Task.Run(async () =>
             {
-                line = System.Console.ReadLine();
-                server.Console.HandleConsoleInput(line);
-            }
+                string line;
+                while (true)
+                {
+                    line = System.Console.ReadLine();
+                    server.Console.HandleConsoleInput(line);
+                }
+            });
+            server.Start();
         }
 
         private void SetupTestConsole()

@@ -29,14 +29,14 @@ namespace MtaServer.Server.Logic
         {
             MtaServer = mtaServer;
 
-            MtaServer.Console.ConsoleHandler += Console_ConsoleHandler;
+            MtaServer.Console.ConsoleInput += ConsoleConsoleHandler;
 
             RegisterCommand("help", Help);
             RegisterCommand("quit", Quit);
             RegisterCommand("shutdown", Quit);
         }
 
-        private void Console_ConsoleHandler(ConsoleInputArgs args)
+        private void ConsoleConsoleHandler(ConsoleInputArgs args)
         {
             IEnumerable<string> arguments = args.Line.Split(" ");
 
