@@ -164,7 +164,6 @@ std::thread runThread;
 void runPulseLoop() {
     while (running)
     {
-        std::cout << running << "\n";
         network->DoPulse();
         network->GetHTTPDownloadManager(EDownloadMode::ASE)->ProcessQueuedFiles();
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
