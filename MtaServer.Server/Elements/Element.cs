@@ -15,11 +15,24 @@ namespace MtaServer.Server.Elements
         public virtual ElementType ElementType => ElementType.Unknown;
         public uint Id { get; protected set; }
 
+
+        private byte timeContext;
+        public byte TimeContext => timeContext;
+
         public Vector3 Position { get; set; }
 
         public Element()
         {
             this.Id = GenerateId();
+        }
+
+        public byte GetAndIncrementTimeContext()
+        {
+            if (++timeContext == 0)
+            {
+                timeContext++;
+            }
+            return timeContext;
         }
     }
 }
