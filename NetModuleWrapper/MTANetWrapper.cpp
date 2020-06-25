@@ -26,6 +26,8 @@ CNetServer* network;
 
 std::map<ulong, NetServerPlayerID> sockets;
 
+bool running;
+
 typedef void(__stdcall* PacketCallback)(unsigned char, unsigned long, char[], unsigned long);
 PacketCallback registeredCallback;
 
@@ -157,13 +159,26 @@ EXPORT int __cdecl initNetWrapper(const char* netDllFilePath, const char* idFile
     return 0;
 }
 
-EXPORT void __cdecl startNetWrapper() {
-    while (true)
+std::thread runThread;
+
+void runPulseLoop() {
+    while (running)
     {
+        std::cout << running << "\n";
         network->DoPulse();
         network->GetHTTPDownloadManager(EDownloadMode::ASE)->ProcessQueuedFiles();
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
+}
+
+EXPORT void __cdecl startNetWrapper() {
+    running = true;
+    runThread = std::thread(runPulseLoop);
+}
+
+EXPORT void __cdecl stopNetWrapper() {
+    running = false;
+    runThread.join();
 }
 
 
