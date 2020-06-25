@@ -1,4 +1,4 @@
-﻿using MtaServer.Packets.Definitions.Join;
+using MtaServer.Packets.Definitions.Join;
 using MtaServer.Packets.Definitions.Player;
 using MtaServer.Packets.Definitions.Sync;
 using MtaServer.Packets.Enums;
@@ -28,10 +28,19 @@ namespace MtaServer.Console
         {
             server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", "0.0.0.0", 50666, new ElementRepository());
 
+            Thread.Sleep(500);
+
             SetupQueueHandlers();
             SetupTestLogic();
 
-            Thread.Sleep(-1);
+            server.onNetStarted();
+
+            string line;
+            while(true)
+            {
+                line = System.Console.ReadLine();
+                server.Console.HandleConsoleInput(line);
+            }
         }
 
         private void SetupQueueHandlers()
