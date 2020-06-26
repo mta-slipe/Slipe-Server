@@ -7,7 +7,6 @@ using MtaServer.Server.Elements;
 using MtaServer.Server.PacketHandling.Factories;
 using MtaServer.Server.PacketHandling.QueueHandlers;
 using MtaServer.Server.Repositories;
-using System;
 using System.Drawing;
 using System.IO;
 using System.Numerics;
@@ -34,6 +33,7 @@ namespace MtaServer.Console
 
             server.Start();
             Thread.Sleep(-1);
+
         }
 
         private void SetupQueueHandlers()
