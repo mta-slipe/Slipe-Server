@@ -4,6 +4,8 @@ using MtaServer.Packets.Definitions.Sync;
 using MtaServer.Packets.Enums;
 using MtaServer.Packets.Lua.Camera;
 using MtaServer.Server.Elements;
+using MtaServer.Server.Exceptions;
+using MtaServer.Server.Logic.Configuration;
 using MtaServer.Server.PacketHandling.QueueHandlers;
 using MtaServer.Server.Repositories;
 using System;
@@ -19,14 +21,51 @@ namespace MtaServer.Console
     {
         static void Main(string[] args)
         {
-            new Program();
+            new Program(args);
         }
 
         private readonly Server.MtaServer server;
 
-        public Program()
+        public Program(string[] args)
         {
-            server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", "0.0.0.0", 50666, new ElementRepository());
+            IConfigurationProvider configurationProvider = null;
+
+            if (args.Length > 0)
+            {
+                string configPath = args[0];
+                if (!File.Exists(configPath))
+                {
+                    System.Console.WriteLine("Couldn't find configuration file {0}", configPath);
+                    System.Console.ReadKey();
+                    return;
+                }
+
+                string extension = Path.GetExtension(configPath);
+                switch (extension)
+                {
+                    case ".json":
+                        configurationProvider = new JsonConfigurationProvider(configPath);
+                        break;
+                    case ".xml":
+                        configurationProvider = new XmlConfigurationProvider(configPath);
+                        break;
+                    default:
+                        System.Console.WriteLine("Unsupported configuration extension {0}", extension);
+                        System.Console.ReadKey();
+                        return;
+                }
+            }
+
+            try
+            {
+                server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", new ElementRepository(), configurationProvider);
+            }
+            catch(ConfigurationException ex)
+            {
+                System.Console.WriteLine(ex.Message);
+                System.Console.ReadKey();
+                return;
+            }
 
             SetupQueueHandlers();
             SetupTestLogic();

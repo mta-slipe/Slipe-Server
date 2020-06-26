@@ -1,5 +1,8 @@
 ﻿using MtaServer.Packets.Enums;
 using MtaServer.Server.Elements;
+using MtaServer.Server.Exceptions;
+using MtaServer.Server.Logic;
+using MtaServer.Server.Logic.Configuration;
 using MtaServer.Server.PacketHandling;
 using MtaServer.Server.Repositories;
 using MTAServerWrapper.Server;
@@ -14,18 +17,28 @@ namespace MtaServer.Server
         private readonly Dictionary<NetWrapper, Dictionary<uint, Client>> clients;
 
         public Element Root { get; }
+        public ServerConfiguration Configuration { get; }
         public IElementRepository ElementRepository { get; private set; }
 
-        public MtaServer(string directory, string netDllPath, string host, ushort port, IElementRepository elementRepository)
+        public MtaServer(string directory, string netDllPath, IElementRepository elementRepository, IConfigurationProvider configurationProvider = null)
         {
             this.ElementRepository = elementRepository;
+
+            if (configurationProvider == null)
+            {
+                this.Configuration = new ServerConfiguration();
+            }
+            else
+            {
+                this.Configuration = new ServerConfiguration(configurationProvider);
+            }
 
             this.Root = new Element();
 
             this.packetReducer = new PacketReducer();
             this.clients = new Dictionary<NetWrapper, Dictionary<uint, Client>>();
 
-            this.netWrapper = CreateNetWrapper(directory, netDllPath, host, port);
+            this.netWrapper = CreateNetWrapper(directory, netDllPath, Configuration.host, Configuration.port);
         }
 
         public void Start()
