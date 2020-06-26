@@ -18,7 +18,7 @@ namespace MtaServer.Server.PacketHandling.Factories
             {
                 packet.AddPlayer(
                     playerId: client.Id,
-                    timeContext: 0,
+                    timeContext: client.TimeContext,
                     nickname: client.Name,
                     bitsreamVersion: 343,
                     buildNumber: 0,
