@@ -1,6 +1,7 @@
 ﻿using MtaServer.Packets.Definitions.Join;
 using MtaServer.Packets.Definitions.Player;
 using MtaServer.Packets.Definitions.Sync;
+using MtaServer.Packets.Definitions.Commands;
 using MtaServer.Packets.Enums;
 using MtaServer.Packets.Lua.Camera;
 using MtaServer.Server.Elements;
@@ -71,6 +72,7 @@ namespace MtaServer.Console
                     timeContext: 0
                 ));
                 client.SendPacket(new FadeCameraPacket(CameraFade.In));
+                client.SendPacket(new ChatEchoPacket(client.Id, "Hello World", Color.White));
 
                 TestPureSync(client);
             };

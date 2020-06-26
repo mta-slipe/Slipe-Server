@@ -92,7 +92,7 @@ namespace MtaServer.Server.PacketHandling.QueueHandlers
             //Debug.WriteLine($"\t\tIsSyncingVelocity: {packet.SyncFlags.IsSyncingVelocity}");
             //Debug.WriteLine($"\t\tIsStealthAiming: {packet.SyncFlags.IsStealthAiming}");
 
-            Debug.WriteLine($"\tposition: {packet.Position}, rotation: {packet.Rotation}");
+            // Debug.WriteLine($"\tposition: {packet.Position}, rotation: {packet.Rotation}");
             //Debug.WriteLine($"\tvelocity: {packet.Velocity}");
             //Debug.WriteLine($"\thealth: {packet.Health}, armour: {packet.Armour}");
             //Debug.WriteLine($"\tCamera rotation: {packet.CameraRotation}, position: {packet.CameraOrientation.CameraPosition}, forward: {packet.CameraOrientation.CameraForward}");

@@ -77,9 +77,7 @@ namespace MtaServer.Packets.Definitions.Join
             builder.WriteStringWithByteAsLength(nametagText);
             if (isNametagColorOverriden)
             {
-                builder.Write((byte)color?.R);
-                builder.Write((byte)color?.G);
-                builder.Write((byte)color?.B);
+                builder.Write(color.Value);
             }
 
             builder.Write(moveAnimation);
