@@ -20,10 +20,6 @@ namespace MtaServer.Server
         public Logic.ConsoleHandler Console { get; }
         public IElementRepository ElementRepository { get; private set; }
 
-        public delegate void ServerShuttingDownHandler();
-
-        public delegate void ServerStartedHandler();
-
         public MtaServer(string directory, string netDllPath, string host, ushort port, IElementRepository elementRepository)
         {
             this.ElementRepository = elementRepository;
@@ -37,8 +33,8 @@ namespace MtaServer.Server
 
             this.netWrapper = CreateNetWrapper(directory, netDllPath, host, port);
 
-            OnServerShuttingDown += MtaServerOnServerShuttingDown;
-            OnServerStarted += MtaServerOnServerStarted;
+            OnShuttingDown += MtaServerOnServerShuttingDown;
+            OnStarted += MtaServerOnServerStarted;
         }
 
         private void MtaServerOnServerStarted()
@@ -54,14 +50,14 @@ namespace MtaServer.Server
 
         public void Shutdown()
         {
-            OnServerShuttingDown?.Invoke();
+            OnShuttingDown?.Invoke();
             Process.GetCurrentProcess().CloseMainWindow();
             Process.GetCurrentProcess().Close();
         }
 
         public void Start()
         {
-            OnServerStarted?.Invoke();
+            OnStarted?.Invoke();
             this.netWrapper.Start();
         }
 
@@ -94,7 +90,9 @@ namespace MtaServer.Server
             this.packetReducer.EnqueuePacket(this.clients[netWrapper][binaryAddress], packetId, data);
         }
 
-        public event ServerShuttingDownHandler OnServerShuttingDown;
-        public event ServerStartedHandler OnServerStarted;
+        public delegate void ShuttingDownHandler();
+        public event ShuttingDownHandler OnShuttingDown;
+        public delegate void StartedHandler();
+        public event StartedHandler OnStarted;
     }
 }

@@ -2,7 +2,6 @@
 
 namespace MtaServer.Server.Logic
 {
-
     public class ConsoleInputArgs : EventArgs
     {
         public string Line { set; get; }
@@ -10,10 +9,6 @@ namespace MtaServer.Server.Logic
 
     public class ConsoleHandler
     {
-        public delegate void ConsoleInputHandler(ConsoleInputArgs args);
-
-        public delegate void ConsoleOutputHandler(string message);
-
         public void Output(string message)
         {
             ConsoleOutput?.Invoke(message);
@@ -40,7 +35,9 @@ namespace MtaServer.Server.Logic
 
         }
 
+        public delegate void ConsoleInputHandler(ConsoleInputArgs args);
         public event ConsoleInputHandler ConsoleInput;
+        public delegate void ConsoleOutputHandler(string message);
         public event ConsoleOutputHandler ConsoleOutput;
     }
 }
