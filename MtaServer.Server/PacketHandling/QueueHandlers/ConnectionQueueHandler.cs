@@ -65,14 +65,14 @@ namespace MtaServer.Server.PacketHandling.QueueHandlers
                 "Unknown";
             client.SendPacket(new JoinCompletePacket($"Slipe Server 0.1.0 [{osName}]\0", "1.5.7-9.0.0"));
 
-            client.Name = joinDataPacket.Nickname;
+            client.Player.Name = joinDataPacket.Nickname;
             client.SetVersion(joinDataPacket.BitStreamVersion);
             client.FetchSerial();
         }
 
         private void HandlePlayerQuit(Client client)
         {
-            server.ElementRepository.Remove(client);
+            server.ElementRepository.Remove(client.Player);
         }
     }
 }

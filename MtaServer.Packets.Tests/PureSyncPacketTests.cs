@@ -45,7 +45,7 @@ namespace MtaServer.Packets.Tests
             packet.Velocity.Should().Be(Vector3.Zero);
 
             packet.Health.Should().Be(100);
-            packet.Armour.Should().Be(0);
+            packet.Armor.Should().Be(0);
 
             //packet.CameraRotation.Should().Be(0);
             packet.CameraOrientation.BasePosition.Should().Be(packet.Position);
@@ -77,7 +77,7 @@ namespace MtaServer.Packets.Tests
             packet.Velocity.Should().Be(Vector3.Zero);
 
             packet.Health.Should().Be(100);
-            packet.Armour.Should().Be(0);
+            packet.Armor.Should().Be(0);
 
             //packet.CameraRotation.Should().Be(0);
             packet.CameraOrientation.BasePosition.Should().Be(packet.Position);

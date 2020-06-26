@@ -30,7 +30,7 @@ namespace MtaServer.Packets.Definitions.Sync
         public float Rotation { get; set; }
         public Vector3 Velocity { get; set; }
         public float Health { get; set; }
-        public float Armour { get; set; }
+        public float Armor { get; set; }
         public float CameraRotation { get; set; }
         public CameraOrientationStructure CameraOrientation { get; set; } = new CameraOrientationStructure(Vector3.Zero);
         public byte WeaponType { get; set; }
@@ -78,7 +78,7 @@ namespace MtaServer.Packets.Definitions.Sync
             }
 
             this.Health = reader.GetFloatFromBits(8, 0, 255);
-            this.Armour = reader.GetFloatFromBits(8, 0, 127.5f);
+            this.Armor = reader.GetFloatFromBits(8, 0, 127.5f);
 
             this.CameraRotation = reader.GetFloatFromBits(12, -MathF.PI, MathF.PI);
             this.CameraOrientation = new CameraOrientationStructure(this.Position);
@@ -138,7 +138,7 @@ namespace MtaServer.Packets.Definitions.Sync
             }
 
             builder.WriteFloatFromBits(this.Health, 8, 0, 255, true, false);
-            builder.WriteFloatFromBits(this.Armour, 8, 0, 127.5f, true, false);
+            builder.WriteFloatFromBits(this.Armor, 8, 0, 127.5f, true, false);
 
             builder.WriteFloatFromBits(this.CameraRotation, 12, -MathF.PI, MathF.PI, true, false);
 

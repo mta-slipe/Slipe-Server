@@ -15,6 +15,6 @@ namespace MtaServer.Server.Repositories
         Element Get(uint id);
         IEnumerable<Element> GetAll();
         IEnumerable<Element> GetWithinRange(Vector3 position, float range);
-        IEnumerable<TElement> GetByType<TElement>(ElementType elementType);
+        IEnumerable<TElement> GetByType<TElement>(ElementType elementType) where TElement: Element;
     }
 }
