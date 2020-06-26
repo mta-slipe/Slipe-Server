@@ -48,7 +48,7 @@ namespace MtaServer.Server.PacketHandling.QueueHandlers
                     {
                         Debug.WriteLine("Handling packet failed");
                         Debug.WriteLine(string.Join(", ", queueEntry.Data));
-                        //Debug.WriteLine($"{e.Message}\n{e.StackTrace}");
+                        Debug.WriteLine($"{e.Message}\n{e.StackTrace}");
                     }
                 }
                 await Task.Delay(this.sleepInterval);
@@ -64,38 +64,49 @@ namespace MtaServer.Server.PacketHandling.QueueHandlers
         {
             client.SendPacket(new ReturnSyncPacket(packet.Position));
 
-            packet.PlayerId = client.Id;
+            packet.PlayerId = client.Player.Id;
             packet.Latency = 0;
-            foreach (var player in this.server.ElementRepository.GetByType<Client>(ElementType.Player))
+            foreach (var remotePlayer in this.server.ElementRepository.GetByType<Player>(ElementType.Player))
             {
-                if (player != client)
+                if (remotePlayer.Client != client)
                 {
-                    player.SendPacket(packet);
+                    remotePlayer.Client.SendPacket(packet);
                 }
             }
 
-            client.Position = packet.Position;
+            var player = client.Player;
+            player.Position = packet.Position;
+            player.Velocity = packet.Velocity;
+            player.Health = packet.Health;
+            player.Armor = packet.Armor;
+            player.AimOrigin = packet.AimOrigin;
+            player.AimDirection = packet.AimDirection;
 
-            //Debug.WriteLine($"client {client.Id} pure sync: ");
-            //Debug.WriteLine($"\tFlags:"); 
+            player.ContactElement = this.server.ElementRepository.Get(packet.ContactElementId);
 
-            //Debug.WriteLine($"\t\tIsInWater: {packet.SyncFlags.IsInWater}");
-            //Debug.WriteLine($"\t\tIsOnGround: {packet.SyncFlags.IsOnGround}");
-            //Debug.WriteLine($"\t\tHasJetpack: {packet.SyncFlags.HasJetpack}");
-            //Debug.WriteLine($"\t\tIsDucked: {packet.SyncFlags.IsDucked}");
-            //Debug.WriteLine($"\t\tWearsGoggles: {packet.SyncFlags.WearsGoggles}");
-            //Debug.WriteLine($"\t\tHasContact: {packet.SyncFlags.HasContact}");
-            //Debug.WriteLine($"\t\tIsChoking: {packet.SyncFlags.IsChoking}");
-            //Debug.WriteLine($"\t\tAkimboTargetUp: {packet.SyncFlags.AkimboTargetUp}");
-            //Debug.WriteLine($"\t\tIsOnFire: {packet.SyncFlags.IsOnFire}");
-            //Debug.WriteLine($"\t\tHasAWeapon: {packet.SyncFlags.HasAWeapon}");
-            //Debug.WriteLine($"\t\tIsSyncingVelocity: {packet.SyncFlags.IsSyncingVelocity}");
-            //Debug.WriteLine($"\t\tIsStealthAiming: {packet.SyncFlags.IsStealthAiming}");
+            player.CurrentWeapon = new PlayerWeapon()
+            {
+                WeaponType = packet.WeaponType,
+                Slot = packet.WeaponSlot,
+                Ammo = packet.TotalAmmo,
+                AmmoInClip = packet.AmmoInClip
+            };
 
-            Debug.WriteLine($"\tposition: {packet.Position}, rotation: {packet.Rotation}");
-            //Debug.WriteLine($"\tvelocity: {packet.Velocity}");
-            //Debug.WriteLine($"\thealth: {packet.Health}, armour: {packet.Armour}");
-            //Debug.WriteLine($"\tCamera rotation: {packet.CameraRotation}, position: {packet.CameraOrientation.CameraPosition}, forward: {packet.CameraOrientation.CameraForward}");
+            player.IsInWater = packet.SyncFlags.IsInWater;
+            player.IsOnGround = packet.SyncFlags.IsOnGround;
+            player.HasJetpack = packet.SyncFlags.HasJetpack;
+            player.IsDucked = packet.SyncFlags.IsDucked;
+            player.WearsGoggles = packet.SyncFlags.WearsGoggles;
+            player.HasContact = packet.SyncFlags.HasContact;
+            player.IsChoking = packet.SyncFlags.IsChoking;
+            player.AkimboTargetUp = packet.SyncFlags.AkimboTargetUp;
+            player.IsOnFire = packet.SyncFlags.IsOnFire;
+            player.IsSyncingVelocity = packet.SyncFlags.IsSyncingVelocity;
+            player.IsStealthAiming = packet.SyncFlags.IsStealthAiming;
+
+            player.CameraPosition = packet.CameraOrientation.CameraPosition;
+            player.CameraDirection = packet.CameraOrientation.CameraForward;
+            player.CameraRotation = packet.CameraRotation;
         }
     }
 }

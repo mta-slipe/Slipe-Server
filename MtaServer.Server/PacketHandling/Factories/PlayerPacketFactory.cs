@@ -10,16 +10,16 @@ namespace MtaServer.Server.PacketHandling.Factories
 {
     public static class PlayerPacketFactory
     {
-        public static PlayerListPacket CreatePlayerListPacket(Client[] clients, bool showInChat = false)
+        public static PlayerListPacket CreatePlayerListPacket(Player[] players, bool showInChat = false)
         {
             var packet = new PlayerListPacket(showInChat);
 
-            foreach(var client in clients)
+            foreach(var player in players)
             {
                 packet.AddPlayer(
-                    playerId: client.Id,
-                    timeContext: client.TimeContext,
-                    nickname: client.Name,
+                    playerId: player.Id,
+                    timeContext: player.TimeContext,
+                    nickname: player.Name,
                     bitsreamVersion: 343,
                     buildNumber: 0,
 
@@ -31,7 +31,7 @@ namespace MtaServer.Server.PacketHandling.Factories
                     isHeadless: false,
                     isFrozen: false,
 
-                    nametagText: client.Name,
+                    nametagText: player.Name,
                     color: Color.FromArgb(255, 255, 0, 255),
                     moveAnimation: 0,
 
@@ -41,8 +41,8 @@ namespace MtaServer.Server.PacketHandling.Factories
                     vehicleId: null,
                     seat: null,
 
-                    position: client.Position,
-                    rotation: 0,
+                    position: player.Position,
+                    rotation: player.PedRotation,
 
                     dimension: 0,
                     fightingStyle: 0,

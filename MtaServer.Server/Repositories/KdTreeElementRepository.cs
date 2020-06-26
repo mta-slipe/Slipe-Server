@@ -42,7 +42,7 @@ namespace MtaServer.Server.Repositories
             return this.elements.Select(element => element.Value);
         }
 
-        public IEnumerable<TElement> GetByType<TElement>(ElementType elementType)
+        public IEnumerable<TElement> GetByType<TElement>(ElementType elementType) where TElement : Element
         {
             return this.elements
                 .Select(element => element.Value)
