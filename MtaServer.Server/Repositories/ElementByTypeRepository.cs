@@ -25,7 +25,7 @@ namespace MtaServer.Server.Repositories
             this.elements[element.ElementType].Add(element);
         }
 
-        public Element Get(uint id)
+        public Element? Get(uint id)
         {
             foreach(var list in this.elements.Values)
             {

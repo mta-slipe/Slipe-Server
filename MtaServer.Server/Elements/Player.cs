@@ -12,12 +12,12 @@ namespace MtaServer.Server.Elements
 
         public Client Client { get; }
 
-        public string Name { get; set; }
+        public string? Name { get; set; }
         public float Health { get; set; }
         public float Armor { get; set; }
         public PlayerWeapon CurrentWeapon { get; set; }
 
-        public Element ContactElement { get; set; }
+        public Element? ContactElement { get; set; }
 
         public Vector3 AimOrigin { get; set; }
         public Vector3 AimDirection { get; set; }
@@ -45,6 +45,6 @@ namespace MtaServer.Server.Elements
 
         public void HandleJoin() => OnJoin?.Invoke(this);
 
-        public static event Action<Player> OnJoin;
+        public static event Action<Player>? OnJoin;
     }
 }

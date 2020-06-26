@@ -19,7 +19,7 @@ namespace MtaServer.Server.PacketHandling.Factories
                 packet.AddPlayer(
                     playerId: player.Id,
                     timeContext: player.TimeContext,
-                    nickname: player.Name,
+                    nickname: player.Name ?? "???",
                     bitsreamVersion: 343,
                     buildNumber: 0,
 
@@ -31,7 +31,7 @@ namespace MtaServer.Server.PacketHandling.Factories
                     isHeadless: false,
                     isFrozen: false,
 
-                    nametagText: player.Name,
+                    nametagText: player.Name ?? "???",
                     color: Color.FromArgb(255, 255, 0, 255),
                     moveAnimation: 0,
 

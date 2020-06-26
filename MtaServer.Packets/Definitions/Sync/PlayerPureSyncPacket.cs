@@ -12,7 +12,7 @@ namespace MtaServer.Packets.Definitions.Sync
 
     public class PlayerPureSyncPacket : Packet
     {
-        static HashSet<byte> slotsWithAmmo = new HashSet<byte>()
+        static readonly HashSet<byte> slotsWithAmmo = new HashSet<byte>()
         {
             2, 3, 4, 5, 6, 7, 8, 9
         };

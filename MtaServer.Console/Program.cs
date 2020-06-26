@@ -9,7 +9,6 @@ using MtaServer.Server.PacketHandling.Factories;
 using MtaServer.Server.PacketHandling.QueueHandlers;
 using MtaServer.Server.Repositories;
 using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Numerics;
