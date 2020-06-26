@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MtaServer.Server.Logic
+namespace MtaServer.Console.Logic
 {
     public class ConsoleInputArgs : EventArgs
     {

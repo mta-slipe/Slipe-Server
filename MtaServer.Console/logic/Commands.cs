@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MtaServer.Server.Logic
+namespace MtaServer.Console.Logic
 {
     public class Commands
     {
         internal Dictionary<string, Action<IEnumerable<string>>> RegisteredCommands = new Dictionary<string, Action<IEnumerable<string>>>();
-        internal MtaServer MtaServer { get; }
+        internal Server.MtaServer MtaServer { get; }
+        internal ConsoleHandler ConsoleHandler { get; }
 
         private void RegisterCommand(string command, Action<IEnumerable<string>> action)
         {
@@ -16,19 +17,21 @@ namespace MtaServer.Server.Logic
 
         private void Quit(IEnumerable<string> arguments)
         {
+            ConsoleHandler.Output("Server is shutting down...");
             MtaServer.Shutdown();
         }
 
         private void Help(IEnumerable<string> arguments)
         {
-            MtaServer.Console.Output("Commands: {0}", string.Join(", ", RegisteredCommands.Keys));
+            ConsoleHandler.Output("Commands: {0}", string.Join(", ", RegisteredCommands.Keys));
         }
 
-        public Commands(MtaServer mtaServer)
+        public Commands(Server.MtaServer mtaServer, ConsoleHandler consoleHandler)
         {
             MtaServer = mtaServer;
+            ConsoleHandler = consoleHandler;
 
-            MtaServer.Console.ConsoleInput += ConsoleConsoleHandler;
+            ConsoleHandler.ConsoleInput += ConsoleConsoleHandler;
 
             RegisterCommand("help", Help);
             RegisterCommand("quit", Quit);
@@ -46,7 +49,7 @@ namespace MtaServer.Server.Logic
             }
             else
             {
-                MtaServer.Console.Output("Command '{0}' not found. Type 'help' for help", command);
+                ConsoleHandler.Output("Command '{0}' not found. Type 'help' for help", command);
             }
         }
     }

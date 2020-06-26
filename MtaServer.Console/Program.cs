@@ -23,16 +23,20 @@ namespace MtaServer.Console
         }
 
         private readonly Server.MtaServer server;
+        public Logic.Commands Commands { get; }
+        public Logic.ConsoleHandler ConsoleHandler { get; }
 
         public Program()
         {
             server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", "0.0.0.0", 50666, new ElementRepository());
 
+            ConsoleHandler = new Logic.ConsoleHandler();
+            Commands = new Logic.Commands(server, ConsoleHandler);
             Thread.Sleep(500);
 
+            SetupConsole();
             SetupQueueHandlers();
             SetupTestLogic();
-            SetupTestConsole();
 
             Task.Run(async () =>
             {
@@ -40,7 +44,7 @@ namespace MtaServer.Console
                 while (true)
                 {
                     line = System.Console.ReadLine();
-                    server.Console.HandleConsoleInput(line);
+                    ConsoleHandler.HandleConsoleInput(line);
                 }
             });
             server.Start();
@@ -48,9 +52,9 @@ namespace MtaServer.Console
 
         }
 
-        private void SetupTestConsole()
+        private void SetupConsole()
         {
-            server.Console.ConsoleOutput += message => System.Console.WriteLine(message);
+            ConsoleHandler.ConsoleOutput += message => System.Console.WriteLine(message);
         }
 
         private void SetupQueueHandlers()

@@ -16,8 +16,6 @@ namespace MtaServer.Server
         private readonly Dictionary<NetWrapper, Dictionary<uint, Client>> clients;
 
         public Element Root { get; }
-        public Logic.Commands Commands { get; }
-        public Logic.ConsoleHandler Console { get; }
         public IElementRepository ElementRepository { get; private set; }
 
         public MtaServer(string directory, string netDllPath, string host, ushort port, IElementRepository elementRepository)
@@ -25,32 +23,18 @@ namespace MtaServer.Server
             this.ElementRepository = elementRepository;
 
             this.Root = new Element();
-            this.Console = new Logic.ConsoleHandler();
-            this.Commands = new Logic.Commands(this);
 
             this.packetReducer = new PacketReducer();
             this.clients = new Dictionary<NetWrapper, Dictionary<uint, Client>>();
 
             this.netWrapper = CreateNetWrapper(directory, netDllPath, host, port);
-
-            OnShuttingDown += MtaServerOnServerShuttingDown;
-            OnStarted += MtaServerOnServerStarted;
         }
 
-        private void MtaServerOnServerStarted()
-        {
-            Console.Output("Server started and is ready to accept connection!");
-            Console.Output("Type 'help' for a list of commands.");
-        }
-
-        private void MtaServerOnServerShuttingDown()
-        {
-            Console.Output("Server is shutting down...");
-        }
 
         public void Shutdown()
         {
             OnShuttingDown?.Invoke();
+            Stop();
             Process.GetCurrentProcess().CloseMainWindow();
             Process.GetCurrentProcess().Close();
         }
