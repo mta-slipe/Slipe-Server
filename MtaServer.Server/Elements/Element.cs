@@ -19,7 +19,16 @@ namespace MtaServer.Server.Elements
         private byte timeContext;
         public byte TimeContext => timeContext;
 
-        public Vector3 Position { get; set; }
+        private Vector3 position;
+        public Vector3 Position
+        {
+            get => position;
+            set
+            {
+                PositionChange?.Invoke(this, value);
+                position = value;
+            }
+        }
 
         public Element()
         {
@@ -34,5 +43,7 @@ namespace MtaServer.Server.Elements
             }
             return timeContext;
         }
+
+        public event Action<Element, Vector3> PositionChange;
     }
 }

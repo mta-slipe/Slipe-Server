@@ -8,6 +8,7 @@ using MtaServer.Server.PacketHandling.Factories;
 using MtaServer.Server.PacketHandling.QueueHandlers;
 using MtaServer.Server.Repositories;
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Numerics;
@@ -27,7 +28,7 @@ namespace MtaServer.Console
 
         public Program()
         {
-            server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", "0.0.0.0", 50666, new ElementRepository());
+            server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", "0.0.0.0", 50666, new CompoundElementRepository());
 
             SetupQueueHandlers();
             SetupTestLogic();
