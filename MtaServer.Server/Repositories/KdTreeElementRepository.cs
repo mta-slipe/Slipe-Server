@@ -24,7 +24,7 @@ namespace MtaServer.Server.Repositories
             element.PositionChange += ReInsertElement;
         }
 
-        public Element Get(uint id)
+        public Element? Get(uint id)
         {
             return this.elements
                 .Select(element => element.Value)

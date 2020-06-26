@@ -40,6 +40,6 @@ namespace MtaServer.Server.Elements
             return TimeContext;
         }
 
-        public event Action<Element, Vector3> PositionChange;
+        public event Action<Element, Vector3>? PositionChange;
     }
 }

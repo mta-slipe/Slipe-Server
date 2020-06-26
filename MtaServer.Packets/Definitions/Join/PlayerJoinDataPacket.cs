@@ -13,13 +13,13 @@ namespace MtaServer.Packets.Definitions.Join
         public ushort NetVersion { get; private set; }
         public ushort MtaVersion { get; private set; }
         public ushort BitStreamVersion { get; private set; }
-        public string PlayerVersion { get; private set; } // CMtaVersion type??
+        public string? PlayerVersion { get; private set; } // CMtaVersion type??
         public bool OptionalUpdateInfoRequired { get; private set; }
         public byte GameVersion { get; private set; } // unssigned
-        public string Nickname { get; private set; }
-        public string Password { get; private set; } // MD5 type??
-        public string Serial { get; private set; }
-        public string DiscordSecret { get; private set; }
+        public string? Nickname { get; private set; }
+        public string? Password { get; private set; } // MD5 type??
+        public string? Serial { get; private set; }
+        public string? DiscordSecret { get; private set; }
 
 
         public override void Read(byte[] bytes)

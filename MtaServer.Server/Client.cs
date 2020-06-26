@@ -15,10 +15,10 @@ namespace MtaServer.Server
 
         public Player Player { get; }
 
-        public string Serial { get; private set; }
-        public string Extra { get; private set; }
-        public string Version { get; private set; }
-        public IPAddress IPAddress { get; set; }
+        public string? Serial { get; private set; }
+        public string? Extra { get; private set; }
+        public string? Version { get; private set; }
+        public IPAddress? IPAddress { get; set; }
 
         public Client(uint binaryAddress, NetWrapper netWrapper)
         {

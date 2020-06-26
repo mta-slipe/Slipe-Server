@@ -39,7 +39,7 @@ namespace MtaServer.Server.Repositories
             this.kdTreeElementRepository.Remove(element);
         }
 
-        public Element Get(uint id)
+        public Element? Get(uint id)
         {
             return this.elementByIdRepository.Get(id);
         }

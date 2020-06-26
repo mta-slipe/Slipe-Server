@@ -22,7 +22,7 @@ namespace MtaServer.Server.Repositories
             this.elements[element.Id] = element;
         }
 
-        public Element Get(uint id)
+        public Element? Get(uint id)
         {
             return this.elements.ContainsKey(id) ? this.elements[id] : null;
         }

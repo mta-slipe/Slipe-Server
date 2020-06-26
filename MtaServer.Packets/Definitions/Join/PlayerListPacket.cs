@@ -77,9 +77,13 @@ namespace MtaServer.Packets.Definitions.Join
             builder.WriteStringWithByteAsLength(nametagText);
             if (isNametagColorOverriden)
             {
-                builder.Write((byte)color?.R);
-                builder.Write((byte)color?.G);
-                builder.Write((byte)color?.B);
+                if (color == null)
+                {
+                    throw new Exception($"Can not write player list packet. {nameof(isNametagColorOverriden)} is true, but required data is null");
+                }
+                builder.Write(color.Value.R);
+                builder.Write(color.Value.G);
+                builder.Write(color.Value.B);
             }
 
             builder.Write(moveAnimation);
@@ -95,10 +99,18 @@ namespace MtaServer.Packets.Definitions.Join
 
             if (isInVehicle)
             {
+                if (vehicleId == null || seat == null)
+                {
+                    throw new Exception($"Can not write player list packet. {nameof(isInVehicle)} is true, but required data is null");
+                }
                 builder.WriteElementId(vehicleId.Value);
                 builder.WriteCapped(seat.Value, 4);
             } else
             {
+                if (position == null || rotation == null)
+                {
+                    throw new Exception($"Can not write player list packet. {nameof(isInVehicle)} is false, but required data is null");
+                }
                 builder.WriteVector3WithZAsFloat(position.Value);
                 builder.WriteFloatFromBits(rotation.Value, 16, -MathF.PI, MathF.PI, false);
             }
