@@ -35,12 +35,15 @@ namespace MTAServerWrapper.Server
         [return: MarshalAs(UnmanagedType.BStr)]
         private static extern string GetClientSerialAndVersion(uint binaryAddress, out ushort serialSize, out ushort extraSize, out ushort versionSize);
 
+        private PacketCallback packetInterceptorDelegate;
+        
         public NetWrapper(string directory, string netDllPath, string host, ushort port)
         {
             string idFile = Path.Join(directory, "id");
             Directory.SetCurrentDirectory(directory);
-            
-            int result = InitNetWrapper(netDllPath, idFile, host, port, 1024, "C# server", PacketInterceptor);
+
+            packetInterceptorDelegate = PacketInterceptor;
+            int result = InitNetWrapper(netDllPath, idFile, host, port, 1024, "C# server", packetInterceptorDelegate);
 
             if (result != 0)
             {
@@ -106,5 +109,6 @@ namespace MTAServerWrapper.Server
         }
 
         public event Action<NetWrapper, uint, PacketId, byte[]> OnPacketReceived;
+
     }
 }
