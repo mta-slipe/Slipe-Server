@@ -1,8 +1,7 @@
-﻿using MtaServer.Packets.Enums;
+﻿using MtaServer.ConfigurationProviders;
+using MtaServer.Packets.Enums;
 using MtaServer.Server.Elements;
 using MtaServer.Server.Exceptions;
-using MtaServer.Server.Logic;
-using MtaServer.Server.Logic.Configuration;
 using MtaServer.Server.PacketHandling;
 using MtaServer.Server.Repositories;
 using MTAServerWrapper.Server;
@@ -20,25 +19,25 @@ namespace MtaServer.Server
         public ServerConfiguration Configuration { get; }
         public IElementRepository ElementRepository { get; private set; }
 
-        public MtaServer(string directory, string netDllPath, IElementRepository elementRepository, IConfigurationProvider configurationProvider = null)
+        public MtaServer(string directory, string netDllPath, IElementRepository elementRepository, Configuration configuration = null)
         {
             this.ElementRepository = elementRepository;
 
-            if (configurationProvider == null)
-            {
+            if (configuration == null)
                 this.Configuration = new ServerConfiguration();
-            }
             else
-            {
-                this.Configuration = new ServerConfiguration(configurationProvider);
-            }
+                this.Configuration = new ServerConfiguration(configuration);
+
+            string property;
+            if(!this.Configuration.Verify(out property))
+                throw new System.Exception($"Property {property} has invalid value.");
 
             this.Root = new Element();
 
             this.packetReducer = new PacketReducer();
             this.clients = new Dictionary<NetWrapper, Dictionary<uint, Client>>();
 
-            this.netWrapper = CreateNetWrapper(directory, netDllPath, Configuration.host, Configuration.port);
+            this.netWrapper = CreateNetWrapper(directory, netDllPath, Configuration.GetHost(), Configuration.GetPort());
         }
 
         public void Start()
