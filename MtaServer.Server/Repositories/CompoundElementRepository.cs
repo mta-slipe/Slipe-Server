@@ -39,7 +39,7 @@ namespace MtaServer.Server.Repositories
             this.kdTreeElementRepository.Remove(element);
         }
 
-        public Element Get(uint id)
+        public Element? Get(uint id)
         {
             return this.elementByIdRepository.Get(id);
         }
@@ -49,7 +49,7 @@ namespace MtaServer.Server.Repositories
             return this.flatElementRepository.GetAll();
         }
 
-        public IEnumerable<TElement> GetByType<TElement>(ElementType elementType)
+        public IEnumerable<TElement> GetByType<TElement>(ElementType elementType) where TElement : Element
         {
             return this.elementByTypeRepository.GetByType<TElement>(elementType);
         }

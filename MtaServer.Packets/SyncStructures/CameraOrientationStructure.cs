@@ -8,7 +8,7 @@ namespace MtaServer.Packets.Structures
 {
     public class CameraOrientationStructure : ISyncStructure
     {
-        private static uint[] bitCountLookup = new uint[]
+        private readonly static uint[] bitCountLookup = new uint[]
         {
             3, 5, 9, 14
         };

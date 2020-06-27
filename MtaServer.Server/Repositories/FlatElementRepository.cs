@@ -22,7 +22,7 @@ namespace MtaServer.Server.Repositories
             this.elements.Add(element);
         }
 
-        public Element Get(uint id)
+        public Element? Get(uint id)
         {
             return this.elements.FirstOrDefault(element => element.Id == id);
         }
@@ -37,7 +37,7 @@ namespace MtaServer.Server.Repositories
             return this.elements.Select(element => element);
         }
 
-        public IEnumerable<TElement> GetByType<TElement>(ElementType elementType)
+        public IEnumerable<TElement> GetByType<TElement>(ElementType elementType) where TElement : Element
         {
             return this.elements.Where(element => element.ElementType == elementType).Cast<TElement>();
         }

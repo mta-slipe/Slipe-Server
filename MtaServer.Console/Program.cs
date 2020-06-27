@@ -3,13 +3,13 @@ using MtaServer.Packets.Definitions.Player;
 using MtaServer.Packets.Definitions.Sync;
 using MtaServer.Packets.Enums;
 using MtaServer.Packets.Lua.Camera;
+using MtaServer.Server;
 using MtaServer.Server.Elements;
 using MtaServer.Server.PacketHandling.Factories;
 using MtaServer.Server.Exceptions;
 using MtaServer.Server.PacketHandling.QueueHandlers;
 using MtaServer.Server.Repositories;
 using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Numerics;
@@ -100,12 +100,13 @@ namespace MtaServer.Console
 
         private void SetupTestLogic()
         {
-            Client.OnJoin += (client) =>
+            Player.OnJoin += (player) =>
             {
-                System.Console.WriteLine($"{client.Name} ({client.Version}) ({client.Serial}) has joined the server!");
-                client.SendPacket(new SetCameraTargetPacket(client.Id));
+                var client = player.Client;
+                System.Console.WriteLine($"{player.Name} ({client.Version}) ({client.Serial}) has joined the server!");
+                client.SendPacket(new SetCameraTargetPacket(player.Id));
                 client.SendPacket(new SpawnPlayerPacket(
-                    client.Id,
+                    player.Id,
                     flags: 0,
                     position: new Vector3(0, 0, 3),
                     rotation: 0,

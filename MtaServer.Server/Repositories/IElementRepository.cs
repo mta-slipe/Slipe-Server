@@ -12,9 +12,9 @@ namespace MtaServer.Server.Repositories
         void Add(Element element);
         void Remove(Element element);
 
-        Element Get(uint id);
+        Element? Get(uint id);
         IEnumerable<Element> GetAll();
         IEnumerable<Element> GetWithinRange(Vector3 position, float range);
-        IEnumerable<TElement> GetByType<TElement>(ElementType elementType);
+        IEnumerable<TElement> GetByType<TElement>(ElementType elementType) where TElement: Element;
     }
 }

@@ -25,7 +25,7 @@ namespace MtaServer.Server.Repositories
             this.elements[element.ElementType].Add(element);
         }
 
-        public Element Get(uint id)
+        public Element? Get(uint id)
         {
             foreach(var list in this.elements.Values)
             {
@@ -51,7 +51,7 @@ namespace MtaServer.Server.Repositories
             return this.elements.SelectMany(kvPair => kvPair.Value);
         }
 
-        public IEnumerable<TElement> GetByType<TElement>(ElementType elementType)
+        public IEnumerable<TElement> GetByType<TElement>(ElementType elementType) where TElement : Element
         {
             return this.elements.ContainsKey(elementType) ? this.elements[elementType].Cast<TElement>() : new TElement[0];
         }
