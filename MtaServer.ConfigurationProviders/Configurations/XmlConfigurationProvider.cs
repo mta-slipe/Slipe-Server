@@ -5,7 +5,7 @@ namespace MtaServer.ConfigurationProviders.Configurations
 {
     public class XmlConfigurationProvider : IConfigurationProvider
     {
-        public Configuration configuration { private set; get; }
+        public Configuration configuration { get; private set; }
         public Configuration GetConfiguration() => configuration;
 
         public XmlConfigurationProvider(string fileName)

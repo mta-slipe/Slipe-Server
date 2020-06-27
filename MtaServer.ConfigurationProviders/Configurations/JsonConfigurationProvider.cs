@@ -6,7 +6,7 @@ namespace MtaServer.ConfigurationProviders
 {
     public class JsonConfigurationProvider : IConfigurationProvider
     {
-        public Configuration configuration { get; private set; }
+        public Configuration configuration { private set; get; }
         public Configuration GetConfiguration() => configuration;
         public JsonConfigurationProvider(string fileName)
         {
