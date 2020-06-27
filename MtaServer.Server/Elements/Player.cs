@@ -43,8 +43,10 @@ namespace MtaServer.Server.Elements
             this.Client = client;
         }
 
+        public void HandleCommand(string command, string[] arguments) => OnCommand?.Invoke(command, arguments);
         public void HandleJoin() => OnJoin?.Invoke(this);
 
         public static event Action<Player>? OnJoin;
+        public event Action<string, string[]>? OnCommand;
     }
 }

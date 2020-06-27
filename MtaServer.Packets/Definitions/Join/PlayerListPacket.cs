@@ -81,9 +81,10 @@ namespace MtaServer.Packets.Definitions.Join
                 {
                     throw new Exception($"Can not write player list packet. {nameof(isNametagColorOverriden)} is true, but required data is null");
                 }
-                builder.Write(color.Value.R);
-                builder.Write(color.Value.G);
-                builder.Write(color.Value.B);
+                else
+                {
+                    builder.Write(color.Value);
+                }
             }
 
             builder.Write(moveAnimation);

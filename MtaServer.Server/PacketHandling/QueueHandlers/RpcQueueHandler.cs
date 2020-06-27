@@ -10,37 +10,20 @@ using System.Threading.Tasks;
 
 namespace MtaServer.Server.PacketHandling.QueueHandlers
 {
-    public class RpcQueueHandler : BaseQueueHandler
+    public class RpcQueueHandler : WorkerBasedQueueHandler
     {
-        private readonly MtaServer server;
-        private readonly int sleepInterval;
 
-        public RpcQueueHandler(MtaServer server, int sleepInterval, int workerCount): base()
-        {
-            this.server = server;
-            this.sleepInterval = sleepInterval;
-            for (int i = 0; i < workerCount; i++)
-            {
-                Task.Run(HandlePackets);
-            }
-        }
+        public RpcQueueHandler(MtaServer server, int sleepInterval, int workerCount): base(server, sleepInterval, workerCount) { }
 
-        public async void HandlePackets()
+        protected override void HandlePacket(PacketQueueEntry queueEntry)
         {
-            while (true)
+            switch (queueEntry.PacketId)
             {
-                while(this.packetQueue.TryDequeue(out PacketQueueEntry queueEntry))
-                {
-                    switch (queueEntry.PacketId)
-                    {
-                        case PacketId.PACKET_ID_RPC:
-                            RpcPacket packet = new RpcPacket();
-                            packet.Read(queueEntry.Data);
-                            HandleRpc(queueEntry.Client, packet);
-                            break;
-                    }
-                }
-                await Task.Delay(this.sleepInterval);
+                case PacketId.PACKET_ID_RPC:
+                    RpcPacket packet = new RpcPacket();
+                    packet.Read(queueEntry.Data);
+                    HandleRpc(queueEntry.Client, packet);
+                    break;
             }
         }
 
