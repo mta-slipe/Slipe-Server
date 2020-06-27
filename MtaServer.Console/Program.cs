@@ -25,57 +25,30 @@ namespace MtaServer.Console
     {
         static void Main(string[] args)
         {
-            new Program(args);
+            try
+            {
+                new Program(args);
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine(ex.Message);
+                System.Console.WriteLine("Press any key to exit...");
+                System.Console.ReadKey();
+            }
         }
 
         private readonly Server.MtaServer server;
 
         public Program(string[] args)
         {
-            IConfigurationProvider configurationProvider = null;
-
             if (args.Length > 0)
             {
-                string configPath = args[0];
-                if (!File.Exists(configPath))
-                {
-                    System.Console.WriteLine("Couldn't find configuration file {0}", configPath);
-                    System.Console.ReadKey();
-                    return;
-                }
+                IConfigurationProvider configurationProvider = GetConfiguration(args[0]);
+                server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", new CompoundElementRepository(), configurationProvider.GetConfiguration());
 
-                string extension = Path.GetExtension(configPath);
-                switch (extension)
-                {
-                    case ".json":
-                        configurationProvider = new JsonConfigurationProvider(configPath);
-                        break;
-                    case ".xml":
-                        configurationProvider = new XmlConfigurationProvider(configPath);
-                        break;
-                    default:
-                        System.Console.WriteLine("Unsupported configuration extension {0}", extension);
-                        System.Console.ReadKey();
-                        return;
-                }
-            }
-
-            if (configurationProvider == null)
+            } else
             {
                 server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", new CompoundElementRepository());
-            }
-            else
-            {
-                try
-                {
-                     server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", new CompoundElementRepository(), configurationProvider.GetConfiguration());
-                }
-                catch(Exception ex)
-                {
-                    System.Console.WriteLine(ex.Message);
-                    System.Console.ReadKey();
-                    return;
-                }
             }
 
             SetupQueueHandlers();
@@ -85,6 +58,25 @@ namespace MtaServer.Console
 
             server.Start();
             Thread.Sleep(-1);
+        }
+
+        private IConfigurationProvider GetConfiguration(string configPath)
+        {
+            if (!File.Exists(configPath))
+            {
+                throw new FileNotFoundException($"Configuration file {configPath} does not exist.");
+            }
+
+            string extension = Path.GetExtension(configPath);
+            switch (extension)
+            {
+                case ".json":
+                   return new JsonConfigurationProvider(configPath);
+                case ".xml":
+                    return new XmlConfigurationProvider(configPath);
+                default:
+                    throw new NotSupportedException($"Unsupported configuration extension {extension}");
+            }
         }
 
         private void SetupQueueHandlers()

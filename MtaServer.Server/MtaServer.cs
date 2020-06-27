@@ -19,19 +19,14 @@ namespace MtaServer.Server
         public Configuration Configuration { get; }
         public IElementRepository ElementRepository { get; private set; }
 
-        public MtaServer(string directory, string netDllPath, IElementRepository elementRepository, Configuration configuration = null)
+        public MtaServer(string directory, string netDllPath, IElementRepository elementRepository, Configuration? configuration = null)
         {
             this.ElementRepository = elementRepository;
 
-            if (configuration == null)
-                this.Configuration = new Configuration();
-            else
-                this.Configuration = configuration;
+            this.Configuration = configuration ?? new Configuration();
 
             var validationResults = new List<ValidationResult>();
-            bool isValid = Validator.TryValidateObject(Configuration, new ValidationContext(Configuration), validationResults, true);
-
-            if (!isValid)
+            if (!Validator.TryValidateObject(Configuration, new ValidationContext(Configuration), validationResults, true))
             {
                 string invalidProperties = string.Join("\r\n\t",validationResults.Select(r => r.ErrorMessage));
                 throw new System.Exception("An error has occurred while parsing configuration parameters:\r\n " + invalidProperties);
