@@ -6,15 +6,17 @@ using MtaServer.Packets.Lua.Camera;
 using MtaServer.Server.Elements;
 using MtaServer.Server.PacketHandling.Factories;
 using MtaServer.Server.Exceptions;
-using MtaServer.Server.Logic.Configuration;
 using MtaServer.Server.PacketHandling.QueueHandlers;
 using MtaServer.Server.Repositories;
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
+using MtaServer.ConfigurationProviders;
+using MtaServer.ConfigurationProviders.Configurations;
 
 namespace MtaServer.Console
 {
@@ -59,7 +61,12 @@ namespace MtaServer.Console
 
             try
             {
-                server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", new ElementRepository(), configurationProvider);
+                if(configurationProvider == null)
+                {
+                    server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", new CompoundElementRepository());
+                }
+                else
+                    server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", new CompoundElementRepository(), configurationProvider.GetConfiguration());
             }
             catch(ConfigurationException ex)
             {

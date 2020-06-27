@@ -1,11 +1,15 @@
 ﻿using System.Xml;
 
-namespace MtaServer.Server.Logic.Configuration
+namespace MtaServer.ConfigurationProviders.Configurations
 {
-    public class XmlConfigurationProvider : ConfigurationProperties, IConfigurationProvider
+    public class XmlConfigurationProvider : IConfigurationProvider
     {
+        public Configuration configuration { private set; get; }
+        public Configuration GetConfiguration() => configuration;
+
         public XmlConfigurationProvider(string fileName)
         {
+            configuration = new Configuration();
             XmlDocument xmlConfig = new XmlDocument();
             xmlConfig.Load(fileName);
 
@@ -16,31 +20,26 @@ namespace MtaServer.Server.Logic.Configuration
                 switch(node.Name)
                 {
                     case "serverName":
-                        serverName = node.InnerText;
+                        configuration.serverName = node.InnerText;
                         break;
                     case "host":
-                        host = node.InnerText;
+                        configuration.host = node.InnerText;
                         break;
                     case "port":
                         if (ushort.TryParse(node.InnerText, out result))
-                            port = result;
+                            configuration.port = result;
 
                         break;
                     case "maxPlayers":
                         if (ushort.TryParse(node.InnerText, out result))
-                            maxPlayers = result;
+                            configuration.maxPlayers = result;
 
                         break;
                     case "password":
-                        password = node.InnerText;
+                        configuration.password = node.InnerText;
                         break;
                 }
             }
         }
-        public string GetServerName() => serverName;
-        public string GetHost() => host;
-        public ushort GetPort() => port;
-        public ushort GetMaxPlayers() => maxPlayers;
-        public string GetPassword() => password;
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using MtaServer.Server.Elements;
 using System.Collections.Generic;
+using System.Numerics;
 
 namespace MtaServer.Server.Repositories
 {
@@ -13,6 +14,7 @@ namespace MtaServer.Server.Repositories
 
         Element Get(uint id);
         IEnumerable<Element> GetAll();
+        IEnumerable<Element> GetWithinRange(Vector3 position, float range);
         IEnumerable<TElement> GetByType<TElement>(ElementType elementType);
     }
 }
