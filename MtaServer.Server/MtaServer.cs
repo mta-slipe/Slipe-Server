@@ -1,7 +1,6 @@
 ﻿using MtaServer.ConfigurationProviders;
 using MtaServer.Packets.Enums;
 using MtaServer.Server.Elements;
-using MtaServer.Server.Exceptions;
 using MtaServer.Server.PacketHandling;
 using MtaServer.Server.Repositories;
 using MTAServerWrapper.Server;

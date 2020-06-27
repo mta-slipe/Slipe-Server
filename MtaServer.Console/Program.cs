@@ -6,7 +6,6 @@ using MtaServer.Packets.Lua.Camera;
 using MtaServer.Server;
 using MtaServer.Server.Elements;
 using MtaServer.Server.PacketHandling.Factories;
-using MtaServer.Server.Exceptions;
 using MtaServer.Server.PacketHandling.QueueHandlers;
 using MtaServer.Server.Repositories;
 using System;
@@ -59,20 +58,22 @@ namespace MtaServer.Console
                 }
             }
 
-            try
+            if (configurationProvider == null)
             {
-                if(configurationProvider == null)
-                {
-                    server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", new CompoundElementRepository());
-                }
-                else
-                    server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", new CompoundElementRepository(), configurationProvider.GetConfiguration());
+                server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", new CompoundElementRepository());
             }
-            catch(ConfigurationException ex)
+            else
             {
-                System.Console.WriteLine(ex.Message);
-                System.Console.ReadKey();
-                return;
+                try
+                {
+                     server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", new CompoundElementRepository(), configurationProvider.GetConfiguration());
+                }
+                catch(Exception ex)
+                {
+                    System.Console.WriteLine(ex.Message);
+                    System.Console.ReadKey();
+                    return;
+                }
             }
 
             SetupQueueHandlers();
