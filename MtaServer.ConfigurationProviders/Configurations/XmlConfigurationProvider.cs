@@ -1,4 +1,5 @@
-﻿using System.Xml;
+﻿using MtaServer.Server;
+using System.Xml;
 
 namespace MtaServer.ConfigurationProviders.Configurations
 {
@@ -20,23 +21,23 @@ namespace MtaServer.ConfigurationProviders.Configurations
                 switch(node.Name)
                 {
                     case "serverName":
-                        configuration.serverName = node.InnerText;
+                        configuration.ServerName = node.InnerText;
                         break;
                     case "host":
-                        configuration.host = node.InnerText;
+                        configuration.Host = node.InnerText;
                         break;
                     case "port":
                         if (ushort.TryParse(node.InnerText, out result))
-                            configuration.port = result;
+                            configuration.Port = result;
 
                         break;
                     case "maxPlayers":
                         if (ushort.TryParse(node.InnerText, out result))
-                            configuration.maxPlayers = result;
+                            configuration.MaxPlayers = result;
 
                         break;
                     case "password":
-                        configuration.password = node.InnerText;
+                        configuration.Password = node.InnerText;
                         break;
                 }
             }

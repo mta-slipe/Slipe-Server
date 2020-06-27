@@ -1,10 +1,11 @@
-﻿using MtaServer.ConfigurationProviders;
-using MtaServer.Packets.Enums;
+﻿using MtaServer.Packets.Enums;
 using MtaServer.Server.Elements;
 using MtaServer.Server.PacketHandling;
 using MtaServer.Server.Repositories;
 using MTAServerWrapper.Server;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace MtaServer.Server
 {
@@ -15,7 +16,7 @@ namespace MtaServer.Server
         private readonly Dictionary<NetWrapper, Dictionary<uint, Client>> clients;
 
         public Element Root { get; }
-        public ServerConfiguration Configuration { get; }
+        public Configuration Configuration { get; }
         public IElementRepository ElementRepository { get; private set; }
 
         public MtaServer(string directory, string netDllPath, IElementRepository elementRepository, Configuration configuration = null)
@@ -23,20 +24,25 @@ namespace MtaServer.Server
             this.ElementRepository = elementRepository;
 
             if (configuration == null)
-                this.Configuration = new ServerConfiguration();
+                this.Configuration = new Configuration();
             else
-                this.Configuration = new ServerConfiguration(configuration);
+                this.Configuration = configuration;
 
-            string property;
-            if(!this.Configuration.Verify(out property))
-                throw new System.Exception($"Property {property} has invalid value.");
+            var validationResults = new List<ValidationResult>();
+            bool isValid = Validator.TryValidateObject(Configuration, new ValidationContext(Configuration), validationResults, true);
+
+            if (!isValid)
+            {
+                string invalidProperties = string.Join("\r\n\t",validationResults.Select(r => r.ErrorMessage));
+                throw new System.Exception("An error has occurred while parsing configuration parameters:\r\n " + invalidProperties);
+            }
 
             this.Root = new Element();
 
             this.packetReducer = new PacketReducer();
             this.clients = new Dictionary<NetWrapper, Dictionary<uint, Client>>();
 
-            this.netWrapper = CreateNetWrapper(directory, netDllPath, Configuration.GetHost(), Configuration.GetPort());
+            this.netWrapper = CreateNetWrapper(directory, netDllPath, Configuration.Host, Configuration.Port);
         }
 
         public void Start()

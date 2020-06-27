@@ -15,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MtaServer.ConfigurationProviders\MtaServer.ConfigurationProviders.csproj" />
     <ProjectReference Include="..\MtaServer.Net\MtaServer.Net.csproj" />
   </ItemGroup>
 
