@@ -16,6 +16,8 @@ using System.IO;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
+using MtaServer.ConfigurationProviders;
+using MtaServer.ConfigurationProviders.Configurations;
 
 namespace MtaServer.Console
 {
@@ -23,14 +25,58 @@ namespace MtaServer.Console
     {
         static void Main(string[] args)
         {
-            new Program();
+            new Program(args);
         }
 
         private readonly Server.MtaServer server;
 
-        public Program()
+        public Program(string[] args)
         {
-            server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", "0.0.0.0", 50666, new CompoundElementRepository());
+            IConfigurationProvider configurationProvider = null;
+
+            if (args.Length > 0)
+            {
+                string configPath = args[0];
+                if (!File.Exists(configPath))
+                {
+                    System.Console.WriteLine("Couldn't find configuration file {0}", configPath);
+                    System.Console.ReadKey();
+                    return;
+                }
+
+                string extension = Path.GetExtension(configPath);
+                switch (extension)
+                {
+                    case ".json":
+                        configurationProvider = new JsonConfigurationProvider(configPath);
+                        break;
+                    case ".xml":
+                        configurationProvider = new XmlConfigurationProvider(configPath);
+                        break;
+                    default:
+                        System.Console.WriteLine("Unsupported configuration extension {0}", extension);
+                        System.Console.ReadKey();
+                        return;
+                }
+            }
+
+            if (configurationProvider == null)
+            {
+                server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", new CompoundElementRepository());
+            }
+            else
+            {
+                try
+                {
+                     server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", new CompoundElementRepository(), configurationProvider.GetConfiguration());
+                }
+                catch(Exception ex)
+                {
+                    System.Console.WriteLine(ex.Message);
+                    System.Console.ReadKey();
+                    return;
+                }
+            }
 
             SetupQueueHandlers();
             SetupTestLogic();
