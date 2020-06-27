@@ -11,16 +11,16 @@ namespace MtaServer.Server.Behaviour
     {
         public DefaultChatBehaviour(MtaServer server)
         {
-            Client.OnJoin += (client) =>
+            Player.OnJoin += (player) =>
             {
-                client.OnCommand += (command, arguments) =>
+                player.OnCommand += (command, arguments) =>
                 {
                     if(command == "say")
                     {
-                        var packet = new ChatEchoPacket(server.Root.Id, client.Name + ": " + string.Join(' ', arguments), Color.White);
-                        foreach (var player in server.ElementRepository.GetByType<Client>(ElementType.Player))
+                        var packet = new ChatEchoPacket(server.Root.Id, player.Name + ": " + string.Join(' ', arguments), Color.White);
+                        foreach (var _player in server.ElementRepository.GetByType<Player>(ElementType.Player))
                         {
-                            player.SendPacket(packet);
+                            _player.Client.SendPacket(packet);
                         }
                     }
                 };

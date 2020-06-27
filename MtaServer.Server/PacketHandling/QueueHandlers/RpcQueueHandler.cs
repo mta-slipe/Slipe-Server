@@ -34,7 +34,7 @@ namespace MtaServer.Server.PacketHandling.QueueHandlers
             {
                 case RpcFunctions.PLAYER_INGAME_NOTICE:
                     client.SendPacket(new JoinedGamePacket(
-                        client.Id, 
+                        client.Player.Id, 
                         server.ElementRepository.Count + 1, 
                         this.server.Root.Id, 
                         HttpDownloadType.HTTP_DOWNLOAD_ENABLED_PORT, 
@@ -45,19 +45,19 @@ namespace MtaServer.Server.PacketHandling.QueueHandlers
                     ));
 
                     var existingPlayersListPacket = PlayerPacketFactory.CreatePlayerListPacket(
-                        this.server.ElementRepository.GetByType<Client>(ElementType.Player).ToArray(), 
+                        this.server.ElementRepository.GetByType<Player>(ElementType.Player).ToArray(), 
                         true
                     );
                     client.SendPacket(existingPlayersListPacket);
 
-                    var newPlayerListPacket = PlayerPacketFactory.CreatePlayerListPacket(new Client[] { client }, false);
-                    foreach (var player in this.server.ElementRepository.GetByType<Client>(ElementType.Player))
+                    var newPlayerListPacket = PlayerPacketFactory.CreatePlayerListPacket(new Player[] { client.Player }, false);
+                    foreach (var player in this.server.ElementRepository.GetByType<Player>(ElementType.Player))
                     {
-                        player.SendPacket(newPlayerListPacket);
+                        player.Client.SendPacket(newPlayerListPacket);
                     }
 
-                    this.server.ElementRepository.Add(client);
-                    client.HandleJoin();
+                    this.server.ElementRepository.Add(client.Player);
+                    client.Player.HandleJoin();
 
                     break;
             }

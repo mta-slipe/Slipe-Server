@@ -19,7 +19,7 @@ namespace MtaServer.Server.PacketHandling.QueueHandlers
                 case PacketId.PACKET_ID_COMMAND:
                     CommandPacket commandPacket = new CommandPacket();
                     commandPacket.Read(queueEntry.Data);
-                    queueEntry.Client.HandleCommand(commandPacket.Command, commandPacket.Arguments);
+                    queueEntry.Client.Player.HandleCommand(commandPacket.Command, commandPacket.Arguments);
                     break;
             }
         }
