@@ -8,6 +8,7 @@ using MtaServer.Server.Elements;
 using MtaServer.Server.PacketHandling.Factories;
 using MtaServer.Server.PacketHandling.QueueHandlers;
 using MtaServer.Server.Repositories;
+using MtaServer.Server.Behaviour;
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -34,6 +35,8 @@ namespace MtaServer.Console
             SetupQueueHandlers();
             SetupTestLogic();
 
+            new DefaultChatBehaviour(server);
+
             server.Start();
             Thread.Sleep(-1);
         }
@@ -52,6 +55,10 @@ namespace MtaServer.Console
             SyncQueueHandler syncQueueHandler = new SyncQueueHandler(server, 10, 1);
             server.RegisterPacketQueueHandler(PacketId.PACKET_ID_CAMERA_SYNC, syncQueueHandler);
             server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_PURESYNC, syncQueueHandler);
+
+            CommandQueueHandler commandQueueHandler = new CommandQueueHandler(server, 10, 1);
+            server.RegisterPacketQueueHandler(PacketId.PACKET_ID_COMMAND, commandQueueHandler);
+
         }
 
         private void SetupTestLogic()
@@ -72,7 +79,7 @@ namespace MtaServer.Console
                     timeContext: 0
                 ));
                 client.SendPacket(new FadeCameraPacket(CameraFade.In));
-                client.SendPacket(new ChatEchoPacket(client.Id, "Hello World", Color.White));
+                client.SendPacket(new ChatEchoPacket(server.Root.Id, "Hello World", Color.White));
 
                 TestPureSync(client);
             };

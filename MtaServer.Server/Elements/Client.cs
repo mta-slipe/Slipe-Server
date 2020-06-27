@@ -35,6 +35,11 @@ namespace MtaServer.Server.Elements
             OnJoin?.Invoke(this);
         }
 
+        public void HandleCommand(string command, string[] arguments)
+        {
+            this.OnCommand?.Invoke(command, arguments);
+        }
+
         public void SetVersion(ushort version)
         {
             this.netWrapper.SetVersion(this.binaryAddress, version);
@@ -49,5 +54,6 @@ namespace MtaServer.Server.Elements
         }
 
         public static event Action<Client> OnJoin;
+        public event Action<string, string[]> OnCommand;
     }
 }
