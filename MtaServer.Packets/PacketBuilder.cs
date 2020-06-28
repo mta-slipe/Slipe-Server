@@ -148,6 +148,11 @@ namespace MtaServer.Packets
             WriteBytes(value.Select(c => (byte)c).ToArray());
         }
 
+        public void WriteStringWithoutLength(string value)
+        {
+            WriteBytes(value.Select(c => (byte)c).ToArray());
+        }
+
         public void WriteStringWithByteAsLength(string value)
         {
             Write((byte)value.Length);
@@ -227,6 +232,13 @@ namespace MtaServer.Packets
             WriteFloat(vector.X, integerBits, fractionalBits);
             WriteFloat(vector.Y, integerBits, fractionalBits);
             Write(vector.Z);
+        }
+
+        public void WriteVectorAsUshorts(Vector3 vector)
+        {
+            Write((ushort)(vector.X * (65536 / 360f)));
+            Write((ushort)(vector.Y * (65536 / 360f)));
+            Write((ushort)(vector.Z * (65536 / 360f)));
         }
 
         float WrapAround(float low, float value, float high)

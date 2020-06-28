@@ -18,6 +18,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using MtaServer.ConfigurationProviders;
 using MtaServer.ConfigurationProviders.Configurations;
+using MtaServer.Packets.Definitions.Lua.ElementRpc.Element;
+using MtaServer.Packets.Definitions.Entities.Structs;
 
 namespace MtaServer.Console
 {
@@ -44,11 +46,11 @@ namespace MtaServer.Console
             if (args.Length > 0)
             {
                 IConfigurationProvider configurationProvider = GetConfiguration(args[0]);
-                server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", new CompoundElementRepository(), configurationProvider.GetConfiguration());
+                server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net_d.dll", new CompoundElementRepository(), configurationProvider.GetConfiguration());
 
             } else
             {
-                server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", new CompoundElementRepository());
+                server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net_d.dll", new CompoundElementRepository());
             }
 
             SetupQueueHandlers();
@@ -121,6 +123,16 @@ namespace MtaServer.Console
                 client.SendPacket(new ChatEchoPacket(server.Root.Id, "Hello World", Color.White));
 
                 TestPureSync(client);
+
+                var entitypacket = new AddEntityPacket();
+                entitypacket.AddObject(
+                    667, (byte)ElementType.Object, null, 0, 0,
+                    null, true, false, new CustomData(), "Test object",
+                    0, new Vector3(0, -5, 3), Vector3.Zero, 1337,
+                    255, false, null, true, true, null, Vector3.One * 3,
+                    false, 1000f
+                );
+                client.SendPacket(entitypacket);
             };
         }
 

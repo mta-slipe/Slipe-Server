@@ -4,8 +4,27 @@ namespace MtaServer.Server.Elements
 {
     public enum ElementType
     {
-        Unknown,
+        Dummy,
+        Player,
+        Vehicle,
+        Object,
+        Marker,
+        Blip,
+        Pickup,
+        RadarArea,
+        SpawnpointDeprecated,
+        RemoteClientDeprecated,
+        Console,
+        PathNodeUnused,
+        WorldMeshUnused,
+        Team,
         Ped,
-        Player,        
+        Colshape,
+        ScriptFile,
+        Water,
+        Weapon,
+        DatabaseConnection,
+        Root,
+        Unknown
     }
 }
