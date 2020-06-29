@@ -22,7 +22,6 @@ namespace MtaServer.Packets.Definitions.Player
         public override byte[] Write()
         {
             var builder = new PacketBuilder();
-            builder.Write(false);
             return builder.Build();
         }
     }
