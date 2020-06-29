@@ -20,6 +20,10 @@ namespace MtaServer.Server
         public string? Version { get; private set; }
         public IPAddress? IPAddress { get; set; }
 
+        private byte[] TimeContext { get; set; } = new byte[] {
+            0, // setCameraMatrix, index = 0
+        };
+
         public Client(uint binaryAddress, NetWrapper netWrapper)
         {
             this.binaryAddress = binaryAddress;
@@ -29,6 +33,12 @@ namespace MtaServer.Server
 
         public void SendPacket(Packet packet) => this.netWrapper.SendPacket(this.binaryAddress, packet);
         public void SetVersion(ushort version) => this.netWrapper.SetVersion(this.binaryAddress, version);
+
+        public byte GenerateSyncTimeContext(uint index)
+        {
+            TimeContext[index] = (byte)Math.Max(1, TimeContext[index] + 1);
+            return TimeContext[index];
+        }
 
         public void FetchSerial()
         {
