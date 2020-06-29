@@ -241,6 +241,18 @@ namespace MtaServer.Packets
             Write((ushort)(vector.Z * (65536 / 360f)));
         }
 
+        public void WriteCompressedVector3(Vector3 vector)
+        {
+            var magnitude = MathF.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
+            Write((float)magnitude);
+            if (magnitude > 0.00001f)
+            {
+                WriteCompressed((float)(vector.X / magnitude));
+                WriteCompressed((float)(vector.Y / magnitude));
+                WriteCompressed((float)(vector.Z / magnitude));
+            }
+        }
+
         float WrapAround(float low, float value, float high)
         {
             float size = high - low;

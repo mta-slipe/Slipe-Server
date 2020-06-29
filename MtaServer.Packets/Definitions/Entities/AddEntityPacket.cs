@@ -117,7 +117,13 @@ namespace MtaServer.Packets.Definitions.Lua.ElementRpc.Element
             byte timeContext, Vector3 position, Vector3 rotation, ushort model,
             byte alpha, bool isLowLod, uint? lowLodElementId, bool isDoubleSided,
             bool isVisibleInAllDimensions, PositionRotationAnimation? positionRotationAnimation,
-            Vector3 scale, bool isFrozen, float health
+            Vector3 scale, bool isFrozen, float health, byte targetType, uint? targetElementId,
+            byte? boneTarget, byte? wheelTarget, Vector3? targetPosition, bool isChanged, ushort? damagePerHit,
+            float? accuracy, float? targetRange, float? weaponRange, bool disableWeaponModel,
+            bool instantReload, bool shootIfTargetBlocked, bool shootIfTargetOutOfRange,
+            bool checkBuildings, bool checkCarTires, bool checkDummies, bool checkObjects,
+            bool checkPeds, bool checkVehicles, bool ignoreSomeObjectForCamera, bool seeThroughStuff,
+            bool shootThroughStuff, byte weaponState, ushort ammo, ushort clipAmmo, uint ownerId
         )
         {
             AddObject(
@@ -129,7 +135,58 @@ namespace MtaServer.Packets.Definitions.Lua.ElementRpc.Element
                 positionRotationAnimation, scale, isFrozen, health
             );
 
+            builder.WriteCapped(targetType, 3);
+            if (targetType == 1 && targetElementId != null)
+            {
+                builder.WriteElementId(targetElementId.Value);
+                if (boneTarget != null)
+                {
+                    builder.Write(boneTarget.Value);
+                }
+                if (wheelTarget != null)
+                {
+                    builder.Write(wheelTarget.Value);
+                }
+            } else if (targetType == 0 && targetPosition != null)
+            {
+                builder.WriteCompressedVector3(targetPosition.Value);
+            }
 
+            if (isChanged &&
+                damagePerHit != null &&
+                accuracy != null &&
+                targetRange != null &&
+                weaponRange != null
+            )
+            {
+                builder.Write(true);
+                builder.WriteCapped(damagePerHit.Value, 12);
+                builder.Write(accuracy.Value);
+                builder.Write(targetRange.Value);
+                builder.Write(weaponRange.Value);
+            } else
+            {
+                builder.Write(false);
+            }
+
+            builder.Write(disableWeaponModel);
+            builder.Write(instantReload);
+            builder.Write(shootIfTargetBlocked);
+            builder.Write(shootIfTargetOutOfRange);
+            builder.Write(checkBuildings);
+            builder.Write(checkCarTires);
+            builder.Write(checkDummies);
+            builder.Write(checkObjects);
+            builder.Write(checkPeds);
+            builder.Write(checkVehicles);
+            builder.Write(ignoreSomeObjectForCamera);
+            builder.Write(seeThroughStuff);
+            builder.Write(shootThroughStuff);
+
+            builder.WriteCapped(weaponState, 4);
+            builder.Write(ammo);
+            builder.Write(clipAmmo);
+            builder.WriteElementId(ownerId);
         }
 
         public void AddPickup(
