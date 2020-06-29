@@ -221,7 +221,7 @@ namespace MtaServer.Packets
             WriteFloat(vector.Z, integerBits, fractionalBits);
         }
 
-        public void WriteVector2(Vector2 vector, int integerBits, int fractionalBits)
+        public void WriteVector2(Vector2 vector, int integerBits = 14, int fractionalBits = 10)
         {
             WriteFloat(vector.X, integerBits, fractionalBits);
             WriteFloat(vector.Y, integerBits, fractionalBits);

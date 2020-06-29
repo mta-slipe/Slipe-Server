@@ -125,13 +125,35 @@ namespace MtaServer.Console
                 TestPureSync(client);
 
                 var entitypacket = new AddEntityPacket();
+                entitypacket.AddWater(666, (byte)ElementType.Water, null, 0, 0,
+                    null, true, true, new CustomData(), "Test water",
+                    0, new Vector3[] {
+                        new Vector3(-6, 0, 4), new Vector3(-3, 0, 4),
+                        new Vector3(-6, 3, 4), new Vector3(-3, 3, 4)
+                    }, false);
                 entitypacket.AddObject(
                     667, (byte)ElementType.Object, null, 0, 0,
                     null, true, false, new CustomData(), "Test object",
-                    0, new Vector3(0, -5, 3), Vector3.Zero, 1337,
+                    0, new Vector3(0, -5, 3), Vector3.Zero, 321,
                     255, false, null, true, true, null, Vector3.One * 3,
                     false, 1000f
                 );
+                entitypacket.AddBlip(668, (byte)ElementType.Blip, null, 0, 0,
+                    null, true, true, new CustomData(), "Test blip",
+                    0, new Vector3(20, 0, 0), 0, 2500, 56, 1, Color.White);
+                entitypacket.AddRadarArea(669, (byte)ElementType.RadarArea, null, 0, 0,
+                    null, true, true, new CustomData(), "Test radar area",
+                    0, new Vector2(0, 0), new Vector2(250, 250), Color.FromArgb(100, Color.DarkGoldenrod), true);
+                entitypacket.AddMarker(670, (byte)ElementType.Marker, null, 0, 0,
+                    null, true, true, new CustomData(), "Test marker",
+                    0, new Vector3(5, 0, 2), (byte)MarkerType.Cylinder, 2, Color.FromArgb(100, Color.DarkCyan), null);
+                entitypacket.AddPickup(671, (byte)ElementType.Pickup, null, 0, 0,
+                    null, true, true, new CustomData(), "Test pickup",
+                    0, new Vector3(0, 5, 3), 349, true, (byte)PickupType.Weapon, null, null, 25, 0);
+                entitypacket.AddPed(672, (byte)ElementType.Ped, null, 0, 0,
+                    null, true, true, new CustomData(), "Test ped",
+                    0, new Vector3(10, 0, 3), 181, 45, 100, 50, null, null,
+                    true, true, true, false, 200, 0, new PedClothing[0], new PedWeapon[0], 0);
                 client.SendPacket(entitypacket);
             };
         }
