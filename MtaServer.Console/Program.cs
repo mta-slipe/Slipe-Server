@@ -125,35 +125,7 @@ namespace MtaServer.Console
                 client.SendPacket(new ConsoleEchoPacket("Hello Console World"));
 
                 TestPureSync(client);
-                TestCameraMatrix(client);
             };
-        }
-
-        private void TestCameraMatrix(Client client)
-        {
-            _ = Task.Run(async () =>
-            {
-                for (int i = 0; i < 500; i++)
-                {
-                    client.SendPacket(new SetCameraMatrixPacket(new Vector3(i, i, 50), new Vector3(i + 50, i + 50, 0), 0, 70, client.Player.GetAndIncrementTimeContext()));
-                    await Task.Delay(5);
-                }
-                for (int i = 0; i < 15; i++)
-                {
-                    client.SendPacket(new SetCameraMatrixPacket(new Vector3(0, 0, i), new Vector3(50, 0, i), 0, 70, client.Player.GetAndIncrementTimeContext()));
-                    await Task.Delay(200);
-                }
-                for (int i = 0; i < 15; i++)
-                {
-                    client.SendPacket(new SetCameraMatrixPacket(new Vector3(0, 0, 10), new Vector3(50, 0, 10), i, 70, client.Player.GetAndIncrementTimeContext()));
-                    await Task.Delay(200);
-                }
-                for (int i = 0; i < 15; i++)
-                {
-                    client.SendPacket(new SetCameraMatrixPacket(new Vector3(0, 0, 10), new Vector3(50, 0, 10), 0, i * 2 + 20, client.Player.GetAndIncrementTimeContext()));
-                    await Task.Delay(200);
-                }
-            });
         }
 
         private void TestPureSync(Client client)
