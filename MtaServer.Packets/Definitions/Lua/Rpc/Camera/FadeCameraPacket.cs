@@ -1,5 +1,6 @@
 ﻿using MtaServer.Packets.Enums;
 using System;
+using System.Drawing;
 using System.Linq;
 
 namespace MtaServer.Packets.Lua.Camera
@@ -17,35 +18,22 @@ namespace MtaServer.Packets.Lua.Camera
 
         public CameraFade CameraFade { get; set; }
         public float FadeTime { get; set; }
-        public byte Red { get; set; }
-        public byte Green { get; set; }
-        public byte Blue { get; set; }
+        public Color Color { get; set; }
 
         public FadeCameraPacket()
         {
 
         }
 
-        public FadeCameraPacket(CameraFade cameraFade, float fadeTime = 1, byte red = 0, byte green = 0, byte blue = 0)
+        public FadeCameraPacket(CameraFade cameraFade, float fadeTime = 1, Color? color = null)
         {
             CameraFade = cameraFade;
             FadeTime = fadeTime;
-            Red = red;
-            Green = green;
-            Blue = blue;
+            Color = color ?? Color.Black;
         }
 
         public override void Read(byte[] bytes)
         {
-            var reader = new PacketReader(bytes);
-
-            this.CameraFade = (CameraFade)reader.GetByte();
-            if (CameraFade == CameraFade.Out)
-            {
-                this.Red = reader.GetByte();
-                this.Green = reader.GetByte();
-                this.Blue = reader.GetByte();
-            }
         }
 
         public override byte[] Write()
@@ -58,9 +46,7 @@ namespace MtaServer.Packets.Lua.Camera
             builder.Write(this.FadeTime);
             if (CameraFade == CameraFade.Out)
             {
-                builder.Write(this.Red);
-                builder.Write(this.Green);
-                builder.Write(this.Blue);
+                builder.Write(this.Color);
             }
             return builder.Build();
         }
