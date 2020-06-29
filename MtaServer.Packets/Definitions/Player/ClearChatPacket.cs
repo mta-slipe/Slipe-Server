@@ -19,10 +19,6 @@ namespace MtaServer.Packets.Definitions.Player
         {
         }
 
-        public override byte[] Write()
-        {
-            var builder = new PacketBuilder();
-            return builder.Build();
-        }
+        public override byte[] Write() => new byte[0];
     }
 }
