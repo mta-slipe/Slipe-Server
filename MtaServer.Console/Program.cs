@@ -132,22 +132,22 @@ namespace MtaServer.Console
             {
                 for (int i = 0; i < 500; i++)
                 {
-                    client.SendPacket(new SetCameraMatrixPacket(new Vector3(i, i, 50), new Vector3(i + 50, i + 50, 0), 0, 70, client.GenerateSyncTimeContext(0)));
+                    client.SendPacket(new SetCameraMatrixPacket(new Vector3(i, i, 50), new Vector3(i + 50, i + 50, 0), 0, 70, client.Player.GetAndIncrementTimeContext()));
                     await Task.Delay(5);
                 }
                 for (int i = 0; i < 15; i++)
                 {
-                    client.SendPacket(new SetCameraMatrixPacket(new Vector3(0, 0, i), new Vector3(50, 0, i), 0, 70, client.GenerateSyncTimeContext(0)));
+                    client.SendPacket(new SetCameraMatrixPacket(new Vector3(0, 0, i), new Vector3(50, 0, i), 0, 70, client.Player.GetAndIncrementTimeContext()));
                     await Task.Delay(200);
                 }
                 for (int i = 0; i < 15; i++)
                 {
-                    client.SendPacket(new SetCameraMatrixPacket(new Vector3(0, 0, 10), new Vector3(50, 0, 10), i, 70, client.GenerateSyncTimeContext(0)));
+                    client.SendPacket(new SetCameraMatrixPacket(new Vector3(0, 0, 10), new Vector3(50, 0, 10), i, 70, client.Player.GetAndIncrementTimeContext()));
                     await Task.Delay(200);
                 }
                 for (int i = 0; i < 15; i++)
                 {
-                    client.SendPacket(new SetCameraMatrixPacket(new Vector3(0, 0, 10), new Vector3(50, 0, 10), 0, i * 2 + 20, client.GenerateSyncTimeContext(0)));
+                    client.SendPacket(new SetCameraMatrixPacket(new Vector3(0, 0, 10), new Vector3(50, 0, 10), 0, i * 2 + 20, client.Player.GetAndIncrementTimeContext()));
                     await Task.Delay(200);
                 }
             });
