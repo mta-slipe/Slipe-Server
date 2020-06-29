@@ -40,5 +40,5 @@ namespace MtaServer.Packets.Lua.Camera
             builder.Write(this.Fov);
             return builder.Build();
         }
-        }
+    }
 }
