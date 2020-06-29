@@ -19,16 +19,30 @@ namespace MtaServer.Server
         public string? Extra { get; private set; }
         public string? Version { get; private set; }
         public IPAddress? IPAddress { get; set; }
+        public bool IsConnected { get; internal set; }
 
         public Client(uint binaryAddress, NetWrapper netWrapper)
         {
             this.binaryAddress = binaryAddress;
             this.netWrapper = netWrapper;
             this.Player = new Player(this);
+            this.IsConnected = true;
         }
 
-        public void SendPacket(Packet packet) => this.netWrapper.SendPacket(this.binaryAddress, packet);
-        public void SetVersion(ushort version) => this.netWrapper.SetVersion(this.binaryAddress, version);
+        public void SendPacket(Packet packet)
+        {
+            if(this.IsConnected)
+            {
+                this.netWrapper.SendPacket(this.binaryAddress, packet);
+            }
+        }
+        public void SetVersion(ushort version)
+        {
+            if(this.IsConnected)
+            {
+                this.netWrapper.SetVersion(this.binaryAddress, version);
+            }
+        }
 
         public void FetchSerial()
         {
