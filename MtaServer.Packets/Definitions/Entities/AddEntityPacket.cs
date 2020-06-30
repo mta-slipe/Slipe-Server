@@ -228,7 +228,15 @@ namespace MtaServer.Packets.Definitions.Lua.ElementRpc.Element
             uint elementId, byte elementType, uint? parentId, byte interior,
             ushort dimension, ElementAttachment? attachment, bool areCollisionsEnabled,
             bool isCallPropagationEnabled, CustomData customData, string name,
-            byte timeContext
+            byte timeContext, Vector3 position, Vector3 rotation, ushort model,
+            float health, Color[] colors,  byte paintJob, VehicleDamage damage,
+            byte variant1, byte variant2, Vector2? turret, ushort? adjustableProperty,
+            float[] doorRatios, byte[] upgrades, string plateText, byte overrideLights,
+            bool isLandingGearDown, bool isSirenActive, bool isFuelTankExplodable,
+            bool isEngineOn, bool isLocked, bool areDoorsUndamageable, bool isDamageProof,
+            bool isFrozen, bool isDerailed, bool isDerailable, bool trainDirection, 
+            bool isTaxiLightOn, float alpha, Color headlightColor, VehicleHandling? handling,
+            VehicleSirenSet? sirens
         )
         {
             AddEntity(
@@ -236,6 +244,162 @@ namespace MtaServer.Packets.Definitions.Lua.ElementRpc.Element
                 dimension, attachment, areCollisionsEnabled,
                 isCallPropagationEnabled, customData, name, timeContext
             );
+
+            builder.WriteVector3WithZAsFloat(position);
+            builder.WriteVectorAsUshorts(rotation);
+            builder.Write((byte)(model - 400));
+            builder.WriteFloatFromBits(health, 12, 0, 2047.5f, true);
+
+            builder.WriteCapped((byte)colors.Length - 1, 2);
+            foreach (var color in colors)
+            {
+                builder.Write(color);
+            }
+            builder.WriteCapped(paintJob, 2);
+
+            WriteVehicleDamage(damage.Doors, 3);
+            WriteVehicleDamage(damage.Wheels, 2);
+            WriteVehicleDamage(damage.Panels, 2);
+            WriteVehicleDamage(damage.Lights, 2);
+
+
+            builder.Write(variant1);
+            builder.Write(variant2);
+
+            if (turret != null)
+            {
+                builder.Write((short)(turret.Value.X * (32767.0f / MathF.PI)));
+                builder.Write((short)(turret.Value.Y * (32767.0f / MathF.PI)));
+            }
+
+            if (adjustableProperty != null)
+            {
+                builder.WriteCompressed(adjustableProperty.Value);
+            }
+
+            foreach (var doorRatio in doorRatios)
+            {
+                if (doorRatio == 0 || doorRatio == 1)
+                {
+                    builder.Write(false);
+                    builder.Write(doorRatio == 1);
+                } else
+                {
+                    builder.Write(true);
+                    builder.WriteFloatFromBits(doorRatio, 10, 0, 1, true);
+                }
+            }
+
+            builder.Write((byte)upgrades.Length);
+            foreach (var upgrade in upgrades)
+            {
+                builder.Write(upgrade);
+            }
+
+            builder.WriteStringWithoutLength(plateText.PadRight(8).Substring(0, 8));
+            builder.WriteCapped(overrideLights, 2);
+
+            builder.Write(isLandingGearDown);
+            builder.Write(isSirenActive);
+            builder.Write(isFuelTankExplodable);
+            builder.Write(isEngineOn);
+            builder.Write(isLocked);
+            builder.Write(areDoorsUndamageable);
+            builder.Write(isDamageProof);
+            builder.Write(isFrozen);
+            builder.Write(isDerailed);
+            builder.Write(isDerailable);
+            builder.Write(trainDirection);
+            builder.Write(isTaxiLightOn);
+
+            builder.WriteCompressed((byte)(255 - alpha));
+
+            builder.Write(headlightColor != Color.White);
+            if (headlightColor != Color.White)
+            {
+                builder.Write(headlightColor);
+            }
+
+            builder.Write(handling != null);
+            if (handling != null)
+            {
+                WriteVehicleHandling(handling.Value);
+            }
+
+            WriteSirens(sirens);
+        }
+
+        private void WriteVehicleHandling(VehicleHandling handling)
+        {
+            builder.Write(handling.Mass);
+
+            builder.Write(handling.TurnMass);
+            builder.Write(handling.DragCoefficient);
+            builder.Write(handling.CenterOfMass);
+            builder.Write(handling.PercentSubmerged);
+
+            builder.Write(handling.TractionMultiplier);
+
+            builder.Write(handling.DriveType);
+            builder.Write(handling.EngineType);
+            builder.Write(handling.NumberOfGears);
+
+            builder.Write(handling.EngineAcceleration);
+            builder.Write(handling.EngineInertia);
+            builder.Write(handling.MaxVelocity);
+
+            builder.Write(handling.BrakeDeceleration);
+            builder.Write(handling.BrakeBids);
+            builder.Write(handling.Abs);
+
+            builder.Write(handling.SteeringLock);
+            builder.Write(handling.TractionLoss);
+            builder.Write(handling.TractionBias);
+
+            builder.Write(handling.SuspensionForceLevel);
+            builder.Write(handling.SuspensionDampening);
+            builder.Write(handling.SuspensionHighSpeedDampening);
+            builder.Write(handling.SuspennsionUpperLimit);
+            builder.Write(handling.SuspenionLowerLimit);
+            builder.Write(handling.SuspensionFrontRearBias);
+            builder.Write(handling.SuspensionAntiDiveMultiplier);
+
+            builder.Write(handling.CollisionDamageMultiplier);
+
+            builder.Write(handling.ModelFlags);
+            builder.Write(handling.HandlingFlags);
+            builder.Write(handling.SeatOffsetDistance);
+            builder.Write(handling.AnimGroup);
+        }
+
+        private void WriteVehicleDamage(byte[] damageStates, int bitCap)
+        {
+            for (int i = 0; i < damageStates.Length; i++)
+            {
+                builder.WriteCapped(damageStates[i], bitCap);
+            }
+        }
+
+        private void WriteSirens(VehicleSirenSet? sirenSet)
+        {
+            builder.Write(sirenSet != null);
+            if (sirenSet != null)
+            {
+                builder.Write((byte)sirenSet.Value.Sirens.Length);
+                builder.Write(sirenSet.Value.SirenType);
+
+                foreach (var siren in sirenSet.Value.Sirens)
+                {
+                    builder.Write(siren.Id);
+                    builder.Write(siren.Position);
+                    builder.Write(siren.Color, true, true);
+                    builder.Write(siren.SirenMinAlpha);
+                    builder.Write(siren.Is360);
+                    builder.Write(siren.UsesLineOfSightCheck);
+                    builder.Write(siren.UsesRandomizer);
+                    builder.Write(siren.IsSilent);
+                }
+            }
         }
 
         public void AddMarker(

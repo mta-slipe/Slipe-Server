@@ -46,11 +46,11 @@ namespace MtaServer.Console
             if (args.Length > 0)
             {
                 IConfigurationProvider configurationProvider = GetConfiguration(args[0]);
-                server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net_d.dll", new CompoundElementRepository(), configurationProvider.GetConfiguration());
+                server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", new CompoundElementRepository(), configurationProvider.GetConfiguration());
 
             } else
             {
-                server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net_d.dll", new CompoundElementRepository());
+                server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", new CompoundElementRepository());
             }
 
             SetupQueueHandlers();
@@ -161,6 +161,20 @@ namespace MtaServer.Console
                     null, null, null, new Vector3(10, 10, 5), true, 10, 1, 100, 200,
                     false, false, true, true, true, true, true, true, true, true,
                     true, true, true, (byte)WeaponState.Ready, 1000, 50, 666);
+                entitypacket.AddVehicle(675, (byte)ElementType.Vehicle, null, 0, 0,
+                    null, true, true, new CustomData(), "Test vehicle",
+                    0, new Vector3(-10, 5, 3), Vector3.Zero, 602, 1000, new Color[] {
+                        Color.Red, Color.Blue
+                    }, 0, new VehicleDamage()
+                    {
+                        Doors = new byte[] { 0, 0, 0, 0, 0, 0 },
+                        Wheels = new byte[] { 0, 0, 0, 0 },
+                        Panels = new byte[] { 0, 0, 0, 0, 0, 0, 0 },
+                        Lights = new byte[] { 0, 0, 0, 0 }
+                    }, 0, 0, null, null, new float[] {
+                        0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f
+                    }, new byte[0], "SLIPE", 0, true, false, false, false, false,
+                    false, false, false, false, false, false, true, 200, Color.MediumPurple, null, null);
                 client.SendPacket(entitypacket);
             };
         }

@@ -172,12 +172,16 @@ namespace MtaServer.Packets
             Write(vector.Y);
         }
 
-        public void Write(Color color, bool withAlpha = false)
+        public void Write(Color color, bool withAlpha = false, bool alphaFirst = false)
         {
+            if (withAlpha && alphaFirst)
+                Write((byte)color.A);
+
             Write((byte)color.R);
             Write((byte)color.G);
             Write((byte)color.B);
-            if (withAlpha)
+
+            if (withAlpha && !alphaFirst)
                 Write((byte)color.A);
         }
 
