@@ -4,6 +4,7 @@ using MtaServer.Server.Elements;
 using MtaServer.Server.PacketHandling;
 using MtaServer.Server.Repositories;
 using MTAServerWrapper.Server;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -85,9 +86,21 @@ namespace MtaServer.Server
             if (!this.clients[netWrapper].ContainsKey(binaryAddress))
             {
                 this.clients[netWrapper][binaryAddress] = new Client(binaryAddress, netWrapper);
+                OnClientConnect?.Invoke(this.clients[netWrapper][binaryAddress]);
             }
+
             this.packetReducer.EnqueuePacket(this.clients[netWrapper][binaryAddress], packetId, data);
+
+            if (packetId == PacketId.PACKET_ID_PLAYER_QUIT || packetId == PacketId.PACKET_ID_PLAYER_TIMEOUT)
+            {
+                this.clients[netWrapper][binaryAddress].IsConnected = false;
+                OnClientDisconnect?.Invoke(this.clients[netWrapper][binaryAddress]);
+                this.clients[netWrapper].Remove(binaryAddress);
+            }
         }
+
+        public event Action<Client>? OnClientConnect;
+        public event Action<Client>? OnClientDisconnect;
 
     }
 }
