@@ -21,7 +21,7 @@ namespace MtaServer.Packets.Definitions.Lua.Rpc.World
         public byte RenderSizeY { get; set; }
         public bool InsideBuilding { get; set; }
 
-        public SetHeatHazePacket(byte intensity,byte randomShift = 0,ushort seedMin = 12,ushort speedMax = 18, short scanSizeX = 75,short scanSizeY = 80,byte renderSizeX = 80,byte RenderSizeY = 85,bool insideBuilding = false)
+        public SetHeatHazePacket(byte intensity,byte randomShift = 0,ushort seedMin = 12,ushort speedMax = 18, short scanSizeX = 75,short scanSizeY = 80,byte renderSizeX = 80,byte renderSizeY = 85,bool insideBuilding = false)
         {
             Intensity = intensity;
             RandomShift = randomShift;
@@ -30,7 +30,7 @@ namespace MtaServer.Packets.Definitions.Lua.Rpc.World
             ScanSizeX = scanSizeX;
             ScanSizeY = scanSizeY;
             RenderSizeX = renderSizeX;
-            RenderSizeY = RenderSizeY;
+            RenderSizeY = renderSizeY;
             InsideBuilding = insideBuilding;
 
         }
