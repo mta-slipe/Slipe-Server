@@ -1,4 +1,5 @@
-﻿using MtaServer.Packets.Enums;
+﻿using MtaServer.Server.ASE;
+using MtaServer.Packets.Enums;
 using MtaServer.Server.Elements;
 using MtaServer.Server.PacketHandling;
 using MtaServer.Server.Repositories;
@@ -9,6 +10,15 @@ using System.Linq;
 
 namespace MtaServer.Server
 {
+    public enum VersionType
+    {
+        Custom = 0x01,
+        Experimental = 0x03,
+        Unstable = 0x05,
+        Untested = 0x07,
+        Release = 0x09,
+    }
+
     public class MtaServer
     {
         private readonly NetWrapper netWrapper;
@@ -16,8 +26,11 @@ namespace MtaServer.Server
         private readonly Dictionary<NetWrapper, Dictionary<uint, Client>> clients;
 
         public Element Root { get; }
+        public ASE.ASE Ase { get; }
         public Configuration Configuration { get; }
         public IElementRepository ElementRepository { get; private set; }
+        public string GameType { get; set; } = "unknown";
+        public string MapName { get; set; } = "unknown";
 
         public MtaServer(string directory, string netDllPath, IElementRepository elementRepository, Configuration? configuration = null)
         {
@@ -38,6 +51,8 @@ namespace MtaServer.Server
             this.clients = new Dictionary<NetWrapper, Dictionary<uint, Client>>();
 
             this.netWrapper = CreateNetWrapper(directory, netDllPath, Configuration.Host, Configuration.Port);
+
+            this.Ase = new ASE.ASE(this);
         }
 
         public void Start()
