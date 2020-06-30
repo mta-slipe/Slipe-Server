@@ -177,15 +177,15 @@ namespace MtaServer.Console
             puresync.PlayerId = 666;
             puresync.Latency = 0;
 
-            _ = Task.Run(async () =>
-            {
-                for (int i = 0; i < 1000; i++)
-                {
-                    puresync.Position += new Vector3(0.25f, 0, 0);
-                    client.SendPacket(puresync);
-                    await Task.Delay(250);
-                }
-            });
+            //_ = Task.Run(async () =>
+            //{
+            //    for (int i = 0; i < 1000; i++)
+            //    {
+            //        puresync.Position += new Vector3(0.25f, 0, 0);
+            //        client.SendPacket(puresync);
+            //        await Task.Delay(250);
+            //    }
+            //});
         }
 
         private void SetupTestEntities(Client client)
