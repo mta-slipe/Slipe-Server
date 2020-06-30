@@ -1,4 +1,4 @@
-﻿using MtaServer.Packets.Definitions.Join;
+using MtaServer.Packets.Definitions.Join;
 using MtaServer.Packets.Definitions.Player;
 using MtaServer.Packets.Definitions.Sync;
 using MtaServer.Packets.Definitions.Commands;
@@ -121,6 +121,9 @@ namespace MtaServer.Console
                 ));
                 client.SendPacket(new FadeCameraPacket(CameraFade.In));
                 client.SendPacket(new ChatEchoPacket(server.Root.Id, "Hello World", Color.White));
+                client.SendPacket(new ClearChatPacket());
+                client.SendPacket(new ChatEchoPacket(server.Root.Id, "Hello World Again", Color.White));
+                client.SendPacket(new ConsoleEchoPacket("Hello Console World"));
 
                 TestPureSync(client);
                 SetupTestEntities(client);

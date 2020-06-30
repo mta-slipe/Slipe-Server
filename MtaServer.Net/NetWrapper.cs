@@ -65,7 +65,7 @@ namespace MTAServerWrapper.Server
 
         void SendPacket(uint binaryAddress, byte packetId, byte[] payload)
         {
-            int size = Marshal.SizeOf(payload[0]) * payload.Length;
+            int size = Marshal.SizeOf((byte)0) * payload.Length;
             IntPtr pointer = Marshal.AllocHGlobal(size);
             try
             {
