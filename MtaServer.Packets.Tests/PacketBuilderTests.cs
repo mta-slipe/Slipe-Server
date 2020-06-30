@@ -135,19 +135,22 @@ namespace MtaServer.Packets.Tests
             bytes.Should().Equal(expectedOutput);
         }
 
-        [Fact]
-        public void WriteColorTest()
+        [Theory]
+        [InlineData(255, 255, 255, 255, false, false, new byte[] { 0xFF, 0xFF, 0xFF })]
+        [InlineData(0, 255, 255, 255, false, false, new byte[] { 0xFF, 0xFF, 0xFF })]
+        [InlineData(128, 255, 255, 255, true, true, new byte[] { 0x80, 0xFF, 0xFF, 0xFF })]
+        [InlineData(128, 255, 255, 255, true, false, new byte[] { 0xFF, 0xFF, 0xFF, 0x80 })]
+        public void WriteColorTest(byte alpha, byte red, byte green, byte blue, bool withAlpha, bool alphaFirst, byte[] expectedOutput)
         {
             var builder = new PacketBuilder();
-            Color color = Color.White;
+            Color color = Color.FromArgb(alpha, red, green, blue);
 
-            builder.Write(color);
+            builder.Write(color, withAlpha, alphaFirst);
 
             var bytes = builder.Build();
-            bytes.Should().Equal(new byte[] 
-            { 
-                0xff, 0xff, 0xff
-            });
+            bytes.Should().Equal(expectedOutput);
         }
+
+
     }
 }
