@@ -5,34 +5,41 @@ namespace MtaServer.Server.Elements
 {
     public class Element
     {
-        private static uint idCounter = 0;
-        private static uint GenerateId()
-        {
-            idCounter++;
-            return idCounter;
-        }
-
         public virtual ElementType ElementType => ElementType.Unknown;
         public uint Id { get; protected set; }
+        public byte TimeContext { get; private set; }
 
+        private Vector3 position;
+        public Vector3 Position
+        {
+            get => position;
+            set
+            {
+                PositionChange?.Invoke(this, value);
+                position = value;
+            }
+        }
 
-        private byte timeContext;
-        public byte TimeContext => timeContext;
-
-        public Vector3 Position { get; set; }
+        public Vector3 Rotation { get; set; }
+        public Vector3 Velocity { get; set; }
+        
+        public byte Interior { get; set; }
+        public ushort Dimension { get; set; }
 
         public Element()
         {
-            this.Id = GenerateId();
+            this.Id = ElementIdGenerator.GenerateId();
         }
 
         public byte GetAndIncrementTimeContext()
         {
-            if (++timeContext == 0)
+            if (++TimeContext == 0)
             {
-                timeContext++;
+                TimeContext++;
             }
-            return timeContext;
+            return TimeContext;
         }
+
+        public event Action<Element, Vector3>? PositionChange;
     }
 }

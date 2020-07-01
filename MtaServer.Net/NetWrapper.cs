@@ -35,7 +35,7 @@ namespace MTAServerWrapper.Server
         [return: MarshalAs(UnmanagedType.BStr)]
         private static extern string GetClientSerialAndVersion(uint binaryAddress, out ushort serialSize, out ushort extraSize, out ushort versionSize);
 
-        private PacketCallback packetInterceptorDelegate;
+        private readonly PacketCallback packetInterceptorDelegate;
         
         public NetWrapper(string directory, string netDllPath, string host, ushort port)
         {
@@ -65,7 +65,7 @@ namespace MTAServerWrapper.Server
 
         void SendPacket(uint binaryAddress, byte packetId, byte[] payload)
         {
-            int size = Marshal.SizeOf(payload[0]) * payload.Length;
+            int size = Marshal.SizeOf((byte)0) * payload.Length;
             IntPtr pointer = Marshal.AllocHGlobal(size);
             try
             {
@@ -108,7 +108,7 @@ namespace MTAServerWrapper.Server
             this.OnPacketReceived?.Invoke(this, binaryAddress, parsedPacketId, data);
         }
 
-        public event Action<NetWrapper, uint, PacketId, byte[]> OnPacketReceived;
+        public event Action<NetWrapper, uint, PacketId, byte[]>? OnPacketReceived;
 
     }
 }

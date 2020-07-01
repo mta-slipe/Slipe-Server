@@ -1,17 +1,24 @@
 using MtaServer.Packets.Definitions.Join;
 using MtaServer.Packets.Definitions.Player;
 using MtaServer.Packets.Definitions.Sync;
+using MtaServer.Packets.Definitions.Commands;
 using MtaServer.Packets.Enums;
 using MtaServer.Packets.Lua.Camera;
+using MtaServer.Server;
 using MtaServer.Server.Elements;
 using MtaServer.Server.PacketHandling.Factories;
 using MtaServer.Server.PacketHandling.QueueHandlers;
 using MtaServer.Server.Repositories;
+using MtaServer.Server.Behaviour;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
+using MtaServer.ConfigurationProviders;
+using MtaServer.ConfigurationProviders.Configurations;
+using MtaServer.Packets.Definitions.Lua.ElementRpc.Element;
 
 namespace MtaServer.Console
 {
@@ -19,16 +26,33 @@ namespace MtaServer.Console
     {
         static void Main(string[] args)
         {
-            new Program();
+            try
+            {
+                new Program(args);
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine(ex.Message);
+                System.Console.WriteLine("Press any key to exit...");
+                System.Console.ReadKey();
+            }
         }
 
         private readonly Server.MtaServer server;
         public Logic.Commands Commands { get; }
         public Logic.ConsoleHandler ConsoleHandler { get; }
 
-        public Program()
+        public Program(string[] args)
         {
-            server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", "0.0.0.0", 50666, new ElementRepository());
+            if (args.Length > 0)
+            {
+                IConfigurationProvider configurationProvider = GetConfiguration(args[0]);
+                server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", new CompoundElementRepository(), configurationProvider.GetConfiguration());
+
+            } else
+            {
+                server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", new CompoundElementRepository());
+            }
 
             ConsoleHandler = new Logic.ConsoleHandler();
             Commands = new Logic.Commands(server, ConsoleHandler);
@@ -37,6 +61,8 @@ namespace MtaServer.Console
             SetupConsole();
             SetupQueueHandlers();
             SetupTestLogic();
+
+            new DefaultChatBehaviour(server);
 
             Task.Run(async () =>
             {
@@ -49,7 +75,25 @@ namespace MtaServer.Console
             });
             server.Start();
             Thread.Sleep(-1);
+        }
 
+        private IConfigurationProvider GetConfiguration(string configPath)
+        {
+            if (!File.Exists(configPath))
+            {
+                throw new FileNotFoundException($"Configuration file {configPath} does not exist.");
+            }
+
+            string extension = Path.GetExtension(configPath);
+            switch (extension)
+            {
+                case ".json":
+                   return new JsonConfigurationProvider(configPath);
+                case ".xml":
+                    return new XmlConfigurationProvider(configPath);
+                default:
+                    throw new NotSupportedException($"Unsupported configuration extension {extension}");
+            }
         }
 
         private void SetupConsole()
@@ -71,16 +115,21 @@ namespace MtaServer.Console
             SyncQueueHandler syncQueueHandler = new SyncQueueHandler(server, 10, 1);
             server.RegisterPacketQueueHandler(PacketId.PACKET_ID_CAMERA_SYNC, syncQueueHandler);
             server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_PURESYNC, syncQueueHandler);
+
+            CommandQueueHandler commandQueueHandler = new CommandQueueHandler(server, 10, 1);
+            server.RegisterPacketQueueHandler(PacketId.PACKET_ID_COMMAND, commandQueueHandler);
+
         }
 
         private void SetupTestLogic()
         {
-            Client.OnJoin += (client) =>
+            Player.OnJoin += (player) =>
             {
-                System.Console.WriteLine($"{client.Name} ({client.Version}) ({client.Serial}) has joined the server!");
-                client.SendPacket(new SetCameraTargetPacket(client.Id));
+                var client = player.Client;
+                System.Console.WriteLine($"{player.Name} ({client.Version}) ({client.Serial}) has joined the server!");
+                client.SendPacket(new SetCameraTargetPacket(player.Id));
                 client.SendPacket(new SpawnPlayerPacket(
-                    client.Id,
+                    player.Id,
                     flags: 0,
                     position: new Vector3(0, 0, 3),
                     rotation: 0,
@@ -91,6 +140,10 @@ namespace MtaServer.Console
                     timeContext: 0
                 ));
                 client.SendPacket(new FadeCameraPacket(CameraFade.In));
+                client.SendPacket(new ChatEchoPacket(server.Root.Id, "Hello World", Color.White));
+                client.SendPacket(new ClearChatPacket());
+                client.SendPacket(new ChatEchoPacket(server.Root.Id, "Hello World Again", Color.White));
+                client.SendPacket(new ConsoleEchoPacket("Hello Console World"));
 
                 TestPureSync(client);
             };

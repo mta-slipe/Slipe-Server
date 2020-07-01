@@ -15,7 +15,7 @@ namespace MtaServer.Packets.Lua
         public ElementRPCFunction ElementRPCFunction { get; }
         public byte[] Data { get; protected set; }
 
-        public LuaPacket(ElementRPCFunction elementRPCFunction, byte[] data = null)
+        public LuaPacket(ElementRPCFunction elementRPCFunction, byte[]? data = null)
         {
             ElementRPCFunction = elementRPCFunction;
             Data = data ?? new byte[0];

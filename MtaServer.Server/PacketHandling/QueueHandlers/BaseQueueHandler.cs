@@ -4,7 +4,7 @@ using System.Collections.Concurrent;
 
 namespace MtaServer.Server.PacketHandling.QueueHandlers
 {
-    public class PacketQueueEntry
+    public struct PacketQueueEntry
     {
         public Client Client { get; set; }
         public PacketId PacketId { get; set; }

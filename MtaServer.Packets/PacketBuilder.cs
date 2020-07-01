@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -164,6 +165,15 @@ namespace MtaServer.Packets
         {
             Write(vector.X);
             Write(vector.Y);
+        }
+
+        public void Write(Color color, bool withAlpha = false)
+        {
+            Write((byte)color.R);
+            Write((byte)color.G);
+            Write((byte)color.B);
+            if (withAlpha)
+                Write((byte)color.A);
         }
 
         // The danger zone

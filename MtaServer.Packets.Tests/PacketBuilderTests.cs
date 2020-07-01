@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
@@ -132,6 +133,21 @@ namespace MtaServer.Packets.Tests
 
             var bytes = builder.Build();
             bytes.Should().Equal(expectedOutput);
+        }
+
+        [Fact]
+        public void WriteColorTest()
+        {
+            var builder = new PacketBuilder();
+            Color color = Color.White;
+
+            builder.Write(color);
+
+            var bytes = builder.Build();
+            bytes.Should().Equal(new byte[] 
+            { 
+                0xff, 0xff, 0xff
+            });
         }
     }
 }
