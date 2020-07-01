@@ -38,13 +38,9 @@ namespace MtaServer.Server.ASE
             {
                 using (BinaryWriter bw = new BinaryWriter(stream))
                 {
-                    List<string> playersNames = new List<string>();
-                    foreach (Player player in MtaServer.ElementRepository.GetByType<Player>(ElementType.Player))
-                    {
-                        playersNames.Add(player.Name);
-                    }
+                    List<string> playerNames = MtaServer.ElementRepository.GetByType<Player>(ElementType.Player).Select(o => o.Name).ToList();
 
-                    int playersCount = MtaServer.ElementRepository.GetByType<Player>(ElementType.Player).Count();
+                    int playersCount = playerNames.Count();
                     string strPlayerCount = playersCount + "/" + MtaServer.Configuration.MaxPlayers;
                     string buildType = ((byte)(VersionType.Release)).ToString();
                     string buildNumber = "0";
@@ -54,9 +50,9 @@ namespace MtaServer.Server.ASE
                     string strHttpPort = Port.ToString();
                     uint extraDataLength = (uint)(strPlayerCount.Length + buildType.Length + buildNumber.Length + pingStatus.Length + strNetRoute.Length + strUpTime.Length + strHttpPort.Length);
 
-                    bw.Write(ToByteArray("EYE2"));
+                    bw.Write("EYE2");
                     bw.Write((byte)4);
-                    bw.Write(ToByteArray("mta"));
+                    bw.Write("mta");
                     bw.Write((byte)(Port.ToString().Length + 1));
                     bw.Write(ToByteArray(Port.ToString()));
                     bw.Write((byte)(MtaServer.Configuration.ServerName.Length + 1));
@@ -66,8 +62,8 @@ namespace MtaServer.Server.ASE
                     bw.Write((byte)(MtaServer.MapName.Length + 7 + 1 + extraDataLength));
                     bw.Write(ToByteArray(MtaServer.MapName));
                     bw.Write((byte)0);
-                    bw.Write(ToByteArray(strPlayerCount)); // clientside "CCore::GetSingleton().GetNetwork()->UpdatePingStatus(*strPingStatus, info.players);" 
-                                                     // changing this number fom 10/10 to eg 1/10
+                    bw.Write(ToByteArray(strPlayerCount));  // client double checks this field in clientside against fake players count function:
+                                                            // "CCore::GetSingleton().GetNetwork()->UpdatePingStatus(*strPingStatus, info.players);" 
                     bw.Write((byte)0);
                     bw.Write(ToByteArray(buildType));
                     bw.Write((byte)0);
@@ -88,10 +84,10 @@ namespace MtaServer.Server.ASE
                     bw.Write((byte)MtaServer.Configuration.MaxPlayers); // max players
 
                     int bytesLeft = (1350 - (int)bw.BaseStream.Position);
-                    int playersLeft = playersNames.Count + 1;
-                    foreach (string name in playersNames)
+                    int playersLeft = playerNames.Count + 1;
+                    foreach (string name in playerNames)
                     {
-                        if(bytesLeft - name.Length + 2 > 0)
+                        if (bytesLeft - name.Length + 2 > 0)
                         {
                             bw.Write((char)(name.Length + 1));
                             bw.Write(ToByteArray(name));
@@ -112,12 +108,12 @@ namespace MtaServer.Server.ASE
             }
         }
         private void OnUdpData(IAsyncResult result)
-		{
+        {
             UdpClient socket = result.AsyncState as UdpClient;
             IPEndPoint source = new IPEndPoint(0, 0);
-			byte[] message = socket.EndReceive(result, ref source);
+            byte[] message = socket.EndReceive(result, ref source);
             byte[] data = new byte[0];
-            switch(message[0])
+            switch (message[0])
             {
                 //case "s": // ASE protocol query
                 //    data = QueryLight();
@@ -139,17 +135,17 @@ namespace MtaServer.Server.ASE
             }
             socket.Send(data, data.Length, source);
             socket.BeginReceive(new AsyncCallback(OnUdpData), socket);
-            Console.WriteLine("requested {0}, sent bytes: {1}",message[0], data.Length);
+            Console.WriteLine("requested {0}, sent bytes: {1}", message[0], data.Length);
         }
 
-		private void StartListening(ushort port)
-		{
-			IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-			IPAddress ipAddress = ipHostInfo.AddressList[0];
-			IPEndPoint localEndPoint = new IPEndPoint(ipAddress, port);
+        private void StartListening(ushort port)
+        {
+            IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
+            IPAddress ipAddress = ipHostInfo.AddressList[0];
+            IPEndPoint localEndPoint = new IPEndPoint(ipAddress, port);
 
-			UdpClient socket = new UdpClient(port);
-			socket.BeginReceive(new AsyncCallback(OnUdpData), socket);
-		}
-	}
+            UdpClient socket = new UdpClient(port);
+            socket.BeginReceive(new AsyncCallback(OnUdpData), socket);
+        }
+    }
 }
