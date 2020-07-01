@@ -3,6 +3,7 @@ using MtaServer.Packets;
 using MTAServerWrapper.Server;
 using System.Net;
 using System.Numerics;
+using System.Text.RegularExpressions;
 
 namespace MtaServer.Server.Elements
 {
@@ -13,6 +14,22 @@ namespace MtaServer.Server.Elements
         public Client Client { get; }
 
         public string? Name { get; set; }
+        public string? NameNoColor
+        {
+            get
+            {
+                if (Name == null)
+                    return null;
+                string tempName = Name;
+                while (true)
+                {
+                    if (Regex.Replace(tempName, "[#][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]", "") == tempName)
+                        return tempName;
+
+                        tempName = Regex.Replace(tempName, "[#][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]", "");
+                }
+            }
+        }
         public float Health { get; set; }
         public float Armor { get; set; }
         public PlayerWeapon CurrentWeapon { get; set; }

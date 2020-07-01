@@ -38,7 +38,7 @@ namespace MtaServer.Server.ASE
             {
                 using (BinaryWriter bw = new BinaryWriter(stream))
                 {
-                    List<string> playerNames = MtaServer.ElementRepository.GetByType<Player>(ElementType.Player).Select(o => o.Name).ToList();
+                    List<string> playerNames = MtaServer.ElementRepository.GetByType<Player>(ElementType.Player).Select(o => o.NameNoColor).ToList();
 
                     int playersCount = playerNames.Count();
                     string strPlayerCount = playersCount + "/" + MtaServer.Configuration.MaxPlayers;
@@ -50,9 +50,9 @@ namespace MtaServer.Server.ASE
                     string strHttpPort = Port.ToString();
                     uint extraDataLength = (uint)(strPlayerCount.Length + buildType.Length + buildNumber.Length + pingStatus.Length + strNetRoute.Length + strUpTime.Length + strHttpPort.Length);
 
-                    bw.Write("EYE2");
+                    bw.Write(ToByteArray("EYE2"));
                     bw.Write((byte)4);
-                    bw.Write("mta");
+                    bw.Write(ToByteArray("mta"));
                     bw.Write((byte)(Port.ToString().Length + 1));
                     bw.Write(ToByteArray(Port.ToString()));
                     bw.Write((byte)(MtaServer.Configuration.ServerName.Length + 1));
