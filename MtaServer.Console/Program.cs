@@ -39,8 +39,8 @@ namespace MtaServer.Console
         }
 
         private readonly Server.MtaServer server;
-        public Logic.Commands Commands { get; }
-        public Logic.ConsoleHandler ConsoleHandler { get; }
+        public Commands.Commands Commands { get; }
+        public ConsoleHandler ConsoleHandler { get; }
 
         public Program(string[] args)
         {
@@ -54,11 +54,10 @@ namespace MtaServer.Console
                 server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", new CompoundElementRepository());
             }
 
-            ConsoleHandler = new Logic.ConsoleHandler();
-            Commands = new Logic.Commands(server, ConsoleHandler);
+            ConsoleHandler = new ConsoleHandler(this);
+            Commands = new Commands.Commands(this);
             Thread.Sleep(500);
 
-            SetupConsole();
             SetupQueueHandlers();
             SetupTestLogic();
 
@@ -94,11 +93,6 @@ namespace MtaServer.Console
                 default:
                     throw new NotSupportedException($"Unsupported configuration extension {extension}");
             }
-        }
-
-        private void SetupConsole()
-        {
-            ConsoleHandler.ConsoleOutput += message => System.Console.WriteLine(message);
         }
 
         private void SetupQueueHandlers()
