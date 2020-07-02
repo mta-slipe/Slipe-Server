@@ -29,8 +29,6 @@ namespace MtaServer.Console
             this.SetupTestLogic();
         }
 
-
-
         private void SetupTestLogic()
         {
             Player.OnJoin += (player) =>

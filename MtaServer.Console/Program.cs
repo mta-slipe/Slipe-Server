@@ -1,3 +1,5 @@
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using MtaServer.ConfigurationProviders;
 using MtaServer.ConfigurationProviders.Configurations;
 using MtaServer.Packets.Enums;
@@ -29,15 +31,14 @@ namespace MtaServer.Console
 
         public Program(string[] args)
         {
-            if (args.Length > 0)
-            {
-                IConfigurationProvider configurationProvider = GetConfiguration(args[0]);
-                server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", configurationProvider.GetConfiguration());
+            var configurationProvider = args.Length > 0 ? GetConfigurationProvider(args[0]) : null;
 
-            } else
-            {
-                server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll");
-            }
+            server = new Server.MtaServer(
+                Directory.GetCurrentDirectory(),
+                @"net.dll",
+                configurationProvider?.GetConfiguration(),
+                Configure
+            );
 
             SetupQueueHandlers();
             SetupBehaviour();
@@ -47,7 +48,13 @@ namespace MtaServer.Console
             Thread.Sleep(-1);
         }
 
-        private IConfigurationProvider GetConfiguration(string configPath)
+        private void Configure(ServiceCollection services)
+        {
+            // Register additional services here to be injected into instances created with server.CreateInstance()
+            services.AddSingleton<ILogger, ConsoleLogger>();
+        }
+
+        private IConfigurationProvider GetConfigurationProvider(string configPath)
         {
             if (!File.Exists(configPath))
             {

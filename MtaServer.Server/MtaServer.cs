@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using MtaServer.Packets.Enums;
 using MtaServer.Server.Elements;
 using MtaServer.Server.PacketHandling;
@@ -78,6 +79,7 @@ namespace MtaServer.Server
         private void SetupDependencies(Action<ServiceCollection>? dependencyCallback)
         {
             this.serviceCollection.TryAddSingleton<IElementRepository>(new CompoundElementRepository());
+            this.serviceCollection.TryAddSingleton<ILogger, DefaultLogger>();
             this.serviceCollection.AddSingleton<Configuration>(this.configuration);
             this.serviceCollection.AddSingleton<RootElement>(this.root);
             this.serviceCollection.AddSingleton<MtaServer>(this);
