@@ -46,11 +46,11 @@ namespace MtaServer.Console
             if (args.Length > 0)
             {
                 IConfigurationProvider configurationProvider = GetConfiguration(args[0]);
-                server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net_d.dll", new CompoundElementRepository(), configurationProvider.GetConfiguration());
+                server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", new CompoundElementRepository(), configurationProvider.GetConfiguration());
 
             } else
             {
-                server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net_d.dll", new CompoundElementRepository());
+                server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", new CompoundElementRepository());
             }
 
             SetupQueueHandlers();
