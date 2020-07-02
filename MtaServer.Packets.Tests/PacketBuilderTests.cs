@@ -58,6 +58,19 @@ namespace MtaServer.Packets.Tests
         }
 
         [Theory]
+        [InlineData(1235, new byte[] { 0b11011010, 0b01100000, 0b10000000 })]
+        [InlineData(0, new byte[] { 0b11110000 })]
+        public void WriteCompressedUlongTest(ulong value, byte[] expectedOutput)
+        {
+            var builder = new PacketBuilder();
+            builder.WriteCompressed(value);
+
+            var bytes = builder.Build();
+
+            bytes.Should().Equal(expectedOutput);
+        }
+
+        [Theory]
         [InlineData(9, new byte[] { 0b111001_00 })]
         public void WriteCompressedUshortTest(ushort value, byte[] expectedOutput)
         {

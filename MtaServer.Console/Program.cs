@@ -46,11 +46,11 @@ namespace MtaServer.Console
             if (args.Length > 0)
             {
                 IConfigurationProvider configurationProvider = GetConfiguration(args[0]);
-                server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", new CompoundElementRepository(), configurationProvider.GetConfiguration());
+                server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net_d.dll", new CompoundElementRepository(), configurationProvider.GetConfiguration());
 
             } else
             {
-                server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net.dll", new CompoundElementRepository());
+                server = new Server.MtaServer(Directory.GetCurrentDirectory(), @"net_d.dll", new CompoundElementRepository());
             }
 
             SetupQueueHandlers();
@@ -242,6 +242,26 @@ namespace MtaServer.Console
                         0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f
                 }, new byte[0], "SLIPE", 0, true, false, false, false, false,
                 false, false, false, false, false, false, true, 200, Color.MediumPurple, null, null);
+
+
+            entitypacket.AddObject(
+                676, (byte)ElementType.Object, null, 0, 0,
+                null, true, false, new CustomData(), "Moving test object",
+                0, new Vector3(0, -5, 3), Vector3.Zero, 321,
+                255, false, null, true, true, new PositionRotationAnimation()
+                {
+                    SourcePosition = new Vector3(0, -5, 3),
+                    SourceRotation = new Vector3(0, 0, 0),
+                    TargetPosition = new Vector3(0, 45, 3),
+                    TargetRotation = new Vector3(0, 0, 360),
+                    DeltaRotationMode = true,
+                    DeltaRotation = new Vector3(0, 0, 360),
+                    StartTime = DateTime.UtcNow,
+                    EndTime = DateTime.UtcNow + TimeSpan.FromSeconds(10),
+                    EasingType = "Linear"
+                }, Vector3.One * 3,
+                false, 1000f
+            );
             client.SendPacket(entitypacket);
         }
     }

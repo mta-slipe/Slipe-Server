@@ -121,6 +121,7 @@ namespace MtaServer.Packets
         public void WriteElementId(uint integer) => WriteBytesCapped(BitConverter.GetBytes(integer), 17);
 
         public void Write(float @float) => WriteBytes(BitConverter.GetBytes(@float));
+        public void Write(double value) => WriteBytes(BitConverter.GetBytes(value));
         public void Write(int integer) => WriteBytes(BitConverter.GetBytes(integer));
         public void Write(short integer) => WriteBytes(BitConverter.GetBytes(integer));
         public void Write(long integer) => WriteBytes(BitConverter.GetBytes(integer));
@@ -389,5 +390,9 @@ namespace MtaServer.Packets
         public void WriteCompressed(short integer) => WriteCompressed(BitConverter.GetBytes(integer), false);
         public void WriteCompressed(uint integer) => WriteCompressed(BitConverter.GetBytes(integer), true);
         public void WriteCompressed(int integer) => WriteCompressed(BitConverter.GetBytes(integer), false);
+
+        // Turns out longs are just written as ints
+        public void WriteCompressed(long integer) => WriteCompressed(BitConverter.GetBytes((int)integer), false);
+        public void WriteCompressed(ulong integer) => WriteCompressed(BitConverter.GetBytes((uint)integer), true);
     }
 }
