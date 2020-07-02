@@ -97,6 +97,7 @@ void testMethod() {
     NetBitStreamInterface* bitStream = network->AllocateNetServerBitStream(0);
     if (bitStream)
     {
+        //bitStream->WriteCompressed((ulong)0);
         //bitStream->WriteNormVector(0.5, 0.5, 0.5);
         //bitStream->Write(128.56f);
         //bitStream->WriteCompressed(0.56f);

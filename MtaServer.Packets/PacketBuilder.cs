@@ -118,11 +118,10 @@ namespace MtaServer.Packets
         public void WriteCapped(ulong integer, int bitCap) => WriteBytesCapped(BitConverter.GetBytes(integer), bitCap);
         public void WriteCapped(byte integer, int bitCap) => WriteBytesCapped(new byte[] { integer }, bitCap);
 
-
-        public void WriteElementId(int integer) => WriteBytesCapped(BitConverter.GetBytes(integer), 17);
         public void WriteElementId(uint integer) => WriteBytesCapped(BitConverter.GetBytes(integer), 17);
 
         public void Write(float @float) => WriteBytes(BitConverter.GetBytes(@float));
+        public void Write(double value) => WriteBytes(BitConverter.GetBytes(value));
         public void Write(int integer) => WriteBytes(BitConverter.GetBytes(integer));
         public void Write(short integer) => WriteBytes(BitConverter.GetBytes(integer));
         public void Write(long integer) => WriteBytes(BitConverter.GetBytes(integer));
@@ -148,6 +147,11 @@ namespace MtaServer.Packets
             WriteBytes(value.Select(c => (byte)c).ToArray());
         }
 
+        public void WriteStringWithoutLength(string value)
+        {
+            WriteBytes(value.Select(c => (byte)c).ToArray());
+        }
+
         public void WriteStringWithByteAsLength(string value)
         {
             Write((byte)value.Length);
@@ -167,12 +171,16 @@ namespace MtaServer.Packets
             Write(vector.Y);
         }
 
-        public void Write(Color color, bool withAlpha = false)
+        public void Write(Color color, bool withAlpha = false, bool alphaFirst = false)
         {
+            if (withAlpha && alphaFirst)
+                Write((byte)color.A);
+
             Write((byte)color.R);
             Write((byte)color.G);
             Write((byte)color.B);
-            if (withAlpha)
+
+            if (withAlpha && !alphaFirst)
                 Write((byte)color.A);
         }
 
@@ -216,7 +224,7 @@ namespace MtaServer.Packets
             WriteFloat(vector.Z, integerBits, fractionalBits);
         }
 
-        public void WriteVector2(Vector2 vector, int integerBits, int fractionalBits)
+        public void WriteVector2(Vector2 vector, int integerBits = 14, int fractionalBits = 10)
         {
             WriteFloat(vector.X, integerBits, fractionalBits);
             WriteFloat(vector.Y, integerBits, fractionalBits);
@@ -227,6 +235,25 @@ namespace MtaServer.Packets
             WriteFloat(vector.X, integerBits, fractionalBits);
             WriteFloat(vector.Y, integerBits, fractionalBits);
             Write(vector.Z);
+        }
+
+        public void WriteVectorAsUshorts(Vector3 vector)
+        {
+            Write((ushort)(vector.X * (65536 / 360f)));
+            Write((ushort)(vector.Y * (65536 / 360f)));
+            Write((ushort)(vector.Z * (65536 / 360f)));
+        }
+
+        public void WriteCompressedVector3(Vector3 vector)
+        {
+            var magnitude = MathF.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
+            Write((float)magnitude);
+            if (magnitude > 0.00001f)
+            {
+                WriteCompressed((float)(vector.X / magnitude));
+                WriteCompressed((float)(vector.Y / magnitude));
+                WriteCompressed((float)(vector.Z / magnitude));
+            }
         }
 
         float WrapAround(float low, float value, float high)
@@ -363,5 +390,9 @@ namespace MtaServer.Packets
         public void WriteCompressed(short integer) => WriteCompressed(BitConverter.GetBytes(integer), false);
         public void WriteCompressed(uint integer) => WriteCompressed(BitConverter.GetBytes(integer), true);
         public void WriteCompressed(int integer) => WriteCompressed(BitConverter.GetBytes(integer), false);
+
+        // Turns out longs are just written as ints
+        public void WriteCompressed(long integer) => WriteCompressed(BitConverter.GetBytes((int)integer), false);
+        public void WriteCompressed(ulong integer) => WriteCompressed(BitConverter.GetBytes((uint)integer), true);
     }
 }

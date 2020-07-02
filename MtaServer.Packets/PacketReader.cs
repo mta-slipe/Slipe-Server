@@ -135,7 +135,18 @@ namespace MtaServer.Packets
             return GetStringCharacters(length);
         }
 
-        public uint GetElementId() => BitConverter.ToUInt32(GetBytesCapped(17).Concat(new byte[] { 0 }).ToArray(), 0);
+        public uint GetElementId()
+        {
+            var id = BitConverter.ToUInt32(GetBytesCapped(17).Concat(new byte[] { 0 }).ToArray(), 0);
+
+            uint maxValue = (1 << 17) - 1;
+            if (id == maxValue)
+            {
+                return PacketConstants.InvalidElementId;
+            }
+
+            return id;
+        }
 
         public Vector3 GetVector3() => new Vector3(GetFloat(), GetFloat(), GetFloat());
         public Vector2 GetVector2() => new Vector2(GetFloat(), GetFloat());
