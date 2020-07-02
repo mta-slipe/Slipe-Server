@@ -1,6 +1,7 @@
 ﻿using MtaServer.Packets.Definitions.Sync;
 using MtaServer.Packets.Enums;
 using MtaServer.Server.Elements;
+using MtaServer.Server.Repositories;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -9,7 +10,12 @@ namespace MtaServer.Server.PacketHandling.QueueHandlers
 {
     public class SyncQueueHandler : WorkerBasedQueueHandler
     {
-        public SyncQueueHandler(MtaServer server, int sleepInterval, int workerCount): base(server, sleepInterval, workerCount) { }
+        private readonly IElementRepository elementRepository;
+
+        public SyncQueueHandler(IElementRepository elementRepository, int sleepInterval, int workerCount): base(sleepInterval, workerCount)
+        {
+            this.elementRepository = elementRepository;
+        }
 
         protected override void HandlePacket(PacketQueueEntry queueEntry)
         {
@@ -47,7 +53,7 @@ namespace MtaServer.Server.PacketHandling.QueueHandlers
 
             packet.PlayerId = client.Player.Id;
             packet.Latency = 0;
-            foreach (var remotePlayer in this.server.ElementRepository.GetByType<Player>(ElementType.Player))
+            foreach (var remotePlayer in this.elementRepository.GetByType<Player>(ElementType.Player))
             {
                 if (remotePlayer.Client != client)
                 {
@@ -63,7 +69,7 @@ namespace MtaServer.Server.PacketHandling.QueueHandlers
             player.AimOrigin = packet.AimOrigin;
             player.AimDirection = packet.AimDirection;
 
-            player.ContactElement = this.server.ElementRepository.Get(packet.ContactElementId);
+            player.ContactElement = this.elementRepository.Get(packet.ContactElementId);
 
             player.CurrentWeapon = new PlayerWeapon()
             {
