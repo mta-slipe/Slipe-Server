@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace MtaServer.Console
 {
@@ -190,6 +191,14 @@ namespace MtaServer.Console
                 false, 1000f
             );
             client.SendPacket(entitypacket);
+
+            _ = Task.Run(async () =>
+            {
+                await Task.Delay(10000);
+                var packet = new RemoveEntityPacket();
+                packet.AddEntity(676);
+                client.SendPacket(packet);
+            });
         }
     }
 }
