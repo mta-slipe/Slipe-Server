@@ -1,6 +1,7 @@
 ﻿using MtaServer.Packets.Definitions.Join;
 using MtaServer.Packets.Enums;
 using MtaServer.Server.Elements;
+using MtaServer.Server.Repositories;
 using MTAServerWrapper.Packets.Outgoing.Connection;
 using System;
 using System.Runtime.InteropServices;
@@ -10,7 +11,13 @@ namespace MtaServer.Server.PacketHandling.QueueHandlers
 {
     public class ConnectionQueueHandler : WorkerBasedQueueHandler
     {
-        public ConnectionQueueHandler(MtaServer server, int sleepInterval, int workerCount): base(server, sleepInterval, workerCount) { }
+        private readonly IElementRepository elementRepository;
+
+        public ConnectionQueueHandler(IElementRepository elementRepository, int sleepInterval, int workerCount)
+            : base(sleepInterval, workerCount)
+        {
+            this.elementRepository = elementRepository;
+        }
 
         protected override void HandlePacket(PacketQueueEntry queueEntry)
         {
@@ -53,7 +60,7 @@ namespace MtaServer.Server.PacketHandling.QueueHandlers
 
         private void HandleClientQuit(Client client)
         {
-            server.ElementRepository.Remove(client.Player);
+            this.elementRepository.Remove(client.Player);
         }
     }
 }

@@ -3,6 +3,7 @@ using MtaServer.Packets.Enums;
 using MtaServer.Packets.Rpc;
 using MtaServer.Server.Elements;
 using MtaServer.Server.PacketHandling.Factories;
+using MtaServer.Server.Repositories;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -12,8 +13,15 @@ namespace MtaServer.Server.PacketHandling.QueueHandlers
 {
     public class RpcQueueHandler : WorkerBasedQueueHandler
     {
+        private readonly IElementRepository elementRepository;
+        private readonly RootElement root;
 
-        public RpcQueueHandler(MtaServer server, int sleepInterval, int workerCount): base(server, sleepInterval, workerCount) { }
+        public RpcQueueHandler(RootElement root, IElementRepository elementRepository, int sleepInterval, int workerCount)
+            : base(sleepInterval, workerCount) 
+        {
+            this.elementRepository = elementRepository;
+            this.root = root;
+        }
 
         protected override void HandlePacket(PacketQueueEntry queueEntry)
         {
@@ -35,8 +43,8 @@ namespace MtaServer.Server.PacketHandling.QueueHandlers
                 case RpcFunctions.PLAYER_INGAME_NOTICE:
                     client.SendPacket(new JoinedGamePacket(
                         client.Player.Id, 
-                        server.ElementRepository.Count + 1, 
-                        this.server.Root.Id, 
+                        this.elementRepository.Count + 1, 
+                        this.root.Id, 
                         HttpDownloadType.HTTP_DOWNLOAD_ENABLED_PORT, 
                         80, 
                         "", 
@@ -45,18 +53,18 @@ namespace MtaServer.Server.PacketHandling.QueueHandlers
                     ));
 
                     var existingPlayersListPacket = PlayerPacketFactory.CreatePlayerListPacket(
-                        this.server.ElementRepository.GetByType<Player>(ElementType.Player).ToArray(), 
+                        this.elementRepository.GetByType<Player>(ElementType.Player).ToArray(), 
                         true
                     );
                     client.SendPacket(existingPlayersListPacket);
 
                     var newPlayerListPacket = PlayerPacketFactory.CreatePlayerListPacket(new Player[] { client.Player }, false);
-                    foreach (var player in this.server.ElementRepository.GetByType<Player>(ElementType.Player))
+                    foreach (var player in this.elementRepository.GetByType<Player>(ElementType.Player))
                     {
                         player.Client.SendPacket(newPlayerListPacket);
                     }
 
-                    this.server.ElementRepository.Add(client.Player);
+                    this.elementRepository.Add(client.Player);
                     client.Player.HandleJoin();
 
                     break;

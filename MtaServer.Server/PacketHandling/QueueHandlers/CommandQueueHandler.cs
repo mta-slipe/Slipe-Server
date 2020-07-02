@@ -10,7 +10,7 @@ namespace MtaServer.Server.PacketHandling.QueueHandlers
 {
     public class CommandQueueHandler : WorkerBasedQueueHandler
     {
-        public CommandQueueHandler(MtaServer server, int sleepInterval, int workerCount) : base(server, sleepInterval, workerCount) { }
+        public CommandQueueHandler(int sleepInterval, int workerCount) : base(sleepInterval, workerCount) { }
 
         protected override void HandlePacket(PacketQueueEntry queueEntry)
         {
