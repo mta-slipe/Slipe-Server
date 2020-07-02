@@ -32,6 +32,11 @@ namespace MtaServer.Server
         public IElementRepository ElementRepository { get; private set; }
         public string GameType { get; set; } = "unknown";
         public string MapName { get; set; } = "unknown";
+        public string Password { get; set; } = "";
+        public bool HasPassword { get => (Password != ""); }
+
+        public DateTime StartDatetime { get; } = DateTime.Now;
+        public long Uptime { get => DateTime.Now.Ticks - StartDatetime.Ticks; }
 
         public MtaServer(string directory, string netDllPath, IElementRepository elementRepository, Configuration? configuration = null)
         {

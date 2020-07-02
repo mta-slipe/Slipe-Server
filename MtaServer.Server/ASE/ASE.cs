@@ -10,30 +10,66 @@ using System.Threading;
 
 namespace MtaServer.Server.ASE
 {
-    public class StateObject
+    public enum EAseVersion
     {
-        public Socket workSocket = null;
-        public const int BufferSize = 1024;
-        public byte[] buffer = new byte[BufferSize];
-        public StringBuilder sb = new StringBuilder();
+        v1_5, // release build
+        v1_5n, // debug build
+    }
+
+    public enum EBuildType
+    {
+        Custom = 0x01,
+        Experimental = 0x03,
+        Unstable = 0x05,
+        Untested = 0x07,
+        Release = 0x09
     }
 
     public class ASE
     {
         private ushort Port { get; }
         internal MtaServer MtaServer { get; }
+        internal EAseVersion AseVersion { get; }
+        internal EBuildType BuildType { get; }
+
+        private byte[] LightCache { set; get; }
+        private long LightCacheTime { set; get; } = 0;
         public ASE(MtaServer mtaServer)
         {
             this.Port = mtaServer.Configuration.Port;
             this.MtaServer = mtaServer;
+            AseVersion = EAseVersion.v1_5;
+            BuildType = EBuildType.Release;
             StartListening((ushort)(this.Port + 123));
         }
 
         private byte[] ToByteArray(string v) => v.Select(c => (byte)c).ToArray();
 
+        private byte[] QueryLightCached()
+        {
+            if(LightCacheTime < DateTime.Now.Ticks)
+            {
+                LightCacheTime = DateTime.Now.Ticks + 15 * 1000 * 10000;
+                LightCache = QueryLight();
+            }
+            return LightCache;
+        }
+
         private byte[] QueryLight()
         {
-            string aseVersion = "1.5"; // "1.5n" for custom builds
+            string aseVersion;
+            switch(AseVersion)
+            {
+                case EAseVersion.v1_5:
+                    aseVersion = "1.5";
+                    break;
+                case EAseVersion.v1_5n:
+                    aseVersion = "1.5n";
+                    break;
+                default:
+                    throw new NotImplementedException(AseVersion.ToString());
+            }
+
             using (MemoryStream stream = new MemoryStream())
             {
                 using (BinaryWriter bw = new BinaryWriter(stream))
@@ -42,11 +78,11 @@ namespace MtaServer.Server.ASE
 
                     int playersCount = playerNames.Count();
                     string strPlayerCount = playersCount + "/" + MtaServer.Configuration.MaxPlayers;
-                    string buildType = ((byte)(VersionType.Release)).ToString();
-                    string buildNumber = "0";
+                    string buildType = $"{(byte)(VersionType.Release)} ";
+                    string buildNumber = $"{(byte)BuildType}";
                     string pingStatus = new string('P', 32);
                     string strNetRoute = new string('N', 32);
-                    string strUpTime = "1000";
+                    string strUpTime = $"{(int)MtaServer.Uptime / 10000}";
                     string strHttpPort = Port.ToString();
                     uint extraDataLength = (uint)(strPlayerCount.Length + buildType.Length + buildNumber.Length + pingStatus.Length + strNetRoute.Length + strUpTime.Length + strHttpPort.Length);
 
@@ -78,7 +114,7 @@ namespace MtaServer.Server.ASE
                     bw.Write(ToByteArray(strHttpPort));
                     bw.Write((byte)(aseVersion.Length + 1));
                     bw.Write(ToByteArray(aseVersion));
-                    bw.Write((byte)0); // password
+                    bw.Write((byte)(MtaServer.HasPassword?1:0)); // password
                     bw.Write((byte)1); // serial verification
                     bw.Write((byte)playersCount); // joined players
                     bw.Write((byte)MtaServer.Configuration.MaxPlayers); // max players
@@ -122,7 +158,7 @@ namespace MtaServer.Server.ASE
                 //    data = QueryLight();
                 //    break;
                 case 114: // Our own lighter query for ingame browser - Release version only
-                    data = QueryLight();
+                    data = QueryLightCached();
                     break;
                 //case "x": // Our own lighter query for xfire updates
                 //    data = QueryLight();
@@ -135,7 +171,6 @@ namespace MtaServer.Server.ASE
             }
             socket.Send(data, data.Length, source);
             socket.BeginReceive(new AsyncCallback(OnUdpData), socket);
-            Console.WriteLine("requested {0}, sent bytes: {1}", message[0], data.Length);
         }
 
         private void StartListening(ushort port)
