@@ -58,6 +58,19 @@ namespace MtaServer.Packets.Tests
         }
 
         [Theory]
+        [InlineData(1235, new byte[] { 0b11011010, 0b01100000, 0b10000000 })]
+        [InlineData(0, new byte[] { 0b11110000 })]
+        public void WriteCompressedUlongTest(ulong value, byte[] expectedOutput)
+        {
+            var builder = new PacketBuilder();
+            builder.WriteCompressed(value);
+
+            var bytes = builder.Build();
+
+            bytes.Should().Equal(expectedOutput);
+        }
+
+        [Theory]
         [InlineData(9, new byte[] { 0b111001_00 })]
         public void WriteCompressedUshortTest(ushort value, byte[] expectedOutput)
         {
@@ -135,19 +148,22 @@ namespace MtaServer.Packets.Tests
             bytes.Should().Equal(expectedOutput);
         }
 
-        [Fact]
-        public void WriteColorTest()
+        [Theory]
+        [InlineData(255, 255, 255, 255, false, false, new byte[] { 0xFF, 0xFF, 0xFF })]
+        [InlineData(0, 255, 255, 255, false, false, new byte[] { 0xFF, 0xFF, 0xFF })]
+        [InlineData(128, 255, 255, 255, true, true, new byte[] { 0x80, 0xFF, 0xFF, 0xFF })]
+        [InlineData(128, 255, 255, 255, true, false, new byte[] { 0xFF, 0xFF, 0xFF, 0x80 })]
+        public void WriteColorTest(byte alpha, byte red, byte green, byte blue, bool withAlpha, bool alphaFirst, byte[] expectedOutput)
         {
             var builder = new PacketBuilder();
-            Color color = Color.White;
+            Color color = Color.FromArgb(alpha, red, green, blue);
 
-            builder.Write(color);
+            builder.Write(color, withAlpha, alphaFirst);
 
             var bytes = builder.Build();
-            bytes.Should().Equal(new byte[] 
-            { 
-                0xff, 0xff, 0xff
-            });
+            bytes.Should().Equal(expectedOutput);
         }
+
+
     }
 }
