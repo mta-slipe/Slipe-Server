@@ -43,8 +43,6 @@ namespace MtaServer.Server.ASE
             StartListening((ushort)(this.Port + 123));
         }
 
-        private byte[] ToByteArray(string v) => v.Select(c => (byte)c).ToArray();
-
         private byte[] QueryLightCached()
         {
             if(LightCacheTime < DateTime.Now.Ticks)
@@ -86,55 +84,55 @@ namespace MtaServer.Server.ASE
                     string strHttpPort = Port.ToString();
                     uint extraDataLength = (uint)(strPlayerCount.Length + buildType.Length + buildNumber.Length + pingStatus.Length + strNetRoute.Length + strUpTime.Length + strHttpPort.Length);
 
-                    bw.Write(ToByteArray("EYE2"));
+                    bw.Write("EYE2".AsSpan());
                     bw.Write((byte)4);
-                    bw.Write(ToByteArray("mta"));
+                    bw.Write("mta".AsSpan());
                     bw.Write((byte)(Port.ToString().Length + 1));
-                    bw.Write(ToByteArray(Port.ToString()));
+                    bw.Write(Port.ToString().AsSpan());
                     bw.Write((byte)(MtaServer.Configuration.ServerName.Length + 1));
-                    bw.Write(ToByteArray(MtaServer.Configuration.ServerName));
+                    bw.Write(MtaServer.Configuration.ServerName.AsSpan());
                     bw.Write((byte)(MtaServer.GameType.Length + 1));
-                    bw.Write(ToByteArray(MtaServer.GameType));
+                    bw.Write(MtaServer.GameType.AsSpan());
                     bw.Write((byte)(MtaServer.MapName.Length + 7 + 1 + extraDataLength));
-                    bw.Write(ToByteArray(MtaServer.MapName));
+                    bw.Write(MtaServer.MapName.AsSpan());
                     bw.Write((byte)0);
-                    bw.Write(ToByteArray(strPlayerCount));  // client double checks this field in clientside against fake players count function:
+                    bw.Write(strPlayerCount.AsSpan());  // client double checks this field in clientside against fake players count function:
                                                             // "CCore::GetSingleton().GetNetwork()->UpdatePingStatus(*strPingStatus, info.players);" 
                     bw.Write((byte)0);
-                    bw.Write(ToByteArray(buildType));
+                    bw.Write(buildType.AsSpan());
                     bw.Write((byte)0);
-                    bw.Write(ToByteArray(buildNumber));
+                    bw.Write(buildNumber.AsSpan());
                     bw.Write((byte)0);
-                    bw.Write(ToByteArray(pingStatus));
+                    bw.Write(pingStatus.AsSpan());
                     bw.Write((byte)0);
-                    bw.Write(ToByteArray(strNetRoute));
+                    bw.Write(strNetRoute.AsSpan());
                     bw.Write((byte)0);
-                    bw.Write(ToByteArray(strUpTime));
+                    bw.Write(strUpTime.AsSpan());
                     bw.Write((byte)0);
-                    bw.Write(ToByteArray(strHttpPort));
+                    bw.Write(strHttpPort.AsSpan());
                     bw.Write((byte)(aseVersion.Length + 1));
-                    bw.Write(ToByteArray(aseVersion));
+                    bw.Write(aseVersion.AsSpan());
                     bw.Write((byte)(MtaServer.HasPassword?1:0)); // password
                     bw.Write((byte)1); // serial verification
                     bw.Write((byte)playersCount); // joined players
                     bw.Write((byte)MtaServer.Configuration.MaxPlayers); // max players
 
                     int bytesLeft = (1350 - (int)bw.BaseStream.Position);
-                    int playersLeft = playerNames.Count + 1;
+                    int playersLeftNum = playerNames.Count + 1;
                     foreach (string name in playerNames)
                     {
                         if (bytesLeft - name.Length + 2 > 0)
                         {
-                            bw.Write((char)(name.Length + 1));
-                            bw.Write(ToByteArray(name));
+                            bw.Write((byte)(name.Length + 1));
+                            bw.Write(name.AsSpan());
                             bytesLeft -= name.Length + 2;
-                            playersLeft--;
+                            playersLeftNum--;
                         }
                         else
                         {
-                            string left = $"And {playersLeft} more";
-                            bw.Write((char)(left.Length + 1));
-                            bw.Write(ToByteArray(left));
+                            string playersLeft = $"And {playersLeftNum} more";
+                            bw.Write((byte)(playersLeft.Length + 1));
+                            bw.Write(playersLeft.AsSpan());
                             break;
                         }
                     }
