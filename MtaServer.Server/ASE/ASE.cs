@@ -27,17 +27,14 @@ namespace MtaServer.Server.ASE
 
     public class ASE
     {
-        private int CacheTime { get; } = 15 * 1000 * 10000;
+        private int CacheTime { get; } = 15 * 1000;
         private ushort Port { get; }
         internal MtaServer MtaServer { get; }
         internal EAseVersion AseVersion { get; }
         internal EBuildType BuildType { get; }
 
-        private byte[] LightCache { set; get; }
-        private long LightCacheTime { set; get; } = 0;
-
-        private byte[] XFireCache { set; get; }
-        private long XFireCacheTime { set; get; } = 0;
+        private Cache<byte[]> LightCache { get; }
+        private Cache<byte[]> XFireCache { set; get; }
 
         public ASE(MtaServer mtaServer)
         {
@@ -46,27 +43,9 @@ namespace MtaServer.Server.ASE
             AseVersion = EAseVersion.v1_5;
             BuildType = EBuildType.Release;
             StartListening((ushort)(this.Port + 123));
-        }
 
-        private byte[] QueryLightCached()
-        {
-            if(LightCacheTime < DateTime.Now.Ticks)
-            {
-                LightCacheTime = DateTime.Now.Ticks + CacheTime;
-                LightCache = QueryLight();
-            }
-            return LightCache;
-        }
-
-        private byte[] QueryXFireLightCached()
-        {
-
-            if (XFireCacheTime < DateTime.Now.Ticks)
-            {
-                XFireCacheTime = DateTime.Now.Ticks + XFireCacheTime;
-                XFireCache = QueryXFireLight();
-            }
-            return XFireCache;
+            LightCache = new Cache<byte[]>(QueryLight, CacheTime);
+            XFireCache = new Cache<byte[]>(QueryXFireLight, CacheTime);
         }
 
         private byte[] QueryXFireLight()
@@ -228,10 +207,10 @@ namespace MtaServer.Server.ASE
                 //    data = QueryLight();
                 //    break;
                 case 114: // Our own lighter query for ingame browser - Release version only
-                    data = QueryLightCached();
+                    data = LightCache.Get();
                     break;
                 case 120: // Our own lighter query for xfire updates
-                    data = QueryXFireLightCached();
+                    data = XFireCache.Get();
                     break;
                 //case 118: // MTA Version (For further possibilities to quick ping, in case we do multiply master servers)
                 //    data = QueryLight();
