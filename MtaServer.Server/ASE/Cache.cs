@@ -15,20 +15,19 @@ namespace MtaServer.Server.ASE
         {
             Data = UpdateFunc();
             CacheTime = DateTime.Now.Ticks;
-            Console.WriteLine("Update cache...");
         }
 
         public Cache(Func<T> updateFunc, int cachePeriod)
         {
             this.UpdateFunc = updateFunc;
             this.CachePeriod = cachePeriod * 10000;
+            this.Data = default(T);
         }
 
         public T Get(bool forceUpdate = false)
         {
             if (forceUpdate || CacheTime + CachePeriod < DateTime.Now.Ticks)
                 UpdateCache();
-            Console.WriteLine("Get Data");
             return Data;
         }
     }

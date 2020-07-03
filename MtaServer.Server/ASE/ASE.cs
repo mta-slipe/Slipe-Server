@@ -1,4 +1,5 @@
 ﻿using MtaServer.Server.Elements;
+using MtaServer.Server.Repositories;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,27 +29,31 @@ namespace MtaServer.Server.ASE
     public class ASE
     {
         private int CacheTime { get; } = 15 * 1000;
-        private ushort Port { get; }
-        internal MtaServer MtaServer { get; }
         internal EAseVersion AseVersion { get; }
         internal EBuildType BuildType { get; }
-
         private Cache<byte[]> LightCache { get; }
         private Cache<byte[]> XFireCache { set; get; }
 
-        public ASE(MtaServer mtaServer)
+
+        private readonly IElementRepository elementRepository;
+        private readonly Configuration configuration;
+        private readonly MtaServer mtaServer;
+
+        public ASE(MtaServer mtaServer, Configuration configuration, IElementRepository elementRepository)
         {
-            this.Port = mtaServer.Configuration.Port;
-            this.MtaServer = mtaServer;
+            this.mtaServer = mtaServer;
+            this.elementRepository = elementRepository;
+            this.configuration = configuration;
+
             AseVersion = EAseVersion.v1_5;
             BuildType = EBuildType.Release;
-            StartListening((ushort)(this.Port + 123));
+            StartListening((ushort)(configuration.Port + 123));
 
             LightCache = new Cache<byte[]>(QueryLight, CacheTime);
             XFireCache = new Cache<byte[]>(QueryXFireLight, CacheTime);
         }
 
-        private byte[] QueryXFireLight()
+        public string GetVersion()
         {
             string aseVersion;
             switch (AseVersion)
@@ -62,39 +67,44 @@ namespace MtaServer.Server.ASE
                 default:
                     throw new NotImplementedException(AseVersion.ToString());
             }
+            return aseVersion;
+        }
 
+        private byte[] QueryXFireLight()
+        {
             using (MemoryStream stream = new MemoryStream())
             {
                 using (BinaryWriter bw = new BinaryWriter(stream))
                 {
-                    List<string> playerNames = MtaServer.ElementRepository.GetByType<Player>(ElementType.Player).Select(o => o.NameNoColor).ToList();
+                    List<string> playerNames = elementRepository.GetByType<Player>(ElementType.Player).Select(o => o.NameNoColor).ToList();
 
+                    string aseVersion = GetVersion();
                     int playersCount = playerNames.Count();
-                    string strPlayerCount = playersCount + "/" + MtaServer.Configuration.MaxPlayers;
+                    string strPlayerCount = playersCount + "/" + configuration.MaxPlayers;
                     string buildType = $"{(byte)(VersionType.Release)} ";
                     string buildNumber = $"{(byte)BuildType}";
                     string pingStatus = new string('P', 32);
                     string strNetRoute = new string('N', 32);
-                    string strUpTime = $"{(int)MtaServer.Uptime / 10000}";
-                    string strHttpPort = Port.ToString();
+                    string strUpTime = $"{(int)mtaServer.Uptime / 10000}";
+                    string strHttpPort = configuration.Port.ToString();
 
                     bw.Write("EYE3".AsSpan());
                     bw.Write((byte)4);
                     bw.Write("mta".AsSpan());
-                    bw.Write((byte)(MtaServer.Configuration.ServerName.Length + 1));
-                    bw.Write(MtaServer.Configuration.ServerName.AsSpan());
-                    bw.Write((byte)(MtaServer.GameType.Length + 1));
-                    bw.Write(MtaServer.GameType.AsSpan());
-                    bw.Write((byte)(MtaServer.MapName.Length + strPlayerCount.Length + 2));
-                    bw.Write(MtaServer.MapName.AsSpan());
+                    bw.Write((byte)(configuration.ServerName.Length + 1));
+                    bw.Write(configuration.ServerName.AsSpan());
+                    bw.Write((byte)(mtaServer.GameType.Length + 1));
+                    bw.Write(mtaServer.GameType.AsSpan());
+                    bw.Write((byte)(mtaServer.MapName.Length + strPlayerCount.Length + 2));
+                    bw.Write(mtaServer.MapName.AsSpan());
                     bw.Write((byte)0);
                     bw.Write(strPlayerCount.AsSpan());  // client double checks this field in clientside against fake players count function:
                                                         // "CCore::GetSingleton().GetNetwork()->UpdatePingStatus(*strPingStatus, info.players);" 
                     bw.Write((byte)(aseVersion.Length + 1));
                     bw.Write(aseVersion.AsSpan());
-                    bw.Write((byte)(MtaServer.HasPassword ? 1 : 0)); // password
+                    bw.Write((byte)(mtaServer.HasPassword ? 1 : 0)); // password
                     bw.Write((byte)playersCount); // joined players
-                    bw.Write((byte)MtaServer.Configuration.MaxPlayers); // max players
+                    bw.Write((byte)configuration.MaxPlayers); // max players
 
                     bw.Flush();
                     return stream.ToArray();
@@ -105,46 +115,35 @@ namespace MtaServer.Server.ASE
 
         private byte[] QueryLight()
         {
-            string aseVersion;
-            switch (AseVersion)
-            {
-                case EAseVersion.v1_5:
-                    aseVersion = "1.5";
-                    break;
-                case EAseVersion.v1_5n:
-                    aseVersion = "1.5n";
-                    break;
-                default:
-                    throw new NotImplementedException(AseVersion.ToString());
-            }
 
             using (MemoryStream stream = new MemoryStream())
             {
                 using (BinaryWriter bw = new BinaryWriter(stream))
                 {
-                    List<string> playerNames = MtaServer.ElementRepository.GetByType<Player>(ElementType.Player).Select(o => o.NameNoColor).ToList();
+                    List<string> playerNames = elementRepository.GetByType<Player>(ElementType.Player).Select(o => o.NameNoColor).ToList();
 
+                    string aseVersion = GetVersion();
                     int playersCount = playerNames.Count();
-                    string strPlayerCount = playersCount + "/" + MtaServer.Configuration.MaxPlayers;
+                    string strPlayerCount = playersCount + "/" + configuration.MaxPlayers;
                     string buildType = $"{(byte)(VersionType.Release)} ";
                     string buildNumber = $"{(byte)BuildType}";
                     string pingStatus = new string('P', 32);
                     string strNetRoute = new string('N', 32);
-                    string strUpTime = $"{(int)MtaServer.Uptime / 10000}";
-                    string strHttpPort = Port.ToString();
+                    string strUpTime = $"{(int)mtaServer.Uptime / 10000}";
+                    string strHttpPort = configuration.Port.ToString();
                     uint extraDataLength = (uint)(strPlayerCount.Length + buildType.Length + buildNumber.Length + pingStatus.Length + strNetRoute.Length + strUpTime.Length + strHttpPort.Length);
 
                     bw.Write("EYE2".AsSpan());
                     bw.Write((byte)4);
                     bw.Write("mta".AsSpan());
-                    bw.Write((byte)(Port.ToString().Length + 1));
-                    bw.Write(Port.ToString().AsSpan());
-                    bw.Write((byte)(MtaServer.Configuration.ServerName.Length + 1));
-                    bw.Write(MtaServer.Configuration.ServerName.AsSpan());
-                    bw.Write((byte)(MtaServer.GameType.Length + 1));
-                    bw.Write(MtaServer.GameType.AsSpan());
-                    bw.Write((byte)(MtaServer.MapName.Length + 7 + 1 + extraDataLength));
-                    bw.Write(MtaServer.MapName.AsSpan());
+                    bw.Write((byte)(configuration.Port.ToString().Length + 1));
+                    bw.Write(configuration.Port.ToString().AsSpan());
+                    bw.Write((byte)(configuration.ServerName.Length + 1));
+                    bw.Write(configuration.ServerName.AsSpan());
+                    bw.Write((byte)(mtaServer.GameType.Length + 1));
+                    bw.Write(mtaServer.GameType.AsSpan());
+                    bw.Write((byte)(mtaServer.MapName.Length + 7 + 1 + extraDataLength));
+                    bw.Write(mtaServer.MapName.AsSpan());
                     bw.Write((byte)0);
                     bw.Write(strPlayerCount.AsSpan());  // client double checks this field in clientside against fake players count function:
                                                         // "CCore::GetSingleton().GetNetwork()->UpdatePingStatus(*strPingStatus, info.players);" 
@@ -162,10 +161,10 @@ namespace MtaServer.Server.ASE
                     bw.Write(strHttpPort.AsSpan());
                     bw.Write((byte)(aseVersion.Length + 1));
                     bw.Write(aseVersion.AsSpan());
-                    bw.Write((byte)(MtaServer.HasPassword ? 1 : 0)); // password
+                    bw.Write((byte)(mtaServer.HasPassword ? 1 : 0)); // password
                     bw.Write((byte)1); // serial verification
                     bw.Write((byte)playersCount); // joined players
-                    bw.Write((byte)MtaServer.Configuration.MaxPlayers); // max players
+                    bw.Write((byte)configuration.MaxPlayers); // max players
 
                     int bytesLeft = (1350 - (int)bw.BaseStream.Position);
                     int playersLeftNum = playerNames.Count + 1;

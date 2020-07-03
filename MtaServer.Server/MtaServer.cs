@@ -33,11 +33,8 @@ namespace MtaServer.Server
         private readonly ServiceProvider serviceProvider;
         private readonly IElementRepository elementRepository;
         private readonly RootElement root;
+        public readonly Configuration configuration;
 
-        public Element Root { get; }
-        public ASE.ASE Ase { get; }
-        public Configuration Configuration { get; }
-        public IElementRepository ElementRepository { get; private set; }
         public string GameType { get; set; } = "unknown";
         public string MapName { get; set; } = "unknown";
         public string Password { get; set; } = "";
@@ -76,8 +73,6 @@ namespace MtaServer.Server
             this.clients = new Dictionary<NetWrapper, Dictionary<uint, Client>>();
 
             this.netWrapper = CreateNetWrapper(directory, netDllPath, this.configuration.Host, this.configuration.Port);
-
-            this.Ase = new ASE.ASE(this);
         }
 
         public void Start()

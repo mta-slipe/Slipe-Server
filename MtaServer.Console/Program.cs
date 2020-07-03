@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using MtaServer.ConfigurationProviders;
 using MtaServer.ConfigurationProviders.Configurations;
 using MtaServer.Packets.Enums;
+using MtaServer.Server.ASE;
 using MtaServer.Server.Behaviour;
 using MtaServer.Server.PacketHandling.QueueHandlers;
 using System;
@@ -100,6 +101,7 @@ namespace MtaServer.Console
         private void SetupBehaviour()
         {
             server.Instantiate<DefaultChatBehaviour>();
+            server.Instantiate<ASE>();
         }
     }
 }
