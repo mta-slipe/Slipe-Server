@@ -55,6 +55,8 @@ namespace MtaServer.Server.Elements
         public bool IsSyncingVelocity { get; set; }
         public bool IsStealthAiming { get; set; }
 
+        public int Score { get; set; }
+
         internal Player(Client client): base()
         {
             this.Client = client;
