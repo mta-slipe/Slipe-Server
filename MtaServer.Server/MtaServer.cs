@@ -1,5 +1,9 @@
 ﻿using MtaServer.Server.ASE;
 using MtaServer.Packets.Enums;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
+using MtaServer.Packets.Enums;
 using MtaServer.Server.Elements;
 using MtaServer.Server.PacketHandling;
 using MtaServer.Server.Repositories;
@@ -25,6 +29,10 @@ namespace MtaServer.Server
         private readonly NetWrapper netWrapper;
         private readonly PacketReducer packetReducer;
         private readonly Dictionary<NetWrapper, Dictionary<uint, Client>> clients;
+        private readonly ServiceCollection serviceCollection;
+        private readonly ServiceProvider serviceProvider;
+        private readonly IElementRepository elementRepository;
+        private readonly RootElement root;
 
         public Element Root { get; }
         public ASE.ASE Ase { get; }
@@ -38,25 +46,36 @@ namespace MtaServer.Server
         public DateTime StartDatetime { get; } = DateTime.Now;
         public long Uptime { get => DateTime.Now.Ticks - StartDatetime.Ticks; }
 
-        public MtaServer(string directory, string netDllPath, IElementRepository elementRepository, Configuration? configuration = null)
-        {
-            this.ElementRepository = elementRepository;
 
-            this.Configuration = configuration ?? new Configuration();
+        public MtaServer(
+            string directory, 
+            string netDllPath, 
+            Configuration? configuration = null,
+            Action<ServiceCollection>? dependencyCallback = null
+        )
+        {
+            this.configuration = configuration ?? new Configuration();
 
             var validationResults = new List<ValidationResult>();
-            if (!Validator.TryValidateObject(Configuration, new ValidationContext(Configuration), validationResults, true))
+            if (!Validator.TryValidateObject(this.configuration, new ValidationContext(this.configuration), validationResults, true))
             {
-                string invalidProperties = string.Join("\r\n\t",validationResults.Select(r => r.ErrorMessage));
-                throw new System.Exception("An error has occurred while parsing configuration parameters:\r\n " + invalidProperties);
+                string invalidProperties = string.Join("\r\n\t", validationResults.Select(r => r.ErrorMessage));
+                throw new Exception("An error has occurred while parsing configuration parameters:\r\n " + invalidProperties);
             }
 
-            this.Root = new Element();
+            this.root = new RootElement();
+
+            this.serviceCollection = new ServiceCollection();
+            this.SetupDependencies(dependencyCallback);
+            this.serviceProvider = this.serviceCollection.BuildServiceProvider();
+
+            this.elementRepository = this.serviceProvider.GetRequiredService<IElementRepository>();
+            this.elementRepository.Add(this.root);
 
             this.packetReducer = new PacketReducer();
             this.clients = new Dictionary<NetWrapper, Dictionary<uint, Client>>();
 
-            this.netWrapper = CreateNetWrapper(directory, netDllPath, Configuration.Host, Configuration.Port);
+            this.netWrapper = CreateNetWrapper(directory, netDllPath, this.configuration.Host, this.configuration.Port);
 
             this.Ase = new ASE.ASE(this);
         }
@@ -74,6 +93,21 @@ namespace MtaServer.Server
         public void RegisterPacketQueueHandler(PacketId packetId, IQueueHandler queueHandler)
         {
             this.packetReducer.RegisterQueueHandler(packetId, queueHandler);
+        }
+
+        public T Instantiate<T>() => ActivatorUtilities.CreateInstance<T>(this.serviceProvider);
+        public T Instantiate<T>(params object[] parameters) 
+            => ActivatorUtilities.CreateInstance<T>(this.serviceProvider, parameters);
+
+        private void SetupDependencies(Action<ServiceCollection>? dependencyCallback)
+        {
+            this.serviceCollection.TryAddSingleton<IElementRepository>(new CompoundElementRepository());
+            this.serviceCollection.TryAddSingleton<ILogger, DefaultLogger>();
+            this.serviceCollection.AddSingleton<Configuration>(this.configuration);
+            this.serviceCollection.AddSingleton<RootElement>(this.root);
+            this.serviceCollection.AddSingleton<MtaServer>(this);
+
+            dependencyCallback?.Invoke(this.serviceCollection);
         }
 
         private NetWrapper CreateNetWrapper(string directory, string netDllPath, string host, ushort port)
