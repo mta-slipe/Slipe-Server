@@ -1,4 +1,4 @@
-﻿using MtaServer.Server.Elements;
+using MtaServer.Server.Elements;
 using MtaServer.Server.Repositories;
 using System;
 using System.Collections.Generic;
@@ -303,8 +303,15 @@ namespace MtaServer.Server.ASE
                     // don't throw exception
                     break;
             }
-            socket.Send(data, data.Length, source);
-            socket.BeginReceive(new AsyncCallback(OnUdpData), socket);
+            try
+            {
+                socket.Send(data, data.Length, source);
+                socket.BeginReceive(new AsyncCallback(OnUdpData), socket);
+            }
+            catch(Exception ex)
+            {
+
+            }
         }
 
         private void StartListening(ushort port)
