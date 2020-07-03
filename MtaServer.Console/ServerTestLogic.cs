@@ -2,6 +2,7 @@
 using MtaServer.Packets.Definitions.Entities.Structs;
 using MtaServer.Packets.Definitions.Join;
 using MtaServer.Packets.Definitions.Lua.ElementRpc.Element;
+using MtaServer.Packets.Definitions.Lua.ElementRpc.Player;
 using MtaServer.Packets.Definitions.Player;
 using MtaServer.Packets.Definitions.Sync;
 using MtaServer.Packets.Lua.Camera;
@@ -53,6 +54,8 @@ namespace MtaServer.Console
                 client.SendPacket(new ClearChatPacket());
                 client.SendPacket(new ChatEchoPacket(this.root.Id, "Hello World Again", Color.White));
                 client.SendPacket(new ConsoleEchoPacket("Hello Console World"));
+                client.SendPacket(new HudComponentVisiblePacket(HudComponent.Money, false));
+                client.SendPacket(new HudComponentVisiblePacket(HudComponent.Health, false));
 
                 TestPureSync(client);
                 SetupTestEntities(client);
