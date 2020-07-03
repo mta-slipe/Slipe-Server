@@ -287,20 +287,21 @@ namespace MtaServer.Server.ASE
                 case 115: // ASE protocol query
                     data = FullCache.Get();
                     break;
-                //case 98:  // Our own lighter query for ingame browser
-                //    data = QueryLight();
-                //    break;
+                case 98:  // Our own lighter query for ingame browser
+                    data = LightCache.Get();
+                    break;
                 case 114: // Our own lighter query for ingame browser - Release version only
                     data = LightCache.Get();
                     break;
                 case 120: // Our own lighter query for xfire updates
                     data = XFireCache.Get();
                     break;
-                //case 118: // MTA Version (For further possibilities to quick ping, in case we do multiply master servers)
-                //    data = QueryLight();
-                //    break;
+                case 118: // MTA Version (For further possibilities to quick ping, in case we do multiply master servers)
+                    data = GetVersion().Select(c => (byte)c).ToArray();
+                    break;
                 default:
-                    throw new NotImplementedException(message[0].ToString());
+                    // don't throw exception
+                    break;
             }
             socket.Send(data, data.Length, source);
             socket.BeginReceive(new AsyncCallback(OnUdpData), socket);
