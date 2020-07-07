@@ -1,4 +1,5 @@
-﻿using MtaServer.Packets.Definitions.Entities.Structs;
+﻿using MtaServer.Packets.Builder;
+using MtaServer.Packets.Definitions.Entities.Structs;
 using MtaServer.Packets.Enums;
 using System;
 using System.Collections.Generic;
@@ -251,11 +252,11 @@ namespace MtaServer.Packets.Definitions.Lua.ElementRpc.Element
 
             if (armor != null)
             {
-                builder.WriteFloatFromBits(armor.Value, 8, 0, 127.5f, true);
+                builder.WritePlayerArmor(armor.Value);
             }
             if (health != null)
             {
-                builder.WriteFloatFromBits(health.Value, 8, 0, 255, true);
+                builder.WritePlayerHealth(health.Value);
             }
             if (weaponType != null && ammo != null)
             {
@@ -288,7 +289,7 @@ namespace MtaServer.Packets.Definitions.Lua.ElementRpc.Element
             builder.WriteVector3WithZAsFloat(position);
             builder.WriteVectorAsUshorts(rotation);
             builder.Write((byte)(model - 400));
-            builder.WriteFloatFromBits(health, 12, 0, 2047.5f, true);
+            builder.WriteVehicleHealth(health);
 
             builder.WriteCapped((byte)colors.Length - 1, 2);
             foreach (var color in colors)
@@ -561,8 +562,8 @@ namespace MtaServer.Packets.Definitions.Lua.ElementRpc.Element
             builder.WriteVector3WithZAsFloat(position);
             builder.WriteCompressed(model);
             builder.WriteFloatFromBits(rotation, 16, -MathF.PI, MathF.PI, false);
-            builder.WriteFloatFromBits(health, 8, 0, 255, true, false);
-            builder.WriteFloatFromBits(armor, 8, 0, 127.5f, true, false);
+            builder.WritePlayerHealth(health);
+            builder.WritePlayerArmor(armor);
 
             builder.Write(vehicleId != null && seat != null);
             if (vehicleId != null && seat != null)

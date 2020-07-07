@@ -1,4 +1,5 @@
 ﻿using System;
+using MtaServer.Packets.Builder;
 using MtaServer.Packets.Enums;
 
 namespace MtaServer.Packets.Definitions.Lua.ElementRpc.Element
