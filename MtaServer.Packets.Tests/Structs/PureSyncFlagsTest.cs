@@ -1,5 +1,7 @@
 using FluentAssertions;
+using MtaServer.Packets.Builder;
 using MtaServer.Packets.Definitions.Sync;
+using MtaServer.Packets.Reader;
 using MtaServer.Packets.Structures;
 using System;
 using System.Numerics;

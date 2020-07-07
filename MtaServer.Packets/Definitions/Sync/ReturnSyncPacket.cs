@@ -6,6 +6,8 @@ using System.Numerics;
 using System.Text;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using MtaServer.Packets.Builder;
+using MtaServer.Packets.Reader;
 
 namespace MtaServer.Packets.Definitions.Sync
 {

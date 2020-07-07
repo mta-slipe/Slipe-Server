@@ -6,7 +6,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 
-namespace MtaServer.Packets
+namespace MtaServer.Packets.Builder
 {
     public class PacketBuilder
     {
@@ -158,19 +158,6 @@ namespace MtaServer.Packets
             WriteBytes(value.Select(c => (byte)c).ToArray());
         }
 
-        public void Write(Vector3 vector)
-        {
-            Write(vector.X);
-            Write(vector.Y);
-            Write(vector.Z);
-        }
-
-        public void Write(Vector2 vector)
-        {
-            Write(vector.X);
-            Write(vector.Y);
-        }
-
         public void Write(Color color, bool withAlpha = false, bool alphaFirst = false)
         {
             if (withAlpha && alphaFirst)
@@ -183,9 +170,6 @@ namespace MtaServer.Packets
             if (withAlpha && !alphaFirst)
                 Write((byte)color.A);
         }
-
-        // The danger zone
-        // from this point on you're going to see all kinds of weird MTA structures.
 
         private byte[] GetBytesFromInt(long value, int byteCount)
         {
@@ -215,45 +199,6 @@ namespace MtaServer.Packets
             int integer = (int)(value * (1 << fractionalBits));
             byte[] bytes = GetBytesFromInt(integer, (integerBits + fractionalBits) / 8);
             Write(bytes);
-        }
-
-        public void Write(Vector3 vector, int integerBits, int fractionalBits)
-        {
-            WriteFloat(vector.X, integerBits, fractionalBits);
-            WriteFloat(vector.Y, integerBits, fractionalBits);
-            WriteFloat(vector.Z, integerBits, fractionalBits);
-        }
-
-        public void WriteVector2(Vector2 vector, int integerBits = 14, int fractionalBits = 10)
-        {
-            WriteFloat(vector.X, integerBits, fractionalBits);
-            WriteFloat(vector.Y, integerBits, fractionalBits);
-        }
-
-        public void WriteVector3WithZAsFloat(Vector3 vector, int integerBits = 14, int fractionalBits = 10)
-        {
-            WriteFloat(vector.X, integerBits, fractionalBits);
-            WriteFloat(vector.Y, integerBits, fractionalBits);
-            Write(vector.Z);
-        }
-
-        public void WriteVectorAsUshorts(Vector3 vector)
-        {
-            Write((ushort)(vector.X * (65536 / 360f)));
-            Write((ushort)(vector.Y * (65536 / 360f)));
-            Write((ushort)(vector.Z * (65536 / 360f)));
-        }
-
-        public void WriteCompressedVector3(Vector3 vector)
-        {
-            var magnitude = MathF.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
-            Write((float)magnitude);
-            if (magnitude > 0.00001f)
-            {
-                WriteCompressed((float)(vector.X / magnitude));
-                WriteCompressed((float)(vector.Y / magnitude));
-                WriteCompressed((float)(vector.Z / magnitude));
-            }
         }
 
         float WrapAround(float low, float value, float high)
@@ -288,111 +233,5 @@ namespace MtaServer.Packets
             }
             WriteCapped((long)integer, bitCount);
         }
-
-        public void WriteNormalizedVector(Vector3 vector)
-        {
-            float x = vector.X;
-            float y = vector.Y;
-            float z = vector.Z;
-
-            Write(x < 0.0);
-            if (y == 0.0)
-                Write(true);
-            else
-            {
-                Write(false);
-                WriteCompressed(y);
-            }
-            if (z == 0.0)
-                Write(true);
-            else
-            {
-                Write(false);
-                WriteCompressed(z);
-            }
-        }
-
-        public void WriteVelocityVector(Vector3 vector)
-        {
-            Write(vector != Vector3.Zero);
-            if (vector.Length() == 0)
-                return;
-
-            Write(vector.Length());
-            WriteNormalizedVector(Vector3.Normalize(vector));
-        }
-
-
-        public void WriteCompressed(float value)
-        {
-            value = Math.Clamp(value, -1, 1);
-            Write((ushort)((value + 1.0f) * 32767.5f));
-        }
-
-
-        // Reference source:
-        // https://github.com/facebookarchive/RakNet/blob/1a169895a900c9fc4841c556e16514182b75faf8/Source/BitStream.cpp#L489
-        public void WriteCompressed(byte[] inByteArray, bool unsignedData)
-        {
-            uint size = (uint)inByteArray.Length * 8;
-            uint currentByte = (size >> 3) - 1; // PCs
-
-            byte byteMatch;
-
-            if (unsignedData)
-            {
-                byteMatch = 0;
-            }
-            else
-            {
-                byteMatch = 0xFF;
-            }
-
-            // Write upper bytes with a single 1
-            // From high byte to low byte, if high byte is a byteMatch then write a 1 bit. Otherwise write a 0 bit and then write the remaining bytes
-            while (currentByte > 0)
-            {
-                if (inByteArray[currentByte] == byteMatch)   // If high byte is byteMatch (0 of 0xff) then it would have the same value shifted
-                {
-                    Write(true);
-                }
-                else
-                {
-                    // Write the remainder of the data after writing 0
-                    Write(false);
-
-                    WriteBytesCapped(inByteArray, (int)((currentByte + 1) << 3));
-                    //  currentByte--;
-
-                    return;
-                }
-
-                currentByte--;
-            }
-
-            // If the upper half of the last byte is a 0 (positive) or 16 (negative) then write a 1 and the remaining 4 bits.  Otherwise write a 0 and the 8 bites.
-            if ((unsignedData && (inByteArray[currentByte] & 0xF0) == 0x00) ||
-                (unsignedData == false && (inByteArray[currentByte] & 0xF0) == 0xF0))
-            {
-                Write(true);
-                WriteCapped(inByteArray[currentByte], 4);
-            }
-
-            else
-            {
-                Write(false);
-                WriteCapped(inByteArray[currentByte], 8);
-            }
-        }
-
-        public void WriteCompressed(byte @byte) => WriteCompressed(new byte[] { @byte }, true);
-        public void WriteCompressed(ushort integer) => WriteCompressed(BitConverter.GetBytes(integer), true);
-        public void WriteCompressed(short integer) => WriteCompressed(BitConverter.GetBytes(integer), false);
-        public void WriteCompressed(uint integer) => WriteCompressed(BitConverter.GetBytes(integer), true);
-        public void WriteCompressed(int integer) => WriteCompressed(BitConverter.GetBytes(integer), false);
-
-        // Turns out longs are just written as ints
-        public void WriteCompressed(long integer) => WriteCompressed(BitConverter.GetBytes((int)integer), false);
-        public void WriteCompressed(ulong integer) => WriteCompressed(BitConverter.GetBytes((uint)integer), true);
     }
 }
