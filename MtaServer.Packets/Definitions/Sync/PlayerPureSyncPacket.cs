@@ -79,8 +79,8 @@ namespace MtaServer.Packets.Definitions.Sync
                 this.Velocity = reader.GetVelocityVector();
             }
 
-            this.Health = reader.GetFloatFromBits(8, 0, 255);
-            this.Armor = reader.GetFloatFromBits(8, 0, 127.5f);
+            this.Health = reader.GetPlayerHealth();
+            this.Armor = reader.GetPlayerArmor();
 
             this.CameraRotation = reader.GetFloatFromBits(12, -MathF.PI, MathF.PI);
             this.CameraOrientation = new CameraOrientationStructure(this.Position);
@@ -139,8 +139,8 @@ namespace MtaServer.Packets.Definitions.Sync
                 builder.WriteVelocityVector(this.Velocity);
             }
 
-            builder.WriteFloatFromBits(this.Health, 8, 0, 255, true, false);
-            builder.WriteFloatFromBits(this.Armor, 8, 0, 127.5f, true, false);
+            builder.WritePlayerHealth(this.Health);
+            builder.WritePlayerArmor(this.Armor);
 
             builder.WriteFloatFromBits(this.CameraRotation, 12, -MathF.PI, MathF.PI, true, false);
 
