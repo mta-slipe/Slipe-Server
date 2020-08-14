@@ -11,9 +11,27 @@ namespace MtaServer.Server.PacketHandling.Factories
 {
     public static class PlayerPacketFactory
     {
+        public enum HudComponent
+        {
+            Ammo,
+            Weapon,
+            Health,
+            Breath,
+            Armour,
+            Money,
+            VehicleName,
+            AreaName,
+            Radar,
+            Clock,
+            Radio,
+            Wanted,
+            Crosshair,
+            All,
+        };
+
         public static HudComponentVisiblePacket CreateShowHudComponentPacket(HudComponent hudComponent, bool show)
         {
-            return new HudComponentVisiblePacket(hudComponent, show);
+            return new HudComponentVisiblePacket((byte)hudComponent, show);
         }
 
         public static PlayerListPacket CreatePlayerListPacket(Player[] players, bool showInChat = false)
