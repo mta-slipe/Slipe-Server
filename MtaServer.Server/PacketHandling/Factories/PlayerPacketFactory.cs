@@ -1,6 +1,7 @@
 ﻿using MtaServer.Packets.Definitions.Join;
 using MtaServer.Packets.Definitions.Lua.ElementRpc.Player;
 using MtaServer.Server.Elements;
+using MtaServer.Server.Elements.Enums;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -11,24 +12,6 @@ namespace MtaServer.Server.PacketHandling.Factories
 {
     public static class PlayerPacketFactory
     {
-        public enum HudComponent
-        {
-            Ammo,
-            Weapon,
-            Health,
-            Breath,
-            Armour,
-            Money,
-            VehicleName,
-            AreaName,
-            Radar,
-            Clock,
-            Radio,
-            Wanted,
-            Crosshair,
-            All,
-        };
-
         public static HudComponentVisiblePacket CreateShowHudComponentPacket(HudComponent hudComponent, bool show)
         {
             return new HudComponentVisiblePacket((byte)hudComponent, show);
