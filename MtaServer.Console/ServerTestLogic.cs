@@ -7,6 +7,7 @@ using MtaServer.Packets.Definitions.Sync;
 using MtaServer.Packets.Lua.Camera;
 using MtaServer.Server;
 using MtaServer.Server.Elements;
+using MtaServer.Server.Elements.Enums;
 using MtaServer.Server.Repositories;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ using System.Drawing;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using static MtaServer.Server.PacketHandling.Factories.PlayerPacketFactory;
 
 namespace MtaServer.Console
 {
@@ -53,6 +55,8 @@ namespace MtaServer.Console
                 client.SendPacket(new ClearChatPacket());
                 client.SendPacket(new ChatEchoPacket(this.root.Id, "Hello World Again", Color.White));
                 client.SendPacket(new ConsoleEchoPacket("Hello Console World"));
+                client.SendPacket(CreateShowHudComponentPacket(HudComponent.Money, false));
+                client.SendPacket(CreateShowHudComponentPacket(HudComponent.Health, false));
 
                 TestPureSync(client);
                 SetupTestEntities(client);
