@@ -1,4 +1,5 @@
 ﻿using MtaServer.Packets.Definitions.Join;
+using MtaServer.Packets.Definitions.Lua.ElementRpc.Player;
 using MtaServer.Server.Elements;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,11 @@ namespace MtaServer.Server.PacketHandling.Factories
 {
     public static class PlayerPacketFactory
     {
+        public static HudComponentVisiblePacket CreateShowHudComponentPacket(HudComponent hudComponent, bool show)
+        {
+            return new HudComponentVisiblePacket(hudComponent, show);
+        }
+
         public static PlayerListPacket CreatePlayerListPacket(Player[] players, bool showInChat = false)
         {
             var packet = new PlayerListPacket(showInChat);
