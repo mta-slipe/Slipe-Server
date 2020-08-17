@@ -89,13 +89,14 @@ namespace MtaServer.Server.ResourceServing
                     var stringHash = BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
                     var checksum = Crc32Algorithm.Compute(content);
 
+                    string fileName = Path.GetRelativePath(Path.Join(this.rootDirectory, resource), file);
                     resourceFiles.Add(new ResourceFile()
                     {
-                        Name = Path.GetRelativePath(Path.Join(this.rootDirectory, resource), file),
+                        Name = fileName,
                         AproximateSize = 28,
                         IsAutoDownload = false,
                         CheckSum = checksum,
-                        FileType = (byte)ResourceFileType.ClientScript,
+                        FileType = (byte)(fileName.EndsWith(".lua") ? ResourceFileType.ClientScript : ResourceFileType.ClientFile,
                         Md5 = hash
                     });
                 }

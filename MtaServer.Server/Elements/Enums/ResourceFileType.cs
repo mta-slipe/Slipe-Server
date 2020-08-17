@@ -12,7 +12,7 @@ namespace MtaServer.Server.Elements.Enums
         Config,
         ClientConfig,
         Html,
-        ClientFIle,
+        ClientFile,
         None,
     }
 }
