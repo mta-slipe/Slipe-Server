@@ -22,6 +22,7 @@ using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using static MtaServer.Server.PacketHandling.Factories.PlayerPacketFactory;
 
 namespace MtaServer.Console
 {
@@ -62,6 +63,8 @@ namespace MtaServer.Console
                 client.SendPacket(new ClearChatPacket());
                 client.SendPacket(new ChatEchoPacket(this.root.Id, "Hello World Again", Color.White));
                 client.SendPacket(new ConsoleEchoPacket("Hello Console World"));
+                client.SendPacket(CreateShowHudComponentPacket(HudComponent.Money, false));
+                client.SendPacket(CreateShowHudComponentPacket(HudComponent.Health, false));
 
                 TestClientResource(client);
                 TestPureSync(client);
