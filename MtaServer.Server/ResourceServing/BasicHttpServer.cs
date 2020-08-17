@@ -96,7 +96,7 @@ namespace MtaServer.Server.ResourceServing
                         AproximateSize = 28,
                         IsAutoDownload = false,
                         CheckSum = checksum,
-                        FileType = (byte)(fileName.EndsWith(".lua") ? ResourceFileType.ClientScript : ResourceFileType.ClientFile,
+                        FileType = (byte)(fileName.EndsWith(".lua") ? ResourceFileType.ClientScript : ResourceFileType.ClientFile),
                         Md5 = hash
                     });
                 }
