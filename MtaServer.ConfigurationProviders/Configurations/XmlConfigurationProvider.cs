@@ -47,6 +47,18 @@ namespace MtaServer.ConfigurationProviders.Configurations
                     case "httpUrl":
                         configuration.HttpUrl = node.InnerText;
                         break;
+
+                    case "httpHost":
+                        configuration.HttpHost = node.InnerText;
+                        break;
+
+                    case "httpConnectionsPerClient":
+                        configuration.HttpConnectionsPerClient = int.Parse(node.InnerText);
+                        break;
+
+                    case "ResourceDirectory":
+                        configuration.ResourceDirectory = node.InnerText;
+                        break;                        
                 }
             }
         }
