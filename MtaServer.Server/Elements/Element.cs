@@ -6,8 +6,12 @@ namespace MtaServer.Server.Elements
     public class Element
     {
         public virtual ElementType ElementType => ElementType.Unknown;
+        public Element? Parent { get; set; }
+
         public uint Id { get; protected set; }
         public byte TimeContext { get; private set; }
+
+        public string Name { get; set; } = "";
 
         private Vector3 position;
         public Vector3 Position
@@ -26,9 +30,18 @@ namespace MtaServer.Server.Elements
         public byte Interior { get; set; }
         public ushort Dimension { get; set; }
 
+        public bool AreCollisionsEnabled { get; set; } = true;
+        public bool IsCallPropagationEnabled { get; set; } = false;
+
         public Element()
         {
             this.Id = ElementIdGenerator.GenerateId();
+        }
+
+        public Element(Element parent)
+        {
+            this.Id = ElementIdGenerator.GenerateId();
+            Parent = parent;
         }
 
         public byte GetAndIncrementTimeContext()

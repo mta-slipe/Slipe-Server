@@ -39,6 +39,14 @@ namespace MtaServer.ConfigurationProviders.Configurations
                     case "password":
                         configuration.Password = node.InnerText;
                         break;
+
+                    case "httpPort":
+                        configuration.HttpPort = ushort.Parse(node.InnerText);
+                        break;
+
+                    case "httpUrl":
+                        configuration.HttpUrl = node.InnerText;
+                        break;
                 }
             }
         }

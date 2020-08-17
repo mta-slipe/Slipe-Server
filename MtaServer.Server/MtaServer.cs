@@ -5,10 +5,12 @@ using MtaServer.Packets.Enums;
 using MtaServer.Server.Elements;
 using MtaServer.Server.PacketHandling;
 using MtaServer.Server.Repositories;
+using MtaServer.Server.ResourceServing;
 using MTAServerWrapper.Server;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 
 namespace MtaServer.Server
@@ -16,6 +18,7 @@ namespace MtaServer.Server
     public class MtaServer
     {
         private readonly NetWrapper netWrapper;
+        private readonly IResourceServer resourceServer;
         private readonly PacketReducer packetReducer;
         private readonly Dictionary<NetWrapper, Dictionary<uint, Client>> clients;
         private readonly ServiceCollection serviceCollection;
@@ -47,6 +50,9 @@ namespace MtaServer.Server
             this.serviceCollection = new ServiceCollection();
             this.SetupDependencies(dependencyCallback);
             this.serviceProvider = this.serviceCollection.BuildServiceProvider();
+
+            this.resourceServer = this.serviceProvider.GetRequiredService<IResourceServer>();
+            this.resourceServer.Start();
 
             this.elementRepository = this.serviceProvider.GetRequiredService<IElementRepository>();
             this.elementRepository.Add(this.root);
@@ -80,6 +86,7 @@ namespace MtaServer.Server
         {
             this.serviceCollection.TryAddSingleton<IElementRepository>(new CompoundElementRepository());
             this.serviceCollection.TryAddSingleton<ILogger, DefaultLogger>();
+            this.serviceCollection.TryAddSingleton<IResourceServer, BasicHttpServer>();
             this.serviceCollection.AddSingleton<Configuration>(this.configuration);
             this.serviceCollection.AddSingleton<RootElement>(this.root);
             this.serviceCollection.AddSingleton<MtaServer>(this);
