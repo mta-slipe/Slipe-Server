@@ -14,12 +14,14 @@ namespace MtaServer.Server.PacketHandling.QueueHandlers
     public class RpcQueueHandler : WorkerBasedQueueHandler
     {
         private readonly IElementRepository elementRepository;
+        private readonly Configuration configuration;
         private readonly RootElement root;
 
-        public RpcQueueHandler(RootElement root, IElementRepository elementRepository, int sleepInterval, int workerCount)
+        public RpcQueueHandler(RootElement root, IElementRepository elementRepository, Configuration configuration, int sleepInterval, int workerCount)
             : base(sleepInterval, workerCount) 
         {
             this.elementRepository = elementRepository;
+            this.configuration = configuration;
             this.root = root;
         }
 
@@ -44,11 +46,11 @@ namespace MtaServer.Server.PacketHandling.QueueHandlers
                     client.SendPacket(new JoinedGamePacket(
                         client.Player.Id, 
                         this.elementRepository.Count + 1, 
-                        this.root.Id, 
-                        HttpDownloadType.HTTP_DOWNLOAD_ENABLED_PORT, 
-                        80, 
-                        "", 
-                        5, 
+                        this.root.Id,
+                        configuration.HttpUrl != null ? HttpDownloadType.HTTP_DOWNLOAD_ENABLED_URL : HttpDownloadType.HTTP_DOWNLOAD_ENABLED_PORT, 
+                        configuration.HttpPort, 
+                        configuration.HttpUrl ?? "", 
+                        configuration.HttpConnectionsPerClient, 
                         1
                     ));
 

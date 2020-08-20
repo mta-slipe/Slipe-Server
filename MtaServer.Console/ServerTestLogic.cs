@@ -1,8 +1,10 @@
-﻿using MtaServer.Packets.Definitions.Commands;
+﻿using Force.Crc32;
+using MtaServer.Packets.Definitions.Commands;
 using MtaServer.Packets.Definitions.Entities.Structs;
 using MtaServer.Packets.Definitions.Join;
 using MtaServer.Packets.Definitions.Lua.ElementRpc.Element;
 using MtaServer.Packets.Definitions.Player;
+using MtaServer.Packets.Definitions.Resources;
 using MtaServer.Packets.Definitions.Sync;
 using MtaServer.Packets.Lua.Camera;
 using MtaServer.Server;
@@ -10,10 +12,14 @@ using MtaServer.Server.Elements;
 using MtaServer.Server.Elements.Enums;
 using MtaServer.Server.PacketHandling.Factories;
 using MtaServer.Server.Repositories;
+using MtaServer.Server.ResourceServing;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
+using System.Linq;
 using System.Numerics;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using static MtaServer.Server.PacketHandling.Factories.PlayerPacketFactory;
@@ -24,12 +30,13 @@ namespace MtaServer.Console
     {
         private readonly IElementRepository elementRepository;
         private readonly RootElement root;
+        private readonly IResourceServer resourceServer;
 
-        public ServerTestLogic(IElementRepository elementRepository, RootElement root)
+        public ServerTestLogic(IElementRepository elementRepository, RootElement root, IResourceServer resourceServer)
         {
             this.elementRepository = elementRepository;
             this.root = root;
-
+            this.resourceServer = resourceServer;
             this.SetupTestLogic();
         }
 
@@ -57,10 +64,33 @@ namespace MtaServer.Console
                 client.SendPacket(new ChatEchoPacket(this.root.Id, "Hello World Again", Color.White));
                 client.SendPacket(new ConsoleEchoPacket("Hello Console World"));
                 client.SendPacket(CreateShowHudComponentPacket(HudComponent.Money, false));
+                client.SendPacket(CreateShowHudComponentPacket(HudComponent.Health, false));
                 client.SendPacket(ElementPacketFactory.CreateSetHealthPacket(player, 50));
+
+                TestClientResource(client);
                 TestPureSync(client);
                 SetupTestEntities(client);
             };
+        }
+
+        private void TestClientResource(Client client)
+        {
+            var resourceRoot = new DummyElement()
+            {
+                Parent = this.root
+            };
+            var resourceDyanmic = new DummyElement()
+            {
+                Parent = resourceRoot
+            };
+
+            var entityPacket = AddEntityPacketFactory.CreateAddEntityPacket(new Element[] { resourceRoot, resourceDyanmic });
+            client.SendPacket(entityPacket);
+
+            var testResourceFiles = this.resourceServer.GetResourceFiles("./TestResource");
+            client.SendPacket(new ResourceStartPacket(
+                "TestResource", 0, resourceRoot.Id, resourceDyanmic.Id, 0, null, null, false, 0, testResourceFiles, new string[0])
+            );
         }
 
         private void TestPureSync(Client client)

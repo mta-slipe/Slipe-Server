@@ -9,11 +9,27 @@ namespace MtaServer.Server
     {
         [MaxLength(128)]
         public string ServerName { get; set; } = "Default Slipe server";
+
         [MaxLength(15)]
         public string Host { get; set; } = "0.0.0.0";
+
         public ushort Port { get; set; } = 50666;
+
         public ushort MaxPlayers { get; set; } = 32;
+
         [MaxLength(128)]
         public string Password { get; set; } = "";
+
+
+        public string HttpHost { get; set; } = "127.0.0.1";
+
+        public ushort HttpPort { get; set; } = 50680;
+
+        public string? HttpUrl { get; set; }
+
+        public int HttpConnectionsPerClient { get; set; } = 1;
+
+        public string ResourceDirectory { get; set; } = "./resources";
+
     }
 }
