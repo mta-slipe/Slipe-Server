@@ -2,6 +2,8 @@
 using MtaServer.Packets;
 using MTAServerWrapper.Server;
 using System.Net;
+using MtaServer.Packets.Definitions.Entities.Structs;
+using System.Numerics;
 
 namespace MtaServer.Server.Elements
 {
@@ -9,12 +11,30 @@ namespace MtaServer.Server.Elements
     {
         public override ElementType ElementType => ElementType.Ped;
 
-        public float PedRotation { get; set; }
+        public ushort Model { get; set; }
+        public float Health { get; set; } = 100;
+        public float Armor { get; set; } = 0;
+        public PlayerWeapon? CurrentWeapon { get; set; }
+        public float PedRotation { get; set; } = 0;
+        public Element? Vehicle { get; set; }
+        public byte? Seat { get; set; }
+        public bool HasJetpack { get; set; } = false;
+        public bool IsSyncable { get; set; } = true;
+        public bool IsHeadless { get; set; } = false;
+        public bool IsFrozen { get; set; } = false;
+        public byte Alpha { get; set; } = 255;
+        public PedMoveAnimation MoveAnimation { get; set; } = 0;
+        public PedClothing[] Clothes { get; set; }
+        public PedWeapon[] Weapons { get; set; }
 
 
-        public Ped(): base()
+        public Ped(ushort model, Vector3 position): base()
         {
+            this.Model = model;
+            this.Position = position;
 
+            this.Clothes = new PedClothing[0];
+            this.Weapons = new PedWeapon[0];
         }
     }
 }

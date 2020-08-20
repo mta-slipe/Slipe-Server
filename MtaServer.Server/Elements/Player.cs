@@ -12,10 +12,6 @@ namespace MtaServer.Server.Elements
 
         public Client Client { get; }
 
-        public float Health { get; set; }
-        public float Armor { get; set; }
-        public PlayerWeapon CurrentWeapon { get; set; }
-
         public Element? ContactElement { get; set; }
 
         public Vector3 AimOrigin { get; set; }
@@ -27,7 +23,6 @@ namespace MtaServer.Server.Elements
 
         public bool IsInWater { get; set; }
         public bool IsOnGround { get; set; }
-        public bool HasJetpack { get; set; }
         public bool IsDucked { get; set; }
         public bool WearsGoggles { get; set; }
         public bool HasContact { get; set; }
@@ -37,7 +32,7 @@ namespace MtaServer.Server.Elements
         public bool IsSyncingVelocity { get; set; }
         public bool IsStealthAiming { get; set; }
 
-        internal Player(Client client): base()
+        internal Player(Client client): base(0, Vector3.Zero)
         {
             this.Client = client;
         }

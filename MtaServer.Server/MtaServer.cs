@@ -84,7 +84,7 @@ namespace MtaServer.Server
 
         private void SetupDependencies(Action<ServiceCollection>? dependencyCallback)
         {
-            this.serviceCollection.TryAddSingleton<IElementRepository>(new CompoundElementRepository());
+            this.serviceCollection.TryAddSingleton<IElementRepository, CompoundElementRepository>();
             this.serviceCollection.TryAddSingleton<ILogger, DefaultLogger>();
             this.serviceCollection.TryAddSingleton<IResourceServer, BasicHttpServer>();
             this.serviceCollection.AddSingleton<Configuration>(this.configuration);
