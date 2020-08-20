@@ -73,6 +73,11 @@ namespace MtaServer.Server.PacketHandling.Factories
         {
             return new PlaySoundPacket(sound);
         }
+        
+        public static SetWantedLevelPacket CreateSetWantedLevelPacket(byte level)
+        {
+            return new SetWantedLevelPacket(level);
+        }
 
     }
 }

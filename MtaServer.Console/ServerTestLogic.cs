@@ -61,6 +61,7 @@ namespace MtaServer.Console
                 client.SendPacket(ElementPacketFactory.CreateSetHealthPacket(player, 50));
                 client.SendPacket(ElementPacketFactory.CreateSetAlphaPacket(player, 100));
                 client.SendPacket(CreatePlaySoundPacket(1));
+                client.SendPacket(CreateSetWantedLevelPacket(4));
                 TestPureSync(client);
                 SetupTestEntities(client);
             };
