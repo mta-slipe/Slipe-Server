@@ -88,9 +88,15 @@ namespace MtaServer.Server.PacketHandling.Factories
         {
             return new DebugEchoPacket(message, level, Color.White);
         }
+
         public static DebugEchoPacket CreateDebugEchoPacket(string message, byte level, Color color)
         {
             return new DebugEchoPacket(message, level, color);
+        }
+        
+        public static ForcePlayerMapPacket CreateForcePlayerMapPacket(bool visible)
+        {
+            return new ForcePlayerMapPacket(visible);
         }
 
     }

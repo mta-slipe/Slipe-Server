@@ -65,6 +65,7 @@ namespace MtaServer.Console
                 client.SendPacket(CreateToggleDebuggerPacket(true));
                 client.SendPacket(CreateDebugEchoPacket("Object reference not set to an instance of an object", 0, Color.Red));
                 client.SendPacket(CreateDebugEchoPacket("You successfully got banned", 3));
+                //client.SendPacket(CreateForcePlayerMapPacket(true)); // it make you can't disable f11 map
                 TestPureSync(client);
                 SetupTestEntities(client);
             };
