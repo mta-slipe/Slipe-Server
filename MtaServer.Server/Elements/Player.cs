@@ -12,7 +12,6 @@ namespace MtaServer.Server.Elements
 
         public Client Client { get; }
 
-        public string? Name { get; set; }
         public float Health { get; set; }
         public float Armor { get; set; }
         public PlayerWeapon CurrentWeapon { get; set; }

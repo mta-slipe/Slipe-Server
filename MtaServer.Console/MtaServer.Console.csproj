@@ -24,4 +24,10 @@
     <ProjectReference Include="..\MtaServer.Server\MtaServer.Server.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Resources\TestResource\test.lua">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

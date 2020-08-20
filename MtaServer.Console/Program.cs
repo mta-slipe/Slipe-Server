@@ -3,8 +3,10 @@ using Microsoft.Extensions.Logging;
 using MtaServer.ConfigurationProviders;
 using MtaServer.ConfigurationProviders.Configurations;
 using MtaServer.Packets.Enums;
+using MtaServer.Server;
 using MtaServer.Server.Behaviour;
 using MtaServer.Server.PacketHandling.QueueHandlers;
+using MtaServer.Server.ResourceServing;
 using System;
 using System.IO;
 using System.Threading;
@@ -45,6 +47,7 @@ namespace MtaServer.Console
             SetupLogic();
 
             server.Start();
+
             Thread.Sleep(-1);
         }
 
