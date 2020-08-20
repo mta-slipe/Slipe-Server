@@ -66,6 +66,7 @@ namespace MtaServer.Console
                 client.SendPacket(CreateDebugEchoPacket("Object reference not set to an instance of an object", 0, Color.Red));
                 client.SendPacket(CreateDebugEchoPacket("You successfully got banned", 3));
                 //client.SendPacket(CreateForcePlayerMapPacket(true)); // it make you can't disable f11 map
+                //client.SendPacket(CreateToggleAllControlsPacket(false)); // makes you can't move at all
                 TestPureSync(client);
                 SetupTestEntities(client);
             };

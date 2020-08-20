@@ -98,6 +98,11 @@ namespace MtaServer.Server.PacketHandling.Factories
         {
             return new ForcePlayerMapPacket(visible);
         }
+        
+        public static ToggleAllControlsPacket CreateToggleAllControlsPacket(bool enabled, bool gtaControls = true, bool mtaControls = true)
+        {
+            return new ToggleAllControlsPacket(enabled, gtaControls, mtaControls);
+        }
 
     }
 }
