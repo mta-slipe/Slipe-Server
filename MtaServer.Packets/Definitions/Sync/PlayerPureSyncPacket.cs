@@ -6,13 +6,15 @@ using System.Numerics;
 using System.Text;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using MtaServer.Packets.Builder;
+using MtaServer.Packets.Reader;
 
 namespace MtaServer.Packets.Definitions.Sync
 {
 
     public class PlayerPureSyncPacket : Packet
     {
-        static HashSet<byte> slotsWithAmmo = new HashSet<byte>()
+        static readonly HashSet<byte> slotsWithAmmo = new HashSet<byte>()
         {
             2, 3, 4, 5, 6, 7, 8, 9
         };
@@ -30,7 +32,7 @@ namespace MtaServer.Packets.Definitions.Sync
         public float Rotation { get; set; }
         public Vector3 Velocity { get; set; }
         public float Health { get; set; }
-        public float Armour { get; set; }
+        public float Armor { get; set; }
         public float CameraRotation { get; set; }
         public CameraOrientationStructure CameraOrientation { get; set; } = new CameraOrientationStructure(Vector3.Zero);
         public byte WeaponType { get; set; }
@@ -77,8 +79,8 @@ namespace MtaServer.Packets.Definitions.Sync
                 this.Velocity = reader.GetVelocityVector();
             }
 
-            this.Health = reader.GetFloatFromBits(8, 0, 255);
-            this.Armour = reader.GetFloatFromBits(8, 0, 127.5f);
+            this.Health = reader.GetPlayerHealth();
+            this.Armor = reader.GetPlayerArmor();
 
             this.CameraRotation = reader.GetFloatFromBits(12, -MathF.PI, MathF.PI);
             this.CameraOrientation = new CameraOrientationStructure(this.Position);
@@ -137,8 +139,8 @@ namespace MtaServer.Packets.Definitions.Sync
                 builder.WriteVelocityVector(this.Velocity);
             }
 
-            builder.WriteFloatFromBits(this.Health, 8, 0, 255, true, false);
-            builder.WriteFloatFromBits(this.Armour, 8, 0, 127.5f, true, false);
+            builder.WritePlayerHealth(this.Health);
+            builder.WritePlayerArmor(this.Armor);
 
             builder.WriteFloatFromBits(this.CameraRotation, 12, -MathF.PI, MathF.PI, true, false);
 

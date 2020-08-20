@@ -3,6 +3,12 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Platforms>AnyCPU;x64;x86</Platforms>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Definitions\Lua\ElementRpc\Player\" />
+    <Folder Include="Definitions\Lua\ElementRpc\Ped\" />
+  </ItemGroup>
 
 </Project>

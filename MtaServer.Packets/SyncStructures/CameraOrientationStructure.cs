@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MtaServer.Packets.Builder;
+using MtaServer.Packets.Reader;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -8,7 +10,7 @@ namespace MtaServer.Packets.Structures
 {
     public class CameraOrientationStructure : ISyncStructure
     {
-        private static uint[] bitCountLookup = new uint[]
+        private readonly static uint[] bitCountLookup = new uint[]
         {
             3, 5, 9, 14
         };

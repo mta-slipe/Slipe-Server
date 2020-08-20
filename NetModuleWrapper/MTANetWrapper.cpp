@@ -26,6 +26,8 @@ CNetServer* network;
 
 std::map<ulong, NetServerPlayerID> sockets;
 
+bool running;
+
 typedef void(__stdcall* PacketCallback)(unsigned char, unsigned long, char[], unsigned long);
 PacketCallback registeredCallback;
 
@@ -95,6 +97,7 @@ void testMethod() {
     NetBitStreamInterface* bitStream = network->AllocateNetServerBitStream(0);
     if (bitStream)
     {
+        //bitStream->WriteCompressed((ulong)0);
         //bitStream->WriteNormVector(0.5, 0.5, 0.5);
         //bitStream->Write(128.56f);
         //bitStream->WriteCompressed(0.56f);
@@ -110,20 +113,24 @@ void testMethod() {
     }
 }
 
-EXPORT bool __cdecl initNetWrapper(const char* netDllFilePath, const char* idFile, const char* ip, unsigned short port,
+EXPORT int __cdecl initNetWrapper(const char* netDllFilePath, const char* idFile, const char* ip, unsigned short port,
     unsigned int playerCount, const char* serverName, PacketCallback callback)
 {
     registeredCallback = callback;
 
     CDynamicLibrary networkLibrary;
-    networkLibrary.Load(netDllFilePath);
+    bool loaded = networkLibrary.Load(netDllFilePath);
+
+    if (!loaded) {
+        return 1001;
+    }
 
     typedef unsigned long (*PFNCHECKCOMPATIBILITY)(unsigned long, unsigned long*);
     PFNCHECKCOMPATIBILITY isCompatible = reinterpret_cast<PFNCHECKCOMPATIBILITY>(networkLibrary.GetProcedureAddress("CheckCompatibility"));
 
     if (!isCompatible)
     {
-        throw std::exception("Can't detect compatibility");
+        return 1002;
     }
     if (!isCompatible(0x0AB, (unsigned long*)0x09)) {
 
@@ -131,35 +138,49 @@ EXPORT bool __cdecl initNetWrapper(const char* netDllFilePath, const char* idFil
         if (isCompatible)
             isCompatible(1, &actualVersion);
 
-        std::cout << "Incompatible net DLL detected. Desired version: " << 0x0AB << ", actual version: " << actualVersion << "\n";
-        return false;
+        return 1003;
     }
 
     typedef CNetServer* (*InitNetServerInterface)();
     InitNetServerInterface pfnInitNetServerInterface = (InitNetServerInterface)(networkLibrary.GetProcedureAddress("InitNetServerInterface"));
     if (!pfnInitNetServerInterface)
     {
-        throw std::exception("Unable to get net server interface");
+        return 1004;
     }
 
     network = pfnInitNetServerInterface();
 
-    std::cout << "Starting '" << serverName << "' on " << ip << ":" << port << " (" << playerCount << ")\n";
 
-    network->InitServerId("= v2");
+    network->InitServerId("");
     network->RegisterPacketHandler(packetHandler);
     network->StartNetwork(ip, port, playerCount, serverName);
 
     testMethod();
 
-    while (true)
+    return 0;
+}
+
+std::thread runThread;
+
+void runPulseLoop() {
+    while (running)
     {
         network->DoPulse();
         network->GetHTTPDownloadManager(EDownloadMode::ASE)->ProcessQueuedFiles();
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
-    return true;
 }
+
+EXPORT void __cdecl startNetWrapper() {
+    running = true;
+    runThread = std::thread(runPulseLoop);
+}
+
+EXPORT void __cdecl stopNetWrapper() {
+    running = false;
+    runThread.join();
+}
+
 
 // extern "C" __declspec(dllexport) void StopNetwork()
 //{

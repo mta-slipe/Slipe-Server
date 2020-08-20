@@ -1,6 +1,7 @@
 ﻿using MtaServer.Packets;
 using MtaServer.Packets.Enums;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -16,7 +17,13 @@ namespace MTAServerWrapper.Server
 
 
         [DllImport(wrapperDllpath, EntryPoint = "initNetWrapper")]
-        private static extern bool InitNetWrapper(string path, string idFile, string ip, ushort port, uint playerCount, string serverName, PacketCallback callback);
+        private static extern int InitNetWrapper(string path, string idFile, string ip, ushort port, uint playerCount, string serverName, PacketCallback callback);
+        
+        [DllImport(wrapperDllpath, EntryPoint = "startNetWrapper")]
+        private static extern void StartNetWrapper();
+
+        [DllImport(wrapperDllpath, EntryPoint = "stopNetWrapper")]
+        private static extern void StopNetWrapper();
 
         [DllImport(wrapperDllpath, EntryPoint = "sendPacket")]
         private static extern bool SendPacket(uint binaryAddress, byte packetId, IntPtr payload, uint payloadSize);
@@ -28,23 +35,37 @@ namespace MTAServerWrapper.Server
         [return: MarshalAs(UnmanagedType.BStr)]
         private static extern string GetClientSerialAndVersion(uint binaryAddress, out ushort serialSize, out ushort extraSize, out ushort versionSize);
 
+        private readonly PacketCallback packetInterceptorDelegate;
+        
         public NetWrapper(string directory, string netDllPath, string host, ushort port)
         {
             string idFile = Path.Join(directory, "id");
             Directory.SetCurrentDirectory(directory);
-            
-            Task.Run(() =>
-            {
-                Console.WriteLine(directory);
-                bool result = InitNetWrapper(netDllPath, idFile, host, port, 1024, "C# server", PacketInterceptor);
 
-                Console.WriteLine($"Net wrapper initialized: {result}");
-            });
+            packetInterceptorDelegate = PacketInterceptor;
+            int result = InitNetWrapper(netDllPath, idFile, host, port, 1024, "C# server", packetInterceptorDelegate);
+
+            if (result != 0)
+            {
+                throw new Exception($"Unable to start net wrapper. Error code {result}");
+            }
+
+            Debug.WriteLine($"Net wrapper initialized: {result}");
+        }
+
+        public void Start()
+        {
+            StartNetWrapper();
+        }
+
+        public void Stop()
+        {
+            StopNetWrapper();
         }
 
         void SendPacket(uint binaryAddress, byte packetId, byte[] payload)
         {
-            int size = Marshal.SizeOf(payload[0]) * payload.Length;
+            int size = Marshal.SizeOf((byte)0) * payload.Length;
             IntPtr pointer = Marshal.AllocHGlobal(size);
             try
             {
@@ -87,6 +108,7 @@ namespace MTAServerWrapper.Server
             this.OnPacketReceived?.Invoke(this, binaryAddress, parsedPacketId, data);
         }
 
-        public event Action<NetWrapper, uint, PacketId, byte[]> OnPacketReceived;
+        public event Action<NetWrapper, uint, PacketId, byte[]>? OnPacketReceived;
+
     }
 }

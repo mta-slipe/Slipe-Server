@@ -1,6 +1,8 @@
 ﻿using FluentAssertions;
+using MtaServer.Packets.Builder;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
@@ -47,6 +49,19 @@ namespace MtaServer.Packets.Tests
         [InlineData(0xfedcbafe, new byte[] { 0x7F, 0x5D, 0x6E, 0x7F, 0x00 })]
         [InlineData(0xfedcbaab, new byte[] { 0x55, 0xDD, 0x6E, 0x7F, 0x00 })]
         public void WriteCompressedUintTest(uint value, byte[] expectedOutput)
+        {
+            var builder = new PacketBuilder();
+            builder.WriteCompressed(value);
+
+            var bytes = builder.Build();
+
+            bytes.Should().Equal(expectedOutput);
+        }
+
+        [Theory]
+        [InlineData(1235, new byte[] { 0b11011010, 0b01100000, 0b10000000 })]
+        [InlineData(0, new byte[] { 0b11110000 })]
+        public void WriteCompressedUlongTest(ulong value, byte[] expectedOutput)
         {
             var builder = new PacketBuilder();
             builder.WriteCompressed(value);
@@ -133,5 +148,23 @@ namespace MtaServer.Packets.Tests
             var bytes = builder.Build();
             bytes.Should().Equal(expectedOutput);
         }
+
+        [Theory]
+        [InlineData(255, 255, 255, 255, false, false, new byte[] { 0xFF, 0xFF, 0xFF })]
+        [InlineData(0, 255, 255, 255, false, false, new byte[] { 0xFF, 0xFF, 0xFF })]
+        [InlineData(128, 255, 255, 255, true, true, new byte[] { 0x80, 0xFF, 0xFF, 0xFF })]
+        [InlineData(128, 255, 255, 255, true, false, new byte[] { 0xFF, 0xFF, 0xFF, 0x80 })]
+        public void WriteColorTest(byte alpha, byte red, byte green, byte blue, bool withAlpha, bool alphaFirst, byte[] expectedOutput)
+        {
+            var builder = new PacketBuilder();
+            Color color = Color.FromArgb(alpha, red, green, blue);
+
+            builder.Write(color, withAlpha, alphaFirst);
+
+            var bytes = builder.Build();
+            bytes.Should().Equal(expectedOutput);
+        }
+
+
     }
 }

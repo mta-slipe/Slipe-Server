@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 using System.Linq;
+using MtaServer.Packets.Builder;
+using MtaServer.Packets.Reader;
 
 namespace MtaServer.Packets.Definitions.Sync
 {

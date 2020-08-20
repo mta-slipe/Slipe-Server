@@ -1,101 +1,99 @@
 ﻿using MtaServer.Packets.Definitions.Sync;
 using MtaServer.Packets.Enums;
 using MtaServer.Server.Elements;
+using MtaServer.Server.Repositories;
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace MtaServer.Server.PacketHandling.QueueHandlers
 {
-    public class SyncQueueHandler : BaseQueueHandler
+    public class SyncQueueHandler : WorkerBasedQueueHandler
     {
-        private readonly MtaServer server;
-        private readonly int sleepInterval;
+        private readonly IElementRepository elementRepository;
 
-        public SyncQueueHandler(MtaServer server, int sleepInterval, int workerCount): base()
+        public SyncQueueHandler(IElementRepository elementRepository, int sleepInterval, int workerCount): base(sleepInterval, workerCount)
         {
-            this.server = server;
-            this.sleepInterval = sleepInterval;
-
-            for (int i = 0; i < workerCount; i++)
-            {
-                _ = Task.Run(HandlePackets);
-            }
+            this.elementRepository = elementRepository;
         }
 
-        public async void HandlePackets()
+        protected override void HandlePacket(PacketQueueEntry queueEntry)
         {
-            while (true)
-            {
-                while(this.packetQueue.TryDequeue(out PacketQueueEntry queueEntry))
+            try
+            { 
+                switch (queueEntry.PacketId)
                 {
-                    try
-                    { 
-                        Console.WriteLine(queueEntry.PacketId);
-                        switch (queueEntry.PacketId)
-                        {
-                            case PacketId.PACKET_ID_CAMERA_SYNC:
-                                CameraSyncPacket cameraPureSyncPacket = new CameraSyncPacket();
-                                cameraPureSyncPacket.Read(queueEntry.Data);
-                                HandleCameraSyncPacket(queueEntry.Client, cameraPureSyncPacket);
-                                break;
-                            case PacketId.PACKET_ID_PLAYER_PURESYNC:
-                                PlayerPureSyncPacket playerPureSyncPacket = new PlayerPureSyncPacket();
-                                playerPureSyncPacket.Read(queueEntry.Data);
-                                HandlePlayerPureSyncPacket(queueEntry.Client, playerPureSyncPacket);
-                                break;
-                        }
-                    } catch (Exception e)
-                    {
-                        Console.WriteLine("Handling packet failed");
-                        Console.WriteLine(string.Join(", ", queueEntry.Data));
-                        //Console.WriteLine($"{e.Message}\n{e.StackTrace}");
-                    }
+                    case PacketId.PACKET_ID_CAMERA_SYNC:
+                        CameraSyncPacket cameraPureSyncPacket = new CameraSyncPacket();
+                        cameraPureSyncPacket.Read(queueEntry.Data);
+                        HandleCameraSyncPacket(queueEntry.Client, cameraPureSyncPacket);
+                        break;
+                    case PacketId.PACKET_ID_PLAYER_PURESYNC:
+                        PlayerPureSyncPacket playerPureSyncPacket = new PlayerPureSyncPacket();
+                        playerPureSyncPacket.Read(queueEntry.Data);
+                        HandleClientPureSyncPacket(queueEntry.Client, playerPureSyncPacket);
+                        break;
                 }
-                await Task.Delay(this.sleepInterval);
+            } catch (Exception e)
+            {
+                Debug.WriteLine("Handling packet failed");
+                Debug.WriteLine(string.Join(", ", queueEntry.Data));
+                Debug.WriteLine($"{e.Message}\n{e.StackTrace}");
             }
         }
 
         private void HandleCameraSyncPacket(Client client, CameraSyncPacket packet)
         {
-            //Console.WriteLine($"client {client.Id} camera sync: isFixed: {packet.IsFixed}, position: {packet.Position}, lookAt: {packet.LookAt}, target: {packet.TargetId}");
+            //Debug.WriteLine($"client {client.Id} camera sync: isFixed: {packet.IsFixed}, position: {packet.Position}, lookAt: {packet.LookAt}, target: {packet.TargetId}");
         }
 
-        private void HandlePlayerPureSyncPacket(Client client, PlayerPureSyncPacket packet)
+        private void HandleClientPureSyncPacket(Client client, PlayerPureSyncPacket packet)
         {
             client.SendPacket(new ReturnSyncPacket(packet.Position));
 
-            packet.PlayerId = client.Id;
+            packet.PlayerId = client.Player.Id;
             packet.Latency = 0;
-            foreach (var player in this.server.ElementRepository.GetByType<Client>(ElementType.Player))
+            foreach (var remotePlayer in this.elementRepository.GetByType<Player>(ElementType.Player))
             {
-                if (player != client)
+                if (remotePlayer.Client != client)
                 {
-                    player.SendPacket(packet);
+                    remotePlayer.Client.SendPacket(packet);
                 }
             }
 
-            client.Position = packet.Position;
+            var player = client.Player;
+            player.Position = packet.Position;
+            player.Velocity = packet.Velocity;
+            player.Health = packet.Health;
+            player.Armor = packet.Armor;
+            player.AimOrigin = packet.AimOrigin;
+            player.AimDirection = packet.AimDirection;
 
-            //Console.WriteLine($"client {client.Id} pure sync: ");
-            //Console.WriteLine($"\tFlags:"); 
+            player.ContactElement = this.elementRepository.Get(packet.ContactElementId);
 
-            //Console.WriteLine($"\t\tIsInWater: {packet.SyncFlags.IsInWater}");
-            //Console.WriteLine($"\t\tIsOnGround: {packet.SyncFlags.IsOnGround}");
-            //Console.WriteLine($"\t\tHasJetpack: {packet.SyncFlags.HasJetpack}");
-            //Console.WriteLine($"\t\tIsDucked: {packet.SyncFlags.IsDucked}");
-            //Console.WriteLine($"\t\tWearsGoggles: {packet.SyncFlags.WearsGoggles}");
-            //Console.WriteLine($"\t\tHasContact: {packet.SyncFlags.HasContact}");
-            //Console.WriteLine($"\t\tIsChoking: {packet.SyncFlags.IsChoking}");
-            //Console.WriteLine($"\t\tAkimboTargetUp: {packet.SyncFlags.AkimboTargetUp}");
-            //Console.WriteLine($"\t\tIsOnFire: {packet.SyncFlags.IsOnFire}");
-            //Console.WriteLine($"\t\tHasAWeapon: {packet.SyncFlags.HasAWeapon}");
-            //Console.WriteLine($"\t\tIsSyncingVelocity: {packet.SyncFlags.IsSyncingVelocity}");
-            //Console.WriteLine($"\t\tIsStealthAiming: {packet.SyncFlags.IsStealthAiming}");
+            player.CurrentWeapon = new PlayerWeapon()
+            {
+                WeaponType = packet.WeaponType,
+                Slot = packet.WeaponSlot,
+                Ammo = packet.TotalAmmo,
+                AmmoInClip = packet.AmmoInClip
+            };
 
-            Console.WriteLine($"\tposition: {packet.Position}, rotation: {packet.Rotation}");
-            //Console.WriteLine($"\tvelocity: {packet.Velocity}");
-            //Console.WriteLine($"\thealth: {packet.Health}, armour: {packet.Armour}");
-            //Console.WriteLine($"\tCamera rotation: {packet.CameraRotation}, position: {packet.CameraOrientation.CameraPosition}, forward: {packet.CameraOrientation.CameraForward}");
+            player.IsInWater = packet.SyncFlags.IsInWater;
+            player.IsOnGround = packet.SyncFlags.IsOnGround;
+            player.HasJetpack = packet.SyncFlags.HasJetpack;
+            player.IsDucked = packet.SyncFlags.IsDucked;
+            player.WearsGoggles = packet.SyncFlags.WearsGoggles;
+            player.HasContact = packet.SyncFlags.HasContact;
+            player.IsChoking = packet.SyncFlags.IsChoking;
+            player.AkimboTargetUp = packet.SyncFlags.AkimboTargetUp;
+            player.IsOnFire = packet.SyncFlags.IsOnFire;
+            player.IsSyncingVelocity = packet.SyncFlags.IsSyncingVelocity;
+            player.IsStealthAiming = packet.SyncFlags.IsStealthAiming;
+
+            player.CameraPosition = packet.CameraOrientation.CameraPosition;
+            player.CameraDirection = packet.CameraOrientation.CameraForward;
+            player.CameraRotation = packet.CameraRotation;
         }
     }
 }
