@@ -33,7 +33,7 @@ namespace MtaServer.Console.Commands
                     throw new Exception($"Unable to create command from {commandType} class.");
                 }
 
-                CommandsCache.Add(command.GetName(), command);
+                CommandsCache.Add(command.Name, command);
             }
         }
 

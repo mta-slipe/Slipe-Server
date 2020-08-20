@@ -8,6 +8,7 @@ using MtaServer.Server.PacketHandling.QueueHandlers;
 using System;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace MtaServer.Console
 {

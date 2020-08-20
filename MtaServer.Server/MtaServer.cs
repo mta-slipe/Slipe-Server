@@ -59,15 +59,6 @@ namespace MtaServer.Server
             this.netWrapper = CreateNetWrapper(directory, netDllPath, this.configuration.Host, this.configuration.Port);
         }
 
-
-        public void Shutdown()
-        {
-            OnShuttingDown?.Invoke();
-            Stop();
-            Process.GetCurrentProcess().CloseMainWindow();
-            Process.GetCurrentProcess().Close();
-        }
-
         public void Start()
         {
             OnStarted?.Invoke();

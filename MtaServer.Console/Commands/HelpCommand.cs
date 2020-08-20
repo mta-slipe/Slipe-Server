@@ -7,9 +7,9 @@ namespace MtaServer.Console.Commands
 {
     public class HelpCommand : ICommand
     {
-        public string GetName() => "help";
-        public string GetDescription() => "Displaying all command or help about specific command.";
-        public string GetUsage() => "help [command name]";
+        public string Name => "help";
+        public string Description => "Displaying all command or help about specific command.";
+        public string Usage => "help [command name]";
 
         public bool Execute(Program program, IEnumerable<string> args, out string errorMessage)
         {
@@ -29,7 +29,7 @@ namespace MtaServer.Console.Commands
                     errorMessage = $"Command '{targetCommand}' not found.";
                     return false;
                 }
-                System.Console.WriteLine($"{targetCommand}:\r\n\tDescription: {command.GetDescription()}\r\n\tHelp: {command.GetUsage()}");
+                System.Console.WriteLine($"{targetCommand}:\r\n\tDescription: {command.Name}\r\n\tHelp: {command.Usage}");
                 errorMessage = "";
                 return true;
             }

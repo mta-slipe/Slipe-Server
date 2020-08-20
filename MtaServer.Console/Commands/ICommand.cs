@@ -6,9 +6,9 @@ namespace MtaServer.Console.Commands
 {
     public interface ICommand
     {
-        public string GetName();
-        public string GetDescription();
-        public string GetUsage();
+        public string Name { get; }
+        public string Description { get; }
+        public string Usage { get; }
         public bool Execute(Program program, IEnumerable<string> args, out string errorMessage);
     }
 }
