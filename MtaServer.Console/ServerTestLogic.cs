@@ -62,6 +62,9 @@ namespace MtaServer.Console
                 client.SendPacket(ElementPacketFactory.CreateSetAlphaPacket(player, 100));
                 client.SendPacket(CreatePlaySoundPacket(1));
                 client.SendPacket(CreateSetWantedLevelPacket(4));
+                client.SendPacket(CreateToggleDebuggerPacket(true));
+                client.SendPacket(CreateDebugEchoPacket("Object reference not set to an instance of an object", 0, Color.Red));
+                client.SendPacket(CreateDebugEchoPacket("You successfully got banned", 3));
                 TestPureSync(client);
                 SetupTestEntities(client);
             };

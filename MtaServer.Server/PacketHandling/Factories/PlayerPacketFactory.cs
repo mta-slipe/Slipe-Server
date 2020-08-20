@@ -78,6 +78,20 @@ namespace MtaServer.Server.PacketHandling.Factories
         {
             return new SetWantedLevelPacket(level);
         }
+        
+        public static ToggleDebuggerPacket CreateToggleDebuggerPacket(bool visible)
+        {
+            return new ToggleDebuggerPacket(visible);
+        }
+        
+        public static DebugEchoPacket CreateDebugEchoPacket(string message, byte level)
+        {
+            return new DebugEchoPacket(message, level, Color.White);
+        }
+        public static DebugEchoPacket CreateDebugEchoPacket(string message, byte level, Color color)
+        {
+            return new DebugEchoPacket(message, level, color);
+        }
 
     }
 }
