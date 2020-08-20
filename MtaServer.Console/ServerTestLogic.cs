@@ -58,7 +58,6 @@ namespace MtaServer.Console
                 client.SendPacket(new ConsoleEchoPacket("Hello Console World"));
                 client.SendPacket(CreateShowHudComponentPacket(HudComponent.Money, false));
                 client.SendPacket(ElementPacketFactory.CreateSetHealthPacket(player, 50));
-                client.SendPacket(ElementPacketFactory.CreateSetAlphaPacket(player, 100));
                 TestPureSync(client);
                 SetupTestEntities(client);
             };
