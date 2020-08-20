@@ -1,5 +1,6 @@
 ﻿using MtaServer.Packets;
 using MtaServer.Server.Elements;
+using MtaServer.Server.PacketHandling;
 using MTAServerWrapper.Server;
 using System;
 using System.Collections.Generic;
@@ -31,7 +32,7 @@ namespace MtaServer.Server
 
         public void SendPacket(Packet packet)
         {
-            if(this.IsConnected)
+            if(this.IsConnected && (ClientPacketScope.Current == null || ClientPacketScope.Current.ContainsClient(this)))
             {
                 this.netWrapper.SendPacket(this.binaryAddress, packet);
             }
