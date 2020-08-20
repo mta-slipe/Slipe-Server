@@ -8,6 +8,7 @@ using MtaServer.Packets.Lua.Camera;
 using MtaServer.Server;
 using MtaServer.Server.Elements;
 using MtaServer.Server.Elements.Enums;
+using MtaServer.Server.PacketHandling.Factories;
 using MtaServer.Server.Repositories;
 using System;
 using System.Collections.Generic;
@@ -56,8 +57,7 @@ namespace MtaServer.Console
                 client.SendPacket(new ChatEchoPacket(this.root.Id, "Hello World Again", Color.White));
                 client.SendPacket(new ConsoleEchoPacket("Hello Console World"));
                 client.SendPacket(CreateShowHudComponentPacket(HudComponent.Money, false));
-                client.SendPacket(CreateShowHudComponentPacket(HudComponent.Health, false));
-
+                client.SendPacket(ElementPacketFactory.CreateSetHealthPacket(player, 50));
                 TestPureSync(client);
                 SetupTestEntities(client);
             };
