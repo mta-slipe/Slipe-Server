@@ -63,9 +63,15 @@ namespace MtaServer.Server.PacketHandling.Factories
 
             return packet;
         }
+
         public static SetFPSLimitPacket CreateSetFPSLimitPacket(ushort limit)
         {
             return new SetFPSLimitPacket(limit);
+        }
+        
+        public static PlaySoundPacket CreatePlaySoundPacket(byte sound)
+        {
+            return new PlaySoundPacket(sound);
         }
 
     }

@@ -60,6 +60,7 @@ namespace MtaServer.Console
                 client.SendPacket(CreateSetFPSLimitPacket(100)); // 0-100, client has own hard limit
                 client.SendPacket(ElementPacketFactory.CreateSetHealthPacket(player, 50));
                 client.SendPacket(ElementPacketFactory.CreateSetAlphaPacket(player, 100));
+                client.SendPacket(CreatePlaySoundPacket(1));
                 TestPureSync(client);
                 SetupTestEntities(client);
             };
