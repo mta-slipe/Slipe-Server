@@ -1,7 +1,9 @@
-﻿using MtaServer.Packets.Enums;
+﻿using MtaServer.Packets.Builder;
+using MtaServer.Packets.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 namespace MtaServer.Packets.Definitions.Join
 {
     public class JoinedGamePacket : Packet

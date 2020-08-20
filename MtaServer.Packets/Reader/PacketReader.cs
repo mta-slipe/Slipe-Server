@@ -5,7 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 
-namespace MtaServer.Packets
+namespace MtaServer.Packets.Reader
 {
     public class PacketReader
     {
@@ -135,10 +135,18 @@ namespace MtaServer.Packets
             return GetStringCharacters(length);
         }
 
-        public uint GetElementId() => BitConverter.ToUInt32(GetBytesCapped(17).Concat(new byte[] { 0 }).ToArray(), 0);
+        public uint GetElementId()
+        {
+            var id = BitConverter.ToUInt32(GetBytesCapped(17).Concat(new byte[] { 0 }).ToArray(), 0);
 
-        public Vector3 GetVector3() => new Vector3(GetFloat(), GetFloat(), GetFloat());
-        public Vector2 GetVector2() => new Vector2(GetFloat(), GetFloat());
+            uint maxValue = (1 << 17) - 1;
+            if (id == maxValue)
+            {
+                return PacketConstants.InvalidElementId;
+            }
+
+            return id;
+        }
 
 
         // The danger zone
@@ -177,15 +185,6 @@ namespace MtaServer.Packets
             return (float)((double)intValue / (1 << fractionalBits));
         }
 
-        public Vector3 GetVector3(int integerBits, int fractionalBits)
-            => new Vector3(GetFloat(integerBits, fractionalBits), GetFloat(integerBits, fractionalBits), GetFloat(integerBits, fractionalBits));
-
-        public Vector2 GetVector2(int integerBits, int fractionalBits)
-            => new Vector2(GetFloat(integerBits, fractionalBits), GetFloat(integerBits, fractionalBits));
-
-        public Vector3 GetVector3WithZAsFloat(int integerBits = 14, int fractionalBits = 10)
-            => new Vector3(GetFloat(integerBits, fractionalBits), GetFloat(integerBits, fractionalBits), GetFloat());
-
         public float GetFloatFromBits(int bitCount, float min, float max)
         {
             byte[] bytes;
@@ -202,140 +201,5 @@ namespace MtaServer.Packets
         }
 
         public float GetFloatFromBits(uint bitCount, float min, float max) => GetFloatFromBits((int)bitCount, min, max);
-
-        public Vector3 GetNormalizedVector()
-        {
-            bool yZero, zZero;
-            bool xNegative;
-
-            float x;
-            float y;
-            float z;
-
-            xNegative = GetBit();
-            yZero = GetBit();
-            if (yZero)
-            {
-                y = 0;
-            } else
-            {
-                y = GetCompressedFloat();
-            }
-
-            zZero = GetBit();
-            if (zZero)
-            {
-                z = 0;
-            } else
-            {
-                z = GetCompressedFloat();
-            }
-
-            x = 1.0f - y * y - z * z;
-            if ( x < 0)
-            {
-                x = 0;
-            } else
-            {
-                x = MathF.Sqrt(x);
-            }
-
-            if (xNegative)
-            {
-                x = -x;
-            }
-
-            return new Vector3(x, y, z);
-        }
-
-        public Vector3 GetVelocityVector()
-        {
-            if (!GetBit())
-            {
-                return Vector3.Zero;
-            }
-
-            float length = GetFloat();
-            Vector3 normalizedVector = GetNormalizedVector();
-            return normalizedVector * length;
-        }
-
-        // Reference source:
-        // https://github.com/facebookarchive/RakNet/blob/1a169895a900c9fc4841c556e16514182b75faf8/Source/BitStream.cpp#L617
-        public byte[] GetCompressed(uint size, bool unsignedData)
-        {
-            byte[] data = new byte[size / 8];
-            uint currentByte = (size >> 3) - 1;
-            byte byteMatch;
-            byte halfByteMatch;
-
-            if (unsignedData )
-	        {
-		        byteMatch = 0;
-		        halfByteMatch = 0;
-	        }
-	        else
-	        {
-		        byteMatch = 0xFF;
-		        halfByteMatch = 0xF0;
-	        }
-
-	        // Upper bytes are specified with a single 1 if they match byteMatch
-	        // From high byte to low byte, if high byte is a byteMatch then write a 1 bit. Otherwise write a 0 bit and then write the remaining bytes
-	        while (currentByte > 0 )
-	        {
-                // If we read a 1 then the data is byteMatch.
-
-                bool isByteMatch = GetBit();
-
-		        if (isByteMatch)   // Check that bit
-		        {
-                    data[currentByte] = byteMatch;
-			        currentByte--;
-		        }
-		        else
-		        {
-                    // Read the rest of the bytes
-
-
-                    var restData = GetBytesCapped((int)((currentByte + 1) << 3), true);
-			        return restData
-                        .Take((int)currentByte + 1)
-                        .Concat(data.Take((int)(data.Length - currentByte - 1)))
-                        .ToArray();
-		        }
-	        }
-
-	        // All but the first bytes are byteMatch.  If the upper half of the last byte is a 0 (positive) or 16 (negative) then what we read will be a 1 and the remaining 4 bits.
-	        // Otherwise we read a 0 and the 8 bytes
-	        //RakAssert(readOffset+1 <=numberOfBitsUsed); // If this assert is hit the stream wasn't long enough to read from
-	        //if (readOffset + 1 > numberOfBitsUsed )
-		       // return data;
-
-            bool b = GetBit();
-
-            if (b)   // Check that bit
-            {
-                data[currentByte] = GetByteCapped(4);
-
-                data[currentByte] |= halfByteMatch; // We have to set the high 4 bits since these are set to 0 by ReadBits
-            }
-            else
-            {
-                data[currentByte] = GetByte();
-            }
-
-            return data;
-        }
-
-        public byte GetCompressedByte() => GetCompressed(8, true)[0];
-        public uint GetCompressedUInt32() => BitConverter.ToUInt32(GetCompressed(32, true));
-        public ushort GetCompressedUint16() => BitConverter.ToUInt16(GetCompressed(16, true));
-
-
-        public float GetCompressedFloat()
-        {
-            return GetUint16() / 32767.5f - 1.0f;
-        }
     }
 }

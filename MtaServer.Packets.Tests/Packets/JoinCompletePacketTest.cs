@@ -5,7 +5,7 @@ using System;
 using System.Numerics;
 using Xunit;
 
-namespace MtaServer.Packets.Tests
+namespace MtaServer.Packets.Tests.Packets
 {
     public class JoinCompletePacketTest
     {
