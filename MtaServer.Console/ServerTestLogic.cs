@@ -57,6 +57,7 @@ namespace MtaServer.Console
                 client.SendPacket(new ChatEchoPacket(this.root.Id, "Hello World Again", Color.White));
                 client.SendPacket(new ConsoleEchoPacket("Hello Console World"));
                 client.SendPacket(CreateShowHudComponentPacket(HudComponent.Money, false));
+                client.SendPacket(CreateSetFPSLimitPacket(100)); // 0-100, client has own hard limit
                 client.SendPacket(ElementPacketFactory.CreateSetHealthPacket(player, 50));
                 client.SendPacket(ElementPacketFactory.CreateSetAlphaPacket(player, 100));
                 TestPureSync(client);

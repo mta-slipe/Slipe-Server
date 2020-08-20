@@ -1,4 +1,5 @@
 ﻿using MtaServer.Packets.Definitions.Join;
+using MtaServer.Packets.Definitions.Lua.ElementRpc.Element;
 using MtaServer.Packets.Definitions.Lua.ElementRpc.Player;
 using MtaServer.Server.Elements;
 using MtaServer.Server.Elements.Enums;
@@ -62,5 +63,10 @@ namespace MtaServer.Server.PacketHandling.Factories
 
             return packet;
         }
+        public static SetFPSLimitPacket CreateSetFPSLimitPacket(ushort limit)
+        {
+            return new SetFPSLimitPacket(limit);
+        }
+
     }
 }
