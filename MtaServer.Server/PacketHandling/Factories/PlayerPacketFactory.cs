@@ -1,4 +1,5 @@
 ﻿using MtaServer.Packets.Definitions.Join;
+using MtaServer.Packets.Definitions.Lua.ElementRpc.Element;
 using MtaServer.Packets.Definitions.Lua.ElementRpc.Player;
 using MtaServer.Server.Elements;
 using MtaServer.Server.Elements.Enums;
@@ -62,5 +63,46 @@ namespace MtaServer.Server.PacketHandling.Factories
 
             return packet;
         }
+
+        public static SetFPSLimitPacket CreateSetFPSLimitPacket(ushort limit)
+        {
+            return new SetFPSLimitPacket(limit);
+        }
+        
+        public static PlaySoundPacket CreatePlaySoundPacket(byte sound)
+        {
+            return new PlaySoundPacket(sound);
+        }
+        
+        public static SetWantedLevelPacket CreateSetWantedLevelPacket(byte level)
+        {
+            return new SetWantedLevelPacket(level);
+        }
+        
+        public static ToggleDebuggerPacket CreateToggleDebuggerPacket(bool visible)
+        {
+            return new ToggleDebuggerPacket(visible);
+        }
+        
+        public static DebugEchoPacket CreateDebugEchoPacket(string message, byte level)
+        {
+            return new DebugEchoPacket(message, level, Color.White);
+        }
+
+        public static DebugEchoPacket CreateDebugEchoPacket(string message, byte level, Color color)
+        {
+            return new DebugEchoPacket(message, level, color);
+        }
+        
+        public static ForcePlayerMapPacket CreateForcePlayerMapPacket(bool visible)
+        {
+            return new ForcePlayerMapPacket(visible);
+        }
+        
+        public static ToggleAllControlsPacket CreateToggleAllControlsPacket(bool enabled, bool gtaControls = true, bool mtaControls = true)
+        {
+            return new ToggleAllControlsPacket(enabled, gtaControls, mtaControls);
+        }
+
     }
 }

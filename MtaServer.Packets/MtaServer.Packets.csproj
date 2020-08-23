@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Definitions\Lua\ElementRpc\Player\" />
     <Folder Include="Definitions\Lua\ElementRpc\Ped\" />
   </ItemGroup>
 

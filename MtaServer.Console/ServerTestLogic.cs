@@ -64,8 +64,16 @@ namespace MtaServer.Console
                 client.SendPacket(new ChatEchoPacket(this.root.Id, "Hello World Again", Color.White));
                 client.SendPacket(new ConsoleEchoPacket("Hello Console World"));
                 client.SendPacket(CreateShowHudComponentPacket(HudComponent.Money, false));
-                client.SendPacket(CreateShowHudComponentPacket(HudComponent.Health, false));
+                client.SendPacket(CreateSetFPSLimitPacket(100)); // 0-100, client has own hard limit
                 client.SendPacket(ElementPacketFactory.CreateSetHealthPacket(player, 50));
+                client.SendPacket(ElementPacketFactory.CreateSetAlphaPacket(player, 100));
+                client.SendPacket(CreatePlaySoundPacket(1));
+                client.SendPacket(CreateSetWantedLevelPacket(4));
+                client.SendPacket(CreateToggleDebuggerPacket(true));
+                client.SendPacket(CreateDebugEchoPacket("Object reference not set to an instance of an object", 0, Color.Red));
+                client.SendPacket(CreateDebugEchoPacket("You successfully got banned", 3));
+                //client.SendPacket(CreateForcePlayerMapPacket(true)); // it make you can't disable f11 map
+                //client.SendPacket(CreateToggleAllControlsPacket(false)); // makes you can't move at all
 
                 TestClientResource(client);
                 TestPureSync(client);
