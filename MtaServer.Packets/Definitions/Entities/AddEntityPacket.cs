@@ -188,8 +188,14 @@ namespace MtaServer.Packets.Definitions.Lua.ElementRpc.Element
                 {
                     builder.Write(wheelTarget.Value);
                 }
-            } else if (targetType == 0 && targetPosition != null)
+
+                if (boneTarget == null && wheelTarget == null)
+                    throw new Exception($"Can not write weapon with target type {targetType} and no wheel or bone target");
+
+            } else if (targetType == 0)
             {
+                if (targetPosition == null)
+                    throw new Exception($"Can not write weapon with target type {targetType} and no target position");
                 builder.WriteCompressedVector3(targetPosition.Value);
             }
 
@@ -736,7 +742,7 @@ namespace MtaServer.Packets.Definitions.Lua.ElementRpc.Element
             ushort dimension, ElementAttachment? attachment, bool areCollisionsEnabled,
             bool isCallPropagationEnabled, CustomData customData, string name,
             byte timeContext, byte colShapeType, Vector3 position, bool isEnabled,
-            bool autoCallEvent
+            bool autoCallEvent, Vector2[] vertices
         )
         {
             AddColshape(
@@ -745,6 +751,12 @@ namespace MtaServer.Packets.Definitions.Lua.ElementRpc.Element
                 isCallPropagationEnabled, customData, name, timeContext,
                 colShapeType, position, isEnabled, autoCallEvent
             );
+
+            builder.WriteCompressed((uint)vertices.Length);
+            foreach (Vector2 vertex in vertices)
+            {
+                builder.WriteVector2(vertex);
+            }
         }
 
 
