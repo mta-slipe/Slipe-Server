@@ -11,8 +11,18 @@ namespace MtaServer.Server.Elements.ColShapes
 
         public CollisionCuboid(Vector3 position, Vector3 dimensions)
         {
-            this.Position = position;
+            Position = position;
             Dimensions = dimensions;
+        }
+
+        public override bool IsWithin(Vector3 position)
+        {
+            Vector3 bounds = this.Position + this.Dimensions;
+
+            return
+                position.X > this.Position.X && position.X < bounds.X &&
+                position.Y > this.Position.Y && position.Y < bounds.Y &&
+                position.Z > this.Position.Z && position.Z < bounds.Z;
         }
     }
 }
