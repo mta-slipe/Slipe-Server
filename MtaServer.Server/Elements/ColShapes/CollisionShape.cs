@@ -12,5 +12,8 @@ namespace MtaServer.Server.Elements.ColShapes
         public bool IsEnabled { get; set; } = true;
         public bool AutoCallEvent { get; set; } = true;
 
+        public abstract bool IsWithin(Vector3 position);
+
+        public bool IsWithin(Element element) => IsWithin(element.Position);
     }
 }

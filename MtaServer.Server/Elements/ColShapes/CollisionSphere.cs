@@ -14,5 +14,10 @@ namespace MtaServer.Server.Elements.ColShapes
             this.Position = position;
             this.Radius = Radius;
         }
+
+        public override bool IsWithin(Vector3 position)
+        {
+            return Vector3.Distance(this.Position, position) < this.Radius;
+        }
     }
 }

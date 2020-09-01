@@ -23,5 +23,14 @@ namespace MtaServer.Server.Elements.ColShapes
             this.Position2 = position;
             Dimensions = dimensions;
         }
+
+        public override bool IsWithin(Vector3 position)
+        {
+            Vector2 bounds = this.Position2 + this.Dimensions;
+
+            return
+                position.X > this.Position.X && position.X < bounds.X &&
+                position.Y > this.Position.Y && position.Y < bounds.Y;
+        }
     }
 }
