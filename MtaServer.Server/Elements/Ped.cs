@@ -1,6 +1,5 @@
 ﻿using System;
 using MtaServer.Packets;
-using MTAServerWrapper.Server;
 using System.Net;
 
 namespace MtaServer.Server.Elements

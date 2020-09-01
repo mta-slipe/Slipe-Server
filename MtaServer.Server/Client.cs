@@ -1,7 +1,7 @@
-﻿using MtaServer.Packets;
+﻿using MtaServer.Net;
+using MtaServer.Packets;
 using MtaServer.Server.Elements;
 using MtaServer.Server.PacketHandling;
-using MTAServerWrapper.Server;
 using System;
 using System.Collections.Generic;
 using System.Net;

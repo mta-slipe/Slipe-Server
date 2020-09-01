@@ -17,16 +17,16 @@ namespace MtaServer.Console
     {
         static void Main(string[] args)
         {
-            try
-            {
+            //try
+            //{
                 new Program(args);
-            }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine(ex.Message);
-                System.Console.WriteLine("Press any key to exit...");
-                System.Console.ReadKey();
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    System.Console.WriteLine(ex.Message);
+            //    System.Console.WriteLine("Press any key to exit...");
+            //    System.Console.ReadKey();
+            //}
         }
 
         private readonly Server.MtaServer server;

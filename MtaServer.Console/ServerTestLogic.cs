@@ -10,6 +10,7 @@ using MtaServer.Packets.Lua.Camera;
 using MtaServer.Server;
 using MtaServer.Server.Elements;
 using MtaServer.Server.Elements.Enums;
+using MtaServer.Server.PacketHandling;
 using MtaServer.Server.PacketHandling.Factories;
 using MtaServer.Server.Repositories;
 using MtaServer.Server.ResourceServing;
@@ -45,6 +46,29 @@ namespace MtaServer.Console
             Player.OnJoin += (player) =>
             {
                 var client = player.Client;
+                _ = Task.Run(async () =>
+                {
+                    using (var scope = new ClientPacketScope(new Client[] { client }))
+                    {
+                        await Task.Delay(500);
+                        client.SendPacket(new ChatEchoPacket(this.root.Id, "After 500 #1", Color.White));
+                        await Task.Delay(500);
+                        client.SendPacket(new ChatEchoPacket(this.root.Id, "After 500 #2", Color.White));
+                    }
+                });
+
+                _ = Task.Run(async () =>
+                {
+                    using (var scope = new ClientPacketScope(new Client[] { }))
+                    {
+                        for (int i = 0; i < 10; i++)
+                        {
+                            await Task.Delay(100);
+                            client.SendPacket(new ChatEchoPacket(this.root.Id, $"After 100 #{i + 1}", Color.White));
+                        }
+                    }
+                });
+
                 System.Console.WriteLine($"{player.Name} ({client.Version}) ({client.Serial}) has joined the server!");
                 client.SendPacket(new SetCameraTargetPacket(player.Id));
                 client.SendPacket(new SpawnPlayerPacket(
