@@ -46,29 +46,6 @@ namespace MtaServer.Console
             Player.OnJoin += (player) =>
             {
                 var client = player.Client;
-                _ = Task.Run(async () =>
-                {
-                    using (var scope = new ClientPacketScope(new Client[] { client }))
-                    {
-                        await Task.Delay(500);
-                        client.SendPacket(new ChatEchoPacket(this.root.Id, "After 500 #1", Color.White));
-                        await Task.Delay(500);
-                        client.SendPacket(new ChatEchoPacket(this.root.Id, "After 500 #2", Color.White));
-                    }
-                });
-
-                _ = Task.Run(async () =>
-                {
-                    using (var scope = new ClientPacketScope(new Client[] { }))
-                    {
-                        for (int i = 0; i < 10; i++)
-                        {
-                            await Task.Delay(100);
-                            client.SendPacket(new ChatEchoPacket(this.root.Id, $"After 100 #{i + 1}", Color.White));
-                        }
-                    }
-                });
-
                 System.Console.WriteLine($"{player.Name} ({client.Version}) ({client.Serial}) has joined the server!");
                 client.SendPacket(new SetCameraTargetPacket(player.Id));
                 client.SendPacket(new SpawnPlayerPacket(
@@ -91,10 +68,37 @@ namespace MtaServer.Console
                 client.SendPacket(CreateShowHudComponentPacket(HudComponent.Health, false));
                 client.SendPacket(ElementPacketFactory.CreateSetHealthPacket(player, 50));
 
+                TestPacketScopes(client);
                 TestClientResource(client);
                 TestPureSync(client);
                 SetupTestEntities(client);
             };
+        }
+
+        private void TestPacketScopes(Client client)
+        {
+            _ = Task.Run(async () =>
+            {
+                using (var scope = new ClientPacketScope(new Client[] { client }))
+                {
+                    await Task.Delay(500);
+                    client.SendPacket(new ChatEchoPacket(this.root.Id, "After 500 #1", Color.White));
+                    await Task.Delay(500);
+                    client.SendPacket(new ChatEchoPacket(this.root.Id, "After 500 #2", Color.White));
+                }
+            });
+
+            _ = Task.Run(async () =>
+            {
+                using (var scope = new ClientPacketScope(new Client[] { }))
+                {
+                    for (int i = 0; i < 10; i++)
+                    {
+                        await Task.Delay(100);
+                        client.SendPacket(new ChatEchoPacket(this.root.Id, $"After 100 #{i + 1}", Color.White));
+                    }
+                }
+            });
         }
 
         private void TestClientResource(Client client)
