@@ -1,6 +1,5 @@
 ﻿using System;
 using MtaServer.Packets;
-using MTAServerWrapper.Server;
 using System.Net;
 using MtaServer.Packets.Definitions.Entities.Structs;
 using System.Numerics;

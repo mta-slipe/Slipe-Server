@@ -10,6 +10,7 @@ using MtaServer.Packets.Lua.Camera;
 using MtaServer.Server;
 using MtaServer.Server.Elements;
 using MtaServer.Server.Elements.Enums;
+using MtaServer.Server.PacketHandling;
 using MtaServer.Server.PacketHandling.Factories;
 using MtaServer.Server.Repositories;
 using MtaServer.Server.ResourceServing;
@@ -75,10 +76,37 @@ namespace MtaServer.Console
                 //client.SendPacket(CreateForcePlayerMapPacket(true)); // it make you can't disable f11 map
                 //client.SendPacket(CreateToggleAllControlsPacket(false)); // makes you can't move at all
 
+                TestPacketScopes(client);
                 TestClientResource(client);
                 TestPureSync(client);
                 SetupTestElements(client);
             };
+        }
+
+        private void TestPacketScopes(Client client)
+        {
+            _ = Task.Run(async () =>
+            {
+                using (var scope = new ClientPacketScope(new Client[] { client }))
+                {
+                    await Task.Delay(500);
+                    client.SendPacket(new ChatEchoPacket(this.root.Id, "After 500 #1", Color.White));
+                    await Task.Delay(500);
+                    client.SendPacket(new ChatEchoPacket(this.root.Id, "After 500 #2", Color.White));
+                }
+            });
+
+            _ = Task.Run(async () =>
+            {
+                using (var scope = new ClientPacketScope(new Client[] { }))
+                {
+                    for (int i = 0; i < 10; i++)
+                    {
+                        await Task.Delay(100);
+                        client.SendPacket(new ChatEchoPacket(this.root.Id, $"After 100 #{i + 1}", Color.White));
+                    }
+                }
+            });
         }
 
         private void TestClientResource(Client client)

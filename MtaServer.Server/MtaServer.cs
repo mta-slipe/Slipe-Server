@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using MtaServer.Net;
 using MtaServer.Packets.Enums;
 using MtaServer.Server.Elements;
 using MtaServer.Server.PacketHandling;
 using MtaServer.Server.Repositories;
 using MtaServer.Server.ResourceServing;
-using MTAServerWrapper.Server;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
