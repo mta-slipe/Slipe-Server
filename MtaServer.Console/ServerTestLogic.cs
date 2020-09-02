@@ -1,8 +1,5 @@
-﻿using Force.Crc32;
-using MtaServer.Packets.Definitions.Commands;
-using MtaServer.Packets.Definitions.Entities.Structs;
+﻿using MtaServer.Packets.Definitions.Commands;
 using MtaServer.Packets.Definitions.Join;
-using MtaServer.Packets.Definitions.Lua.ElementRpc.Element;
 using MtaServer.Packets.Definitions.Player;
 using MtaServer.Packets.Definitions.Resources;
 using MtaServer.Packets.Definitions.Sync;
@@ -15,15 +12,9 @@ using MtaServer.Server.PacketHandling.Factories;
 using MtaServer.Server.Repositories;
 using MtaServer.Server.ResourceServing;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
-using System.Linq;
 using System.Numerics;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
-using static MtaServer.Server.PacketHandling.Factories.PlayerPacketFactory;
 
 namespace MtaServer.Console
 {
@@ -64,17 +55,19 @@ namespace MtaServer.Console
                 client.SendPacket(new ClearChatPacket());
                 client.SendPacket(new ChatEchoPacket(this.root.Id, "Hello World Again", Color.White));
                 client.SendPacket(new ConsoleEchoPacket("Hello Console World"));
-                client.SendPacket(CreateShowHudComponentPacket(HudComponent.Money, false));
-                client.SendPacket(CreateSetFPSLimitPacket(100)); // 0-100, client has own hard limit
+
                 client.SendPacket(ElementPacketFactory.CreateSetHealthPacket(player, 50));
                 client.SendPacket(ElementPacketFactory.CreateSetAlphaPacket(player, 100));
-                client.SendPacket(CreatePlaySoundPacket(1));
-                client.SendPacket(CreateSetWantedLevelPacket(4));
-                client.SendPacket(CreateToggleDebuggerPacket(true));
-                client.SendPacket(CreateDebugEchoPacket("Object reference not set to an instance of an object", 0, Color.Red));
-                client.SendPacket(CreateDebugEchoPacket("You successfully got banned", 3));
-                //client.SendPacket(CreateForcePlayerMapPacket(true)); // it make you can't disable f11 map
-                //client.SendPacket(CreateToggleAllControlsPacket(false)); // makes you can't move at all
+
+                client.SendPacket(PlayerPacketFactory.CreateShowHudComponentPacket(HudComponent.Money, false));
+                client.SendPacket(PlayerPacketFactory.CreateSetFPSLimitPacket(100));
+                client.SendPacket(PlayerPacketFactory.CreatePlaySoundPacket(1));
+                client.SendPacket(PlayerPacketFactory.CreateSetWantedLevelPacket(4));
+                client.SendPacket(PlayerPacketFactory.CreateToggleDebuggerPacket(true));
+                client.SendPacket(PlayerPacketFactory.CreateDebugEchoPacket("Object reference not set to an instance of an object", 0, Color.Red));
+                client.SendPacket(PlayerPacketFactory.CreateDebugEchoPacket("You successfully got banned", 3));
+                //client.SendPacket(PlayerPacketFactory.CreateForcePlayerMapPacket(true)); 
+                //client.SendPacket(PlayerPacketFactory.CreateToggleAllControlsPacket(false));
 
                 TestPacketScopes(client);
                 TestClientResource(client);

@@ -3,6 +3,8 @@ using MtaServer.Packets.Definitions.Lua.ElementRpc.Element;
 using MtaServer.Packets.Definitions.Lua.ElementRpc.Player;
 using MtaServer.Server.Elements;
 using MtaServer.Server.Elements.Enums;
+using MtaServer.Server.Enums;
+using MTAServerWrapper.Packets.Outgoing.Connection;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -104,5 +106,9 @@ namespace MtaServer.Server.PacketHandling.Factories
             return new ToggleAllControlsPacket(enabled, gtaControls, mtaControls);
         }
 
+        public static PlayerQuitPacket CreateQuitPacket(Player player, QuitReason reason = QuitReason.Quit)
+        {
+            return new PlayerQuitPacket(player.Id, (byte)reason);
+        }
     }
 }

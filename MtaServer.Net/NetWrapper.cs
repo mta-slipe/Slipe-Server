@@ -94,6 +94,11 @@ namespace MtaServer.Net
             SendPacket(binaryAddress, (byte)packet.PacketId, packet.Write());
         }
 
+        public void SendPacket(uint binaryAddress, PacketId packetId, byte[] data)
+        {
+            SendPacket(binaryAddress, (byte)packetId, data);
+        }
+
         public void SetVersion(uint binaryAddress, ushort version)
         {
             SetSocketVersion(binaryAddress, version);

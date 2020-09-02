@@ -2,12 +2,12 @@
 using MtaServer.Packets.Enums;
 using MtaServer.Packets.Rpc;
 using MtaServer.Server.Elements;
+using MtaServer.Server.Extensions;
 using MtaServer.Server.PacketHandling.Factories;
 using MtaServer.Server.Repositories;
 using System;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace MtaServer.Server.PacketHandling.QueueHandlers
 {
@@ -54,19 +54,17 @@ namespace MtaServer.Server.PacketHandling.QueueHandlers
                         1
                     ));
 
-                    var existingPlayersListPacket = PlayerPacketFactory.CreatePlayerListPacket(
-                        this.elementRepository.GetByType<Player>(ElementType.Player).ToArray(), 
-                        true
-                    );
+                    var otherPlayers = this.elementRepository
+                        .GetByType<Player>(ElementType.Player)
+                        .Except(new Player[] { client.Player })
+                        .ToArray();
+
+                    var existingPlayersListPacket = PlayerPacketFactory.CreatePlayerListPacket(otherPlayers, true);
                     client.SendPacket(existingPlayersListPacket);
 
                     var newPlayerListPacket = PlayerPacketFactory.CreatePlayerListPacket(new Player[] { client.Player }, false);
-                    foreach (var player in this.elementRepository.GetByType<Player>(ElementType.Player))
-                    {
-                        player.Client.SendPacket(newPlayerListPacket);
-                    }
+                    newPlayerListPacket.SendTo(otherPlayers);
 
-                    this.elementRepository.Add(client.Player);
                     client.Player.HandleJoin();
 
                     break;

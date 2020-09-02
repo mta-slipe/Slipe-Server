@@ -83,6 +83,7 @@ namespace MtaServer.Console
             server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_JOINDATA, connectionQueueHandler);
             server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_QUIT, connectionQueueHandler);
             server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_TIMEOUT, connectionQueueHandler);
+            server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_NO_SOCKET, connectionQueueHandler);
 
             RpcQueueHandler rpcQueueHandler = this.server.Instantiate<RpcQueueHandler>(10, 1);
             server.RegisterPacketQueueHandler(PacketId.PACKET_ID_RPC, rpcQueueHandler);
@@ -103,6 +104,7 @@ namespace MtaServer.Console
         private void SetupBehaviour()
         {
             server.Instantiate<DefaultChatBehaviour>();
+            server.Instantiate<BasicElementRepositoryBehaviour>();
         }
     }
 }

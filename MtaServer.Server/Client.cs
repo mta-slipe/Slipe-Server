@@ -1,5 +1,6 @@
 ﻿using MtaServer.Net;
 using MtaServer.Packets;
+using MtaServer.Packets.Enums;
 using MtaServer.Server.Elements;
 using MtaServer.Server.PacketHandling;
 using System;
@@ -32,11 +33,20 @@ namespace MtaServer.Server
 
         public void SendPacket(Packet packet)
         {
-            if(this.IsConnected && (ClientPacketScope.Current == null || ClientPacketScope.Current.ContainsClient(this)))
+            if (this.IsConnected && (ClientPacketScope.Current == null || ClientPacketScope.Current.ContainsClient(this)))
             {
                 this.netWrapper.SendPacket(this.binaryAddress, packet);
             }
         }
+
+        public void SendPacket(PacketId packetId, byte[] data)
+        {
+            if (this.IsConnected && (ClientPacketScope.Current == null || ClientPacketScope.Current.ContainsClient(this)))
+            {
+                this.netWrapper.SendPacket(this.binaryAddress, packetId, data);
+            }
+        }
+
         public void SetVersion(ushort version)
         {
             if(this.IsConnected)
