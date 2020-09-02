@@ -2,8 +2,10 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using MtaServer.Net;
+using MtaServer.Packets;
 using MtaServer.Packets.Enums;
 using MtaServer.Server.Elements;
+using MtaServer.Server.Extensions;
 using MtaServer.Server.PacketHandling;
 using MtaServer.Server.Repositories;
 using MtaServer.Server.ResourceServing;
@@ -55,7 +57,6 @@ namespace MtaServer.Server
             this.resourceServer.Start();
 
             this.elementRepository = this.serviceProvider.GetRequiredService<IElementRepository>();
-            this.elementRepository.Add(this.root);
 
             this.packetReducer = new PacketReducer();
             this.clients = new Dictionary<NetWrapper, Dictionary<uint, Client>>();
@@ -82,11 +83,16 @@ namespace MtaServer.Server
         public T Instantiate<T>(params object[] parameters) 
             => ActivatorUtilities.CreateInstance<T>(this.serviceProvider, parameters);
 
+        public void BroadcastPacket(Packet packet)
+        {
+            packet.SendTo(this.clients.SelectMany(x => x.Value.Values));
+        }
+
         private void SetupDependencies(Action<ServiceCollection>? dependencyCallback)
         {
-            this.serviceCollection.TryAddSingleton<IElementRepository, CompoundElementRepository>();
-            this.serviceCollection.TryAddSingleton<ILogger, DefaultLogger>();
-            this.serviceCollection.TryAddSingleton<IResourceServer, BasicHttpServer>();
+            this.serviceCollection.AddSingleton<IElementRepository, CompoundElementRepository>();
+            this.serviceCollection.AddSingleton<ILogger, DefaultLogger>();
+            this.serviceCollection.AddSingleton<IResourceServer, BasicHttpServer>();
             this.serviceCollection.AddSingleton<Configuration>(this.configuration);
             this.serviceCollection.AddSingleton<RootElement>(this.root);
             this.serviceCollection.AddSingleton<MtaServer>(this);
@@ -114,7 +120,11 @@ namespace MtaServer.Server
 
             this.packetReducer.EnqueuePacket(this.clients[netWrapper][binaryAddress], packetId, data);
 
-            if (packetId == PacketId.PACKET_ID_PLAYER_QUIT || packetId == PacketId.PACKET_ID_PLAYER_TIMEOUT)
+            if (
+                packetId == PacketId.PACKET_ID_PLAYER_QUIT || 
+                packetId == PacketId.PACKET_ID_PLAYER_TIMEOUT ||
+                packetId == PacketId.PACKET_ID_PLAYER_NO_SOCKET
+            )
             {
                 this.clients[netWrapper][binaryAddress].IsConnected = false;
                 OnClientDisconnect?.Invoke(this.clients[netWrapper][binaryAddress]);

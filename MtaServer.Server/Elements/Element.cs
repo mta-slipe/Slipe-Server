@@ -36,11 +36,12 @@ namespace MtaServer.Server.Elements
         public Element()
         {
             this.Id = ElementIdGenerator.GenerateId();
+
+            Created?.Invoke(this);
         }
 
-        public Element(Element parent)
+        public Element(Element parent) : this()
         {
-            this.Id = ElementIdGenerator.GenerateId();
             Parent = parent;
         }
 
@@ -53,6 +54,14 @@ namespace MtaServer.Server.Elements
             return TimeContext;
         }
 
+        public void Destroy()
+        {
+            this.Destroyed?.Invoke(this);
+        }
+
         public event Action<Element, Vector3>? PositionChange;
+        public event Action<Element>? Destroyed;
+
+        public static event Action<Element>? Created;
     }
 }

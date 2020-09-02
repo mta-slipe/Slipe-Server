@@ -10,7 +10,7 @@ namespace MtaServer.Server.Tests.CollisionShapes
 {
     public class CollisionPolygonTests
     {
-        private CollisionPolygon shape = new CollisionPolygon(Vector3.Zero, new Vector2[] {
+        private readonly CollisionPolygon shape = new CollisionPolygon(Vector3.Zero, new Vector2[] {
             new Vector2(1, 2),
             new Vector2(1, 4),
             new Vector2(2, 3),
