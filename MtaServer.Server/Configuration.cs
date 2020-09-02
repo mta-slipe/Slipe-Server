@@ -13,7 +13,7 @@ namespace MtaServer.Server
         [MaxLength(15)]
         public string Host { get; set; } = "0.0.0.0";
 
-        public ushort Port { get; set; } = 40666;
+        public ushort Port { get; set; } = 50666;
 
         public ushort MaxPlayers { get; set; } = 32;
 
