@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MtaServer.Server.Elements.Events;
+using System;
 using System.Numerics;
 
 namespace MtaServer.Server.Elements
@@ -19,7 +20,7 @@ namespace MtaServer.Server.Elements
             get => position;
             set
             {
-                PositionChange?.Invoke(this, value);
+                PositionChange?.Invoke(new ElementChangeEventArgs<Vector3>(this, value, this.IsSync));
                 position = value;
             }
         }
@@ -32,6 +33,7 @@ namespace MtaServer.Server.Elements
 
         public bool AreCollisionsEnabled { get; set; } = true;
         public bool IsCallPropagationEnabled { get; set; } = false;
+        protected bool IsSync { get; private set; } = false;
 
         public Element()
         {
@@ -59,7 +61,14 @@ namespace MtaServer.Server.Elements
             this.Destroyed?.Invoke(this);
         }
 
-        public event Action<Element, Vector3>? PositionChange;
+        public void RunAsSync(Action action)
+        {
+            this.IsSync = true;
+            action();
+            this.IsSync = false;
+        }
+
+        public event Action<ElementChangeEventArgs<Vector3>>? PositionChange;
         public event Action<Element>? Destroyed;
 
         public static event Action<Element>? Created;

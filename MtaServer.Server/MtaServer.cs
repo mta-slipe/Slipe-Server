@@ -29,17 +29,18 @@ namespace MtaServer.Server
         private readonly RootElement root;
 
         public readonly Configuration configuration;
-
+        private readonly Func<uint, NetWrapper, Client>? clientCreationMethod;
 
         public MtaServer(
             string directory, 
             string netDllPath, 
             Configuration? configuration = null,
-            Action<ServiceCollection>? dependencyCallback = null
+            Action<ServiceCollection>? dependencyCallback = null,
+            Func<uint, NetWrapper, Client>? clientCreationMethod = null
         )
         {
             this.configuration = configuration ?? new Configuration();
-
+            this.clientCreationMethod = clientCreationMethod;
             var validationResults = new List<ValidationResult>();
             if (!Validator.TryValidateObject(this.configuration, new ValidationContext(this.configuration), validationResults, true))
             {
@@ -114,7 +115,9 @@ namespace MtaServer.Server
         {
             if (!this.clients[netWrapper].ContainsKey(binaryAddress))
             {
-                this.clients[netWrapper][binaryAddress] = new Client(binaryAddress, netWrapper);
+                this.clients[netWrapper][binaryAddress] = 
+                    clientCreationMethod?.Invoke(binaryAddress, netWrapper) ??
+                    new Client(binaryAddress, netWrapper);
                 OnClientConnect?.Invoke(this.clients[netWrapper][binaryAddress]);
             }
 
@@ -134,6 +137,5 @@ namespace MtaServer.Server
 
         public event Action<Client>? OnClientConnect;
         public event Action<Client>? OnClientDisconnect;
-
     }
 }

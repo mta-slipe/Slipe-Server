@@ -105,6 +105,7 @@ namespace MtaServer.Console
         {
             server.Instantiate<DefaultChatBehaviour>();
             server.Instantiate<BasicElementRepositoryBehaviour>();
+            server.Instantiate<ElementUpdateBehaviour>();
         }
     }
 }

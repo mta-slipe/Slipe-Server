@@ -1,9 +1,11 @@
 ﻿using MtaServer.Packets.Definitions.Sync;
 using MtaServer.Packets.Enums;
 using MtaServer.Server.Elements;
+using MtaServer.Server.Extensions;
 using MtaServer.Server.Repositories;
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MtaServer.Server.PacketHandling.QueueHandlers
@@ -53,47 +55,48 @@ namespace MtaServer.Server.PacketHandling.QueueHandlers
 
             packet.PlayerId = client.Player.Id;
             packet.Latency = 0;
-            foreach (var remotePlayer in this.elementRepository.GetByType<Player>(ElementType.Player))
-            {
-                if (remotePlayer.Client != client)
-                {
-                    remotePlayer.Client.SendPacket(packet);
-                }
-            }
+
+            var otherPlayers = this.elementRepository
+                .GetByType<Player>(ElementType.Player)
+                .Where(p => p != client.Player);
+            packet.SendTo(otherPlayers);
 
             var player = client.Player;
-            player.Position = packet.Position;
-            player.Velocity = packet.Velocity;
-            player.Health = packet.Health;
-            player.Armor = packet.Armor;
-            player.AimOrigin = packet.AimOrigin;
-            player.AimDirection = packet.AimDirection;
-
-            player.ContactElement = this.elementRepository.Get(packet.ContactElementId);
-
-            player.CurrentWeapon = new PlayerWeapon()
+            player.RunAsSync(() =>
             {
-                WeaponType = packet.WeaponType,
-                Slot = packet.WeaponSlot,
-                Ammo = packet.TotalAmmo,
-                AmmoInClip = packet.AmmoInClip
-            };
+                player.Position = packet.Position;
+                player.Velocity = packet.Velocity;
+                player.Health = packet.Health;
+                player.Armor = packet.Armor;
+                player.AimOrigin = packet.AimOrigin;
+                player.AimDirection = packet.AimDirection;
 
-            player.IsInWater = packet.SyncFlags.IsInWater;
-            player.IsOnGround = packet.SyncFlags.IsOnGround;
-            player.HasJetpack = packet.SyncFlags.HasJetpack;
-            player.IsDucked = packet.SyncFlags.IsDucked;
-            player.WearsGoggles = packet.SyncFlags.WearsGoggles;
-            player.HasContact = packet.SyncFlags.HasContact;
-            player.IsChoking = packet.SyncFlags.IsChoking;
-            player.AkimboTargetUp = packet.SyncFlags.AkimboTargetUp;
-            player.IsOnFire = packet.SyncFlags.IsOnFire;
-            player.IsSyncingVelocity = packet.SyncFlags.IsSyncingVelocity;
-            player.IsStealthAiming = packet.SyncFlags.IsStealthAiming;
+                player.ContactElement = this.elementRepository.Get(packet.ContactElementId);
 
-            player.CameraPosition = packet.CameraOrientation.CameraPosition;
-            player.CameraDirection = packet.CameraOrientation.CameraForward;
-            player.CameraRotation = packet.CameraRotation;
+                player.CurrentWeapon = new PlayerWeapon()
+                {
+                    WeaponType = packet.WeaponType,
+                    Slot = packet.WeaponSlot,
+                    Ammo = packet.TotalAmmo,
+                    AmmoInClip = packet.AmmoInClip
+                };
+
+                player.IsInWater = packet.SyncFlags.IsInWater;
+                player.IsOnGround = packet.SyncFlags.IsOnGround;
+                player.HasJetpack = packet.SyncFlags.HasJetpack;
+                player.IsDucked = packet.SyncFlags.IsDucked;
+                player.WearsGoggles = packet.SyncFlags.WearsGoggles;
+                player.HasContact = packet.SyncFlags.HasContact;
+                player.IsChoking = packet.SyncFlags.IsChoking;
+                player.AkimboTargetUp = packet.SyncFlags.AkimboTargetUp;
+                player.IsOnFire = packet.SyncFlags.IsOnFire;
+                player.IsSyncingVelocity = packet.SyncFlags.IsSyncingVelocity;
+                player.IsStealthAiming = packet.SyncFlags.IsStealthAiming;
+
+                player.CameraPosition = packet.CameraOrientation.CameraPosition;
+                player.CameraDirection = packet.CameraOrientation.CameraForward;
+                player.CameraRotation = packet.CameraRotation;
+            });
         }
     }
 }

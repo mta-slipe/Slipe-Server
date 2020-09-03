@@ -184,6 +184,7 @@ namespace MtaServer.Console
 
         private void SetupTestElements(Client client)
         {
+            var vehicle = new Vehicle(602, new Vector3(-10, 5, 3));
             var entityPacket = AddEntityPacketFactory.CreateAddEntityPacket(new Element[]
             {
                 new Water(new Vector3[]
@@ -204,9 +205,18 @@ namespace MtaServer.Console
                     TargetType = WeaponTargetType.Fixed,
                     TargetPosition = new Vector3(10, 10, 5)
                 },
-                new Vehicle(602, new Vector3(-10, 5, 3))
+                vehicle
             });
             client.SendPacket(entityPacket);
+
+            Task.Run(async () =>
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    vehicle.Position += new Vector3(2, 0, 0);
+                    await Task.Delay(250);
+                }
+            });
         }
     }
 }

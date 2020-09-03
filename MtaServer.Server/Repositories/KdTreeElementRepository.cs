@@ -5,6 +5,7 @@ using System.Linq;
 using KdTree;
 using KdTree.Math;
 using System.Numerics;
+using MtaServer.Server.Elements.Events;
 
 namespace MtaServer.Server.Repositories
 {
@@ -57,10 +58,10 @@ namespace MtaServer.Server.Repositories
                 .Select(entry => entry.Value);
         }
 
-        private void ReInsertElement(Element element, Vector3 newPosition)
+        private void ReInsertElement(ElementChangeEventArgs<Vector3> args)
         {
-            this.Remove(element);
-            this.elements.Add(new float[] { newPosition.X, newPosition.Y, newPosition.Z }, element);
+            this.Remove(args.Source);
+            this.elements.Add(new float[] { args.NewValue.X, args.NewValue.Y, args.NewValue.Z }, args.Source);
         }
     }
 }
