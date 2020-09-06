@@ -108,11 +108,13 @@ namespace MtaServer.Console
             {
                 Parent = this.root,
                 ElementTypeName = "resource",
+                Name = "TestResource"
             };
             var resourceDyanmic = new DummyElement()
             {
                 Parent = resourceRoot,
-                ElementTypeName = "resource",
+                ElementTypeName = "map",
+                Name = "dynamic"
             };
 
             var entityPacket = AddEntityPacketFactory.CreateAddEntityPacket(new Element[] { resourceRoot, resourceDyanmic });
@@ -185,6 +187,7 @@ namespace MtaServer.Console
         private void SetupTestElements(Client client)
         {
             var vehicle = new Vehicle(602, new Vector3(-10, 5, 3));
+            var worldObject = new WorldObject(321, new Vector3(5, 0, 3));
             var entityPacket = AddEntityPacketFactory.CreateAddEntityPacket(new Element[]
             {
                 new Water(new Vector3[]
@@ -192,7 +195,7 @@ namespace MtaServer.Console
                         new Vector3(-6, 0, 4), new Vector3(-3, 0, 4),
                         new Vector3(-6, 3, 4), new Vector3(-3, 3, 4)
                 }),
-                new WorldObject(321, new Vector3(5, 0, 3)),
+                worldObject,
                 new Blip(new Vector3(20, 0, 0), BlipIcon.Bulldozer),
                 new RadarArea(new Vector2(0, 0), new Vector2(200, 200), Color.FromArgb(100, Color.Aqua)),
                 new Marker(new Vector3(5, 0, 2), MarkerType.Cylinder){
@@ -208,14 +211,19 @@ namespace MtaServer.Console
                 vehicle
             });
             client.SendPacket(entityPacket);
+            worldObject.Velocity = new Vector3(0, 0.5f, 0);
 
             Task.Run(async () =>
             {
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < 30; i++)
                 {
-                    vehicle.Position += new Vector3(2, 0, 0);
+                    vehicle.Position += new Vector3(0.5f, 0, 0);
+                    vehicle.Rotation += new Vector3(0, 0, 10f);
+                    worldObject.Rotation += new Vector3(0, 0, 12f);
+                    client.Player.Rotation += new Vector3(0, 0, 2.5f);
                     await Task.Delay(250);
                 }
+                worldObject.Velocity = Vector3.Zero;
             });
         }
     }

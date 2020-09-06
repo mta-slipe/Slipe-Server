@@ -22,7 +22,7 @@ namespace MtaServer.Server.Repositories
         public void Add(Element element)
         {
             this.elements.Add(new float[] { element.Position.X, element.Position.Y, element.Position.Z }, element);
-            element.PositionChange += ReInsertElement;
+            element.PositionChanged += ReInsertElement;
         }
 
         public Element? Get(uint id)
@@ -35,7 +35,7 @@ namespace MtaServer.Server.Repositories
         public void Remove(Element element)
         {
             this.elements.RemoveAt(new float[] { element.Position.X, element.Position.Y, element.Position.Z });
-            element.PositionChange -= ReInsertElement;
+            element.PositionChanged -= ReInsertElement;
         }
 
         public IEnumerable<Element> GetAll()
@@ -58,7 +58,7 @@ namespace MtaServer.Server.Repositories
                 .Select(entry => entry.Value);
         }
 
-        private void ReInsertElement(ElementChangeEventArgs<Vector3> args)
+        private void ReInsertElement(object sender, ElementChangedEventArgs<Vector3> args)
         {
             this.Remove(args.Source);
             this.elements.Add(new float[] { args.NewValue.X, args.NewValue.Y, args.NewValue.Z }, args.Source);

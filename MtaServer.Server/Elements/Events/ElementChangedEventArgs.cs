@@ -4,13 +4,13 @@ using System.Text;
 
 namespace MtaServer.Server.Elements.Events
 {
-    public class ElementChangeEventArgs<TSource, TValue> : EventArgs
+    public class ElementChangedEventArgs<TSource, TValue> : EventArgs
     {
         public TSource Source { get; }
         public TValue NewValue { get; }
         public bool IsSync { get; }
 
-        public ElementChangeEventArgs(TSource source, TValue newValue, bool isSync = false)
+        public ElementChangedEventArgs(TSource source, TValue newValue, bool isSync = false)
         {
             Source = source;
             NewValue = newValue;
@@ -18,9 +18,9 @@ namespace MtaServer.Server.Elements.Events
         }
     }
 
-    public class ElementChangeEventArgs<T>: ElementChangeEventArgs<Element, T>
+    public class ElementChangedEventArgs<T>: ElementChangedEventArgs<Element, T>
     {
-        public ElementChangeEventArgs(Element source, T newValue, bool isSync = false)
+        public ElementChangedEventArgs(Element source, T newValue, bool isSync = false)
             :base(source, newValue, isSync)
         {
         }

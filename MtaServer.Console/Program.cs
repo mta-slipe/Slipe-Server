@@ -96,16 +96,17 @@ namespace MtaServer.Console
             server.RegisterPacketQueueHandler(PacketId.PACKET_ID_COMMAND, commandQueueHandler);
         }
 
-        private void SetupLogic()
-        {
-            this.server.Instantiate<ServerTestLogic>();
-        }
-
         private void SetupBehaviour()
         {
             server.Instantiate<DefaultChatBehaviour>();
             server.Instantiate<BasicElementRepositoryBehaviour>();
             server.Instantiate<ElementUpdateBehaviour>();
+            server.Instantiate<VelocityBehaviour>();
+        }
+
+        private void SetupLogic()
+        {
+            this.server.Instantiate<ServerTestLogic>();
         }
     }
 }

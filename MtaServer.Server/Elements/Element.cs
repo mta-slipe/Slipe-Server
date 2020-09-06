@@ -20,13 +20,32 @@ namespace MtaServer.Server.Elements
             get => position;
             set
             {
-                PositionChange?.Invoke(new ElementChangeEventArgs<Vector3>(this, value, this.IsSync));
+                PositionChanged?.Invoke(this, new ElementChangedEventArgs<Vector3>(this, value, this.IsSync));
                 position = value;
             }
         }
 
-        public Vector3 Rotation { get; set; }
-        public Vector3 Velocity { get; set; }
+        private Vector3 rotation;
+        public Vector3 Rotation
+        {
+            get => rotation;
+            set
+            {
+                RotationChanged?.Invoke(this, new ElementChangedEventArgs<Vector3>(this, value, this.IsSync));
+                rotation = value;
+            }
+        }
+
+        private Vector3 velocity;
+        public Vector3 Velocity
+        {
+            get => velocity;
+            set
+            {
+                VelocityChanged?.Invoke(this, new ElementChangedEventArgs<Vector3>(this, value, this.IsSync));
+                velocity = value;
+            }
+        }
         
         public byte Interior { get; set; }
         public ushort Dimension { get; set; }
@@ -68,7 +87,9 @@ namespace MtaServer.Server.Elements
             this.IsSync = false;
         }
 
-        public event Action<ElementChangeEventArgs<Vector3>>? PositionChange;
+        public event ElementChangedEventHandler<Vector3>? PositionChanged;
+        public event ElementChangedEventHandler<Vector3>? RotationChanged;
+        public event ElementChangedEventHandler<Vector3>? VelocityChanged;
         public event Action<Element>? Destroyed;
 
         public static event Action<Element>? Created;
