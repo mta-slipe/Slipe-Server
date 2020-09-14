@@ -4,6 +4,7 @@ using MtaServer.ConfigurationProviders;
 using MtaServer.ConfigurationProviders.Configurations;
 using MtaServer.Packets.Enums;
 using MtaServer.Server;
+using MtaServer.Server.AllSeeingEye;
 using MtaServer.Server.Behaviour;
 using MtaServer.Server.PacketHandling.QueueHandlers;
 using MtaServer.Server.ResourceServing;
@@ -40,7 +41,11 @@ namespace MtaServer.Console
                 @"net.dll",
                 configurationProvider?.GetConfiguration(),
                 Configure
-            );
+            )
+            {
+                GameType = "Slipe Server",
+                MapName = "N/A"
+            };
 
             SetupQueueHandlers();
             SetupBehaviour();
@@ -105,6 +110,8 @@ namespace MtaServer.Console
         {
             server.Instantiate<DefaultChatBehaviour>();
             server.Instantiate<BasicElementRepositoryBehaviour>();
+            server.Instantiate<AseBehaviour>();
+            server.Instantiate<MasterServerAnnouncementBehaviour>("http://master.mtasa.com/ase/add.php");
         }
     }
 }
