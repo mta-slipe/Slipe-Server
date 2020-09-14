@@ -20,12 +20,14 @@ namespace MtaServer.Console
 {
     public class ServerTestLogic
     {
+        private readonly Server.MtaServer server;
         private readonly IElementRepository elementRepository;
         private readonly RootElement root;
         private readonly IResourceServer resourceServer;
 
-        public ServerTestLogic(IElementRepository elementRepository, RootElement root, IResourceServer resourceServer)
+        public ServerTestLogic(Server.MtaServer server, IElementRepository elementRepository, RootElement root, IResourceServer resourceServer)
         {
+            this.server = server;
             this.elementRepository = elementRepository;
             this.root = root;
             this.resourceServer = resourceServer;
@@ -34,7 +36,7 @@ namespace MtaServer.Console
 
         private void SetupTestLogic()
         {
-            Player.OnJoin += (player) =>
+            this.server.PlayerJoined += (player) =>
             {
                 var client = player.Client;
                 System.Console.WriteLine($"{player.Name} ({client.Version}) ({client.Serial}) has joined the server!");
@@ -104,16 +106,16 @@ namespace MtaServer.Console
 
         private void TestClientResource(Client client)
         {
-            var resourceRoot = new DummyElement()
+            var resourceRoot = server.AssociateElement(new DummyElement()
             {
                 Parent = this.root,
                 ElementTypeName = "resource",
-            };
-            var resourceDyanmic = new DummyElement()
+            });
+            var resourceDyanmic = server.AssociateElement(new DummyElement()
             {
                 Parent = resourceRoot,
                 ElementTypeName = "resource",
-            };
+            });
 
             var entityPacket = AddEntityPacketFactory.CreateAddEntityPacket(new Element[] { resourceRoot, resourceDyanmic });
             client.SendPacket(entityPacket);
@@ -184,27 +186,30 @@ namespace MtaServer.Console
 
         private void SetupTestElements(Client client)
         {
+            var worldObject = server.AssociateElement(new WorldObject(321, new Vector3(5, 0, 3)));
+
             var entityPacket = AddEntityPacketFactory.CreateAddEntityPacket(new Element[]
             {
-                new Water(new Vector3[]
+                server.AssociateElement(new Water(new Vector3[]
                 {
                         new Vector3(-6, 0, 4), new Vector3(-3, 0, 4),
                         new Vector3(-6, 3, 4), new Vector3(-3, 3, 4)
-                }),
-                new WorldObject(321, new Vector3(5, 0, 3)),
-                new Blip(new Vector3(20, 0, 0), BlipIcon.Bulldozer),
-                new RadarArea(new Vector2(0, 0), new Vector2(200, 200), Color.FromArgb(100, Color.Aqua)),
-                new Marker(new Vector3(5, 0, 2), MarkerType.Cylinder){
+                })),
+                server.AssociateElement(new WorldObject(321, new Vector3(5, 0, 3))),
+                server.AssociateElement(new Blip(new Vector3(20, 0, 0), BlipIcon.Bulldozer)),
+                server.AssociateElement(new RadarArea(new Vector2(0, 0), new Vector2(200, 200), Color.FromArgb(100, Color.Aqua))),
+                server.AssociateElement(new Marker(new Vector3(5, 0, 2), MarkerType.Cylinder){
                     Color = Color.FromArgb(100, Color.Cyan)
-                },
-                new Pickup(new Vector3(0, 5, 3), PickupType.Health, 20),
-                new Ped(7, new Vector3(10, 0, 3)),
-                new Weapon(355, new Vector3(10, 10, 5))
+                }),
+                server.AssociateElement(new Pickup(new Vector3(0, 5, 3), PickupType.Health, 20)),
+                server.AssociateElement(new Ped(7, new Vector3(10, 0, 3))),
+                server.AssociateElement(new Weapon(355, new Vector3(10, 10, 5))
                 {
                     TargetType = WeaponTargetType.Fixed,
                     TargetPosition = new Vector3(10, 10, 5)
-                },
-                new Vehicle(602, new Vector3(-10, 5, 3))
+                }),
+                server.AssociateElement(new Vehicle(602, new Vector3(-10, 5, 3))),
+                worldObject
             });
             client.SendPacket(entityPacket);
         }

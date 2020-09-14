@@ -15,14 +15,16 @@ namespace MtaServer.Server.PacketHandling.QueueHandlers
     {
         private readonly IElementRepository elementRepository;
         private readonly Configuration configuration;
+        private readonly MtaServer server;
         private readonly RootElement root;
 
-        public RpcQueueHandler(RootElement root, IElementRepository elementRepository, Configuration configuration, int sleepInterval, int workerCount)
-            : base(sleepInterval, workerCount) 
+        public RpcQueueHandler(MtaServer server, RootElement root, IElementRepository elementRepository, Configuration configuration, int sleepInterval, int workerCount)
+            : base(sleepInterval, workerCount)
         {
+            this.server = server;
+            this.root = root;
             this.elementRepository = elementRepository;
             this.configuration = configuration;
-            this.root = root;
         }
 
         protected override void HandlePacket(PacketQueueEntry queueEntry)
@@ -65,7 +67,7 @@ namespace MtaServer.Server.PacketHandling.QueueHandlers
                     var newPlayerListPacket = PlayerPacketFactory.CreatePlayerListPacket(new Player[] { client.Player }, false);
                     newPlayerListPacket.SendTo(otherPlayers);
 
-                    client.Player.HandleJoin();
+                    this.server.HandlePlayerJoin(client.Player);
 
                     break;
             }

@@ -13,11 +13,11 @@ namespace MtaServer.Server.Behaviour
     {
         private readonly IElementRepository elementRepository;
 
-        public BasicElementRepositoryBehaviour(IElementRepository elementRepository)
+        public BasicElementRepositoryBehaviour(IElementRepository elementRepository, MtaServer server)
         {
             this.elementRepository = elementRepository;
 
-            Element.Created += OnElementCreate;
+            server.ElementCreated += OnElementCreate;
         }
 
         private void OnElementCreate(Element element)

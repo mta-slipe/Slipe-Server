@@ -8,7 +8,7 @@ namespace MtaServer.Server.Elements
         public virtual ElementType ElementType => ElementType.Unknown;
         public Element? Parent { get; set; }
 
-        public uint Id { get; protected set; }
+        public uint Id { get; set; }
         public byte TimeContext { get; private set; }
 
         public string Name { get; set; } = "";
@@ -35,9 +35,7 @@ namespace MtaServer.Server.Elements
 
         public Element()
         {
-            this.Id = ElementIdGenerator.GenerateId();
 
-            Created?.Invoke(this);
         }
 
         public Element(Element parent) : this()
@@ -61,7 +59,5 @@ namespace MtaServer.Server.Elements
 
         public event Action<Element, Vector3>? PositionChange;
         public event Action<Element>? Destroyed;
-
-        public static event Action<Element>? Created;
     }
 }
