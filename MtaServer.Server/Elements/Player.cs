@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using System.Text.RegularExpressions;
 
 namespace MtaServer.Server.Elements
 {
@@ -9,6 +10,7 @@ namespace MtaServer.Server.Elements
 
         public Client Client { get; }
 
+        public PlayerWeapon CurrentWeapon { get; set; }
         public Element? ContactElement { get; set; }
 
         public Vector3 AimOrigin { get; set; }
@@ -29,7 +31,7 @@ namespace MtaServer.Server.Elements
         public bool IsSyncingVelocity { get; set; }
         public bool IsStealthAiming { get; set; }
 
-        internal Player(Client client): base(0, Vector3.Zero)
+        internal Player(Client client) : base(0, Vector3.Zero)
         {
             this.Client = client;
         }

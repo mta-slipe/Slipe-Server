@@ -1,9 +1,9 @@
+﻿using MtaServer.Packets.Enums;
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using MtaServer.Net;
 using MtaServer.Packets;
-using MtaServer.Packets.Enums;
 using MtaServer.Server.Elements;
 using MtaServer.Server.Extensions;
 using MtaServer.Server.PacketHandling;
@@ -14,9 +14,20 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using MtaServer.Server.AllSeeingEye;
 
 namespace MtaServer.Server
 {
+    public enum VersionType
+    {
+        Custom = 0x01,
+        Experimental = 0x03,
+        Unstable = 0x05,
+        Untested = 0x07,
+        Release = 0x09,
+    }
+
     public class MtaServer
     {
         private readonly NetWrapper netWrapper;
@@ -27,8 +38,15 @@ namespace MtaServer.Server
         private readonly ServiceProvider serviceProvider;
         private readonly IElementRepository elementRepository;
         private readonly RootElement root;
-
         public readonly Configuration configuration;
+
+        public string GameType { get; set; } = "unknown";
+        public string MapName { get; set; } = "unknown";
+        public string Password { get; set; } = "";
+        public bool HasPassword { get => (Password != ""); }
+
+        public DateTime StartDatetime { get; } = DateTime.Now;
+        public long Uptime { get => DateTime.Now.Ticks - StartDatetime.Ticks; }
 
 
         public MtaServer(
@@ -93,6 +111,8 @@ namespace MtaServer.Server
             this.serviceCollection.AddSingleton<IElementRepository, CompoundElementRepository>();
             this.serviceCollection.AddSingleton<ILogger, DefaultLogger>();
             this.serviceCollection.AddSingleton<IResourceServer, BasicHttpServer>();
+            this.serviceCollection.AddSingleton<AseQueryService, AseQueryService>();
+            this.serviceCollection.AddSingleton<HttpClient>(new HttpClient());
             this.serviceCollection.AddSingleton<Configuration>(this.configuration);
             this.serviceCollection.AddSingleton<RootElement>(this.root);
             this.serviceCollection.AddSingleton<MtaServer>(this);

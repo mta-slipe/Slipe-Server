@@ -15,7 +15,7 @@ namespace MtaServer.Server
 
         public ushort Port { get; set; } = 50666;
 
-        public ushort MaxPlayers { get; set; } = 32;
+        public ushort MaxPlayerCount { get; set; } = 64;
 
         [MaxLength(128)]
         public string Password { get; set; } = "";

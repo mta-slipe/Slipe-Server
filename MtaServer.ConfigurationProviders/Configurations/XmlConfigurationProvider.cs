@@ -33,7 +33,7 @@ namespace MtaServer.ConfigurationProviders.Configurations
                         break;
                     case "maxPlayers":
                         if (ushort.TryParse(node.InnerText, out result))
-                            configuration.MaxPlayers = result;
+                            configuration.MaxPlayerCount = result;
 
                         break;
                     case "password":
