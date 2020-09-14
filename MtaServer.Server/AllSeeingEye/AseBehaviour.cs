@@ -17,7 +17,7 @@ namespace MtaServer.Server.AllSeeingEye
     public class AseBehaviour
     {
         private const int cacheTime = 10 * 1000;
-
+        private readonly AseQueryService aseQueryService;
         private readonly ILogger logger;
 
         private readonly Cache<byte[]> fullCache;
@@ -26,21 +26,9 @@ namespace MtaServer.Server.AllSeeingEye
         private readonly AseVersion aseVersion;
         private readonly Dictionary<string, string> rules = new Dictionary<string, string>();
 
-        public void SetRule(string key, string value)
-        {
-            this.rules[key] = value;
-        }
-
-        public bool RemoveRule(string key) => this.rules.Remove(key);
-
-        public string? GetRule(string key)
-        {
-            rules.TryGetValue(key, out string? value);
-            return value;
-        }
-
         public AseBehaviour(AseQueryService aseQueryService, Configuration configuration, ILogger logger)
         {
+            this.aseQueryService = aseQueryService;
             this.logger = logger;
 
             aseVersion = AseVersion.v1_5;
@@ -52,22 +40,14 @@ namespace MtaServer.Server.AllSeeingEye
             StartListening((ushort)(configuration.Port + 123));
         }
 
-        public string GetVersion()
+        public void SetRule(string key, string value)
         {
-            string aseVersion;
-            switch (this.aseVersion)
-            {
-                case AseVersion.v1_5:
-                    aseVersion = "1.5";
-                    break;
-                case AseVersion.v1_5n:
-                    aseVersion = "1.5n";
-                    break;
-                default:
-                    throw new NotImplementedException(this.aseVersion.ToString());
-            }
-            return aseVersion;
+            this.rules[key] = value;
         }
+
+        public bool RemoveRule(string key) => this.aseQueryService.RemoveRule(key);
+
+        public string? GetRule(string key) => this.aseQueryService.GetRule(key);
 
         private void OnUdpData(IAsyncResult result)
         {
@@ -97,7 +77,7 @@ namespace MtaServer.Server.AllSeeingEye
                             data = xFireCache.Get();
                             break;
                         case AseQueryType.Version:
-                            data = GetVersion().Select(c => (byte)c).ToArray();
+                            data = this.aseQueryService.GetVersion().Select(c => (byte)c).ToArray();
                             break;
                         default:
                             throw new NotImplementedException($"'{message[0]}' is not a valid ASE query");

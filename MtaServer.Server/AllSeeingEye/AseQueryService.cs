@@ -31,6 +31,20 @@ namespace MtaServer.Server.AllSeeingEye
             this.rules = new Dictionary<string, string>();
         }
 
+        public void SetRule(string key, string value)
+        {
+            this.rules[key] = value;
+        }
+
+        public bool RemoveRule(string key) => this.rules.Remove(key);
+
+        public string? GetRule(string key)
+        {
+
+            rules.TryGetValue(key, out string? value);
+            return value;
+        }
+
 
         public byte[] QueryFull()
         {
@@ -190,15 +204,12 @@ namespace MtaServer.Server.AllSeeingEye
 
         public string GetVersion()
         {
-            switch (this.aseVersion)
+            return this.aseVersion switch
             {
-                case AseVersion.v1_5:
-                    return "1.5";
-                case AseVersion.v1_5n:
-                    return "1.5n";
-                default:
-                    throw new NotImplementedException(this.aseVersion.ToString());
-            }
+                AseVersion.v1_5 => "1.5",
+                AseVersion.v1_5n => "1.5n",
+                _ => throw new NotImplementedException(this.aseVersion.ToString()),
+            };
         }
     }
 }
