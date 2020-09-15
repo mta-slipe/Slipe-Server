@@ -129,6 +129,16 @@ namespace MtaServer.Packets.Reader
             return result;
         }
 
+        public string GetStringCharacters(uint length)
+        {
+            string result = "";
+            for (int i = 0; i < length; i++)
+            {
+                result += (char)GetByteFromData();
+            }
+            return result;
+        }
+
         public string GetString()
         {
             int length = GetUint16();
@@ -201,5 +211,14 @@ namespace MtaServer.Packets.Reader
         }
 
         public float GetFloatFromBits(uint bitCount, float min, float max) => GetFloatFromBits((int)bitCount, min, max);
+
+        public void AlignToByteBoundary()
+        {
+            int bitsNeeded = 8 - (this.bitArray.Count % 8);
+            if (bitsNeeded > 0 && bitsNeeded < 8)
+            {
+                GetBits(bitsNeeded);
+            }
+        }
     }
 }

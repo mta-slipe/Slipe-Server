@@ -233,5 +233,17 @@ namespace MtaServer.Packets.Builder
             }
             WriteCapped((long)integer, bitCount);
         }
+
+        public void AlignToByteBoundary()
+        {
+            int bitsNeeded = 8 - (this.bits.Count % 8);
+            if (bitsNeeded > 0 && bitsNeeded < 8)
+            {
+                for (int i = 0; i < bitsNeeded; i++)
+                {
+                    WriteBit(false);
+                }
+            }
+        }
     }
 }
