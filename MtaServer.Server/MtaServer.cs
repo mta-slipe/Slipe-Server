@@ -15,6 +15,7 @@ using System.Linq;
 using System.Net.Http;
 using MtaServer.Server.AllSeeingEye;
 using MtaServer.Server.Elements.IdGeneration;
+using MtaServer.Server.Events;
 
 namespace MtaServer.Server
 {
@@ -77,6 +78,8 @@ namespace MtaServer.Server
             this.elementRepository = this.serviceProvider.GetRequiredService<IElementRepository>();
             this.elementIdGenerator = this.serviceProvider.GetService<IElementIdGenerator>();
 
+            this.elementRepository.Add(this.root);
+
             this.packetReducer = new PacketReducer();
             this.clients = new Dictionary<NetWrapper, Dictionary<uint, Client>>();
 
@@ -106,6 +109,8 @@ namespace MtaServer.Server
         {
             packet.SendTo(this.clients.SelectMany(x => x.Value.Values));
         }
+
+        public void HandleLuaEvent(LuaEvent luaEvent) => this.LuaEventTriggered?.Invoke(luaEvent);
 
         private void SetupDependencies(Action<ServiceCollection>? dependencyCallback)
         {
@@ -168,6 +173,7 @@ namespace MtaServer.Server
             {
                 element.Id = this.elementIdGenerator.GetId();
             }
+            this.elementRepository.Add(element);
 
             this.ElementCreated?.Invoke(element);
 
@@ -183,6 +189,7 @@ namespace MtaServer.Server
         public event Action<Player>? PlayerJoined;
         public event Action<Client>? ClientConnected;
         public event Action<Client>? ClientDisconnected;
+        public event Action<LuaEvent>? LuaEventTriggered;
 
     }
 }

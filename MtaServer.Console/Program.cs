@@ -99,6 +99,9 @@ namespace MtaServer.Console
 
             CommandQueueHandler commandQueueHandler = this.server.Instantiate<CommandQueueHandler>(10, 1);
             server.RegisterPacketQueueHandler(PacketId.PACKET_ID_COMMAND, commandQueueHandler);
+
+            LuaEventQueueHandler luaEventQueueHandler= this.server.Instantiate<LuaEventQueueHandler>(10, 1);
+            server.RegisterPacketQueueHandler(PacketId.PACKET_ID_LUA_EVENT, luaEventQueueHandler);
         }
 
         private void SetupLogic()
@@ -112,6 +115,7 @@ namespace MtaServer.Console
             server.Instantiate<BasicElementRepositoryBehaviour>();
             server.Instantiate<AseBehaviour>();
             server.Instantiate<MasterServerAnnouncementBehaviour>("http://master.mtasa.com/ase/add.php");
+            server.Instantiate<EventLoggingBehaviour>();
         }
     }
 }
