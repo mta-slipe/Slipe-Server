@@ -3,6 +3,7 @@ using MtaServer.Packets.Builder;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
@@ -163,6 +164,22 @@ namespace MtaServer.Packets.Tests
 
             var bytes = builder.Build();
             bytes.Should().Equal(expectedOutput);
+        }
+
+        [Fact]
+        public void AlignToByteBoundaryTest()
+        {
+            var builder = new PacketBuilder();
+
+            builder.Write(true);
+            builder.AlignToByteBoundary();
+            builder.Write(true);
+            builder.AlignToByteBoundary();
+            builder.Write(true);
+
+            var bytes = builder.Build();
+            bytes.Length.Should().Be(3);
+            bytes.Should().Equal(new byte[] { 0b10000000, 0b10000000, 0b10000000 });
         }
 
 

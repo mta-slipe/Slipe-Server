@@ -56,7 +56,7 @@ namespace MtaServer.Server.Behaviour
                     this.timer.Interval = interval * 1000;
                 }
 
-                this.logger.LogInformation($"Master server list announcement result: ${keyValuePairCollection["ok_message"]}");
+                this.logger.LogInformation($"Master server list announcement result: {keyValuePairCollection["ok_message"]}");
             } catch (HttpRequestException e)
             {
                 this.logger.LogError($"Failed to announce to master server list: {e.Message}");

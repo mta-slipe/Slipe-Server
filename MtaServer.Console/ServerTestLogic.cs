@@ -1,9 +1,11 @@
 ﻿using MtaServer.Packets.Definitions.Commands;
 using MtaServer.Packets.Definitions.Join;
+using MtaServer.Packets.Definitions.Lua;
 using MtaServer.Packets.Definitions.Player;
 using MtaServer.Packets.Definitions.Resources;
 using MtaServer.Packets.Definitions.Sync;
 using MtaServer.Packets.Lua.Camera;
+using MtaServer.Packets.Lua.Event;
 using MtaServer.Server;
 using MtaServer.Server.Elements;
 using MtaServer.Server.Elements.Enums;
@@ -12,6 +14,7 @@ using MtaServer.Server.PacketHandling.Factories;
 using MtaServer.Server.Repositories;
 using MtaServer.Server.ResourceServing;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 using System.Threading.Tasks;
@@ -72,6 +75,7 @@ namespace MtaServer.Console
                 TestPacketScopes(client);
                 TestClientResource(client);
                 TestPureSync(client);
+                _ = TestEventTrigger(client);
                 SetupTestElements(client);
             };
         }
@@ -207,6 +211,30 @@ namespace MtaServer.Console
                 new Vehicle(602, new Vector3(-10, 5, 3))
             });
             client.SendPacket(entityPacket);
+        }
+
+        private async Task TestEventTrigger(Client client)
+        {
+            var table = new LuaValue(new Dictionary<LuaValue, LuaValue>()
+            {
+                ["x"] = 5.5f,
+                ["y"] = "string",
+                ["z"] = new LuaValue(new Dictionary<LuaValue, LuaValue>() { }),
+                ["w"] = false
+            });
+            table.TableValue?.Add("self", table);
+
+            var packet = new LuaEventPacket("Slipe.Test.ClientEvent", root.Id, new LuaValue[]
+            {
+                "String value",
+                true,
+                123,
+                table
+            });
+
+            await Task.Delay(5000);
+
+            client.SendPacket(packet);
         }
     }
 }

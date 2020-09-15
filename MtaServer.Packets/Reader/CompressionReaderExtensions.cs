@@ -76,8 +76,15 @@ namespace MtaServer.Packets.Reader
         }
 
         public static byte GetCompressedByte(this PacketReader reader) => reader.GetCompressed(8, true)[0];
-        public static uint GetCompressedUInt32(this PacketReader reader) => BitConverter.ToUInt32(reader.GetCompressed(32, true));
+
         public static ushort GetCompressedUint16(this PacketReader reader) => BitConverter.ToUInt16(reader.GetCompressed(16, true));
+        public static short GetCompressedint16(this PacketReader reader) => BitConverter.ToInt16(reader.GetCompressed(16, true));
+
+        public static uint GetCompressedUInt32(this PacketReader reader) => BitConverter.ToUInt32(reader.GetCompressed(32, true));
+        public static int GetCompressedInt32(this PacketReader reader) => BitConverter.ToInt32(reader.GetCompressed(32, true));
+
+        public static ulong GetCompressedUInt64(this PacketReader reader) => BitConverter.ToUInt64(reader.GetCompressed(64, true));
+        public static long GetCompressedInt64(this PacketReader reader) => BitConverter.ToInt64(reader.GetCompressed(64, true));
 
 
         public static float GetCompressedFloat(this PacketReader reader)
