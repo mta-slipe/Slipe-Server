@@ -19,5 +19,10 @@ namespace MtaServer.Server.Elements
             this.Position = position;
             this.MarkerType = markerType;
         }
+
+        public new Marker AssociateWith(MtaServer server)
+        {
+            return server.AssociateElement(this);
+        }
     }
 }

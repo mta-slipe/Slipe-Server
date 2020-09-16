@@ -57,6 +57,11 @@ namespace MtaServer.Server.Elements
             this.Destroyed?.Invoke(this);
         }
 
+        public Element AssociateWith(MtaServer server)
+        {
+            return server.AssociateElement(this);
+        }
+
         public event Action<Element, Vector3>? PositionChange;
         public event Action<Element>? Destroyed;
     }

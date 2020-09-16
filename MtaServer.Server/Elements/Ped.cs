@@ -35,5 +35,10 @@ namespace MtaServer.Server.Elements
             this.Clothes = new PedClothing[0];
             this.Weapons = new PedWeapon[0];
         }
+
+        public new Ped AssociateWith(MtaServer server)
+        {
+            return server.AssociateElement(this);
+        }
     }
 }

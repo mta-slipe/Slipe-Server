@@ -32,5 +32,10 @@ namespace MtaServer.Server.Elements.ColShapes
                 position.X > this.Position.X && position.X < bounds.X &&
                 position.Y > this.Position.Y && position.Y < bounds.Y;
         }
+
+        public new CollisionRectangle AssociateWith(MtaServer server)
+        {
+            return server.AssociateElement(this);
+        }
     }
 }

@@ -24,5 +24,10 @@ namespace MtaServer.Server.Elements
             this.Model = model;
             this.Position = position;
         }
+
+        public new WorldObject AssociateWith(MtaServer server)
+        {
+            return server.AssociateElement(this);
+        }
     }
 }

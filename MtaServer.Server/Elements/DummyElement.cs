@@ -8,5 +8,10 @@ namespace MtaServer.Server.Elements
         public override ElementType ElementType => ElementType.Dummy;
 
         public string ElementTypeName { get; set; } = "dummy";
+
+        public new DummyElement AssociateWith(MtaServer server)
+        {
+            return server.AssociateElement(this);
+        }
     }
 }

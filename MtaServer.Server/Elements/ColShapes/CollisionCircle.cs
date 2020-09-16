@@ -28,5 +28,10 @@ namespace MtaServer.Server.Elements.ColShapes
         {
             return Vector3.Distance(this.Position, new Vector3(position.X, position.Y, 0)) < this.Radius;
         }
+
+        public new CollisionCircle AssociateWith(MtaServer server)
+        {
+            return server.AssociateElement(this);
+        }
     }
 }

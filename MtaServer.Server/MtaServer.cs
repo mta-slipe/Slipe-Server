@@ -118,7 +118,7 @@ namespace MtaServer.Server
             this.serviceCollection.AddSingleton<ILogger, DefaultLogger>();
             this.serviceCollection.AddSingleton<IResourceServer, BasicHttpServer>();
             this.serviceCollection.AddSingleton<IElementIdGenerator, ElementIdGenerator>();
-            this.serviceCollection.AddSingleton<AseQueryService, AseQueryService>();
+            this.serviceCollection.AddSingleton<IAseQueryService, AseQueryService>();
             this.serviceCollection.AddSingleton<HttpClient>(new HttpClient());
             this.serviceCollection.AddSingleton<Configuration>(this.configuration);
             this.serviceCollection.AddSingleton<RootElement>(this.root);

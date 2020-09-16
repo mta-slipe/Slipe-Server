@@ -54,5 +54,10 @@ namespace MtaServer.Server.Elements
             this.Model = (ushort)model;
             this.PickupType = PickupType.Custom;
         }
+
+        public new Pickup AssociateWith(MtaServer server)
+        {
+            return server.AssociateElement(this);
+        }
     }
 }

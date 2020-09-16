@@ -17,5 +17,10 @@ namespace MtaServer.Server.Elements
         {
             this.Vertices = vertices;
         }
+
+        public new Water AssociateWith(MtaServer server)
+        {
+            return server.AssociateElement(this);
+        }
     }
 }

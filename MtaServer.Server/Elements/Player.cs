@@ -36,6 +36,11 @@ namespace MtaServer.Server.Elements
             this.Client = client;
         }
 
+        public new Player AssociateWith(MtaServer server)
+        {
+            return server.AssociateElement(this);
+        }
+
         public void HandleCommand(string command, string[] arguments) => OnCommand?.Invoke(command, arguments);
         public event Action<string, string[]>? OnCommand;
     }

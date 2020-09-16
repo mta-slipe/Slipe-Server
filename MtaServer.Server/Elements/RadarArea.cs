@@ -28,5 +28,10 @@ namespace MtaServer.Server.Elements
             this.Size = size;
             this.Color = color;
         }
+
+        public new RadarArea AssociateWith(MtaServer server)
+        {
+            return server.AssociateElement(this);
+        }
     }
 }
