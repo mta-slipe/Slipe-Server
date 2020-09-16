@@ -22,5 +22,10 @@ namespace MtaServer.Server.Elements
             this.VisibleDistance = visibleDistance;
             this.Ordering = ordering;
         }
+
+        public new Blip AssociateWith(MtaServer server)
+        {
+            return server.AssociateElement(this);
+        }
     }
 }

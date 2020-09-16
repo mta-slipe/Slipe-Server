@@ -24,5 +24,10 @@ namespace MtaServer.Server.Elements.ColShapes
                 position.Y > this.Position.Y && position.Y < bounds.Y &&
                 position.Z > this.Position.Z && position.Z < bounds.Z;
         }
+
+        public new CollisionCuboid AssociateWith(MtaServer server)
+        {
+            return server.AssociateElement(this);
+        }
     }
 }

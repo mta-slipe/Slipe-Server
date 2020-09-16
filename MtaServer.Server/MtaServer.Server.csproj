@@ -21,4 +21,8 @@
     <ProjectReference Include="..\MtaServer.Net\MtaServer.Net.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Factories\" />
+  </ItemGroup>
+
 </Project>

@@ -8,15 +8,6 @@ namespace MtaServer.Server.Tests
     public class ElementTests
     {
         [Fact]
-        public void CreateTwoElements_CreatesUniqueElementIds()
-        {
-            var element1 = new Element();
-            var element2 = new Element();
-
-            element1.Id.Should().NotBe(element2.Id);
-        }
-
-        [Fact]
         public void GetAndIncrementTimeContext_ReturnsNewTimeContext()
         {
             var element = new Element();

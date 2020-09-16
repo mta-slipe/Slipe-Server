@@ -15,5 +15,10 @@ namespace MtaServer.Server.Elements.ColShapes
         public abstract bool IsWithin(Vector3 position);
 
         public bool IsWithin(Element element) => IsWithin(element.Position);
+
+        public new CollisionShape AssociateWith(MtaServer server)
+        {
+            return server.AssociateElement(this);
+        }
     }
 }

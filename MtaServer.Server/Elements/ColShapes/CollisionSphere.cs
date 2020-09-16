@@ -19,5 +19,10 @@ namespace MtaServer.Server.Elements.ColShapes
         {
             return Vector3.Distance(this.Position, position) < this.Radius;
         }
+
+        public new CollisionSphere AssociateWith(MtaServer server)
+        {
+            return server.AssociateElement(this);
+        }
     }
 }

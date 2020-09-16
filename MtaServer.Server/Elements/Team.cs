@@ -22,5 +22,10 @@ namespace MtaServer.Server.Elements
 
             this.Players = new List<Player>();
         }
+
+        public new Team AssociateWith(MtaServer server)
+        {
+            return server.AssociateElement(this);
+        }
     }
 }

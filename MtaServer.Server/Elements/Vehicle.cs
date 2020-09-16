@@ -55,5 +55,10 @@ namespace MtaServer.Server.Elements
 
             this.Name = $"vehicle{this.Id}";
         }
+
+        public new Vehicle AssociateWith(MtaServer server)
+        {
+            return server.AssociateElement(this);
+        }
     }
 }

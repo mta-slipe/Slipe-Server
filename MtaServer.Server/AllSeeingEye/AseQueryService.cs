@@ -10,7 +10,7 @@ using System.Text;
 
 namespace MtaServer.Server.AllSeeingEye
 {
-    public class AseQueryService
+    public class AseQueryService : IAseQueryService
     {
         private readonly MtaServer mtaServer;
         private readonly Configuration configuration;

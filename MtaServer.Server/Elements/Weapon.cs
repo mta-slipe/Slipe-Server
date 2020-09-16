@@ -41,5 +41,10 @@ namespace MtaServer.Server.Elements
         {
 
         }
+
+        public new Weapon AssociateWith(MtaServer server)
+        {
+            return server.AssociateElement(this);
+        }
     }
 }

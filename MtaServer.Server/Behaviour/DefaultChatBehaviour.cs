@@ -10,7 +10,7 @@ namespace MtaServer.Server.Behaviour
     {
         public DefaultChatBehaviour(MtaServer server, ILogger? logger)
         {
-            Player.OnJoin += (player) =>
+            server.PlayerJoined += (player) =>
             {
                 player.OnCommand += (command, arguments) =>
                 {

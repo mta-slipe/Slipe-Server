@@ -1,6 +1,5 @@
 ﻿using MtaServer.Packets.Enums;
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using MtaServer.Net;
 using MtaServer.Packets;
@@ -12,10 +11,10 @@ using MtaServer.Server.ResourceServing;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 using MtaServer.Server.AllSeeingEye;
+using MtaServer.Server.Elements.IdGeneration;
 using MtaServer.Server.Events;
 
 namespace MtaServer.Server
@@ -38,6 +37,7 @@ namespace MtaServer.Server
         private readonly ServiceCollection serviceCollection;
         private readonly ServiceProvider serviceProvider;
         private readonly IElementRepository elementRepository;
+        private readonly IElementIdGenerator? elementIdGenerator;
         private readonly RootElement root;
         public readonly Configuration configuration;
 
@@ -76,6 +76,8 @@ namespace MtaServer.Server
             this.resourceServer.Start();
 
             this.elementRepository = this.serviceProvider.GetRequiredService<IElementRepository>();
+            this.elementIdGenerator = this.serviceProvider.GetService<IElementIdGenerator>();
+
             this.elementRepository.Add(this.root);
 
             this.packetReducer = new PacketReducer();
@@ -115,7 +117,8 @@ namespace MtaServer.Server
             this.serviceCollection.AddSingleton<IElementRepository, CompoundElementRepository>();
             this.serviceCollection.AddSingleton<ILogger, DefaultLogger>();
             this.serviceCollection.AddSingleton<IResourceServer, BasicHttpServer>();
-            this.serviceCollection.AddSingleton<AseQueryService, AseQueryService>();
+            this.serviceCollection.AddSingleton<IElementIdGenerator, ElementIdGenerator>();
+            this.serviceCollection.AddSingleton<IAseQueryService, AseQueryService>();
             this.serviceCollection.AddSingleton<HttpClient>(new HttpClient());
             this.serviceCollection.AddSingleton<Configuration>(this.configuration);
             this.serviceCollection.AddSingleton<RootElement>(this.root);
@@ -138,8 +141,11 @@ namespace MtaServer.Server
         {
             if (!this.clients[netWrapper].ContainsKey(binaryAddress))
             {
-                this.clients[netWrapper][binaryAddress] = new Client(binaryAddress, netWrapper);
-                OnClientConnect?.Invoke(this.clients[netWrapper][binaryAddress]);
+                var client = new Client(binaryAddress, netWrapper);
+                AssociateElement(client.Player);
+
+                this.clients[netWrapper][binaryAddress ]= client;
+                ClientConnected?.Invoke(client);
             }
 
             this.packetReducer.EnqueuePacket(this.clients[netWrapper][binaryAddress], packetId, data);
@@ -151,13 +157,38 @@ namespace MtaServer.Server
             )
             {
                 this.clients[netWrapper][binaryAddress].IsConnected = false;
-                OnClientDisconnect?.Invoke(this.clients[netWrapper][binaryAddress]);
+                ClientDisconnected?.Invoke(this.clients[netWrapper][binaryAddress]);
                 this.clients[netWrapper].Remove(binaryAddress);
             }
         }
 
-        public event Action<Client>? OnClientConnect;
-        public event Action<Client>? OnClientDisconnect;
+        public T AssociateElement<T>(T element) where T : Element
+        {
+            return HandleElementCreation(element);
+        }
+
+        private T HandleElementCreation<T>(T element) where T : Element
+        {
+            if (this.elementIdGenerator != null)
+            {
+                element.Id = this.elementIdGenerator.GetId();
+            }
+            this.elementRepository.Add(element);
+
+            this.ElementCreated?.Invoke(element);
+
+            return element;
+        }
+
+        public void HandlePlayerJoin(Player player)
+        {
+            PlayerJoined?.Invoke(player);
+        }
+
+        public event Action<Element>? ElementCreated;
+        public event Action<Player>? PlayerJoined;
+        public event Action<Client>? ClientConnected;
+        public event Action<Client>? ClientDisconnected;
         public event Action<LuaEvent>? LuaEventTriggered;
 
     }

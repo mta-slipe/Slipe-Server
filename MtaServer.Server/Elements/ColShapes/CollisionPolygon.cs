@@ -32,6 +32,11 @@ namespace MtaServer.Server.Elements.ColShapes
             return intersections % 2 == 1;
         }
 
+        public new CollisionPolygon AssociateWith(MtaServer server)
+        {
+            return server.AssociateElement(this);
+        }
+
         private bool IsOnSegment(Vector2 p, Vector2 q, Vector2 r)
         {
             return (
