@@ -17,7 +17,7 @@ namespace MtaServer.Server.AllSeeingEye
     public class AseBehaviour
     {
         private const int cacheTime = 10 * 1000;
-        private readonly AseQueryService aseQueryService;
+        private readonly IAseQueryService aseQueryService;
         private readonly ILogger logger;
 
         private readonly Cache<byte[]> fullCache;
@@ -26,7 +26,7 @@ namespace MtaServer.Server.AllSeeingEye
         private readonly AseVersion aseVersion;
         private readonly Dictionary<string, string> rules = new Dictionary<string, string>();
 
-        public AseBehaviour(AseQueryService aseQueryService, Configuration configuration, ILogger logger)
+        public AseBehaviour(IAseQueryService aseQueryService, Configuration configuration, ILogger logger)
         {
             this.aseQueryService = aseQueryService;
             this.logger = logger;

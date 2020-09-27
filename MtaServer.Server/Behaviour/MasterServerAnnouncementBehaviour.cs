@@ -13,10 +13,10 @@ namespace MtaServer.Server.Behaviour
         private readonly Configuration configuration;
         private readonly ILogger logger;
         private readonly string masterServerUrl;
-        private readonly AseQueryService aseQueryService;
+        private readonly IAseQueryService aseQueryService;
         private readonly Timer timer;
 
-        public MasterServerAnnouncementBehaviour(HttpClient httpClient, Configuration configuration, ILogger logger, string masterServerUrl, AseQueryService aseQueryService)
+        public MasterServerAnnouncementBehaviour(HttpClient httpClient, Configuration configuration, ILogger logger, string masterServerUrl, IAseQueryService aseQueryService)
         {
             this.httpClient = httpClient;
             this.configuration = configuration;
