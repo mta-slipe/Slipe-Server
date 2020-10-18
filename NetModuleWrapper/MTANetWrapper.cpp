@@ -181,6 +181,11 @@ EXPORT void __cdecl stopNetWrapper() {
     runThread.join();
 }
 
+EXPORT void __cdecl setChecks(const char* szDisableComboACMap, const char* szDisableACMap, const char* szEnableSDMap,
+                                                        int iEnableClientChecks, bool bHideAC, const char* szImgMods)
+{
+    network->SetChecks(szDisableComboACMap, szDisableACMap, szEnableSDMap, iEnableClientChecks, bHideAC, szImgMods);
+}
 
 // extern "C" __declspec(dllexport) void StopNetwork()
 //{
@@ -260,11 +265,6 @@ EXPORT void __cdecl stopNetWrapper() {
 //{
 //}
 // extern "C" __declspec(dllexport) void __cdecl ClearClientBitStreamVersion(const NetServerPlayerID& PlayerID)
-//{
-//}
-//
-// extern "C" __declspec(dllexport) void __cdecl SetChecks(const char* szDisableComboACMap, const char* szDisableACMap, const char* szEnableSDMap,
-//                                                        int iEnableClientChecks, bool bHideAC, const char* szImgMods)
 //{
 //}
 //

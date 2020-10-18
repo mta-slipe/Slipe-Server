@@ -31,5 +31,19 @@ namespace MtaServer.Server
 
         public string ResourceDirectory { get; set; } = "./resources";
 
+        public AntiCheatConfig AntiCheat { get; set; } = new AntiCheatConfig();
+    }
+
+    public class AntiCheatConfig
+    {
+        public string AllowGta3ImgMods { get; set; } = "none";
+
+        public string EnableSpecialDetections { get; set; } = "";
+
+        // Hide the AC info from the client, showing the following line upon join:
+        // "Server AC info: [Undisclosed]"
+        public bool HideAC { get; set; } = false;
+        public string DisableACFeatures { get; set; } = "";
+        public int VerifyClientSettings { get; set; } = -1;
     }
 }

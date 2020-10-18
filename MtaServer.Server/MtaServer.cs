@@ -89,6 +89,16 @@ namespace MtaServer.Server
         public void Start()
         {
             this.netWrapper.Start();
+            this.ConfigureAC();
+        }
+
+        private void ConfigureAC() {
+            this.netWrapper.SetACConfig(
+                configuration.AntiCheat.DisableACFeatures,
+                configuration.AntiCheat.HideAC,
+                configuration.AntiCheat.AllowGta3ImgMods,
+                configuration.AntiCheat.EnableSpecialDetections
+            );
         }
 
         public void Stop()
