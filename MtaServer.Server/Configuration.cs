@@ -45,5 +45,12 @@ namespace MtaServer.Server
         public bool HideAC { get; set; } = false;
         public string DisableACFeatures { get; set; } = "";
         public int VerifyClientSettings { get; set; } = -1;
+        public ClientFileCheck[] FileChecks { get; set; } = new ClientFileCheck[] { };
+    }
+
+    public class ClientFileCheck
+    {
+        public string FileName { get; set; } = "";
+        public bool Verify { get; set; } = false;
     }
 }

@@ -97,7 +97,8 @@ namespace MtaServer.Server
                 configuration.AntiCheat.DisableACFeatures,
                 configuration.AntiCheat.HideAC,
                 configuration.AntiCheat.AllowGta3ImgMods,
-                configuration.AntiCheat.EnableSpecialDetections
+                configuration.AntiCheat.EnableSpecialDetections,
+                configuration.AntiCheat.FileChecks
             );
         }
 
