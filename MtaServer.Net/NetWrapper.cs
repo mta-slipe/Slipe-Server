@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
-using MtaServer.Net;
 using MtaServer.Packets;
 using MtaServer.Packets.Enums;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using System.Linq;
 
 namespace MtaServer.Net
@@ -21,7 +19,7 @@ namespace MtaServer.Net
 
         [DllImport(wrapperDllpath, EntryPoint = "initNetWrapper")]
         private static extern int InitNetWrapper(string path, string idFile, string ip, ushort port, uint playerCount, string serverName, PacketCallback callback);
-        
+
         [DllImport(wrapperDllpath, EntryPoint = "startNetWrapper")]
         private static extern void StartNetWrapper();
 
@@ -41,8 +39,37 @@ namespace MtaServer.Net
         [DllImport(wrapperDllpath, EntryPoint = "setChecks")]
         private static extern void SetChecks(string szDisableComboACMap, string szDisableACMap, string szEnableSDMap, int iEnableClientChecks, bool bHideAC, string szImgMods);
 
+        private static dynamic[] gtaDataFiles = new[] {
+            new { fileName = "data/animgrp.dat", bitNumber = 1 },
+            new { fileName = "data/ar_stats.dat", bitNumber = 3 },
+            new { fileName = "data/carmods.dat", bitNumber = 0 },
+            new { fileName = "data/clothes.dat", bitNumber = 5 },
+            new { fileName = "data/default.dat", bitNumber = 7 },
+            new { fileName = "data/default.ide", bitNumber = 9 },
+            new { fileName = "data/gta.dat", bitNumber = 11 },
+            new { fileName = "data/maps", bitNumber = 25 },
+            new { fileName = "data/object.dat", bitNumber = 6 },
+            new { fileName = "data/peds.ide", bitNumber = 13 },
+            new { fileName = "data/pedstats.dat", bitNumber = 15 },
+            new { fileName = "data/txdcut.ide", bitNumber = 17 },
+            new { fileName = "data/vehicles.ide", bitNumber = 14 },
+            new { fileName = "data/weapon.dat", bitNumber = 20 },
+            new { fileName = "data/melee.dat", bitNumber = 4 },
+            new { fileName = "data/water.dat", bitNumber = 16 },
+            new { fileName = "data/water1.dat", bitNumber = 18 },
+            new { fileName = "data/handling.cfg", bitNumber = 2 },
+            new { fileName = "models/coll/weapons.col", bitNumber = 19 },
+            new { fileName = "data/plants.dat", bitNumber = 21 },
+            new { fileName = "data/furnitur.dat", bitNumber = 23 },
+            new { fileName = "data/procobj.dat", bitNumber = 24 },
+            new { fileName = "data/surface.dat", bitNumber = 8 },
+            new { fileName = "data/surfinfo.dat", bitNumber = 12 },
+            new { fileName = "anim/ped.ifp", bitNumber = 22 },
+            new { fileName = "data/timecyc.dat", bitNumber = 26 },
+        };
+
         private readonly PacketCallback packetInterceptorDelegate;
-        
+
         public NetWrapper(string directory, string netDllPath, string host, ushort port)
         {
             string idFile = Path.Join(directory, "id");
@@ -109,51 +136,85 @@ namespace MtaServer.Net
             SetSocketVersion(binaryAddress, version);
         }
 
-        public void SetACConfig(string disabledAC, bool hideAC, string allowGta3ImgMods, string enabledSD) {
-            if (!new string[] {"none", "peds"}.Contains(allowGta3ImgMods)) {
+        public void SetACConfig(string disabledAC, bool hideAC, string allowGta3ImgMods, string enabledSD, dynamic[] fileChecks)
+        {
+            if (!new string[] { "none", "peds" }.Contains(allowGta3ImgMods))
+            {
                 throw new ArgumentException("allowGta3ImgMods has incorrect value! Allowed values: none, peds");
             }
 
-            var defaultDisabledSDArray = new string[] {"12", "14", "15", "16", "20", "22", "23", "28", "31", "32", "33", "34", "35", "36"};
+            var defaultDisabledSDArray = new string[] { "12", "14", "15", "16", "20", "22", "23", "28", "31", "32", "33", "34", "35", "36" };
             var szDisabledComboAC = new SzArgMap();
             var szDisabledAC = new SzArgMap();
             var szEnabledSD = new SzArgMap();
-            foreach (var i in defaultDisabledSDArray) {
+            var enableClientChecks = -1;
+            foreach (var i in defaultDisabledSDArray)
+            {
                 szDisabledComboAC.Set(i, "");
             }
-            
+
             var parsedDisabledAC = disabledAC.Split(",");
             var parsedEnabledSD = enabledSD.Split(",");
-            foreach (var f in parsedDisabledAC) {
-                if (int.TryParse(f, out _)) {
+            foreach (var f in parsedDisabledAC)
+            {
+                if (int.TryParse(f, out _))
+                {
                     szDisabledAC.Set(f, "");
                     szDisabledComboAC.Set(f, "");
                 }
             }
-            foreach (var sd in parsedEnabledSD) {
-                if (int.TryParse(sd, out _)) {
+            foreach (var sd in parsedEnabledSD)
+            {
+                if (int.TryParse(sd, out _))
+                {
                     szEnabledSD.Set(sd, "");
                     szDisabledComboAC.Remove(sd);
                 }
             }
 
-            SetChecks(szDisabledComboAC.ToString(), szDisabledAC.ToString(), szEnabledSD.ToString(), -1, hideAC, allowGta3ImgMods); // TODO fix client checks
+            foreach (var fc in fileChecks)
+            {
+                var gtaFile = gtaDataFiles.Where(x => x.fileName == fc.FileName).FirstOrDefault();
+                if (gtaFile != null)
+                {
+                    if (fc.Verify)
+                    {
+                        enableClientChecks |= 1 << gtaFile.bitNumber;
+                    }
+                    else
+                    {
+                        enableClientChecks &= ~(1 << gtaFile.bitNumber);
+                    }
+                }
+            }
+
+            SetChecks(szDisabledComboAC.ToString(),
+                      szDisabledAC.ToString(),
+                      szEnabledSD.ToString(),
+                      enableClientChecks,
+                      hideAC,
+                      allowGta3ImgMods);
         }
 
         // This class is used only for AC configuring, to keep compatibility with internal implementation of NetModuleWrapper.dll
-        internal class SzArgMap {
+        internal class SzArgMap
+        {
             private IDictionary<string, string> internalMap = new Dictionary<string, string>();
-            public void Set(string key, string value) {
+            public void Set(string key, string value)
+            {
                 internalMap[key] = value;
             }
 
-            public void Remove(string key) {
+            public void Remove(string key)
+            {
                 internalMap.Remove(key);
             }
 
-            public override string ToString() {
+            public override string ToString()
+            {
                 var resultingString = "";
-                foreach (var kv in internalMap) {
+                foreach (var kv in internalMap)
+                {
                     if (resultingString.Length == 0) resultingString += $"{kv.Key}={kv.Value}";
                     resultingString += $"&{kv.Key}={kv.Value}";
                 }
@@ -167,7 +228,7 @@ namespace MtaServer.Net
             Marshal.Copy(payload, data, 0, (int)payloadSize);
 
             PacketId parsedPacketId = (PacketId)packetId;
-                
+
             this.OnPacketReceived?.Invoke(this, binaryAddress, parsedPacketId, data);
         }
 
