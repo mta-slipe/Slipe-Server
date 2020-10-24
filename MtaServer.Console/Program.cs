@@ -3,11 +3,9 @@ using Microsoft.Extensions.Logging;
 using MtaServer.ConfigurationProviders;
 using MtaServer.ConfigurationProviders.Configurations;
 using MtaServer.Packets.Enums;
-using MtaServer.Server;
 using MtaServer.Server.AllSeeingEye;
 using MtaServer.Server.Behaviour;
 using MtaServer.Server.PacketHandling.QueueHandlers;
-using MtaServer.Server.ResourceServing;
 using System;
 using System.IO;
 using System.Threading;
@@ -16,6 +14,8 @@ namespace MtaServer.Console
 {
     public class Program
     {
+        private static EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
+
         static void Main(string[] args)
         {
             try
@@ -47,13 +47,19 @@ namespace MtaServer.Console
                 MapName = "N/A"
             };
 
+            System.Console.CancelKeyPress += delegate
+            {
+                server.Stop();
+                waitHandle.Set();
+            };
+
             SetupQueueHandlers();
             SetupBehaviour();
             SetupLogic();
 
             server.Start();
-
-            Thread.Sleep(-1);
+            
+            waitHandle.WaitOne();
         }
 
         private void Configure(ServiceCollection services)
@@ -73,9 +79,11 @@ namespace MtaServer.Console
             switch (extension)
             {
                 case ".json":
-                   return new JsonConfigurationProvider(configPath);
+                    return new JsonConfigurationProvider(configPath);
                 case ".xml":
                     return new XmlConfigurationProvider(configPath);
+                case ".toml":
+                    return new TomlConfigurationProvider(configPath);
                 default:
                     throw new NotSupportedException($"Unsupported configuration extension {extension}");
             }
@@ -100,7 +108,7 @@ namespace MtaServer.Console
             CommandQueueHandler commandQueueHandler = this.server.Instantiate<CommandQueueHandler>(10, 1);
             server.RegisterPacketQueueHandler(PacketId.PACKET_ID_COMMAND, commandQueueHandler);
 
-            LuaEventQueueHandler luaEventQueueHandler= this.server.Instantiate<LuaEventQueueHandler>(10, 1);
+            LuaEventQueueHandler luaEventQueueHandler = this.server.Instantiate<LuaEventQueueHandler>(10, 1);
             server.RegisterPacketQueueHandler(PacketId.PACKET_ID_LUA_EVENT, luaEventQueueHandler);
         }
 
