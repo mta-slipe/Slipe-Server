@@ -1,14 +1,14 @@
 ﻿using MtaServer.Packets.Definitions.Entities.Structs;
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 
 namespace MtaServer.Server.Elements
 {
     public class Vehicle : Element
     {
+        public const int MIN_PUSH_ANTISPAM_RATE_MS = 1500;
+
         public override ElementType ElementType => ElementType.Vehicle;
 
         public ushort Model { get; set; }
@@ -40,6 +40,28 @@ namespace MtaServer.Server.Elements
         public Color HeadlightColor { get; set; } = Color.White;
         public VehicleHandling? Handling { get; set; }
         public VehicleSirenSet? Sirens { get; set; }
+        public IList<Player> Occupants { get; set; } = new List<Player>();
+
+        private Player? _syncer;
+        public Player? Syncer { 
+            get => _syncer; 
+            set 
+            {
+                if (value == null)
+                {
+                    if (_syncer != null)
+                        _syncer.SyncingVehicles.Remove(this);
+                } 
+                else if (value != _syncer)
+                {
+                    if (_syncer != null)
+                        _syncer.SyncingVehicles.Remove(this);
+                    value.SyncingVehicles.Add(this);
+                }
+                _syncer = value;
+            } 
+        }
+        public long LastPushTimestamp { get; set; } = 0;
 
 
 

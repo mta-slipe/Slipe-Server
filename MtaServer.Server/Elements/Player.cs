@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
-using System.Text.RegularExpressions;
 
 namespace MtaServer.Server.Elements
 {
@@ -30,6 +30,8 @@ namespace MtaServer.Server.Elements
         public bool IsOnFire { get; set; }
         public bool IsSyncingVelocity { get; set; }
         public bool IsStealthAiming { get; set; }
+        public IList<Vehicle> SyncingVehicles { get; set; } = new List<Vehicle>();
+
 
         internal Player(Client client) : base(0, Vector3.Zero)
         {

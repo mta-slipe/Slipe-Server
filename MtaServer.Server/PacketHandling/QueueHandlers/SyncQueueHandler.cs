@@ -4,7 +4,7 @@ using MtaServer.Server.Elements;
 using MtaServer.Server.Repositories;
 using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
+using System.Linq;
 
 namespace MtaServer.Server.PacketHandling.QueueHandlers
 {
@@ -33,6 +33,11 @@ namespace MtaServer.Server.PacketHandling.QueueHandlers
                         playerPureSyncPacket.Read(queueEntry.Data);
                         HandleClientPureSyncPacket(queueEntry.Client, playerPureSyncPacket);
                         break;
+                    case PacketId.PACKET_ID_VEHICLE_PUSH_SYNC:
+                        UnoccupiedVehiclePushSyncPacket packet = new UnoccupiedVehiclePushSyncPacket();
+                        packet.Read(queueEntry.Data);
+                        HandleUnoccupiedVehiclePushSyncPacket(queueEntry.Client, packet);
+                        break;
                 }
             } catch (Exception e)
             {
@@ -53,6 +58,8 @@ namespace MtaServer.Server.PacketHandling.QueueHandlers
 
             packet.PlayerId = client.Player.Id;
             packet.Latency = 0;
+
+            // TODO make smart sync packet relaying
             foreach (var remotePlayer in this.elementRepository.GetByType<Player>(ElementType.Player))
             {
                 if (remotePlayer.Client != client)
@@ -94,6 +101,27 @@ namespace MtaServer.Server.PacketHandling.QueueHandlers
             player.CameraPosition = packet.CameraOrientation.CameraPosition;
             player.CameraDirection = packet.CameraOrientation.CameraForward;
             player.CameraRotation = packet.CameraRotation;
+        }
+
+        private void HandleUnoccupiedVehiclePushSyncPacket(Client client, UnoccupiedVehiclePushSyncPacket packet)
+        {
+            var vehicle = (Vehicle?) this.elementRepository.Get(packet.VehicleId);
+            if (vehicle != null)
+            {
+                var timeNow = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                if (vehicle.Syncer != client.Player && (timeNow - vehicle.LastPushTimestamp) >= Vehicle.MIN_PUSH_ANTISPAM_RATE_MS)
+                {
+                    if (vehicle.Occupants.ElementAtOrDefault(0) == null)
+                    {
+                        // TODO we need to update whole vehicle pool to adjust the vehicles syncers
+                        vehicle.Syncer = client.Player;
+                        vehicle.LastPushTimestamp = timeNow;
+                    }
+                }
+            } else
+            {
+                Debug.WriteLine("Incorrect vehicle id in VEHICLE_PUSH_SYNC packet");
+            }
         }
     }
 }
