@@ -57,6 +57,15 @@ namespace MtaServer.Server.Repositories
                 .Select(entry => entry.Value);
         }
 
+        public IEnumerable<TElement> GetWithinRange<TElement>(Vector3 position, float range, ElementType elementType) where TElement : Element
+        {
+            return this.elements
+                .RadialSearch(new float[] { position.X, position.Y, position.Z }, range)
+                .Where(element => element.Value.ElementType == elementType)
+                .Select(kvPair => kvPair.Value)
+                .Cast<TElement>();
+        }
+
         private void ReInsertElement(Element element, Vector3 newPosition)
         {
             this.Remove(element);
