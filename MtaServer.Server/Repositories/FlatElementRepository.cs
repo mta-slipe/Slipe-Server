@@ -46,5 +46,12 @@ namespace MtaServer.Server.Repositories
         {
             return this.elements.Where(element => Vector3.Distance(element.Position, position) < range);
         }
+
+        public IEnumerable<TElement> GetWithinRange<TElement>(Vector3 position, float range, ElementType elementType) where TElement : Element
+        {
+            return this.elements
+                .Where(element => Vector3.Distance(element.Position, position) < range && element.ElementType == elementType)
+                .Cast<TElement>();
+        }
     }
 }
