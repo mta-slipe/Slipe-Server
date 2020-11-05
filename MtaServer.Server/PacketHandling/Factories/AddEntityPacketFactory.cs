@@ -3,12 +3,14 @@ using MtaServer.Server.Elements;
 using MtaServer.Server.Elements.ColShapes;
 using MtaServer.Server.PacketHandling.Builders;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace MtaServer.Server.PacketHandling.Factories
 {
     public static class AddEntityPacketFactory
     {
-        public static AddEntityPacket CreateAddEntityPacket(Element[] elements)
+        public static AddEntityPacket CreateAddEntityPacket(IEnumerable<Element> elements)
         {
             var builder = new AddEntityPacketBuilder();
 

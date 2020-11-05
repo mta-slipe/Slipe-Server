@@ -86,14 +86,14 @@ namespace MtaServer.Server.PacketHandling.Factories
             return new ToggleDebuggerPacket(visible);
         }
         
-        public static DebugEchoPacket CreateDebugEchoPacket(string message, byte level)
+        public static DebugEchoPacket CreateDebugEchoPacket(string message, DebugLevel level)
         {
-            return new DebugEchoPacket(message, level, Color.White);
+            return new DebugEchoPacket(message, (byte)level, Color.White);
         }
 
-        public static DebugEchoPacket CreateDebugEchoPacket(string message, byte level, Color color)
+        public static DebugEchoPacket CreateDebugEchoPacket(string message, DebugLevel level, Color color)
         {
-            return new DebugEchoPacket(message, level, color);
+            return new DebugEchoPacket(message, (byte)level, color);
         }
         
         public static ForcePlayerMapPacket CreateForcePlayerMapPacket(bool visible)

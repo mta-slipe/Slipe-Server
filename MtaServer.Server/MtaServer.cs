@@ -63,7 +63,7 @@ namespace MtaServer.Server
             if (!Validator.TryValidateObject(this.configuration, new ValidationContext(this.configuration), validationResults, true))
             {
                 string invalidProperties = string.Join("\r\n\t", validationResults.Select(r => r.ErrorMessage));
-                throw new Exception("An error has occurred while parsing configuration parameters:\r\n " + invalidProperties);
+                throw new Exception($"An error has occurred while parsing configuration parameters:\r\n {invalidProperties}");
             }
 
             this.root = new RootElement();
@@ -117,7 +117,7 @@ namespace MtaServer.Server
             this.serviceCollection.AddSingleton<IElementRepository, CompoundElementRepository>();
             this.serviceCollection.AddSingleton<ILogger, DefaultLogger>();
             this.serviceCollection.AddSingleton<IResourceServer, BasicHttpServer>();
-            this.serviceCollection.AddSingleton<IElementIdGenerator, ElementIdGenerator>();
+            this.serviceCollection.AddSingleton<IElementIdGenerator, RepositoryBasedElementIdGenerator>();
             this.serviceCollection.AddSingleton<IAseQueryService, AseQueryService>();
             this.serviceCollection.AddSingleton<HttpClient>(new HttpClient());
             this.serviceCollection.AddSingleton<Configuration>(this.configuration);
