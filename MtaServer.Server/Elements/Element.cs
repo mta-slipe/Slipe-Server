@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Numerics;
 
 namespace MtaServer.Server.Elements
@@ -6,7 +8,25 @@ namespace MtaServer.Server.Elements
     public class Element
     {
         public virtual ElementType ElementType => ElementType.Unknown;
-        public Element? Parent { get; set; }
+
+        private Element? parent;
+        public Element? Parent
+        {
+            get => parent;
+            set
+            {
+                this.parent = value;
+
+                if (this.parent != null)
+                    this.parent.RemoveChild(this);
+
+                if (value != null)
+                    value.AddChild(this);
+            }
+        }
+
+        private readonly List<Element> children;
+        public IReadOnlyCollection<Element> Children => children.AsReadOnly();
 
         public uint Id { get; set; }
         public byte TimeContext { get; private set; }
@@ -35,7 +55,7 @@ namespace MtaServer.Server.Elements
 
         public Element()
         {
-
+            this.children = new List<Element>();
         }
 
         public Element(Element parent) : this()
@@ -60,6 +80,17 @@ namespace MtaServer.Server.Elements
         public Element AssociateWith(MtaServer server)
         {
             return server.AssociateElement(this);
+        }
+
+        public void AddChild(Element element)
+        {
+            this.children.Add(element);
+            element.Destroyed += (element) => RemoveChild(element);
+        }
+
+        public void RemoveChild(Element element)
+        {
+            this.children.Remove(element);
         }
 
         public event Action<Element, Vector3>? PositionChange;
