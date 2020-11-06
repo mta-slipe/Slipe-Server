@@ -1,5 +1,5 @@
 ﻿using MtaServer.Packets.Enums;
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MtaServer.Net;
 using MtaServer.Packets;
@@ -19,15 +19,6 @@ using MtaServer.Server.Events;
 
 namespace MtaServer.Server
 {
-    public enum VersionType
-    {
-        Custom = 0x01,
-        Experimental = 0x03,
-        Unstable = 0x05,
-        Untested = 0x07,
-        Release = 0x09,
-    }
-
     public class MtaServer
     {
         private readonly NetWrapper netWrapper;
@@ -39,15 +30,15 @@ namespace MtaServer.Server
         private readonly IElementRepository elementRepository;
         private readonly IElementIdGenerator? elementIdGenerator;
         private readonly RootElement root;
-        public readonly Configuration configuration;
+        private readonly Configuration configuration;
 
         public string GameType { get; set; } = "unknown";
         public string MapName { get; set; } = "unknown";
         public string Password { get; set; } = "";
-        public bool HasPassword { get => (Password != ""); }
+        public bool HasPassword => Password != "";
 
-        public DateTime StartDatetime { get; } = DateTime.Now;
-        public long Uptime { get => DateTime.Now.Ticks - StartDatetime.Ticks; }
+        public DateTime StartDatetime { get; private set; }
+        public TimeSpan Uptime => DateTime.Now - StartDatetime;
 
 
         public MtaServer(
@@ -88,6 +79,7 @@ namespace MtaServer.Server
 
         public void Start()
         {
+            this.StartDatetime = DateTime.Now;
             this.netWrapper.Start();
         }
 
@@ -110,7 +102,18 @@ namespace MtaServer.Server
             packet.SendTo(this.clients.SelectMany(x => x.Value.Values));
         }
 
-        public void HandleLuaEvent(LuaEvent luaEvent) => this.LuaEventTriggered?.Invoke(luaEvent);
+        public T AssociateElement<T>(T element) where T : Element
+        {
+            if (this.elementIdGenerator != null)
+            {
+                element.Id = this.elementIdGenerator.GetId();
+            }
+            this.elementRepository.Add(element);
+
+            this.ElementCreated?.Invoke(element);
+
+            return element;
+        }
 
         private void SetupDependencies(Action<ServiceCollection>? dependencyCallback)
         {
@@ -162,28 +165,8 @@ namespace MtaServer.Server
             }
         }
 
-        public T AssociateElement<T>(T element) where T : Element
-        {
-            return HandleElementCreation(element);
-        }
-
-        private T HandleElementCreation<T>(T element) where T : Element
-        {
-            if (this.elementIdGenerator != null)
-            {
-                element.Id = this.elementIdGenerator.GetId();
-            }
-            this.elementRepository.Add(element);
-
-            this.ElementCreated?.Invoke(element);
-
-            return element;
-        }
-
-        public void HandlePlayerJoin(Player player)
-        {
-            PlayerJoined?.Invoke(player);
-        }
+        public void HandlePlayerJoin(Player player) => PlayerJoined?.Invoke(player);
+        public void HandleLuaEvent(LuaEvent luaEvent) => this.LuaEventTriggered?.Invoke(luaEvent);
 
         public event Action<Element>? ElementCreated;
         public event Action<Player>? PlayerJoined;

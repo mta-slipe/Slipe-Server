@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
-using Microsoft.Extensions.Logging;
-using MtaServer.Packets.Definitions.Commands;
 using MtaServer.Server.Elements;
-using MtaServer.Server.PacketHandling.Builders;
 using MtaServer.Server.PacketHandling.Factories;
 using MtaServer.Server.Repositories;
 
 namespace MtaServer.Server.Behaviour
 {
+    /// <summary>
+    /// Behaviour responsible for sending create entity packets for all elements in the repository on player join 
+    /// </summary>
     public class PlayerJoinElementBehaviour
     {
         private readonly IElementRepository elementRepository;

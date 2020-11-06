@@ -6,6 +6,9 @@ using MtaServer.Server.Elements;
 
 namespace MtaServer.Server.Behaviour
 {
+    /// <summary>
+    /// Behaviour responsible for sending chat echo packets to mimic default MTA main chat
+    /// </summary>
     public class DefaultChatBehaviour
     {
         public DefaultChatBehaviour(MtaServer server, ILogger? logger)
