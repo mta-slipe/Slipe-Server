@@ -7,6 +7,9 @@ using System.Web;
 
 namespace MtaServer.Server.Behaviour
 {
+    /// <summary>
+    /// Behaviour responsible for announcing the server to the master server list and responding to ASE queries
+    /// </summary>
     public class MasterServerAnnouncementBehaviour
     {
         private readonly HttpClient httpClient;

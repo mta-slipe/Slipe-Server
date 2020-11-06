@@ -3,7 +3,7 @@ using MtaServer.Server.Elements;
 using System;
 using Xunit;
 
-namespace MtaServer.Server.Tests
+namespace MtaServer.Server.Tests.Elements
 {
     public class ElementTests
     {

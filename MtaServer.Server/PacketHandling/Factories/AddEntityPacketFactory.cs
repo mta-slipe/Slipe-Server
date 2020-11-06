@@ -44,7 +44,7 @@ namespace MtaServer.Server.PacketHandling.Factories
                         break;
 
                     case ElementType.Ped:
-                        if (element is Ped ped)
+                        if (element is Ped ped && !(element is Player))
                             builder.AddPed(ped);
                         break;
 

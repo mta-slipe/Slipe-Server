@@ -8,6 +8,9 @@ using Newtonsoft.Json;
 
 namespace MtaServer.Server.Behaviour
 {
+    /// <summary>
+    /// Behaviour responsbile for logging triggered MTA Lua events
+    /// </summary>
     public class EventLoggingBehaviour
     {
         public EventLoggingBehaviour(MtaServer server, ILogger? logger)

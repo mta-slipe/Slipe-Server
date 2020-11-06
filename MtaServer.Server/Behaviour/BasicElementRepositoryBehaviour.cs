@@ -9,6 +9,9 @@ using MtaServer.Server.Repositories;
 
 namespace MtaServer.Server.Behaviour
 {
+    /// <summary>
+    /// Behaviour responsible for adding elements to the element repository upon creation
+    /// </summary>
     public class BasicElementRepositoryBehaviour
     {
         private readonly IElementRepository elementRepository;
