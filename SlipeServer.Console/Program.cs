@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using SlipeServer.ConfigurationProviders;
 using SlipeServer.ConfigurationProviders.Configurations;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Server;
 using SlipeServer.Server.AllSeeingEye;
 using SlipeServer.Server.Behaviour;
 using SlipeServer.Server.PacketHandling.QueueHandlers;
@@ -35,7 +36,7 @@ namespace SlipeServer.Console
         {
             var configurationProvider = args.Length > 0 ? GetConfigurationProvider(args[0]) : null;
 
-            server = new Server.MtaServer(
+            server = new MtaServer(
                 Directory.GetCurrentDirectory(),
                 @"net.dll",
                 configurationProvider?.GetConfiguration(),
