@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using MtaServer.Server.Elements;
+using MtaServer.Server.Enums;
 using MtaServer.Server.Extensions;
 using MtaServer.Server.Repositories;
 using System;
@@ -146,7 +147,7 @@ namespace MtaServer.Server.AllSeeingEye
                     string buildNumber = $"{(byte)this.buildType}";
                     string pingStatus = new string('P', 32);
                     string strNetRoute = new string('N', 32);
-                    string strUpTime = $"{(int)mtaServer.Uptime / 10000}";
+                    string strUpTime = $"{(int)mtaServer.Uptime.Ticks / 10000}";
                     string strHttpPort = configuration.HttpPort.ToString();
                     uint extraDataLength = (uint)(strPlayerCount.Length + buildType.Length + buildNumber.Length + pingStatus.Length + strNetRoute.Length + strUpTime.Length + strHttpPort.Length) + 7;
 
