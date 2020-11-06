@@ -9,21 +9,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "C Sharp", "C Sharp", "{5DA9
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "C++", "C++", "{A1416335-865E-44F0-93F0-2F78714CF30E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MtaServer.Packets", "MtaServer.Packets\MtaServer.Packets.csproj", "{7A17C4E8-975D-4C8F-B2EA-06C2FB6A95E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlipeServer.Packets", "SlipeServer.Packets\SlipeServer.Packets.csproj", "{7A17C4E8-975D-4C8F-B2EA-06C2FB6A95E1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MtaServer.Server", "MtaServer.Server\MtaServer.Server.csproj", "{3553F673-3CEA-43F9-AEE4-57452B4198B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlipeServer.Server", "SlipeServer.Server\SlipeServer.Server.csproj", "{3553F673-3CEA-43F9-AEE4-57452B4198B4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MtaServer.Console", "MtaServer.Console\MtaServer.Console.csproj", "{C4A5BC86-F708-424B-AD52-B9DDDF469CDD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlipeServer.Console", "SlipeServer.Console\SlipeServer.Console.csproj", "{C4A5BC86-F708-424B-AD52-B9DDDF469CDD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MtaServer.Net", "MtaServer.Net\MtaServer.Net.csproj", "{8A09A2F0-6D15-4FCD-9FE6-8E51293AA37C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlipeServer.Net", "SlipeServer.Net\SlipeServer.Net.csproj", "{8A09A2F0-6D15-4FCD-9FE6-8E51293AA37C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{53C45DDE-A29E-4C31-BFFB-104AD8CDC47C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MtaServer.Packets.Tests", "MtaServer.Packets.Tests\MtaServer.Packets.Tests.csproj", "{47B5D12C-8BB5-4276-BD29-3D786210531C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlipeServer.Packets.Tests", "SlipeServer.Packets.Tests\SlipeServer.Packets.Tests.csproj", "{47B5D12C-8BB5-4276-BD29-3D786210531C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MtaServer.Server.Tests", "MtaServer.Server.Tests\MtaServer.Server.Tests.csproj", "{F957C6B5-CA50-413C-867F-05CF545F0A72}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlipeServer.Server.Tests", "SlipeServer.Server.Tests\SlipeServer.Server.Tests.csproj", "{F957C6B5-CA50-413C-867F-05CF545F0A72}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MtaServer.ConfigurationProviders", "MtaServer.ConfigurationProviders\MtaServer.ConfigurationProviders.csproj", "{25AAC8F6-1ED1-483B-84D5-551920A27D18}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlipeServer.ConfigurationProviders", "SlipeServer.ConfigurationProviders\SlipeServer.ConfigurationProviders.csproj", "{25AAC8F6-1ED1-483B-84D5-551920A27D18}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
