@@ -28,6 +28,11 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                         cameraPureSyncPacket.Read(queueEntry.Data);
                         HandleCameraSyncPacket(queueEntry.Client, cameraPureSyncPacket);
                         break;
+                    case PacketId.PACKET_ID_PLAYER_KEYSYNC:
+                        KeySyncPacket keySyncPacket = new KeySyncPacket();
+                        keySyncPacket.Read(queueEntry.Data);
+                        HandleClientKeySyncPacket(queueEntry.Client, keySyncPacket);
+                        break;
                     case PacketId.PACKET_ID_PLAYER_PURESYNC:
                         PlayerPureSyncPacket playerPureSyncPacket = new PlayerPureSyncPacket();
                         playerPureSyncPacket.Read(queueEntry.Data);
@@ -45,6 +50,11 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         private void HandleCameraSyncPacket(Client client, CameraSyncPacket packet)
         {
             //Debug.WriteLine($"client {client.Id} camera sync: isFixed: {packet.IsFixed}, position: {packet.Position}, lookAt: {packet.LookAt}, target: {packet.TargetId}");
+        }
+
+        private void HandleClientKeySyncPacket(Client client, KeySyncPacket packet)
+        {
+
         }
 
         private void HandleClientPureSyncPacket(Client client, PlayerPureSyncPacket packet)

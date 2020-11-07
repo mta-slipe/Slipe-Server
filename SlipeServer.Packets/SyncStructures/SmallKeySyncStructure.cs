@@ -8,7 +8,7 @@ using System.Xml;
 
 namespace SlipeServer.Packets.Structures
 {
-    public class FullKeySyncStructure : ISyncStructure
+    public class SmallKeySyncStructure : ISyncStructure
     {
         public bool LeftShoulder1 { get; set; }
         public bool RightShoulder1 { get; set; }
@@ -25,12 +25,12 @@ namespace SlipeServer.Packets.Structures
         public Vector2 LeftStick { get; set; }
 
 
-        public FullKeySyncStructure()
+        public SmallKeySyncStructure()
         {
 
         }
 
-        public FullKeySyncStructure(
+        public SmallKeySyncStructure(
             Vector2 leftStick,
             bool leftShoulder1,
             bool leftShoulder2,

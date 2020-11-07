@@ -69,6 +69,7 @@ namespace SlipeServer.Server
             this.elementRepository = this.serviceProvider.GetRequiredService<IElementRepository>();
             this.elementIdGenerator = this.serviceProvider.GetService<IElementIdGenerator>();
 
+            this.root.AssociateWith(this);
             this.elementRepository.Add(this.root);
 
             this.packetReducer = new PacketReducer();
