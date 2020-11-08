@@ -1,9 +1,11 @@
 ﻿using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Extensions;
 using SlipeServer.Server.Repositories;
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers
@@ -54,7 +56,8 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
         private void HandleClientKeySyncPacket(Client client, KeySyncPacket packet)
         {
-
+            packet.PlayerId = client.Player.Id;
+            packet.SendTo(this.elementRepository.GetByType<Player>(ElementType.Player).Where(p => p.Client != client));
         }
 
         private void HandleClientPureSyncPacket(Client client, PlayerPureSyncPacket packet)
@@ -63,13 +66,8 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
             packet.PlayerId = client.Player.Id;
             packet.Latency = 0;
-            foreach (var remotePlayer in this.elementRepository.GetByType<Player>(ElementType.Player))
-            {
-                if (remotePlayer.Client != client)
-                {
-                    remotePlayer.Client.SendPacket(packet);
-                }
-            }
+
+            packet.SendTo(this.elementRepository.GetByType<Player>(ElementType.Player).Where(p => p.Client != client));
 
             var player = client.Player;
             player.Position = packet.Position;

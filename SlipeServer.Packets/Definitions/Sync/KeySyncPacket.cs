@@ -33,6 +33,8 @@ namespace SlipeServer.Packets.Definitions.Sync
         public float AimArm { get; set; }
         public VehicleAimDirection VehicleAimDirection { get; set; }
 
+        public uint PlayerId { get; set; }
+
         public KeySyncPacket()
         {
 
@@ -85,6 +87,8 @@ namespace SlipeServer.Packets.Definitions.Sync
         {
             var builder = new PacketBuilder();
 
+            builder.WriteElementId(this.PlayerId);
+
             this.SmallKeySyncStructure.Write(builder);
 
             builder.WriteFloatFromBits(this.PlayerRotation, 12, -MathF.PI, MathF.PI, true);
@@ -94,24 +98,25 @@ namespace SlipeServer.Packets.Definitions.Sync
 
             if (this.SmallKeySyncStructure.ButtonCircle || this.SmallKeySyncStructure.RightShoulder1)
             {
-                builder.Write(this.HasWeapon);
-                if (this.HasWeapon)
+                builder.WriteCapped(this.WeaponSlot, 4);
+
+                if (WeaponConstants.weaponsWithAmmo.Contains(this.WeaponSlot))
                 {
-                    builder.Write(this.WeaponType);
-                    builder.WriteCapped(this.WeaponSlot, 4);
+                    builder.WriteCompressed(this.TotalAmmo);
+                    builder.WriteCompressed(this.AmmoInClip);
 
-
-                    if (WeaponConstants.weaponsWithAmmo.Contains(this.WeaponSlot))
-                    {
-                        builder.WriteCompressed(this.TotalAmmo);
-                        builder.WriteCompressed(this.AmmoInClip);
-
-                        builder.Write((ushort)(this.AimArm * 90 * 180 * MathF.PI));
-                        builder.Write(this.AimOrigin);
-                        builder.WriteNormalizedVector(this.AimDirection);
-                        builder.Write((byte)this.VehicleAimDirection);
-                    }
+                    builder.Write((ushort)(this.AimArm * 90 * 180 * MathF.PI));
+                    builder.Write(this.AimOrigin);
+                    builder.WriteNormalizedVector(this.AimDirection);
+                    builder.Write((byte)this.VehicleAimDirection);
                 }
+            }
+
+            if (this.KeySyncFlagsStructure.IsSyncingVehicle)
+            {
+                // write turret if vehicle has turret
+                // write hydraulics if upgrade present
+                // write should buttons if in plane or heli
             }
 
             return builder.Build();

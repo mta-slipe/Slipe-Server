@@ -70,7 +70,6 @@ namespace SlipeServer.Server
             this.elementIdGenerator = this.serviceProvider.GetService<IElementIdGenerator>();
 
             this.root.AssociateWith(this);
-            this.elementRepository.Add(this.root);
 
             this.packetReducer = new PacketReducer();
             this.clients = new Dictionary<NetWrapper, Dictionary<uint, Client>>();
@@ -110,6 +109,7 @@ namespace SlipeServer.Server
                 element.Id = this.elementIdGenerator.GetId();
             }
             this.elementRepository.Add(element);
+            element.Destroyed += (element) => this.elementRepository.Remove(element);
 
             this.ElementCreated?.Invoke(element);
 

@@ -30,7 +30,7 @@ namespace SlipeServer.Console
         }
 
         private readonly EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
-        private readonly Server.MtaServer server;
+        private readonly MtaServer server;
 
         public Program(string[] args)
         {
@@ -121,7 +121,6 @@ namespace SlipeServer.Console
         private void SetupBehaviour()
         {
             server.Instantiate<DefaultChatBehaviour>();
-            server.Instantiate<BasicElementRepositoryBehaviour>();
             server.Instantiate<PlayerJoinElementBehaviour>();
             server.Instantiate<AseBehaviour>();
             server.Instantiate<MasterServerAnnouncementBehaviour>("http://master.mtasa.com/ase/add.php");

@@ -8,6 +8,8 @@ using MTAServerWrapper.Packets.Outgoing.Connection;
 using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using SlipeServer.Server.Extensions;
+using System.Linq;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers
 {
@@ -68,7 +70,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         private void HandleClientQuit(Client client, QuitReason reason)
         {
             var packet = PlayerPacketFactory.CreateQuitPacket(client.Player, reason);
-            this.server.BroadcastPacket(packet);
+            packet.SendTo(this.elementRepository.GetByType<Player>(ElementType.Player).Except(new Player[] { client.Player }));
 
             client.Player.Destroy();
         }

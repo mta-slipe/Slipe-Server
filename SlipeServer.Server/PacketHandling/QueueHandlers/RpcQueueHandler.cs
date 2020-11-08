@@ -45,9 +45,11 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             switch (packet.FunctionId)
             {
                 case RpcFunctions.PLAYER_INGAME_NOTICE:
+                    var players = this.elementRepository.GetByType<Player>(ElementType.Player);
+
                     client.SendPacket(new JoinedGamePacket(
-                        client.Player.Id, 
-                        this.elementRepository.Count + 1, 
+                        client.Player.Id,
+                        players.Count ()+ 1, 
                         this.root.Id,
                         configuration.HttpUrl != null ? HttpDownloadType.HTTP_DOWNLOAD_ENABLED_URL : HttpDownloadType.HTTP_DOWNLOAD_ENABLED_PORT, 
                         configuration.HttpPort, 
@@ -56,8 +58,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                         1
                     ));
 
-                    var otherPlayers = this.elementRepository
-                        .GetByType<Player>(ElementType.Player)
+                    var otherPlayers = players
                         .Except(new Player[] { client.Player })
                         .ToArray();
 
