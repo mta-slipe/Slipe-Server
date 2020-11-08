@@ -23,7 +23,7 @@ namespace SlipeServer.Server.Extensions
 
         public static void SendTo(this Packet packet, IEnumerable<Player> players)
         {
-            SendTo(packet, players.Select(p => p.Client));
+            packet.SendTo(players.Select(p => p.Client));
         }
     }
 }

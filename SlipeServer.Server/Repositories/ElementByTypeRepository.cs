@@ -40,10 +40,8 @@ namespace SlipeServer.Server.Repositories
 
         public void Remove(Element element)
         {
-            foreach (var list in this.elements.Values)
-            {
-                list.Remove(element);
-            }
+            if (this.elements.ContainsKey(element.ElementType))
+                this.elements[element.ElementType].Remove(element);
         }
 
         public IEnumerable<Element> GetAll()

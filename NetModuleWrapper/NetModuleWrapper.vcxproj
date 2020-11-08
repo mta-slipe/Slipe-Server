@@ -94,7 +94,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>copy ..\Debug\NetModuleWrapper.dll ..\MtaServer.Net /y</Command>
+      <Command>copy ..\Debug\NetModuleWrapper.dll ..\SlipeServer.Net /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

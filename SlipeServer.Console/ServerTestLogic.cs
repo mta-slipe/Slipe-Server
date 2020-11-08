@@ -1,4 +1,5 @@
-﻿using SlipeServer.Packets.Definitions.Commands;
+﻿using MTAServerWrapper.Packets.Outgoing.Connection;
+using SlipeServer.Packets.Definitions.Commands;
 using SlipeServer.Packets.Definitions.Join;
 using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Packets.Definitions.Player;
@@ -10,6 +11,7 @@ using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Enums;
+using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling;
 using SlipeServer.Server.PacketHandling.Factories;
 using SlipeServer.Server.Repositories;
@@ -24,7 +26,7 @@ namespace SlipeServer.Console
 {
     public class ServerTestLogic
     {
-        private readonly Server.MtaServer server;
+        private readonly MtaServer server;
         private readonly IElementRepository elementRepository;
         private readonly RootElement root;
         private readonly IResourceServer resourceServer;
@@ -32,7 +34,7 @@ namespace SlipeServer.Console
         private DummyElement? resourceRoot;
         private DummyElement? resourceDynamic;
 
-        public ServerTestLogic(Server.MtaServer server, IElementRepository elementRepository, RootElement root, IResourceServer resourceServer)
+        public ServerTestLogic(MtaServer server, IElementRepository elementRepository, RootElement root, IResourceServer resourceServer)
         {
             this.server = server;
             this.elementRepository = elementRepository;
@@ -209,12 +211,15 @@ namespace SlipeServer.Console
             );
             client.SendPacket(playerList);
 
-            var data = new byte[] { 0, 0, 0, 0, 2, 46, 33, 240, 8, 159, 255, 240, 8, 4, 116, 11, 186, 246, 64, 0, 73, 144, 129, 19, 48, 0, 0 };
-            var puresync = new PlayerPureSyncPacket();
-            puresync.Read(data);
+            var packet = new PlayerQuitPacket(666, (byte)QuitReason.Quit);
+            client.SendPacket(packet);
 
-            puresync.PlayerId = 666;
-            puresync.Latency = 0;
+            //var data = new byte[] { 0, 0, 0, 0, 2, 46, 33, 240, 8, 159, 255, 240, 8, 4, 116, 11, 186, 246, 64, 0, 73, 144, 129, 19, 48, 0, 0 };
+            //var puresync = new PlayerPureSyncPacket();
+            //puresync.Read(data);
+
+            //puresync.PlayerId = 666;
+            //puresync.Latency = 0;
 
             //_ = Task.Run(async () =>
             //{

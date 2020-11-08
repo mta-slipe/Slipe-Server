@@ -1,9 +1,11 @@
 ﻿using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Extensions;
 using SlipeServer.Server.Repositories;
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers
@@ -28,6 +30,11 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                         cameraPureSyncPacket.Read(queueEntry.Data);
                         HandleCameraSyncPacket(queueEntry.Client, cameraPureSyncPacket);
                         break;
+                    case PacketId.PACKET_ID_PLAYER_KEYSYNC:
+                        KeySyncPacket keySyncPacket = new KeySyncPacket();
+                        keySyncPacket.Read(queueEntry.Data);
+                        HandleClientKeySyncPacket(queueEntry.Client, keySyncPacket);
+                        break;
                     case PacketId.PACKET_ID_PLAYER_PURESYNC:
                         PlayerPureSyncPacket playerPureSyncPacket = new PlayerPureSyncPacket();
                         playerPureSyncPacket.Read(queueEntry.Data);
@@ -47,19 +54,20 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             //Debug.WriteLine($"client {client.Id} camera sync: isFixed: {packet.IsFixed}, position: {packet.Position}, lookAt: {packet.LookAt}, target: {packet.TargetId}");
         }
 
+        private void HandleClientKeySyncPacket(Client client, KeySyncPacket packet)
+        {
+            packet.PlayerId = client.Player.Id;
+            packet.SendTo(this.elementRepository.GetByType<Player>(ElementType.Player).Where(p => p.Client != client));
+        }
+
         private void HandleClientPureSyncPacket(Client client, PlayerPureSyncPacket packet)
         {
             client.SendPacket(new ReturnSyncPacket(packet.Position));
 
             packet.PlayerId = client.Player.Id;
             packet.Latency = 0;
-            foreach (var remotePlayer in this.elementRepository.GetByType<Player>(ElementType.Player))
-            {
-                if (remotePlayer.Client != client)
-                {
-                    remotePlayer.Client.SendPacket(packet);
-                }
-            }
+
+            packet.SendTo(this.elementRepository.GetByType<Player>(ElementType.Player).Where(p => p.Client != client));
 
             var player = client.Player;
             player.Position = packet.Position;

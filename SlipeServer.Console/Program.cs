@@ -30,7 +30,7 @@ namespace SlipeServer.Console
         }
 
         private readonly EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
-        private readonly Server.MtaServer server;
+        private readonly MtaServer server;
 
         public Program(string[] args)
         {
@@ -104,6 +104,7 @@ namespace SlipeServer.Console
             SyncQueueHandler syncQueueHandler = this.server.Instantiate<SyncQueueHandler>(10, 1);
             server.RegisterPacketQueueHandler(PacketId.PACKET_ID_CAMERA_SYNC, syncQueueHandler);
             server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_PURESYNC, syncQueueHandler);
+            server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_KEYSYNC, syncQueueHandler);
 
             CommandQueueHandler commandQueueHandler = this.server.Instantiate<CommandQueueHandler>(10, 1);
             server.RegisterPacketQueueHandler(PacketId.PACKET_ID_COMMAND, commandQueueHandler);
@@ -120,7 +121,6 @@ namespace SlipeServer.Console
         private void SetupBehaviour()
         {
             server.Instantiate<DefaultChatBehaviour>();
-            server.Instantiate<BasicElementRepositoryBehaviour>();
             server.Instantiate<PlayerJoinElementBehaviour>();
             server.Instantiate<AseBehaviour>();
             server.Instantiate<MasterServerAnnouncementBehaviour>("http://master.mtasa.com/ase/add.php");
