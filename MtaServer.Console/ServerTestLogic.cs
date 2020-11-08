@@ -1,22 +1,22 @@
-﻿using MtaServer.Packets.Definitions.Commands;
-using MtaServer.Packets.Definitions.Join;
-using MtaServer.Packets.Definitions.Player;
-using MtaServer.Packets.Definitions.Resources;
-using MtaServer.Packets.Definitions.Sync;
-using MtaServer.Packets.Lua.Camera;
-using MtaServer.Server;
-using MtaServer.Server.Elements;
-using MtaServer.Server.Elements.Enums;
-using MtaServer.Server.PacketHandling;
-using MtaServer.Server.PacketHandling.Factories;
-using MtaServer.Server.Repositories;
-using MtaServer.Server.ResourceServing;
+﻿using SlipeServer.Packets.Definitions.Commands;
+using SlipeServer.Packets.Definitions.Join;
+using SlipeServer.Packets.Definitions.Player;
+using SlipeServer.Packets.Definitions.Resources;
+using SlipeServer.Packets.Definitions.Sync;
+using SlipeServer.Packets.Lua.Camera;
+using SlipeServer.Server;
+using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements.Enums;
+using SlipeServer.Server.PacketHandling;
+using SlipeServer.Server.PacketHandling.Factories;
+using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ResourceServing;
 using System;
 using System.Drawing;
 using System.Numerics;
 using System.Threading.Tasks;
 
-namespace MtaServer.Console
+namespace SlipeServer.Console
 {
     public class ServerTestLogic
     {
