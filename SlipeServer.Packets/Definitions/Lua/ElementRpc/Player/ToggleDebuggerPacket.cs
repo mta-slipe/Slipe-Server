@@ -10,9 +10,11 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player
     public class ToggleDebuggerPacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_LUA;
-        public override PacketFlags Flags => PacketFlags.PACKET_HIGH_PRIORITY | PacketFlags.PACKET_RELIABLE | PacketFlags.PACKET_SEQUENCED;
+        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+        public override PacketPriority Priority => PacketPriority.High;
 
         public bool Visible { get; set; }
+
 
         public ToggleDebuggerPacket(bool visible)
         {

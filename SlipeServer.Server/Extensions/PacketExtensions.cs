@@ -17,13 +17,17 @@ namespace SlipeServer.Server.Extensions
             byte[] data = packet.Write();
             foreach(var client in clients)
             {
-                client.SendPacket(packet.PacketId, data);
+                client.SendPacket(packet.PacketId, data, packet.Priority, packet.Reliability);
             }
         }
 
         public static void SendTo(this Packet packet, IEnumerable<Player> players)
         {
-            packet.SendTo(players.Select(p => p.Client));
+            byte[] data = packet.Write();
+            foreach (var player in players)
+            {
+                player.Client.SendPacket(packet.PacketId, data, packet.Priority, packet.Reliability);
+            }
         }
     }
 }

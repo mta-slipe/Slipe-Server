@@ -12,7 +12,8 @@ namespace SlipeServer.Packets.Definitions.Resources
     {
 
         public override PacketId PacketId => PacketId.PACKET_ID_RESOURCE_START;
-        public override PacketFlags Flags => PacketFlags.PACKET_MEDIUM_PRIORITY;
+        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+        public override PacketPriority Priority => PacketPriority.High;
 
         public string Name { get; set; }
         public ushort NetId { get; }

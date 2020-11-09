@@ -9,8 +9,8 @@ namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
     public class SetHeatHazePacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_LUA;
-
-        public override PacketFlags Flags => PacketFlags.PACKET_MEDIUM_PRIORITY;
+        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+        public override PacketPriority Priority => PacketPriority.High;
 
         public byte Intensity { get; set; }
         public byte RandomShift { get; set; }

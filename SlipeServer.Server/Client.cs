@@ -39,11 +39,11 @@ namespace SlipeServer.Server
             }
         }
 
-        public void SendPacket(PacketId packetId, byte[] data)
+        public void SendPacket(PacketId packetId, byte[] data, PacketPriority priority = PacketPriority.Medium, PacketReliability reliability = PacketReliability.Unreliable)
         {
             if (this.IsConnected && (ClientPacketScope.Current == null || ClientPacketScope.Current.ContainsClient(this)))
             {
-                this.netWrapper.SendPacket(this.binaryAddress, packetId, data);
+                this.netWrapper.SendPacket(this.binaryAddress, packetId, data, priority, reliability);
             }
         }
 

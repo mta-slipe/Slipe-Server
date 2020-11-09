@@ -15,7 +15,8 @@ namespace SlipeServer.Packets.Definitions.Sync
     public class LightSyncDataPacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_LIGHTSYNC;
-        public override PacketFlags Flags => PacketFlags.PACKET_MEDIUM_PRIORITY;
+        public override PacketReliability Reliability => PacketReliability.Unreliable;
+        public override PacketPriority Priority => PacketPriority.Low;
 
 
 

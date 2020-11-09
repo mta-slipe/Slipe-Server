@@ -13,7 +13,8 @@ namespace SlipeServer.Packets.Definitions.Sync
     public class CameraSyncPacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_CAMERA_SYNC;
-        public override PacketFlags Flags => PacketFlags.PACKET_MEDIUM_PRIORITY;
+        public override PacketReliability Reliability => PacketReliability.UnreliableSequenced;
+        public override PacketPriority Priority => PacketPriority.Medium;
 
         public byte TimeContext { get; private set; } 
         public bool IsFixed { get; private set; }

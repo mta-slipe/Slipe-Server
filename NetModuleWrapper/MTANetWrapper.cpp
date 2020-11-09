@@ -48,7 +48,7 @@ bool packetHandler(unsigned char ucPacketID, const NetServerPlayerID& Socket, Ne
     return true;
 }
 
-EXPORT void __cdecl sendPacket(unsigned long address, unsigned char packetId, unsigned char* payload, unsigned long payloadSize)
+EXPORT void __cdecl sendPacket(unsigned long address, unsigned char packetId, unsigned char* payload, unsigned long payloadSize, unsigned char priority, unsigned char reliability)
 {
     NetBitStreamInterface* pBitStream = network->AllocateNetServerBitStream(0);
     if (pBitStream)
@@ -59,7 +59,7 @@ EXPORT void __cdecl sendPacket(unsigned long address, unsigned char packetId, un
         }
 
         auto socket = sockets[address];
-        network->SendPacket(packetId, socket, pBitStream, false, PACKET_PRIORITY_HIGH, PACKET_RELIABILITY_RELIABLE_ORDERED);
+        network->SendPacket(packetId, socket, pBitStream, false, static_cast<NetServerPacketPriority>(priority), static_cast<NetServerPacketReliability>(reliability));
         network->DeallocateNetServerBitStream(pBitStream);
     }
 }

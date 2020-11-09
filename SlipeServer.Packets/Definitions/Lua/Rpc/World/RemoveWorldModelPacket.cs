@@ -10,8 +10,9 @@ namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
     public class RemoveWorldModelPacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_LUA;
+        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+        public override PacketPriority Priority => PacketPriority.High;
 
-        public override PacketFlags Flags => PacketFlags.PACKET_MEDIUM_PRIORITY;
         public ushort ModelID { get; set; }
         public float Radius { get; set; }
         public Vector3 Position { get; set; }

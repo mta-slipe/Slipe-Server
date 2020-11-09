@@ -10,7 +10,8 @@ namespace SlipeServer.Packets.Definitions.Commands
     public class ConsoleEchoPacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_CONSOLE_ECHO;
-        public override PacketFlags Flags => PacketFlags.PACKET_LOW_PRIORITY;
+        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+        public override PacketPriority Priority => PacketPriority.Low;
 
         public string Message { get; set; }
 

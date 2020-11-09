@@ -8,7 +8,8 @@ namespace MTAServerWrapper.Packets.Outgoing.Connection
     public class PlayerTimeoutPacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_TIMEOUT;
-        public override PacketFlags Flags => throw new NotImplementedException();
+        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+        public override PacketPriority Priority => PacketPriority.High;
 
         public PlayerTimeoutPacket()
         {

@@ -10,7 +10,8 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element
     public class SetElementAlphaRpcPacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
-        public override PacketFlags Flags => PacketFlags.PACKET_HIGH_PRIORITY | PacketFlags.PACKET_RELIABLE | PacketFlags.PACKET_SEQUENCED;
+        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+        public override PacketPriority Priority => PacketPriority.High;
 
         public uint ElementId { get; set; }
         public byte TimeContext { get; set; }
