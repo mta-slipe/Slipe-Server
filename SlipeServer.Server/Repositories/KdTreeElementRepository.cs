@@ -5,6 +5,7 @@ using System.Linq;
 using KdTree;
 using KdTree.Math;
 using System.Numerics;
+using SlipeServer.Server.Elements.Events;
 
 namespace SlipeServer.Server.Repositories
 {
@@ -21,7 +22,7 @@ namespace SlipeServer.Server.Repositories
         public void Add(Element element)
         {
             this.elements.Add(new float[] { element.Position.X, element.Position.Y, element.Position.Z }, element);
-            element.PositionChange += ReInsertElement;
+            element.PositionChanged += ReInsertElement;
         }
 
         public Element? Get(uint id)
@@ -34,7 +35,7 @@ namespace SlipeServer.Server.Repositories
         public void Remove(Element element)
         {
             this.elements.RemoveAt(new float[] { element.Position.X, element.Position.Y, element.Position.Z });
-            element.PositionChange -= ReInsertElement;
+            element.PositionChanged -= ReInsertElement;
         }
 
         public IEnumerable<Element> GetAll()
@@ -66,10 +67,10 @@ namespace SlipeServer.Server.Repositories
                 .Cast<TElement>();
         }
 
-        private void ReInsertElement(Element element, Vector3 newPosition)
+        private void ReInsertElement(object sender, ElementChangedEventArgs<Vector3> args)
         {
-            this.Remove(element);
-            this.elements.Add(new float[] { newPosition.X, newPosition.Y, newPosition.Z }, element);
+            this.Remove(args.Source);
+            this.elements.Add(new float[] { args.NewValue.X, args.NewValue.Y, args.NewValue.Z }, args.Source);
         }
     }
 }

@@ -113,11 +113,6 @@ namespace SlipeServer.Console
             server.RegisterPacketQueueHandler(PacketId.PACKET_ID_LUA_EVENT, luaEventQueueHandler);
         }
 
-        private void SetupLogic()
-        {
-            this.server.Instantiate<ServerTestLogic>();
-        }
-
         private void SetupBehaviour()
         {
             server.Instantiate<DefaultChatBehaviour>();
@@ -125,6 +120,13 @@ namespace SlipeServer.Console
             server.Instantiate<AseBehaviour>();
             server.Instantiate<MasterServerAnnouncementBehaviour>("http://master.mtasa.com/ase/add.php");
             server.Instantiate<EventLoggingBehaviour>();
+            server.Instantiate<ElementUpdateBehaviour>();
+            server.Instantiate<VelocityBehaviour>();
+        }
+
+        private void SetupLogic()
+        {
+            this.server.Instantiate<ServerTestLogic>();
         }
     }
 }

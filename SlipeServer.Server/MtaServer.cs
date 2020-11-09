@@ -32,6 +32,8 @@ namespace SlipeServer.Server
         private readonly RootElement root;
         private readonly Configuration configuration;
 
+        private readonly Func<uint, NetWrapper, Client>? clientCreationMethod;
+
         public string GameType { get; set; } = "unknown";
         public string MapName { get; set; } = "unknown";
         public string Password { get; set; } = "";
@@ -40,16 +42,16 @@ namespace SlipeServer.Server
         public DateTime StartDatetime { get; private set; }
         public TimeSpan Uptime => DateTime.Now - StartDatetime;
 
-
         public MtaServer(
             string directory, 
             string netDllPath, 
             Configuration? configuration = null,
-            Action<ServiceCollection>? dependencyCallback = null
+            Action<ServiceCollection>? dependencyCallback = null,
+            Func<uint, NetWrapper, Client>? clientCreationMethod = null
         )
         {
             this.configuration = configuration ?? new Configuration();
-
+            this.clientCreationMethod = clientCreationMethod;
             var validationResults = new List<ValidationResult>();
             if (!Validator.TryValidateObject(this.configuration, new ValidationContext(this.configuration), validationResults, true))
             {
@@ -145,10 +147,11 @@ namespace SlipeServer.Server
         {
             if (!this.clients[netWrapper].ContainsKey(binaryAddress))
             {
-                var client = new Client(binaryAddress, netWrapper);
+                var client = clientCreationMethod?.Invoke(binaryAddress, netWrapper) ??
+                    new Client(binaryAddress, netWrapper); 
                 AssociateElement(client.Player);
 
-                this.clients[netWrapper][binaryAddress ]= client;
+                this.clients[netWrapper][binaryAddress] = client;
                 ClientConnected?.Invoke(client);
             }
 

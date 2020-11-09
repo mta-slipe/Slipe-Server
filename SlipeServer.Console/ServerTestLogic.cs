@@ -211,25 +211,25 @@ namespace SlipeServer.Console
             );
             client.SendPacket(playerList);
 
-            var packet = new PlayerQuitPacket(666, (byte)QuitReason.Quit);
-            client.SendPacket(packet);
+            var data = new byte[] { 0, 0, 0, 0, 2, 46, 33, 240, 8, 159, 255, 240, 8, 4, 116, 11, 186, 246, 64, 0, 73, 144, 129, 19, 48, 0, 0 };
+            var puresync = new PlayerPureSyncPacket();
+            puresync.Read(data);
 
-            //var data = new byte[] { 0, 0, 0, 0, 2, 46, 33, 240, 8, 159, 255, 240, 8, 4, 116, 11, 186, 246, 64, 0, 73, 144, 129, 19, 48, 0, 0 };
-            //var puresync = new PlayerPureSyncPacket();
-            //puresync.Read(data);
+            puresync.PlayerId = 666;
+            puresync.Latency = 0;
 
-            //puresync.PlayerId = 666;
-            //puresync.Latency = 0;
+            _ = Task.Run(async () =>
+            {
+                for (int i = 0; i < 20; i++)
+                {
+                    puresync.Position += new Vector3(0.25f, 0, 0);
+                    client.SendPacket(puresync);
+                    await Task.Delay(250);
+                }
 
-            //_ = Task.Run(async () =>
-            //{
-            //    for (int i = 0; i < 1000; i++)
-            //    {
-            //        puresync.Position += new Vector3(0.25f, 0, 0);
-            //        client.SendPacket(puresync);
-            //        await Task.Delay(250);
-            //    }
-            //});
+                var packet = new PlayerQuitPacket(666, (byte)QuitReason.Quit);
+                client.SendPacket(packet);
+            });
         }
 
         private async Task TestEventTrigger(Client client)
