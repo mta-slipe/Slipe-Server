@@ -10,7 +10,8 @@ namespace SlipeServer.Packets.Lua.Camera
     public class SetCameraMatrixPacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_LUA;
-        public override PacketFlags Flags => PacketFlags.PACKET_MEDIUM_PRIORITY;
+        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+        public override PacketPriority Priority => PacketPriority.High;
 
         public Vector3 Position { get; set; }
         public Vector3 LookAt { get; set; }

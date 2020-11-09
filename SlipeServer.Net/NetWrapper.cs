@@ -27,7 +27,7 @@ namespace SlipeServer.Net
         private static extern void StopNetWrapper();
 
         [DllImport(wrapperDllpath, EntryPoint = "sendPacket")]
-        private static extern bool SendPacket(uint binaryAddress, byte packetId, IntPtr payload, uint payloadSize);
+        private static extern bool SendPacket(uint binaryAddress, byte packetId, IntPtr payload, uint payloadSize, byte priority, byte ordering);
 
         [DllImport(wrapperDllpath, EntryPoint = "setSocketVersion")]
         private static extern bool SetSocketVersion(uint binaryAddress, ushort version);
@@ -64,14 +64,14 @@ namespace SlipeServer.Net
             StopNetWrapper();
         }
 
-        void SendPacket(uint binaryAddress, byte packetId, byte[] payload)
+        void SendPacket(uint binaryAddress, byte packetId, byte[] payload, PacketPriority priority, PacketReliability reliability)
         {
             int size = Marshal.SizeOf((byte)0) * payload.Length;
             IntPtr pointer = Marshal.AllocHGlobal(size);
             try
             {
                 Marshal.Copy(payload, 0, pointer, payload.Length);
-                SendPacket(binaryAddress, packetId, pointer, (uint)payload.Length);
+                SendPacket(binaryAddress, packetId, pointer, (uint)payload.Length, (byte)priority, (byte)reliability);
             }
             finally
             {
@@ -91,12 +91,12 @@ namespace SlipeServer.Net
 
         public void SendPacket(uint binaryAddress, Packet packet)
         {
-            SendPacket(binaryAddress, (byte)packet.PacketId, packet.Write());
+            SendPacket(binaryAddress, (byte)packet.PacketId, packet.Write(), packet.Priority, packet.Reliability);
         }
 
-        public void SendPacket(uint binaryAddress, PacketId packetId, byte[] data)
+        public void SendPacket(uint binaryAddress, PacketId packetId, byte[] data, PacketPriority priority = PacketPriority.High, PacketReliability reliability = PacketReliability.ReliableSequenced)
         {
-            SendPacket(binaryAddress, (byte)packetId, data);
+            SendPacket(binaryAddress, (byte)packetId, data, priority, reliability);
         }
 
         public void SetVersion(uint binaryAddress, ushort version)

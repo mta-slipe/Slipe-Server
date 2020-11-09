@@ -8,7 +8,8 @@ namespace SlipeServer.Packets
     public abstract class Packet
     {
         public abstract PacketId PacketId { get; }
-        public abstract PacketFlags Flags { get; }
+        public abstract PacketReliability Reliability { get; }
+        public abstract PacketPriority Priority { get; }
 
         public abstract byte[] Write();
         public abstract void Read(byte[] bytes);

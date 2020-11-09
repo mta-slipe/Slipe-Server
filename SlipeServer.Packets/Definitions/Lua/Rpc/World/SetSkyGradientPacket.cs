@@ -10,8 +10,8 @@ namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
     public class SetSkyGradientPacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_LUA;
-
-        public override PacketFlags Flags => PacketFlags.PACKET_MEDIUM_PRIORITY;
+        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+        public override PacketPriority Priority => PacketPriority.High;
 
         public Color Top { get; set; }
         public Color Bottom { get; set; }

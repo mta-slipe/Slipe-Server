@@ -10,7 +10,8 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player
     public class DebugEchoPacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_DEBUG_ECHO;
-        public override PacketFlags Flags => PacketFlags.PACKET_LOW_PRIORITY;
+        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+        public override PacketPriority Priority => PacketPriority.High;
 
         public string Message { get; set; }
         public byte Level { get; set; }

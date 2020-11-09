@@ -10,8 +10,8 @@ namespace SlipeServer.Packets.Lua
     public class LuaPacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_LUA;
-
-        public override PacketFlags Flags => throw new NotImplementedException();
+        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+        public override PacketPriority Priority => PacketPriority.High;
 
         public ElementRPCFunction ElementRPCFunction { get; }
         public byte[] Data { get; protected set; }

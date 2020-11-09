@@ -11,7 +11,8 @@ namespace SlipeServer.Packets.Definitions.Join
     public class PlayerListPacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_LIST;
-        public override PacketFlags Flags => PacketFlags.PACKET_MEDIUM_PRIORITY;
+        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+        public override PacketPriority Priority => PacketPriority.High;
 
 
         private readonly PacketBuilder builder;

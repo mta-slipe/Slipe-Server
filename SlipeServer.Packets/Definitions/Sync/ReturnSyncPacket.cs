@@ -15,7 +15,8 @@ namespace SlipeServer.Packets.Definitions.Sync
     public class ReturnSyncPacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_RETURN_SYNC;
-        public override PacketFlags Flags => PacketFlags.PACKET_MEDIUM_PRIORITY;
+        public override PacketReliability Reliability => PacketReliability.Reliable;
+        public override PacketPriority Priority => PacketPriority.High;
 
         public Vector3 Position { get; set; }
         public float Rotation { get; set; }

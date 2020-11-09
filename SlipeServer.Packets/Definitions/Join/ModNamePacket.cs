@@ -8,7 +8,8 @@ namespace MTAServerWrapper.Packets.Outgoing.Connection
     public class ModNamePacket: Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_MOD_NAME;
-        public override PacketFlags Flags => throw new NotImplementedException();
+        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+        public override PacketPriority Priority => PacketPriority.High;
 
         public ushort NetVersion { get; }
         public string Name { get; }

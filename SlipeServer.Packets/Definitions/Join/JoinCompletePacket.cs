@@ -8,7 +8,8 @@ namespace MTAServerWrapper.Packets.Outgoing.Connection
     public class JoinCompletePacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_SERVER_JOIN_COMPLETE;
-        public override PacketFlags Flags => throw new NotImplementedException();
+        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+        public override PacketPriority Priority => PacketPriority.High;
 
         public string WelcomeMessage { get; }
         public string Version { get; }

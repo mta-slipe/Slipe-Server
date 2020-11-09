@@ -9,8 +9,9 @@ namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
     public class ResetFogDistancePacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_LUA;
+        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+        public override PacketPriority Priority => PacketPriority.High;
 
-        public override PacketFlags Flags => PacketFlags.PACKET_MEDIUM_PRIORITY;
         public ResetFogDistancePacket() { }
 
         public override void Read(byte[] bytes)

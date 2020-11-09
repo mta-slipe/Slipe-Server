@@ -20,7 +20,8 @@ namespace SlipeServer.Packets.Definitions.Sync
         };
 
         public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_PURESYNC;
-        public override PacketFlags Flags => PacketFlags.PACKET_MEDIUM_PRIORITY;
+        public override PacketReliability Reliability => PacketReliability.UnreliableSequenced;
+        public override PacketPriority Priority => PacketPriority.Medium;
 
         public uint PlayerId { get; set; }
         public byte TimeContext { get; set; }

@@ -10,7 +10,8 @@ namespace SlipeServer.Packets.Rpc
     public class RpcPacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_RPC;
-        public override PacketFlags Flags => throw new NotImplementedException();
+        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+        public override PacketPriority Priority => PacketPriority.High;
 
         public RpcFunctions FunctionId { get; private set; }
 

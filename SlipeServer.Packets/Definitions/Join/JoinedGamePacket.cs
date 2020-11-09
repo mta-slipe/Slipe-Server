@@ -9,7 +9,8 @@ namespace SlipeServer.Packets.Definitions.Join
     public class JoinedGamePacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_SERVER_JOINEDGAME;
-        public override PacketFlags Flags => throw new NotImplementedException();
+        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+        public override PacketPriority Priority => PacketPriority.High;
 
         public uint ClientId { get; }
         public int PlayerCount { get; }

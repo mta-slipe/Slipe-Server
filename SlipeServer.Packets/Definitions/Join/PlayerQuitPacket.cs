@@ -8,7 +8,8 @@ namespace MTAServerWrapper.Packets.Outgoing.Connection
     public class PlayerQuitPacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_QUIT;
-        public override PacketFlags Flags => throw new NotImplementedException();
+        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+        public override PacketPriority Priority => PacketPriority.High;
 
         public uint PlayerId { get; }
         public byte QuitReason { get; }

@@ -10,9 +10,9 @@ namespace SlipeServer.Packets.Definitions.Resources
 {
     public class ResourceStopPacket : Packet
     {
-
         public override PacketId PacketId => PacketId.PACKET_ID_RESOURCE_STOP;
-        public override PacketFlags Flags => PacketFlags.PACKET_MEDIUM_PRIORITY;
+        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+        public override PacketPriority Priority => PacketPriority.High;
 
         public ushort NetId { get; }
 

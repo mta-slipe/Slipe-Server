@@ -10,7 +10,8 @@ namespace SlipeServer.Packets.Definitions.Commands
     public class CommandPacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_COMMAND;
-        public override PacketFlags Flags => PacketFlags.PACKET_HIGH_PRIORITY;
+        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+        public override PacketPriority Priority => PacketPriority.High;
 
         public string Command { get; private set; }
         public string[] Arguments { get; private set; }

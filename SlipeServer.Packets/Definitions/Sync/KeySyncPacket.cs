@@ -14,7 +14,8 @@ namespace SlipeServer.Packets.Definitions.Sync
     public class KeySyncPacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_KEYSYNC;
-        public override PacketFlags Flags => PacketFlags.PACKET_MEDIUM_PRIORITY;
+        public override PacketReliability Reliability => PacketReliability.UnreliableSequenced;
+        public override PacketPriority Priority => PacketPriority.Medium;
 
         public SmallKeySyncStructure SmallKeySyncStructure { get; set; }
         public float PlayerRotation { get; set; }

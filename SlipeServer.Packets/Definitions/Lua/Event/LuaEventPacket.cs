@@ -13,7 +13,8 @@ namespace SlipeServer.Packets.Lua.Event
     public class LuaEventPacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_LUA_EVENT;
-        public override PacketFlags Flags => throw new NotImplementedException();
+        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+        public override PacketPriority Priority => PacketPriority.High;
 
         public string Name { get; set; }
         public uint ElementId { get; set; }

@@ -11,7 +11,8 @@ namespace SlipeServer.Packets.Definitions.Player
     public class SpawnPlayerPacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_SPAWN;
-        public override PacketFlags Flags => PacketFlags.PACKET_MEDIUM_PRIORITY;
+        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+        public override PacketPriority Priority => PacketPriority.High;
 
         public uint PlayerId { get; set; }
         public Vector3 Position { get; set; }
