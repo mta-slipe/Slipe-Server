@@ -31,7 +31,6 @@ namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
             builder.Write((byte)ElementRpcFunction.SET_GRAVITY);
             builder.Write(this.Gravity);
 
-
             return builder.Build();
         }
     }

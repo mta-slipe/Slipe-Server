@@ -26,37 +26,43 @@ namespace SlipeServer.Server.Services
         private TrafficLightState trafficLightState;
         private bool trafficLightStateForced;
 
-        private int hour = 0;
-        private int minute = 0;
+        private byte hour = 0;
+        private byte minute = 0;
 
         #region Properties
 
         public byte Weather { get; set; }
 
-        private float fogDistance;
-        public float FogDistance
+        private float? fogDistance;
+        public float? FogDistance
         {
             get => fogDistance;
             set
             {
                 fogDistance = value;
-                this.server.BroadcastPacket(new SetFogDistancePacket(value));
+                if (value != null)
+                    this.server.BroadcastPacket(new SetFogDistancePacket(value.Value));
+                else
+                    this.server.BroadcastPacket(new ResetFogDistancePacket());
             }
         }
 
-        private float farClipDistance;
-        public float FarClipDistance
+        private float? farClipDistance;
+        public float? FarClipDistance
         {
 
             get => farClipDistance;
             set
             {
                 farClipDistance = value;
-                this.server.BroadcastPacket(new SetFarClipDistancePacket(value));
+                if (value != null)
+                    this.server.BroadcastPacket(new SetFarClipDistancePacket(value.Value));
+                else
+                    this.server.BroadcastPacket(new ResetFarClipDistancePacket());
             }
         }
 
-        private float aircraftMaxHeight;
+        private float aircraftMaxHeight = 800;
         public float AircraftMaxHeight
         {
 
@@ -68,7 +74,7 @@ namespace SlipeServer.Server.Services
             }
         }
 
-        private float aircraftMaxVelocity;
+        private float aircraftMaxVelocity = 1.5f;
         public float AircraftMaxVelocity
         {
 
@@ -80,7 +86,7 @@ namespace SlipeServer.Server.Services
             }
         }
 
-        private bool cloudsEnabled;
+        private bool cloudsEnabled = true;
         public bool CloudsEnabled
         {
 
@@ -92,7 +98,7 @@ namespace SlipeServer.Server.Services
             }
         }
 
-        private float gameSpeed;
+        private float gameSpeed = 1;
         public float GameSpeed
         {
 
@@ -104,7 +110,7 @@ namespace SlipeServer.Server.Services
             }
         }
 
-        private float gravity;
+        private float gravity = 0.008f;
         public float Gravity
         {
 
@@ -116,7 +122,7 @@ namespace SlipeServer.Server.Services
             }
         }
 
-        private bool interiorSoundsEnabled;
+        private bool interiorSoundsEnabled = true;
         public bool InteriorSoundsEnabled
         {
 
@@ -141,7 +147,7 @@ namespace SlipeServer.Server.Services
             }
         }
 
-        private int moonSize;
+        private int moonSize = 3;
         public int MoonSize
         {
 
@@ -153,7 +159,7 @@ namespace SlipeServer.Server.Services
             }
         }
 
-        private bool occlusionsEnabled;
+        private bool occlusionsEnabled = true;
         public bool OcclusionsEnabled
         {
 
@@ -165,7 +171,7 @@ namespace SlipeServer.Server.Services
             }
         }
 
-        private float rainLevel;
+        private float rainLevel = 0;
         public float RainLevel
         {
 
@@ -177,7 +183,7 @@ namespace SlipeServer.Server.Services
             }
         }
 
-        private int sunSize;
+        private int sunSize = 1;
         public int SunSize
         {
 
@@ -189,7 +195,7 @@ namespace SlipeServer.Server.Services
             }
         }
 
-        private Vector3 windVelocity;
+        private Vector3 windVelocity = Vector3.Zero;
         public Vector3 WindVelocity
         {
 
@@ -225,7 +231,7 @@ namespace SlipeServer.Server.Services
             if (this.minute >= 60)
             {
                 this.minute %= 60;
-                this.hour = (this.hour + 1) % 24;
+                this.hour = (byte)((this.hour + 1) % 24);
             }
         }
 
@@ -233,8 +239,12 @@ namespace SlipeServer.Server.Services
 
         private void HandlePlayerJoin(Player player)
         {
-            player.Client.SendPacket(new SetFogDistancePacket(this.fogDistance));
-            player.Client.SendPacket(new SetFarClipDistancePacket(this.farClipDistance));
+            if (this.fogDistance != null)
+                player.Client.SendPacket(new SetFogDistancePacket(this.fogDistance.Value));
+
+            if (this.farClipDistance != null)
+                player.Client.SendPacket(new SetFarClipDistancePacket(this.farClipDistance.Value));
+
             player.Client.SendPacket(new SetAircraftMaxHeightPacket(this.aircraftMaxHeight));
             player.Client.SendPacket(new SetAircraftMaxVelocityPacket(this.aircraftMaxVelocity));
             player.Client.SendPacket(new SetCloudsEnabledPacket(this.cloudsEnabled));
@@ -348,16 +358,16 @@ namespace SlipeServer.Server.Services
             this.server.BroadcastPacket(new SetTrafficLightStatePacket((byte)state, forced));
         }
 
-        public void SetTime(int hour, int minute)
+        public void SetTime(byte hour, byte minute)
         {
             this.hour = hour;
             this.minute = minute;
             this.server.BroadcastPacket(new SetTimePacket(hour, minute));
         }
 
-        public Tuple<int, int> GetTime()
+        public Tuple<byte, byte> GetTime()
         {
-            return new Tuple<int, int>(hour, minute);
+            return new Tuple<byte, byte>(hour, minute);
         }
 
         #endregion

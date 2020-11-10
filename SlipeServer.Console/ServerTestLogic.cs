@@ -2,6 +2,7 @@
 using SlipeServer.Packets.Definitions.Commands;
 using SlipeServer.Packets.Definitions.Join;
 using SlipeServer.Packets.Definitions.Lua;
+using SlipeServer.Packets.Definitions.Lua.Rpc.World;
 using SlipeServer.Packets.Definitions.Player;
 using SlipeServer.Packets.Definitions.Resources;
 using SlipeServer.Packets.Definitions.Sync;
@@ -57,12 +58,12 @@ namespace SlipeServer.Console
             SetupResourceElements();
             SetupTestElements();
 
-            this.worldService.Gravity = 0.5f;
-            this.worldService.SetWeather(Weather.CloudySf);
+            this.worldService.Gravity = -0.008f;
+            this.worldService.SetWeather(Weather.ExtraSunnyDesert);
             this.worldService.CloudsEnabled = false;
             this.worldService.SetTime(13, 37);
             this.worldService.MinuteDuration = 60000;
-            this.worldService.SetSunColor(Color.Aqua, Color.Teal);
+            this.worldService.SetSkyGradient(Color.Aqua, Color.Teal);
 
             this.server.PlayerJoined += OnPlayerJoin;
         }
