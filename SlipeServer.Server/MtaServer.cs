@@ -21,7 +21,7 @@ namespace SlipeServer.Server
 {
     public class MtaServer
     {
-        private readonly NetWrapper netWrapper;
+        private readonly List<NetWrapper> netWrappers;
         private readonly IResourceServer resourceServer;
         private readonly PacketReducer packetReducer;
         private readonly Dictionary<NetWrapper, Dictionary<uint, Client>> clients;
@@ -39,17 +39,18 @@ namespace SlipeServer.Server
         public string Password { get; set; } = "";
         public bool HasPassword => Password != "";
 
+        public bool IsRunning { get; private set; }
         public DateTime StartDatetime { get; private set; }
         public TimeSpan Uptime => DateTime.Now - StartDatetime;
 
         public MtaServer(
-            string directory, 
-            string netDllPath, 
             Configuration? configuration = null,
             Action<ServiceCollection>? dependencyCallback = null,
             Func<uint, NetWrapper, Client>? clientCreationMethod = null
         )
         {
+            this.netWrappers = new List<NetWrapper>();
+
             this.configuration = configuration ?? new Configuration();
             this.clientCreationMethod = clientCreationMethod;
             var validationResults = new List<ValidationResult>();
@@ -75,19 +76,50 @@ namespace SlipeServer.Server
 
             this.packetReducer = new PacketReducer();
             this.clients = new Dictionary<NetWrapper, Dictionary<uint, Client>>();
+        }
 
-            this.netWrapper = CreateNetWrapper(directory, netDllPath, this.configuration.Host, this.configuration.Port);
+        public MtaServer(
+            string directory,
+            string netDllPath,
+            Configuration? configuration = null,
+            Action<ServiceCollection>? dependencyCallback = null,
+            Func<uint, NetWrapper, Client>? clientCreationMethod = null
+        ) : this(configuration, dependencyCallback, clientCreationMethod)
+        {
+            this.AddNetWrapper(directory, netDllPath, this.configuration.Host, this.configuration.Port);
         }
 
         public void Start()
         {
             this.StartDatetime = DateTime.Now;
-            this.netWrapper.Start();
+
+            foreach (var netWrapper in this.netWrappers)
+            {
+                netWrapper.Start();
+            }
+
+            this.IsRunning = true;
         }
 
         public void Stop()
         {
-            this.netWrapper.Stop();
+            foreach (var netWrapper in this.netWrappers)
+            {
+                netWrapper.Stop();
+            }
+
+            this.IsRunning = false;
+        }
+
+        public NetWrapper AddNetWrapper(string directory, string netDllPath, string host, ushort port)
+        {
+            var wrapper = CreateNetWrapper(directory, netDllPath, host, port);
+            this.netWrappers.Add(wrapper);
+
+            if (this.IsRunning)
+                wrapper.Start();
+
+            return wrapper;
         }
 
         public void RegisterPacketQueueHandler(PacketId packetId, IQueueHandler queueHandler)
@@ -136,7 +168,7 @@ namespace SlipeServer.Server
         private NetWrapper CreateNetWrapper(string directory, string netDllPath, string host, ushort port)
         {
             NetWrapper netWrapper = new NetWrapper(directory, netDllPath, host, port);
-            netWrapper.OnPacketReceived += EnqueueIncomingPacket;
+            netWrapper.PacketReceived += EnqueueIncomingPacket;
 
             this.clients[netWrapper] = new Dictionary<uint, Client>();
 
@@ -170,7 +202,7 @@ namespace SlipeServer.Server
         }
 
         public void HandlePlayerJoin(Player player) => PlayerJoined?.Invoke(player);
-        public void HandleLuaEvent(LuaEvent luaEvent) => this.LuaEventTriggered?.Invoke(luaEvent);
+        public void HandleLuaEvent(LuaEvent luaEvent) => LuaEventTriggered?.Invoke(luaEvent);
 
         public event Action<Element>? ElementCreated;
         public event Action<Player>? PlayerJoined;

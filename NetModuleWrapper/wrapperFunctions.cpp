@@ -1,14 +1,4 @@
-﻿#include <iostream>
-#include "mta/shared/sdk/SharedUtil.h";
-#include "mta/server/core/CDynamicLibrary.h";
-#include "mta/server/sdk/core/CServerInterface.h";
-#include "mta/shared/sdk/SharedUtil.h";
-#include "mta/shared/sdk/net/Packets.h";
-#include "mta/shared/sdk/net/bitstream.h";
-#include "mta/server/sdk/net/CNetServer.h";
-#include <bitset>
-#include <map>
-#include <iomanip>
+﻿#include "NetWrapper.h";
 
 #if defined _WIN32
 #define EXPORT extern "C" __declspec(dllexport)
@@ -16,172 +6,51 @@
 #define EXPORT extern "C" __attribute__ ((visibility ("default")))
 #endif
 
-enum ENetworkUsageDirection
+EXPORT void __cdecl sendPacket(ushort id, unsigned long address, unsigned char packetId, unsigned char* payload, unsigned long payloadSize, unsigned char priority, unsigned char reliability)
 {
-    STATS_INCOMING_TRAFFIC = 0,
-    STATS_OUTGOING_TRAFFIC = 1
-};
-
-CNetServer* network;
-
-std::map<ulong, NetServerPlayerID> sockets;
-
-bool running;
-
-typedef void(__stdcall* PacketCallback)(unsigned char, unsigned long, char[], unsigned long);
-PacketCallback registeredCallback;
-
-bool packetHandler(unsigned char ucPacketID, const NetServerPlayerID& Socket, NetBitStreamInterface* pBitStream, SNetExtraInfo* pNetExtraInfo)
-{
-    sockets[Socket.GetBinaryAddress()] = Socket;
-    if (registeredCallback != nullptr)
-    {
-        uint bitCount = pBitStream->GetNumberOfBitsUsed();
-        uint byteCount = pBitStream->GetNumberOfBytesUsed();
-
-        char buffer[4096];
-        pBitStream->Read(buffer, byteCount);
-
-        registeredCallback(ucPacketID, Socket.GetBinaryAddress(), buffer, byteCount);
-    }
-
-    return true;
+    NetWrapper::getNetWrapper(id)->sendPacket(address, packetId, payload, payloadSize, priority, reliability);
 }
 
-EXPORT void __cdecl sendPacket(unsigned long address, unsigned char packetId, unsigned char* payload, unsigned long payloadSize, unsigned char priority, unsigned char reliability)
+EXPORT void __cdecl setSocketVersion(ushort id, unsigned long address, unsigned short version)
 {
-    NetBitStreamInterface* pBitStream = network->AllocateNetServerBitStream(0);
-    if (pBitStream)
-    {
-        for (int i = 0; i < payloadSize; i++)
-        {
-            pBitStream->Write((char)payload[i]);
-        }
-
-        auto socket = sockets[address];
-        network->SendPacket(packetId, socket, pBitStream, false, static_cast<NetServerPacketPriority>(priority), static_cast<NetServerPacketReliability>(reliability));
-        network->DeallocateNetServerBitStream(pBitStream);
-    }
+    NetWrapper::getNetWrapper(id)->setSocketVersion(address, version);
 }
 
-EXPORT void __cdecl setSocketVersion(unsigned long address, unsigned short version)
+EXPORT BSTR __cdecl getClientSerialAndVersion(ushort id, unsigned long address, uint16_t & serialSize, uint16_t & extraSize, uint16_t & versionSize)
 {
-    network->SetClientBitStreamVersion(sockets[address], version);
-}
-
-EXPORT BSTR __cdecl getClientSerialAndVersion(unsigned long address, uint16_t & serialSize, uint16_t & extraSize, uint16_t & versionSize)
-{
-    auto socket = sockets[address];
-
-    SFixedString<32> strSerialTemp;
-    SFixedString<64> strExtraTemp;
-    SFixedString<32> strPlayerVersionTemp;
-    network->GetClientSerialAndVersion(socket, strSerialTemp, strExtraTemp, strPlayerVersionTemp);
-
-    std::string serial = (std::string)SStringX(strSerialTemp);
-    std::string extra = (std::string)SStringX(strExtraTemp);
-    std::string version = (std::string)SStringX(strPlayerVersionTemp);
-
-    serialSize = serial.length();
-    extraSize = extra.length();
-    versionSize = version.length();
-
-    std::string result = serial + extra + version;
-
-    std::wstring widestr = std::wstring(result.begin(), result.end());
-    BSTR bstr = SysAllocString(widestr.c_str());
-    return bstr;
-}
-
-void testMethod() {
-    NetBitStreamInterface* bitStream = network->AllocateNetServerBitStream(0);
-    if (bitStream)
-    {
-        //bitStream->WriteCompressed((ulong)0);
-        //bitStream->WriteNormVector(0.5, 0.5, 0.5);
-        //bitStream->Write(128.56f);
-        //bitStream->WriteCompressed(0.56f);
-
-        int bitCount = bitStream->GetNumberOfBitsUsed();
-
-        bitStream->ResetReadPointer();
-
-        for (int i = 0; i < bitCount; i++)
-            std::cout << (i % 8 == 0 ? ", 0b" : "") << bitStream->ReadBit();
-
-        network->DeallocateNetServerBitStream(bitStream);
-    }
+    return NetWrapper::getNetWrapper(id)->getClientSerialAndVersion(address, serialSize, extraSize, versionSize);
 }
 
 EXPORT int __cdecl initNetWrapper(const char* netDllFilePath, const char* idFile, const char* ip, unsigned short port,
     unsigned int playerCount, const char* serverName, PacketCallback callback)
 {
-    registeredCallback = callback;
-
-    CDynamicLibrary networkLibrary;
-    bool loaded = networkLibrary.Load(netDllFilePath);
-
-    if (!loaded) {
-        return 1001;
-    }
-
-    typedef unsigned long (*PFNCHECKCOMPATIBILITY)(unsigned long, unsigned long*);
-    PFNCHECKCOMPATIBILITY isCompatible = reinterpret_cast<PFNCHECKCOMPATIBILITY>(networkLibrary.GetProcedureAddress("CheckCompatibility"));
-
-    if (!isCompatible)
-    {
-        return 1002;
-    }
-    if (!isCompatible(0x0AB, (unsigned long*)0x09)) {
-
-        ulong actualVersion = 0;
-        if (isCompatible)
-            isCompatible(1, &actualVersion);
-
-        return 1003;
-    }
-
-    typedef CNetServer* (*InitNetServerInterface)();
-    InitNetServerInterface pfnInitNetServerInterface = (InitNetServerInterface)(networkLibrary.GetProcedureAddress("InitNetServerInterface"));
-    if (!pfnInitNetServerInterface)
-    {
-        return 1004;
-    }
-
-    network = pfnInitNetServerInterface();
-
-
-    network->InitServerId("");
-    network->RegisterPacketHandler(packetHandler);
-    network->StartNetwork(ip, port, playerCount, serverName);
-
-    testMethod();
-
-    return 0;
+    auto wrapper = new NetWrapper();
+    wrapper->init(netDllFilePath, idFile, ip, port, playerCount, serverName, callback);
+    return wrapper->getId();
 }
 
-std::thread runThread;
-
-void runPulseLoop() {
-    while (running)
-    {
-        network->DoPulse();
-        network->GetHTTPDownloadManager(EDownloadMode::ASE)->ProcessQueuedFiles();
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-    }
+EXPORT void __cdecl destroyNetWrapper(ushort id)
+{
+    auto wrapper = NetWrapper::getNetWrapper(id);
+    wrapper->destroy();
+    delete wrapper;
 }
 
-EXPORT void __cdecl startNetWrapper() {
-    running = true;
-    runThread = std::thread(runPulseLoop);
+EXPORT void __cdecl startNetWrapper(ushort id) {
+    NetWrapper::getNetWrapper(id)->start();
 }
 
-EXPORT void __cdecl stopNetWrapper() {
-    running = false;
-    runThread.join();
+EXPORT void __cdecl stopNetWrapper(ushort id) {
+    NetWrapper::getNetWrapper(id)->stop();
 }
 
 
+//enum ENetworkUsageDirection
+//{
+//    STATS_INCOMING_TRAFFIC = 0,
+//    STATS_OUTGOING_TRAFFIC = 1
+//};
+//
 // extern "C" __declspec(dllexport) void StopNetwork()
 //{
 //    network->StopNetwork();
