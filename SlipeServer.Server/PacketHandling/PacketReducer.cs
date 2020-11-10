@@ -24,6 +24,14 @@ namespace SlipeServer.Server.PacketHandling
             this.registeredQueueHandlers[packetId].Add(queueHandler);
         }
 
+        public void UnregisterQueueHandler(PacketId packetId, IQueueHandler queueHandler)
+        {
+            if (this.registeredQueueHandlers.ContainsKey(packetId))
+            {
+                this.registeredQueueHandlers[packetId].Remove(queueHandler);
+            }
+        }
+
         public void EnqueuePacket(Client client, PacketId packetId, byte[] data)
         {
             if (this.registeredQueueHandlers.ContainsKey(packetId))

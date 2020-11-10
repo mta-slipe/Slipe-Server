@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace SlipeServer.Net
 {
-    public class NetWrapper
+    public class NetWrapper: IDisposable
     {
-        const string wrapperDllpath = @"NetModuleWrapper.dll";
+        const string wrapperDllpath = @"NetModuleWrapper";
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate void PacketCallback(byte packetId, uint binaryAddress, IntPtr payload, uint payloadSize);
@@ -19,24 +19,28 @@ namespace SlipeServer.Net
 
         [DllImport(wrapperDllpath, EntryPoint = "initNetWrapper")]
         private static extern int InitNetWrapper(string path, string idFile, string ip, ushort port, uint playerCount, string serverName, PacketCallback callback);
-        
+
+        [DllImport(wrapperDllpath, EntryPoint = "destroyNetWrapper")]
+        private static extern void DestroyNetWrapper(ushort id);
+
         [DllImport(wrapperDllpath, EntryPoint = "startNetWrapper")]
-        private static extern void StartNetWrapper();
+        private static extern void StartNetWrapper(ushort id);
 
         [DllImport(wrapperDllpath, EntryPoint = "stopNetWrapper")]
-        private static extern void StopNetWrapper();
+        private static extern void StopNetWrapper(ushort id);
 
         [DllImport(wrapperDllpath, EntryPoint = "sendPacket")]
-        private static extern bool SendPacket(uint binaryAddress, byte packetId, IntPtr payload, uint payloadSize, byte priority, byte ordering);
+        private static extern bool SendPacket(ushort id, uint binaryAddress, byte packetId, IntPtr payload, uint payloadSize, byte priority, byte ordering);
 
         [DllImport(wrapperDllpath, EntryPoint = "setSocketVersion")]
-        private static extern bool SetSocketVersion(uint binaryAddress, ushort version);
+        private static extern bool SetSocketVersion(ushort id, uint binaryAddress, ushort version);
 
         [DllImport(wrapperDllpath, EntryPoint = "getClientSerialAndVersion", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
         [return: MarshalAs(UnmanagedType.BStr)]
-        private static extern string GetClientSerialAndVersion(uint binaryAddress, out ushort serialSize, out ushort extraSize, out ushort versionSize);
+        private static extern string GetClientSerialAndVersion(ushort id, uint binaryAddress, out ushort serialSize, out ushort extraSize, out ushort versionSize);
 
         private readonly PacketCallback packetInterceptorDelegate;
+        private readonly ushort id;
         
         public NetWrapper(string directory, string netDllPath, string host, ushort port)
         {
@@ -46,22 +50,28 @@ namespace SlipeServer.Net
             packetInterceptorDelegate = PacketInterceptor;
             int result = InitNetWrapper(netDllPath, idFile, host, port, 1024, "C# server", packetInterceptorDelegate);
 
-            if (result != 0)
+            if (result < 0)
             {
                 throw new Exception($"Unable to start net wrapper. Error code: {result} ({((NetWrapperErrorCode)result)})");
             }
+            this.id = (ushort)result;
 
             Debug.WriteLine($"Net wrapper initialized: {result}");
         }
 
+        public void Dispose()
+        {
+            DestroyNetWrapper(this.id);
+        }
+
         public void Start()
         {
-            StartNetWrapper();
+            StartNetWrapper(this.id);
         }
 
         public void Stop()
         {
-            StopNetWrapper();
+            StopNetWrapper(this.id);
         }
 
         void SendPacket(uint binaryAddress, byte packetId, byte[] payload, PacketPriority priority, PacketReliability reliability)
@@ -71,22 +81,12 @@ namespace SlipeServer.Net
             try
             {
                 Marshal.Copy(payload, 0, pointer, payload.Length);
-                SendPacket(binaryAddress, packetId, pointer, (uint)payload.Length, (byte)priority, (byte)reliability);
+                SendPacket(this.id, binaryAddress, packetId, pointer, (uint)payload.Length, (byte)priority, (byte)reliability);
             }
             finally
             {
                 Marshal.FreeHGlobal(pointer);
             }
-        }
-
-        public Tuple<string, string, string> GetClientSerialExtraAndVersion(uint binaryAddress)
-        {
-            string result = GetClientSerialAndVersion(binaryAddress, out ushort serialSize, out ushort extraSize, out _).ToString();
-
-            string serial = result.Substring(0, serialSize);
-            string extra = result.Substring(serialSize, extraSize);
-            string version = result.Substring(serialSize + extraSize);
-            return new Tuple<string, string, string>(serial, extra, version);
         }
 
         public void SendPacket(uint binaryAddress, Packet packet)
@@ -99,9 +99,19 @@ namespace SlipeServer.Net
             SendPacket(binaryAddress, (byte)packetId, data, priority, reliability);
         }
 
+        public Tuple<string, string, string> GetClientSerialExtraAndVersion(uint binaryAddress)
+        {
+            string result = GetClientSerialAndVersion(this.id, binaryAddress, out ushort serialSize, out ushort extraSize, out _).ToString();
+
+            string serial = result.Substring(0, serialSize);
+            string extra = result.Substring(serialSize, extraSize);
+            string version = result.Substring(serialSize + extraSize);
+            return new Tuple<string, string, string>(serial, extra, version);
+        }
+
         public void SetVersion(uint binaryAddress, ushort version)
         {
-            SetSocketVersion(binaryAddress, version);
+            SetSocketVersion(this.id, binaryAddress, version);
         }
 
         void PacketInterceptor(byte packetId, uint binaryAddress, IntPtr payload, uint payloadSize)
@@ -111,10 +121,10 @@ namespace SlipeServer.Net
 
             PacketId parsedPacketId = (PacketId)packetId;
                 
-            this.OnPacketReceived?.Invoke(this, binaryAddress, parsedPacketId, data);
+            this.PacketReceived?.Invoke(this, binaryAddress, parsedPacketId, data);
         }
 
-        public event Action<NetWrapper, uint, PacketId, byte[]>? OnPacketReceived;
+        public event Action<NetWrapper, uint, PacketId, byte[]>? PacketReceived;
 
     }
 }

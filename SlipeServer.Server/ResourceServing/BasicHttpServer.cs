@@ -93,7 +93,7 @@ namespace SlipeServer.Server.ResourceServing
                     resourceFiles.Add(new ResourceFile()
                     {
                         Name = fileName,
-                        AproximateSize = 28,
+                        AproximateSize = content.Length,
                         IsAutoDownload = false,
                         CheckSum = checksum,
                         FileType = (byte)(fileName.EndsWith(".lua") ? ResourceFileType.ClientScript : ResourceFileType.ClientFile),

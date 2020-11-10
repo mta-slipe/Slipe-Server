@@ -36,16 +36,26 @@ namespace SlipeServer.Console
         {
             var configurationProvider = args.Length > 0 ? GetConfigurationProvider(args[0]) : null;
 
+            Configuration? configuration = configurationProvider?.GetConfiguration();
             server = new MtaServer(
                 Directory.GetCurrentDirectory(),
                 @"net.dll",
-                configurationProvider?.GetConfiguration(),
+                configuration,
                 Configure
             )
             {
                 GameType = "Slipe Server",
                 MapName = "N/A"
             };
+
+#if DEBUG
+            server.AddNetWrapper(
+                Directory.GetCurrentDirectory(),
+                @"net_d.dll",
+                configuration?.Host ?? "0.0.0.0",
+                (ushort)((configuration?.Port + 1) ?? 50667)
+            );
+#endif
 
             System.Console.CancelKeyPress += delegate
             {

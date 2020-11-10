@@ -10,7 +10,6 @@ namespace SlipeServer.Server.Elements
 
         public Client Client { get; }
 
-        public PlayerWeapon CurrentWeapon { get; set; }
         public Element? ContactElement { get; set; }
 
         public Vector3 AimOrigin { get; set; }
