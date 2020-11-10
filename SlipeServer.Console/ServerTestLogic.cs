@@ -16,6 +16,7 @@ using SlipeServer.Server.PacketHandling;
 using SlipeServer.Server.PacketHandling.Factories;
 using SlipeServer.Server.Repositories;
 using SlipeServer.Server.ResourceServing;
+using SlipeServer.Server.Services;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -30,16 +31,24 @@ namespace SlipeServer.Console
         private readonly IElementRepository elementRepository;
         private readonly RootElement root;
         private readonly IResourceServer resourceServer;
-
+        private readonly WorldService worldService;
         private DummyElement? resourceRoot;
         private DummyElement? resourceDynamic;
 
-        public ServerTestLogic(MtaServer server, IElementRepository elementRepository, RootElement root, IResourceServer resourceServer)
+        public ServerTestLogic(
+            MtaServer server, 
+            IElementRepository elementRepository, 
+            RootElement root, 
+            IResourceServer resourceServer,
+            WorldService worldService
+        )
         {
             this.server = server;
             this.elementRepository = elementRepository;
             this.root = root;
             this.resourceServer = resourceServer;
+            this.worldService = worldService;
+
             this.SetupTestLogic();
         }
 
@@ -47,6 +56,13 @@ namespace SlipeServer.Console
         {
             SetupResourceElements();
             SetupTestElements();
+
+            this.worldService.Gravity = 0.5f;
+            this.worldService.SetWeather(Weather.CloudySf);
+            this.worldService.CloudsEnabled = false;
+            this.worldService.SetTime(13, 37);
+            this.worldService.MinuteDuration = 60000;
+            this.worldService.SetSunColor(Color.Aqua, Color.Teal);
 
             this.server.PlayerJoined += OnPlayerJoin;
         }
