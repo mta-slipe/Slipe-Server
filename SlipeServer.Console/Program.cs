@@ -50,9 +50,9 @@ namespace SlipeServer.Console
 
 #if DEBUG
             server.AddNetWrapper(
-                Directory.GetCurrentDirectory(), 
-                @"net_d.dll", 
-                configuration?.Host ?? "0.0.0.0", 
+                Directory.GetCurrentDirectory(),
+                @"net_d.dll",
+                configuration?.Host ?? "0.0.0.0",
                 (ushort)((configuration?.Port + 1) ?? 50667)
             );
 #endif

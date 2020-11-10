@@ -30,7 +30,6 @@ void NetWrapper::destroy()
 bool NetWrapper::packetHandler(unsigned char ucPacketID, const NetServerPlayerID& Socket, NetBitStreamInterface* pBitStream, SNetExtraInfo* pNetExtraInfo)
 {
     sockets[Socket.GetBinaryAddress()] = Socket;
-    NetWrapper::netWrappersPerSocket[Socket] = this;
 
     if (registeredCallback != nullptr)
     {
@@ -148,7 +147,6 @@ int NetWrapper::init(const char* netDllFilePath, const char* idFile, const char*
 
     network = pfnInitNetServerInterface();
 
-
     network->InitServerId("");
     network->RegisterPacketHandler(staticPacketHandler);
     network->StartNetwork(ip, port, playerCount, serverName);
@@ -177,6 +175,11 @@ void NetWrapper::stop() {
     runThread.join();
 }
 
+bool NetWrapper::isValidSocket(NetServerPlayerID id)
+{
+    return this->network->IsValidSocket(id);
+}
+
 NetWrapper* NetWrapper::getNetWrapper(int id)
 {
     return NetWrapper::netWrappers[id];
@@ -184,5 +187,15 @@ NetWrapper* NetWrapper::getNetWrapper(int id)
 
 NetWrapper* NetWrapper::getNetWrapper(NetServerPlayerID id)
 {
+    if (NetWrapper::netWrappersPerSocket.find(id) == NetWrapper::netWrappersPerSocket.end()) {
+        for (auto wrapper : netWrappers) {
+            if (wrapper.second->isValidSocket(id)) {
+                NetWrapper::netWrappersPerSocket[id] = wrapper.second;
+                return wrapper.second;
+            }
+        }
+        return nullptr;
+    }
+
     return NetWrapper::netWrappersPerSocket[id];
 }

@@ -41,6 +41,7 @@ public:
     int init(const char* netDllFilePath, const char* idFile, const char* ip, unsigned short port, unsigned int playerCount, const char* serverName, PacketCallback callback);
     void start();
     void stop();
+    bool isValidSocket(NetServerPlayerID id);
 
     static NetWrapper* getNetWrapper(int id);
     static NetWrapper* getNetWrapper(NetServerPlayerID id);
