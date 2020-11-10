@@ -58,7 +58,6 @@ namespace SlipeServer.Console
             SetupResourceElements();
             SetupTestElements();
 
-            this.worldService.Gravity = -0.008f;
             this.worldService.SetWeather(Weather.ExtraSunnyDesert);
             this.worldService.CloudsEnabled = false;
             this.worldService.SetTime(13, 37);
