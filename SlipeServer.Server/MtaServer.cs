@@ -16,6 +16,7 @@ using System.Net.Http;
 using SlipeServer.Server.AllSeeingEye;
 using SlipeServer.Server.Elements.IdGeneration;
 using SlipeServer.Server.Events;
+using SlipeServer.Server.Services;
 
 namespace SlipeServer.Server
 {
@@ -157,6 +158,9 @@ namespace SlipeServer.Server
             this.serviceCollection.AddSingleton<IResourceServer, BasicHttpServer>();
             this.serviceCollection.AddSingleton<IElementIdGenerator, RepositoryBasedElementIdGenerator>();
             this.serviceCollection.AddSingleton<IAseQueryService, AseQueryService>();
+
+            this.serviceCollection.AddSingleton<WorldService>();
+
             this.serviceCollection.AddSingleton<HttpClient>(new HttpClient());
             this.serviceCollection.AddSingleton<Configuration>(this.configuration);
             this.serviceCollection.AddSingleton<RootElement>(this.root);

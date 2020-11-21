@@ -2,6 +2,7 @@
 using SlipeServer.Packets.Definitions.Commands;
 using SlipeServer.Packets.Definitions.Join;
 using SlipeServer.Packets.Definitions.Lua;
+using SlipeServer.Packets.Definitions.Lua.Rpc.World;
 using SlipeServer.Packets.Definitions.Player;
 using SlipeServer.Packets.Definitions.Resources;
 using SlipeServer.Packets.Definitions.Sync;
@@ -16,6 +17,7 @@ using SlipeServer.Server.PacketHandling;
 using SlipeServer.Server.PacketHandling.Factories;
 using SlipeServer.Server.Repositories;
 using SlipeServer.Server.ResourceServing;
+using SlipeServer.Server.Services;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -30,16 +32,24 @@ namespace SlipeServer.Console
         private readonly IElementRepository elementRepository;
         private readonly RootElement root;
         private readonly IResourceServer resourceServer;
-
+        private readonly WorldService worldService;
         private DummyElement? resourceRoot;
         private DummyElement? resourceDynamic;
 
-        public ServerTestLogic(MtaServer server, IElementRepository elementRepository, RootElement root, IResourceServer resourceServer)
+        public ServerTestLogic(
+            MtaServer server, 
+            IElementRepository elementRepository, 
+            RootElement root, 
+            IResourceServer resourceServer,
+            WorldService worldService
+        )
         {
             this.server = server;
             this.elementRepository = elementRepository;
             this.root = root;
             this.resourceServer = resourceServer;
+            this.worldService = worldService;
+
             this.SetupTestLogic();
         }
 
@@ -47,6 +57,12 @@ namespace SlipeServer.Console
         {
             SetupResourceElements();
             SetupTestElements();
+
+            this.worldService.SetWeather(Weather.ExtraSunnyDesert);
+            this.worldService.CloudsEnabled = false;
+            this.worldService.SetTime(13, 37);
+            this.worldService.MinuteDuration = 60000;
+            this.worldService.SetSkyGradient(Color.Aqua, Color.Teal);
 
             this.server.PlayerJoined += OnPlayerJoin;
         }

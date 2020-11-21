@@ -12,10 +12,10 @@ namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
         public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
         public override PacketPriority Priority => PacketPriority.High;
 
-        public int Hour { get; set; }
-        public int Minute { get; set; }
+        public byte Hour { get; set; }
+        public byte Minute { get; set; }
 
-        public SetTimePacket(int hour,int minute)
+        public SetTimePacket(byte hour, byte minute)
         {
             Hour = hour;
             Minute = minute;
