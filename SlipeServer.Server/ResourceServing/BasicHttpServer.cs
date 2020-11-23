@@ -18,12 +18,14 @@ namespace SlipeServer.Server.ResourceServing
         private readonly HttpListener httpListener;
         private readonly string rootDirectory;
         private readonly ILogger logger;
+        private readonly string httpAddress;
         private bool running;
 
         public BasicHttpServer(Configuration configuration, ILogger logger)
         {
+            this.httpAddress = $"http://{configuration.HttpHost}:{configuration.HttpPort}/";
             this.httpListener = new HttpListener();
-            this.httpListener.Prefixes.Add($"http://{configuration.HttpHost}:{configuration.HttpPort}/");
+            this.httpListener.Prefixes.Add(httpAddress);
 
             this.running = false;
             this.rootDirectory = configuration.ResourceDirectory;
@@ -38,7 +40,15 @@ namespace SlipeServer.Server.ResourceServing
             }
 
             this.running = true;
-            this.httpListener.Start();
+            try
+            {
+                this.httpListener.Start();
+
+            }
+            catch(HttpListenerException ex)
+            {
+                throw new Exception($"Could not bind http server on address {httpAddress}");
+            }
 
             Task.Run(async () =>
             {
