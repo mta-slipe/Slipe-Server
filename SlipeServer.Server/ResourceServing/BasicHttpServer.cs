@@ -23,7 +23,7 @@ namespace SlipeServer.Server.ResourceServing
 
         public BasicHttpServer(Configuration configuration, ILogger logger)
         {
-            httpAddress = $"http://{configuration.HttpHost}:{configuration.HttpPort}/";
+            this.httpAddress = $"http://{configuration.HttpHost}:{configuration.HttpPort}/";
             this.httpListener = new HttpListener();
             this.httpListener.Prefixes.Add(httpAddress);
 
@@ -44,7 +44,8 @@ namespace SlipeServer.Server.ResourceServing
             {
                 this.httpListener.Start();
 
-            }catch(HttpListenerException ex)
+            }
+            catch(HttpListenerException ex)
             {
                 throw new Exception($"Could not bind http server on address {httpAddress}");
             }
