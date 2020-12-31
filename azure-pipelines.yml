@@ -36,6 +36,7 @@ steps:
     command: 'test'
 
 - task: NuGetCommand@2
+  displayName: 'NuGet pack'
   inputs:
     command: 'pack'
     packagesToPack: '**/SlipeServer.Server.csproj'
