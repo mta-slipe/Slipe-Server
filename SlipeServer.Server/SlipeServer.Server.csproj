@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SlipeServer.Net\SlipeServer.Net.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\SlipeServer.Net\SlipeServer.Net.csproj"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -41,7 +41,7 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
-    <None Include="slipe-logo.png">
+    <None Include="..\slipe-logo.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>

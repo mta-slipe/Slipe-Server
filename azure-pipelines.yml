@@ -40,7 +40,7 @@ steps:
   inputs:
     command: 'pack'
     # buildProperties: '-IncludeReferencedProjects'
-    packagesToPack: '**/SlipeServer.Server.csproj'
+    packagesToPack: '**/SlipeServer.Packets.csproj;**/SlipeServer.Net.csproj;**/SlipeServer.Server.csproj'
     versioningScheme: 'byPrereleaseNumber'
     majorVersion: '0'
     minorVersion: '1'
