@@ -6,7 +6,7 @@ using System.Numerics;
 using System.Text;
 using Xunit;
 
-namespace SlipeServer.Server.Tests.CollisionShapes
+namespace SlipeServer.Server.Tests.Unit.CollisionShapes
 {
     public class CollisionTubeTests
     {

@@ -7,7 +7,6 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling;
 using SlipeServer.Server.Repositories;
-using SlipeServer.Server.ResourceServing;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -17,15 +16,16 @@ using SlipeServer.Server.AllSeeingEye;
 using SlipeServer.Server.Elements.IdGeneration;
 using SlipeServer.Server.Events;
 using SlipeServer.Server.Services;
+using SlipeServer.Server.Resources.ResourceServing;
 
 namespace SlipeServer.Server
 {
     public class MtaServer
     {
-        private readonly List<NetWrapper> netWrappers;
+        private readonly List<INetWrapper> netWrappers;
         private readonly IResourceServer resourceServer;
-        private readonly PacketReducer packetReducer;
-        private readonly Dictionary<NetWrapper, Dictionary<uint, Client>> clients;
+        protected readonly PacketReducer packetReducer;
+        private readonly Dictionary<INetWrapper, Dictionary<uint, Client>> clients;
         private readonly ServiceCollection serviceCollection;
         private readonly ServiceProvider serviceProvider;
         private readonly IElementRepository elementRepository;
@@ -33,7 +33,7 @@ namespace SlipeServer.Server
         private readonly RootElement root;
         private readonly Configuration configuration;
 
-        private readonly Func<uint, NetWrapper, Client>? clientCreationMethod;
+        private readonly Func<uint, INetWrapper, Client>? clientCreationMethod;
 
         public string GameType { get; set; } = "unknown";
         public string MapName { get; set; } = "unknown";
@@ -47,10 +47,10 @@ namespace SlipeServer.Server
         public MtaServer(
             Configuration? configuration = null,
             Action<ServiceCollection>? dependencyCallback = null,
-            Func<uint, NetWrapper, Client>? clientCreationMethod = null
+            Func<uint, INetWrapper, Client>? clientCreationMethod = null
         )
         {
-            this.netWrappers = new List<NetWrapper>();
+            this.netWrappers = new List<INetWrapper>();
 
             this.configuration = configuration ?? new Configuration();
             this.clientCreationMethod = clientCreationMethod;
@@ -76,7 +76,7 @@ namespace SlipeServer.Server
             this.root.AssociateWith(this);
 
             this.packetReducer = new PacketReducer();
-            this.clients = new Dictionary<NetWrapper, Dictionary<uint, Client>>();
+            this.clients = new Dictionary<INetWrapper, Dictionary<uint, Client>>();
         }
 
         public MtaServer(
@@ -84,7 +84,7 @@ namespace SlipeServer.Server
             string netDllPath,
             Configuration? configuration = null,
             Action<ServiceCollection>? dependencyCallback = null,
-            Func<uint, NetWrapper, Client>? clientCreationMethod = null
+            Func<uint, INetWrapper, Client>? clientCreationMethod = null
         ) : this(configuration, dependencyCallback, clientCreationMethod)
         {
             this.AddNetWrapper(directory, netDllPath, this.configuration.Host, this.configuration.Port);
@@ -112,7 +112,7 @@ namespace SlipeServer.Server
             this.IsRunning = false;
         }
 
-        public NetWrapper AddNetWrapper(string directory, string netDllPath, string host, ushort port)
+        public INetWrapper AddNetWrapper(string directory, string netDllPath, string host, ushort port)
         {
             var wrapper = CreateNetWrapper(directory, netDllPath, host, port);
             this.netWrappers.Add(wrapper);
@@ -131,6 +131,9 @@ namespace SlipeServer.Server
         public T Instantiate<T>() => ActivatorUtilities.CreateInstance<T>(this.serviceProvider);
         public T Instantiate<T>(params object[] parameters) 
             => ActivatorUtilities.CreateInstance<T>(this.serviceProvider, parameters);
+
+        public T GetService<T>() => this.serviceProvider.GetService<T>();
+        public T GetRequiredService<T>() => this.serviceProvider.GetRequiredService<T>();
 
         public void BroadcastPacket(Packet packet)
         {
@@ -159,7 +162,10 @@ namespace SlipeServer.Server
             this.serviceCollection.AddSingleton<IElementIdGenerator, RepositoryBasedElementIdGenerator>();
             this.serviceCollection.AddSingleton<IAseQueryService, AseQueryService>();
 
-            this.serviceCollection.AddSingleton<WorldService>();
+            this.serviceCollection.AddSingleton<GameWorld>();
+            this.serviceCollection.AddSingleton<ChatBox>();
+            this.serviceCollection.AddSingleton<ClientConsole>();
+            this.serviceCollection.AddSingleton<DebugLog>();
 
             this.serviceCollection.AddSingleton<HttpClient>(new HttpClient());
             this.serviceCollection.AddSingleton<Configuration>(this.configuration);
@@ -169,17 +175,20 @@ namespace SlipeServer.Server
             dependencyCallback?.Invoke(this.serviceCollection);
         }
 
-        private NetWrapper CreateNetWrapper(string directory, string netDllPath, string host, ushort port)
+        private INetWrapper CreateNetWrapper(string directory, string netDllPath, string host, ushort port)
         {
-            NetWrapper netWrapper = new NetWrapper(directory, netDllPath, host, port);
-            netWrapper.PacketReceived += EnqueueIncomingPacket;
-
-            this.clients[netWrapper] = new Dictionary<uint, Client>();
-
+            INetWrapper netWrapper = new NetWrapper(directory, netDllPath, host, port);
+            RegisterNetWrapper(netWrapper);
             return netWrapper;
         }
 
-        private void EnqueueIncomingPacket(NetWrapper netWrapper, uint binaryAddress, PacketId packetId, byte[] data)
+        protected void RegisterNetWrapper(INetWrapper netWrapper)
+        {
+            netWrapper.PacketReceived += EnqueueIncomingPacket;
+            this.clients[netWrapper] = new Dictionary<uint, Client>();
+        }
+
+        private void EnqueueIncomingPacket(INetWrapper netWrapper, uint binaryAddress, PacketId packetId, byte[] data)
         {
             if (!this.clients[netWrapper].ContainsKey(binaryAddress))
             {

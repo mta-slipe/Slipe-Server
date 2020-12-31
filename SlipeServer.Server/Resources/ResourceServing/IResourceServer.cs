@@ -6,7 +6,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SlipeServer.Server.ResourceServing
+namespace SlipeServer.Server.Resources.ResourceServing
 {
     public interface IResourceServer
     {

@@ -3,7 +3,7 @@ using SlipeServer.Server.Elements;
 using System;
 using Xunit;
 
-namespace SlipeServer.Server.Tests.Elements
+namespace SlipeServer.Server.Tests.Unit.Elements
 {
     public class ElementTests
     {

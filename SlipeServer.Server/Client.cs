@@ -12,7 +12,7 @@ namespace SlipeServer.Server
 {
     public class Client
     {
-        private readonly NetWrapper netWrapper;
+        private readonly INetWrapper netWrapper;
         private readonly uint binaryAddress;
 
         public Player Player { get; }
@@ -23,7 +23,7 @@ namespace SlipeServer.Server
         public IPAddress? IPAddress { get; set; }
         public bool IsConnected { get; internal set; }
 
-        public Client(uint binaryAddress, NetWrapper netWrapper)
+        public Client(uint binaryAddress, INetWrapper netWrapper)
         {
             this.binaryAddress = binaryAddress;
             this.netWrapper = netWrapper;
