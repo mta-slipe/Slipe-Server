@@ -39,6 +39,7 @@ steps:
   displayName: 'dotnet pack'
   inputs:
     command: 'pack'
+    # buildProperties: '-IncludeReferencedProjects'
     packagesToPack: '**/SlipeServer.Server.csproj'
     versioningScheme: 'byPrereleaseNumber'
     majorVersion: '0'
