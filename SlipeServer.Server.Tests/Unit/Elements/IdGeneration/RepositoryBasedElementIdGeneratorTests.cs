@@ -5,7 +5,7 @@ using SlipeServer.Server.Elements.IdGeneration;
 using SlipeServer.Server.Repositories;
 using Xunit;
 
-namespace SlipeServer.Server.Tests.Elements.IdGeneration
+namespace SlipeServer.Server.Tests.Unit.Elements.IdGeneration
 {
     public class RepositoryBasedElementIdGeneratorTests
     {

@@ -40,8 +40,9 @@ namespace SlipeServer.Server.Elements
             get => position;
             set
             {
-                PositionChanged?.Invoke(this, new ElementChangedEventArgs<Vector3>(this, value, this.IsSync));
+                var args = new ElementChangedEventArgs<Vector3>(this, this.Position, value, this.IsSync);
                 position = value;
+                PositionChanged?.Invoke(this, args);
             }
         }
 
@@ -51,8 +52,9 @@ namespace SlipeServer.Server.Elements
             get => rotation;
             set
             {
-                RotationChanged?.Invoke(this, new ElementChangedEventArgs<Vector3>(this, value, this.IsSync));
+                var args = new ElementChangedEventArgs<Vector3>(this, this.Rotation, value, this.IsSync);
                 rotation = value;
+                RotationChanged?.Invoke(this, args);
             }
         }
 
@@ -62,8 +64,9 @@ namespace SlipeServer.Server.Elements
             get => velocity;
             set
             {
-                VelocityChanged?.Invoke(this, new ElementChangedEventArgs<Vector3>(this, value, this.IsSync));
+                var args = new ElementChangedEventArgs<Vector3>(this, this.Velocity, value, this.IsSync);
                 velocity = value;
+                VelocityChanged?.Invoke(this, args);
             }
         }
         

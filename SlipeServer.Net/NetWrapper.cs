@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SlipeServer.Net
 {
-    public class NetWrapper: IDisposable
+    public class NetWrapper : IDisposable, INetWrapper
     {
         const string wrapperDllpath = @"NetModuleWrapper";
 
@@ -41,7 +41,7 @@ namespace SlipeServer.Net
 
         private readonly PacketCallback packetInterceptorDelegate;
         private readonly ushort id;
-        
+
         public NetWrapper(string directory, string netDllPath, string host, ushort port)
         {
             string idFile = Path.Join(directory, "id");
@@ -120,7 +120,7 @@ namespace SlipeServer.Net
             Marshal.Copy(payload, data, 0, (int)payloadSize);
 
             PacketId parsedPacketId = (PacketId)packetId;
-                
+
             this.PacketReceived?.Invoke(this, binaryAddress, parsedPacketId, data);
         }
 

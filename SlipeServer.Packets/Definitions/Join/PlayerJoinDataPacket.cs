@@ -1,8 +1,7 @@
-﻿using SlipeServer.Packets.Enums;
+﻿using SlipeServer.Packets.Builder;
+using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SlipeServer.Packets.Definitions.Join
 {
@@ -41,7 +40,19 @@ namespace SlipeServer.Packets.Definitions.Join
 
         public override byte[] Write()
         {
-            throw new NotImplementedException();
+            PacketBuilder builder = new PacketBuilder();
+
+            builder.Write(NetVersion);
+            builder.Write(MtaVersion);
+            builder.Write(BitStreamVersion);
+            builder.Write(PlayerVersion ?? "");
+            builder.Write(OptionalUpdateInfoRequired);
+            builder.Write(GameVersion);
+            builder.WriteStringWithoutLength((Nickname ?? "").PadRight(PacketConstants.MaxPlayerNickLength));
+            builder.WriteStringWithoutLength((Password ?? "").PadRight(16));
+            builder.WriteStringWithoutLength((Serial ?? "").PadRight(PacketConstants.MaxSerialLength));
+
+            return builder.Build();
         }
     }
 }

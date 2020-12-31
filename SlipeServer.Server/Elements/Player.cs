@@ -30,7 +30,7 @@ namespace SlipeServer.Server.Elements
         public bool IsSyncingVelocity { get; set; }
         public bool IsStealthAiming { get; set; }
 
-        internal Player(Client client) : base(0, Vector3.Zero)
+        protected internal Player(Client client) : base(0, Vector3.Zero)
         {
             this.Client = client;
         }

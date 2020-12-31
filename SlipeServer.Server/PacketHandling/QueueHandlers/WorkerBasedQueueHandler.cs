@@ -8,6 +8,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
     public abstract class WorkerBasedQueueHandler : BaseQueueHandler
     {
         protected readonly int sleepInterval;
+        private TaskCompletionSource<int>? pulseTaskCompletionSource;
 
         public WorkerBasedQueueHandler(int sleepInterval = 10, int workerCount = 1) : base()
         {
@@ -27,11 +28,23 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                 {
                     HandlePacket(queueEntry);
                 }
+
+                if (this.pulseTaskCompletionSource != null)
+                {
+                    this.pulseTaskCompletionSource.SetResult(0);
+                    this.pulseTaskCompletionSource = null;
+                }
+
                 await Task.Delay(this.sleepInterval);
             }
         }
 
         protected abstract void HandlePacket(PacketQueueEntry queueEntry);
 
+        public Task GetPulseTask()
+        {
+            this.pulseTaskCompletionSource = new TaskCompletionSource<int>();
+            return this.pulseTaskCompletionSource.Task;
+        }
     }
 }

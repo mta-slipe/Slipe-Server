@@ -71,7 +71,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
             var otherPlayers = this.elementRepository
                 .GetByType<Player>(ElementType.Player)
-                .Where(p => p != client.Player);
+                .Where(p => p.Client != client);
             packet.SendTo(otherPlayers);
 
             var player = client.Player;
