@@ -41,6 +41,9 @@ steps:
     command: 'pack'
     packagesToPack: '**/SlipeServer.Server.csproj'
     versioningScheme: 'byPrereleaseNumber'
+    majorVersion: '0'
+    minorVersion: '1'
+    patchVersion: '0'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet publish'
