@@ -35,8 +35,8 @@ steps:
   inputs:
     command: 'test'
 
-- task: NuGetCommand@2
-  displayName: 'NuGet pack'
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet pack'
   inputs:
     command: 'pack'
     packagesToPack: '**/SlipeServer.Server.csproj'
