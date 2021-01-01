@@ -16,7 +16,7 @@ using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling;
 using SlipeServer.Server.PacketHandling.Factories;
 using SlipeServer.Server.Repositories;
-using SlipeServer.Server.ResourceServing;
+using SlipeServer.Server.Resources.ResourceServing;
 using SlipeServer.Server.Services;
 using System;
 using System.Collections.Generic;
@@ -32,7 +32,8 @@ namespace SlipeServer.Console
         private readonly IElementRepository elementRepository;
         private readonly RootElement root;
         private readonly IResourceServer resourceServer;
-        private readonly WorldService worldService;
+        private readonly GameWorld worldService;
+        private readonly DebugLog debugLog;
         private DummyElement? resourceRoot;
         private DummyElement? resourceDynamic;
 
@@ -41,15 +42,16 @@ namespace SlipeServer.Console
             IElementRepository elementRepository, 
             RootElement root, 
             IResourceServer resourceServer,
-            WorldService worldService
+            GameWorld world,
+            DebugLog debugLog
         )
         {
             this.server = server;
             this.elementRepository = elementRepository;
             this.root = root;
             this.resourceServer = resourceServer;
-            this.worldService = worldService;
-
+            this.worldService = world;
+            this.debugLog = debugLog;
             this.SetupTestLogic();
         }
 
@@ -135,11 +137,12 @@ namespace SlipeServer.Console
             client.SendPacket(PlayerPacketFactory.CreateSetFPSLimitPacket(100));
             client.SendPacket(PlayerPacketFactory.CreatePlaySoundPacket(1));
             client.SendPacket(PlayerPacketFactory.CreateSetWantedLevelPacket(4));
-            client.SendPacket(PlayerPacketFactory.CreateToggleDebuggerPacket(true));
-            client.SendPacket(PlayerPacketFactory.CreateDebugEchoPacket("Test debug message", DebugLevel.Custom, Color.Red));
-            client.SendPacket(PlayerPacketFactory.CreateDebugEchoPacket("Test debug message 2", DebugLevel.Information));
             //client.SendPacket(PlayerPacketFactory.CreateForcePlayerMapPacket(true)); 
             //client.SendPacket(PlayerPacketFactory.CreateToggleAllControlsPacket(false));
+
+            this.debugLog.SetVisibleTo(player, true);
+            this.debugLog.OutputTo(player, "Test debug message", DebugLevel.Custom, Color.Red);
+            this.debugLog.OutputTo(player, "Test debug message 2", DebugLevel.Information);
 
             TestPacketScopes(client);
             TestClientResource(client);

@@ -3,7 +3,7 @@ using SlipeServer.Server.Constants;
 using SlipeServer.Server.Elements.IdGeneration;
 using Xunit;
 
-namespace SlipeServer.Server.Tests.Elements.IdGeneration
+namespace SlipeServer.Server.Tests.Unit.Elements.IdGeneration
 {
     public class BasicElementIdGeneratorTests
     {

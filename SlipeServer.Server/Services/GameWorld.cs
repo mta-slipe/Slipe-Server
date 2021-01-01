@@ -10,7 +10,7 @@ using System.Timers;
 
 namespace SlipeServer.Server.Services
 {
-    public class WorldService
+    public class GameWorld
     {
         private readonly MtaServer server;
         private readonly Dictionary<GarageLocation, bool> garageStates;
@@ -209,7 +209,7 @@ namespace SlipeServer.Server.Services
 
         #endregion
 
-        public WorldService(MtaServer server)
+        public GameWorld(MtaServer server)
         {
             this.server = server;
             this.garageStates = new Dictionary<GarageLocation, bool>();

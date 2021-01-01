@@ -1,0 +1,20 @@
+﻿using SlipeServer.Server.Elements;
+using System;
+
+namespace SlipeServer.Server.Tests.Integration
+{
+    public class TestingPlayer : Player
+    {
+        public uint Address { get; }
+
+        public TestingPlayer(Client client, uint address) : base(client)
+        {
+            Address = address;
+        }
+
+        public new TestingPlayer AssociateWith(MtaServer server)
+        {
+            return server.AssociateElement(this);
+        }
+    }
+}

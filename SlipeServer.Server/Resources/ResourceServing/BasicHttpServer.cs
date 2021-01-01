@@ -11,7 +11,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SlipeServer.Server.ResourceServing
+namespace SlipeServer.Server.Resources.ResourceServing
 {
     public class BasicHttpServer: IResourceServer
     {
