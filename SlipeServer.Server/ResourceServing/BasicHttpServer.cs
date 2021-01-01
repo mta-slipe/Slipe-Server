@@ -43,11 +43,10 @@ namespace SlipeServer.Server.ResourceServing
             try
             {
                 this.httpListener.Start();
-
             }
-            catch(HttpListenerException ex)
+            catch(HttpListenerException exception)
             {
-                throw new Exception($"Could not bind http server on address {httpAddress}");
+                throw new Exception($"Could not start http server on address {httpAddress}", exception);
             }
 
             Task.Run(async () =>
