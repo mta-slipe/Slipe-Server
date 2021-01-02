@@ -15,7 +15,7 @@ namespace SlipeServer.Server
         private readonly INetWrapper netWrapper;
         private readonly uint binaryAddress;
 
-        public Player Player { get; }
+        public Player Player { get; protected set; }
 
         public string? Serial { get; private set; }
         public string? Extra { get; private set; }
