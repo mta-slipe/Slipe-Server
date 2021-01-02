@@ -17,22 +17,33 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SlipeServer.Packets\SlipeServer.Packets.csproj" />
+    <None Remove="net.dll" />
+    <None Remove="NetModuleWrapper.dll" />
+    <None Remove="net_d.dll" />
+    <None Remove="net_no.dll" />
+    <None Remove="pthread.dll" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="net.dll">
+    <Content Include="net.dll" Pack="true">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="NetModuleWrapper.dll">
+    </Content>
+    <Content Include="NetModuleWrapper.dll" Pack="true">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="net_d.dll">
+    </Content>
+    <Content Include="net_d.dll" Pack="true">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="pthread.dll">
+    </Content>
+    <Content Include="net_no.dll" Pack="true">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    </Content>
+    <Content Include="pthread.dll" Pack="true">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SlipeServer.Packets\SlipeServer.Packets.csproj" />
   </ItemGroup>
 
   <ItemGroup>
