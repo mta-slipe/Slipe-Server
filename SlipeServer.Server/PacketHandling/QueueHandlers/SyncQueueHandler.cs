@@ -53,7 +53,18 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
         private void HandleCameraSyncPacket(Client client, CameraSyncPacket packet)
         {
-            //Debug.WriteLine($"client {client.Id} camera sync: isFixed: {packet.IsFixed}, position: {packet.Position}, lookAt: {packet.LookAt}, target: {packet.TargetId}");
+            var player = client.Player;
+            player.RunAsSync(() =>
+            {
+                if (packet.IsFixed)
+                {
+                    player.Camera.Position = packet.Position;
+                    player.Camera.LookAt = packet.LookAt;
+                } else
+                {
+                    player.Camera.Target = this.elementRepository.Get(packet.TargetId);
+                }
+            });
         }
 
         private void HandleClientKeySyncPacket(Client client, KeySyncPacket packet)

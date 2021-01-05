@@ -1,4 +1,5 @@
-﻿using MTAServerWrapper.Packets.Outgoing.Connection;
+﻿using Microsoft.Extensions.Logging;
+using MTAServerWrapper.Packets.Outgoing.Connection;
 using SlipeServer.Packets.Definitions.Commands;
 using SlipeServer.Packets.Definitions.Join;
 using SlipeServer.Packets.Definitions.Lua;
@@ -16,6 +17,7 @@ using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling;
 using SlipeServer.Server.PacketHandling.Factories;
 using SlipeServer.Server.Repositories;
+using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.ResourceServing;
 using SlipeServer.Server.Services;
 using System;
@@ -34,16 +36,23 @@ namespace SlipeServer.Console
         private readonly IResourceServer resourceServer;
         private readonly GameWorld worldService;
         private readonly DebugLog debugLog;
-        private DummyElement? resourceRoot;
-        private DummyElement? resourceDynamic;
+        private readonly ILogger logger;
+        private readonly ChatBox chatBox;
+        private readonly ClientConsole console;
+        private readonly LuaService luaService;
+        private Resource? testResource;
 
         public ServerTestLogic(
-            MtaServer server, 
-            IElementRepository elementRepository, 
-            RootElement root, 
+            MtaServer server,
+            IElementRepository elementRepository,
+            RootElement root,
             IResourceServer resourceServer,
             GameWorld world,
-            DebugLog debugLog
+            DebugLog debugLog,
+            ILogger logger,
+            ChatBox chatBox,
+            ClientConsole console,
+            LuaService luaService
         )
         {
             this.server = server;
@@ -52,39 +61,32 @@ namespace SlipeServer.Console
             this.resourceServer = resourceServer;
             this.worldService = world;
             this.debugLog = debugLog;
+            this.logger = logger;
+            this.chatBox = chatBox;
+            this.console = console;
+            this.luaService = luaService;
             this.SetupTestLogic();
         }
 
         private void SetupTestLogic()
         {
-            SetupResourceElements();
             SetupTestElements();
+
+            this.luaService.AddEventHandler("Slipe.Test.Event", (e) => this.TriggerTestEvent(e.Player));
 
             this.worldService.SetWeather(Weather.ExtraSunnyDesert);
             this.worldService.CloudsEnabled = false;
             this.worldService.SetTime(13, 37);
-            this.worldService.MinuteDuration = 60000;
+            this.worldService.MinuteDuration = 60_000;
             this.worldService.SetSkyGradient(Color.Aqua, Color.Teal);
 
             this.server.PlayerJoined += OnPlayerJoin;
         }
 
-        private void SetupResourceElements()
-        {
-            this.resourceRoot = new DummyElement()
-            {
-                Parent = this.root,
-                ElementTypeName = "resource",
-            }.AssociateWith(server);
-            this.resourceDynamic = new DummyElement()
-            {
-                Parent = resourceRoot,
-                ElementTypeName = "resource",
-            }.AssociateWith(server);
-        }
-
         private void SetupTestElements()
         {
+            this.testResource = new Resource(this.server, this.root, this.resourceServer, "TestResource");
+
             new WorldObject(321, new Vector3(5, 0, 3)).AssociateWith(server);
             new Water(new Vector3[]
             {
@@ -111,147 +113,37 @@ namespace SlipeServer.Console
         private void OnPlayerJoin(Player player)
         {
             var client = player.Client;
-            System.Console.WriteLine($"{player.Name} ({client.Version}) ({client.Serial}) has joined the server!");
-            client.SendPacket(new SetCameraTargetPacket(player.Id));
-            client.SendPacket(new SpawnPlayerPacket(
-                player.Id,
-                flags: 0,
-                position: new Vector3(0, 0, 3),
-                rotation: 0,
-                skin: 7,
-                teamId: 0,
-                interior: 0,
-                dimension: 0,
-                timeContext: 0
-            ));
-            client.SendPacket(new FadeCameraPacket(CameraFade.In));
-            client.SendPacket(new ChatEchoPacket(this.root.Id, "Hello World", Color.White));
-            client.SendPacket(new ClearChatPacket());
-            client.SendPacket(new ChatEchoPacket(this.root.Id, "Hello World Again", Color.White));
-            client.SendPacket(new ConsoleEchoPacket("Hello Console World"));
 
-            client.SendPacket(ElementPacketFactory.CreateSetHealthPacket(player, 50));
-            client.SendPacket(ElementPacketFactory.CreateSetAlphaPacket(player, 100));
+            this.logger.LogInformation($"{player.Name} ({client.Version}) ({client.Serial}) has joined the server!");
+            this.chatBox.Output($"{player.Name} ({client.Version}) ({client.Serial}) has joined the server!");
 
-            client.SendPacket(PlayerPacketFactory.CreateShowHudComponentPacket(HudComponent.Money, false));
-            client.SendPacket(PlayerPacketFactory.CreateSetFPSLimitPacket(100));
-            client.SendPacket(PlayerPacketFactory.CreatePlaySoundPacket(1));
-            client.SendPacket(PlayerPacketFactory.CreateSetWantedLevelPacket(4));
-            //client.SendPacket(PlayerPacketFactory.CreateForcePlayerMapPacket(true)); 
-            //client.SendPacket(PlayerPacketFactory.CreateToggleAllControlsPacket(false));
+            player.Spawn(new Vector3(0, 0, 3), 0, 7, 0, 0);
+            player.Health = 50;
+            player.Alpha = 100;
+            player.Camera.Target = player;
+            player.Camera.Fade(CameraFade.In);
+
+            this.chatBox.OutputTo(player, "Hello world");
+            this.chatBox.ClearFor(player);
+            this.chatBox.OutputTo(player, "Hello World Again");
+
+            this.console.OutputTo(player, "Hello Console World");
 
             this.debugLog.SetVisibleTo(player, true);
             this.debugLog.OutputTo(player, "Test debug message", DebugLevel.Custom, Color.Red);
             this.debugLog.OutputTo(player, "Test debug message 2", DebugLevel.Information);
 
-            TestPacketScopes(client);
-            TestClientResource(client);
-            TestPureSync(client);
-            _ = TestEventTrigger(client);
+            player.ShowHudComponent(HudComponent.Money, false);
+            player.SetFpsLimit(60);
+            player.PlaySound(1);
+            player.WantedLevel = 4;
+            //player.ForceMapVisible(true);
+            //player.ToggleAllControls(false, true, true);
+
+            this.testResource?.StartFor(player);
         }
 
-        private void TestPacketScopes(Client client)
-        {
-            _ = Task.Run(async () =>
-            {
-                using (var scope = new ClientPacketScope(new Client[] { client }))
-                {
-                    await Task.Delay(500);
-                    client.SendPacket(new ChatEchoPacket(this.root.Id, "After 500 #1", Color.White));
-                    await Task.Delay(500);
-                    client.SendPacket(new ChatEchoPacket(this.root.Id, "After 500 #2", Color.White));
-                }
-            });
-
-            _ = Task.Run(async () =>
-            {
-                using (var scope = new ClientPacketScope(new Client[] { }))
-                {
-                    for (int i = 0; i < 10; i++)
-                    {
-                        await Task.Delay(100);
-                        client.SendPacket(new ChatEchoPacket(this.root.Id, $"After 100 #{i + 1}", Color.White));
-                    }
-                }
-            });
-        }
-
-        private void TestClientResource(Client client)
-        {
-            if (resourceRoot != null && resourceDynamic != null)
-            {
-                var entityPacket = AddEntityPacketFactory.CreateAddEntityPacket(new Element[] { resourceRoot, resourceDynamic });
-                client.SendPacket(entityPacket);
-
-                var testResourceFiles = this.resourceServer.GetResourceFiles("./TestResource");
-                client.SendPacket(new ResourceStartPacket(
-                    "TestResource", 0, resourceRoot.Id, resourceDynamic.Id, 0, null, null, false, 0, testResourceFiles, new string[0])
-                );
-            }
-        }
-
-        private void TestPureSync(Client client)
-        {
-            var playerList = new PlayerListPacket(false);
-            playerList.AddPlayer(
-                playerId: 666,
-                timeContext: 0,
-                nickname: "Dummy-Player",
-                bitsreamVersion: 343,
-                buildNumber: 0,
-
-                isDead: false,
-                isInVehicle: false,
-                hasJetpack: true,
-                isNametagShowing: true,
-                isNametagColorOverriden: true,
-                isHeadless: false,
-                isFrozen: false,
-
-                nametagText: "Dummy-Player",
-                color: Color.FromArgb(255, 255, 0, 255),
-                moveAnimation: 0,
-
-                model: 9,
-                teamId: null,
-
-                vehicleId: null,
-                seat: null,
-
-                position: new Vector3(5, 0, 3),
-                rotation: 0,
-
-                dimension: 0,
-                fightingStyle: 0,
-                alpha: 255,
-                interior: 0,
-
-                weapons: new byte[16]
-            );
-            client.SendPacket(playerList);
-
-            var data = new byte[] { 0, 0, 0, 0, 2, 46, 33, 240, 8, 159, 255, 240, 8, 4, 116, 11, 186, 246, 64, 0, 73, 144, 129, 19, 48, 0, 0 };
-            var puresync = new PlayerPureSyncPacket();
-            puresync.Read(data);
-
-            puresync.PlayerId = 666;
-            puresync.Latency = 0;
-
-            _ = Task.Run(async () =>
-            {
-                for (int i = 0; i < 20; i++)
-                {
-                    puresync.Position += new Vector3(0.25f, 0, 0);
-                    client.SendPacket(puresync);
-                    await Task.Delay(250);
-                }
-
-                var packet = new PlayerQuitPacket(666, (byte)QuitReason.Quit);
-                client.SendPacket(packet);
-            });
-        }
-
-        private async Task TestEventTrigger(Client client)
+        private void TriggerTestEvent(Player player)
         {
             var table = new LuaValue(new Dictionary<LuaValue, LuaValue>()
             {
@@ -262,17 +154,7 @@ namespace SlipeServer.Console
             });
             table.TableValue?.Add("self", table);
 
-            var packet = new LuaEventPacket("Slipe.Test.ClientEvent", root.Id, new LuaValue[]
-            {
-                "String value",
-                true,
-                123,
-                table
-            });
-
-            await Task.Delay(5000);
-
-            client.SendPacket(packet);
+            this.luaService.TriggerEvent(player, "Slipe.Test.ClientEvent", root, "String value", true, 23, table);
         }
     }
 }

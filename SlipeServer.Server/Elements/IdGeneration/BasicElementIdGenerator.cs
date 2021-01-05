@@ -11,12 +11,14 @@ namespace SlipeServer.Server.Elements.IdGeneration
 
         public BasicElementIdGenerator()
         {
-            this.idCounter = 0;
+            this.idCounter = 1;
         }
 
         public uint GetId()
         {
             this.idCounter = (this.idCounter + 1) % ElementConstants.MaxElementId;
+            if (this.idCounter == 0)
+                this.idCounter++;
             return idCounter;
         }
     }

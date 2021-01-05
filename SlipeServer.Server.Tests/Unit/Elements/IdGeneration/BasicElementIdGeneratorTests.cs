@@ -23,13 +23,13 @@ namespace SlipeServer.Server.Tests.Unit.Elements.IdGeneration
         {
             var generator = new BasicElementIdGenerator();
 
-            for (int i = 0; i < ElementConstants.MaxElementId - 1; i++)
+            for (int i = 0; i < ElementConstants.MaxElementId - 2; i++)
             {
                 generator.GetId();
             }
 
             var id = generator.GetId();
-            id.Should().Be(0);
+            id.Should().Be(1);
         }
     }
 }

@@ -125,13 +125,18 @@ namespace SlipeServer.Console
 
         private void SetupBehaviour()
         {
-            server.Instantiate<DefaultChatBehaviour>();
-            server.Instantiate<PlayerJoinElementBehaviour>();
             server.Instantiate<AseBehaviour>();
             server.Instantiate<MasterServerAnnouncementBehaviour>("http://master.mtasa.com/ase/add.php");
+
             server.Instantiate<EventLoggingBehaviour>();
-            server.Instantiate<ElementUpdateBehaviour>();
             server.Instantiate<VelocityBehaviour>();
+            server.Instantiate<DefaultChatBehaviour>();
+
+            server.Instantiate<PlayerJoinElementBehaviour>();
+
+            server.Instantiate<ElementPacketBehaviour>();
+            server.Instantiate<PedPacketBehaviour>();
+            server.Instantiate<PlayerPacketBehaviour>();
         }
 
         private void SetupLogic()

@@ -166,8 +166,9 @@ namespace SlipeServer.Server
             this.serviceCollection.AddSingleton<ChatBox>();
             this.serviceCollection.AddSingleton<ClientConsole>();
             this.serviceCollection.AddSingleton<DebugLog>();
+            this.serviceCollection.AddSingleton<LuaService>();
 
-            this.serviceCollection.AddSingleton<HttpClient>(new HttpClient());
+            this.serviceCollection.AddSingleton<HttpClient>();
             this.serviceCollection.AddSingleton<Configuration>(this.configuration);
             this.serviceCollection.AddSingleton<RootElement>(this.root);
             this.serviceCollection.AddSingleton<MtaServer>(this);

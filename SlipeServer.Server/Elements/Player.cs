@@ -1,4 +1,8 @@
-﻿using System;
+﻿using SlipeServer.Server.ElementConcepts;
+using SlipeServer.Server.Elements.Enums;
+using SlipeServer.Server.Elements.Events;
+using SlipeServer.Server.PacketHandling.Factories;
+using System;
 using System.Numerics;
 using System.Text.RegularExpressions;
 
@@ -9,6 +13,19 @@ namespace SlipeServer.Server.Elements
         public override ElementType ElementType => ElementType.Player;
 
         public Client Client { get; }
+        public Camera Camera { get; }
+
+        private byte wantedLevel = 0;
+        public byte WantedLevel
+        {
+            get => wantedLevel;
+            set
+            {
+                var args = new ElementChangedEventArgs<Player, byte>(this, this.WantedLevel, value, this.IsSync);
+                wantedLevel = value;
+                WantedLevelChanged?.Invoke(this, args);
+            }
+        }
 
         public Element? ContactElement { get; set; }
 
@@ -33,6 +50,7 @@ namespace SlipeServer.Server.Elements
         protected internal Player(Client client) : base(0, Vector3.Zero)
         {
             this.Client = client;
+            this.Camera = new Camera(this);
         }
 
         public new Player AssociateWith(MtaServer server)
@@ -40,7 +58,46 @@ namespace SlipeServer.Server.Elements
             return server.AssociateElement(this);
         }
 
+        public void Spawn(Vector3 position, float rotation, ushort model, byte interior, ushort dimension)
+        {
+            this.position = position;
+            this.PedRotation = rotation;
+            this.model = model;
+            this.interior = interior;
+            this.dimension = dimension;
+
+            this.Spawned?.Invoke(this);
+        }
+
+        public void ShowHudComponent(HudComponent hudComponent, bool isVisible)
+        {
+            this.Client.SendPacket(PlayerPacketFactory.CreateShowHudComponentPacket(hudComponent, isVisible));
+        }
+
+        public void SetFpsLimit(ushort limit)
+        {
+            this.Client.SendPacket(PlayerPacketFactory.CreateSetFPSLimitPacket(limit));
+        }
+
+        public void PlaySound(byte sound)
+        {
+            this.Client.SendPacket(PlayerPacketFactory.CreatePlaySoundPacket(sound));
+        }
+
+        public void ForceMapVisible(bool isVisible)
+        {
+            this.Client.SendPacket(PlayerPacketFactory.CreateForcePlayerMapPacket(isVisible));
+        }
+
+        public void ToggleAllControls(bool isEnabled, bool gtaControls = true, bool mtaControls = true)
+        {
+            this.Client.SendPacket(PlayerPacketFactory.CreateToggleAllControlsPacket(isEnabled, gtaControls, mtaControls));
+        }
+
         public void HandleCommand(string command, string[] arguments) => OnCommand?.Invoke(command, arguments);
+
+        public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
+        public event Action<Player>? Spawned;
         public event Action<string, string[]>? OnCommand;
     }
 }
