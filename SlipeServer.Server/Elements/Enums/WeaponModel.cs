@@ -6,7 +6,7 @@ namespace SlipeServer.Server.Elements.Enums
 {
     public enum WeaponModel
     {
-        WEAPONTYPE_UNARMED = 0,
+        Unarmed = 0,
         Brassknuckle,
         Golfclub,
         Nightstick,
