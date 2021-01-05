@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 using System.Text;
+using SlipeServer.Packets.Definitions.Player;
 
 namespace SlipeServer.Server.PacketHandling.Factories
 {
@@ -109,6 +110,11 @@ namespace SlipeServer.Server.PacketHandling.Factories
         public static PlayerQuitPacket CreateQuitPacket(Player player, QuitReason reason = QuitReason.Quit)
         {
             return new PlayerQuitPacket(player.Id, (byte)reason);
+        }
+
+        public static SpawnPlayerPacket CreateSpawnPacket(Player player)
+        {
+            return new SpawnPlayerPacket(player.Id, 0, player.Position, player.PedRotation, player.Model, 0, player.Interior, player.Dimension, player.GetAndIncrementTimeContext()); ;
         }
     }
 }

@@ -30,12 +30,12 @@ namespace SlipeServer.Server.Resources
             this.Root = new DummyElement()
             {
                 Parent = root,
-                ElementTypeName = "resource",
+                ElementTypeName = name,
             }.AssociateWith(server);
             this.DynamicRoot = new DummyElement()
             {
                 Parent = this.Root,
-                ElementTypeName = "resource",
+                ElementTypeName = name,
             }.AssociateWith(server);
 
             this.Exports = new List<string>();

@@ -13,7 +13,7 @@ namespace SlipeServer.Server.Elements.IdGeneration
 
         public RepositoryBasedElementIdGenerator(IElementRepository elementRepository)
         {
-            this.idCounter = 0;
+            this.idCounter = 1;
             this.elementRepository = elementRepository;
         }
 
@@ -23,6 +23,8 @@ namespace SlipeServer.Server.Elements.IdGeneration
             while (this.elementRepository.Get(this.idCounter) != null)
             {
                 this.idCounter = (this.idCounter + 1) % ElementConstants.MaxElementId;
+                if (idCounter == 0)
+                    idCounter++;
                 if (idCounter == start)
                     throw new ElementIdsExhaustedException();
             }

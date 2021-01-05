@@ -50,7 +50,7 @@ namespace SlipeServer.Server.Tests.Unit.Elements.IdGeneration
             var firstElement = new DummyElement() { Id = first };
             repository.Add(firstElement);
 
-            for (int i = 0; i < ElementConstants.MaxElementId - 1; i++)
+            for (int i = 0; i < ElementConstants.MaxElementId - 2; i++)
             {
                 var id = generator.GetId();
                 repository.Add(new DummyElement() { Id = id });
@@ -68,7 +68,7 @@ namespace SlipeServer.Server.Tests.Unit.Elements.IdGeneration
             var repository = new ElementByIdRepository();
             var generator = new RepositoryBasedElementIdGenerator(repository);
 
-            for (int i = 0; i < ElementConstants.MaxElementId; i++)
+            for (int i = 0; i < ElementConstants.MaxElementId - 1; i++)
             {
                 var second = generator.GetId();
                 repository.Add(new DummyElement() { Id = second });

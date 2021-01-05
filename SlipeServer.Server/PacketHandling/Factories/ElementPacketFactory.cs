@@ -40,5 +40,15 @@ namespace SlipeServer.Server.PacketHandling.Factories
         {
             return new SetElementAlphaRpcPacket(element.Id, element.GetAndIncrementTimeContext(), alpha);
         }
+
+        public static SetElementDimensionRpcPacket CreateSetDimensionPacket(Element element, ushort dimension)
+        {
+            return new SetElementDimensionRpcPacket(element.Id, dimension);
+        }
+
+        public static SetElementInteriorRpcPacket CreateSetInteriorPacket(Element element, byte interior)
+        {
+            return new SetElementInteriorRpcPacket(element.Id, interior);
+        }
     }
 }
