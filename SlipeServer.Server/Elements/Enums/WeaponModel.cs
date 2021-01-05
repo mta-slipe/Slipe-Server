@@ -51,7 +51,7 @@ namespace SlipeServer.Server.Elements.Enums
         HeatSeekingRpg,
         Flamethrower,
         Minigun,
-        Sathcel,
+        Satchel,
         Detonator,
         Spraycan,
         FireExtinguisher,
