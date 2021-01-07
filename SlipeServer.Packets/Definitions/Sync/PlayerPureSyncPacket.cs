@@ -46,8 +46,8 @@ namespace SlipeServer.Packets.Definitions.Sync
 
         public bool IsDamageChanged { get; set; }
         public uint DamagerId { get; set; }
+        public byte DamageType { get; set; }
         public byte DamageBodypart { get; set; }
-        public byte DamageBodyPart { get; set; }
 
         public PlayerPureSyncPacket()
         {
@@ -112,7 +112,7 @@ namespace SlipeServer.Packets.Definitions.Sync
             if (this.IsDamageChanged)
             {
                 this.DamagerId = reader.GetElementId();
-                this.WeaponType = reader.GetByteCapped(6);
+                this.DamageType = reader.GetByteCapped(6);
                 this.DamageBodypart = reader.GetByteCapped(3);
             }
         }

@@ -121,6 +121,9 @@ namespace SlipeServer.Console
 
             LuaEventQueueHandler luaEventQueueHandler = this.server.Instantiate<LuaEventQueueHandler>(10, 1);
             server.RegisterPacketQueueHandler(PacketId.PACKET_ID_LUA_EVENT, luaEventQueueHandler);
+
+            PlayerEventQueueHandler playerEventQueueHandler = this.server.Instantiate<PlayerEventQueueHandler>(10, 1);
+            server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_WASTED, playerEventQueueHandler);
         }
 
         private void SetupBehaviour()

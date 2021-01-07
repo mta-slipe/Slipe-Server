@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Server.ElementConcepts;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
+using SlipeServer.Server.Enums;
 using SlipeServer.Server.PacketHandling.Factories;
 using System;
 using System.Numerics;
@@ -66,7 +67,7 @@ namespace SlipeServer.Server.Elements
             this.interior = interior;
             this.dimension = dimension;
 
-            this.Spawned?.Invoke(this);
+            this.Spawned?.Invoke(this, new PlayerSpawnedEventArgs(this));
         }
 
         public void ShowHudComponent(HudComponent hudComponent, bool isVisible)
@@ -94,10 +95,30 @@ namespace SlipeServer.Server.Elements
             this.Client.SendPacket(PlayerPacketFactory.CreateToggleAllControlsPacket(isEnabled, gtaControls, mtaControls));
         }
 
-        public void HandleCommand(string command, string[] arguments) => OnCommand?.Invoke(command, arguments);
+        public void TriggerCommand(string command, string[] arguments)
+        {
+            this.OnCommand?.Invoke(this, new PlayerCommandEventArgs(this, command, arguments));
+        }
+
+        public void TriggerDamaged(Element? damager, WeaponType damageType, BodyPart bodyPart)
+        {
+            this.Damaged?.Invoke(this, new PlayerDamagedEventArgs(this, damager, damageType, bodyPart));
+        }
+
+        public void Kill(Element? damager, WeaponType damageType, BodyPart bodyPart)
+        {
+            this.Wasted?.Invoke(this, new PlayerWastedEventArgs(this, damager, damageType, bodyPart));
+        }
+
+        public void Kill(WeaponType damageType = WeaponType.WEAPONTYPE_UNARMED, BodyPart bodyPart = BodyPart.Torso)
+        {
+            this.Kill(null, damageType, bodyPart);
+        }
 
         public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
-        public event Action<Player>? Spawned;
-        public event Action<string, string[]>? OnCommand;
+        public event EventHandler<PlayerDamagedEventArgs>? Damaged;
+        public event EventHandler<PlayerWastedEventArgs>? Wasted;
+        public event EventHandler<PlayerSpawnedEventArgs>? Spawned;
+        public event EventHandler<PlayerCommandEventArgs>? OnCommand;
     }
 }

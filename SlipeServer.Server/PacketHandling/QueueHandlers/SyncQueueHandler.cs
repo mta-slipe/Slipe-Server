@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.Repositories;
 
@@ -120,6 +121,12 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                 player.CameraPosition = packet.CameraOrientation.CameraPosition;
                 player.CameraDirection = packet.CameraOrientation.CameraForward;
                 player.CameraRotation = packet.CameraRotation;
+
+                if (packet.IsDamageChanged)
+                {
+                    var damager = this.elementRepository.Get(packet.DamagerId);
+                    player.TriggerDamaged(damager, (WeaponType)packet.DamageType, (BodyPart)packet.DamageBodypart);
+                }
             });
         }
     }

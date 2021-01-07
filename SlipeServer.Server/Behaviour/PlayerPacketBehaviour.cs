@@ -28,9 +28,9 @@ namespace SlipeServer.Server.Behaviour
             player.WantedLevelChanged += WantedLevelChanged;
         }
 
-        private void RelayPlayerSpawn(Player player)
+        private void RelayPlayerSpawn(object sender, PlayerSpawnedEventArgs args)
         {
-            var packet = PlayerPacketFactory.CreateSpawnPacket(player);
+            var packet = PlayerPacketFactory.CreateSpawnPacket(args.Source);
             this.server.BroadcastPacket(packet);
         }
 

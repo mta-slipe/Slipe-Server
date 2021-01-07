@@ -19,7 +19,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                 case PacketId.PACKET_ID_COMMAND:
                     CommandPacket commandPacket = new CommandPacket();
                     commandPacket.Read(queueEntry.Data);
-                    queueEntry.Client.Player.HandleCommand(commandPacket.Command, commandPacket.Arguments);
+                    queueEntry.Client.Player.TriggerCommand(commandPacket.Command, commandPacket.Arguments);
                     break;
             }
         }
