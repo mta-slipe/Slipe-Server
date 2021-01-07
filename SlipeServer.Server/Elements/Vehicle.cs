@@ -36,12 +36,12 @@ namespace SlipeServer.Server.Elements
         public bool IsDerailable { get; set; } = true;
         public bool TrainDirection { get; set; } = true;
         public bool IsTaxiLightOn { get; set; } = false;
-        public byte Alpha { get; set; } = 255;
         public Color HeadlightColor { get; set; } = Color.White;
         public VehicleHandling? Handling { get; set; }
         public VehicleSirenSet? Sirens { get; set; }
 
-
+        public Ped? Driver { get; set; }
+        public Dictionary<int, Ped> Occupants { get; set; }
 
         public Vehicle(ushort model, Vector3 position): base()
         {
@@ -54,6 +54,7 @@ namespace SlipeServer.Server.Elements
             this.Upgrades = new VehicleUpgrade[0];
 
             this.Name = $"vehicle{this.Id}";
+            this.Occupants = new Dictionary<int, Ped>();
         }
 
         public new Vehicle AssociateWith(MtaServer server)
