@@ -26,6 +26,7 @@ namespace SlipeServer.Server.Behaviour
         {
             player.Spawned += RelayPlayerSpawn;
             player.WantedLevelChanged += WantedLevelChanged;
+            player.Wasted += RelayPlayerWasted;
         }
 
         private void RelayPlayerSpawn(object sender, PlayerSpawnedEventArgs args)
@@ -38,6 +39,14 @@ namespace SlipeServer.Server.Behaviour
         {
             var packet = PlayerPacketFactory.CreateSetWantedLevelPacket(args.NewValue);
             args.Source.Client.SendPacket(packet);
+        }
+
+        private void RelayPlayerWasted(object? sender, PlayerWastedEventArgs e)
+        {
+            var packet = PlayerPacketFactory.CreateWastedPacket(
+                e.Source, e.Killer, e.WeaponType, e.BodyPart, false, e.AnimationGroup, e.AnimationId
+            );
+            this.server.BroadcastPacket(packet);
         }
     }
 }

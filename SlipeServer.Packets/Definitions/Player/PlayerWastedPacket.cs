@@ -71,8 +71,8 @@ namespace SlipeServer.Packets.Definitions.Player
         {
             var builder = new PacketBuilder();
 
-            builder.Write(this.PlayerId);
-            builder.Write(this.KillerId);
+            builder.WriteElementId(this.PlayerId);
+            builder.WriteElementId(this.KillerId);
             builder.WriteCapped(this.WeaponType, 6);
             builder.WriteCapped(this.BodyPart, 3);
             builder.Write(this.IsStealth);

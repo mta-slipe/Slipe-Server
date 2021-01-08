@@ -3,6 +3,7 @@ using System.Drawing;
 using Microsoft.Extensions.Logging;
 using SlipeServer.Packets.Definitions.Commands;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Services;
 
 namespace SlipeServer.Server.Behaviour
 {
@@ -11,17 +12,16 @@ namespace SlipeServer.Server.Behaviour
     /// </summary>
     public class DefaultChatBehaviour
     {
-        public DefaultChatBehaviour(MtaServer server, ILogger? logger)
+        public DefaultChatBehaviour(MtaServer server, ChatBox chatBox, ILogger? logger)
         {
             server.PlayerJoined += (player) =>
             {
-                player.OnCommand += (command, arguments) =>
+                player.OnCommand += (sender, arguments) =>
                 {
-                    if(command == "say")
+                    if(arguments.Command == "say")
                     {
-                        string message = $"{player.Name}: {string.Join(' ', arguments)}";
-                        var packet = new ChatEchoPacket(player.Id, message, Color.White);
-                        server.BroadcastPacket(packet);
+                        string message = $"{player.Name}: {string.Join(' ', arguments.Arguments)}";
+                        chatBox.Output(message, Color.White, true, player);
                         logger?.LogInformation(message);
                     }
                 };

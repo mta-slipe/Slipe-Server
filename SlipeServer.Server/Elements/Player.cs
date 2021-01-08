@@ -105,9 +105,9 @@ namespace SlipeServer.Server.Elements
             this.Damaged?.Invoke(this, new PlayerDamagedEventArgs(this, damager, damageType, bodyPart));
         }
 
-        public void Kill(Element? damager, WeaponType damageType, BodyPart bodyPart)
+        public void Kill(Element? damager, WeaponType damageType, BodyPart bodyPart, ulong animationGroup = 0, ulong animationId = 15)
         {
-            this.Wasted?.Invoke(this, new PlayerWastedEventArgs(this, damager, damageType, bodyPart));
+            this.Wasted?.Invoke(this, new PlayerWastedEventArgs(this, damager, damageType, bodyPart, animationGroup, animationId));
         }
 
         public void Kill(WeaponType damageType = WeaponType.WEAPONTYPE_UNARMED, BodyPart bodyPart = BodyPart.Torso)

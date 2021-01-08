@@ -11,13 +11,20 @@ namespace SlipeServer.Server.Elements.Events
         public Element? Killer { get; }
         public WeaponType WeaponType { get; }
         public BodyPart BodyPart { get; }
+        public ulong AnimationGroup { get; }
+        public ulong AnimationId { get; }
 
-        public PlayerWastedEventArgs(Player source, Element? killer, WeaponType weaponType, BodyPart bodyPart)
+        public PlayerWastedEventArgs(
+            Player source, Element? killer, WeaponType weaponType, BodyPart bodyPart,
+            ulong animationGroup, ulong animationId
+        )
         {
             Source = source;
             Killer = killer;
             WeaponType = weaponType;
             BodyPart = bodyPart;
+            AnimationGroup = animationGroup;
+            AnimationId = animationId;
         }
     }
 }

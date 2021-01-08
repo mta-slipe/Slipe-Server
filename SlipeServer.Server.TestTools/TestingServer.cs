@@ -5,7 +5,7 @@ using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Resources.ResourceServing;
 using System;
 
-namespace SlipeServer.Server.Tests.Integration
+namespace SlipeServer.Server.TestTools
 {
     public class TestingServer: MtaServer
     {

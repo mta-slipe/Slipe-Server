@@ -116,5 +116,14 @@ namespace SlipeServer.Server.PacketHandling.Factories
         {
             return new SpawnPlayerPacket(player.Id, 0, player.Position, player.PedRotation, player.Model, 0, player.Interior, player.Dimension, player.GetAndIncrementTimeContext()); ;
         }
+
+        public static PlayerWastedPacket CreateWastedPacket(
+            Player player, Element? killer, WeaponType weaponType, BodyPart bodyPart, bool isStealth,
+            ulong animationGroup, ulong animationId
+        )
+        {
+            return new PlayerWastedPacket(player.Id, killer?.Id ?? 0, (byte)weaponType, (byte)bodyPart, isStealth, 
+                player.GetAndIncrementTimeContext(), animationGroup, animationId);
+        }
     }
 }

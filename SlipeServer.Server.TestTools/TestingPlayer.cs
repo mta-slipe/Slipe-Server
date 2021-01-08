@@ -1,7 +1,7 @@
 ﻿using SlipeServer.Server.Elements;
 using System;
 
-namespace SlipeServer.Server.Tests.Integration
+namespace SlipeServer.Server.TestTools
 {
     public class TestingPlayer : Player
     {

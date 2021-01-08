@@ -41,7 +41,10 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         private void HandlePlayerWasted(Client client, PlayerWastedPacket wastedPacket)
         {
             var damager = this.elementRepository.Get(wastedPacket.KillerId);
-            client.Player.Kill(damager, (WeaponType)wastedPacket.WeaponType, (BodyPart)wastedPacket.BodyPart);
+            client.Player.Kill(
+                damager, (WeaponType)wastedPacket.WeaponType, (BodyPart)wastedPacket.BodyPart, 
+                wastedPacket.AnimationGroup, wastedPacket.AnimationId
+            );
         }
     }
 }

@@ -140,8 +140,15 @@ namespace SlipeServer.Console
             //player.ForceMapVisible(true);
             //player.ToggleAllControls(false, true, true);
 
-            player.Wasted += (o, args) => player.Spawn(new Vector3(0, 0, 3), 0, 7, 0, 0);
-            player.OnCommand += (o, args) => player.Kill();
+            player.Wasted += async (o, args) =>
+            {
+                await Task.Delay(500);
+                player.Camera.Fade(CameraFade.Out, 1.75f);
+                await Task.Delay(2000);
+                player.Camera.Fade(CameraFade.In, 0);
+                player.Spawn(new Vector3(0, 0, 3), 0, 7, 0, 0);
+            };
+            player.OnCommand += (o, args) => { if (args.Command == "kill") player.Kill(); };
 
             this.testResource?.StartFor(player);
         }

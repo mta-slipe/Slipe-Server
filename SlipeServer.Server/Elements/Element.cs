@@ -32,6 +32,8 @@ namespace SlipeServer.Server.Elements
         public IReadOnlyCollection<Element> Children => children.AsReadOnly();
 
         public uint Id { get; set; }
+
+        private readonly object timeContextLock = new object();
         public byte TimeContext { get; private set; }
 
         public string Name { get; set; } = "";
@@ -136,11 +138,14 @@ namespace SlipeServer.Server.Elements
 
         public byte GetAndIncrementTimeContext()
         {
-            if (++TimeContext == 0)
+            lock (timeContextLock)
             {
-                TimeContext++;
+                if (++TimeContext == 0)
+                {
+                    TimeContext++;
+                }
+                return TimeContext;
             }
-            return TimeContext;
         }
 
         public void Destroy()
