@@ -1,4 +1,5 @@
-﻿using SlipeServer.Packets.Enums;
+﻿using Microsoft.Extensions.Logging;
+using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
 using System;
 using System.Collections.Generic;
@@ -9,10 +10,12 @@ namespace SlipeServer.Server.PacketHandling
     public class PacketReducer
     {
         private readonly Dictionary<PacketId, List<IQueueHandler>> registeredQueueHandlers;
+        private readonly ILogger logger;
 
-        public PacketReducer()
+        public PacketReducer(ILogger logger)
         {
             this.registeredQueueHandlers = new Dictionary<PacketId, List<IQueueHandler>>();
+            this.logger = logger;
         }
 
         public void RegisterQueueHandler(PacketId packetId, IQueueHandler queueHandler)
@@ -42,7 +45,7 @@ namespace SlipeServer.Server.PacketHandling
                 }
             } else
             {
-                Debug.WriteLine($"Received unregistered packet {packetId}");
+                logger.LogWarning($"Received unregistered packet {packetId}");
             }
         }
     }

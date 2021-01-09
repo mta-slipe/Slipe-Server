@@ -101,29 +101,12 @@ namespace SlipeServer.Console
 
         private void SetupQueueHandlers()
         {
-            ConnectionQueueHandler connectionQueueHandler = this.server.Instantiate<ConnectionQueueHandler>(10, 1);
-            server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_JOIN, connectionQueueHandler);
-            server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_JOINDATA, connectionQueueHandler);
-            server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_QUIT, connectionQueueHandler);
-            server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_TIMEOUT, connectionQueueHandler);
-            server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_NO_SOCKET, connectionQueueHandler);
-
-            RpcQueueHandler rpcQueueHandler = this.server.Instantiate<RpcQueueHandler>(10, 1);
-            server.RegisterPacketQueueHandler(PacketId.PACKET_ID_RPC, rpcQueueHandler);
-
-            SyncQueueHandler syncQueueHandler = this.server.Instantiate<SyncQueueHandler>(10, 1);
-            server.RegisterPacketQueueHandler(PacketId.PACKET_ID_CAMERA_SYNC, syncQueueHandler);
-            server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_PURESYNC, syncQueueHandler);
-            server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_KEYSYNC, syncQueueHandler);
-
-            CommandQueueHandler commandQueueHandler = this.server.Instantiate<CommandQueueHandler>(10, 1);
-            server.RegisterPacketQueueHandler(PacketId.PACKET_ID_COMMAND, commandQueueHandler);
-
-            LuaEventQueueHandler luaEventQueueHandler = this.server.Instantiate<LuaEventQueueHandler>(10, 1);
-            server.RegisterPacketQueueHandler(PacketId.PACKET_ID_LUA_EVENT, luaEventQueueHandler);
-
-            PlayerEventQueueHandler playerEventQueueHandler = this.server.Instantiate<PlayerEventQueueHandler>(10, 1);
-            server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_WASTED, playerEventQueueHandler);
+            server.RegisterPacketQueueHandler<ConnectionQueueHandler>(10, 1);
+            server.RegisterPacketQueueHandler<RpcQueueHandler>(10, 1);
+            server.RegisterPacketQueueHandler<SyncQueueHandler>(10, 1);
+            server.RegisterPacketQueueHandler<CommandQueueHandler>(10, 1);
+            server.RegisterPacketQueueHandler<LuaEventQueueHandler>(10, 1);
+            server.RegisterPacketQueueHandler<PlayerEventQueueHandler>(10, 1);
         }
 
         private void SetupBehaviour()

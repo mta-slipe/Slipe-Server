@@ -58,6 +58,10 @@ namespace SlipeServer.ConfigurationProviders.Configurations
 
                     case "ResourceDirectory":
                         configuration.ResourceDirectory = node.InnerText;
+                        break;    
+
+                    case "ExplosionSyncDistance":
+                        configuration.ExplosionSyncDistance = float.Parse(node.InnerText);
                         break;                        
                 }
             }

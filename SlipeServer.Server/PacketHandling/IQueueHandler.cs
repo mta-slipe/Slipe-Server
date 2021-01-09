@@ -8,6 +8,7 @@ namespace SlipeServer.Server.PacketHandling
 {
     public interface IQueueHandler
     {
+        IEnumerable<PacketId> SupportedPacketIds { get; }
         void EnqueuePacket(Client client, PacketId packetId, byte[] data);
     }
 }

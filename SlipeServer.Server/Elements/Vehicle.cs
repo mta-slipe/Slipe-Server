@@ -61,5 +61,14 @@ namespace SlipeServer.Server.Elements
         {
             return server.AssociateElement(this);
         }
+
+        public void BlowUp()
+        {
+            this.Health = 0;
+            this.IsEngineOn = false;
+            this.Blown?.Invoke(this, EventArgs.Empty);
+        }
+
+        public event EventHandler? Blown;
     }
 }

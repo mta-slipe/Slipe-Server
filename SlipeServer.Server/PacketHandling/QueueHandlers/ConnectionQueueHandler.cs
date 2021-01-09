@@ -10,40 +10,63 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using SlipeServer.Server.Extensions;
 using System.Linq;
+using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers
 {
     public class ConnectionQueueHandler : WorkerBasedQueueHandler
     {
+        private readonly ILogger logger;
         private readonly MtaServer server;
         private readonly IElementRepository elementRepository;
 
-        public ConnectionQueueHandler(MtaServer server, IElementRepository elementRepository, int sleepInterval, int workerCount)
-            : base(sleepInterval, workerCount)
+        public override IEnumerable<PacketId> SupportedPacketIds => new PacketId[] { 
+            PacketId.PACKET_ID_PLAYER_JOIN,
+            PacketId.PACKET_ID_PLAYER_JOINDATA,
+            PacketId.PACKET_ID_PLAYER_QUIT,
+            PacketId.PACKET_ID_PLAYER_TIMEOUT,
+            PacketId.PACKET_ID_PLAYER_NO_SOCKET
+        };
+
+        public ConnectionQueueHandler(
+            ILogger logger,
+            MtaServer server, 
+            IElementRepository elementRepository, 
+            int sleepInterval, 
+            int workerCount
+        ) : base(sleepInterval, workerCount)
         {
+            this.logger = logger;
             this.server = server;
             this.elementRepository = elementRepository;
         }
 
         protected override void HandlePacket(PacketQueueEntry queueEntry)
         {
-            switch (queueEntry.PacketId)
+            try
             {
-                case PacketId.PACKET_ID_PLAYER_JOIN:
-                    HandleClientJoin(queueEntry.Client);
-                    break;
-                case PacketId.PACKET_ID_PLAYER_JOINDATA:
-                    PlayerJoinDataPacket joinDataPacket = new PlayerJoinDataPacket();
-                    joinDataPacket.Read(queueEntry.Data);
-                    HandleClientJoinData(queueEntry.Client, joinDataPacket);
-                    break;
-                case PacketId.PACKET_ID_PLAYER_QUIT:
-                    HandleClientQuit(queueEntry.Client, QuitReason.Quit);
-                    break;
-                case PacketId.PACKET_ID_PLAYER_TIMEOUT:
-                case PacketId.PACKET_ID_PLAYER_NO_SOCKET:
-                    HandleClientQuit(queueEntry.Client, QuitReason.Timeout);
-                    break;
+                switch (queueEntry.PacketId)
+                {
+                    case PacketId.PACKET_ID_PLAYER_JOIN:
+                        HandleClientJoin(queueEntry.Client);
+                        break;
+                    case PacketId.PACKET_ID_PLAYER_JOINDATA:
+                        PlayerJoinDataPacket joinDataPacket = new PlayerJoinDataPacket();
+                        joinDataPacket.Read(queueEntry.Data);
+                        HandleClientJoinData(queueEntry.Client, joinDataPacket);
+                        break;
+                    case PacketId.PACKET_ID_PLAYER_QUIT:
+                        HandleClientQuit(queueEntry.Client, QuitReason.Quit);
+                        break;
+                    case PacketId.PACKET_ID_PLAYER_TIMEOUT:
+                    case PacketId.PACKET_ID_PLAYER_NO_SOCKET:
+                        HandleClientQuit(queueEntry.Client, QuitReason.Timeout);
+                        break;
+                }
+            } catch (Exception e)
+            {
+                this.logger.LogError($"Handling packet ({queueEntry.PacketId}) failed.\n{e.Message}");
             }
         }
 

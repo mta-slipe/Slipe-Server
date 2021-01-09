@@ -31,5 +31,7 @@ namespace SlipeServer.Server
 
         public string ResourceDirectory { get; set; } = "./resources";
 
+        public float ExplosionSyncDistance { get; set; } = 400;
+
     }
 }
