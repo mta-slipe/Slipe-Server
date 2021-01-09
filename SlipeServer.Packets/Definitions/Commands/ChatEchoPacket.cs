@@ -43,7 +43,7 @@ namespace SlipeServer.Packets.Definitions.Commands
             builder.Write(this.Color);
             builder.Write(this.IsColorCoded);
             builder.WriteElementId(this.SourceId);
-            builder.WriteStringWithByteAsLength(this.Message);
+            builder.WriteStringWithoutLength(this.Message);
 
             return builder.Build();
         }

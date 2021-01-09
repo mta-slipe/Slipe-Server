@@ -134,6 +134,7 @@ namespace SlipeServer.Console
             server.Instantiate<EventLoggingBehaviour>();
             server.Instantiate<VelocityBehaviour>();
             server.Instantiate<DefaultChatBehaviour>();
+            server.Instantiate<NicknameChangeBehaviour>();
 
             server.Instantiate<PlayerJoinElementBehaviour>();
 

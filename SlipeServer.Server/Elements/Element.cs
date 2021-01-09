@@ -36,7 +36,17 @@ namespace SlipeServer.Server.Elements
         private readonly object timeContextLock = new object();
         public byte TimeContext { get; private set; }
 
-        public string Name { get; set; } = "";
+        private string name = "";
+        public string Name
+        {
+            get => name;
+            set
+            {
+                var args = new ElementChangedEventArgs<string>(this, this.Name, value, this.IsSync);
+                name = value;
+                NameChanged?.Invoke(this, args);
+            }
+        }
 
         protected Vector3 position;
         public Vector3 Position
@@ -189,6 +199,7 @@ namespace SlipeServer.Server.Elements
         public event ElementChangedEventHandler<byte>? InteriorChanged;
         public event ElementChangedEventHandler<ushort>? DimensionChanged;
         public event ElementChangedEventHandler<byte>? AlphaChanged;
+        public event ElementChangedEventHandler<string>? NameChanged;
         public event Action<Element>? Destroyed;
     }
 }

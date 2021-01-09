@@ -27,6 +27,7 @@ namespace SlipeServer.Server.Behaviour
             player.Spawned += RelayPlayerSpawn;
             player.WantedLevelChanged += WantedLevelChanged;
             player.Wasted += RelayPlayerWasted;
+            player.NameChanged += RelayedNameChanged;
         }
 
         private void RelayPlayerSpawn(object sender, PlayerSpawnedEventArgs args)
@@ -47,6 +48,15 @@ namespace SlipeServer.Server.Behaviour
                 e.Source, e.Killer, e.WeaponType, e.BodyPart, false, e.AnimationGroup, e.AnimationId
             );
             this.server.BroadcastPacket(packet);
+        }
+
+        private void RelayedNameChanged(object sender, ElementChangedEventArgs<string> args)
+        {
+            if (!args.IsSync)
+            {
+                var packet = PlayerPacketFactory.CreateNicknameChangePacket((Player)args.Source);
+                this.server.BroadcastPacket(packet);
+            }
         }
     }
 }
