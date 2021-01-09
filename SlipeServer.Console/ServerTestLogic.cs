@@ -40,6 +40,7 @@ namespace SlipeServer.Console
         private readonly ChatBox chatBox;
         private readonly ClientConsole console;
         private readonly LuaService luaService;
+        private readonly ExplosionService explosionService;
         private Resource? testResource;
 
         public ServerTestLogic(
@@ -52,7 +53,8 @@ namespace SlipeServer.Console
             ILogger logger,
             ChatBox chatBox,
             ClientConsole console,
-            LuaService luaService
+            LuaService luaService,
+            ExplosionService explosionService
         )
         {
             this.server = server;
@@ -65,6 +67,7 @@ namespace SlipeServer.Console
             this.chatBox = chatBox;
             this.console = console;
             this.luaService = luaService;
+            this.explosionService = explosionService;
             this.SetupTestLogic();
         }
 
@@ -149,6 +152,10 @@ namespace SlipeServer.Console
                 player.Spawn(new Vector3(0, 0, 3), 0, 7, 0, 0);
             };
             player.OnCommand += (o, args) => { if (args.Command == "kill") player.Kill(); };
+            player.OnCommand += (o, args) => {
+                if (args.Command == "boom")
+                    this.explosionService.CreateExplosion(player.Position, ExplosionType.Tiny);
+            };
 
             this.testResource?.StartFor(player);
         }

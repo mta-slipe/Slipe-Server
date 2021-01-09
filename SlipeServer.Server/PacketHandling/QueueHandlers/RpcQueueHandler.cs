@@ -1,4 +1,5 @@
-﻿using SlipeServer.Packets.Definitions.Join;
+﻿using Microsoft.Extensions.Logging;
+using SlipeServer.Packets.Definitions.Join;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Rpc;
 using SlipeServer.Server.Elements;
@@ -6,6 +7,7 @@ using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Factories;
 using SlipeServer.Server.Repositories;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -15,12 +17,22 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
     {
         private readonly IElementRepository elementRepository;
         private readonly Configuration configuration;
+        private readonly ILogger logger;
         private readonly MtaServer server;
         private readonly RootElement root;
+        public override IEnumerable<PacketId> SupportedPacketIds => new PacketId[] { PacketId.PACKET_ID_RPC };
 
-        public RpcQueueHandler(MtaServer server, RootElement root, IElementRepository elementRepository, Configuration configuration, int sleepInterval, int workerCount)
-            : base(sleepInterval, workerCount)
+        public RpcQueueHandler(
+            ILogger logger, 
+            MtaServer server, 
+            RootElement root, 
+            IElementRepository elementRepository, 
+            Configuration configuration, 
+            int sleepInterval, 
+            int workerCount
+        ) : base(sleepInterval, workerCount)
         {
+            this.logger = logger;
             this.server = server;
             this.root = root;
             this.elementRepository = elementRepository;
@@ -29,19 +41,25 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
         protected override void HandlePacket(PacketQueueEntry queueEntry)
         {
-            switch (queueEntry.PacketId)
+            try
             {
-                case PacketId.PACKET_ID_RPC:
-                    RpcPacket packet = new RpcPacket();
-                    packet.Read(queueEntry.Data);
-                    HandleRpc(queueEntry.Client, packet);
-                    break;
+                switch (queueEntry.PacketId)
+                {
+                    case PacketId.PACKET_ID_RPC:
+                        RpcPacket packet = new RpcPacket();
+                        packet.Read(queueEntry.Data);
+                        HandleRpc(queueEntry.Client, packet);
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                this.logger.LogError($"Handling packet ({queueEntry.PacketId}) failed.\n{e.Message}");
             }
         }
 
         private void HandleRpc(Client client, RpcPacket packet)
         {
-            Debug.WriteLine($"Received RPC of type {packet.FunctionId}");
             switch (packet.FunctionId)
             {
                 case RpcFunctions.PLAYER_INGAME_NOTICE:
@@ -70,6 +88,9 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
                     this.server.HandlePlayerJoin(client.Player);
 
+                    break;
+                default:
+                    this.logger.LogWarning($"Received RPC of type {packet.FunctionId}");
                     break;
             }
         }

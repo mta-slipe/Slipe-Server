@@ -17,6 +17,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         private readonly MtaServer server;
         private readonly IElementRepository elementRepository;
         private readonly ILogger logger;
+        public override IEnumerable<PacketId> SupportedPacketIds => new PacketId[] { PacketId.PACKET_ID_LUA_EVENT };
 
         public LuaEventQueueHandler(MtaServer server, IElementRepository elementRepository, ILogger logger, int sleepInterval, int workerCount) 
             : base(sleepInterval, workerCount)
@@ -28,28 +29,35 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
         protected override void HandlePacket(PacketQueueEntry queueEntry)
         {
-            switch (queueEntry.PacketId)
+            try
             {
-                case PacketId.PACKET_ID_LUA_EVENT:
-                    LuaEventPacket eventPacket = new LuaEventPacket();
-                    eventPacket.Read(queueEntry.Data);
+                switch (queueEntry.PacketId)
+                {
+                    case PacketId.PACKET_ID_LUA_EVENT:
+                        LuaEventPacket eventPacket = new LuaEventPacket();
+                        eventPacket.Read(queueEntry.Data);
 
-                    var element = this.elementRepository.Get(eventPacket.ElementId);
-                    if (element == null)
-                    {
-                        this.logger.LogWarning($"'{eventPacket.Name}' event triggered on non-existant element {eventPacket.ElementId}");
+                        var element = this.elementRepository.Get(eventPacket.ElementId);
+                        if (element == null)
+                        {
+                            this.logger.LogWarning($"'{eventPacket.Name}' event triggered on non-existant element {eventPacket.ElementId}");
+                            break;
+                        }
+
+                        this.server.HandleLuaEvent(new Events.LuaEvent()
+                        {
+                            Player = queueEntry.Client.Player,
+                            Name = eventPacket.Name,
+                            Source = element,
+                            Parameters = eventPacket.LuaValues.ToArray()
+                        });
+
                         break;
-                    }
-
-                    this.server.HandleLuaEvent(new Events.LuaEvent()
-                    {
-                        Player = queueEntry.Client.Player,
-                        Name = eventPacket.Name,
-                        Source = element,
-                        Parameters = eventPacket.LuaValues.ToArray()
-                    });
-
-                    break;
+                }
+            }
+            catch (Exception e)
+            {
+                this.logger.LogError($"Handling packet ({queueEntry.PacketId}) failed.\n{e.Message}");
             }
         }
 

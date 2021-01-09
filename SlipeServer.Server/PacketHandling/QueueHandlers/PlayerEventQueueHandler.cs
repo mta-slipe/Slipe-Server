@@ -11,30 +11,47 @@ using System.Threading.Tasks;
 using SlipeServer.Server.Extensions;
 using System.Linq;
 using SlipeServer.Packets.Definitions.Player;
+using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers
 {
     public class PlayerEventQueueHandler : WorkerBasedQueueHandler
     {
+        private readonly ILogger logger;
         private readonly MtaServer server;
         private readonly IElementRepository elementRepository;
+        public override IEnumerable<PacketId> SupportedPacketIds => new PacketId[] { PacketId.PACKET_ID_PLAYER_WASTED };
 
-        public PlayerEventQueueHandler(MtaServer server, IElementRepository elementRepository, int sleepInterval, int workerCount)
-            : base(sleepInterval, workerCount)
+        public PlayerEventQueueHandler(
+            ILogger logger,
+            MtaServer server, 
+            IElementRepository elementRepository, 
+            int sleepInterval, 
+            int workerCount
+        ) : base(sleepInterval, workerCount)
         {
+            this.logger = logger;
             this.server = server;
             this.elementRepository = elementRepository;
         }
 
         protected override void HandlePacket(PacketQueueEntry queueEntry)
         {
-            switch (queueEntry.PacketId)
+            try
             {
-                case PacketId.PACKET_ID_PLAYER_WASTED:
-                    PlayerWastedPacket wastedPacket = new PlayerWastedPacket();
-                    wastedPacket.Read(queueEntry.Data);
-                    HandlePlayerWasted(queueEntry.Client, wastedPacket);
-                    break;
+                switch (queueEntry.PacketId)
+                {
+                    case PacketId.PACKET_ID_PLAYER_WASTED:
+                        PlayerWastedPacket wastedPacket = new PlayerWastedPacket();
+                        wastedPacket.Read(queueEntry.Data);
+                        HandlePlayerWasted(queueEntry.Client, wastedPacket);
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                this.logger.LogError($"Handling packet ({queueEntry.PacketId}) failed.\n{e.Message}");
             }
         }
 

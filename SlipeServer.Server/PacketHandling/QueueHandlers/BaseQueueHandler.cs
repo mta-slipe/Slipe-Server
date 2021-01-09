@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers
 {
@@ -14,6 +15,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
     public abstract class BaseQueueHandler: IQueueHandler
     {
         protected readonly ConcurrentQueue<PacketQueueEntry> packetQueue;
+        public abstract IEnumerable<PacketId> SupportedPacketIds { get; }
 
         public BaseQueueHandler()
         {

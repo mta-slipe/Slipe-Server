@@ -1,4 +1,5 @@
-﻿using SlipeServer.Packets.Definitions.Sync;
+﻿using Microsoft.Extensions.Logging;
+using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
@@ -7,6 +8,7 @@ using SlipeServer.Server.Repositories;
 
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,10 +17,23 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 {
     public class SyncQueueHandler : WorkerBasedQueueHandler
     {
+        private readonly ILogger logger;
         private readonly IElementRepository elementRepository;
+        public override IEnumerable<PacketId> SupportedPacketIds => new PacketId[] 
+        { 
+            PacketId.PACKET_ID_CAMERA_SYNC, 
+            PacketId.PACKET_ID_PLAYER_KEYSYNC, 
+            PacketId.PACKET_ID_PLAYER_PURESYNC 
+        };
 
-        public SyncQueueHandler(IElementRepository elementRepository, int sleepInterval, int workerCount): base(sleepInterval, workerCount)
+        public SyncQueueHandler(
+            ILogger logger,
+            IElementRepository elementRepository, 
+            int sleepInterval, 
+            int workerCount
+        ): base(sleepInterval, workerCount)
         {
+            this.logger = logger;
             this.elementRepository = elementRepository;
         }
 
@@ -46,9 +61,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                 }
             } catch (Exception e)
             {
-                Debug.WriteLine("Handling packet failed");
-                Debug.WriteLine(string.Join(", ", queueEntry.Data));
-                Debug.WriteLine($"{e.Message}\n{e.StackTrace}");
+                this.logger.LogError($"Handling packet ({queueEntry.PacketId}) failed.\n{e.Message}");
             }
         }
 

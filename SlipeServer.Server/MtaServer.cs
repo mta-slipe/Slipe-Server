@@ -75,7 +75,7 @@ namespace SlipeServer.Server
 
             this.root.AssociateWith(this);
 
-            this.packetReducer = new PacketReducer();
+            this.packetReducer = new PacketReducer(this.serviceProvider.GetRequiredService<ILogger>());
             this.clients = new Dictionary<INetWrapper, Dictionary<uint, Client>>();
         }
 
@@ -128,6 +128,17 @@ namespace SlipeServer.Server
             this.packetReducer.RegisterQueueHandler(packetId, queueHandler);
         }
 
+        public void RegisterPacketQueueHandler(IQueueHandler queueHandler)
+        {
+            foreach (var packetId in queueHandler.SupportedPacketIds)
+                this.RegisterPacketQueueHandler(packetId, queueHandler);
+        }
+
+        public void RegisterPacketQueueHandler<T>(params object[] parameters) where T: IQueueHandler
+        {
+            this.RegisterPacketQueueHandler(this.Instantiate<T>(parameters));
+        }
+
         public T Instantiate<T>() => ActivatorUtilities.CreateInstance<T>(this.serviceProvider);
         public T Instantiate<T>(params object[] parameters) 
             => ActivatorUtilities.CreateInstance<T>(this.serviceProvider, parameters);
@@ -167,6 +178,7 @@ namespace SlipeServer.Server
             this.serviceCollection.AddSingleton<ClientConsole>();
             this.serviceCollection.AddSingleton<DebugLog>();
             this.serviceCollection.AddSingleton<LuaService>();
+            this.serviceCollection.AddSingleton<ExplosionService>();
 
             this.serviceCollection.AddSingleton<HttpClient>();
             this.serviceCollection.AddSingleton<Configuration>(this.configuration);
