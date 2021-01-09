@@ -165,5 +165,6 @@ namespace SlipeServer.Packets.Enums
         PACKET_ID_PLAYER_NETWORK_STATUS,
         PACKET_ID_PLAYER_ACINFO,
         PACKET_ID_CHAT_CLEAR,
+        PACKET_ID_SERVER_INFO_SYNC,
     }
 }

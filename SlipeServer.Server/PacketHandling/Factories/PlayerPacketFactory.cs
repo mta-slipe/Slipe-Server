@@ -125,5 +125,10 @@ namespace SlipeServer.Server.PacketHandling.Factories
             return new PlayerWastedPacket(player.Id, killer?.Id ?? 0, (byte)weaponType, (byte)bodyPart, isStealth, 
                 player.GetAndIncrementTimeContext(), animationGroup, animationId);
         }
+
+        public static ChangeNicknamePacket CreateNicknameChangePacket(Player player)
+        {
+            return new ChangeNicknamePacket(player.Id, player.Name);
+        }
     }
 }

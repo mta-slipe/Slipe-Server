@@ -62,7 +62,10 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                 "Unknown";
             client.SendPacket(new JoinCompletePacket($"Slipe Server 0.1.0 [{osName}]\0", "1.5.7-9.0.0"));
 
-            client.Player.Name = joinDataPacket.Nickname;
+            client.Player.RunAsSync(() =>
+            {
+                client.Player.Name = joinDataPacket.Nickname;
+            });
             client.SetVersion(joinDataPacket.BitStreamVersion);
             client.FetchSerial();
         }
