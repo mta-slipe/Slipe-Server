@@ -49,7 +49,7 @@ namespace SlipeServer.Server.Elements
 
         public PlayerWeapon? CurrentWeapon { get; set; }
         public float PedRotation { get; set; } = 0;
-        public Element? Vehicle { get; set; }
+        public Vehicle? Vehicle { get; set; }
         public byte? Seat { get; set; }
         public bool HasJetpack { get; set; } = false;
         public bool IsSyncable { get; set; } = true;

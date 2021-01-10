@@ -48,6 +48,9 @@ namespace SlipeServer.Server.Elements
         public bool IsSyncingVelocity { get; set; }
         public bool IsStealthAiming { get; set; }
 
+        public VehicleAction VehicleAction { get; set; } = VehicleAction.None;
+        public Vehicle? JackingVehicle { get; set; }
+
         protected internal Player(Client client) : base(0, Vector3.Zero)
         {
             this.Client = client;

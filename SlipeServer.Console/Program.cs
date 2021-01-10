@@ -107,6 +107,7 @@ namespace SlipeServer.Console
             server.RegisterPacketQueueHandler<CommandQueueHandler>(10, 1);
             server.RegisterPacketQueueHandler<LuaEventQueueHandler>(10, 1);
             server.RegisterPacketQueueHandler<PlayerEventQueueHandler>(10, 1);
+            server.RegisterPacketQueueHandler<VehicleInOutHandler>(10, 1);
         }
 
         private void SetupBehaviour()
