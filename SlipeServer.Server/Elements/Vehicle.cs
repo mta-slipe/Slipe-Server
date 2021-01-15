@@ -45,7 +45,22 @@ namespace SlipeServer.Server.Elements
         public bool IsTrailer => VehicleConstants.TrailerModels.Contains(this.Model);
 
         public Player? JackingPlayer { get; set; }
-        public Ped? Driver { get; set; }
+        public Ped? Driver
+        {
+            get
+            {
+                if (Occupants.ContainsKey(0))
+                    return Occupants[0];
+                return null;
+            }
+            set
+            {
+                if (value == null)
+                    Occupants.Remove(0);
+                else
+                    Occupants[0] = value;
+            }
+        }
         public Dictionary<byte, Ped> Occupants { get; set; }
 
         public Vehicle(ushort model, Vector3 position) : base()

@@ -1,21 +1,14 @@
-﻿using SlipeServer.Packets.Definitions.Join;
+﻿using Microsoft.Extensions.Logging;
+using SlipeServer.Packets.Definitions.Vehicles;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Server.Constants;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
-using SlipeServer.Server.PacketHandling.Factories;
-using SlipeServer.Server.Repositories;
-using MTAServerWrapper.Packets.Outgoing.Connection;
-using System;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using SlipeServer.Server.Extensions;
-using System.Linq;
-using SlipeServer.Packets.Definitions.Player;
-using Microsoft.Extensions.Logging;
+using SlipeServer.Server.Repositories;
+using System;
 using System.Collections.Generic;
-using SlipeServer.Packets.Definitions.Vehicles;
 using System.Numerics;
-using SlipeServer.Server.Constants;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers
 {
@@ -407,12 +400,96 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
         private void HandleNotifyJack(Client client, Vehicle vehicle, VehicleInOutPacket packet)
         {
+            if (client.Player.VehicleAction != VehicleAction.Jacking)
+                return;
 
+            if (vehicle.Driver == null)
+                return;
+
+            var jackedPed = vehicle.Driver;
+            if (jackedPed is Player jackedPlayer)
+            {
+                jackedPlayer.Vehicle = null;
+                jackedPlayer.VehicleAction = VehicleAction.None;
+                vehicle.JackingPlayer = null;
+
+                client.Player.Vehicle = vehicle;
+                client.Player.VehicleAction = VehicleAction.None;
+                vehicle.Driver = client.Player;
+
+
+                var replyPacket = new VehicleInOutPacket()
+                {
+                    PlayerId = client.Player.Id,
+                    PlayerInId = client.Player.Id,
+                    PlayerOutId = jackedPlayer.Id,
+                    VehicleId = vehicle.Id,
+                    OutActionId = VehicleInOutActionReturns.NotifyJackReturn,
+                    Seat = packet.Seat
+                };
+                this.server.BroadcastPacket(replyPacket);
+            }
         }
 
         private void HandleNotifyJackAbort(Client client, Vehicle vehicle, VehicleInOutPacket packet)
         {
+            if (client.Player.VehicleAction != VehicleAction.Jacking)
+                return;
 
+            client.Player.VehicleAction = VehicleAction.None;
+            vehicle.JackingPlayer = null;
+
+            var replyPacket = new VehicleInOutPacket()
+            {
+                PlayerId = client.Player.Id,
+                VehicleId = vehicle.Id,
+                OutActionId = VehicleInOutActionReturns.NotifyInAbortReturn,
+                Seat = packet.Seat
+            };
+            this.server.BroadcastPacket(replyPacket);
+
+            var jackedPlayer = vehicle.Driver;
+            if (jackedPlayer == null)
+                return;
+
+            if (packet.StartedJacking)
+            {
+                jackedPlayer.Vehicle = null;
+                vehicle.RemovePassenger(jackedPlayer);
+
+                var jackReplyPacket = new VehicleInOutPacket()
+                {
+                    PlayerId = jackedPlayer.Id,
+                    VehicleId = vehicle.Id,
+                    OutActionId = VehicleInOutActionReturns.NotifyOutReturn,
+                    Seat = packet.Seat
+                };
+                this.server.BroadcastPacket(jackReplyPacket);
+            }
+        }
+
+        private void SendResponse(
+            Player player, 
+            Player sourcePlayer, 
+            Vehicle vehicle, 
+            byte seat, 
+            byte door, 
+            VehicleInOutActionReturns action,
+            VehicleEnterFailReason failReason = VehicleEnterFailReason.Invalid,
+            Vector3? correctPosition = null
+        )
+        {
+            var replyPacket = new VehicleInOutPacket()
+            {
+                PlayerId = sourcePlayer.Id,
+                VehicleId = vehicle.Id,
+                Seat = seat,
+                Door = door,
+                OutActionId = action,
+                FailReason = failReason,
+                CorrectPosition = correctPosition ?? Vector3.Zero,
+            };
+            replyPacket.SendTo(player);
         }
     }
 }

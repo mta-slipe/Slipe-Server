@@ -5,7 +5,6 @@ using SlipeServer.Server.Enums;
 using SlipeServer.Server.PacketHandling.Factories;
 using System;
 using System.Numerics;
-using System.Text.RegularExpressions;
 
 namespace SlipeServer.Server.Elements
 {
