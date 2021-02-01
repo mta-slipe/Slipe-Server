@@ -76,8 +76,32 @@ namespace SlipeServer.Lua
                 return new Vector3(GetSingleFromDynValue(dynValues.Dequeue()), GetSingleFromDynValue(dynValues.Dequeue()), GetSingleFromDynValue(dynValues.Dequeue()));
             if (targetType == typeof(float))
                 return GetSingleFromDynValue(dynValues.Dequeue());
+            if (targetType == typeof(double))
+                return GetDoubleFromDynValue(dynValues.Dequeue());
+            if (targetType == typeof(byte))
+                return GetByteFromDynValue(dynValues.Dequeue());
+            if (targetType == typeof(short))
+                return GetInt16FromDynValue(dynValues.Dequeue());
+            if (targetType == typeof(ushort))
+                return GetUInt16FromDynValue(dynValues.Dequeue());
+            if (targetType == typeof(int))
+                return GetInt32FromDynValue(dynValues.Dequeue());
+            if (targetType == typeof(uint))
+                return GetUInt32FromDynValue(dynValues.Dequeue());
+            if (targetType == typeof(long))
+                return GetInt64FromDynValue(dynValues.Dequeue());
+            if (targetType == typeof(ulong))
+                return GetUInt64FromDynValue(dynValues.Dequeue());
+            if (targetType == typeof(string))
+                return GetStringFromDynValue(dynValues.Dequeue());
+            if (targetType == typeof(bool))
+                return GetBooleanFromDynValue(dynValues.Dequeue());
+            if (targetType == typeof(Table))
+                return GetTableFromDynValue(dynValues.Dequeue());
+            if (typeof(Element).IsAssignableFrom(targetType))
+                return dynValues.Dequeue().UserData.Object;
 
-            return null;
+            throw new NotImplementedException($"Conversion for {targetType} not implemented");
         }
     }
 }

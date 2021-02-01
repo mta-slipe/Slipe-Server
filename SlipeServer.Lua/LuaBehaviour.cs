@@ -51,7 +51,25 @@ namespace SlipeServer.Lua
                     object[] parameters = new object[methodParameters.Length];
                     for (int i = 0; i < parameters.Length; i++)
                     {
-                        parameters[i] = this.translator.FromDynValue(methodParameters[i].ParameterType, valueQueue);
+                        try
+                        {
+                            if (valueQueue.Any())
+                            {
+                                parameters[i] = this.translator.FromDynValue(methodParameters[i].ParameterType, valueQueue);
+                            }
+                            else
+                            {
+                                if (!methodParameters[i].IsOptional)
+                                    throw new LuaArgumentException(methodParameters[i].Name, methodParameters[i].ParameterType, i, DataType.Nil);
+                            }
+                        } catch (NotImplementedException)
+                        {
+                            valueQueue.TryDequeue(out DynValue valueType);
+                            throw new LuaException($"Unsupported Lua value translation for {methodParameters[i].ParameterType}");
+                        } catch (Exception e)
+                        {
+                            throw new LuaException($"Error when converting Lua value to {methodParameters[i].ParameterType}", e);
+                        }
                     }
                     var result = method.Invoke(methodSet, parameters);
 
