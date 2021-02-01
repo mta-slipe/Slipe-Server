@@ -78,9 +78,9 @@ namespace SlipeServer.Lua
             }
         }
 
-        public void LoadDefinitions<T>() where T: new()
+        public void LoadDefinitions<T>()
         {
-            LoadDefinitions(new T());
+            LoadDefinitions(this.server.Instantiate<T>());
         }
 
         public void LoadDefaultDefinitions()
@@ -104,7 +104,6 @@ namespace SlipeServer.Lua
             LoadDefinitions(script);
 
             script.LoadString(code).Function.Call();
-
         }
 
         public void LoadScript(string identifier, string[] codes)
@@ -118,7 +117,6 @@ namespace SlipeServer.Lua
 
             foreach (var code in codes)
                 script.LoadString(code).Function.Call();
-
         }
 
         public async Task LoadScriptFromPath(string path) => LoadScript(path, await File.ReadAllTextAsync(path));

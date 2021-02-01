@@ -16,11 +16,12 @@ namespace SlipeServer.Scripting.Definitions
         }
 
         [ScriptDefinition("createObject")]
-        public WorldObject CreateObject(ushort model, Vector3 position, Vector3? rotation = null, bool isLowLOD = false)
+        public WorldObject CreateObject(ushort model, Vector3 position, Vector3? rotation = null, bool isLowLod = false)
         {
             return new WorldObject(model, position)
             {
-                Rotation = rotation ?? Vector3.Zero
+                Rotation = rotation ?? Vector3.Zero,
+                IsLowLod = isLowLod
             }.AssociateWith(this.server);
         }
 
