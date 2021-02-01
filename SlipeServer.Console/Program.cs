@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SlipeServer.ConfigurationProviders;
 using SlipeServer.ConfigurationProviders.Configurations;
+using SlipeServer.Lua;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server;
 using SlipeServer.Server.AllSeeingEye;
@@ -31,6 +32,7 @@ namespace SlipeServer.Console
 
         private readonly EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
         private readonly MtaServer server;
+        private LuaBehaviour luaBehaviour;
 
         public Program(string[] args)
         {
@@ -66,6 +68,7 @@ namespace SlipeServer.Console
             SetupQueueHandlers();
             SetupBehaviour();
             SetupLogic();
+            SetupLua();
 
             server.Start();
             
@@ -129,6 +132,13 @@ namespace SlipeServer.Console
         private void SetupLogic()
         {
             this.server.Instantiate<ServerTestLogic>();
+        }
+
+        private void SetupLua()
+        {
+            this.luaBehaviour = server.Instantiate<LuaBehaviour>();
+            this.luaBehaviour.LoadDefaultDefinitions();
+            this.luaBehaviour.LoadScript("test.lua", "local object = createObject(321, 5, 5, 5) print(type(object), object)");
         }
     }
 }

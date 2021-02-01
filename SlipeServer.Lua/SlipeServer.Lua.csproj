@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MoonSharp" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SlipeServer.Scripting\SlipeServer.Scripting.csproj" />
+    <ProjectReference Include="..\SlipeServer.Server\SlipeServer.Server.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -139,6 +139,7 @@ namespace SlipeServer.Server
             this.RegisterPacketQueueHandler(this.Instantiate<T>(parameters));
         }
 
+        public object Instantiate(Type type) => ActivatorUtilities.CreateInstance(this.serviceProvider, type);
         public T Instantiate<T>() => ActivatorUtilities.CreateInstance<T>(this.serviceProvider);
         public T Instantiate<T>(params object[] parameters) 
             => ActivatorUtilities.CreateInstance<T>(this.serviceProvider, parameters);
