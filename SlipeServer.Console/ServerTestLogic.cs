@@ -39,7 +39,7 @@ namespace SlipeServer.Console
         private readonly ILogger logger;
         private readonly ChatBox chatBox;
         private readonly ClientConsole console;
-        private readonly LuaService luaService;
+        private readonly LuaEventService luaService;
         private readonly ExplosionService explosionService;
         private Resource? testResource;
 
@@ -53,7 +53,7 @@ namespace SlipeServer.Console
             ILogger logger,
             ChatBox chatBox,
             ClientConsole console,
-            LuaService luaService,
+            LuaEventService luaService,
             ExplosionService explosionService
         )
         {

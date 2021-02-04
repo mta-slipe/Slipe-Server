@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SlipeServer.ConfigurationProviders;
 using SlipeServer.ConfigurationProviders.Configurations;
-using SlipeServer.Packets.Enums;
+using SlipeServer.Lua;
 using SlipeServer.Server;
 using SlipeServer.Server.AllSeeingEye;
 using SlipeServer.Server.Behaviour;
@@ -89,6 +89,8 @@ namespace SlipeServer.Console
         private void Configure(ServiceCollection services)
         {
             services.AddSingleton<ILogger>(this.Logger);
+
+            services.AddLua();
         }
 
         private IConfigurationProvider GetConfigurationProvider(string configPath)
@@ -142,6 +144,7 @@ namespace SlipeServer.Console
         private void SetupLogic()
         {
             this.server.Instantiate<ServerTestLogic>();
+            this.server.Instantiate<LuaTestLogic>();
         }
     }
 }
