@@ -2,6 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Version>0.1.0</Version>
+    <Authors>Slipe</Authors>
+    <Company></Company>
+    <Product>Slipe Server Lua</Product>
+    <PackageProjectUrl>https://github.com/mta-slipe/Slipe-server</PackageProjectUrl>
+    <PackageIcon>slipe-logo.png</PackageIcon>
+    <RepositoryUrl>https://github.com/mta-slipe/Slipe-server</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Description>Lua scripting layer C# Server for MTA San Andreas</Description>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,6 +21,17 @@
   <ItemGroup>
     <ProjectReference Include="..\SlipeServer.Scripting\SlipeServer.Scripting.csproj" />
     <ProjectReference Include="..\SlipeServer.Server\SlipeServer.Server.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="..\slipe-logo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
