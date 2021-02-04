@@ -1,27 +1,21 @@
 ﻿using SlipeServer.Packets.Definitions.Lua;
-using SlipeServer.Packets.Definitions.Lua.Rpc.World;
 using SlipeServer.Packets.Lua.Event;
 using SlipeServer.Server.Elements;
-using SlipeServer.Server.Enums;
 using SlipeServer.Server.Events;
 using SlipeServer.Server.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Numerics;
-using System.Text;
-using System.Timers;
 
 namespace SlipeServer.Server.Services
 {
-    public class LuaService
+    public class LuaEventService
     {
         private readonly MtaServer server;
         private readonly RootElement root;
 
         private readonly Dictionary<string, List<Action<LuaEvent>>> eventHandlers;
 
-        public LuaService(MtaServer server, RootElement root)
+        public LuaEventService(MtaServer server, RootElement root)
         {
             this.server = server;
             this.root = root;
