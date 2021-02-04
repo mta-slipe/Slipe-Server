@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using MoonSharp.Interpreter;
-using SlipeServer.Scripting.Definitions;
+using SlipeServer.Scripting;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using System;
@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SlipeServer.Lua
 {
-    public class LuaBehaviour
+    public class LuaService
     {
         private readonly MtaServer server;
         private readonly ILogger logger;
@@ -21,24 +21,23 @@ namespace SlipeServer.Lua
         private readonly Dictionary<string, LuaMethod> methods;
         private readonly LuaTranslator translator;
 
-        public LuaBehaviour(MtaServer server, ILogger logger, RootElement root)
+        public LuaService(MtaServer server, ILogger logger, RootElement root)
         {
             this.server = server;
             this.logger = logger;
             this.root = root;
             this.scripts = new Dictionary<string, Script>();
             this.methods = new Dictionary<string, LuaMethod>();
-            this.translator = new LuaTranslator(server);
-
+            this.translator = new LuaTranslator();
         }
 
         public void LoadDefinitions(object methodSet)
         {
             foreach (var method in methodSet.GetType().GetMethods()
                     .Where(method => method.CustomAttributes
-                        .Any(attribute => attribute.AttributeType == typeof(ScriptDefinitionAttribute))))
+                        .Any(attribute => attribute.AttributeType == typeof(ScriptFunctionDefinitionAttribute))))
             {
-                var attribute = method.GetCustomAttribute<ScriptDefinitionAttribute>();
+                var attribute = method.GetCustomAttribute<ScriptFunctionDefinitionAttribute>();
 
                 if (this.methods.ContainsKey(attribute.NiceName))
                     throw new Exception($"Lua name conflict for '{attribute.NiceName}'");
@@ -85,10 +84,10 @@ namespace SlipeServer.Lua
 
         public void LoadDefaultDefinitions()
         {
-            foreach (var type in typeof(ScriptDefinitionAttribute).Assembly.DefinedTypes
+            foreach (var type in typeof(ScriptFunctionDefinitionAttribute).Assembly.DefinedTypes
                 .Where(type => type.GetMethods()
                     .Any(method => method.CustomAttributes
-                        .Any(attribute => attribute.AttributeType == typeof(ScriptDefinitionAttribute)))))
+                        .Any(attribute => attribute.AttributeType == typeof(ScriptFunctionDefinitionAttribute)))))
             {
                 LoadDefinitions(this.server.Instantiate(type));
             }
@@ -103,20 +102,24 @@ namespace SlipeServer.Lua
             LoadGlobals(script);
             LoadDefinitions(script);
 
-            script.LoadString(code).Function.Call();
+            script.DoString(code);
         }
 
         public void LoadScript(string identifier, string[] codes)
         {
             var script = new Script(CoreModules.Preset_SoftSandbox);
-            script.Options.DebugPrint = (value) => this.logger.LogInformation(value);
+            script.Options.DebugPrint = (value) =>
+            {
+                using var scope = this.logger.BeginScope(script);
+                this.logger.LogDebug(value);
+            };
             this.scripts[identifier] = script;
 
             LoadGlobals(script);
             LoadDefinitions(script);
 
             foreach (var code in codes)
-                script.LoadString(code).Function.Call();
+                script.DoString(code);
         }
 
         public async Task LoadScriptFromPath(string path) => LoadScript(path, await File.ReadAllTextAsync(path));
@@ -127,18 +130,23 @@ namespace SlipeServer.Lua
             LoadScript(identifier, codeTasks.Select(task => task.Result).ToArray());
         }
 
+        public void UnloadScript(string identifier)
+        {
+            this.scripts.Remove(identifier);
+        }
+
         private void LoadDefinitions(Script script)
         {
             foreach (var definition in this.methods)
             {
                 script.Globals["real"+ definition.Key] = definition.Value;
-                script.LoadString($"function {definition.Key}(...) return table.unpack(real{definition.Key}({{...}})) end").Function.Call();
+                script.DoString($"function {definition.Key}(...) return table.unpack(real{definition.Key}({{...}})) end");
             }
         }
 
         private void LoadGlobals(Script script)
         {
-            script.Globals["root"] = this.translator.ToDynValues(this.root);
+            script.Globals["root"] = this.translator.ToDynValues(this.root).First();
         }
 
         public delegate DynValue[] LuaMethod(params DynValue[] values);

@@ -1,5 +1,4 @@
-﻿using SlipeServer.Lua;
-using SlipeServer.Server;
+﻿using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using System;
 using System.Numerics;
@@ -15,7 +14,7 @@ namespace SlipeServer.Scripting.Definitions
             this.server = server;
         }
 
-        [ScriptDefinition("createObject")]
+        [ScriptFunctionDefinition("createObject")]
         public WorldObject CreateObject(ushort model, Vector3 position, Vector3? rotation = null, bool isLowLod = false)
         {
             return new WorldObject(model, position)

@@ -163,6 +163,9 @@ namespace SlipeServer.Server
 
             this.ElementCreated?.Invoke(element);
 
+            if (element != root)
+                element.Parent = root;
+
             return element;
         }
 
@@ -178,7 +181,7 @@ namespace SlipeServer.Server
             this.serviceCollection.AddSingleton<ChatBox>();
             this.serviceCollection.AddSingleton<ClientConsole>();
             this.serviceCollection.AddSingleton<DebugLog>();
-            this.serviceCollection.AddSingleton<LuaService>();
+            this.serviceCollection.AddSingleton<LuaEventService>();
             this.serviceCollection.AddSingleton<ExplosionService>();
 
             this.serviceCollection.AddSingleton<HttpClient>();

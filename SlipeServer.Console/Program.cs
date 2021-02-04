@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using SlipeServer.ConfigurationProviders;
 using SlipeServer.ConfigurationProviders.Configurations;
 using SlipeServer.Lua;
-using SlipeServer.Packets.Enums;
 using SlipeServer.Server;
 using SlipeServer.Server.AllSeeingEye;
 using SlipeServer.Server.Behaviour;
@@ -32,7 +31,6 @@ namespace SlipeServer.Console
 
         private readonly EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
         private readonly MtaServer server;
-        private LuaBehaviour luaBehaviour;
 
         public Program(string[] args)
         {
@@ -68,7 +66,6 @@ namespace SlipeServer.Console
             SetupQueueHandlers();
             SetupBehaviour();
             SetupLogic();
-            SetupLua();
 
             server.Start();
             
@@ -77,8 +74,10 @@ namespace SlipeServer.Console
 
         private void Configure(ServiceCollection services)
         {
-            // Register additional services here to be injected into instances created with server.CreateInstance()
+            // Register additional services here to be injected into instances created with server.Instantiate()
             services.AddSingleton<ILogger, ConsoleLogger>();
+
+            services.AddLua();
         }
 
         private IConfigurationProvider GetConfigurationProvider(string configPath)
@@ -132,13 +131,7 @@ namespace SlipeServer.Console
         private void SetupLogic()
         {
             this.server.Instantiate<ServerTestLogic>();
-        }
-
-        private void SetupLua()
-        {
-            this.luaBehaviour = server.Instantiate<LuaBehaviour>();
-            this.luaBehaviour.LoadDefaultDefinitions();
-            this.luaBehaviour.LoadScript("test.lua", "local object = createObject(321, 5, 5, 5) print(type(object), object)");
+            this.server.Instantiate<LuaTestLogic>();
         }
     }
 }

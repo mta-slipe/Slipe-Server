@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace SlipeServer.Server
 {
@@ -23,7 +21,7 @@ namespace SlipeServer.Server
 
         public string HttpHost { get; set; } = "127.0.0.1";
 
-        public ushort HttpPort { get; set; } = 50680;
+        public ushort HttpPort { get; set; } = 40680;
 
         public string? HttpUrl { get; set; }
 

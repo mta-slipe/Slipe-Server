@@ -1,21 +1,19 @@
 ﻿using MoonSharp.Interpreter;
+using SlipeServer.Scripting;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 
 namespace SlipeServer.Lua
 {
     public class LuaTranslator
     {
-        private readonly MtaServer server;
-
-        public LuaTranslator(MtaServer server)
+        public LuaTranslator()
         {
-            this.server = server;
-
-            UserData.RegisterType<Element>(InteropAccessMode.Default);
+            UserData.RegisterType<Element>(InteropAccessMode.Hardwired);
         }
 
         public IEnumerable<DynValue> ToDynValues(object obj)
@@ -53,8 +51,17 @@ namespace SlipeServer.Lua
                     DynValue.NewNumber(vector.Y),
                     DynValue.NewNumber(vector.Z)
                 };
+            if (obj is Delegate del)
+                return new DynValue[] { DynValue.NewCallback((context, arguments) => ToDynValues(del.DynamicInvoke(arguments.GetArray())).First()) };
+            if (obj is Table table)
+                return new DynValue[] { DynValue.NewTable(table) };
+            if (obj is DynValue dynValue)
+                return new DynValue[] { dynValue };
 
-            return null;
+            if (obj is IEnumerable<object> enumerable)
+                return enumerable.Select(x => ToDynValues(obj)).SelectMany(x => x).ToArray();
+
+            throw new NotImplementedException($"Conversion to Lua for {obj.GetType()} not implemented");
         }
 
         public float GetSingleFromDynValue(DynValue dynValue) => (float)dynValue.Number;
@@ -100,8 +107,18 @@ namespace SlipeServer.Lua
                 return GetTableFromDynValue(dynValues.Dequeue());
             if (typeof(Element).IsAssignableFrom(targetType))
                 return dynValues.Dequeue().UserData.Object;
+            if (targetType == typeof(ScriptCallbackDelegate))
+            {
+                var callback = dynValues.Dequeue().Function;
+                return (ScriptCallbackDelegate)((parameters) => callback.Call(ToDynValues(parameters)));
+            }
+            if (targetType == typeof(EventDelegate))
+            {
+                var callback = dynValues.Dequeue().Function;
+                return (EventDelegate)((element, parameters) => callback.Call(new DynValue[] { UserData.Create(element) }.Concat(ToDynValues(parameters))));
+            }
 
-            throw new NotImplementedException($"Conversion for {targetType} not implemented");
+            throw new NotImplementedException($"Conversion from Lua for {targetType} not implemented");
         }
     }
 }
