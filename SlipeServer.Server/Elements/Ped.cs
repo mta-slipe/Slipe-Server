@@ -74,6 +74,11 @@ namespace SlipeServer.Server.Elements
             return server.AssociateElement(this);
         }
 
+        public void RemoveFromVehicle(bool warpOut = true)
+        {
+            this.Vehicle?.RemovePassenger(this, warpOut);
+        }
+
         public event ElementChangedEventHandler<Ped, ushort>? ModelChanged;
         public event ElementChangedEventHandler<Ped, float>? HealthChanged;
         public event ElementChangedEventHandler<Ped, float>? ArmourChanged;

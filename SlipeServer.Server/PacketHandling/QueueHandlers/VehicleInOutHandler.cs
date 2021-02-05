@@ -158,7 +158,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
                     if (warpIn)
                     {
-                        // warp ped into vehicle
+                        vehicle.AddPassenger(packet.Seat, client.Player, true);
                     }
                     else
                     {
@@ -222,7 +222,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
                 if (warpIn)
                 {
-                    // warp ped into vehicle
+                    vehicle.AddPassenger(seat.Value, client.Player, true);
                 } else
                 {
                     var replyPacket = new VehicleInOutPacket()
@@ -259,7 +259,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                 if (client.Player.Vehicle != null)
                 {
                     vehicle.IsEngineOn = true;
-                    vehicle.Occupants[packet.Seat] = client.Player;
+                    vehicle.AddPassenger(packet.Seat, client.Player, false);
 
                     var replyPacket = new VehicleInOutPacket()
                     {
@@ -279,7 +279,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             {
                 client.Player.VehicleAction = VehicleAction.None;
                 client.Player.Vehicle = null;
-                vehicle.RemovePassenger(client.Player);
+                vehicle.RemovePassenger(client.Player, false);
 
                 var replyPacket = new VehicleInOutPacket()
                 {
@@ -343,7 +343,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             if (!vehicle.Occupants.ContainsValue(client.Player))
                 return;
 
-            vehicle.RemovePassenger(client.Player);
+            vehicle.RemovePassenger(client.Player, false);
 
             vehicle.Occupants.Remove(packet.Seat);
             var replyPacket = new VehicleInOutPacket()
@@ -385,7 +385,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
             client.Player.VehicleAction = VehicleAction.None;
             client.Player.Vehicle = null;
-            vehicle.RemovePassenger(client.Player);
+            vehicle.RemovePassenger(client.Player, false);
 
 
             var replyPacket = new VehicleInOutPacket()
@@ -455,7 +455,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             if (packet.StartedJacking)
             {
                 jackedPlayer.Vehicle = null;
-                vehicle.RemovePassenger(jackedPlayer);
+                vehicle.RemovePassenger(jackedPlayer, false);
 
                 var jackReplyPacket = new VehicleInOutPacket()
                 {
