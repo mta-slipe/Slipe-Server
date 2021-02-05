@@ -145,16 +145,14 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             {
                 if (vehicle.Driver == null)
                 {
-                    client.Player.Vehicle = vehicle;
-                    client.Player.VehicleAction = VehicleAction.Entering;
-
-
-
-                    // Allow for cancelling of entering
-                    /*
+                    if (!vehicle.CanEnter(client.Player))
+                    {
                         SendInRequestFailResponse(client, vehicle, VehicleEnterFailReason.Script);
                         return;
-                    */
+                    }
+
+                    client.Player.Vehicle = vehicle;
+                    client.Player.VehicleAction = VehicleAction.Entering;
 
                     if (warpIn)
                     {
@@ -175,18 +173,18 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                 } else
                 {
 
-                    // Allow for cancelling of entering
-                    /*
+                    if (!vehicle.CanEnter(client.Player))
+                    {
                         SendInRequestFailResponse(client, vehicle, VehicleEnterFailReason.Script);
                         return;
-                    */
+                    }
 
                     if (vehicle.Driver is Player player)
                     {
                         client.Player.VehicleAction = VehicleAction.Jacking;
                         client.Player.JackingVehicle = vehicle;
                         player.VehicleAction = VehicleAction.Jacked;
-                        vehicle.JackingPlayer = client.Player;
+                        vehicle.JackingPed = client.Player;
 
                         var replyPacket = new VehicleInOutPacket()
                         {
@@ -211,14 +209,14 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                     SendInRequestFailResponse(client, vehicle, VehicleEnterFailReason.Seat);
                     return;
                 }
-                client.Player.Vehicle = vehicle;
-                client.Player.VehicleAction = VehicleAction.Entering;
-
-                // Allow for cancelling of entering
-                /*
+                if (!vehicle.CanEnter(client.Player))
+                {
                     SendInRequestFailResponse(client, vehicle, VehicleEnterFailReason.Script);
                     return;
-                */
+                }
+
+                client.Player.Vehicle = vehicle;
+                client.Player.VehicleAction = VehicleAction.Entering;
 
                 if (warpIn)
                 {
@@ -308,17 +306,17 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                 return;
             }
 
-            // Allow for cancelling of exiting
-            /*
-                var replyPacket = new VehicleInOutPacket()
+            if (!vehicle.CanExit(client.Player))
+            {
+                var cancelReplyPacket = new VehicleInOutPacket()
                 {
                     PlayerId = client.Player.Id,
                     VehicleId = vehicle.Id,
                     OutActionId = VehicleInOutActionReturns.VehicleAttemptFailed,
                 };
-                replyPacket.SendTo(client);
+                cancelReplyPacket.SendTo(client);
                 return;
-            */
+            }
 
             client.Player.VehicleAction = VehicleAction.Exiting;
 
@@ -411,7 +409,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             {
                 jackedPlayer.Vehicle = null;
                 jackedPlayer.VehicleAction = VehicleAction.None;
-                vehicle.JackingPlayer = null;
+                vehicle.JackingPed = null;
 
                 client.Player.Vehicle = vehicle;
                 client.Player.VehicleAction = VehicleAction.None;
@@ -437,7 +435,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                 return;
 
             client.Player.VehicleAction = VehicleAction.None;
-            vehicle.JackingPlayer = null;
+            vehicle.JackingPed = null;
 
             var replyPacket = new VehicleInOutPacket()
             {
@@ -466,30 +464,6 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                 };
                 this.server.BroadcastPacket(jackReplyPacket);
             }
-        }
-
-        private void SendResponse(
-            Player player, 
-            Player sourcePlayer, 
-            Vehicle vehicle, 
-            byte seat, 
-            byte door, 
-            VehicleInOutActionReturns action,
-            VehicleEnterFailReason failReason = VehicleEnterFailReason.Invalid,
-            Vector3? correctPosition = null
-        )
-        {
-            var replyPacket = new VehicleInOutPacket()
-            {
-                PlayerId = sourcePlayer.Id,
-                VehicleId = vehicle.Id,
-                Seat = seat,
-                Door = door,
-                OutActionId = action,
-                FailReason = failReason,
-                CorrectPosition = correctPosition ?? Vector3.Zero,
-            };
-            replyPacket.SendTo(player);
         }
     }
 }

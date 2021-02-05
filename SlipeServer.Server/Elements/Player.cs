@@ -47,9 +47,6 @@ namespace SlipeServer.Server.Elements
         public bool IsSyncingVelocity { get; set; }
         public bool IsStealthAiming { get; set; }
 
-        public VehicleAction VehicleAction { get; set; } = VehicleAction.None;
-        public Vehicle? JackingVehicle { get; set; }
-
         protected internal Player(Client client) : base(0, Vector3.Zero)
         {
             this.Client = client;
@@ -109,7 +106,11 @@ namespace SlipeServer.Server.Elements
 
         public void Kill(Element? damager, WeaponType damageType, BodyPart bodyPart, ulong animationGroup = 0, ulong animationId = 15)
         {
-            this.Wasted?.Invoke(this, new PlayerWastedEventArgs(this, damager, damageType, bodyPart, animationGroup, animationId));
+            this.RunAsSync(() =>
+            {
+                this.health = 0;
+                this.Wasted?.Invoke(this, new PlayerWastedEventArgs(this, damager, damageType, bodyPart, animationGroup, animationId));
+            });
         }
 
         public void Kill(WeaponType damageType = WeaponType.WEAPONTYPE_UNARMED, BodyPart bodyPart = BodyPart.Torso)

@@ -44,7 +44,7 @@ namespace SlipeServer.Server.Elements
 
         public bool IsTrailer => VehicleConstants.TrailerModels.Contains(this.Model);
 
-        public Player? JackingPlayer { get; set; }
+        public Ped? JackingPed { get; set; }
         public Ped? Driver
         {
             get
@@ -124,6 +124,9 @@ namespace SlipeServer.Server.Elements
             this.IsEngineOn = false;
             this.Blown?.Invoke(this, EventArgs.Empty);
         }
+
+        public virtual bool CanEnter(Ped ped) => true;
+        public virtual bool CanExit(Ped ped) => true;
 
         public event EventHandler? Blown;
     }

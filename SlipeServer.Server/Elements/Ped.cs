@@ -4,6 +4,7 @@ using System.Net;
 using SlipeServer.Packets.Definitions.Entities.Structs;
 using System.Numerics;
 using SlipeServer.Server.Elements.Events;
+using SlipeServer.Server.Enums;
 
 namespace SlipeServer.Server.Elements
 {
@@ -59,6 +60,12 @@ namespace SlipeServer.Server.Elements
         public PedClothing[] Clothes { get; set; }
         public PedWeapon[] Weapons { get; set; }
 
+        public bool IsAlive => health > 0;
+
+
+        public VehicleAction VehicleAction { get; set; } = VehicleAction.None;
+        public Vehicle? JackingVehicle { get; set; }
+
 
         public Ped(ushort model, Vector3 position): base()
         {
@@ -72,6 +79,23 @@ namespace SlipeServer.Server.Elements
         public new Ped AssociateWith(MtaServer server)
         {
             return server.AssociateElement(this);
+        }
+
+        public void WarpIntoVehicle(Vehicle vehicle)
+        {
+            if (!this.IsAlive || vehicle.Health <= 0)
+                return;
+
+            if (vehicle.Driver != null && vehicle.Driver.VehicleAction != VehicleAction.None)
+                return;
+
+            vehicle.Driver?.RemoveFromVehicle();
+             
+        }
+
+        public void RemoveFromVehicle()
+        {
+
         }
 
         public event ElementChangedEventHandler<Ped, ushort>? ModelChanged;
