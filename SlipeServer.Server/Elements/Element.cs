@@ -193,6 +193,11 @@ namespace SlipeServer.Server.Elements
             this.children.Remove(element);
         }
 
+        public bool IsChildOf(Element element)
+        {
+            return element != null && (this.parent == element || (this.parent != null && this.parent.IsChildOf(element)));
+        }
+
         public event ElementChangedEventHandler<Vector3>? PositionChanged;
         public event ElementChangedEventHandler<Vector3>? RotationChanged;
         public event ElementChangedEventHandler<Vector3>? VelocityChanged;

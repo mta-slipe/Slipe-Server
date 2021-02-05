@@ -139,6 +139,7 @@ namespace SlipeServer.Server
             this.RegisterPacketQueueHandler(this.Instantiate<T>(parameters));
         }
 
+        public object Instantiate(Type type) => ActivatorUtilities.CreateInstance(this.serviceProvider, type);
         public T Instantiate<T>() => ActivatorUtilities.CreateInstance<T>(this.serviceProvider);
         public T Instantiate<T>(params object[] parameters) 
             => ActivatorUtilities.CreateInstance<T>(this.serviceProvider, parameters);
@@ -162,6 +163,9 @@ namespace SlipeServer.Server
 
             this.ElementCreated?.Invoke(element);
 
+            if (element != root)
+                element.Parent = root;
+
             return element;
         }
 
@@ -177,7 +181,7 @@ namespace SlipeServer.Server
             this.serviceCollection.AddSingleton<ChatBox>();
             this.serviceCollection.AddSingleton<ClientConsole>();
             this.serviceCollection.AddSingleton<DebugLog>();
-            this.serviceCollection.AddSingleton<LuaService>();
+            this.serviceCollection.AddSingleton<LuaEventService>();
             this.serviceCollection.AddSingleton<ExplosionService>();
 
             this.serviceCollection.AddSingleton<HttpClient>();

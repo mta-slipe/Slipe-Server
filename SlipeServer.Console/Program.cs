@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SlipeServer.ConfigurationProviders;
 using SlipeServer.ConfigurationProviders.Configurations;
-using SlipeServer.Packets.Enums;
+using SlipeServer.Lua;
 using SlipeServer.Server;
 using SlipeServer.Server.AllSeeingEye;
 using SlipeServer.Server.Behaviour;
@@ -17,13 +17,21 @@ namespace SlipeServer.Console
     {
         static void Main(string[] args)
         {
+            Program? program = null;
             try
             {
-                new Program(args);
+                program = new Program(args);
+                program.Start();
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                System.Console.WriteLine(ex.Message);
+                if (program != null)
+                {
+                    program.Logger.LogCritical(exception, exception.Message);
+                } else
+                {
+                    System.Console.WriteLine($"Error in startup {exception.Message}");
+                }
                 System.Console.WriteLine("Press any key to exit...");
                 System.Console.ReadKey();
             }
@@ -32,8 +40,12 @@ namespace SlipeServer.Console
         private readonly EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
         private readonly MtaServer server;
 
+        public ILogger Logger { get; }
+
         public Program(string[] args)
         {
+            this.Logger = new ConsoleLogger();
+
             var configurationProvider = args.Length > 0 ? GetConfigurationProvider(args[0]) : null;
 
             Configuration? configuration = configurationProvider?.GetConfiguration();
@@ -62,20 +74,23 @@ namespace SlipeServer.Console
                 server.Stop();
                 waitHandle.Set();
             };
+        }
 
+        public void Start()
+        {
             SetupQueueHandlers();
             SetupBehaviour();
             SetupLogic();
 
             server.Start();
-            
             waitHandle.WaitOne();
         }
 
         private void Configure(ServiceCollection services)
         {
-            // Register additional services here to be injected into instances created with server.CreateInstance()
-            services.AddSingleton<ILogger, ConsoleLogger>();
+            services.AddSingleton<ILogger>(this.Logger);
+
+            services.AddLua();
         }
 
         private IConfigurationProvider GetConfigurationProvider(string configPath)
@@ -130,6 +145,7 @@ namespace SlipeServer.Console
         private void SetupLogic()
         {
             this.server.Instantiate<ServerTestLogic>();
+            this.server.Instantiate<LuaTestLogic>();
         }
     }
 }
