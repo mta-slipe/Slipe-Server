@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Definitions.Entities.Structs;
 using SlipeServer.Server.Constants;
+using SlipeServer.Server.Elements.Events;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -55,10 +56,10 @@ namespace SlipeServer.Server.Elements
             }
             set
             {
-                if (value == null)
-                    Occupants.Remove(0);
-                else
-                    Occupants[0] = value;
+                if (value == null && this.Driver != null)
+                    RemovePassenger(this.Driver, true);
+                else if (value != null)
+                    AddPassenger(0, value, true);
             }
         }
         public Dictionary<byte, Ped> Occupants { get; set; }
@@ -89,13 +90,28 @@ namespace SlipeServer.Server.Elements
             return null;
         }
 
-        public void RemovePassenger(Ped ped)
+        public void AddPassenger(byte seat, Ped ped, bool warpsIn = true)
+        {
+            this.Occupants.TryGetValue(seat, out Ped? occupant);
+            if (occupant != null)
+            {
+                RemovePassenger(occupant, true);
+            }
+            this.Occupants[seat] = ped;
+            ped.Vehicle = this;
+
+            this.PedEntered?.Invoke(this, new VehicleEnteredEventsArgs(ped, this, seat, warpsIn));
+        }
+
+        public void RemovePassenger(Ped ped, bool warpsOut = true)
         {
             if (this.Occupants.ContainsValue(ped))
             {
                 var item = this.Occupants.First(kvPair => kvPair.Value == ped);
 
                 this.Occupants.Remove(item.Key);
+
+                this.PedLeft?.Invoke(this, new VehicleLeftEventArgs(ped, this, item.Key, warpsOut));
             }
         }
 
@@ -129,5 +145,7 @@ namespace SlipeServer.Server.Elements
         public virtual bool CanExit(Ped ped) => true;
 
         public event EventHandler? Blown;
+        public event EventHandler<VehicleLeftEventArgs>? PedLeft;
+        public event EventHandler<VehicleEnteredEventsArgs>? PedEntered;
     }
 }

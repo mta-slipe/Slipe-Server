@@ -81,7 +81,12 @@ namespace SlipeServer.Server.Elements
             return server.AssociateElement(this);
         }
 
-        public void WarpIntoVehicle(Vehicle vehicle)
+        public void RemoveFromVehicle(bool warpOut = true)
+        {
+            this.Vehicle?.RemovePassenger(this, warpOut);
+        }
+
+        public void WarpIntoVehicle(Vehicle vehicle, byte seat = 0)
         {
             if (!this.IsAlive || vehicle.Health <= 0)
                 return;
@@ -89,13 +94,8 @@ namespace SlipeServer.Server.Elements
             if (vehicle.Driver != null && vehicle.Driver.VehicleAction != VehicleAction.None)
                 return;
 
-            vehicle.Driver?.RemoveFromVehicle();
+            vehicle.AddPassenger(seat, this, true);
              
-        }
-
-        public void RemoveFromVehicle()
-        {
-
         }
 
         public event ElementChangedEventHandler<Ped, ushort>? ModelChanged;

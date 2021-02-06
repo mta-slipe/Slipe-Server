@@ -140,6 +140,7 @@ namespace SlipeServer.Console
             server.Instantiate<ElementPacketBehaviour>();
             server.Instantiate<PedPacketBehaviour>();
             server.Instantiate<PlayerPacketBehaviour>();
+            server.Instantiate<VehicleWarpBehaviour>();
         }
 
         private void SetupLogic()

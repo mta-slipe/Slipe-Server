@@ -110,7 +110,16 @@ namespace SlipeServer.Console
                 TargetType = WeaponTargetType.Fixed,
                 TargetPosition = new Vector3(10, 10, 5)
             }.AssociateWith(server);
-            new Vehicle(602, new Vector3(-10, 5, 3)).AssociateWith(server);
+            var vehicle = new Vehicle(602, new Vector3(-10, 5, 3)).AssociateWith(server);
+
+            vehicle.PedEntered += async (sender, eventArgs) =>
+            {
+                if (eventArgs.Seat == 1)
+                {
+                    await Task.Delay(500);
+                    eventArgs.Vehicle.RemovePassenger(eventArgs.Ped);
+                }
+            };
         }
 
         private void OnPlayerJoin(Player player)
