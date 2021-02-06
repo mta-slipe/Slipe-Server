@@ -93,7 +93,7 @@ namespace SlipeServer.Server.Elements
         public void AddPassenger(byte seat, Ped ped, bool warpsIn = true)
         {
             this.Occupants.TryGetValue(seat, out Ped? occupant);
-            if (occupant != null)
+            if (occupant != null && occupant != ped)
             {
                 RemovePassenger(occupant, true);
             }
@@ -110,6 +110,7 @@ namespace SlipeServer.Server.Elements
                 var item = this.Occupants.First(kvPair => kvPair.Value == ped);
 
                 this.Occupants.Remove(item.Key);
+                ped.Vehicle = null;
 
                 this.PedLeft?.Invoke(this, new VehicleLeftEventArgs(ped, this, item.Key, warpsOut));
             }

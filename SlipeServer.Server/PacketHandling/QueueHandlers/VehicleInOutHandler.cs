@@ -151,6 +151,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                         return;
                     }
 
+                    client.Player.Seat = packet.Seat;
                     if (warpIn)
                     {
                         vehicle.AddPassenger(packet.Seat, client.Player, true);
@@ -179,6 +180,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                         return;
                     }
 
+                    client.Player.Seat = packet.Seat;
                     if (vehicle.Driver is Player player)
                     {
                         client.Player.VehicleAction = VehicleAction.Jacking;
@@ -215,6 +217,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                     return;
                 }
 
+                client.Player.Seat = packet.Seat;
                 client.Player.Vehicle = vehicle;
                 client.Player.VehicleAction = VehicleAction.Entering;
 
@@ -344,7 +347,6 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
             vehicle.RemovePassenger(client.Player, false);
 
-            vehicle.Occupants.Remove(packet.Seat);
             var replyPacket = new VehicleInOutPacket()
             {
                 PlayerId = client.Player.Id,
