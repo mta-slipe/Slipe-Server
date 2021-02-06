@@ -5,7 +5,6 @@ using SlipeServer.Server.Enums;
 using SlipeServer.Server.PacketHandling.Factories;
 using System;
 using System.Numerics;
-using System.Text.RegularExpressions;
 
 namespace SlipeServer.Server.Elements
 {
@@ -107,7 +106,11 @@ namespace SlipeServer.Server.Elements
 
         public void Kill(Element? damager, WeaponType damageType, BodyPart bodyPart, ulong animationGroup = 0, ulong animationId = 15)
         {
-            this.Wasted?.Invoke(this, new PlayerWastedEventArgs(this, damager, damageType, bodyPart, animationGroup, animationId));
+            this.RunAsSync(() =>
+            {
+                this.health = 0;
+                this.Wasted?.Invoke(this, new PlayerWastedEventArgs(this, damager, damageType, bodyPart, animationGroup, animationId));
+            });
         }
 
         public void Kill(WeaponType damageType = WeaponType.WEAPONTYPE_UNARMED, BodyPart bodyPart = BodyPart.Torso)

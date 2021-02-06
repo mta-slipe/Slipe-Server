@@ -1,7 +1,10 @@
 ﻿using SlipeServer.Packets.Definitions.Entities.Structs;
+using SlipeServer.Server.Constants;
+using SlipeServer.Server.Elements.Events;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
@@ -40,10 +43,28 @@ namespace SlipeServer.Server.Elements
         public VehicleHandling? Handling { get; set; }
         public VehicleSirenSet? Sirens { get; set; }
 
-        public Ped? Driver { get; set; }
-        public Dictionary<int, Ped> Occupants { get; set; }
+        public bool IsTrailer => VehicleConstants.TrailerModels.Contains(this.Model);
 
-        public Vehicle(ushort model, Vector3 position): base()
+        public Ped? JackingPed { get; set; }
+        public Ped? Driver
+        {
+            get
+            {
+                if (Occupants.ContainsKey(0))
+                    return Occupants[0];
+                return null;
+            }
+            set
+            {
+                if (value == null && this.Driver != null)
+                    RemovePassenger(this.Driver, true);
+                else if (value != null)
+                    AddPassenger(0, value, true);
+            }
+        }
+        public Dictionary<byte, Ped> Occupants { get; set; }
+
+        public Vehicle(ushort model, Vector3 position) : base()
         {
             this.Model = model;
             this.Position = position;
@@ -54,12 +75,64 @@ namespace SlipeServer.Server.Elements
             this.Upgrades = new VehicleUpgrade[0];
 
             this.Name = $"vehicle{this.Id}";
-            this.Occupants = new Dictionary<int, Ped>();
+            this.Occupants = new Dictionary<byte, Ped>();
         }
 
         public new Vehicle AssociateWith(MtaServer server)
         {
             return server.AssociateElement(this);
+        }
+
+        public Ped? GetOccupantInSeat(byte seat)
+        {
+            if (this.Occupants.ContainsKey(seat))
+                return this.Occupants[seat];
+            return null;
+        }
+
+        public void AddPassenger(byte seat, Ped ped, bool warpsIn = true)
+        {
+            this.Occupants.TryGetValue(seat, out Ped? occupant);
+            if (occupant != null && occupant != ped)
+            {
+                RemovePassenger(occupant, true);
+            }
+            this.Occupants[seat] = ped;
+            ped.Vehicle = this;
+
+            this.PedEntered?.Invoke(this, new VehicleEnteredEventsArgs(ped, this, seat, warpsIn));
+        }
+
+        public void RemovePassenger(Ped ped, bool warpsOut = true)
+        {
+            if (this.Occupants.ContainsValue(ped))
+            {
+                var item = this.Occupants.First(kvPair => kvPair.Value == ped);
+
+                this.Occupants.Remove(item.Key);
+                ped.Vehicle = null;
+
+                this.PedLeft?.Invoke(this, new VehicleLeftEventArgs(ped, this, item.Key, warpsOut));
+            }
+        }
+
+        public byte GetMaxPassengers()
+        {
+            if (VehicleConstants.SeatsPerVehicle.ContainsKey(this.Model))
+                return VehicleConstants.SeatsPerVehicle[this.Model];
+            return 4;
+        }
+
+        public byte? GetFreePassengerSeat()
+        {
+            for (byte seat = 1; seat < this.GetMaxPassengers(); seat++)
+            {
+                if (!this.Occupants.ContainsKey(seat))
+                {
+                    return seat;
+                }
+            }
+            return null;
         }
 
         public void BlowUp()
@@ -69,6 +142,11 @@ namespace SlipeServer.Server.Elements
             this.Blown?.Invoke(this, EventArgs.Empty);
         }
 
+        public virtual bool CanEnter(Ped ped) => true;
+        public virtual bool CanExit(Ped ped) => true;
+
         public event EventHandler? Blown;
+        public event EventHandler<VehicleLeftEventArgs>? PedLeft;
+        public event EventHandler<VehicleEnteredEventsArgs>? PedEntered;
     }
 }

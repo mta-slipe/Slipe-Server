@@ -4,6 +4,7 @@ using System.Net;
 using SlipeServer.Packets.Definitions.Entities.Structs;
 using System.Numerics;
 using SlipeServer.Server.Elements.Events;
+using SlipeServer.Server.Enums;
 
 namespace SlipeServer.Server.Elements
 {
@@ -49,7 +50,7 @@ namespace SlipeServer.Server.Elements
 
         public PlayerWeapon? CurrentWeapon { get; set; }
         public float PedRotation { get; set; } = 0;
-        public Element? Vehicle { get; set; }
+        public Vehicle? Vehicle { get; set; }
         public byte? Seat { get; set; }
         public bool HasJetpack { get; set; } = false;
         public bool IsSyncable { get; set; } = true;
@@ -58,6 +59,12 @@ namespace SlipeServer.Server.Elements
         public PedMoveAnimation MoveAnimation { get; set; } = 0;
         public PedClothing[] Clothes { get; set; }
         public PedWeapon[] Weapons { get; set; }
+
+        public bool IsAlive => health > 0;
+
+
+        public VehicleAction VehicleAction { get; set; } = VehicleAction.None;
+        public Vehicle? JackingVehicle { get; set; }
 
 
         public Ped(ushort model, Vector3 position): base()
@@ -72,6 +79,23 @@ namespace SlipeServer.Server.Elements
         public new Ped AssociateWith(MtaServer server)
         {
             return server.AssociateElement(this);
+        }
+
+        public void RemoveFromVehicle(bool warpOut = true)
+        {
+            this.Vehicle?.RemovePassenger(this, warpOut);
+        }
+
+        public void WarpIntoVehicle(Vehicle vehicle, byte seat = 0)
+        {
+            if (!this.IsAlive || vehicle.Health <= 0)
+                return;
+
+            if (vehicle.Driver != null && vehicle.Driver.VehicleAction != VehicleAction.None)
+                return;
+
+            vehicle.AddPassenger(seat, this, true);
+             
         }
 
         public event ElementChangedEventHandler<Ped, ushort>? ModelChanged;
