@@ -166,6 +166,17 @@ namespace SlipeServer.Console
                     this.explosionService.CreateExplosion(player.Position, ExplosionType.Tiny);
             };
 
+            player.AddWeapon(WeaponId.Ak47, 500, true);
+            player.AddWeapon(WeaponId.Tec9, 500, true);
+            player.AddWeapon(WeaponId.Sniper, 500, true);
+            player.AddWeapon(WeaponId.Deagle, 500, true);
+            player.AddWeapon(WeaponId.Golfclub, 500, true);
+
+            player.RemoveWeapon(WeaponId.Tec9, 500);
+            player.RemoveWeapon(WeaponId.Sniper);
+            player.RemoveWeapon(WeaponId.Deagle, 200);
+            player.SetAmmoCount(WeaponSlot.AssaultRifles, 750, 25);
+
             this.testResource?.StartFor(player);
         }
 

@@ -101,33 +101,59 @@ namespace SlipeServer.Server.Elements
             vehicle.AddPassenger(seat, this, true);    
         }
 
-        public void AddWeapon(WeaponId weaponId, ushort ammoCount, ushort inClip = 0)
+        public void AddWeapon(WeaponId weaponId, ushort ammoCount, bool setAsCurrent = false)
         {
             this.Weapons.Add(new Weapon()
             {
                 Type = weaponId,
                 Ammo = ammoCount,
-                AmmoInClip = inClip,
+                AmmoInClip = 0,
                 Slot = WeaponConstants.SlotPerWeapon[weaponId]
             });
+            this.WeaponReceived?.Invoke(this, new WeaponReceivedEventArgs(this, weaponId, ammoCount, setAsCurrent));
         }
 
-        public void RemoveWeapon(WeaponId weaponId)
+        public void RemoveWeapon(WeaponId weaponId, ushort? ammoCount = null)
         {
-            this.Weapons.RemoveAll(weapon => weapon.Type == weaponId);
+            var weapon = this.Weapons.FirstOrDefault(weapon => weapon.Type == weaponId);
+            if (weapon != null)
+            {
+                this.Weapons.Remove(weapon);
+                this.WeaponRemoved?.Invoke(this, new WeaponRemovedEventArgs(this, weaponId, ammoCount));
+            }
         }
 
-        public void SetAmmoCount(WeaponId weaponId, ushort count)
+        public void RemoveWeapon(WeaponSlot weaponSlot, ushort? ammoCount = null)
+        {
+            var weapon = this.Weapons.FirstOrDefault(weapon => weapon.Slot == weaponSlot);
+            RemoveWeapon(weapon.Type, ammoCount);
+        }
+
+        public void SetAmmoCount(WeaponId weaponId, ushort count, ushort? inClip)
         {
             var weapon = this.Weapons.FirstOrDefault(weapon => weapon.Type == weaponId);
             if (weapon != null)
             {
                 weapon.Ammo = count;
+                if (inClip != null)
+                {
+                    weapon.AmmoInClip = Math.Min(inClip.Value, count);
+                }
+                this.AmmoUpdated?.Invoke(this, new AmmoUpdateEventArgs(this, weaponId, count, inClip));
             }
+        }
+
+        public void SetAmmoCount(WeaponSlot weaponSlot, ushort count, ushort? inClip)
+        {
+            var weapon = this.Weapons.FirstOrDefault(weapon => weapon.Slot == weaponSlot);
+            SetAmmoCount(weapon.Type, count, inClip);
         }
 
         public event ElementChangedEventHandler<Ped, ushort>? ModelChanged;
         public event ElementChangedEventHandler<Ped, float>? HealthChanged;
         public event ElementChangedEventHandler<Ped, float>? ArmourChanged;
+        public event EventHandler<WeaponReceivedEventArgs>? WeaponReceived;
+        public event EventHandler<WeaponRemovedEventArgs>? WeaponRemoved;
+        public event EventHandler<AmmoUpdateEventArgs>? AmmoUpdated;
     }
 }
