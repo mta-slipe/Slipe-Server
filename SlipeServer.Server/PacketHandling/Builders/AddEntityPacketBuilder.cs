@@ -109,7 +109,7 @@ namespace SlipeServer.Server.PacketHandling.Builders
                 null, element.AreCollisionsEnabled, element.IsCallPropagationEnabled, new CustomData(), element.Name, element.TimeContext,
                 element.Position, element.Model, element.PedRotation, element.Health, element.Armor, element.Vehicle?.Id, element.Seat,
                 element.HasJetpack, element.IsSyncable, element.IsHeadless, element.IsFrozen, element.Alpha, (byte)element.MoveAnimation,
-                element.Clothes, element.Weapons, element.CurrentWeapon?.Slot ?? 0
+                element.Clothes, element.Weapons.Cast<PedWeapon>().ToArray(), (byte)(element.CurrentWeapon?.Slot ?? 0)
             );
         }
 
@@ -157,7 +157,7 @@ namespace SlipeServer.Server.PacketHandling.Builders
             );
         }
 
-        public void AddWeapon(Weapon element)
+        public void AddWeapon(WeaponObject element)
         {
             packet.AddWeapon(element.Id, (byte)element.ElementType, element.Parent?.Id ?? 0, element.Interior, element.Dimension,
                 null, element.AreCollisionsEnabled, element.IsCallPropagationEnabled, new CustomData(), element.Name, element.TimeContext,

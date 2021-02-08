@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SlipeServer.Net\SlipeServer.Net.csproj"/>
+    <ProjectReference Include="..\SlipeServer.Net\SlipeServer.Net.csproj" />
   </ItemGroup>
 
   <ItemGroup>

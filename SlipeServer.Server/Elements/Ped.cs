@@ -1,10 +1,14 @@
 ﻿using System;
 using SlipeServer.Packets;
 using System.Net;
-using SlipeServer.Packets.Definitions.Entities.Structs;
 using System.Numerics;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Enums;
+using SlipeServer.Server.Elements.Structs;
+using SlipeServer.Packets.Definitions.Entities.Structs;
+using System.Collections.Generic;
+using SlipeServer.Server.Constants;
+using System.Linq;
 
 namespace SlipeServer.Server.Elements
 {
@@ -48,7 +52,7 @@ namespace SlipeServer.Server.Elements
             }
         }
 
-        public PlayerWeapon? CurrentWeapon { get; set; }
+        public Weapon? CurrentWeapon { get; set; }
         public float PedRotation { get; set; } = 0;
         public Vehicle? Vehicle { get; set; }
         public byte? Seat { get; set; }
@@ -58,7 +62,7 @@ namespace SlipeServer.Server.Elements
         public bool IsFrozen { get; set; } = false;
         public PedMoveAnimation MoveAnimation { get; set; } = 0;
         public PedClothing[] Clothes { get; set; }
-        public PedWeapon[] Weapons { get; set; }
+        public List<Weapon> Weapons { get; set; }
 
         public bool IsAlive => health > 0;
 
@@ -73,7 +77,7 @@ namespace SlipeServer.Server.Elements
             this.Position = position;
 
             this.Clothes = new PedClothing[0];
-            this.Weapons = new PedWeapon[0];
+            this.Weapons = new List<Weapon>();
         }
 
         public new Ped AssociateWith(MtaServer server)
@@ -94,8 +98,32 @@ namespace SlipeServer.Server.Elements
             if (vehicle.Driver != null && vehicle.Driver.VehicleAction != VehicleAction.None)
                 return;
 
-            vehicle.AddPassenger(seat, this, true);
-             
+            vehicle.AddPassenger(seat, this, true);    
+        }
+
+        public void AddWeapon(WeaponId weaponId, ushort ammoCount, ushort inClip = 0)
+        {
+            this.Weapons.Add(new Weapon()
+            {
+                Type = weaponId,
+                Ammo = ammoCount,
+                AmmoInClip = inClip,
+                Slot = WeaponConstants.SlotPerWeapon[weaponId]
+            });
+        }
+
+        public void RemoveWeapon(WeaponId weaponId)
+        {
+            this.Weapons.RemoveAll(weapon => weapon.Type == weaponId);
+        }
+
+        public void SetAmmoCount(WeaponId weaponId, ushort count)
+        {
+            var weapon = this.Weapons.FirstOrDefault(weapon => weapon.Type == weaponId);
+            if (weapon != null)
+            {
+                weapon.Ammo = count;
+            }
         }
 
         public event ElementChangedEventHandler<Ped, ushort>? ModelChanged;

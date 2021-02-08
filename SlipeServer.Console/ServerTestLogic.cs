@@ -105,7 +105,7 @@ namespace SlipeServer.Console
             }.AssociateWith(server);
             new Pickup(new Vector3(0, 5, 3), PickupType.Health, 20).AssociateWith(server);
             new Ped(7, new Vector3(10, 0, 3)).AssociateWith(server);
-            new Weapon(355, new Vector3(10, 10, 5))
+            new WeaponObject(355, new Vector3(10, 10, 5))
             {
                 TargetType = WeaponTargetType.Fixed,
                 TargetPosition = new Vector3(10, 10, 5)
