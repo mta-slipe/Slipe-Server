@@ -74,7 +74,7 @@ namespace SlipeServer.Server.PacketHandling.Factories
                         break;
 
                     case ElementType.Weapon:
-                        if (element is Weapon weapon)
+                        if (element is WeaponObject weapon)
                             builder.AddWeapon(weapon);
                         break;
                 }

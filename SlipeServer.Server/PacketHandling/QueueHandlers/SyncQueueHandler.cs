@@ -2,6 +2,7 @@
 using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements.Structs;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.Repositories;
@@ -111,13 +112,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
                 player.ContactElement = this.elementRepository.Get(packet.ContactElementId);
 
-                player.CurrentWeapon = new PlayerWeapon()
-                {
-                    WeaponType = packet.WeaponType,
-                    Slot = packet.WeaponSlot,
-                    Ammo = packet.TotalAmmo,
-                    AmmoInClip = packet.AmmoInClip
-                };
+                player.CurrentWeapon = new Weapon((WeaponId)packet.WeaponType, packet.TotalAmmo, packet.AmmoInClip);
 
                 player.IsInWater = packet.SyncFlags.IsInWater;
                 player.IsOnGround = packet.SyncFlags.IsOnGround;

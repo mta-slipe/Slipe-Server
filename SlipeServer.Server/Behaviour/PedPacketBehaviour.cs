@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
+using SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.PacketHandling.Factories;
@@ -30,6 +31,9 @@ namespace SlipeServer.Server.Behaviour
                 ped.ModelChanged += RelayModelChange;
                 ped.HealthChanged += RelayHealthChange;
                 ped.ArmourChanged += RelayArmourChange;
+                ped.WeaponReceived += RelayPedWeaponReceive;
+                ped.WeaponRemoved += RelayPedWeaponRemove;
+                ped.AmmoUpdated += RelayPedAmmoCountUpdate;
             }
         }
 
@@ -49,6 +53,21 @@ namespace SlipeServer.Server.Behaviour
         {
             if (!args.IsSync)
                 this.server.BroadcastPacket(PedPacketFactory.CreateSetArmourPacket(args.Source));
+        }
+
+        private void RelayPedWeaponReceive(object? sender, WeaponReceivedEventArgs e)
+        {
+            this.server.BroadcastPacket(new GiveWeaponRpcPacket(e.Ped.Id, (byte)e.WeaponId, e.AmmoCount, e.SetAsCurrent));
+        }
+
+        private void RelayPedWeaponRemove(object? sender, WeaponRemovedEventArgs e)
+        {
+            this.server.BroadcastPacket(new TakeWeaponRpcPacket(e.Ped.Id, (byte)e.WeaponId, e.AmmoCount));
+        }
+
+        private void RelayPedAmmoCountUpdate(object? sender, AmmoUpdateEventArgs e)
+        {
+            this.server.BroadcastPacket(new SetAmmoCountRpcPacket(e.Ped.Id, (byte)e.WeaponId, e.AmmoCount, e.AmmoInClipCount));
         }
     }
 }

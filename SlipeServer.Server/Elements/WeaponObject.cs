@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace SlipeServer.Server.Elements
 {
-    public class Weapon : WorldObject
+    public class WeaponObject : WorldObject
     {
         public override ElementType ElementType => ElementType.Weapon;
 
@@ -37,12 +37,12 @@ namespace SlipeServer.Server.Elements
         public ushort ClipAmmo { get; set; } = 0;
         public Element? Owner { get; set; }
 
-        public Weapon(ushort model, Vector3 position) : base(model, position)
+        public WeaponObject(ushort model, Vector3 position) : base(model, position)
         {
 
         }
 
-        public new Weapon AssociateWith(MtaServer server)
+        public new WeaponObject AssociateWith(MtaServer server)
         {
             return server.AssociateElement(this);
         }
