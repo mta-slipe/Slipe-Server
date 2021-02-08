@@ -12,6 +12,7 @@ using SlipeServer.Packets.Lua.Event;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Enums;
+using SlipeServer.Server.Elements.Structs;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling;
@@ -23,6 +24,7 @@ using SlipeServer.Server.Services;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 
@@ -166,17 +168,28 @@ namespace SlipeServer.Console
                     this.explosionService.CreateExplosion(player.Position, ExplosionType.Tiny);
             };
 
-            player.AddWeapon(WeaponId.Ak47, 500, true);
-            player.AddWeapon(WeaponId.Tec9, 500, true);
-            player.AddWeapon(WeaponId.Sniper, 500, true);
-            player.AddWeapon(WeaponId.Deagle, 500, true);
-            player.AddWeapon(WeaponId.Golfclub, 500, true);
+            //player.AddWeapon(WeaponId.Ak47, 500, true);
+            //player.AddWeapon(WeaponId.Tec9, 500, true);
+            //player.AddWeapon(WeaponId.Sniper, 500, true);
+            //player.AddWeapon(WeaponId.Deagle, 500, true);
+            //player.AddWeapon(WeaponId.Golfclub, 500, true);
 
-            player.RemoveWeapon(WeaponId.Tec9, 500);
-            player.RemoveWeapon(WeaponId.Sniper);
-            player.RemoveWeapon(WeaponId.Deagle, 200);
-            player.SetAmmoCount(WeaponSlot.AssaultRifles, 750, 25);
+            //player.RemoveWeapon(WeaponId.Tec9, 500);
+            //player.RemoveWeapon(WeaponId.Sniper);
+            //player.RemoveWeapon(WeaponId.Deagle, 200);
+            //player.SetAmmoCount(WeaponSlot.AssaultRifles, 750, 25);
 
+            player.Weapons.Add(new Weapon(WeaponId.Ak47, 500));
+            player.Weapons.Add(new Weapon(WeaponId.Tec9, 500));
+            player.Weapons.Add(new Weapon(WeaponId.Sniper, 500));
+            player.Weapons.Add(new Weapon(WeaponId.Deagle, 500));
+            player.Weapons.Add(new Weapon(WeaponId.Golfclub, 500));
+            player.Weapons.Remove(WeaponId.Tec9);
+            player.Weapons.Remove(WeaponId.Sniper);
+            player.Weapons.First(weapon => weapon.Type == WeaponId.Deagle).Ammo -= 200;
+            player.Weapons.First(weapon => weapon.Type == WeaponId.Ak47).Ammo = 750;
+            player.Weapons.First(weapon => weapon.Type == WeaponId.Ak47).AmmoInClip = 25;
+            
             this.testResource?.StartFor(player);
         }
 

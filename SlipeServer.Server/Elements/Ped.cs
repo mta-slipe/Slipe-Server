@@ -9,6 +9,7 @@ using SlipeServer.Packets.Definitions.Entities.Structs;
 using System.Collections.Generic;
 using SlipeServer.Server.Constants;
 using System.Linq;
+using SlipeServer.Server.Collections;
 
 namespace SlipeServer.Server.Elements
 {
@@ -62,7 +63,7 @@ namespace SlipeServer.Server.Elements
         public bool IsFrozen { get; set; } = false;
         public PedMoveAnimation MoveAnimation { get; set; } = 0;
         public PedClothing[] Clothes { get; set; }
-        public List<Weapon> Weapons { get; set; }
+        public WeaponCollection Weapons { get; set; }
 
         public bool IsAlive => health > 0;
 
@@ -77,7 +78,10 @@ namespace SlipeServer.Server.Elements
             this.Position = position;
 
             this.Clothes = new PedClothing[0];
-            this.Weapons = new List<Weapon>();
+            this.Weapons = new WeaponCollection();
+            this.Weapons.WeaponAdded += (sender, args) => this.WeaponReceived?.Invoke(this, new WeaponReceivedEventArgs(this, args.Type, args.Ammo, false));
+            this.Weapons.WeaponRemoved += (sender, args) => this.WeaponRemoved?.Invoke(this, new WeaponRemovedEventArgs(this, args.Type, args.Ammo));
+            this.Weapons.WeaponAmmoUpdated += (sender, args) => this.AmmoUpdated?.Invoke(this, new AmmoUpdateEventArgs(this, args.Type, args.Ammo, args.AmmoInClip));
         }
 
         public new Ped AssociateWith(MtaServer server)
@@ -103,13 +107,7 @@ namespace SlipeServer.Server.Elements
 
         public void AddWeapon(WeaponId weaponId, ushort ammoCount, bool setAsCurrent = false)
         {
-            this.Weapons.Add(new Weapon()
-            {
-                Type = weaponId,
-                Ammo = ammoCount,
-                AmmoInClip = 0,
-                Slot = WeaponConstants.SlotPerWeapon[weaponId]
-            });
+            this.Weapons.Add(new Weapon(weaponId, ammoCount, null));
             this.WeaponReceived?.Invoke(this, new WeaponReceivedEventArgs(this, weaponId, ammoCount, setAsCurrent));
         }
 

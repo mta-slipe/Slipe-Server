@@ -112,13 +112,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
                 player.ContactElement = this.elementRepository.Get(packet.ContactElementId);
 
-                player.CurrentWeapon = new Weapon()
-                {
-                    Type = (WeaponId)packet.WeaponType,
-                    Slot = (WeaponSlot)packet.WeaponSlot,
-                    Ammo = packet.TotalAmmo,
-                    AmmoInClip = packet.AmmoInClip
-                };
+                player.CurrentWeapon = new Weapon((WeaponId)packet.WeaponType, packet.TotalAmmo, packet.AmmoInClip);
 
                 player.IsInWater = packet.SyncFlags.IsInWater;
                 player.IsOnGround = packet.SyncFlags.IsOnGround;
