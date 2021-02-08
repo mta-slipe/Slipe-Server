@@ -94,8 +94,8 @@ namespace SlipeServer.Packets.Definitions.Sync
 
                 if (slotsWithAmmo.Contains(this.WeaponSlot))
                 {
-                    this.TotalAmmo = reader.GetCompressedUint16();
-                    this.AmmoInClip = reader.GetCompressedUint16();
+                    this.TotalAmmo = reader.GetAmmo();
+                    this.AmmoInClip = reader.GetAmmo();
 
                     this.Arm = ((reader.GetUint16()) * MathF.PI / 180) / 90.0f;
 
@@ -152,8 +152,7 @@ namespace SlipeServer.Packets.Definitions.Sync
 
                 if (slotsWithAmmo.Contains(this.WeaponSlot))
                 {
-                    builder.WriteCompressed(this.TotalAmmo);
-                    builder.WriteCompressed(this.AmmoInClip);
+                    builder.WriteAmmo(this.TotalAmmo, this.AmmoInClip);
 
                     builder.Write(this.Arm * 90 * 180 * MathF.PI);
                     //this.Arm = ((reader.GetUint16()) * MathF.PI / 180) / 90.0f;
