@@ -1,4 +1,5 @@
 ﻿using SlipeServer.Server.Collections.Events;
+using SlipeServer.Server.Constants;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Structs;
 using SlipeServer.Server.Enums;
@@ -12,16 +13,16 @@ namespace SlipeServer.Server.Collections
 {
     public class WeaponCollection: IEnumerable<Weapon>
     {
-        private readonly List<Weapon> weapons;
+        private readonly Dictionary<WeaponSlot, Weapon> weapons;
 
         public WeaponCollection()
         {
-            this.weapons = new List<Weapon>();
+            this.weapons = new Dictionary<WeaponSlot, Weapon>();
         }
 
         public void Add(Weapon weapon)
         {
-            this.weapons.Add(weapon);
+            this.weapons[weapon.Slot] = weapon;
             this.WeaponAdded?.Invoke(this, weapon);
 
             weapon.AmmoUpdated += AmmoUpdated;
@@ -30,29 +31,34 @@ namespace SlipeServer.Server.Collections
 
         public void Remove(Weapon weapon)
         {
-            this.weapons.Remove(weapon);
-            this.WeaponRemoved?.Invoke(this, weapon);
+            Remove(weapon.Slot);
         }
 
         public void Remove(WeaponSlot slot)
         {
-            var weapon = this.weapons.FirstOrDefault(weapon => weapon.Slot == slot);
-            if (weapon != null)
-                Remove(weapon);
+            if (this.weapons.TryGetValue(slot, out var weapon))
+            {
+                this.weapons.Remove(slot);
+                this.WeaponRemoved?.Invoke(this, weapon);
+            }
         }
 
         public void Remove(WeaponId type)
         {
-            var weapon = this.weapons.FirstOrDefault(weapon => weapon.Type == type);
-            if (weapon != null)
-                Remove(weapon);
+            Remove(WeaponConstants.SlotPerWeapon[type]);
+        }
+
+        public Weapon? Get(WeaponSlot slot)
+        {
+            this.weapons.TryGetValue(slot, out var weapon);
+            return weapon;
         }
 
         private void AmmoInClipUpdated(object? sender, AmmoUpdateEventArgs e) => this.WeaponAmmoUpdated?.Invoke(this, e.Weapon);
         private void AmmoUpdated(object? sender, AmmoUpdateEventArgs e) => this.WeaponAmmoUpdated?.Invoke(this, e.Weapon);
 
-        public IEnumerator<Weapon> GetEnumerator() => this.weapons.GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator() => this.weapons.GetEnumerator();
+        public IEnumerator<Weapon> GetEnumerator() => this.weapons.Values.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => this.weapons.Values.GetEnumerator();
 
         public event EventHandler<Weapon>? WeaponAdded;
         public event EventHandler<Weapon>? WeaponRemoved;

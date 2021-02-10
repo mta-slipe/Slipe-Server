@@ -167,6 +167,14 @@ namespace SlipeServer.Console
                 if (args.Command == "boom")
                     this.explosionService.CreateExplosion(player.Position, ExplosionType.Tiny);
             };
+            player.OnCommand += (o, args) => {
+                if (args.Command == "m4")
+                    player.CurrentWeapon = new Weapon(WeaponId.M4, 500);
+            };
+            player.OnCommand += (o, args) => {
+                if (args.Command == "assault")
+                    player.CurrentWeaponSlot = WeaponSlot.AssaultRifles;
+            };
 
             //player.AddWeapon(WeaponId.Ak47, 500, true);
             //player.AddWeapon(WeaponId.Tec9, 500, true);

@@ -31,6 +31,7 @@ namespace SlipeServer.Server.Behaviour
                 ped.ModelChanged += RelayModelChange;
                 ped.HealthChanged += RelayHealthChange;
                 ped.ArmourChanged += RelayArmourChange;
+                ped.WeaponSlotChanged += RelayWeaponSlotChange;
                 ped.WeaponReceived += RelayPedWeaponReceive;
                 ped.WeaponRemoved += RelayPedWeaponRemove;
                 ped.AmmoUpdated += RelayPedAmmoCountUpdate;
@@ -53,6 +54,12 @@ namespace SlipeServer.Server.Behaviour
         {
             if (!args.IsSync)
                 this.server.BroadcastPacket(PedPacketFactory.CreateSetArmourPacket(args.Source));
+        }
+
+        private void RelayWeaponSlotChange(object sender, ElementChangedEventArgs<Ped, WeaponSlot> args)
+        {
+            if (!args.IsSync)
+                this.server.BroadcastPacket(new SetWeaponSlotRpcPacket(args.Source.Id, (byte)args.NewValue));
         }
 
         private void RelayPedWeaponReceive(object? sender, WeaponReceivedEventArgs e)
