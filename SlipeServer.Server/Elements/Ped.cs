@@ -53,7 +53,50 @@ namespace SlipeServer.Server.Elements
             }
         }
 
-        public Weapon? CurrentWeapon { get; set; }
+        private WeaponSlot currentWeaponSlot;
+        public WeaponSlot CurrentWeaponSlot
+        {
+            get => currentWeaponSlot;
+            set
+            {
+                var args = new ElementChangedEventArgs<Ped, WeaponSlot>(this, this.CurrentWeaponSlot, value, this.IsSync);
+                currentWeaponSlot = value;
+                WeaponSlotChanged?.Invoke(this, args);
+            }
+        }
+
+
+        public Weapon? CurrentWeapon
+        {
+            get => this.Weapons.Get(this.CurrentWeaponSlot);
+            set
+            {
+                if (value == null)
+                {
+                    this.currentWeaponSlot = WeaponSlot.Hand;
+                } else
+                {
+                    this.currentWeaponSlot = value.Slot;
+                    if (!this.Weapons.Any(w => w.Type == value.Type))
+                    {
+                        if (this.Weapons.Any(w => w.Slot == value.Slot))
+                            this.Weapons.Remove(value.Slot);
+
+                        this.Weapons.Add(value);
+                    } else
+                    {
+                        var weapon = this.Weapons.Get(value.Slot);
+                        if (weapon != null && weapon.Ammo != value.Ammo)
+                            weapon.Ammo = value.Ammo;
+                        if (weapon != null && weapon.AmmoInClip != value.AmmoInClip)
+                            weapon.AmmoInClip = value.AmmoInClip;
+
+                    }
+                    this.CurrentWeaponSlot = value.Slot;
+                }
+            }
+        }
+
         public float PedRotation { get; set; } = 0;
         public Vehicle? Vehicle { get; set; }
         public byte? Seat { get; set; }
@@ -150,6 +193,7 @@ namespace SlipeServer.Server.Elements
         public event ElementChangedEventHandler<Ped, ushort>? ModelChanged;
         public event ElementChangedEventHandler<Ped, float>? HealthChanged;
         public event ElementChangedEventHandler<Ped, float>? ArmourChanged;
+        public event ElementChangedEventHandler<Ped, WeaponSlot>? WeaponSlotChanged;
         public event EventHandler<WeaponReceivedEventArgs>? WeaponReceived;
         public event EventHandler<WeaponRemovedEventArgs>? WeaponRemoved;
         public event EventHandler<AmmoUpdateEventArgs>? AmmoUpdated;
