@@ -2,19 +2,21 @@
 using Moq;
 using SlipeServer.Net;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Server.Elements;
 using SlipeServer.Server.Resources.ResourceServing;
 using System;
 
 namespace SlipeServer.Server.TestTools
 {
-    public class TestingServer: MtaServer
+    public class TestingServer<TPlayer>: MtaServer where TPlayer: Player
     {
         public Mock<INetWrapper> NetWrapperMock { get; }
         private uint binaryAddressCounter;
+        private Func<Client, uint, TPlayer> playerCreationMethod;
 
-        public TestingServer(Configuration configuration = null
-        ) : base(configuration, ConfigureOverrides)
+        public TestingServer(Func<Client, uint, TPlayer> playerCreationMethod, Configuration configuration = null) : base(configuration, ConfigureOverrides)
         {
+            this.playerCreationMethod = playerCreationMethod;
             this.NetWrapperMock = new Mock<INetWrapper>();
             RegisterNetWrapper(NetWrapperMock.Object);
         }
@@ -25,11 +27,13 @@ namespace SlipeServer.Server.TestTools
             services.AddSingleton<IResourceServer>(httpServerMock.Object);
         }
 
-        public TestingPlayer AddFakePlayer()
+        public TPlayer AddFakePlayer()
         {
             var address = ++binaryAddressCounter;
             var client = new Client(address, this.NetWrapperMock.Object);
-            return new TestingPlayer(client, address).AssociateWith(this);
+            var player = this.playerCreationMethod(client, address);
+            player.AssociateWith(this);
+            return player;
         }
 
         public void HandlePacket(TestingPlayer source, PacketId packetId, byte[] data)
@@ -43,5 +47,13 @@ namespace SlipeServer.Server.TestTools
         }
 
         public uint GenerateBinaryAddress() => ++binaryAddressCounter;
+    }
+
+    public class TestingServer: TestingServer<TestingPlayer>
+    {
+        public TestingServer(Configuration configuration = null) : base((client, address) => new TestingPlayer(client, address), configuration)
+        {
+            
+        } 
     }
 }
