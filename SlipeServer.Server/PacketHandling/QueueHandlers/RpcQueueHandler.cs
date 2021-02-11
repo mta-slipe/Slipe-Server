@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlipeServer.Packets.Definitions.Join;
+using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Rpc;
 using SlipeServer.Server.Elements;
@@ -87,6 +88,8 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                     newPlayerListPacket.SendTo(otherPlayers);
 
                     this.server.HandlePlayerJoin(client.Player);
+
+                    SyncPacketFactory.CreateSyncSettingsPacket(this.configuration).SendTo(client.Player);
 
                     break;
                 default:
