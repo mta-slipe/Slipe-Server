@@ -1,5 +1,9 @@
 ﻿using SlipeServer.Server;
 using System.Xml;
+using System.Linq;
+using System.Collections;
+using System;
+using SlipeServer.Server.Enums;
 
 namespace SlipeServer.ConfigurationProviders.Configurations
 {
@@ -58,11 +62,43 @@ namespace SlipeServer.ConfigurationProviders.Configurations
 
                     case "ResourceDirectory":
                         configuration.ResourceDirectory = node.InnerText;
-                        break;    
+                        break;
 
                     case "ExplosionSyncDistance":
                         configuration.ExplosionSyncDistance = float.Parse(node.InnerText);
-                        break;                        
+                        break;
+
+                    case "BulletSyncEnabledWeapons":
+                        configuration.BulletSyncEnabledWeapons = node.ChildNodes.Cast<XmlNode>().Select(node => (WeaponId)Enum.Parse(typeof(XmlNode), node.InnerText)).ToArray();
+                        break;
+
+                    case "VehicleExtrapolationBaseMilliseconds":
+                        configuration.VehicleExtrapolationBaseMilliseconds = short.Parse(node.InnerText);
+                        break;
+
+                    case "VehicleExtrapolationPercentage":
+                        configuration.VehicleExtrapolationPercentage = short.Parse(node.InnerText);
+                        break;
+
+                    case "VehicleExtrapolationMaxMilliseconds":
+                        configuration.VehicleExtrapolationMaxMilliseconds = short.Parse(node.InnerText);
+                        break;
+
+                    case "UseAlternativePulseOrder":
+                        configuration.UseAlternativePulseOrder = bool.Parse(node.InnerText);
+                        break;
+
+                    case "AllowFastSprintFix":
+                        configuration.AllowFastSprintFix = bool.Parse(node.InnerText);
+                        break;
+
+                    case "AllowDriveByAnimationFix":
+                        configuration.AllowDriveByAnimationFix = bool.Parse(node.InnerText);
+                        break;
+
+                    case "AllowShotgunDamageFix":
+                        configuration.AllowShotgunDamageFix = bool.Parse(node.InnerText);
+                        break;
                 }
             }
         }
