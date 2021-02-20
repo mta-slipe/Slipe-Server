@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SlipeServer.Packets;
+using SlipeServer.Packets.Enums;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,6 +9,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 {
     public abstract class WorkerBasedQueueHandler : BaseQueueHandler
     {
+        protected abstract Dictionary<PacketId, Type> PacketTypes { get; }
         protected readonly int sleepInterval;
         private TaskCompletionSource<int>? pulseTaskCompletionSource;
 
@@ -26,7 +29,27 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             {
                 while (this.packetQueue.TryDequeue(out PacketQueueEntry queueEntry))
                 {
-                    HandlePacket(queueEntry);
+                    if (!this.PacketTypes.ContainsKey(queueEntry.PacketId))
+                    {
+                        throw new NotSupportedException($"Unsupported packet id {queueEntry.PacketId}");
+                    }
+
+                    try
+                    {
+                        var type = this.PacketTypes[queueEntry.PacketId];
+                        var packet = Activator.CreateInstance(type) as Packet;
+                        if (packet != null)
+                        {
+                            packet.Read(queueEntry.Data);
+                            HandlePacket(queueEntry.Client, packet);
+                        }
+                    } catch (Exception e)
+                    {
+                        if (!this.PacketTypes.ContainsKey(queueEntry.PacketId))
+                        {
+                            throw new NotSupportedException($"Error handling packet id {queueEntry.PacketId}", e);
+                        }
+                    }
                 }
 
                 if (this.pulseTaskCompletionSource != null)
@@ -39,7 +62,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             }
         }
 
-        protected abstract void HandlePacket(PacketQueueEntry queueEntry);
+        protected abstract void HandlePacket(Client client, Packet packet);
 
         public Task GetPulseTask()
         {

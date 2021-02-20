@@ -2,17 +2,12 @@
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
-using SlipeServer.Server.PacketHandling.Factories;
 using SlipeServer.Server.Repositories;
-using MTAServerWrapper.Packets.Outgoing.Connection;
 using System;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using SlipeServer.Server.Extensions;
-using System.Linq;
 using SlipeServer.Packets.Definitions.Player;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using SlipeServer.Packets;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers
 {
@@ -22,6 +17,11 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         private readonly MtaServer server;
         private readonly IElementRepository elementRepository;
         public override IEnumerable<PacketId> SupportedPacketIds => new PacketId[] { PacketId.PACKET_ID_PLAYER_WASTED };
+
+        protected override Dictionary<PacketId, Type> PacketTypes { get; } = new Dictionary<PacketId, Type>()
+        {
+            [PacketId.PACKET_ID_PLAYER_WASTED] = typeof(PlayerWastedPacket),
+        };
 
         public PlayerEventQueueHandler(
             ILogger logger,
@@ -36,22 +36,20 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             this.elementRepository = elementRepository;
         }
 
-        protected override void HandlePacket(PacketQueueEntry queueEntry)
+        protected override void HandlePacket(Client client, Packet packet)
         {
             try
             {
-                switch (queueEntry.PacketId)
+                switch (packet)
                 {
-                    case PacketId.PACKET_ID_PLAYER_WASTED:
-                        PlayerWastedPacket wastedPacket = new PlayerWastedPacket();
-                        wastedPacket.Read(queueEntry.Data);
-                        HandlePlayerWasted(queueEntry.Client, wastedPacket);
+                    case PlayerWastedPacket wastedPacket:
+                        HandlePlayerWasted(client, wastedPacket);
                         break;
                 }
             }
             catch (Exception e)
             {
-                this.logger.LogError($"Handling packet ({queueEntry.PacketId}) failed.\n{e.Message}");
+                this.logger.LogError($"Handling packet ({packet.PacketId}) failed.\n{e.Message}");
             }
         }
 

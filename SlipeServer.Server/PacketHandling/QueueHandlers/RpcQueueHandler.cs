@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
+using SlipeServer.Packets;
 using SlipeServer.Packets.Definitions.Join;
-using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Rpc;
 using SlipeServer.Server.Elements;
@@ -9,7 +9,6 @@ using SlipeServer.Server.PacketHandling.Factories;
 using SlipeServer.Server.Repositories;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers
@@ -22,6 +21,11 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         private readonly MtaServer server;
         private readonly RootElement root;
         public override IEnumerable<PacketId> SupportedPacketIds => new PacketId[] { PacketId.PACKET_ID_RPC };
+
+        protected override Dictionary<PacketId, Type> PacketTypes { get; } = new Dictionary<PacketId, Type>()
+        {
+            [PacketId.PACKET_ID_RPC] = typeof(RpcPacket),
+        };
 
         public RpcQueueHandler(
             ILogger logger, 
@@ -40,22 +44,20 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             this.configuration = configuration;
         }
 
-        protected override void HandlePacket(PacketQueueEntry queueEntry)
+        protected override void HandlePacket(Client client, Packet packet)
         {
             try
             {
-                switch (queueEntry.PacketId)
+                switch (packet)
                 {
-                    case PacketId.PACKET_ID_RPC:
-                        RpcPacket packet = new RpcPacket();
-                        packet.Read(queueEntry.Data);
-                        HandleRpc(queueEntry.Client, packet);
+                    case RpcPacket rpcPacket:
+                        HandleRpc(client, rpcPacket);
                         break;
                 }
             }
             catch (Exception e)
             {
-                this.logger.LogError($"Handling packet ({queueEntry.PacketId}) failed.\n{e.Message}");
+                this.logger.LogError($"Handling packet ({packet.PacketId}) failed.\n{e.Message}");
             }
         }
 

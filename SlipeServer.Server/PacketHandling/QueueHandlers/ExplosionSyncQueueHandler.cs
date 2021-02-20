@@ -1,18 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
+using SlipeServer.Packets;
 using SlipeServer.Packets.Definitions.Explosions;
-using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
-using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.Repositories;
-
-
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers
 {
@@ -23,6 +17,11 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         private readonly IElementRepository elementRepository;
 
         public override IEnumerable<PacketId> SupportedPacketIds => new PacketId[] { PacketId.PACKET_ID_EXPLOSION };
+
+        protected override Dictionary<PacketId, Type> PacketTypes { get; } = new Dictionary<PacketId, Type>()
+        {
+            [PacketId.PACKET_ID_EXPLOSION] = typeof(ExplosionPacket),
+        };
 
         public ExplosionSyncQueueHandler(
             Configuration configuration,
@@ -37,21 +36,19 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             this.elementRepository = elementRepository;
         }
 
-        protected override void HandlePacket(PacketQueueEntry queueEntry)
+        protected override void HandlePacket(Client client, Packet packet)
         {
             try
             { 
-                switch (queueEntry.PacketId)
+                switch (packet)
                 {
-                    case PacketId.PACKET_ID_EXPLOSION:
-                        ExplosionPacket explosioPacket = new ExplosionPacket();
-                        explosioPacket.Read(queueEntry.Data);
-                        HandleExplosionPacket(queueEntry.Client, explosioPacket);
+                    case ExplosionPacket explosionPacket:
+                        HandleExplosionPacket(client, explosionPacket);
                         break;
                 }
             } catch (Exception e)
             {
-                this.logger.LogError($"Handling packet ({queueEntry.PacketId}) failed.\n{e.Message}");
+                this.logger.LogError($"Handling packet ({packet.PacketId}) failed.\n{e.Message}");
             }
         }
 

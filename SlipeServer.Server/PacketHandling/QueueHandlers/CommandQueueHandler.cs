@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SlipeServer.Server.Elements;
 using Microsoft.Extensions.Logging;
+using SlipeServer.Packets;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers
 {
@@ -14,26 +15,29 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         private readonly ILogger logger;
         public override IEnumerable<PacketId> SupportedPacketIds => new PacketId[] { PacketId.PACKET_ID_COMMAND };
 
+        protected override Dictionary<PacketId, Type> PacketTypes { get; } = new Dictionary<PacketId, Type>()
+        {
+            [PacketId.PACKET_ID_COMMAND] = typeof(CommandPacket),
+        };
+
         public CommandQueueHandler(ILogger logger, int sleepInterval, int workerCount) : base(sleepInterval, workerCount)
         {
             this.logger = logger;
         }
 
-        protected override void HandlePacket(PacketQueueEntry queueEntry)
+        protected override void HandlePacket(Client client, Packet packet)
         {
             try
             {
-                switch (queueEntry.PacketId)
+                switch (packet)
                 {
-                    case PacketId.PACKET_ID_COMMAND:
-                        CommandPacket commandPacket = new CommandPacket();
-                        commandPacket.Read(queueEntry.Data);
-                        queueEntry.Client.Player.TriggerCommand(commandPacket.Command, commandPacket.Arguments);
+                    case CommandPacket commandPacket:
+                        client.Player.TriggerCommand(commandPacket.Command, commandPacket.Arguments);
                         break;
                 }
             } catch (Exception e)
             {
-                this.logger.LogError($"Handling packet ({queueEntry.PacketId}) failed.\n{e.Message}");
+                this.logger.LogError($"Handling packet ({packet.PacketId}) failed.\n{e.Message}");
             }
         }
 

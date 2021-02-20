@@ -1,19 +1,15 @@
 ﻿using Microsoft.Extensions.Logging;
+using SlipeServer.Packets;
 using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Constants;
 using SlipeServer.Server.Elements;
-using SlipeServer.Server.Elements.Structs;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.Repositories;
-
-
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers
 {
@@ -28,6 +24,13 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             PacketId.PACKET_ID_PLAYER_PURESYNC 
         };
 
+        protected override Dictionary<PacketId, Type> PacketTypes { get; } = new Dictionary<PacketId, Type>()
+        {
+            [PacketId.PACKET_ID_CAMERA_SYNC] = typeof(CameraSyncPacket),
+            [PacketId.PACKET_ID_PLAYER_KEYSYNC] = typeof(KeySyncPacket),
+            [PacketId.PACKET_ID_PLAYER_PURESYNC] = typeof(PlayerPureSyncPacket),
+        };
+
         public SyncQueueHandler(
             ILogger logger,
             IElementRepository elementRepository, 
@@ -39,31 +42,25 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             this.elementRepository = elementRepository;
         }
 
-        protected override void HandlePacket(PacketQueueEntry queueEntry)
+        protected override void HandlePacket(Client client, Packet packet)
         {
             try
             { 
-                switch (queueEntry.PacketId)
+                switch (packet)
                 {
-                    case PacketId.PACKET_ID_CAMERA_SYNC:
-                        CameraSyncPacket cameraPureSyncPacket = new CameraSyncPacket();
-                        cameraPureSyncPacket.Read(queueEntry.Data);
-                        HandleCameraSyncPacket(queueEntry.Client, cameraPureSyncPacket);
+                    case CameraSyncPacket cameraSyncPacket:
+                        HandleCameraSyncPacket(client, cameraSyncPacket);
                         break;
-                    case PacketId.PACKET_ID_PLAYER_KEYSYNC:
-                        KeySyncPacket keySyncPacket = new KeySyncPacket();
-                        keySyncPacket.Read(queueEntry.Data);
-                        HandleClientKeySyncPacket(queueEntry.Client, keySyncPacket);
+                    case KeySyncPacket keySyncPacket:
+                        HandleClientKeySyncPacket(client, keySyncPacket);
                         break;
-                    case PacketId.PACKET_ID_PLAYER_PURESYNC:
-                        PlayerPureSyncPacket playerPureSyncPacket = new PlayerPureSyncPacket();
-                        playerPureSyncPacket.Read(queueEntry.Data);
-                        HandleClientPureSyncPacket(queueEntry.Client, playerPureSyncPacket);
+                    case PlayerPureSyncPacket playerPureSyncPacket:
+                        HandleClientPureSyncPacket(client, playerPureSyncPacket);
                         break;
                 }
             } catch (Exception e)
             {
-                this.logger.LogError($"Handling packet ({queueEntry.PacketId}) failed.\n{e.Message}");
+                this.logger.LogError($"Handling packet ({packet.PacketId}) failed.\n{e.Message}");
             }
         }
 
