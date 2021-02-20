@@ -6,7 +6,7 @@ namespace SlipeServer.Net
 {
     public interface INetWrapper
     {
-        event Action<NetWrapper, uint, PacketId, byte[]>? PacketReceived;
+        event Action<NetWrapper, uint, PacketId, byte[], uint?>? PacketReceived;
 
         Tuple<string, string, string> GetClientSerialExtraAndVersion(uint binaryAddress);
         void SendPacket(uint binaryAddress, Packet packet);

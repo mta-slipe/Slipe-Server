@@ -39,7 +39,14 @@ bool NetWrapper::packetHandler(unsigned char ucPacketID, const NetServerPlayerID
         char buffer[4096];
         pBitStream->Read(buffer, byteCount);
 
-        registeredCallback(ucPacketID, Socket.GetBinaryAddress(), buffer, byteCount);
+        bool hasPing = false;
+        unsigned int ping = 0;
+        if (pNetExtraInfo != nullptr && pNetExtraInfo->m_bHasPing) {
+            hasPing = true;
+            ping = pNetExtraInfo->m_uiPing;
+        }
+
+        registeredCallback(ucPacketID, Socket.GetBinaryAddress(), buffer, byteCount, hasPing, ping);
     }
 
     return true;
@@ -93,7 +100,11 @@ BSTR NetWrapper::getClientSerialAndVersion(unsigned long address, uint16_t& seri
 void NetWrapper::testMethod() {
     NetBitStreamInterface* bitStream = network->AllocateNetServerBitStream(0);
     if (bitStream)
-    {
+    {        
+        char x[4];
+        registeredCallback(0, 0, x, 4, 1, 50);
+
+        std::cout << "TEST\n";
         //bitStream->WriteCompressed((ulong)0);
         //bitStream->WriteNormVector(0.5, 0.5, 0.5);
         //bitStream->Write(128.56f);
