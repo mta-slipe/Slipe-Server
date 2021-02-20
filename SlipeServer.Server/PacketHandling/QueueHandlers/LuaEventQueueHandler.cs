@@ -1,14 +1,11 @@
 ﻿using SlipeServer.Packets.Enums;
-using SlipeServer.Packets.Definitions.Commands;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using SlipeServer.Server.Elements;
 using SlipeServer.Packets.Lua.Event;
 using SlipeServer.Server.Repositories;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using SlipeServer.Packets;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers
 {
@@ -19,6 +16,11 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         private readonly ILogger logger;
         public override IEnumerable<PacketId> SupportedPacketIds => new PacketId[] { PacketId.PACKET_ID_LUA_EVENT };
 
+        protected override Dictionary<PacketId, Type> PacketTypes { get; } = new Dictionary<PacketId, Type>()
+        {
+            [PacketId.PACKET_ID_LUA_EVENT] = typeof(LuaEventPacket),
+        };
+
         public LuaEventQueueHandler(MtaServer server, IElementRepository elementRepository, ILogger logger, int sleepInterval, int workerCount) 
             : base(sleepInterval, workerCount)
         {
@@ -27,16 +29,13 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             this.logger = logger;
         }
 
-        protected override void HandlePacket(PacketQueueEntry queueEntry)
+        protected override void HandlePacket(Client client, Packet packet)
         {
             try
             {
-                switch (queueEntry.PacketId)
+                switch (packet)
                 {
-                    case PacketId.PACKET_ID_LUA_EVENT:
-                        LuaEventPacket eventPacket = new LuaEventPacket();
-                        eventPacket.Read(queueEntry.Data);
-
+                    case LuaEventPacket eventPacket:
                         var element = this.elementRepository.Get(eventPacket.ElementId);
                         if (element == null)
                         {
@@ -46,7 +45,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
                         this.server.HandleLuaEvent(new Events.LuaEvent()
                         {
-                            Player = queueEntry.Client.Player,
+                            Player = client.Player,
                             Name = eventPacket.Name,
                             Source = element,
                             Parameters = eventPacket.LuaValues.ToArray()
@@ -57,7 +56,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             }
             catch (Exception e)
             {
-                this.logger.LogError($"Handling packet ({queueEntry.PacketId}) failed.\n{e.Message}");
+                this.logger.LogError($"Handling packet ({packet.PacketId}) failed.\n{e.Message}");
             }
         }
 

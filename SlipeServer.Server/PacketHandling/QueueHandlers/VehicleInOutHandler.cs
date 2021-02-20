@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using SlipeServer.Packets;
 using SlipeServer.Packets.Definitions.Vehicles;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Constants;
@@ -19,6 +20,11 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         private readonly IElementRepository elementRepository;
         public override IEnumerable<PacketId> SupportedPacketIds => new PacketId[] { PacketId.PACKET_ID_VEHICLE_INOUT };
 
+        protected override Dictionary<PacketId, Type> PacketTypes { get; } = new Dictionary<PacketId, Type>()
+        {
+            [PacketId.PACKET_ID_VEHICLE_INOUT] = typeof(VehicleInOutPacket)
+        };
+
         public VehicleInOutHandler(
             ILogger logger,
             MtaServer server, 
@@ -32,22 +38,20 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             this.elementRepository = elementRepository;
         }
 
-        protected override void HandlePacket(PacketQueueEntry queueEntry)
+        protected override void HandlePacket(Client client, Packet packet)
         {
             try
             {
-                switch (queueEntry.PacketId)
+                switch (packet)
                 {
-                    case PacketId.PACKET_ID_VEHICLE_INOUT:
-                        VehicleInOutPacket inOutPacket = new VehicleInOutPacket();
-                        inOutPacket.Read(queueEntry.Data);
-                        HandleInOutPacket(queueEntry.Client, inOutPacket);
+                    case VehicleInOutPacket vehicleInOutPacket:
+                        HandleInOutPacket(client, vehicleInOutPacket);
                         break;
                 }
             }
             catch (Exception e)
             {
-                this.logger.LogError($"Handling packet ({queueEntry.PacketId}) failed.\n{e.Message}");
+                this.logger.LogError($"Handling packet ({packet.PacketId}) failed.\n{e.Message}");
             }
         }
 

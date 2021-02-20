@@ -26,6 +26,10 @@ namespace SlipeServer.Packets.Definitions.Join
         public bool IsVoiceEnabled { get; }
         public int VoiceQuality { get; }
 
+        public JoinedGamePacket()
+        {
+
+        }
         public JoinedGamePacket(
             uint clientId,
             int playerCount,
@@ -93,7 +97,7 @@ namespace SlipeServer.Packets.Definitions.Join
 
         public override void Read(byte[] bytes)
         {
-            throw new NotImplementedException();
+
         }
     }
 }
