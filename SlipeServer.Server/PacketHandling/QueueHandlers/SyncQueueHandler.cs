@@ -91,7 +91,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             client.SendPacket(new ReturnSyncPacket(packet.Position));
 
             packet.PlayerId = client.Player.Id;
-            packet.Latency = 0;
+            packet.Latency = (ushort)client.Ping;
 
             var otherPlayers = this.elementRepository
                 .GetByType<Player>(ElementType.Player)

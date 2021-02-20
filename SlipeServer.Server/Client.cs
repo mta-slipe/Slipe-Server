@@ -22,6 +22,7 @@ namespace SlipeServer.Server
         public string? Version { get; private set; }
         public IPAddress? IPAddress { get; set; }
         public bool IsConnected { get; internal set; }
+        public uint Ping { get; set; }
 
         public Client(uint binaryAddress, INetWrapper netWrapper)
         {

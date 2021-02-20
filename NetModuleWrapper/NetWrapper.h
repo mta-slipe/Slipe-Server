@@ -10,7 +10,7 @@
 #include <map>
 #include <iomanip>
 
-typedef void(__stdcall* PacketCallback)(unsigned char, unsigned long, char[], unsigned long);
+typedef void(__stdcall* PacketCallback)(unsigned char, unsigned long, char[], unsigned long, bool, unsigned int);
 
 class NetWrapper
 {

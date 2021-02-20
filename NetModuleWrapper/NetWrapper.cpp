@@ -39,7 +39,14 @@ bool NetWrapper::packetHandler(unsigned char ucPacketID, const NetServerPlayerID
         char buffer[4096];
         pBitStream->Read(buffer, byteCount);
 
-        registeredCallback(ucPacketID, Socket.GetBinaryAddress(), buffer, byteCount);
+        bool hasPing = false;
+        unsigned int ping = 0;
+        if (pNetExtraInfo != nullptr && pNetExtraInfo->m_bHasPing) {
+            hasPing = true;
+            ping = pNetExtraInfo->m_uiPing;
+        }
+
+        registeredCallback(ucPacketID, Socket.GetBinaryAddress(), buffer, byteCount, hasPing, ping);
     }
 
     return true;

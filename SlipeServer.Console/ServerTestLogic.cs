@@ -1,22 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
-using MTAServerWrapper.Packets.Outgoing.Connection;
-using SlipeServer.Packets.Definitions.Commands;
-using SlipeServer.Packets.Definitions.Join;
 using SlipeServer.Packets.Definitions.Lua;
-using SlipeServer.Packets.Definitions.Lua.Rpc.World;
-using SlipeServer.Packets.Definitions.Player;
-using SlipeServer.Packets.Definitions.Resources;
-using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Packets.Lua.Camera;
-using SlipeServer.Packets.Lua.Event;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Structs;
 using SlipeServer.Server.Enums;
-using SlipeServer.Server.Extensions;
-using SlipeServer.Server.PacketHandling;
-using SlipeServer.Server.PacketHandling.Factories;
 using SlipeServer.Server.Repositories;
 using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.ResourceServing;
@@ -43,6 +32,7 @@ namespace SlipeServer.Console
         private readonly ClientConsole console;
         private readonly LuaEventService luaService;
         private readonly ExplosionService explosionService;
+        private readonly FireService fireService;
         private Resource? testResource;
 
         public ServerTestLogic(
@@ -56,7 +46,8 @@ namespace SlipeServer.Console
             ChatBox chatBox,
             ClientConsole console,
             LuaEventService luaService,
-            ExplosionService explosionService
+            ExplosionService explosionService,
+            FireService fireService
         )
         {
             this.server = server;
@@ -70,6 +61,7 @@ namespace SlipeServer.Console
             this.console = console;
             this.luaService = luaService;
             this.explosionService = explosionService;
+            this.fireService = fireService;
             this.SetupTestLogic();
         }
 
@@ -166,14 +158,18 @@ namespace SlipeServer.Console
             player.OnCommand += (o, args) => {
                 if (args.Command == "boom")
                     this.explosionService.CreateExplosion(player.Position, ExplosionType.Tiny);
-            };
-            player.OnCommand += (o, args) => {
+
                 if (args.Command == "m4")
                     player.CurrentWeapon = new Weapon(WeaponId.M4, 500);
-            };
-            player.OnCommand += (o, args) => {
+
                 if (args.Command == "assault")
                     player.CurrentWeaponSlot = WeaponSlot.AssaultRifles;
+
+                if (args.Command == "fire")
+                    this.fireService.CreateFire(player.Position);
+
+                if (args.Command == "ping")
+                    chatBox.OutputTo(player, $"Your ping is {player.Client.Ping}", Color.YellowGreen);
             };
 
             //player.AddWeapon(WeaponId.Ak47, 500, true);

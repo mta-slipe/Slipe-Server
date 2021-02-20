@@ -14,7 +14,7 @@ namespace SlipeServer.Net
         const string wrapperDllpath = @"NetModuleWrapper";
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        delegate void PacketCallback(byte packetId, uint binaryAddress, IntPtr payload, uint payloadSize);
+        delegate void PacketCallback(byte packetId, uint binaryAddress, IntPtr payload, uint payloadSize, bool hasPing, uint ping);
 
 
         [DllImport(wrapperDllpath, EntryPoint = "initNetWrapper")]
@@ -114,17 +114,17 @@ namespace SlipeServer.Net
             SetSocketVersion(this.id, binaryAddress, version);
         }
 
-        void PacketInterceptor(byte packetId, uint binaryAddress, IntPtr payload, uint payloadSize)
+        void PacketInterceptor(byte packetId, uint binaryAddress, IntPtr payload, uint payloadSize, bool hasPing, uint ping)
         {
             byte[] data = new byte[payloadSize];
             Marshal.Copy(payload, data, 0, (int)payloadSize);
 
             PacketId parsedPacketId = (PacketId)packetId;
 
-            this.PacketReceived?.Invoke(this, binaryAddress, parsedPacketId, data);
+            this.PacketReceived?.Invoke(this, binaryAddress, parsedPacketId, data, hasPing ? ping : (uint?)null);
         }
 
-        public event Action<NetWrapper, uint, PacketId, byte[]>? PacketReceived;
+        public event Action<NetWrapper, uint, PacketId, byte[], uint?>? PacketReceived;
 
     }
 }

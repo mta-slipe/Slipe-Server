@@ -3,7 +3,6 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
 
@@ -20,7 +19,7 @@ namespace SlipeServer.Server.Services
 
         public void CreateExplosion(Vector3 position, ExplosionType type, Player? responsiblePlayer = null)
         {
-            var packet = new ExplosionPacket(responsiblePlayer?.Id, null, position, (byte)type, 0);
+            var packet = new ExplosionPacket(responsiblePlayer?.Id, null, position, (byte)type, (ushort)(responsiblePlayer?.Client.Ping ?? 0));
             server.BroadcastPacket(packet);
         }
 
@@ -31,7 +30,7 @@ namespace SlipeServer.Server.Services
             Player? responsiblePlayer = null
         )
         {
-            var packet = new ExplosionPacket(responsiblePlayer?.Id, null, position, (byte)type, 0);
+            var packet = new ExplosionPacket(responsiblePlayer?.Id, null, position, (byte)type, (ushort)(responsiblePlayer?.Client.Ping ?? 0));
             packet.SendTo(players);
         }
     }

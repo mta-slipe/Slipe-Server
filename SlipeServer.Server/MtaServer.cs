@@ -183,6 +183,7 @@ namespace SlipeServer.Server
             this.serviceCollection.AddSingleton<DebugLog>();
             this.serviceCollection.AddSingleton<LuaEventService>();
             this.serviceCollection.AddSingleton<ExplosionService>();
+            this.serviceCollection.AddSingleton<FireService>();
 
             this.serviceCollection.AddSingleton<HttpClient>();
             this.serviceCollection.AddSingleton<Configuration>(this.configuration);
@@ -205,7 +206,7 @@ namespace SlipeServer.Server
             this.clients[netWrapper] = new Dictionary<uint, Client>();
         }
 
-        private void EnqueueIncomingPacket(INetWrapper netWrapper, uint binaryAddress, PacketId packetId, byte[] data)
+        private void EnqueueIncomingPacket(INetWrapper netWrapper, uint binaryAddress, PacketId packetId, byte[] data, uint? ping)
         {
             if (!this.clients[netWrapper].ContainsKey(binaryAddress))
             {
@@ -216,6 +217,9 @@ namespace SlipeServer.Server
                 this.clients[netWrapper][binaryAddress] = client;
                 ClientConnected?.Invoke(client);
             }
+
+            if (ping != null)
+                this.clients[netWrapper][binaryAddress].Ping = ping.Value;
 
             this.packetReducer.EnqueuePacket(this.clients[netWrapper][binaryAddress], packetId, data);
 
