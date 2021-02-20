@@ -100,11 +100,7 @@ BSTR NetWrapper::getClientSerialAndVersion(unsigned long address, uint16_t& seri
 void NetWrapper::testMethod() {
     NetBitStreamInterface* bitStream = network->AllocateNetServerBitStream(0);
     if (bitStream)
-    {        
-        char x[4];
-        registeredCallback(0, 0, x, 4, 1, 50);
-
-        std::cout << "TEST\n";
+    {
         //bitStream->WriteCompressed((ulong)0);
         //bitStream->WriteNormVector(0.5, 0.5, 0.5);
         //bitStream->Write(128.56f);
