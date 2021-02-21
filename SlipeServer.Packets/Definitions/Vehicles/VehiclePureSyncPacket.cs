@@ -5,6 +5,7 @@ using SlipeServer.Packets.Reader;
 using SlipeServer.Packets.Structures;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Vehicles
@@ -18,6 +19,8 @@ namespace SlipeServer.Packets.Definitions.Vehicles
         public override PacketPriority Priority => PacketPriority.Medium;
 
 
+        public uint PlayerId { get; set; }
+        public ushort Latency { get; set; }
         public byte TimeContext { get; set; }
         public int RemoteModel { get; set; }
         public FullKeySyncStructure KeySync { get; set; } = new FullKeySyncStructure();
@@ -46,6 +49,8 @@ namespace SlipeServer.Packets.Definitions.Vehicles
         public List<TrailerSync> Trailers { get; set; }
         public Vector2? TurretRotation { get; set; }
         public ushort? AdjustableProperty { get; set; }
+        public ushort? LeftShoulder2 { get; set; }
+        public ushort? RightShoulder2 { get; set; }
 
         public VehiclePureSyncPacket()
         {
@@ -137,17 +142,91 @@ namespace SlipeServer.Packets.Definitions.Vehicles
                 {
                     this.AdjustableProperty = reader.GetUint16();
                 }
+
+
             }
 
             if (this.VehiclePureSyncFlags.IsAircraft)
             {
-                // read look left and look right
+                this.LeftShoulder2 = reader.GetBit() ? (ushort)255 : (ushort)0;
+                this.RightShoulder2 = reader.GetBit() ? (ushort)255 : (ushort)0;
             }
         }
 
         public override byte[] Write()
         {
             var builder = new PacketBuilder();
+
+            builder.WriteElementId(this.PlayerId);
+            builder.Write(this.TimeContext);
+            builder.Write(this.Latency);
+            this.KeySync.Write(builder);
+            builder.Write((int)this.RemoteModel);
+
+            if (this.Seat == 0)
+            {
+                builder.WriteVector3WithZAsFloat(this.Position);
+                bool isTrain = false;
+                if (isTrain)
+                {
+
+                }
+
+                builder.WriteVehicleRotation(this.Rotation);
+                builder.WriteVelocityVector(this.Velocity);
+                builder.WriteVelocityVector(this.TurnVelocity);
+                builder.WriteVehicleHealth(this.Health);
+
+                var trailers = new Queue<TrailerSync>(this.Trailers);
+                while (trailers.Any())
+                {
+                    builder.Write(true);
+                    var trailer = trailers.Dequeue();
+                    builder.WriteElementId(trailer.Id);
+                    builder.WriteVector3WithZAsFloat(trailer.Position);
+                    builder.WriteVehicleRotation(trailer.Rotation);
+                }
+                builder.Write(false);
+            }
+
+            builder.WritePlayerHealth(this.PlayerHealth);
+            builder.WritePlayerArmor(this.PlayerArmor);
+
+            this.VehiclePureSyncFlags.Write(builder);
+
+            if (this.VehiclePureSyncFlags.HasAWeapon)
+            {
+                builder.WriteWeaponSlot(this.WeaponSlot ?? 0);
+                if (this.VehiclePureSyncFlags.IsDoingGangDriveby && WeaponConstants.weaponsWithAmmo.Contains(this.WeaponSlot ?? 0))
+                {
+                    builder.WriteAmmo(this.WeaponAmmo, this.WeaponAmmoInClip);
+
+                    builder.Write((ushort)(this.AimArm * 90 * 180 * MathF.PI));
+                    builder.Write(this.AimOrigin.Value);
+                    builder.WriteNormalizedVector(this.AimDirection.Value);
+                    builder.Write((byte)this.VehicleAimDirection);
+                }
+            }
+
+            if (this.Seat == 0)
+            {
+                if (VehicleConstants.VehiclesWithTurrets.Contains(this.RemoteModel) && this.TurretRotation.HasValue)
+                {
+                    builder.WriteTurretRotation(this.TurretRotation.Value);
+                }
+                if (VehicleConstants.VehiclesWithAdjustableProperties.Contains(this.RemoteModel) && this.AdjustableProperty.HasValue)
+                {
+                    builder.Write(this.AdjustableProperty);
+                }
+            }
+
+            if (this.VehiclePureSyncFlags.IsAircraft)
+            {
+                builder.Write(this.LeftShoulder2 != 0);
+                builder.Write(this.RightShoulder2 != 0);
+            }
+
+            builder.WriteCapped(0, 4);
 
             return builder.Build();
         }

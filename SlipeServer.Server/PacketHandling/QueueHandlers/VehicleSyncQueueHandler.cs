@@ -59,13 +59,13 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         {
             client.SendPacket(new ReturnSyncPacket(packet.Position));
 
-            //packet.PlayerId = client.Player.Id;
-            //packet.Latency = (ushort)client.Ping;
+            packet.PlayerId = client.Player.Id;
+            packet.Latency = (ushort)client.Ping;
 
-            //var otherPlayers = this.elementRepository
-            //    .GetByType<Player>(ElementType.Player)
-            //    .Where(p => p.Client != client);
-            //packet.SendTo(otherPlayers);
+            var otherPlayers = this.elementRepository
+                .GetByType<Player>(ElementType.Player)
+                .Where(p => p.Client != client);
+            packet.SendTo(otherPlayers);
 
             var player = client.Player;
             player.RunAsSync(() =>
@@ -108,6 +108,12 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                     vehicle.Health = packet.Health;
                     vehicle.Velocity = packet.Velocity;
                     vehicle.TurnVelocity = packet.TurnVelocity;
+
+                    if (packet.TurretRotation.HasValue)
+                        vehicle.TurretRotation = packet.TurretRotation;
+
+                    if (packet.AdjustableProperty.HasValue)
+                        vehicle.AdjustableProperty = packet.AdjustableProperty;
                 });
             }
         }

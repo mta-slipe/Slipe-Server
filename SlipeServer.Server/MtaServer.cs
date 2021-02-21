@@ -231,7 +231,9 @@ namespace SlipeServer.Server
             {
                 this.clients[netWrapper][binaryAddress].IsConnected = false;
                 ClientDisconnected?.Invoke(this.clients[netWrapper][binaryAddress]);
+                this.clients[netWrapper][binaryAddress].Player.Destroy();
                 this.clients[netWrapper].Remove(binaryAddress);
+
             }
         }
 

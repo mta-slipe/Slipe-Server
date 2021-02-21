@@ -64,6 +64,11 @@ namespace SlipeServer.Console
             System.Console.ResetColor();
 
             System.Console.WriteLine($" {this.prefix}{formatter(state, exception)}");
+
+            if (exception != null)
+            {
+                System.Console.WriteLine($" {this.prefix}{exception.StackTrace}");
+            }
         }
     }
 }

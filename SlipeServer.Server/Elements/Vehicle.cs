@@ -23,7 +23,7 @@ namespace SlipeServer.Server.Elements
         public byte Variant2 { get; set; } = 0;
 
         private Vector2? turretDirection;
-        public Vector2? TurretDirection
+        public Vector2? TurretRotation
         {
             get => VehicleConstants.TurretModels.Contains((VehicleModel)this.Model) ? turretDirection ?? Vector2.Zero : null;
             set => this.turretDirection = value;

@@ -151,7 +151,7 @@ namespace SlipeServer.Server.PacketHandling.Builders
             packet.AddVehicle(element.Id, (byte)element.ElementType, element.Parent?.Id ?? 0, element.Interior, element.Dimension,
                 null, element.AreCollisionsEnabled, element.IsCallPropagationEnabled, new CustomData(), element.Name, element.TimeContext,
                 element.Position, element.Rotation, element.Model, element.Health, element.Colors, element.PaintJob, element.Damage, element.Variant1,
-                element.Variant2, element.TurretDirection, element.AdjustableProperty, VehicleConstants.DoorsPerVehicle[(VehicleModel)element.Model] > 0 ? element.DoorRatios : new float[0], element.Upgrades.Select(u => (byte)u).ToArray(), element.PlateText, 
+                element.Variant2, element.TurretRotation, element.AdjustableProperty, VehicleConstants.DoorsPerVehicle[(VehicleModel)element.Model] > 0 ? element.DoorRatios : new float[0], element.Upgrades.Select(u => (byte)u).ToArray(), element.PlateText, 
                 element.OverrideLights, element.IsLandingGearDown, element.IsSirenActive, element.IsFuelTankExplodable, element.IsEngineOn, element.IsLocked, 
                 element.AreDoorsUndamageable, element.IsDamageProof, element.IsFrozen, element.IsDerailed, element.IsDerailable, element.TrainDirection, element.IsTaxiLightOn, 
                 element.Alpha, element.HeadlightColor, element.Handling, element.Sirens
