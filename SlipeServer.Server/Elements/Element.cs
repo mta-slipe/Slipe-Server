@@ -83,6 +83,18 @@ namespace SlipeServer.Server.Elements
             }
         }
 
+        protected Vector3 turnVelocity;
+        public Vector3 TurnVelocity
+        {
+            get => turnVelocity;
+            set
+            {
+                var args = new ElementChangedEventArgs<Vector3>(this, this.TurnVelocity, value, this.IsSync);
+                turnVelocity = value;
+                TurnVelocityChanged?.Invoke(this, args);
+            }
+        }
+
         protected byte interior;
         public byte Interior
         {
@@ -200,6 +212,7 @@ namespace SlipeServer.Server.Elements
         public event ElementChangedEventHandler<Vector3>? PositionChanged;
         public event ElementChangedEventHandler<Vector3>? RotationChanged;
         public event ElementChangedEventHandler<Vector3>? VelocityChanged;
+        public event ElementChangedEventHandler<Vector3>? TurnVelocityChanged;
         public event ElementChangedEventHandler<byte>? InteriorChanged;
         public event ElementChangedEventHandler<ushort>? DimensionChanged;
         public event ElementChangedEventHandler<byte>? AlphaChanged;

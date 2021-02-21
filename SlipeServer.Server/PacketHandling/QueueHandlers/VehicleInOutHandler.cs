@@ -122,7 +122,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             bool warpIn = false;
 
             if (
-                (client.Player.IsInWater || packet.IsOnWater) && VehicleConstants.WaterEntryVehicles.Contains(vehicle.Model) ||
+                (client.Player.IsInWater || packet.IsOnWater) && VehicleConstants.WaterEntryVehicles.Contains((VehicleModel)vehicle.Model) ||
                 vehicle.Model == 464
             ) 
             {

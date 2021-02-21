@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SlipeServer.Packets.Enums
 {
-    public enum VehicleAimDirection
+    public enum VehicleAimDirection: byte
     {
         Forwards,
         Left,
