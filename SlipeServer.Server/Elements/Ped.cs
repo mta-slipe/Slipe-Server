@@ -115,9 +115,9 @@ namespace SlipeServer.Server.Elements
         public Vehicle? JackingVehicle { get; set; }
 
 
-        public Ped(ushort model, Vector3 position): base()
+        public Ped(PedModelId model, Vector3 position): base()
         {
-            this.Model = model;
+            this.Model = (ushort) model;
             this.Position = position;
 
             this.Clothes = new PedClothing[0];
