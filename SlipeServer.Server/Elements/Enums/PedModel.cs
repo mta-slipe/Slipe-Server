@@ -1,6 +1,10 @@
-namespace SlipeServer.Server.Enums
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace SlipeServer.Server.Elements.Enums
 {
-    public enum PedModelId
+    public enum PedModel
     { 
         Wmymech = 50,
         Vmaff2 = 125,
