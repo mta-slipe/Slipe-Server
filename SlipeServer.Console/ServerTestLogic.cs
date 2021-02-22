@@ -99,9 +99,9 @@ namespace SlipeServer.Console
             }.AssociateWith(server);
             new Pickup(new Vector3(0, 5, 3), PickupType.Health, 20).AssociateWith(server);
             
-            var enumLength = Enum.GetNames(typeof(PedModelId)).Length;
-            PedModelId randomPedId = (PedModelId) new Random().Next(enumLength);
-            new Ped(randomPedId, new Vector3(10, 0, 3)).AssociateWith(server);
+            var enumLength = Enum.GetNames(typeof(PedModel)).Length;
+            PedModel randomPedModel = (PedModel) new Random().Next(enumLength);
+            new Ped(randomPedModel, new Vector3(10, 0, 3)).AssociateWith(server);
             
             new WeaponObject(355, new Vector3(10, 10, 5))
             {
