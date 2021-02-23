@@ -98,7 +98,11 @@ namespace SlipeServer.Console
                 Color = Color.FromArgb(100, Color.Cyan)
             }.AssociateWith(server);
             new Pickup(new Vector3(0, 5, 3), PickupType.Health, 20).AssociateWith(server);
-            new Ped(7, new Vector3(10, 0, 3)).AssociateWith(server);
+            
+            var enumLength = Enum.GetNames(typeof(PedModel)).Length;
+            PedModel randomPedModel = (PedModel) new Random().Next(enumLength);
+            new Ped(randomPedModel, new Vector3(10, 0, 3)).AssociateWith(server);
+            
             new WeaponObject(355, new Vector3(10, 10, 5))
             {
                 TargetType = WeaponTargetType.Fixed,
