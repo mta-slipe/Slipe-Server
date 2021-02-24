@@ -4666,4 +4666,15 @@ namespace SlipeServer.Server.Enums
         SFNvilla001CM = 9339,
         #endregion 
     }
+    
+    public class WorldModel
+    {
+        public ushort Id { get; set; }
+        
+        public WorldModel(ObjectModel model)
+        {
+            this.Id = (ushort)model;
+        }
+    }
+
 }
