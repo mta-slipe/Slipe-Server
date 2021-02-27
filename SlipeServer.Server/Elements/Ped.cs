@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using SlipeServer.Server.Constants;
 using System.Linq;
 using SlipeServer.Server.Collections;
+using SlipeServer.Server.Elements.Enums;
 
 namespace SlipeServer.Server.Elements
 {
@@ -115,9 +116,9 @@ namespace SlipeServer.Server.Elements
         public Vehicle? JackingVehicle { get; set; }
 
 
-        public Ped(ushort model, Vector3 position): base()
+        public Ped(PedModel model, Vector3 position): base()
         {
-            this.Model = model;
+            this.Model = (ushort) model;
             this.Position = position;
 
             this.Clothes = new PedClothing[0];
