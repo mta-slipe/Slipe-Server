@@ -102,9 +102,8 @@ namespace SlipeServer.Console
             var enumLength = Enum.GetNames(typeof(PedModel)).Length;
             PedModel randomPedModel = (PedModel) new Random().Next(enumLength);
             new Ped(randomPedModel, new Vector3(10, 0, 3)).AssociateWith(server);
-            
-            WorldModel model = new WorldModel(ObjectModel.Drugred);
-            new WorldObject(model.Id, new Vector3(15, 0, 3)).AssociateWith(server);
+
+            new WorldObject(ObjectModel.Drugred, new Vector3(15, 0, 3)).AssociateWith(server);
             
             new WeaponObject(355, new Vector3(10, 10, 5))
             {
