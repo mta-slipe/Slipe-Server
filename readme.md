@@ -25,7 +25,7 @@ In order to create a packet definition you would look at MTA's source code for t
 Do note that MTA's packet definitions have business logic in it as well. Slipe's packet definitions should only contain the logic for reading from or writing to the packet.  
 
 An example of one of MTA's packets and Slipe's equivalent is:  
-[Explosion packet Slipe definition](https://github.com/multitheftauto/mtasa-blue/tree/master/Server/mods/deathmatch/logic/packets)  
+[Explosion packet Slipe definition](https://github.com/mta-slipe/Slipe-Server/blob/master/SlipeServer.Packets/Definitions/Explosions/ExplosionPacket.cs)  
 [Explosion packet MTA definition](https://github.com/multitheftauto/mtasa-blue/blob/master/Server/mods/deathmatch/logic/packets/CExplosionSyncPacket.cpp)  
 
 ## Project architecture / layering
