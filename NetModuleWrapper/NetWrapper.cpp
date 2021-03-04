@@ -187,6 +187,12 @@ bool NetWrapper::isValidSocket(NetServerPlayerID id)
     return this->network->IsValidSocket(id);
 }
 
+void NetWrapper::SetChecks(const char* szDisableComboACMap, const char* szDisableACMap, const char* szEnableSDMap,
+    int iEnableClientChecks, bool bHideAC, const char* szImgMods)
+{
+    this->network->SetChecks(szDisableComboACMap, szDisableACMap, szEnableSDMap, iEnableClientChecks, bHideAC, szImgMods);
+}
+
 NetWrapper* NetWrapper::getNetWrapper(int id)
 {
     return NetWrapper::netWrappers[id];
@@ -206,3 +212,4 @@ NetWrapper* NetWrapper::getNetWrapper(NetServerPlayerID id)
 
     return NetWrapper::netWrappersPerSocket[id];
 }
+
