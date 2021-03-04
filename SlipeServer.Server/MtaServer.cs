@@ -87,7 +87,7 @@ namespace SlipeServer.Server
             Func<uint, INetWrapper, Client>? clientCreationMethod = null
         ) : this(configuration, dependencyCallback, clientCreationMethod)
         {
-            this.AddNetWrapper(directory, netDllPath, this.configuration.Host, this.configuration.Port);
+            this.AddNetWrapper(directory, netDllPath, this.configuration.Host, this.configuration.Port, this.configuration.AntiCheat);
         }
 
         public void Start()

@@ -131,7 +131,6 @@ namespace SlipeServer.Net
             var defaultDisabledSdArray = (new int[] { 12, 14, 15, 16, 20, 22, 23, 28, 31, 32, 33, 34, 35, 36 })
                 .Where(x => !enabledSpecialDetections.Any(y => (int)y == x));
 
-
             SetChecks(this.id,
                 string.Join('&', defaultDisabledSdArray.Select(x => $"{x}=")),
                 string.Join('&', disabledAntiCheats.Select(x => $"{(int)x}=")),
