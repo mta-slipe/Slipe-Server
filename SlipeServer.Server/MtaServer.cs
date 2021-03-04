@@ -87,7 +87,7 @@ namespace SlipeServer.Server
             Func<uint, INetWrapper, Client>? clientCreationMethod = null
         ) : this(configuration, dependencyCallback, clientCreationMethod)
         {
-            this.AddNetWrapper(directory, netDllPath, this.configuration.Host, this.configuration.Port);
+            this.AddNetWrapper(directory, netDllPath, this.configuration.Host, this.configuration.Port, this.configuration.AntiCheat);
         }
 
         public void Start()
@@ -112,15 +112,28 @@ namespace SlipeServer.Server
             this.IsRunning = false;
         }
 
-        public INetWrapper AddNetWrapper(string directory, string netDllPath, string host, ushort port)
+        public INetWrapper AddNetWrapper(string directory, string netDllPath, string host, ushort port, AntiCheatConfiguration? configuration = null)
         {
             var wrapper = CreateNetWrapper(directory, netDllPath, host, port);
             this.netWrappers.Add(wrapper);
+
+            ConfigureAntiCheat(wrapper, configuration ?? new AntiCheatConfiguration());
 
             if (this.IsRunning)
                 wrapper.Start();
 
             return wrapper;
+        }
+
+        private void ConfigureAntiCheat(INetWrapper netWrapper, AntiCheatConfiguration configuration)
+        {
+            netWrapper.SetAntiCheatConfig(
+                configuration.DisabledAntiCheat,
+                configuration.HideAntiCheat,
+                configuration.AllowGta3ImgMods,
+                configuration.EnableSpecialDetections,
+                configuration.FileChecks
+            );
         }
 
         public void RegisterPacketQueueHandler(PacketId packetId, IQueueHandler queueHandler)

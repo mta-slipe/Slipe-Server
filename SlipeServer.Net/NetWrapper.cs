@@ -1,11 +1,14 @@
-﻿using SlipeServer.Net;
+using SlipeServer.Net;
 using SlipeServer.Packets;
 using SlipeServer.Packets.Enums;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
+using System.Linq;
+using System.Collections;
+using System.Collections.Generic;
+using SlipeServer.Net.Enums;
 
 namespace SlipeServer.Net
 {
@@ -38,6 +41,9 @@ namespace SlipeServer.Net
         [DllImport(wrapperDllpath, EntryPoint = "getClientSerialAndVersion", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
         [return: MarshalAs(UnmanagedType.BStr)]
         private static extern string GetClientSerialAndVersion(ushort id, uint binaryAddress, out ushort serialSize, out ushort extraSize, out ushort versionSize);
+
+        [DllImport(wrapperDllpath, EntryPoint = "setChecks")]
+        private static extern void SetChecks(ushort id, string szDisableComboACMap, string szDisableACMap, string szEnableSDMap, int iEnableClientChecks, bool bHideAC, string szImgMods);
 
         private readonly PacketCallback packetInterceptorDelegate;
         private readonly ushort id;
@@ -112,6 +118,27 @@ namespace SlipeServer.Net
         public void SetVersion(uint binaryAddress, ushort version)
         {
             SetSocketVersion(this.id, binaryAddress, version);
+        }
+
+        public void SetAntiCheatConfig(
+            IEnumerable<AntiCheat> disabledAntiCheats, 
+            bool hideAntiCheatFromClient, 
+            AllowGta3ImgMods allowGta3ImgMods, 
+            IEnumerable<SpecialDetection> enabledSpecialDetections, 
+            DataFile disallowedDataFiles
+        )
+        {
+            var defaultDisabledSdArray = (new int[] { 12, 14, 15, 16, 20, 22, 23, 28, 31, 32, 33, 34, 35, 36 })
+                .Where(x => !enabledSpecialDetections.Any(y => (int)y == x));
+
+            SetChecks(this.id,
+                string.Join('&', defaultDisabledSdArray.Select(x => $"{x}=")),
+                string.Join('&', disabledAntiCheats.Select(x => $"{(int)x}=")),
+                string.Join('&', enabledSpecialDetections.Select(x => $"{(int)x}=")),
+
+                (int)disallowedDataFiles,
+                hideAntiCheatFromClient,
+                allowGta3ImgMods.ToString().ToLower());
         }
 
         void PacketInterceptor(byte packetId, uint binaryAddress, IntPtr payload, uint payloadSize, bool hasPing, uint ping)

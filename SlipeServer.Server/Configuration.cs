@@ -1,4 +1,5 @@
-﻿using SlipeServer.Server.Enums;
+﻿using SlipeServer.Net.Enums;
+using SlipeServer.Server.Enums;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -58,5 +59,17 @@ namespace SlipeServer.Server
         public bool AllowDriveByAnimationFix { get; set; } = true;
         public bool AllowShotgunDamageFix { get; set; } = true;
 
+
+        public AntiCheatConfiguration AntiCheat { get; set; } = new AntiCheatConfiguration();
+    }
+
+    public class AntiCheatConfiguration
+    {
+        public AllowGta3ImgMods AllowGta3ImgMods { get; set; } = AllowGta3ImgMods.None;
+        public SpecialDetection[] EnableSpecialDetections { get; set; } = new SpecialDetection[] { };
+        public AntiCheat[] DisabledAntiCheat { get; set; } = new AntiCheat[] { };
+        public DataFile FileChecks { get; set; } = DataFile.None;
+        public bool HideAntiCheat { get; set; } = false;
+        public int VerifyClientSettings { get; set; } = -1;
     }
 }
