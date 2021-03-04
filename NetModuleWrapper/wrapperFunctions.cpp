@@ -44,6 +44,11 @@ EXPORT void __cdecl stopNetWrapper(ushort id) {
     NetWrapper::getNetWrapper(id)->stop();
 }
 
+EXPORT void __cdecl setChecks(ushort id, const char* szDisableComboACMap, const char* szDisableACMap, const char* szEnableSDMap,
+                                                        int iEnableClientChecks, bool bHideAC, const char* szImgMods)
+{
+    NetWrapper::getNetWrapper(id)->SetChecks(szDisableComboACMap, szDisableACMap, szEnableSDMap, iEnableClientChecks, bHideAC, szImgMods);
+}
 
 //enum ENetworkUsageDirection
 //{
@@ -129,11 +134,6 @@ EXPORT void __cdecl stopNetWrapper(ushort id) {
 //{
 //}
 // extern "C" __declspec(dllexport) void __cdecl ClearClientBitStreamVersion(const NetServerPlayerID& PlayerID)
-//{
-//}
-//
-// extern "C" __declspec(dllexport) void __cdecl SetChecks(const char* szDisableComboACMap, const char* szDisableACMap, const char* szEnableSDMap,
-//                                                        int iEnableClientChecks, bool bHideAC, const char* szImgMods)
 //{
 //}
 //

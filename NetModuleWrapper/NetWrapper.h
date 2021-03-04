@@ -43,6 +43,8 @@ public:
     void stop();
     bool isValidSocket(NetServerPlayerID id);
 
+    void SetChecks(const char* szDisableComboACMap, const char* szDisableACMap, const char* szEnableSDMap, int iEnableClientChecks, bool bHideAC, const char* szImgMods);
+
     static NetWrapper* getNetWrapper(int id);
     static NetWrapper* getNetWrapper(NetServerPlayerID id);
 };
