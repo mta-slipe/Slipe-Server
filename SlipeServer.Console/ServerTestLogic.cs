@@ -200,7 +200,7 @@ namespace SlipeServer.Console
             player.Weapons.First(weapon => weapon.Type == WeaponId.Ak47).Ammo = 750;
             player.Weapons.First(weapon => weapon.Type == WeaponId.Ak47).AmmoInClip = 25;
             
-            //this.testResource?.StartFor(player);
+            this.testResource?.StartFor(player);
         }
 
         private void TriggerTestEvent(Player player)
