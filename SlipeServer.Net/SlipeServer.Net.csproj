@@ -1,0 +1,60 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Platforms>AnyCPU;x64;x86</Platforms>
+    <Nullable>enable</Nullable>
+    <Version>0.1.0</Version>
+    <Authors>Slipe</Authors>
+    <Company></Company>
+    <Product>Slipe Server</Product>
+    <PackageProjectUrl>https://github.com/mta-slipe/Slipe-server</PackageProjectUrl>
+    <PackageIcon>slipe-logo.png</PackageIcon>
+    <RepositoryUrl>https://github.com/mta-slipe/Slipe-server</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Description>C# Server for MTA San Andreas net library wrapper</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="net.dll" />
+    <None Remove="NetModuleWrapper.dll" />
+    <None Remove="net_d.dll" />
+    <None Remove="net_no.dll" />
+    <None Remove="pthread.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="net.dll" Pack="true" PackagePath="lib\netcoreapp3.1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="NetModuleWrapper.dll" Pack="true" PackagePath="lib\netcoreapp3.1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="net_d.dll" Pack="true" PackagePath="lib\netcoreapp3.1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="net_no.dll" Pack="true" PackagePath="lib\netcoreapp3.1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="pthread.dll" Pack="true" PackagePath="lib\netcoreapp3.1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SlipeServer.Packets\SlipeServer.Packets.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="..\slipe-logo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

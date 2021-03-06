@@ -94,7 +94,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>copy ..\Debug\NetModuleWrapper.dll ..\MtaServer.Net /y</Command>
+      <Command>copy ..\Debug\NetModuleWrapper.dll ..\SlipeServer.Net /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -147,8 +147,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="MTANetWrapper.cpp" />
+    <ClCompile Include="wrapperFunctions.cpp" />
     <ClCompile Include="mta\server\core\CDynamicLibrary.cpp" />
+    <ClCompile Include="NetWrapper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mta\server\build_overrides_s.h" />
@@ -251,6 +252,7 @@
     <ClInclude Include="mta\shared\sdk\xml\CXMLErrorCodes.h" />
     <ClInclude Include="mta\shared\sdk\xml\CXMLFile.h" />
     <ClInclude Include="mta\shared\sdk\xml\CXMLNode.h" />
+    <ClInclude Include="NetWrapper.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
