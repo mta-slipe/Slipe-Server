@@ -21,7 +21,8 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         { 
             PacketId.PACKET_ID_CAMERA_SYNC, 
             PacketId.PACKET_ID_PLAYER_KEYSYNC, 
-            PacketId.PACKET_ID_PLAYER_PURESYNC 
+            PacketId.PACKET_ID_PLAYER_PURESYNC,
+            PacketId.PACKET_ID_VEHICLE_PUSH_SYNC
         };
 
         protected override Dictionary<PacketId, Type> PacketTypes { get; } = new Dictionary<PacketId, Type>()
@@ -29,6 +30,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             [PacketId.PACKET_ID_CAMERA_SYNC] = typeof(CameraSyncPacket),
             [PacketId.PACKET_ID_PLAYER_KEYSYNC] = typeof(KeySyncPacket),
             [PacketId.PACKET_ID_PLAYER_PURESYNC] = typeof(PlayerPureSyncPacket),
+            [PacketId.PACKET_ID_VEHICLE_PUSH_SYNC] = typeof(UnoccupiedVehiclePushSyncPacket)
         };
 
         public SyncQueueHandler(
@@ -57,6 +59,9 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                     case PlayerPureSyncPacket playerPureSyncPacket:
                         HandleClientPureSyncPacket(client, playerPureSyncPacket);
                         break;
+                    case UnoccupiedVehiclePushSyncPacket unoccupiedVehiclePushSyncPacket:
+                        HandleUnoccupiedVehiclePushSyncPacket(client, unoccupiedVehiclePushSyncPacket);
+                        break;
                 }
             } catch (Exception e)
             {
@@ -84,6 +89,28 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         {
             packet.PlayerId = client.Player.Id;
             packet.SendTo(this.elementRepository.GetByType<Player>(ElementType.Player).Where(p => p.Client != client));
+        }
+
+        private void HandleUnoccupiedVehiclePushSyncPacket(Client client, UnoccupiedVehiclePushSyncPacket packet)
+        {
+            var vehicle = (Vehicle?)this.elementRepository.Get(packet.VehicleId);
+            if (vehicle != null)
+            {
+                var timeNow = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                if (vehicle.Syncer != client.Player && (timeNow - vehicle.LastPushTimestamp) >= Vehicle.MIN_PUSH_ANTISPAM_RATE_MS)
+                {
+                    if (vehicle.Occupants.ElementAtOrDefault(0).Value == null)
+                    {
+                        // TODO we need to update whole vehicle pool to adjust the vehicles syncers
+                        vehicle.Syncer = client.Player;
+                        vehicle.LastPushTimestamp = timeNow;
+                    }
+                }
+            }
+            else
+            {
+               this.logger.LogDebug("Incorrect vehicle id in VEHICLE_PUSH_SYNC packet");
+            }
         }
 
         private void HandleClientPureSyncPacket(Client client, PlayerPureSyncPacket packet)

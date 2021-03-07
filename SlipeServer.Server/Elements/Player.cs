@@ -4,6 +4,7 @@ using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.PacketHandling.Factories;
 using System;
+using System.Collections.Generic;
 using System.Numerics;
 
 namespace SlipeServer.Server.Elements
@@ -46,6 +47,8 @@ namespace SlipeServer.Server.Elements
         public bool IsOnFire { get; set; }
         public bool IsSyncingVelocity { get; set; }
         public bool IsStealthAiming { get; set; }
+
+        public IList<Vehicle> SyncingVehicles { get; set; } = new List<Vehicle>();
 
         protected internal Player(Client client) : base(0, Vector3.Zero)
         {

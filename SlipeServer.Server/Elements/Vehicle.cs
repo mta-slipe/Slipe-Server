@@ -12,6 +12,7 @@ namespace SlipeServer.Server.Elements
 {
     public class Vehicle : Element
     {
+        public const int MIN_PUSH_ANTISPAM_RATE_MS = 1500;
         public override ElementType ElementType => ElementType.Vehicle;
 
         public ushort Model { get; set; }
@@ -63,6 +64,28 @@ namespace SlipeServer.Server.Elements
             }
         }
         public Dictionary<byte, Ped> Occupants { get; set; }
+
+        private Player? _syncer;
+        public Player? Syncer
+        {
+            get => _syncer;
+            set
+            {
+                if (value == null)
+                {
+                    if (_syncer != null)
+                        _syncer.SyncingVehicles.Remove(this);
+                }
+                else if (value != _syncer)
+                {
+                    if (_syncer != null)
+                        _syncer.SyncingVehicles.Remove(this);
+                    value.SyncingVehicles.Add(this);
+                }
+                _syncer = value;
+            }
+        }
+        public long LastPushTimestamp { get; set; } = 0;
 
         public Vehicle(ushort model, Vector3 position) : base()
         {
