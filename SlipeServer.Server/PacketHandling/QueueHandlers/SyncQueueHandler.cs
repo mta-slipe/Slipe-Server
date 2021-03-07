@@ -112,7 +112,6 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                this.logger.LogDebug("Incorrect vehicle id in VEHICLE_PUSH_SYNC packet");
             }
         }
-    }
 
         private void HandleClientPureSyncPacket(Client client, PlayerPureSyncPacket packet)
         {
