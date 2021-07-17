@@ -26,7 +26,7 @@ namespace SlipeServer.Packets.Definitions.Voice
 
         public override void Read(byte[] bytes)
         {
-            throw new System.NotImplementedException();
+            
         }
     }
 }

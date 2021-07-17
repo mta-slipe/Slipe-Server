@@ -14,13 +14,11 @@ namespace SlipeServer.Packets.Definitions.Voice
         public override PacketReliability Reliability { get; } = PacketReliability.ReliableSequenced;
         public override PacketPriority Priority { get; } = PacketPriority.Low;
 
-        public byte[]? Buffer { get; set; } = null;
+        public byte[]? Buffer { get; set; }
         public uint SourceElementId { get; set; }
 
-        public VoiceDataPacket(in uint elementId, in byte[] sourceBuffer, ushort bufferSize)
+        public VoiceDataPacket(uint elementId, byte[] sourceBuffer)
         {
-            this.Buffer = new byte[bufferSize];
-
             this.Buffer = sourceBuffer;
             
             this.SourceElementId = elementId;
@@ -42,12 +40,9 @@ namespace SlipeServer.Packets.Definitions.Voice
 
         public override void Read(byte[] bytes)
         {
-            if (this.Buffer != null)
-            {
-                var reader = new PacketReader(bytes);
+            var reader = new PacketReader(bytes);
 
-                this.Buffer = reader.GetBytes(bytes.Length);
-            }
+            this.Buffer = reader.GetBytes(bytes.Length);
         }
     }
 }
