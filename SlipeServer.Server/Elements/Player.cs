@@ -46,6 +46,7 @@ namespace SlipeServer.Server.Elements
         public bool IsOnFire { get; set; }
         public bool IsSyncingVelocity { get; set; }
         public bool IsStealthAiming { get; set; }
+        public bool IsMuted { get; set; }
 
         protected internal Player(Client client) : base(0, Vector3.Zero)
         {
@@ -118,10 +119,22 @@ namespace SlipeServer.Server.Elements
             this.Kill(null, damageType, bodyPart);
         }
 
+        public void VoiceDataStart(byte[] voiceData)
+        {
+            this.OnVoiceData?.Invoke(this, new PlayerVoiceStartArgs(this, voiceData));
+        }
+
+        public void VoiceDataEnd()
+        {
+            this.OnVoiceDataEnd.Invoke(this, new PlayerVoiceEndArgs(this));
+        }
+
         public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
         public event EventHandler<PlayerDamagedEventArgs>? Damaged;
         public event EventHandler<PlayerWastedEventArgs>? Wasted;
         public event EventHandler<PlayerSpawnedEventArgs>? Spawned;
         public event EventHandler<PlayerCommandEventArgs>? OnCommand;
+        public event EventHandler<PlayerVoiceStartArgs> OnVoiceData;
+        public event EventHandler<PlayerVoiceEndArgs> OnVoiceDataEnd;
     }
 }

@@ -99,6 +99,10 @@ namespace SlipeServer.ConfigurationProviders.Configurations
                     case "AllowShotgunDamageFix":
                         configuration.AllowShotgunDamageFix = bool.Parse(node.InnerText);
                         break;
+
+                    case "IsVoiceEnabled":
+                        configuration.IsVoiceEnabled = bool.Parse(node.InnerText);
+                        break;
                 }
             }
         }
