@@ -28,11 +28,10 @@ namespace SlipeServer.Packets.Definitions.Voice
         {
             var builder = new PacketBuilder();
 
-            // Write the source player id
             builder.WriteElementId(this.SourceElementId);
-            // Write the length as an unsigned short integer
+
             builder.Write((ushort)this.Buffer!.Length);
-            // Write the string data
+
             builder.Write(Encoding.Default.GetString(this.Buffer));
 
             return builder.Build();
