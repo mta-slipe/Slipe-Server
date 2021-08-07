@@ -1,6 +1,10 @@
-﻿using SlipeServer.Server.Elements;
+﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
+using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
+using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Factories;
+using SlipeServer.Server.Repositories;
+using System.Linq;
 using System.Numerics;
 
 namespace SlipeServer.Server.Behaviour
@@ -11,11 +15,12 @@ namespace SlipeServer.Server.Behaviour
     public class ElementPacketBehaviour
     {
         private readonly MtaServer server;
+        private readonly IElementRepository elementRepository;
 
-        public ElementPacketBehaviour(MtaServer server)
+        public ElementPacketBehaviour(MtaServer server, IElementRepository elementRepository)
         {
             this.server = server;
-
+            this.elementRepository = elementRepository;
             server.ElementCreated += OnElementCreate;
         }
 
@@ -26,6 +31,21 @@ namespace SlipeServer.Server.Behaviour
             element.AlphaChanged += RelayAlphaChange;
             element.DimensionChanged += RelayDimensionChange;
             element.InteriorChanged += RelayInteriorChange;
+            element.Destroyed += RelayElementDestroy;
+        }
+
+        private void RelayElementDestroy(Element element)
+        {
+            if (!(element is Player))
+            {
+                var packet = new RemoveEntityPacket();
+                packet.AddEntity(element.Id);
+
+                var otherPlayers = this.elementRepository
+                    .GetByType<Player>(ElementType.Player)
+                    .Where(p => p != element);
+                packet.SendTo(otherPlayers);
+            }
         }
 
         private void RelayPositionChange(object sender, ElementChangedEventArgs<Vector3> args)
