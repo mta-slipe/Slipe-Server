@@ -131,7 +131,7 @@ namespace SlipeServer.Packets.Definitions.Join
                 } else
                 {
                     builder.Write(true);
-                    builder.Write(weapons[i]);
+                    builder.WriteCapped(weapons[i], 6);
                 }
             }
         }

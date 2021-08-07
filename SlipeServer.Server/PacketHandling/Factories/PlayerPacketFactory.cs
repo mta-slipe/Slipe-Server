@@ -11,6 +11,7 @@ using System.Drawing;
 using System.Numerics;
 using System.Text;
 using SlipeServer.Packets.Definitions.Player;
+using System.Linq;
 
 namespace SlipeServer.Server.PacketHandling.Factories
 {
@@ -34,33 +35,36 @@ namespace SlipeServer.Server.PacketHandling.Factories
                     bitsreamVersion: 343,
                     buildNumber: 0,
 
-                    isDead: false,
-                    isInVehicle: false,
+                    isDead: !player.IsAlive,
+                    isInVehicle: player.Vehicle != null,
                     hasJetpack: false,
                     isNametagShowing: true,
                     isNametagColorOverriden: true,
-                    isHeadless: false,
-                    isFrozen: false,
+                    isHeadless: player.IsHeadless,
+                    isFrozen: player.IsFrozen,
 
                     nametagText: player.Name ?? "???",
                     color: Color.FromArgb(255, 255, 0, 255),
                     moveAnimation: 0,
 
-                    model: 9,
+                    model: player.Model,
                     teamId: null,
 
-                    vehicleId: null,
-                    seat: null,
+                    vehicleId: player.Vehicle?.Id,
+                    seat: player.Seat,
 
                     position: player.Position,
                     rotation: player.PedRotation,
 
-                    dimension: 0,
+                    dimension: player.Dimension,
                     fightingStyle: 0,
-                    alpha: 255,
-                    interior: 0,
+                    alpha: player.Alpha,
+                    interior: player.Interior,
 
-                    weapons: new byte[16]
+                    weapons: (new byte[16]).Select((value, index) =>
+                    {
+                        return (byte)(player.Weapons.Get((WeaponSlot)index)?.Type ?? 0);
+                    }).ToArray()
                 );
             }
 

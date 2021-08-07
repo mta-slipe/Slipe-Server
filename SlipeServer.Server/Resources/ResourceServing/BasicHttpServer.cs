@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ namespace SlipeServer.Server.Resources.ResourceServing
     {
         private readonly HttpListener httpListener;
         private readonly string rootDirectory;
+        private readonly Configuration configuration;
         private readonly ILogger logger;
         private readonly string httpAddress;
         private bool running;
@@ -29,6 +31,7 @@ namespace SlipeServer.Server.Resources.ResourceServing
 
             this.running = false;
             this.rootDirectory = configuration.ResourceDirectory;
+            this.configuration = configuration;
             this.logger = logger;
         }
 
@@ -46,7 +49,14 @@ namespace SlipeServer.Server.Resources.ResourceServing
             }
             catch(HttpListenerException exception)
             {
-                throw new Exception($"Could not start http server on address {httpAddress}", exception);
+                if (exception.Message == "Access is denied." && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    string command = $@"netsh http add urlacl url=http://{this.configuration.HttpHost}:{this.configuration.HttpPort}/ sddl=D:(A;;GX;;;S-1-1-0)";
+                    throw new Exception($"Could not start http server on address {httpAddress}\n{exception.Message}\nYou might need to run the following command in an administrator command prompt: \n{command}", exception);
+                } else
+                {
+                    throw new Exception($"Could not start http server on address {httpAddress}\n{exception.Message}", exception);
+                }
             }
 
             Task.Run(async () =>

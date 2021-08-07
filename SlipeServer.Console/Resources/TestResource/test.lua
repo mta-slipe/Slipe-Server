@@ -15,3 +15,9 @@ addEventHandler("Slipe.Test.ClientEvent", root, function(...)
 end)
 
 outputChatBox("Event ready");
+
+addCommandHandler("crun", function(command, ...)
+	outputChatBox("Running code")
+	local code = table.concat({ ... }, " ")
+	loadstring(code)()
+end)
