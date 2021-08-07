@@ -3,9 +3,6 @@ using SlipeServer.Packets.Structures;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Reader;
 
@@ -147,15 +144,13 @@ namespace SlipeServer.Packets.Definitions.Sync
 
             if (this.SyncFlags.HasAWeapon)
             {
-                builder.Write(this.WeaponType);
                 builder.WriteCapped(this.WeaponSlot, 4);
 
                 if (slotsWithAmmo.Contains(this.WeaponSlot))
                 {
-                    builder.WriteAmmo(this.TotalAmmo, this.AmmoInClip);
+                    builder.WriteAmmo(null, this.AmmoInClip);
 
-                    builder.Write(this.Arm * 90 * 180 * MathF.PI);
-                    //this.Arm = ((reader.GetUint16()) * MathF.PI / 180) / 90.0f;
+                    builder.Write((short)(this.Arm * 90 * 180 / MathF.PI));
 
                     // if player is aiming
                     if (this.KeySync.RightShoulder1 || this.KeySync.ButtonCircle)
