@@ -126,7 +126,6 @@ namespace SlipeServer.Console
         {
             var client = player.Client;
 
-            this.logger.LogInformation($"{player.Name} ({client.Version}) ({client.Serial}) has joined the server!");
             this.chatBox.Output($"{player.Name} ({client.Version}) ({client.Serial}) has joined the server!");
 
             player.Spawn(new Vector3(0, 0, 3), 0, 7, 0, 0);
@@ -193,7 +192,7 @@ namespace SlipeServer.Console
             player.Weapons.Add(new Weapon(WeaponId.Tec9, 500));
             player.Weapons.Add(new Weapon(WeaponId.Sniper, 500));
             player.Weapons.Add(new Weapon(WeaponId.Deagle, 500));
-            player.Weapons.Add(new Weapon(WeaponId.Golfclub, 500));
+            player.Weapons.Add(new Weapon(WeaponId.Golfclub, 1));
             player.Weapons.Remove(WeaponId.Tec9);
             player.Weapons.Remove(WeaponId.Sniper);
             player.Weapons.First(weapon => weapon.Type == WeaponId.Deagle).Ammo -= 200;

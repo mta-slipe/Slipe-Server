@@ -21,7 +21,7 @@ namespace SlipeServer.Server
         public string Password { get; set; } = "";
 
 
-        public string HttpHost { get; set; } = "127.0.0.1";
+        public string HttpHost { get; set; } = "*";
 
         public ushort HttpPort { get; set; } = 40680;
 

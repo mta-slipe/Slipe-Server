@@ -118,10 +118,17 @@ namespace SlipeServer.Server.Elements
             this.Kill(null, damageType, bodyPart);
         }
 
+        public void TriggerDisconnected(QuitReason reason)
+        {
+            this.Disconnected?.Invoke(this, new PlayerQuitEventArgs(reason));
+            this.Destroy();
+        }
+
         public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
         public event EventHandler<PlayerDamagedEventArgs>? Damaged;
         public event EventHandler<PlayerWastedEventArgs>? Wasted;
         public event EventHandler<PlayerSpawnedEventArgs>? Spawned;
         public event EventHandler<PlayerCommandEventArgs>? OnCommand;
+        public event EventHandler<PlayerQuitEventArgs>? Disconnected;
     }
 }

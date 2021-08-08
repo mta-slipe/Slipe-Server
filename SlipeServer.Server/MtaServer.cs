@@ -17,6 +17,7 @@ using SlipeServer.Server.Elements.IdGeneration;
 using SlipeServer.Server.Events;
 using SlipeServer.Server.Services;
 using SlipeServer.Server.Resources.ResourceServing;
+using SlipeServer.Server.Enums;
 
 namespace SlipeServer.Server
 {
@@ -242,9 +243,20 @@ namespace SlipeServer.Server
                 packetId == PacketId.PACKET_ID_PLAYER_NO_SOCKET
             )
             {
-                this.clients[netWrapper][binaryAddress].IsConnected = false;
-                ClientDisconnected?.Invoke(this.clients[netWrapper][binaryAddress]);
-                this.clients[netWrapper].Remove(binaryAddress);
+                if (this.clients[netWrapper].ContainsKey(binaryAddress))
+                {
+                    var client = this.clients[netWrapper][binaryAddress];
+                    client.IsConnected = false;
+                    var quitReason = packetId switch
+                    {
+                        PacketId.PACKET_ID_PLAYER_QUIT => QuitReason.Quit,
+                        PacketId.PACKET_ID_PLAYER_TIMEOUT => QuitReason.Timeout,
+                        PacketId.PACKET_ID_PLAYER_NO_SOCKET => QuitReason.Timeout,
+                        _ => throw new NotImplementedException()
+                    };
+                    client.Player.TriggerDisconnected(quitReason);
+                    this.clients[netWrapper].Remove(binaryAddress);
+                }
             }
         }
 
@@ -254,7 +266,6 @@ namespace SlipeServer.Server
         public event Action<Element>? ElementCreated;
         public event Action<Player>? PlayerJoined;
         public event Action<Client>? ClientConnected;
-        public event Action<Client>? ClientDisconnected;
         public event Action<LuaEvent>? LuaEventTriggered;
 
     }
