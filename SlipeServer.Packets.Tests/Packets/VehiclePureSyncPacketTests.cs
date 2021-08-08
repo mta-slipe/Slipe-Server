@@ -10,19 +10,19 @@ namespace SlipeServer.Packets.Tests.Packets
     {
         private readonly byte[] carTestPacket = new byte[]
         {
-            2, 0, 0, 0, 90, 2, 0, 0, 0, 216, 255, 3, 20, 0, 16, 144, 57, 64, 102, 105, 44, 170, 195, 51, 252, 0, 0, 0, 0, 208, 112, 200, 0, 193, 0, 0,
+            2, 0, 0, 0, 22, 128, 128, 0, 15, 55, 127, 203, 199, 192, 31, 4, 206, 208, 41, 28, 141, 104, 192, 215, 255, 1, 0, 59, 238, 52, 28, 50, 0, 48, 64, 0,
         };
         private readonly byte[] hydraTestPacket = new byte[]
         {
-            2, 0, 0, 0, 8, 2, 0, 0, 117, 111, 4, 93, 29, 1, 221, 83, 140, 67, 182, 153, 66, 16, 56, 92, 7, 71, 192, 0, 21, 114, 101, 81, 216, 39, 199, 124, 194, 127, 2, 213, 166, 128, 119, 12, 126, 50, 223, 84, 92, 50, 0, 0, 97, 16, 38, 0, 0,
+            2, 0, 0, 0, 2, 0, 128, 0, 0, 202, 0, 40, 132, 192, 16, 220, 29, 80, 54, 93, 15, 200, 144, 105, 1, 0, 0, 246, 255, 52, 28, 50, 0, 48, 96, 240, 20, 0, 0, 
         };
         private readonly byte[] forkliftTestPacket = new byte[]
         {
-            2, 0, 0, 0, 18, 2, 0, 0, 165, 45, 0, 85, 44, 0, 132, 101, 56, 64, 96, 125, 43, 163, 129, 75, 255, 255, 255, 229, 56, 208, 112, 200, 0, 193, 4, 128, 24,
+            2, 0, 0, 0, 4, 128, 128, 0, 0, 20, 0, 3, 133, 0, 26, 89, 78, 16, 62, 94, 12, 20, 208, 82, 255, 255, 255, 0, 0, 52, 28, 50, 0, 48, 65, 208, 4,
         };
         private readonly byte[] firetruckTestPacket = new byte[]
         {
-            2, 0, 0, 0, 151, 1, 0, 0, 0, 120, 0, 241, 19, 0, 250, 64, 85, 64, 178, 120, 58, 155, 1, 8, 0, 0, 0, 0, 0, 208, 112, 200, 0, 193, 3, 38, 111, 152, 17, 1, 0,
+            2, 0, 0, 0, 37, 192, 64, 0, 10, 30, 0, 3, 133, 0, 6, 94, 149, 80, 44, 158, 142, 166, 208, 64, 0, 1, 0, 54, 255, 52, 28, 50, 0, 48, 64, 161, 156, 28, 10, 0,
         };
 
         [Fact]
@@ -39,8 +39,8 @@ namespace SlipeServer.Packets.Tests.Packets
             packet.PlayerHealth.Should().Be(50);
             packet.PlayerArmor.Should().Be(0);
 
-            packet.AdjustableProperty.HasValue.Should().BeFalse();
-            packet.TurretRotation.HasValue.Should().BeFalse();
+            packet.AdjustableProperty.Should().Be(0);
+            packet.TurretRotation.Should().Be(Vector2.Zero);
         }
 
         [Fact]
@@ -53,14 +53,14 @@ namespace SlipeServer.Packets.Tests.Packets
             packet.RemoteModel.Should().Be(520);
             packet.Position.Should().Equals(new Vector3(10, 5, 3));
             packet.Seat.Should().Be(0);
-            packet.Health.Should().Be(936.5f);
+            packet.Health.Should().Be(1000);
             packet.PlayerHealth.Should().Be(50);
             packet.PlayerArmor.Should().Be(0);
 
-            packet.VehiclePureSyncFlags.IsLandingGearDown.Should().BeFalse();
+            packet.VehiclePureSyncFlags.IsLandingGearDown.Should().BeTrue();
 
-            packet.AdjustableProperty.HasValue.Should().BeTrue();
-            packet.TurretRotation.HasValue.Should().BeFalse();
+            packet.AdjustableProperty.Should().NotBe(0);
+            packet.TurretRotation.Should().Be(Vector2.Zero);
         }
 
         [Fact]
@@ -77,8 +77,8 @@ namespace SlipeServer.Packets.Tests.Packets
             packet.PlayerHealth.Should().Be(50);
             packet.PlayerArmor.Should().Be(0);
 
-            packet.AdjustableProperty.HasValue.Should().BeTrue();
-            packet.TurretRotation.HasValue.Should().BeFalse();
+            packet.AdjustableProperty.Should().NotBe(0);
+            packet.TurretRotation.Should().Be(Vector2.Zero);
         }
 
         [Fact]
@@ -95,8 +95,8 @@ namespace SlipeServer.Packets.Tests.Packets
             packet.PlayerHealth.Should().Be(50);
             packet.PlayerArmor.Should().Be(0);
 
-            packet.AdjustableProperty.HasValue.Should().BeFalse();
-            packet.TurretRotation.HasValue.Should().BeTrue();
+            packet.AdjustableProperty.Should().Be(0);
+            packet.TurretRotation.Should().NotBe(Vector2.Zero);
         }
     }
 }
