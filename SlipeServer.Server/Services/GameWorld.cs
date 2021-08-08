@@ -1,4 +1,5 @@
 ﻿using SlipeServer.Packets.Definitions.Lua.Rpc.World;
+using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using System;
@@ -368,6 +369,11 @@ namespace SlipeServer.Server.Services
         public Tuple<byte, byte> GetTime()
         {
             return new Tuple<byte, byte>(hour, minute);
+        }
+
+        public void CreateProjectile(Vector3 from, Vector3 direction, uint sourceElement)
+        {
+            this.server.BroadcastPacket(new ProjectileSyncPacket(from, direction, sourceElement));
         }
 
         #endregion

@@ -54,7 +54,7 @@ namespace SlipeServer.Console
             };
             server = new MtaServer(
                 Directory.GetCurrentDirectory(),
-                @"net.dll",
+                @"net_d.dll",
                 configuration,
                 Configure
             )

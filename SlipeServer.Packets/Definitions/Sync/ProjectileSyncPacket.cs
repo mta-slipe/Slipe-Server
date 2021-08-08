@@ -28,6 +28,7 @@ namespace SlipeServer.Packets.Definitions.Sync
         public Vector3 VecMoveSpeed { get; set; }
         public ushort Model { get; set; }
         public uint SourceElement { get; set; }
+        public ushort? Latency { get; }
 
 
         public ProjectileSyncPacket()
@@ -35,9 +36,14 @@ namespace SlipeServer.Packets.Definitions.Sync
 
         }
 
-        public ProjectileSyncPacket(SmallKeySyncStructure smallKeySyncStructure, float playerRotation, float cameraRotation, KeySyncFlagsStructure keySyncFlagsStructure)
+        public ProjectileSyncPacket(Vector3 origin, Vector3 target, uint sourceElement)
         {
-
+            Model = 345;
+            this.SourceElement = sourceElement;
+            WeaponType = 19;
+            this.VecOrigin = origin;
+            this.VecTarget = target;
+            VecMoveSpeed = new Vector3(0, 0, -1);
         }
 
         public override void Read(byte[] bytes)
@@ -88,9 +94,7 @@ namespace SlipeServer.Packets.Definitions.Sync
                 builder.Write(true);
                 builder.WriteElementId(this.SourceElement);
 
-                //unsigned short usLatency = static_cast<CPlayer*>(m_pSourceElement)->GetPing();
-                //BitStream.WriteCompressed(usLatency);
-                builder.WriteCompressed((ushort)0); // Latency
+                builder.WriteCompressed(this.Latency ?? 0);
             }
             else
             {
@@ -99,7 +103,6 @@ namespace SlipeServer.Packets.Definitions.Sync
 
             if (OriginId != 0) // INVALID_ELEMENT_ID
             {
-
                 builder.Write(true);
                 builder.WriteElementId(this.OriginId);
             }
@@ -107,8 +110,9 @@ namespace SlipeServer.Packets.Definitions.Sync
             {
                 builder.Write(false);
             }
-            builder.Write(this.VecOrigin);
-            builder.Write(this.WeaponType);
+
+            builder.WriteVector3WithZAsFloat(this.VecOrigin);
+            builder.WriteWeaponType(this.WeaponType);
             builder.Write(Model);
             switch (WeaponType)
             {
@@ -124,8 +128,7 @@ namespace SlipeServer.Packets.Definitions.Sync
                     if (TargetId != 0) // INVALID_ELEMENT_ID
                     {
                         builder.Write(true);
-                        builder.WriteElementId(this.TargetId);
-
+                        builder.Write(this.TargetId);
                     }
                     else
                     {
