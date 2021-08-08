@@ -48,7 +48,10 @@ namespace SlipeServer.Console
 
             var configurationProvider = args.Length > 0 ? GetConfigurationProvider(args[0]) : null;
 
-            Configuration? configuration = configurationProvider?.GetConfiguration();
+            Configuration? configuration = configurationProvider?.GetConfiguration() ?? new Configuration()
+            {
+                IsVoiceEnabled = true
+            };
             server = new MtaServer(
                 Directory.GetCurrentDirectory(),
                 @"net.dll",
@@ -123,6 +126,7 @@ namespace SlipeServer.Console
             server.RegisterPacketQueueHandler<LuaEventQueueHandler>(10, 1);
             server.RegisterPacketQueueHandler<PlayerEventQueueHandler>(10, 1);
             server.RegisterPacketQueueHandler<VehicleInOutHandler>(10, 1);
+            server.RegisterPacketQueueHandler<VoiceHandler>(10, 1);
         }
 
         private void SetupBehaviour()
@@ -141,6 +145,7 @@ namespace SlipeServer.Console
             server.Instantiate<PedPacketBehaviour>();
             server.Instantiate<PlayerPacketBehaviour>();
             server.Instantiate<VehicleWarpBehaviour>();
+            server.Instantiate<VoiceBehaviour>();
         }
 
         private void SetupLogic()
