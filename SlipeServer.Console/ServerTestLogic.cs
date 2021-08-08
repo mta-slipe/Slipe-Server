@@ -98,9 +98,9 @@ namespace SlipeServer.Console
                 Color = Color.FromArgb(100, Color.Cyan)
             }.AssociateWith(server);
             new Pickup(new Vector3(0, 5, 3), PickupType.Health, 20).AssociateWith(server);
-            
-            var enumLength = Enum.GetNames(typeof(PedModel)).Length;
-            PedModel randomPedModel = (PedModel) new Random().Next(enumLength);
+
+            var values = Enum.GetValues(typeof(PedModel));
+            PedModel randomPedModel = (PedModel)values.GetValue(new Random().Next(values.Length))!;
             new Ped(randomPedModel, new Vector3(10, 0, 3)).AssociateWith(server);
 
             new WorldObject(ObjectModel.Drugred, new Vector3(15, 0, 3)).AssociateWith(server);
