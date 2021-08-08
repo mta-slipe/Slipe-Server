@@ -41,7 +41,7 @@ namespace SlipeServer.Packets.Definitions.Join
             int enableClientChecks,
             bool isFakeLagCommandEnabled = false,
             bool isVoiceEnabled = true,
-            int voiceSampleRate = 1,
+            int voiceSampleRate = 2,
             int voiceQuality = 4,
             int voiceBitRate = 24600)
         {

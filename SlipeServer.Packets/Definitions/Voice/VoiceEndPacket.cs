@@ -16,6 +16,11 @@ namespace SlipeServer.Packets.Definitions.Voice
             this.SourceElementId = sourceElementId;
         }
 
+        public VoiceEndPacket()
+        {
+            
+        }
+
         public override byte[] Write()
         {
             var builder = new PacketBuilder();

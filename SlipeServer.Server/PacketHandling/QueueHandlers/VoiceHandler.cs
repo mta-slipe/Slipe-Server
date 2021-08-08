@@ -44,7 +44,6 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         
         protected override void HandlePacket(Client client, Packet packet)
         {
-            logger.LogInformation("VoiceHandler Received a packet!");
             try
             {
                 switch (packet)

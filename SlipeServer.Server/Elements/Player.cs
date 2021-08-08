@@ -46,7 +46,8 @@ namespace SlipeServer.Server.Elements
         public bool IsOnFire { get; set; }
         public bool IsSyncingVelocity { get; set; }
         public bool IsStealthAiming { get; set; }
-        public bool IsMuted { get; set; }
+        public bool IsVoiceMuted { get; set; }
+        public bool IsChatMuted { get; set; }
 
         protected internal Player(Client client) : base(0, Vector3.Zero)
         {

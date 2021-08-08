@@ -17,13 +17,17 @@ namespace SlipeServer.Packets.Definitions.Voice
         public byte[]? Buffer { get; set; }
         public uint SourceElementId { get; set; }
 
-        public VoiceDataPacket(uint elementId, byte[] sourceBuffer)
+        public VoiceDataPacket(uint sourceElementId, byte[]? buffer)
         {
-            this.Buffer = sourceBuffer;
-            
-            this.SourceElementId = elementId;
+            this.Buffer = buffer;
+            this.SourceElementId = sourceElementId;
         }
-        
+
+        public VoiceDataPacket()
+        {
+            
+        }
+
         public override byte[] Write()
         {
             var builder = new PacketBuilder();
