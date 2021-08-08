@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <Platforms>AnyCPU;x64;x86</Platforms>
     <Nullable>enable</Nullable>
     <Version>0.1.0</Version>
@@ -25,19 +25,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="net.dll" Pack="true" PackagePath="lib\netcoreapp3.1">
+    <Content Include="net.dll" Pack="true" PackagePath="lib\net5.0">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="NetModuleWrapper.dll" Pack="true" PackagePath="lib\netcoreapp3.1">
+    <Content Include="NetModuleWrapper.dll" Pack="true" PackagePath="lib\net5.0">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="net_d.dll" Pack="true" PackagePath="lib\netcoreapp3.1">
+    <Content Include="net_d.dll" Pack="true" PackagePath="lib\net5.0">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="net_no.dll" Pack="true" PackagePath="lib\netcoreapp3.1">
+    <Content Include="net_no.dll" Pack="true" PackagePath="lib\net5.0">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="pthread.dll" Pack="true" PackagePath="lib\netcoreapp3.1">
+    <Content Include="pthread.dll" Pack="true" PackagePath="lib\net5.0">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
