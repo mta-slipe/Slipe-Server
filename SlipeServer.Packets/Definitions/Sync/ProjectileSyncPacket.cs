@@ -46,10 +46,10 @@ namespace SlipeServer.Packets.Definitions.Sync
 
             bool hasOrigin = reader.GetBit();
             if (hasOrigin)
-                this.OriginId = reader.GetUint32();
+                this.OriginId = reader.GetElementId();
 
             this.VecOrigin = reader.GetVector3WithZAsFloat();
-            this.WeaponType = reader.GetByte();
+            this.WeaponType = reader.GetWeaponType();
             this.Model = reader.GetUint16();
 
             switch (WeaponType)

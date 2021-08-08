@@ -132,7 +132,7 @@ namespace SlipeServer.Console
 
         private void SetupBehaviour()
         {
-            server.Instantiate<AseBehaviour>();
+            //server.Instantiate<AseBehaviour>();
             server.Instantiate<MasterServerAnnouncementBehaviour>("http://master.mtasa.com/ase/add.php");
 
             server.Instantiate<EventLoggingBehaviour>();

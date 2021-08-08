@@ -19,9 +19,10 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         private readonly IElementRepository elementRepository;
         public override IEnumerable<PacketId> SupportedPacketIds => new PacketId[] 
         { 
-            PacketId.PACKET_ID_CAMERA_SYNC, 
-            PacketId.PACKET_ID_PLAYER_KEYSYNC, 
-            PacketId.PACKET_ID_PLAYER_PURESYNC 
+            PacketId.PACKET_ID_CAMERA_SYNC,
+            PacketId.PACKET_ID_PLAYER_KEYSYNC,
+            PacketId.PACKET_ID_PLAYER_PURESYNC,
+            PacketId.PACKET_ID_PROJECTILE
         };
 
         protected override Dictionary<PacketId, Type> PacketTypes { get; } = new Dictionary<PacketId, Type>()
@@ -29,6 +30,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             [PacketId.PACKET_ID_CAMERA_SYNC] = typeof(CameraSyncPacket),
             [PacketId.PACKET_ID_PLAYER_KEYSYNC] = typeof(KeySyncPacket),
             [PacketId.PACKET_ID_PLAYER_PURESYNC] = typeof(PlayerPureSyncPacket),
+            [PacketId.PACKET_ID_PROJECTILE] = typeof(ProjectileSyncPacket),
         };
 
         public SyncQueueHandler(
@@ -57,6 +59,9 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                     case PlayerPureSyncPacket playerPureSyncPacket:
                         HandleClientPureSyncPacket(client, playerPureSyncPacket);
                         break;
+                    case ProjectileSyncPacket projectileSyncPacket:
+                        HandleProjectileSyncPacket(client, projectileSyncPacket);
+                        break;
                 }
             } catch (Exception e)
             {
@@ -84,6 +89,11 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         {
             packet.PlayerId = client.Player.Id;
             packet.SendTo(this.elementRepository.GetByType<Player>(ElementType.Player).Where(p => p.Client != client));
+        }
+
+        private void HandleProjectileSyncPacket(Client client, ProjectileSyncPacket packet)
+        {
+            throw new NotImplementedException();
         }
 
         private void HandleClientPureSyncPacket(Client client, PlayerPureSyncPacket packet)
