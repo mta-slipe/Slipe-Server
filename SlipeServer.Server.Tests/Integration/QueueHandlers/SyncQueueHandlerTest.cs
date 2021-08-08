@@ -22,7 +22,7 @@ namespace SlipeServer.Server.Tests.Integration.QueueHandlers
         public async Task SyncHandlerSendsReturnSync()
         {
             var server = new TestingServer();
-            var handler = server.Instantiate<SyncQueueHandler>(0, 1);
+            var handler = server.Instantiate<SyncQueueHandler>(QueueHandlerScalingConfig.Default, 0);
             server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_PURESYNC, handler);
 
             var player1 = server.AddFakePlayer();
@@ -43,7 +43,7 @@ namespace SlipeServer.Server.Tests.Integration.QueueHandlers
         public async Task SyncHandlerRelaysSync()
         {
             var server = new TestingServer();
-            var handler = server.Instantiate<SyncQueueHandler>(0, 1);
+            var handler = server.Instantiate<SyncQueueHandler>(QueueHandlerScalingConfig.Default, 0);
             server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_PURESYNC, handler);
 
             var player1 = server.AddFakePlayer();
@@ -66,7 +66,7 @@ namespace SlipeServer.Server.Tests.Integration.QueueHandlers
         public async Task SyncHandlerDoesNotRelaySyncBack()
         {
             var server = new TestingServer();
-            var handler = server.Instantiate<SyncQueueHandler>(0, 1);
+            var handler = server.Instantiate<SyncQueueHandler>(QueueHandlerScalingConfig.Default, 0);
             server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_PURESYNC, handler);
 
             var player1 = server.AddFakePlayer();

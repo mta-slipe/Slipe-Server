@@ -17,6 +17,8 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         protected readonly ConcurrentQueue<PacketQueueEntry> packetQueue;
         public abstract IEnumerable<PacketId> SupportedPacketIds { get; }
 
+        public int QueuedPacketCount => packetQueue.Count;
+
         public BaseQueueHandler()
         {
             this.packetQueue = new ConcurrentQueue<PacketQueueEntry>();

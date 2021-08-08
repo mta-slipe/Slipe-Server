@@ -121,12 +121,12 @@ namespace SlipeServer.Console
         {
             server.RegisterPacketQueueHandler<ConnectionQueueHandler>(10, 1);
             server.RegisterPacketQueueHandler<RpcQueueHandler>(10, 1);
-            server.RegisterPacketQueueHandler<SyncQueueHandler>(10, 1);
+            server.RegisterPacketQueueHandler<SyncQueueHandler>(QueueHandlerScalingConfig.Aggressive, 10);
             server.RegisterPacketQueueHandler<CommandQueueHandler>(10, 1);
             server.RegisterPacketQueueHandler<LuaEventQueueHandler>(10, 1);
             server.RegisterPacketQueueHandler<PlayerEventQueueHandler>(10, 1);
             server.RegisterPacketQueueHandler<VehicleInOutHandler>(10, 1);
-            server.RegisterPacketQueueHandler<VehicleSyncQueueHandler>(10, 1);
+            server.RegisterPacketQueueHandler<VehicleSyncQueueHandler>(QueueHandlerScalingConfig.Aggressive, 10);
             server.RegisterPacketQueueHandler<VoiceHandler>(10, 1);
         }
 

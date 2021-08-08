@@ -10,10 +10,11 @@ using SlipeServer.Server.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers
 {
-    public class SyncQueueHandler : WorkerBasedQueueHandler
+    public class SyncQueueHandler : ScalingWorkerBasedQueueHandler
     {
         private readonly ILogger logger;
         private readonly IElementRepository elementRepository;
@@ -35,14 +36,14 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             ILogger logger,
             IElementRepository elementRepository, 
             int sleepInterval, 
-            int workerCount
-        ): base(sleepInterval, workerCount)
+            QueueHandlerScalingConfig config
+        ): base(config, sleepInterval)
         {
             this.logger = logger;
             this.elementRepository = elementRepository;
         }
 
-        protected override void HandlePacket(Client client, Packet packet)
+        protected override Task HandlePacket(Client client, Packet packet)
         {
             try
             { 
@@ -62,6 +63,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             {
                 this.logger.LogError($"Handling packet ({packet.PacketId}) failed.\n{e.Message}");
             }
+            return Task.CompletedTask;
         }
 
         private void HandleCameraSyncPacket(Client client, CameraSyncPacket packet)

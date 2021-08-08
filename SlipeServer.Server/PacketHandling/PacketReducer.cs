@@ -9,11 +9,15 @@ namespace SlipeServer.Server.PacketHandling
 {
     public class PacketReducer
     {
+        private readonly List<IQueueHandler> queueHandlers;
         private readonly Dictionary<PacketId, List<IQueueHandler>> registeredQueueHandlers;
         private readonly ILogger logger;
 
+        public IEnumerable<IQueueHandler> RegisteredQueueHandlers => queueHandlers;
+
         public PacketReducer(ILogger logger)
         {
+            this.queueHandlers = new List<IQueueHandler>();
             this.registeredQueueHandlers = new Dictionary<PacketId, List<IQueueHandler>>();
             this.logger = logger;
         }
@@ -25,6 +29,7 @@ namespace SlipeServer.Server.PacketHandling
                 this.registeredQueueHandlers[packetId] = new List<IQueueHandler>();
             }
             this.registeredQueueHandlers[packetId].Add(queueHandler);
+            this.queueHandlers.Add(queueHandler);
         }
 
         public void UnregisterQueueHandler(PacketId packetId, IQueueHandler queueHandler)
@@ -33,6 +38,7 @@ namespace SlipeServer.Server.PacketHandling
             {
                 this.registeredQueueHandlers[packetId].Remove(queueHandler);
             }
+            this.queueHandlers.Add(queueHandler);
         }
 
         public void EnqueuePacket(Client client, PacketId packetId, byte[] data)

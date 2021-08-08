@@ -10,10 +10,11 @@ using SlipeServer.Server.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers
 {
-    public class VehicleSyncQueueHandler : WorkerBasedQueueHandler
+    public class VehicleSyncQueueHandler : ScalingWorkerBasedQueueHandler
     {
         private readonly ILogger logger;
         private readonly IElementRepository elementRepository;
@@ -29,16 +30,16 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
         public VehicleSyncQueueHandler(
             ILogger logger,
-            IElementRepository elementRepository, 
-            int sleepInterval, 
-            int workerCount
-        ): base(sleepInterval, workerCount)
+            IElementRepository elementRepository,
+            QueueHandlerScalingConfig config,
+            int sleepInterval
+        ): base(config, sleepInterval)
         {
             this.logger = logger;
             this.elementRepository = elementRepository;
         }
 
-        protected override void HandlePacket(Client client, Packet packet)
+        protected override Task HandlePacket(Client client, Packet packet)
         {
             try
             { 
@@ -52,6 +53,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             {
                 this.logger.LogError($"Handling packet ({packet.PacketId}) failed.\n{e.Message}");
             }
+            return Task.CompletedTask;
         }
 
         private void HandleVehiclePureSyncPacket(Client client, VehiclePureSyncPacket packet)
@@ -74,10 +76,8 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                 player.Health = packet.PlayerHealth;
                 player.Armor = packet.PlayerArmor;
 
-                if (packet.AimOrigin != null)
-                    player.AimOrigin = packet.AimOrigin;
-                if (packet.AimDirection != null)
-                    player.AimDirection = packet.AimDirection;
+                player.AimOrigin = packet.AimOrigin;
+                player.AimDirection = packet.AimDirection;
 
 
                 player.CurrentWeaponSlot = (WeaponSlot)packet.WeaponSlot!;
