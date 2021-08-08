@@ -129,8 +129,8 @@ namespace SlipeServer.Server.Tests.Integration.QueueHandlers
 
             var betweenWorkerCount = handler.WorkerCount;
 
-            // wait for packets to be handled
-            await Task.Delay(100);
+            while (handler.QueuedPacketCount > 0)
+                await Task.Delay(10);
 
             handler.CheckWorkerCount();
 
