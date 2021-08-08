@@ -27,6 +27,7 @@ namespace SlipeServer.Packets.Definitions.Sync
         public Vector3 VecRotation { get; set; }
         public Vector3 VecMoveSpeed { get; set; }
         public ushort Model { get; set; }
+        public uint SourceElement { get; set; }
 
 
         public ProjectileSyncPacket()
@@ -51,7 +52,7 @@ namespace SlipeServer.Packets.Definitions.Sync
             this.WeaponType = reader.GetByte();
             this.Model = reader.GetUint16();
 
-            switch(WeaponType)
+            switch (WeaponType)
             {
                 case 16: // WEAPONTYPE_GRENADE
                 case 17: // WEAPONTYPE_TEARGAS
@@ -70,49 +71,69 @@ namespace SlipeServer.Packets.Definitions.Sync
                     this.VecRotation = reader.GetVector3();
 
                     break;
-                //case 58:            // WEAPONTYPE_FLARE
-                //case 21:            // WEAPONTYPE_FREEFALL_BOMB
-                //    break;
+                    //case 58:            // WEAPONTYPE_FLARE
+                    //case 21:            // WEAPONTYPE_FREEFALL_BOMB
+                    //    break;
 
-                //default:
-                //    break;
+                    //default:
+                    //    break;
             }
         }
 
         public override byte[] Write()
         {
             var builder = new PacketBuilder();
-
-            builder.WriteElementId(this.PlayerId);
-
-            this.SmallKeySyncStructure.Write(builder);
-
-            builder.WriteFloatFromBits(this.PlayerRotation, 12, -MathF.PI, MathF.PI, true);
-            builder.WriteFloatFromBits(this.CameraRotation, 12, -MathF.PI, MathF.PI, true);
-
-            this.KeySyncFlagsStructure.Write(builder);
-
-            if (this.SmallKeySyncStructure.ButtonCircle || this.SmallKeySyncStructure.RightShoulder1)
+            if (this.SourceElement != 0)
             {
-                builder.WriteCapped(this.WeaponSlot, 4);
+                builder.Write(true);
+                builder.WriteElementId(this.SourceElement);
 
-                if (WeaponConstants.weaponsWithAmmo.Contains(this.WeaponSlot))
-                {
-                    builder.WriteCompressed(this.TotalAmmo);
-                    builder.WriteCompressed(this.AmmoInClip);
-
-                    builder.Write((ushort)(this.AimArm * 90 * 180 * MathF.PI));
-                    builder.Write(this.AimOrigin);
-                    builder.WriteNormalizedVector(this.AimDirection);
-                    builder.Write((byte)this.VehicleAimDirection);
-                }
+                //unsigned short usLatency = static_cast<CPlayer*>(m_pSourceElement)->GetPing();
+                //BitStream.WriteCompressed(usLatency);
+                builder.WriteCompressed((ushort)0); // Latency
+            }
+            else
+            {
+                builder.Write(false);
             }
 
-            if (this.KeySyncFlagsStructure.IsSyncingVehicle)
+            if (OriginId != 0) // INVALID_ELEMENT_ID
             {
-                // write turret if vehicle has turret
-                // write hydraulics if upgrade present
-                // write should buttons if in plane or heli
+
+                builder.Write(true);
+                builder.WriteElementId(this.OriginId);
+            }
+            else
+            {
+                builder.Write(false);
+            }
+            builder.Write(this.VecOrigin);
+            builder.Write(this.WeaponType);
+            builder.Write(Model);
+            switch (WeaponType)
+            {
+                case 16:            // WEAPONTYPE_GRENADE
+                case 17:            // WEAPONTYPE_TEARGAS
+                case 18:            // WEAPONTYPE_MOLOTOV
+                case 39:            // WEAPONTYPE_REMOTE_SATCHEL_CHARGE
+                    builder.WriteFloat(Force, 7, 17);
+                    builder.WriteVelocityVector(VecMoveSpeed);
+                    break;
+                case 19:            // WEAPONTYPE_ROCKET
+                case 20:            // WEAPONTYPE_ROCKET_HS
+                    if (TargetId != 0) // INVALID_ELEMENT_ID
+                    {
+                        builder.Write(true);
+                        builder.WriteElementId(this.TargetId);
+
+                    }
+                    else
+                    {
+                        builder.Write(false);
+                    }
+                    builder.WriteVelocityVector(VecMoveSpeed);
+                    builder.Write(VecRotation);
+                    break;
             }
 
             return builder.Build();
