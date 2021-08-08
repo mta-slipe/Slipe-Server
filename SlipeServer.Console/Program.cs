@@ -48,7 +48,10 @@ namespace SlipeServer.Console
 
             var configurationProvider = args.Length > 0 ? GetConfigurationProvider(args[0]) : null;
 
-            Configuration? configuration = configurationProvider?.GetConfiguration();
+            Configuration? configuration = configurationProvider?.GetConfiguration() ?? new Configuration()
+            {
+                IsVoiceEnabled = true
+            };
             server = new MtaServer(
                 Directory.GetCurrentDirectory(),
                 @"net.dll",
