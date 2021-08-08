@@ -122,7 +122,8 @@ namespace SlipeServer.Server.Elements
 
         public void VoiceDataStart(byte[] voiceData)
         {
-            this.OnVoiceData?.Invoke(this, new PlayerVoiceStartArgs(this, voiceData));
+            if (!this.IsVoiceMuted)
+                this.OnVoiceData?.Invoke(this, new PlayerVoiceStartArgs(this, voiceData));
         }
 
         public void VoiceDataEnd()
