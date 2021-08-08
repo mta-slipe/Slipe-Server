@@ -106,12 +106,16 @@ void NetWrapper::testMethod() {
         //bitStream->Write(128.56f);
         //bitStream->WriteCompressed(0.56f);
 
-        int bitCount = bitStream->GetNumberOfBitsUsed();
+        bitStream->WriteString("Slipe Server 0.1.0 [Windows]");
+        bitStream->WriteString("1.5.8-9.0.0");
 
+        int bitCount = bitStream->GetNumberOfBitsUsed();
         bitStream->ResetReadPointer();
 
         for (int i = 0; i < bitCount; i++)
             std::cout << (i % 8 == 0 ? ", 0b" : "") << bitStream->ReadBit();
+
+        std::cout << "\n";
 
         network->DeallocateNetServerBitStream(bitStream);
     }

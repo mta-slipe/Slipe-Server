@@ -94,7 +94,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                 RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "Linux" :
                 RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD) ? "Free BSD" :
                 "Unknown";
-            client.SendPacket(new JoinCompletePacket($"Slipe Server 0.1.0 [{osName}]\0", "1.5.7-9.0.0"));
+            client.SendPacket(new JoinCompletePacket($"Slipe Server 0.1.0 [{osName}]", "1.5.8-9.0.0"));
 
             client.Player.RunAsSync(() =>
             {
