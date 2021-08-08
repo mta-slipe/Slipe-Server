@@ -1,10 +1,11 @@
 ﻿namespace SlipeServer.Packets.Enums
 {
-    public enum PacketPriority
+    public enum ChatEchoType : byte
     {
-        High = 0,
-        Medium,
-        Low,
-        Count
+        Player,
+        Action,
+        Team,
+        Private,
+        Internal
     };
 }

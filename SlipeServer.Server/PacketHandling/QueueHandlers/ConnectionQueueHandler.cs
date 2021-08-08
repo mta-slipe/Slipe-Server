@@ -20,6 +20,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         private readonly ILogger logger;
         private readonly MtaServer server;
         private readonly IElementRepository elementRepository;
+        private readonly ushort bitStreamVersion;
 
         public override IEnumerable<PacketId> SupportedPacketIds => new PacketId[] { 
             PacketId.PACKET_ID_PLAYER_JOIN,
@@ -43,12 +44,15 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             MtaServer server, 
             IElementRepository elementRepository, 
             int sleepInterval, 
-            int workerCount
+            int workerCount,
+            Configuration configuration
         ) : base(sleepInterval, workerCount)
         {
             this.logger = logger;
             this.server = server;
             this.elementRepository = elementRepository;
+
+            this.bitStreamVersion = configuration.BitStreamVersion;
         }
 
         protected override void HandlePacket(Client client, Packet packet)
@@ -79,7 +83,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
         private void HandleClientJoin(Client client)
         {
-            client.SendPacket(new ModNamePacket(0x06D, "deathmatch"));
+            client.SendPacket(new ModNamePacket(this.bitStreamVersion, "deathmatch"));
         }
 
         private void HandleClientJoinData(Client client, PlayerJoinDataPacket joinDataPacket)

@@ -84,11 +84,12 @@ namespace SlipeServer.Packets.Builder
 
         public static void WriteVelocityVector(this PacketBuilder builder, Vector3 vector)
         {
-            builder.Write(vector != Vector3.Zero);
-            if (vector.Length() == 0)
+            var length = vector.Length();
+            builder.Write(length != 0);
+            if (length == 0)
                 return;
 
-            builder.Write(vector.Length());
+            builder.Write(length);
             builder.WriteNormalizedVector(Vector3.Normalize(vector));
         }
     }

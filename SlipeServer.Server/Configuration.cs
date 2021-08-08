@@ -33,6 +33,8 @@ namespace SlipeServer.Server
 
         public float ExplosionSyncDistance { get; set; } = 400;
 
+        public ushort BitStreamVersion { get; set; } = 114;
+
         public bool IsVoiceEnabled { get; set; }
 
         public WeaponId[] BulletSyncEnabledWeapons { get; set; } = new WeaponId[] { 

@@ -2,6 +2,7 @@
 using System.Drawing;
 using Microsoft.Extensions.Logging;
 using SlipeServer.Packets.Definitions.Commands;
+using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Services;
 
@@ -28,7 +29,7 @@ namespace SlipeServer.Server.Behaviour
                         string newName = arguments.Arguments[0];
                         string message = $"{player.Name} has been renamed to {newName}";
                         player.Name = newName;
-                        chatBox.Output(message, Color.LightYellow, true, player);
+                        chatBox.Output(message, Color.LightYellow, true, ChatEchoType.Internal, player);
                         logger?.LogInformation(message);
                     }
                 };

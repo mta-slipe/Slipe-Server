@@ -111,6 +111,11 @@ namespace SlipeServer.Console
                 TargetPosition = new Vector3(10, 10, 5)
             }.AssociateWith(server);
             var vehicle = new Vehicle(602, new Vector3(-10, 5, 3)).AssociateWith(server);
+            var aircraft = new Vehicle(520, new Vector3(10, 5, 3)).AssociateWith(server);
+            var forklift = new Vehicle(530, new Vector3(20, 5, 3)).AssociateWith(server);
+            var forklift2 = new Vehicle(530, new Vector3(22, 5, 3)).AssociateWith(server);
+            var firetruck = new Vehicle(407, new Vector3(30, 5, 3)).AssociateWith(server);
+            var firetruck2 = new Vehicle(407, new Vector3(35, 5, 3)).AssociateWith(server);
 
             vehicle.PedEntered += async (sender, eventArgs) =>
             {

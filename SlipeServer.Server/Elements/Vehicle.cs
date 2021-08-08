@@ -21,8 +21,21 @@ namespace SlipeServer.Server.Elements
         public VehicleDamage Damage { get; set; }
         public byte Variant1 { get; set; } = 0;
         public byte Variant2 { get; set; } = 0;
-        public Vector2? TurretDirection { get; set; }
-        public ushort? AdjustableProperty { get; set; }
+
+        private Vector2? turretDirection;
+        public Vector2? TurretRotation
+        {
+            get => VehicleConstants.TurretModels.Contains((VehicleModel)this.Model) ? turretDirection ?? Vector2.Zero : null;
+            set => this.turretDirection = value;
+        }
+
+        private ushort? adjustableProperty;
+        public ushort? AdjustableProperty
+        {
+            get => VehicleConstants.AdjustablePropertyModels.Contains((VehicleModel)this.Model) ? adjustableProperty ?? 0 : null;
+            set => this.adjustableProperty = value;
+        }
+
         public float[] DoorRatios { get; set; }
         public VehicleUpgrade[] Upgrades { get; set; }
         public string PlateText { get; set; } = "";
@@ -43,7 +56,7 @@ namespace SlipeServer.Server.Elements
         public VehicleHandling? Handling { get; set; }
         public VehicleSirenSet? Sirens { get; set; }
 
-        public bool IsTrailer => VehicleConstants.TrailerModels.Contains(this.Model);
+        public bool IsTrailer => VehicleConstants.TrailerModels.Contains((VehicleModel)this.Model);
 
         public Ped? JackingPed { get; set; }
         public Ped? Driver
@@ -118,8 +131,8 @@ namespace SlipeServer.Server.Elements
 
         public byte GetMaxPassengers()
         {
-            if (VehicleConstants.SeatsPerVehicle.ContainsKey(this.Model))
-                return VehicleConstants.SeatsPerVehicle[this.Model];
+            if (VehicleConstants.SeatsPerVehicle.ContainsKey((VehicleModel)this.Model))
+                return VehicleConstants.SeatsPerVehicle[(VehicleModel)this.Model];
             return 4;
         }
 

@@ -2,6 +2,7 @@
 using System.Drawing;
 using Microsoft.Extensions.Logging;
 using SlipeServer.Packets.Definitions.Commands;
+using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Services;
 
@@ -21,7 +22,7 @@ namespace SlipeServer.Server.Behaviour
                     if(arguments.Command == "say")
                     {
                         string message = $"{player.Name}: {string.Join(' ', arguments.Arguments)}";
-                        chatBox.Output(message, Color.White, true, player);
+                        chatBox.Output(message, Color.White, true, ChatEchoType.Player, player);
                         logger?.LogInformation(message);
                     }
                 };
