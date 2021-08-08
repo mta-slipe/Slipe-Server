@@ -76,7 +76,8 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                         configuration.HttpPort, 
                         configuration.HttpUrl ?? "", 
                         configuration.HttpConnectionsPerClient, 
-                        1
+                        1,
+                        isVoiceEnabled: configuration.IsVoiceEnabled
                     ));
 
                     var otherPlayers = players

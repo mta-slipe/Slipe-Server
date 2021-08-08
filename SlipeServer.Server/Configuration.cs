@@ -35,6 +35,7 @@ namespace SlipeServer.Server
 
         public ushort BitStreamVersion { get; set; } = 114;
 
+        public bool IsVoiceEnabled { get; set; }
 
         public WeaponId[] BulletSyncEnabledWeapons { get; set; } = new WeaponId[] { 
             WeaponId.Colt,

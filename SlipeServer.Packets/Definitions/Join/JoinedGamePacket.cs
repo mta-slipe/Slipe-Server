@@ -40,10 +40,10 @@ namespace SlipeServer.Packets.Definitions.Join
             int httpConnectionsPerClient,
             int enableClientChecks,
             bool isFakeLagCommandEnabled = false,
-            bool isVoiceEnabled = false,
-            int voiceSampleRate = 0,
-            int voiceQuality = 0,
-            int voiceBitRate = 0)
+            bool isVoiceEnabled = true,
+            int voiceSampleRate = 2,
+            int voiceQuality = 4,
+            int voiceBitRate = 24600)
         {
             this.ClientId = clientId;
             this.PlayerCount = playerCount;
