@@ -16,6 +16,7 @@ namespace SlipeServer.Packets.Definitions.Commands
         public uint SourceId { get; set; }
         public string Message { get; set; }
         public Color Color { get; set; }
+        public byte MessageType { get; set; }
         public bool IsColorCoded { get; set; }
 
         public ChatEchoPacket()
@@ -23,11 +24,12 @@ namespace SlipeServer.Packets.Definitions.Commands
 
         }
 
-        public ChatEchoPacket(uint sourceId, string message, Color color, bool isColorCoded = false)
+        public ChatEchoPacket(uint sourceId, string message, Color color, ChatEchoType messageType, bool isColorCoded = false)
         {
             SourceId = sourceId;
             Message = message;
             Color = color;
+            MessageType = (byte)messageType;
             IsColorCoded = isColorCoded;
         }
 
@@ -43,6 +45,7 @@ namespace SlipeServer.Packets.Definitions.Commands
             builder.Write(this.Color);
             builder.Write(this.IsColorCoded);
             builder.WriteElementId(this.SourceId);
+            //builder.Write(this.MessageType); // to be added when upping bitstream version to 116
             builder.WriteStringWithoutLength(this.Message);
 
             return builder.Build();

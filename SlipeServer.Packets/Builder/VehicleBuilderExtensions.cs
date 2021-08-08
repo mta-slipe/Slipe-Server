@@ -12,15 +12,15 @@ namespace SlipeServer.Packets.Builder
 
         public static void WriteVehicleRotation(this PacketBuilder builder, Vector3 rotation)
         {
-            builder.Write((ushort)(rotation.X * (65536 / 360f)));
-            builder.Write((ushort)(rotation.Y * (65536 / 360f)));
-            builder.Write((ushort)(rotation.Z * (65536 / 360f)));
+            builder.Write((ushort)(rotation.X * (65536f / 360f)));
+            builder.Write((ushort)(rotation.Y * (65536f / 360f)));
+            builder.Write((ushort)(rotation.Z * (65536f / 360f)));
         }
 
         public static void WriteTurretRotation(this PacketBuilder builder, Vector2 rotation)
         {
-            builder.Write((ushort)(rotation.X * (32767.0f / MathF.PI)));
-            builder.Write((ushort)(rotation.Y * (32767.0f / MathF.PI)));
+            builder.Write((short)(rotation.X * (32767.0f / MathF.PI)));
+            builder.Write((short)(rotation.Y * (32767.0f / MathF.PI)));
         }        
     }
 }

@@ -15,8 +15,8 @@ namespace SlipeServer.Packets.Reader
         );
 
         public static Vector2 GetTurretRotation(this PacketReader reader) => new Vector2(
-            reader.GetUint16() / (32767.0f / MathF.PI),
-            reader.GetUint16() / (32767.0f / MathF.PI)
+            reader.GetInt16() / (32767.0f / MathF.PI),
+            reader.GetInt16() / (32767.0f / MathF.PI)
         );
     }
 }

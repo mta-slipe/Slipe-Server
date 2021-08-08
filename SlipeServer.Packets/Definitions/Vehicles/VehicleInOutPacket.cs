@@ -13,7 +13,7 @@ namespace SlipeServer.Packets.Definitions.Vehicles
 
         public override PacketPriority Priority => PacketPriority.High;
 
-        public uint PlayerId { get; set; }
+        public uint PedId { get; set; }
         public uint VehicleId { get; set; }
         public VehicleInOutAction ActionId { get; set; }
         public VehicleInOutActionReturns OutActionId { get; set; }
@@ -41,6 +41,7 @@ namespace SlipeServer.Packets.Definitions.Vehicles
         {
             var reader = new PacketReader(bytes);
 
+            this.PedId = reader.GetElementId();
             this.VehicleId = reader.GetElementId();
             this.ActionId = (VehicleInOutAction)reader.GetByteCapped(4);
 
@@ -83,7 +84,7 @@ namespace SlipeServer.Packets.Definitions.Vehicles
         {
             var builder = new PacketBuilder();
 
-            builder.WriteElementId(this.PlayerId);
+            builder.WriteElementId(this.PedId);
             builder.WriteElementId(this.VehicleId);
             builder.WriteCapped(this.Seat, 4);
             builder.WriteCapped((byte)this.OutActionId, 4);

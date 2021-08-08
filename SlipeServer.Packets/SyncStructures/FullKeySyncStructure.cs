@@ -39,7 +39,9 @@ namespace SlipeServer.Packets.Structures
             bool buttonCircle,
             bool buttonTriangle,
             bool shockButton,
-            bool pedWalk
+            bool pedWalk,
+            byte buttonSquareByte,
+            byte buttonCrossByte
         )
         {
             LeftStick = leftStick;
@@ -51,6 +53,8 @@ namespace SlipeServer.Packets.Structures
             ButtonTriangle = buttonTriangle;
             ShockButton = shockButton;
             PedWalk = pedWalk;
+            ButtonSquareByte = buttonSquareByte;
+            ButtonCrossByte = buttonCrossByte;
         }
 
         public void Read(PacketReader reader)
@@ -64,8 +68,8 @@ namespace SlipeServer.Packets.Structures
             RightShoulder1 = reader.GetBit();
             LeftShoulder1 = reader.GetBit();
 
-            //this.ButtonSquareByte = reader.GetBit() ? reader.GetByte() : (byte)0;
-            //this.ButtonCrossByte = reader.GetBit() ? reader.GetByte() : (byte)0;
+            this.ButtonSquareByte = reader.GetBit() ? reader.GetByte() : (byte)0;
+            this.ButtonCrossByte = reader.GetBit() ? reader.GetByte() : (byte)0;
 
             LeftStick = new Vector2(
                 (float)(reader.GetByte() * 128.0f / 127.0f),
@@ -86,6 +90,24 @@ namespace SlipeServer.Packets.Structures
                 RightShoulder1,
                 LeftShoulder1,
             });
+
+
+            if (ButtonSquareByte >= 1 && ButtonSquareByte <= 254)
+            {
+                builder.Write(true);
+                builder.Write(ButtonSquareByte);
+            }
+            else
+                builder.Write(false);
+
+            if (ButtonCrossByte >= 1 && ButtonCrossByte <= 254)
+            {
+                builder.Write(true);
+                builder.Write(ButtonCrossByte);
+            }
+            else
+                builder.Write(false);
+
             builder.Write(new byte[]
             {
                 (byte)((float)LeftStick.X * 127.0f / 128.0f),

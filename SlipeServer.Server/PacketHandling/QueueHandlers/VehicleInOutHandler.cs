@@ -167,7 +167,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
                         var replyPacket = new VehicleInOutPacket()
                         {
-                            PlayerId = client.Player.Id,
+                            PedId = client.Player.Id,
                             VehicleId = vehicle.Id,
                             Door = packet.Door,
                             Seat = 0,
@@ -194,7 +194,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
                         var replyPacket = new VehicleInOutPacket()
                         {
-                            PlayerId = client.Player.Id,
+                            PedId = client.Player.Id,
                             VehicleId = vehicle.Id,
                             Door = packet.Door,
                             OutActionId = VehicleInOutActionReturns.RequestJackConfirmed,
@@ -233,7 +233,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                     client.Player.Seat = seat;
                     var replyPacket = new VehicleInOutPacket()
                     {
-                        PlayerId = client.Player.Id,
+                        PedId = client.Player.Id,
                         VehicleId = vehicle.Id,
                         Seat = seat.Value,
                         Door = packet.Door,
@@ -248,7 +248,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         {
             var replyPacket = new VehicleInOutPacket()
             {
-                PlayerId = client.Player.Id,
+                PedId = client.Player.Id,
                 VehicleId = vehicle.Id,
                 FailReason = failReason,
                 OutActionId = VehicleInOutActionReturns.VehicleAttemptFailed,
@@ -269,7 +269,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
                     var replyPacket = new VehicleInOutPacket()
                     {
-                        PlayerId = client.Player.Id,
+                        PedId = client.Player.Id,
                         VehicleId = vehicle.Id,
                         Seat = client.Player.Seat ?? 0,
                         OutActionId = VehicleInOutActionReturns.NotifyInReturn,
@@ -289,7 +289,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
                 var replyPacket = new VehicleInOutPacket()
                 {
-                    PlayerId = client.Player.Id,
+                    PedId = client.Player.Id,
                     VehicleId = vehicle.Id,
                     Seat = packet.Seat,
                     Door = packet.Door,
@@ -306,7 +306,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             {
                 var errorReplyPacket = new VehicleInOutPacket()
                 {
-                    PlayerId = client.Player.Id,
+                    PedId = client.Player.Id,
                     VehicleId = vehicle.Id,
                     OutActionId = VehicleInOutActionReturns.VehicleAttemptFailed,
                 };
@@ -318,7 +318,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             {
                 var cancelReplyPacket = new VehicleInOutPacket()
                 {
-                    PlayerId = client.Player.Id,
+                    PedId = client.Player.Id,
                     VehicleId = vehicle.Id,
                     OutActionId = VehicleInOutActionReturns.VehicleAttemptFailed,
                 };
@@ -330,7 +330,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
             var replyPacket = new VehicleInOutPacket()
             {
-                PlayerId = client.Player.Id,
+                PedId = client.Player.Id,
                 VehicleId = vehicle.Id,
                 OutActionId = VehicleInOutActionReturns.RequestOutConfirmed,
                 Door = packet.Door
@@ -353,7 +353,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
             var replyPacket = new VehicleInOutPacket()
             {
-                PlayerId = client.Player.Id,
+                PedId = client.Player.Id,
                 VehicleId = vehicle.Id,
                 OutActionId = VehicleInOutActionReturns.NotifyOutReturn,
                 Seat = packet.Seat
@@ -374,7 +374,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
             var replyPacket = new VehicleInOutPacket()
             {
-                PlayerId = client.Player.Id,
+                PedId = client.Player.Id,
                 VehicleId = vehicle.Id,
                 OutActionId = VehicleInOutActionReturns.NotifyOutAbortReturn,
                 Seat = packet.Seat
@@ -395,7 +395,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
             var replyPacket = new VehicleInOutPacket()
             {
-                PlayerId = client.Player.Id,
+                PedId = client.Player.Id,
                 VehicleId = vehicle.Id,
                 OutActionId = VehicleInOutActionReturns.NotifyFellOffReturn,
                 Seat = packet.Seat
@@ -424,7 +424,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
                 var replyPacket = new VehicleInOutPacket()
                 {
-                    PlayerId = client.Player.Id,
+                    PedId = client.Player.Id,
                     PlayerInId = client.Player.Id,
                     PlayerOutId = jackedPlayer.Id,
                     VehicleId = vehicle.Id,
@@ -445,7 +445,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
             var replyPacket = new VehicleInOutPacket()
             {
-                PlayerId = client.Player.Id,
+                PedId = client.Player.Id,
                 VehicleId = vehicle.Id,
                 OutActionId = VehicleInOutActionReturns.NotifyInAbortReturn,
                 Seat = packet.Seat
@@ -463,7 +463,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
                 var jackReplyPacket = new VehicleInOutPacket()
                 {
-                    PlayerId = jackedPlayer.Id,
+                    PedId = jackedPlayer.Id,
                     VehicleId = vehicle.Id,
                     OutActionId = VehicleInOutActionReturns.NotifyOutReturn,
                     Seat = packet.Seat

@@ -3,7 +3,6 @@ using SlipeServer.Packets;
 using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Packets.Definitions.Vehicles;
 using SlipeServer.Packets.Enums;
-using SlipeServer.Server.Constants;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
@@ -76,12 +75,12 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                 player.Armor = packet.PlayerArmor;
 
                 if (packet.AimOrigin != null)
-                    player.AimOrigin = packet.AimOrigin.Value;
+                    player.AimOrigin = packet.AimOrigin;
                 if (packet.AimDirection != null)
-                    player.AimDirection = packet.AimDirection.Value;
+                    player.AimDirection = packet.AimDirection;
 
 
-                player.CurrentWeaponSlot = (WeaponSlot)packet.WeaponSlot;
+                player.CurrentWeaponSlot = (WeaponSlot)packet.WeaponSlot!;
                 if (player.CurrentWeapon != null && packet.WeaponAmmo != null && packet.WeaponAmmoInClip != null)
                 {
                     player.CurrentWeapon.UpdateAmmoCountWithoutTriggerEvent(packet.WeaponAmmo.Value, packet.WeaponAmmoInClip.Value);
@@ -108,12 +107,8 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                     vehicle.Health = packet.Health;
                     vehicle.Velocity = packet.Velocity;
                     vehicle.TurnVelocity = packet.TurnVelocity;
-
-                    if (packet.TurretRotation.HasValue)
-                        vehicle.TurretRotation = packet.TurretRotation;
-
-                    if (packet.AdjustableProperty.HasValue)
-                        vehicle.AdjustableProperty = packet.AdjustableProperty;
+                    vehicle.TurretRotation = packet.TurretRotation;
+                    vehicle.AdjustableProperty = packet.AdjustableProperty;
                 });
             }
         }
