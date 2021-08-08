@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlipeServer.Packets;
+using SlipeServer.Packets.Constants;
 using SlipeServer.Packets.Definitions.Join;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Reader;
 using SlipeServer.Packets.Rpc;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Extensions;
@@ -66,38 +68,71 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             switch (packet.FunctionId)
             {
                 case RpcFunctions.PLAYER_INGAME_NOTICE:
-                    var players = this.elementRepository.GetByType<Player>(ElementType.Player);
-
-                    client.SendPacket(new JoinedGamePacket(
-                        client.Player.Id,
-                        players.Count ()+ 1, 
-                        this.root.Id,
-                        configuration.HttpUrl != null ? HttpDownloadType.HTTP_DOWNLOAD_ENABLED_URL : HttpDownloadType.HTTP_DOWNLOAD_ENABLED_PORT, 
-                        configuration.HttpPort, 
-                        configuration.HttpUrl ?? "", 
-                        configuration.HttpConnectionsPerClient, 
-                        1,
-                        isVoiceEnabled: configuration.IsVoiceEnabled
-                    ));
-
-                    var otherPlayers = players
-                        .Except(new Player[] { client.Player })
-                        .ToArray();
-
-                    var existingPlayersListPacket = PlayerPacketFactory.CreatePlayerListPacket(otherPlayers, true);
-                    client.SendPacket(existingPlayersListPacket);
-
-                    var newPlayerListPacket = PlayerPacketFactory.CreatePlayerListPacket(new Player[] { client.Player }, false);
-                    newPlayerListPacket.SendTo(otherPlayers);
-
-                    this.server.HandlePlayerJoin(client.Player);
-
-                    SyncPacketFactory.CreateSyncSettingsPacket(this.configuration).SendTo(client.Player);
-
+                    HandleIngameNotice(client, packet);
                     break;
+
+                case RpcFunctions.PLAYER_WEAPON:
+                    HandlePlayerWeapon(client, packet);
+                    break;
+
                 default:
                     this.logger.LogWarning($"Received RPC of type {packet.FunctionId}");
                     break;
+            }
+        }
+
+        private void HandleIngameNotice(Client client, RpcPacket packet)
+        {
+            var players = this.elementRepository.GetByType<Player>(ElementType.Player);
+
+            client.SendPacket(new JoinedGamePacket(
+                client.Player.Id,
+                players.Count() + 1,
+                this.root.Id,
+                configuration.HttpUrl != null ? HttpDownloadType.HTTP_DOWNLOAD_ENABLED_URL : HttpDownloadType.HTTP_DOWNLOAD_ENABLED_PORT,
+                configuration.HttpPort,
+                configuration.HttpUrl ?? "",
+                configuration.HttpConnectionsPerClient,
+                1,
+                isVoiceEnabled: configuration.IsVoiceEnabled
+            ));
+
+            var otherPlayers = players
+                .Except(new Player[] { client.Player })
+                .ToArray();
+
+            var existingPlayersListPacket = PlayerPacketFactory.CreatePlayerListPacket(otherPlayers, true);
+            client.SendPacket(existingPlayersListPacket);
+
+            var newPlayerListPacket = PlayerPacketFactory.CreatePlayerListPacket(new Player[] { client.Player }, false);
+            newPlayerListPacket.SendTo(otherPlayers);
+
+            this.server.HandlePlayerJoin(client.Player);
+
+            SyncPacketFactory.CreateSyncSettingsPacket(this.configuration).SendTo(client.Player);
+        }
+
+        private void HandlePlayerWeapon(Client client, RpcPacket packet)
+        {
+            var previousSlot = client.Player.CurrentWeaponSlot;
+            if (packet.Reader.GetBit() && client.Player.CurrentWeapon != null && (
+                previousSlot == WeaponSlot.Projectiles ||
+                previousSlot == WeaponSlot.HeavyWeapons ||
+                previousSlot == WeaponSlot.Special1
+            ))
+            {
+                client.Player.CurrentWeapon.Ammo = 0;
+                client.Player.CurrentWeapon.AmmoInClip = 0;
+            }
+
+            var slot = packet.Reader.GetWeaponSlot();
+            client.Player.CurrentWeaponSlot = (WeaponSlot)slot;
+
+            if (WeaponConstants.slotsWithAmmo.Contains(slot) && client.Player.CurrentWeapon != null)
+            {
+                (var ammo, var inClip) = packet.Reader.GetAmmoTuple(true);
+                client.Player.CurrentWeapon.Ammo = ammo;
+                client.Player.CurrentWeapon.AmmoInClip = inClip;
             }
         }
     }

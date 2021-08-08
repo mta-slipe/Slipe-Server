@@ -15,11 +15,18 @@ namespace SlipeServer.Packets.Rpc
 
         public RpcFunctions FunctionId { get; private set; }
 
+        public PacketReader Reader { get; private set; }
+
+        public RpcPacket()
+        {
+            this.Reader = new PacketReader(new byte[0]);    
+        }
+
         public override void Read(byte[] bytes)
         {
-            PacketReader reader = new PacketReader(bytes);
+            this.Reader = new PacketReader(bytes);
 
-            this.FunctionId = (RpcFunctions)reader.GetByte();
+            this.FunctionId = (RpcFunctions)this.Reader.GetByte();
         }
 
         public override byte[] Write()

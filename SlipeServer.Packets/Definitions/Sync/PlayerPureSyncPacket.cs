@@ -5,17 +5,13 @@ using System.Collections.Generic;
 using System.Numerics;
 using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Reader;
+using SlipeServer.Packets.Constants;
 
 namespace SlipeServer.Packets.Definitions.Sync
 {
 
     public class PlayerPureSyncPacket : Packet
     {
-        static readonly HashSet<byte> slotsWithAmmo = new HashSet<byte>()
-        {
-            2, 3, 4, 5, 6, 7, 8, 9
-        };
-
         public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_PURESYNC;
         public override PacketReliability Reliability => PacketReliability.UnreliableSequenced;
         public override PacketPriority Priority => PacketPriority.Medium;
@@ -89,7 +85,7 @@ namespace SlipeServer.Packets.Definitions.Sync
                 this.WeaponType = reader.GetByte();
                 this.WeaponSlot = reader.GetByteCapped(4);
 
-                if (slotsWithAmmo.Contains(this.WeaponSlot))
+                if (WeaponConstants.slotsWithAmmo.Contains(this.WeaponSlot))
                 {
                     this.TotalAmmo = reader.GetAmmo();
                     this.AmmoInClip = reader.GetAmmo();
@@ -146,7 +142,7 @@ namespace SlipeServer.Packets.Definitions.Sync
             {
                 builder.WriteCapped(this.WeaponSlot, 4);
 
-                if (slotsWithAmmo.Contains(this.WeaponSlot))
+                if (WeaponConstants.slotsWithAmmo.Contains(this.WeaponSlot))
                 {
                     builder.WriteAmmo(null, this.AmmoInClip);
 
