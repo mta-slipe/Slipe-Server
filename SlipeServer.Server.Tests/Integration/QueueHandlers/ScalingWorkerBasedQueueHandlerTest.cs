@@ -113,11 +113,12 @@ namespace SlipeServer.Server.Tests.Integration.QueueHandlers
                 minWorkerCount: 1,
                 maxWorkerCount: 2,
                 newWorkerTimeout: 1,
-                queueHighThreshold: 10,
+                queueLowThreshold: 1,
+                queueHighThreshold: 2,
                 handleTimeout: 5
             );
 
-            for (int i = 1; i < 13; i++)
+            for (int i = 1; i < 5; i++)
             {
                 handler.EnqueuePacket(null, PacketId.PACKET_ID_PLAYER_NO_SOCKET, Array.Empty<byte>());
             }
