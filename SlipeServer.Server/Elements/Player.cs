@@ -130,6 +130,12 @@ namespace SlipeServer.Server.Elements
             this.OnVoiceDataEnd.Invoke(this, new PlayerVoiceEndArgs(this));
         }
 
+        public void TriggerDisconnected(QuitReason reason)
+        {
+            this.Disconnected?.Invoke(this, new PlayerQuitEventArgs(reason));
+            this.Destroy();
+        }
+
         public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
         public event EventHandler<PlayerDamagedEventArgs>? Damaged;
         public event EventHandler<PlayerWastedEventArgs>? Wasted;
@@ -137,5 +143,6 @@ namespace SlipeServer.Server.Elements
         public event EventHandler<PlayerCommandEventArgs>? OnCommand;
         public event EventHandler<PlayerVoiceStartArgs> OnVoiceData;
         public event EventHandler<PlayerVoiceEndArgs> OnVoiceDataEnd;
+        public event EventHandler<PlayerQuitEventArgs>? Disconnected;
     }
 }
