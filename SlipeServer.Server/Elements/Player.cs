@@ -148,9 +148,9 @@ namespace SlipeServer.Server.Elements
             this.Destroy();
         }
 
-        public void TakeScreenshot(ushort width, ushort height)
+        public void TakeScreenshot(ushort width, ushort height, byte quality = 30)
         {
-            this.Client.SendPacket(ElementPacketFactory.CreateTakePlayerScreenshotPacket(this, width, height, "", 30, 5000, 500, null));
+            this.Client.SendPacket(ElementPacketFactory.CreateTakePlayerScreenshotPacket(this, width, height, "", quality, 5000, 500, null));
         }
 
         internal void ScreenshotEnd(int screenshotId)
