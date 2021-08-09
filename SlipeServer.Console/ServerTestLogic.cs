@@ -182,6 +182,9 @@ namespace SlipeServer.Console
                 if (args.Command == "ts")
                     player.TakeScreenshot(256, 256);
 
+                if (args.Command == "tshq")
+                    player.TakeScreenshot(960, 540, 70);
+
                 if (args.Command == "ping")
                     chatBox.OutputTo(player, $"Your ping is {player.Client.Ping}", Color.YellowGreen);
             };
@@ -215,11 +218,11 @@ namespace SlipeServer.Console
 
         private void Player_OnScreenshot(object? o, Server.Elements.Events.ScreenshotEventArgs e)
         {
-            using (FileStream file = new FileStream("screenshot.jpg", FileMode.Create, FileAccess.Write))
-            {
-                e.Stream.CopyTo(file);
-            }
-            //throw new NotImplementedException();
+            if(e.Stream != null)
+                using (FileStream file = new FileStream("screenshot.jpg", FileMode.Create, FileAccess.Write))
+                {
+                    e.Stream.CopyTo(file);
+                }
         }
 
         private void TriggerTestEvent(Player player)
