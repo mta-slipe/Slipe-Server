@@ -178,6 +178,9 @@ namespace SlipeServer.Console
                 if (args.Command == "fire")
                     this.fireService.CreateFire(player.Position);
 
+                if (args.Command == "ts")
+                    player.TakeScreenshot(256, 256);
+
                 if (args.Command == "ping")
                     chatBox.OutputTo(player, $"Your ping is {player.Client.Ping}", Color.YellowGreen);
             };

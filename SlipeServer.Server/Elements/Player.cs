@@ -136,6 +136,10 @@ namespace SlipeServer.Server.Elements
             this.Disconnected?.Invoke(this, new PlayerQuitEventArgs(reason));
             this.Destroy();
         }
+        public void TakeScreenshot(ushort width, ushort height)
+        {
+            this.Client.SendPacket(ElementPacketFactory.CreateTakePlayerScreenshotPacket(this, width, height, "", 30, 5000, 500, null));
+        }
 
         public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
         public event EventHandler<PlayerDamagedEventArgs>? Damaged;
