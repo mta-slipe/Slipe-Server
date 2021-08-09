@@ -119,6 +119,7 @@ namespace SlipeServer.Console
 
         private void SetupQueueHandlers()
         {
+            server.RegisterPacketQueueHandler<ExplosionSyncQueueHandler>(10, 1);
             server.RegisterPacketQueueHandler<ConnectionQueueHandler>(10, 1);
             server.RegisterPacketQueueHandler<RpcQueueHandler>(10, 1);
             server.RegisterPacketQueueHandler<SyncQueueHandler>(QueueHandlerScalingConfig.Aggressive, 10);

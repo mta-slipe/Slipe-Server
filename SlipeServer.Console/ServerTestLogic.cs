@@ -176,6 +176,15 @@ namespace SlipeServer.Console
                 if (args.Command == "assault")
                     player.CurrentWeaponSlot = WeaponSlot.AssaultRifles;
 
+                if (args.Command == "rocket")
+                    player.CurrentWeapon = new Weapon(WeaponId.RocketLauncher, 500);
+
+                if (args.Command == "shootrocket")
+                {
+                    var position = player.Position + new Vector3(0, 0, 0.7f);
+                    this.worldService.CreateProjectile(position, player.Rotation, player);
+                }
+
                 if (args.Command == "fire")
                     this.fireService.CreateFire(player.Position);
 
