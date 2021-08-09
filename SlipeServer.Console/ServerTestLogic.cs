@@ -13,6 +13,7 @@ using SlipeServer.Server.Services;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
@@ -185,6 +186,8 @@ namespace SlipeServer.Console
                     chatBox.OutputTo(player, $"Your ping is {player.Client.Ping}", Color.YellowGreen);
             };
 
+            player.OnScreenshot += Player_OnScreenshot;
+
             //player.AddWeapon(WeaponId.Ak47, 500, true);
             //player.AddWeapon(WeaponId.Tec9, 500, true);
             //player.AddWeapon(WeaponId.Sniper, 500, true);
@@ -208,6 +211,15 @@ namespace SlipeServer.Console
             player.Weapons.First(weapon => weapon.Type == WeaponId.Ak47).AmmoInClip = 25;
             
             this.testResource?.StartFor(player);
+        }
+
+        private void Player_OnScreenshot(object? o, Server.Elements.Events.ScreenshotEventArgs e)
+        {
+            using (FileStream file = new FileStream("screenshot.jpg", FileMode.Create, FileAccess.Write))
+            {
+                e.Stream.CopyTo(file);
+            }
+            //throw new NotImplementedException();
         }
 
         private void TriggerTestEvent(Player player)

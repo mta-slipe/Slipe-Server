@@ -11,7 +11,7 @@ namespace SlipeServer.Packets.Definitions.Player
     public enum ScreenshotStatus : byte
     {
         Unknown,
-        HasImage,
+        Success,
         Minimalized,
         Disabled,
         Error,
@@ -23,6 +23,7 @@ namespace SlipeServer.Packets.Definitions.Player
         public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
         public override PacketPriority Priority => PacketPriority.High;
 
+        public ScreenshotStatus Status { get; set; }
         public ushort ScreenshotId { get; set; }
         public ushort PartNumber { get; set; }
         public long ServerGrabTime { get; set; }
@@ -33,6 +34,7 @@ namespace SlipeServer.Packets.Definitions.Player
         public string Tag { get; set; }
         public string Error { get; set; }
 
+        public byte[] Buffer { get; set; }
         //CBuffer m_buffer;
 
         public PlayerScreenshotPacket(
@@ -44,6 +46,32 @@ namespace SlipeServer.Packets.Definitions.Player
         {
             var reader = new PacketReader(bytes);
 
+            Status = (ScreenshotStatus)reader.GetByte();
+
+            switch (Status)
+            {
+                case ScreenshotStatus.Success:
+                    ScreenshotId = reader.GetUint16();
+                    PartNumber = reader.GetUint16();
+                    ushort partBytes = reader.GetUint16();
+                    Buffer = reader.GetBytes(partBytes);
+                    if(PartNumber == 0)
+                    {
+                        ServerGrabTime = reader.GetUint32();
+                        TotalBytes = reader.GetUint32();
+                        TotalParts = reader.GetUint16();
+                    }
+                    break;
+                case ScreenshotStatus.Unknown:
+                    break;
+                case ScreenshotStatus.Minimalized:
+                case ScreenshotStatus.Disabled:
+                case ScreenshotStatus.Error:
+
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
         }
 
         public override byte[] Write()

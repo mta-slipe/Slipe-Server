@@ -4,10 +4,19 @@ using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.PacketHandling.Factories;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Numerics;
 
 namespace SlipeServer.Server.Elements
 {
+    public class PlayerPendingScreenshot
+    {
+        public MemoryStream Stream { get; init; }
+        public string? ErrorMessage { get; set; } = null;
+        public uint TotalParts { get; set; }
+    }
+
     public class Player: Ped
     {
         public override ElementType ElementType => ElementType.Player;
@@ -48,6 +57,8 @@ namespace SlipeServer.Server.Elements
         public bool IsStealthAiming { get; set; }
         public bool IsVoiceMuted { get; set; }
         public bool IsChatMuted { get; set; }
+
+        public Dictionary<int, PlayerPendingScreenshot> PendingScreenshots { get; } = new Dictionary<int, PlayerPendingScreenshot>();
 
         protected internal Player(Client client) : base(0, Vector3.Zero)
         {
@@ -136,9 +147,20 @@ namespace SlipeServer.Server.Elements
             this.Disconnected?.Invoke(this, new PlayerQuitEventArgs(reason));
             this.Destroy();
         }
+
         public void TakeScreenshot(ushort width, ushort height)
         {
             this.Client.SendPacket(ElementPacketFactory.CreateTakePlayerScreenshotPacket(this, width, height, "", 30, 5000, 500, null));
+        }
+
+        internal void ScreenshotEnd(int screenshotId)
+        {
+            var pendingScreenshot = PendingScreenshots[screenshotId];
+            using(var stream = pendingScreenshot.Stream)
+            {
+                this.OnScreenshot?.Invoke(this, new ScreenshotEventArgs(pendingScreenshot.Stream, pendingScreenshot.ErrorMessage));
+            }
+            PendingScreenshots.Remove(screenshotId);
         }
 
         public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
@@ -149,5 +171,6 @@ namespace SlipeServer.Server.Elements
         public event EventHandler<PlayerVoiceStartArgs> OnVoiceData;
         public event EventHandler<PlayerVoiceEndArgs> OnVoiceDataEnd;
         public event EventHandler<PlayerQuitEventArgs>? Disconnected;
+        public event EventHandler<ScreenshotEventArgs>? OnScreenshot;
     }
 }
