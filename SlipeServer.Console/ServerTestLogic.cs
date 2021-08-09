@@ -180,8 +180,7 @@ namespace SlipeServer.Console
 
                 if (args.Command == "shootrocket")
                 {
-                    var position = player.Position;
-                    position.Z += 0.7f;
+                    var position = player.Position + new Vector3(0, 0, 0.7f);
                     this.worldService.CreateProjectile(position, player.Rotation, player);
                 }
 

@@ -63,7 +63,7 @@ namespace SlipeServer.Packets.Definitions.Sync
                 case 17: // WEAPONTYPE_TEARGAS
                 case 18: // WEAPONTYPE_MOLOTOV
                 case 39: // WEAPONTYPE_REMOTE_SATCHEL_CHARGE
-                    this.Force = reader.GetFloatFromBits(24, -128, 128); // 7 integer bits, 2^7 = 128
+                    this.Force = reader.GetFloatFromBits(24, -128, 128);
                     this.VecMoveSpeed = reader.GetVelocityVector();
                     break;
                 case 19: // WEAPONTYPE_ROCKET
@@ -76,12 +76,6 @@ namespace SlipeServer.Packets.Definitions.Sync
                     this.VecRotation = reader.GetVector3();
 
                     break;
-                    //case 58:            // WEAPONTYPE_FLARE
-                    //case 21:            // WEAPONTYPE_FREEFALL_BOMB
-                    //    break;
-
-                    //default:
-                    //    break;
             }
         }
 
@@ -100,7 +94,7 @@ namespace SlipeServer.Packets.Definitions.Sync
                 builder.Write(false);
             }
 
-            if (OriginId != 0) // INVALID_ELEMENT_ID
+            if (OriginId != 0)
             {
                 builder.Write(true);
                 builder.WriteElementId(this.OriginId);
