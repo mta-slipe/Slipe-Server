@@ -36,14 +36,13 @@ namespace SlipeServer.Packets.Definitions.Sync
 
         }
 
-        public ProjectileSyncPacket(Vector3 origin, Vector3 target, uint sourceElement)
+        public ProjectileSyncPacket(Vector3 origin, Vector3 direction, uint sourceElement)
         {
-            Model = 345;
+            this.Model = 345;
             this.SourceElement = sourceElement;
-            WeaponType = 19;
+            this.WeaponType = 19;
             this.VecOrigin = origin;
-            this.VecTarget = target;
-            VecMoveSpeed = new Vector3(0, 0, -1);
+            this.VecMoveSpeed = direction;
         }
 
         public override void Read(byte[] bytes)

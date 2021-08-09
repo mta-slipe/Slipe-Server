@@ -371,9 +371,10 @@ namespace SlipeServer.Server.Services
             return new Tuple<byte, byte>(hour, minute);
         }
 
-        public void CreateProjectile(Vector3 from, Vector3 direction, uint sourceElement)
+        // Source element is required by client.
+        public void CreateProjectile(Vector3 from, Vector3 direction, Element sourceElement)
         {
-            this.server.BroadcastPacket(new ProjectileSyncPacket(from, direction, sourceElement));
+            this.server.BroadcastPacket(new ProjectileSyncPacket(from, direction, sourceElement.Id));
         }
 
         #endregion

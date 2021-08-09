@@ -15,6 +15,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 {
     public class SyncQueueHandler : WorkerBasedQueueHandler
     {
+        private readonly Configuration configuration;
         private readonly ILogger logger;
         private readonly IElementRepository elementRepository;
         public override IEnumerable<PacketId> SupportedPacketIds => new PacketId[] 
@@ -34,12 +35,14 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         };
 
         public SyncQueueHandler(
+            Configuration configuration,
             ILogger logger,
             IElementRepository elementRepository, 
             int sleepInterval, 
             int workerCount
         ): base(sleepInterval, workerCount)
         {
+            this.configuration = configuration;
             this.logger = logger;
             this.elementRepository = elementRepository;
         }
@@ -93,7 +96,13 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
         private void HandleProjectileSyncPacket(Client client, ProjectileSyncPacket packet)
         {
-            throw new NotImplementedException();
+            var nearbyPlayers = this.elementRepository.GetWithinRange<Player>(
+                packet.VecOrigin,
+                this.configuration.ExplosionSyncDistance,
+                ElementType.Player
+            );
+
+            packet.SendTo(nearbyPlayers);
         }
 
         private void HandleClientPureSyncPacket(Client client, PlayerPureSyncPacket packet)

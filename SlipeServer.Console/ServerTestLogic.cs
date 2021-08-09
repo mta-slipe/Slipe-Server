@@ -178,10 +178,11 @@ namespace SlipeServer.Console
                 if (args.Command == "rocket")
                     player.CurrentWeapon = new Weapon(WeaponId.RocketLauncher, 500);
 
-                if (args.Command == "droprocket")
+                if (args.Command == "shootrocket")
                 {
-                    this.worldService.CreateProjectile(new Vector3(0,0,10), new Vector3(0,0,-1), player.Id);
-                    this.debugLog.OutputTo(player, "DropRocket", DebugLevel.Information);
+                    var position = player.Position;
+                    position.Z += 0.7f;
+                    this.worldService.CreateProjectile(position, player.Rotation, player);
                 }
 
                 if (args.Command == "fire")
