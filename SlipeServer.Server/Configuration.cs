@@ -23,7 +23,7 @@ namespace SlipeServer.Server
 
         public string HttpHost { get; set; } = "*";
 
-        public ushort HttpPort { get; set; } = 40685;
+        public ushort HttpPort { get; set; } = 40680;
 
         public string? HttpUrl { get; set; }
 
