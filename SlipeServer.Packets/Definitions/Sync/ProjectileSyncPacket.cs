@@ -36,11 +36,11 @@ namespace SlipeServer.Packets.Definitions.Sync
 
         }
 
-        public ProjectileSyncPacket(Vector3 origin, Vector3 direction, uint sourceElement)
+        public ProjectileSyncPacket(Vector3 origin, Vector3 direction, uint sourceElement, byte weaponType, ushort model)
         {
-            this.Model = 345;
+            this.Model = model;
             this.SourceElement = sourceElement;
-            this.WeaponType = 19;
+            this.WeaponType = weaponType;
             this.VecOrigin = origin;
             this.VecMoveSpeed = direction;
         }

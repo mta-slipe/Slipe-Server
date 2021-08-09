@@ -371,9 +371,9 @@ namespace SlipeServer.Server.Services
             return new Tuple<byte, byte>(hour, minute);
         }
 
-        public void CreateProjectile(Vector3 from, Vector3 direction, Element sourceElement)
+        public void CreateProjectile(Vector3 from, Vector3 direction, Element sourceElement, WeaponType weaponType = WeaponType.WEAPONTYPE_ROCKET, ushort model = 345)
         {
-            this.server.BroadcastPacket(new ProjectileSyncPacket(from, direction, sourceElement.Id));
+            this.server.BroadcastPacket(new ProjectileSyncPacket(from, direction, sourceElement.Id, (byte)weaponType, model));
         }
 
         #endregion
