@@ -10,11 +10,13 @@ namespace SlipeServer.Server.Elements.Events
     {
         public Stream Stream { get; }
         public string? ErrorMessage { get; }
+        public string Tag { get; set; }
 
-        public ScreenshotEventArgs(Stream stream, string? errorMessage)
+        public ScreenshotEventArgs(Stream stream, string? errorMessage, string tag)
         {
             Stream = stream;
             ErrorMessage = errorMessage;
+            Tag = tag;
         }
     }
 }

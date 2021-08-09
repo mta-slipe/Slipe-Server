@@ -12,9 +12,10 @@ namespace SlipeServer.Server.Elements
 {
     public class PlayerPendingScreenshot
     {
-        public MemoryStream Stream { get; init; }
-        public string? ErrorMessage { get; set; } = null;
-        public uint TotalParts { get; set; }
+        public MemoryStream? Stream { get; init; }
+        public string? ErrorMessage { get; init; }
+        public string Tag { get; init; } = "";
+        public uint TotalParts { get; init; }
     }
 
     public class Player: Ped
@@ -148,9 +149,10 @@ namespace SlipeServer.Server.Elements
             this.Destroy();
         }
 
-        public void TakeScreenshot(ushort width, ushort height, byte quality = 30)
+        public void TakeScreenshot(ushort width, ushort height, string tag = "", byte quality = 30, uint maxBandwith = 5000, ushort maxPacketSize = 500)
         {
-            this.Client.SendPacket(ElementPacketFactory.CreateTakePlayerScreenshotPacket(this, width, height, "", quality, 5000, 500, null));
+            quality = Math.Clamp(quality, (byte)0, (byte)100);
+            this.Client.SendPacket(ElementPacketFactory.CreateTakePlayerScreenshotPacket(this, width, height, tag, quality, maxBandwith, maxPacketSize, null));
         }
 
         internal void ScreenshotEnd(int screenshotId)
@@ -158,7 +160,7 @@ namespace SlipeServer.Server.Elements
             var pendingScreenshot = PendingScreenshots[screenshotId];
             using(var stream = pendingScreenshot.Stream)
             {
-                this.OnScreenshot?.Invoke(this, new ScreenshotEventArgs(pendingScreenshot.Stream, pendingScreenshot.ErrorMessage));
+                this.OnScreenshot?.Invoke(this, new ScreenshotEventArgs(pendingScreenshot.Stream, pendingScreenshot.ErrorMessage, pendingScreenshot.Tag));
             }
             PendingScreenshots.Remove(screenshotId);
         }

@@ -189,10 +189,10 @@ namespace SlipeServer.Console
                     this.fireService.CreateFire(player.Position);
 
                 if (args.Command == "ts")
-                    player.TakeScreenshot(256, 256);
+                    player.TakeScreenshot(256, 256, "lowqualitytag", 30);
 
                 if (args.Command == "tshq")
-                    player.TakeScreenshot(960, 540, 70);
+                    player.TakeScreenshot(960, 540, "highqualitytag", 70);
 
                 if (args.Command == "ping")
                     chatBox.OutputTo(player, $"Your ping is {player.Client.Ping}", Color.YellowGreen);
@@ -228,10 +228,16 @@ namespace SlipeServer.Console
         private void Player_OnScreenshot(object? o, Server.Elements.Events.ScreenshotEventArgs e)
         {
             if(e.Stream != null)
-                using (FileStream file = new FileStream("screenshot.jpg", FileMode.Create, FileAccess.Write))
+                using (FileStream file = new FileStream($"screenshot_${e.Tag}.jpg", FileMode.Create, FileAccess.Write))
                 {
                     e.Stream.CopyTo(file);
                 }
+            else
+            {
+                Player? player = (Player?)o;
+                logger.LogWarning($"Failed to take a screenshot ({e.Tag}) of player: {player?.Name}, reason: {e.ErrorMessage}");
+
+            }
         }
 
         private void TriggerTestEvent(Player player)

@@ -79,16 +79,31 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                         {
                             Stream = new MemoryStream((int)screenshotPacket.TotalBytes),
                             TotalParts = screenshotPacket.TotalParts,
+                            Tag = screenshotPacket.Tag,
                         };
                     }
                 }
+                else
+                {
+
+                    client.Player.PendingScreenshots[screenshotPacket.ScreenshotId] = new PlayerPendingScreenshot
+                    {
+                        ErrorMessage = screenshotPacket.Error,
+                        Tag = screenshotPacket.Tag,
+                    };
+                    client.Player.ScreenshotEnd(screenshotPacket.ScreenshotId);
+                    return;
+                }
             }
             var pendingScreenshot = client.Player.PendingScreenshots[screenshotPacket.ScreenshotId];
-            pendingScreenshot.Stream.Write(screenshotPacket.Buffer);
-            if (pendingScreenshot.TotalParts == screenshotPacket.PartNumber + 1)
+            if (pendingScreenshot.Stream != null)
             {
-                pendingScreenshot.Stream.Seek(0, SeekOrigin.Begin);
-                client.Player.ScreenshotEnd(screenshotPacket.ScreenshotId);
+                pendingScreenshot.Stream.Write(screenshotPacket.Buffer);
+                if (pendingScreenshot.TotalParts == screenshotPacket.PartNumber + 1)
+                {
+                    pendingScreenshot.Stream.Seek(0, SeekOrigin.Begin);
+                    client.Player.ScreenshotEnd(screenshotPacket.ScreenshotId);
+                }
             }
         }
     }

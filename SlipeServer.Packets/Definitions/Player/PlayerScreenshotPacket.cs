@@ -35,7 +35,6 @@ namespace SlipeServer.Packets.Definitions.Player
         public string Error { get; set; }
 
         public byte[] Buffer { get; set; }
-        //CBuffer m_buffer;
 
         public PlayerScreenshotPacket(
         )
@@ -60,6 +59,8 @@ namespace SlipeServer.Packets.Definitions.Player
                         ServerGrabTime = reader.GetUint32();
                         TotalBytes = reader.GetUint32();
                         TotalParts = reader.GetUint16();
+                        ResourceId = reader.GetUint16();
+                        Tag = reader.GetString();
                     }
                     break;
                 case ScreenshotStatus.Unknown:
@@ -67,7 +68,13 @@ namespace SlipeServer.Packets.Definitions.Player
                 case ScreenshotStatus.Minimalized:
                 case ScreenshotStatus.Disabled:
                 case ScreenshotStatus.Error:
-
+                    ServerGrabTime = reader.GetUint32();
+                    ResourceId = reader.GetUint16();
+                    Tag = reader.GetString();
+                    if (!reader.IsFinishedReading)
+                        Error = reader.GetString();
+                    else
+                        Error = Status.ToString();
                     break;
                 default:
                     throw new NotImplementedException();
