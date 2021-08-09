@@ -16,13 +16,15 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 {
     public class SyncQueueHandler : ScalingWorkerBasedQueueHandler
     {
+        private readonly Configuration configuration;
         private readonly ILogger logger;
         private readonly IElementRepository elementRepository;
         public override IEnumerable<PacketId> SupportedPacketIds => new PacketId[] 
         { 
-            PacketId.PACKET_ID_CAMERA_SYNC, 
-            PacketId.PACKET_ID_PLAYER_KEYSYNC, 
-            PacketId.PACKET_ID_PLAYER_PURESYNC 
+            PacketId.PACKET_ID_CAMERA_SYNC,
+            PacketId.PACKET_ID_PLAYER_KEYSYNC,
+            PacketId.PACKET_ID_PLAYER_PURESYNC,
+            PacketId.PACKET_ID_PROJECTILE
         };
 
         protected override Dictionary<PacketId, Type> PacketTypes { get; } = new Dictionary<PacketId, Type>()
@@ -30,15 +32,18 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             [PacketId.PACKET_ID_CAMERA_SYNC] = typeof(CameraSyncPacket),
             [PacketId.PACKET_ID_PLAYER_KEYSYNC] = typeof(KeySyncPacket),
             [PacketId.PACKET_ID_PLAYER_PURESYNC] = typeof(PlayerPureSyncPacket),
+            [PacketId.PACKET_ID_PROJECTILE] = typeof(ProjectileSyncPacket),
         };
 
         public SyncQueueHandler(
+            Configuration configuration,
             ILogger logger,
             IElementRepository elementRepository, 
             int sleepInterval, 
             QueueHandlerScalingConfig config
         ): base(config, sleepInterval)
         {
+            this.configuration = configuration;
             this.logger = logger;
             this.elementRepository = elementRepository;
         }
@@ -57,6 +62,9 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                         break;
                     case PlayerPureSyncPacket playerPureSyncPacket:
                         HandleClientPureSyncPacket(client, playerPureSyncPacket);
+                        break;
+                    case ProjectileSyncPacket projectileSyncPacket:
+                        HandleProjectileSyncPacket(client, projectileSyncPacket);
                         break;
                 }
             } catch (Exception e)
@@ -86,6 +94,17 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         {
             packet.PlayerId = client.Player.Id;
             packet.SendTo(this.elementRepository.GetByType<Player>(ElementType.Player).Where(p => p.Client != client));
+        }
+
+        private void HandleProjectileSyncPacket(Client client, ProjectileSyncPacket packet)
+        {
+            var nearbyPlayers = this.elementRepository.GetWithinRange<Player>(
+                packet.VecOrigin,
+                this.configuration.ExplosionSyncDistance,
+                ElementType.Player
+            );
+
+            packet.SendTo(nearbyPlayers);
         }
 
         private void HandleClientPureSyncPacket(Client client, PlayerPureSyncPacket packet)
