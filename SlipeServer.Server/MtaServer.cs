@@ -18,6 +18,7 @@ using SlipeServer.Server.Events;
 using SlipeServer.Server.Services;
 using SlipeServer.Server.Resources.ResourceServing;
 using SlipeServer.Server.Enums;
+using SlipeServer.Server.PacketHandling.QueueHandlers.SyncMiddleware;
 
 namespace SlipeServer.Server
 {
@@ -190,6 +191,7 @@ namespace SlipeServer.Server
             this.serviceCollection.AddSingleton<IResourceServer, BasicHttpServer>();
             this.serviceCollection.AddSingleton<IElementIdGenerator, RepositoryBasedElementIdGenerator>();
             this.serviceCollection.AddSingleton<IAseQueryService, AseQueryService>();
+            this.serviceCollection.AddSingleton(typeof(ISyncHandlerMiddleware<>), typeof(BasicSyncHandlerMiddleware<>));
 
             this.serviceCollection.AddSingleton<GameWorld>();
             this.serviceCollection.AddSingleton<ChatBox>();
