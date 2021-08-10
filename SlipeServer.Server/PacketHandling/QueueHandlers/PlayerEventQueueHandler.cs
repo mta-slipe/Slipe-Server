@@ -16,11 +16,12 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         private readonly ILogger logger;
         private readonly MtaServer server;
         private readonly IElementRepository elementRepository;
-        public override IEnumerable<PacketId> SupportedPacketIds => new PacketId[] { PacketId.PACKET_ID_PLAYER_WASTED };
+        public override IEnumerable<PacketId> SupportedPacketIds => PacketTypes.Keys;
 
         protected override Dictionary<PacketId, Type> PacketTypes { get; } = new Dictionary<PacketId, Type>()
         {
             [PacketId.PACKET_ID_PLAYER_WASTED] = typeof(PlayerWastedPacket),
+            [PacketId.PACKET_ID_PLAYER_DIAGNOSTIC] = typeof(PlayerDiagnosticPacket),
         };
 
         public PlayerEventQueueHandler(
@@ -45,12 +46,20 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                     case PlayerWastedPacket wastedPacket:
                         HandlePlayerWasted(client, wastedPacket);
                         break;
+                    case PlayerDiagnosticPacket diagnosticPacket:
+                        HandlePlayerDiagnostic(client, diagnosticPacket);
+                        break;
                 }
             }
             catch (Exception e)
             {
                 this.logger.LogError($"Handling packet ({packet.PacketId}) failed.\n{e.Message}");
             }
+        }
+
+        private void HandlePlayerDiagnostic(Client client, PlayerDiagnosticPacket diagnosticPacket)
+        {
+
         }
 
         private void HandlePlayerWasted(Client client, PlayerWastedPacket wastedPacket)
