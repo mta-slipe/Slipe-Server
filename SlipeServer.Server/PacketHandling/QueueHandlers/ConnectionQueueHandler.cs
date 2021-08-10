@@ -89,7 +89,6 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
         private void HandleClientJoinData(Client client, PlayerJoinDataPacket joinDataPacket)
         {
-            client.SendPacket(new UpdateInfoPacket("Mandatory", "2.0.0"));
             HandleClientQuit(client, QuitReason.Quit);
 
             string osName =

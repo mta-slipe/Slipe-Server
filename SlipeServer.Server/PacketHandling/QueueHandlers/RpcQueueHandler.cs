@@ -1,7 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using SlipeServer.Packets;
 using SlipeServer.Packets.Constants;
 using SlipeServer.Packets.Definitions.Join;
+using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
 using SlipeServer.Packets.Rpc;
@@ -84,6 +85,20 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         private void HandleIngameNotice(Client client, RpcPacket packet)
         {
             var players = this.elementRepository.GetByType<Player>(ElementType.Player);
+
+            var isVersionValid = Version.TryParse(string.Join(".", client.Version.Replace("-", ".").Split(".").Take(4)), out Version result);
+            if (!isVersionValid)
+            {
+                client.Player.Kick(PlayerDisconnectType.BAD_VERSION);
+                return;
+            }
+
+            if (result < configuration.MinVersion)
+            {
+                client.SendPacket(new UpdateInfoPacket("Mandatory", configuration.MinVersion.ToString()));
+                client.Player.Kick($"Disconnected: Minimum mta version required: {configuration.MinVersion}", PlayerDisconnectType.CUSTOM);
+                return;
+            }
 
             client.SendPacket(new JoinedGamePacket(
                 client.Player.Id,

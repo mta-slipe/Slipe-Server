@@ -138,6 +138,12 @@ namespace SlipeServer.Server.Elements
             this.Destroy();
         }
 
+        public void Kick(PlayerDisconnectType type)
+        {
+            this.OnKick?.Invoke(this, new PlayerKickEventArgs("", type));
+            Client.SendPacket(new PlayerDisconnectPacket(type, ""));
+        }
+
         public void Kick(string reason, PlayerDisconnectType type = PlayerDisconnectType.CUSTOM)
         {
             this.OnKick?.Invoke(this, new PlayerKickEventArgs(reason, type));

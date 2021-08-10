@@ -37,6 +37,8 @@ namespace SlipeServer.Server
 
         public bool IsVoiceEnabled { get; set; }
 
+        public Version MinVersion { get; set; } = new Version(1, 5, 8);
+
         public WeaponId[] BulletSyncEnabledWeapons { get; set; } = new WeaponId[] { 
             WeaponId.Colt,
             WeaponId.Silenced,
