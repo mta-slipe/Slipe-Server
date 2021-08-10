@@ -160,7 +160,7 @@ namespace SlipeServer.Console
             player.OnKick += (o, args) =>
             {
                 Player? player = (Player?)o;
-                this.logger.LogWarning($"${player?.Name} has been kicked, reason: {args.Reason}");
+                this.logger.LogWarning($"{player?.Name} has been kicked, reason: {args.Reason}");
             };
 
             player.Wasted += async (o, args) =>
