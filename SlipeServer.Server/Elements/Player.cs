@@ -1,4 +1,5 @@
-﻿using SlipeServer.Server.ElementConcepts;
+﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
+using SlipeServer.Server.ElementConcepts;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Enums;
@@ -137,6 +138,12 @@ namespace SlipeServer.Server.Elements
             this.Destroy();
         }
 
+        public void Kick(string reason, PlayerDisconnectType type = PlayerDisconnectType.CUSTOM)
+        {
+            this.OnKick?.Invoke(this, new PlayerKickEventArgs(reason, type));
+            Client.SendPacket(new PlayerDisconnectPacket(type, reason));
+        }
+
         public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
         public event EventHandler<PlayerDamagedEventArgs>? Damaged;
         public event EventHandler<PlayerWastedEventArgs>? Wasted;
@@ -145,5 +152,6 @@ namespace SlipeServer.Server.Elements
         public event EventHandler<PlayerVoiceStartArgs> OnVoiceData;
         public event EventHandler<PlayerVoiceEndArgs> OnVoiceDataEnd;
         public event EventHandler<PlayerQuitEventArgs>? Disconnected;
+        public event EventHandler<PlayerKickEventArgs>? OnKick;
     }
 }

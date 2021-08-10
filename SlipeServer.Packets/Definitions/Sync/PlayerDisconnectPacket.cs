@@ -35,7 +35,7 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element
 
     public class PlayerDisconnectPacket : Packet
     { 
-        public override PacketId PacketId => PacketId.PACKET_ID_DISCONNECT_MESSAGE;
+        public override PacketId PacketId => PacketId.PACKET_ID_SERVER_DISCONNECTED;
         public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
         public override PacketPriority Priority => PacketPriority.High;
 
@@ -50,6 +50,7 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element
             Reason = reason;
             Duration = 0;
         }
+
         public PlayerDisconnectPacket(PlayerDisconnectType type, string reason)
         {
             Type = type;
@@ -57,6 +58,12 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element
             Duration = 0;
         }
 
+        public PlayerDisconnectPacket(PlayerDisconnectType type, string reason, int duration)
+        {
+            Type = type;
+            Reason = reason;
+            Duration = duration;
+        }
 
         public override void Read(byte[] bytes)
         {

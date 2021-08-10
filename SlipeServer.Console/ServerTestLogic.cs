@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlipeServer.Packets.Definitions.Lua;
+using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
@@ -156,6 +157,12 @@ namespace SlipeServer.Console
             //player.ForceMapVisible(true);
             //player.ToggleAllControls(false, true, true);
 
+            player.OnKick += (o, args) =>
+            {
+                Player? player = (Player?)o;
+                this.logger.LogWarning($"${player?.Name} has been kicked, reason: {args.Reason}");
+            };
+
             player.Wasted += async (o, args) =>
             {
                 await Task.Delay(500);
@@ -189,6 +196,11 @@ namespace SlipeServer.Console
 
                 if (args.Command == "ping")
                     chatBox.OutputTo(player, $"Your ping is {player.Client.Ping}", Color.YellowGreen);
+
+
+                if (args.Command == "kickme")
+                    player.Kick("You has been kicked by slipe");
+
             };
 
             //player.AddWeapon(WeaponId.Ak47, 500, true);
