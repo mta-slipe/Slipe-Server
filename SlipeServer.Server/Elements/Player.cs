@@ -4,6 +4,7 @@ using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.PacketHandling.Factories;
 using System;
+using System.Collections.Generic;
 using System.Numerics;
 
 namespace SlipeServer.Server.Elements
@@ -137,6 +138,21 @@ namespace SlipeServer.Server.Elements
             this.Destroy();
         }
 
+        public void ResendModPackets()
+        {
+            this.Client.ResendModPackets();
+        }
+
+        public void ResendPlayerACInfo()
+        {
+            this.Client.ResendPlayerACInfo();
+        }
+
+        internal void TriggerPlayerACInfo(List<byte> detectedACList, uint d3d9Size, string d3d9MD5, string D3d9SHA256)
+        {
+            OnACInfo?.Invoke(this, new PlayerACInfoArgs(detectedACList, d3d9Size, d3d9MD5, D3d9SHA256));
+        }
+
         public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
         public event EventHandler<PlayerDamagedEventArgs>? Damaged;
         public event EventHandler<PlayerWastedEventArgs>? Wasted;
@@ -145,5 +161,6 @@ namespace SlipeServer.Server.Elements
         public event EventHandler<PlayerVoiceStartArgs> OnVoiceData;
         public event EventHandler<PlayerVoiceEndArgs> OnVoiceDataEnd;
         public event EventHandler<PlayerQuitEventArgs>? Disconnected;
+        public event EventHandler<PlayerACInfoArgs>? OnACInfo;
     }
 }

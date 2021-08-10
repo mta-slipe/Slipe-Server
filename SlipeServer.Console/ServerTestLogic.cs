@@ -189,6 +189,17 @@ namespace SlipeServer.Console
 
                 if (args.Command == "ping")
                     chatBox.OutputTo(player, $"Your ping is {player.Client.Ping}", Color.YellowGreen);
+
+                if (args.Command == "resendmodpackets")
+                    player.ResendModPackets();
+
+                if (args.Command == "ac")
+                    player.ResendPlayerACInfo();
+            };
+
+            player.OnACInfo += (o, args) =>
+            {
+                logger.LogInformation($"ACInfo for {player.Name} detectedACList:{string.Join(",", args.DetectedACList)} d3d9Size: {args.D3D9Size} d3d9SHA256: {args.D3D9SHA256}");
             };
 
             //player.AddWeapon(WeaponId.Ak47, 500, true);

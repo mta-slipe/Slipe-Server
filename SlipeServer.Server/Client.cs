@@ -55,6 +55,22 @@ namespace SlipeServer.Server
                 this.netWrapper.SetVersion(this.binaryAddress, version);
             }
         }
+        
+        public void ResendModPackets()
+        {
+            if(this.IsConnected)
+            {
+                this.netWrapper.ResendModPackets(this.binaryAddress);
+            }
+        }
+        
+        public void ResendPlayerACInfo()
+        {
+            if(this.IsConnected)
+            {
+                this.netWrapper.ResendPlayerACInfo(this.binaryAddress);
+            }
+        }
 
         public void FetchSerial()
         {

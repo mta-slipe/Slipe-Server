@@ -22,6 +22,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         {
             [PacketId.PACKET_ID_PLAYER_WASTED] = typeof(PlayerWastedPacket),
             [PacketId.PACKET_ID_PLAYER_DIAGNOSTIC] = typeof(PlayerDiagnosticPacket),
+            [PacketId.PACKET_ID_PLAYER_ACINFO] = typeof(PlayerACInfoPacket),
         };
 
         public PlayerEventQueueHandler(
@@ -47,7 +48,10 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                         HandlePlayerWasted(client, wastedPacket);
                         break;
                     case PlayerDiagnosticPacket diagnosticPacket:
-                        HandlePlayerDiagnostic(client, diagnosticPacket);
+                        HandleDiagnosticPacket(client, diagnosticPacket);
+                        break;
+                    case PlayerACInfoPacket acInfoPacket:
+                        HandleAcInfoPacket(client, acInfoPacket);
                         break;
                 }
             }
@@ -57,9 +61,14 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             }
         }
 
-        private void HandlePlayerDiagnostic(Client client, PlayerDiagnosticPacket diagnosticPacket)
+        private void HandleDiagnosticPacket(Client client, PlayerDiagnosticPacket diagnosticPacket)
         {
 
+        }
+        
+        private void HandleAcInfoPacket(Client client, PlayerACInfoPacket acInfoPacket)
+        {
+            client.Player.TriggerPlayerACInfo(acInfoPacket.DetectedACList, acInfoPacket.D3d9Size, acInfoPacket.D3d9MD5, acInfoPacket.D3d9SHA256);
         }
 
         private void HandlePlayerWasted(Client client, PlayerWastedPacket wastedPacket)
