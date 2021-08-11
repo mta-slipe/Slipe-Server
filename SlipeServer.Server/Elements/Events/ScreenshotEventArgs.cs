@@ -14,9 +14,9 @@ namespace SlipeServer.Server.Elements.Events
 
         public ScreenshotEventArgs(Stream stream, string? errorMessage, string tag)
         {
-            Stream = stream;
-            ErrorMessage = errorMessage;
-            Tag = tag;
+            this.Stream = stream;
+            this.ErrorMessage = errorMessage;
+            this.Tag = tag;
         }
     }
 }

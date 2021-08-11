@@ -198,7 +198,7 @@ namespace SlipeServer.Console
                     chatBox.OutputTo(player, $"Your ping is {player.Client.Ping}", Color.YellowGreen);
             };
 
-            player.OnScreenshot += Player_OnScreenshot;
+            player.OnScreenshot += HandlePlayerScreenshot;
 
             //player.AddWeapon(WeaponId.Ak47, 500, true);
             //player.AddWeapon(WeaponId.Tec9, 500, true);
@@ -225,7 +225,7 @@ namespace SlipeServer.Console
             this.testResource?.StartFor(player);
         }
 
-        private void Player_OnScreenshot(object? o, Server.Elements.Events.ScreenshotEventArgs e)
+        private void HandlePlayerScreenshot(object? o, Server.Elements.Events.ScreenshotEventArgs e)
         {
             if(e.Stream != null)
                 using (FileStream file = new FileStream($"screenshot_${e.Tag}.jpg", FileMode.Create, FileAccess.Write))
