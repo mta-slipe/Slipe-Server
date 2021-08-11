@@ -153,6 +153,11 @@ namespace SlipeServer.Server.Elements
             OnACInfo?.Invoke(this, new PlayerACInfoArgs(detectedACList, d3d9Size, d3d9MD5, D3d9SHA256));
         }
 
+        internal void TriggerPlayerModInfo(List<byte> detectedACList, uint d3d9Size, string d3d9MD5, string D3d9SHA256)
+        {
+            OnACInfo?.Invoke(this, new PlayerACInfoArgs(detectedACList, d3d9Size, d3d9MD5, D3d9SHA256));
+        }
+
         public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
         public event EventHandler<PlayerDamagedEventArgs>? Damaged;
         public event EventHandler<PlayerWastedEventArgs>? Wasted;
@@ -162,5 +167,6 @@ namespace SlipeServer.Server.Elements
         public event EventHandler<PlayerVoiceEndArgs> OnVoiceDataEnd;
         public event EventHandler<PlayerQuitEventArgs>? Disconnected;
         public event EventHandler<PlayerACInfoArgs>? OnACInfo;
+        public event EventHandler<PlayerModInfoArgs>? OnModInfo;
     }
 }
