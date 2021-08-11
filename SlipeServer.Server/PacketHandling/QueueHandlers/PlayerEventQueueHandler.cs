@@ -8,6 +8,7 @@ using SlipeServer.Packets.Definitions.Player;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using SlipeServer.Packets;
+using System.IO;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers
 {
@@ -16,11 +17,12 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         private readonly ILogger logger;
         private readonly MtaServer server;
         private readonly IElementRepository elementRepository;
-        public override IEnumerable<PacketId> SupportedPacketIds => new PacketId[] { PacketId.PACKET_ID_PLAYER_WASTED };
+        public override IEnumerable<PacketId> SupportedPacketIds => PacketTypes.Keys;
 
         protected override Dictionary<PacketId, Type> PacketTypes { get; } = new Dictionary<PacketId, Type>()
         {
             [PacketId.PACKET_ID_PLAYER_WASTED] = typeof(PlayerWastedPacket),
+            [PacketId.PACKET_ID_PLAYER_SCREENSHOT] = typeof(PlayerScreenshotPacket),
         };
 
         public PlayerEventQueueHandler(
@@ -45,6 +47,9 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                     case PlayerWastedPacket wastedPacket:
                         HandlePlayerWasted(client, wastedPacket);
                         break;
+                    case PlayerScreenshotPacket screenshotPacket:
+                        HandlePlayerScreenshot(client, screenshotPacket);
+                        break;
                 }
             }
             catch (Exception e)
@@ -60,6 +65,46 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                 damager, (WeaponType)wastedPacket.WeaponType, (BodyPart)wastedPacket.BodyPart, 
                 wastedPacket.AnimationGroup, wastedPacket.AnimationId
             );
+        }
+
+        private void HandlePlayerScreenshot(Client client, PlayerScreenshotPacket screenshotPacket)
+        {
+            if (screenshotPacket.PartNumber == 0)
+            {
+                if (screenshotPacket.Status == ScreenshotStatus.Success)
+                {
+                    if (!(client.Player.PendingScreenshots.ContainsKey(screenshotPacket.ScreenshotId)))
+                    {
+                        client.Player.PendingScreenshots[screenshotPacket.ScreenshotId] = new PlayerPendingScreenshot
+                        {
+                            Stream = new MemoryStream((int)screenshotPacket.TotalBytes),
+                            TotalParts = screenshotPacket.TotalParts,
+                            Tag = screenshotPacket.Tag,
+                        };
+                    }
+                }
+                else
+                {
+
+                    client.Player.PendingScreenshots[screenshotPacket.ScreenshotId] = new PlayerPendingScreenshot
+                    {
+                        ErrorMessage = screenshotPacket.Error,
+                        Tag = screenshotPacket.Tag,
+                    };
+                    client.Player.ScreenshotEnd(screenshotPacket.ScreenshotId);
+                    return;
+                }
+            }
+            var pendingScreenshot = client.Player.PendingScreenshots[screenshotPacket.ScreenshotId];
+            if (pendingScreenshot.Stream != null)
+            {
+                pendingScreenshot.Stream.Write(screenshotPacket.Buffer);
+                if (pendingScreenshot.TotalParts == screenshotPacket.PartNumber + 1)
+                {
+                    pendingScreenshot.Stream.Seek(0, SeekOrigin.Begin);
+                    client.Player.ScreenshotEnd(screenshotPacket.ScreenshotId);
+                }
+            }
         }
     }
 }

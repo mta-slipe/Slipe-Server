@@ -125,7 +125,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
                 if (this.pulseTaskCompletionSource != null)
                 {
-                    this.pulseTaskCompletionSource.SetResult(0);
+                    this.pulseTaskCompletionSource.TrySetResult(0);
                     this.pulseTaskCompletionSource = null;
                 }
 

@@ -14,6 +14,7 @@ using SlipeServer.Server.Services;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
@@ -194,6 +195,12 @@ namespace SlipeServer.Console
                 if (args.Command == "fire")
                     this.fireService.CreateFire(player.Position);
 
+                if (args.Command == "ts")
+                    player.TakeScreenshot(256, 256, "lowqualitytag", 30);
+
+                if (args.Command == "tshq")
+                    player.TakeScreenshot(960, 540, "highqualitytag", 70);
+
                 if (args.Command == "ping")
                     chatBox.OutputTo(player, $"Your ping is {player.Client.Ping}", Color.YellowGreen);
 
@@ -202,6 +209,8 @@ namespace SlipeServer.Console
                     player.Kick("You has been kicked by slipe");
 
             };
+
+            player.OnScreenshot += HandlePlayerScreenshot;
 
             //player.AddWeapon(WeaponId.Ak47, 500, true);
             //player.AddWeapon(WeaponId.Tec9, 500, true);
@@ -226,6 +235,21 @@ namespace SlipeServer.Console
             player.Weapons.First(weapon => weapon.Type == WeaponId.Ak47).AmmoInClip = 25;
             
             this.testResource?.StartFor(player);
+        }
+
+        private void HandlePlayerScreenshot(object? o, Server.Elements.Events.ScreenshotEventArgs e)
+        {
+            if(e.Stream != null)
+                using (FileStream file = new FileStream($"screenshot_${e.Tag}.jpg", FileMode.Create, FileAccess.Write))
+                {
+                    e.Stream.CopyTo(file);
+                }
+            else
+            {
+                Player? player = (Player?)o;
+                logger.LogWarning($"Failed to take a screenshot ({e.Tag}) of player: {player?.Name}, reason: {e.ErrorMessage}");
+
+            }
         }
 
         private void TriggerTestEvent(Player player)

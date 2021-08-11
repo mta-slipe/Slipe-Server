@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets;
 using SlipeServer.Packets.Definitions.Join;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
+using SlipeServer.Packets.Definitions.Player;
 using SlipeServer.Server.Elements;
 using System;
 using System.Collections.Generic;
@@ -39,6 +40,11 @@ namespace SlipeServer.Server.PacketHandling.Factories
         public static SetElementAlphaRpcPacket CreateSetAlphaPacket(Element element, byte alpha)
         {
             return new SetElementAlphaRpcPacket(element.Id, element.GetAndIncrementTimeContext(), alpha);
+        }
+        
+        public static TakePlayerScreenshotPacket CreateTakePlayerScreenshotPacket(Element element, ushort sizeX, ushort sizeY, string tag, byte quality, uint maxBandwith, ushort maxPacketSize, Resources.Resource? resource)
+        {
+            return new TakePlayerScreenshotPacket(element.GetAndIncrementTimeContext(), sizeX, sizeY, tag, quality, maxBandwith, maxPacketSize, resource?.NetId ?? 0);
         }
 
         public static SetElementDimensionRpcPacket CreateSetDimensionPacket(Element element, ushort dimension)
