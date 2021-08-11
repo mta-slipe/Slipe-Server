@@ -5,10 +5,19 @@ using SlipeServer.Server.Enums;
 using SlipeServer.Server.PacketHandling.Factories;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Numerics;
 
 namespace SlipeServer.Server.Elements
 {
+    public class PlayerPendingScreenshot
+    {
+        public MemoryStream? Stream { get; init; }
+        public string? ErrorMessage { get; init; }
+        public string Tag { get; init; } = "";
+        public uint TotalParts { get; init; }
+    }
+
     public class Player: Ped
     {
         public override ElementType ElementType => ElementType.Player;
@@ -49,6 +58,8 @@ namespace SlipeServer.Server.Elements
         public bool IsStealthAiming { get; set; }
         public bool IsVoiceMuted { get; set; }
         public bool IsChatMuted { get; set; }
+
+        public Dictionary<int, PlayerPendingScreenshot> PendingScreenshots { get; } = new Dictionary<int, PlayerPendingScreenshot>();
 
         protected internal Player(Client client) : base(0, Vector3.Zero)
         {
@@ -138,6 +149,22 @@ namespace SlipeServer.Server.Elements
             this.Destroy();
         }
 
+        public void TakeScreenshot(ushort width, ushort height, string tag = "", byte quality = 30, uint maxBandwith = 5000, ushort maxPacketSize = 500)
+        {
+            quality = Math.Clamp(quality, (byte)0, (byte)100);
+            this.Client.SendPacket(ElementPacketFactory.CreateTakePlayerScreenshotPacket(this, width, height, tag, quality, maxBandwith, maxPacketSize, null));
+        }
+
+        internal void ScreenshotEnd(int screenshotId)
+        {
+            var pendingScreenshot = PendingScreenshots[screenshotId];
+            using(var stream = pendingScreenshot.Stream)
+            {
+                this.OnScreenshot?.Invoke(this, new ScreenshotEventArgs(pendingScreenshot.Stream, pendingScreenshot.ErrorMessage, pendingScreenshot.Tag));
+            }
+            PendingScreenshots.Remove(screenshotId);
+        }
+
         public void ResendModPackets()
         {
             this.Client.ResendModPackets();
@@ -166,6 +193,7 @@ namespace SlipeServer.Server.Elements
         public event EventHandler<PlayerVoiceStartArgs> OnVoiceData;
         public event EventHandler<PlayerVoiceEndArgs> OnVoiceDataEnd;
         public event EventHandler<PlayerQuitEventArgs>? Disconnected;
+        public event EventHandler<ScreenshotEventArgs>? OnScreenshot;
         public event EventHandler<PlayerACInfoArgs>? OnACInfo;
         public event EventHandler<PlayerModInfoArgs>? OnModInfo;
     }
