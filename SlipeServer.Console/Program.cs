@@ -3,10 +3,13 @@ using Microsoft.Extensions.Logging;
 using SlipeServer.ConfigurationProviders;
 using SlipeServer.ConfigurationProviders.Configurations;
 using SlipeServer.Lua;
+using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Server;
 using SlipeServer.Server.AllSeeingEye;
 using SlipeServer.Server.Behaviour;
 using SlipeServer.Server.PacketHandling.QueueHandlers;
+using SlipeServer.Server.PacketHandling.QueueHandlers.SyncMiddleware;
+using SlipeServer.Server.Repositories;
 using System;
 using System.IO;
 using System.Threading;
@@ -39,6 +42,7 @@ namespace SlipeServer.Console
 
         private readonly EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
         private readonly MtaServer server;
+        private readonly Configuration configuration;
 
         public ILogger Logger { get; }
 
@@ -48,7 +52,7 @@ namespace SlipeServer.Console
 
             var configurationProvider = args.Length > 0 ? GetConfigurationProvider(args[0]) : null;
 
-            Configuration? configuration = configurationProvider?.GetConfiguration() ?? new Configuration()
+            this.configuration = configurationProvider?.GetConfiguration() ?? new Configuration()
             {
                 IsVoiceEnabled = true
             };
@@ -92,6 +96,9 @@ namespace SlipeServer.Console
         private void Configure(ServiceCollection services)
         {
             services.AddSingleton<ILogger>(this.Logger);
+            services.AddSingleton<ISyncHandlerMiddleware<ProjectileSyncPacket>, RangeSyncHandlerMiddleware<ProjectileSyncPacket>>(
+                x => new RangeSyncHandlerMiddleware<ProjectileSyncPacket>(x.GetRequiredService<IElementRepository>(), this.configuration.ExplosionSyncDistance)    
+            );
 
             services.AddLua();
         }
