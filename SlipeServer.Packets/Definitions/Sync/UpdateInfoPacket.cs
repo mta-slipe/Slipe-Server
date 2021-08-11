@@ -23,8 +23,8 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element
 
         public UpdateInfoPacket(string type, string data)
         {
-            Type = type;
-            Data = data;
+            this.Type = type;
+            this.Data = data;
         }
 
         public override void Read(byte[] bytes)
@@ -35,8 +35,8 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element
         public override byte[] Write()
         {
             var builder = new PacketBuilder();
-            builder.Write(Type);
-            builder.Write(Data);
+            builder.Write(this.Type);
+            builder.Write(this.Data);
 
             return builder.Build();
         }

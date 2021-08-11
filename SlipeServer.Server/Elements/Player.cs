@@ -6,6 +6,7 @@ using SlipeServer.Server.PacketHandling.Factories;
 using System;
 using System.Numerics;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
+using SlipeServer.Packets.Enums;
 
 namespace SlipeServer.Server.Elements
 {
@@ -141,13 +142,13 @@ namespace SlipeServer.Server.Elements
         public void Kick(PlayerDisconnectType type)
         {
             this.OnKick?.Invoke(this, new PlayerKickEventArgs("", type));
-            Client.SendPacket(new PlayerDisconnectPacket(type, ""));
+            this.Client.SendPacket(new PlayerDisconnectPacket(type, ""));
         }
 
         public void Kick(string reason, PlayerDisconnectType type = PlayerDisconnectType.CUSTOM)
         {
             this.OnKick?.Invoke(this, new PlayerKickEventArgs(reason, type));
-            Client.SendPacket(new PlayerDisconnectPacket(type, reason));
+            this.Client.SendPacket(new PlayerDisconnectPacket(type, reason));
         }
 
         public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;

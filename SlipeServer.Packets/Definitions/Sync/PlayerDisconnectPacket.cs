@@ -7,32 +7,6 @@ using System.Text;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element
 {
-    public enum PlayerDisconnectType
-    {
-        NO_REASON,
-        INVALID_PASSWORD,
-        INVALID_NICKNAME,
-        BANNED_SERIAL,
-        BANNED_IP,
-        BANNED_ACCOUNT,
-        VERSION_MISMATCH,
-        JOIN_FLOOD,
-        INCORRECT_PASSWORD,
-        DIFFERENT_BRANCH,
-        BAD_VERSION,
-        SERVER_NEWER,
-        SERVER_OLDER,
-        NICK_CLASH,
-        ELEMENT_FAILURE,
-        GENERAL_REFUSED,
-        SERIAL_VERIFICATION,
-        CONNECTION_DESYNC,
-        BAN,
-        KICK,
-        CUSTOM,
-        SHUTDOWN
-    };
-
     public class PlayerDisconnectPacket : Packet
     { 
         public override PacketId PacketId => PacketId.PACKET_ID_SERVER_DISCONNECTED;
@@ -46,23 +20,16 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element
 
         public PlayerDisconnectPacket(string reason)
         {
-            Type = PlayerDisconnectType.CUSTOM;
-            Reason = reason;
-            Duration = 0;
+            this.Type = PlayerDisconnectType.CUSTOM;
+            this.Reason = reason;
+            this.Duration = 0;
         }
 
-        public PlayerDisconnectPacket(PlayerDisconnectType type, string reason)
+        public PlayerDisconnectPacket(PlayerDisconnectType type, string reason, int duration = 0)
         {
-            Type = type;
-            Reason = reason;
-            Duration = 0;
-        }
-
-        public PlayerDisconnectPacket(PlayerDisconnectType type, string reason, int duration)
-        {
-            Type = type;
-            Reason = reason;
-            Duration = duration;
+            this.Type = type;
+            this.Reason = reason;
+            this.Duration = duration;
         }
 
         public override void Read(byte[] bytes)

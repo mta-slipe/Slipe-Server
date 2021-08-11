@@ -1,4 +1,5 @@
 ﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
+using SlipeServer.Packets.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,8 +15,8 @@ namespace SlipeServer.Server.Elements.Events
 
         public PlayerKickEventArgs(string reason, PlayerDisconnectType type)
         {
-            Reason = reason;
-            Type = type;
+            this.Reason = reason;
+            this.Type = type;
         }
     }
 }
