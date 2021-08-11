@@ -13,6 +13,7 @@ namespace SlipeServer.Server.Tests.Integration.QueueHandlers
     class DummyQueueHandler : ScalingWorkerBasedQueueHandler
     {
         private readonly int handleTimeout;
+        private readonly TaskCompletionSource taskCompletionSource;
 
         public override IEnumerable<PacketId> SupportedPacketIds => new PacketId[]
         {
@@ -31,7 +32,7 @@ namespace SlipeServer.Server.Tests.Integration.QueueHandlers
             int queueHighThreshold = 20,
             int queueLowThreshold = 3,
             int newWorkerTimeout = 5,
-            int handleTimeout = 25
+            TaskCompletionSource? taskCompletionSource = null
         ) : base(
             sleepInterval: sleepInterval,
             minWorkerCount: minWorkerCount,
@@ -40,12 +41,13 @@ namespace SlipeServer.Server.Tests.Integration.QueueHandlers
             queueLowThreshold: queueLowThreshold,
             newWorkerTimeout: newWorkerTimeout)
         {
-            this.handleTimeout = handleTimeout;
+            this.taskCompletionSource = taskCompletionSource ?? new TaskCompletionSource();
         }
+
 
         protected override async Task HandlePacket(Client client, Packet packet)
         {
-            await Task.Delay(this.handleTimeout);
+            await this.taskCompletionSource.Task;
         }
     }
 
@@ -57,8 +59,7 @@ namespace SlipeServer.Server.Tests.Integration.QueueHandlers
             var handler = new DummyQueueHandler(
                 minWorkerCount: 1,
                 maxWorkerCount: 2,
-                newWorkerTimeout: 1,
-                handleTimeout: 5
+                newWorkerTimeout: 1
             );
 
             for (int i = 1; i < 25; i++)
@@ -84,8 +85,7 @@ namespace SlipeServer.Server.Tests.Integration.QueueHandlers
                 maxWorkerCount: 10,
                 newWorkerTimeout: 1,
                 queueLowThreshold: 1,
-                queueHighThreshold: 2,
-                handleTimeout: 5
+                queueHighThreshold: 2
             );
 
             for (int i = 1; i < 50; i++)
@@ -109,13 +109,14 @@ namespace SlipeServer.Server.Tests.Integration.QueueHandlers
         [Fact]
         public async Task PacketCountBelowThresholdDespawnsWorker()
         {
+            var taskCompletionSource = new TaskCompletionSource();
             var handler = new DummyQueueHandler(
                 minWorkerCount: 1,
                 maxWorkerCount: 2,
                 newWorkerTimeout: 1,
                 queueLowThreshold: 1,
                 queueHighThreshold: 2,
-                handleTimeout: 5
+                taskCompletionSource: taskCompletionSource
             );
 
             for (int i = 1; i < 5; i++)
@@ -129,8 +130,9 @@ namespace SlipeServer.Server.Tests.Integration.QueueHandlers
 
             var betweenWorkerCount = handler.WorkerCount;
 
+            taskCompletionSource.SetResult();
             while (handler.QueuedPacketCount > 0)
-                await Task.Delay(10);
+                await handler.GetPulseTask();
 
             handler.CheckWorkerCount();
 

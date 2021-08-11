@@ -6,6 +6,7 @@ using SlipeServer.Server.Constants;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
+using SlipeServer.Server.PacketHandling.QueueHandlers.SyncMiddleware;
 using SlipeServer.Server.Repositories;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,9 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         private readonly Configuration configuration;
         private readonly ILogger logger;
         private readonly IElementRepository elementRepository;
+        private readonly ISyncHandlerMiddleware<PlayerPureSyncPacket> pureSyncMiddleware;
+        private readonly ISyncHandlerMiddleware<ProjectileSyncPacket> projectileSyncMiddleware;
+
         public override IEnumerable<PacketId> SupportedPacketIds => new PacketId[] 
         { 
             PacketId.PACKET_ID_CAMERA_SYNC,
@@ -38,7 +42,9 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         public SyncQueueHandler(
             Configuration configuration,
             ILogger logger,
-            IElementRepository elementRepository, 
+            IElementRepository elementRepository,
+            ISyncHandlerMiddleware<PlayerPureSyncPacket> pureSyncMiddleware,
+            ISyncHandlerMiddleware<ProjectileSyncPacket> projectileSyncMiddleware,
             int sleepInterval, 
             QueueHandlerScalingConfig config
         ): base(config, sleepInterval)
@@ -46,6 +52,8 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             this.configuration = configuration;
             this.logger = logger;
             this.elementRepository = elementRepository;
+            this.pureSyncMiddleware = pureSyncMiddleware;
+            this.projectileSyncMiddleware = projectileSyncMiddleware;
         }
 
         protected override Task HandlePacket(Client client, Packet packet)
@@ -98,13 +106,8 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
         private void HandleProjectileSyncPacket(Client client, ProjectileSyncPacket packet)
         {
-            var nearbyPlayers = this.elementRepository.GetWithinRange<Player>(
-                packet.VecOrigin,
-                this.configuration.ExplosionSyncDistance,
-                ElementType.Player
-            );
-
-            packet.SendTo(nearbyPlayers);
+            var otherPlayers = this.projectileSyncMiddleware.GetPlayersToSyncTo(client.Player, packet);
+            packet.SendTo(otherPlayers);
         }
 
         private void HandleClientPureSyncPacket(Client client, PlayerPureSyncPacket packet)
@@ -114,9 +117,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             packet.PlayerId = client.Player.Id;
             packet.Latency = (ushort)client.Ping;
 
-            var otherPlayers = this.elementRepository
-                .GetByType<Player>(ElementType.Player)
-                .Where(p => p.Client != client);
+            var otherPlayers = this.pureSyncMiddleware.GetPlayersToSyncTo(client.Player, packet);
             packet.SendTo(otherPlayers);
 
             var player = client.Player;

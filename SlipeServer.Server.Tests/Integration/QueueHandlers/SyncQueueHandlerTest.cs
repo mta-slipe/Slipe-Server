@@ -1,7 +1,10 @@
 ﻿using Moq;
 using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Server.Elements;
 using SlipeServer.Server.PacketHandling.QueueHandlers;
+using SlipeServer.Server.PacketHandling.QueueHandlers.SyncMiddleware;
+using SlipeServer.Server.Repositories;
 using SlipeServer.Server.TestTools;
 using System;
 using System.Collections.Generic;
@@ -66,11 +69,18 @@ namespace SlipeServer.Server.Tests.Integration.QueueHandlers
         public async Task SyncHandlerDoesNotRelaySyncBack()
         {
             var server = new TestingServer();
-            var handler = server.Instantiate<SyncQueueHandler>(QueueHandlerScalingConfig.Default, 0);
-            server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_PURESYNC, handler);
 
             var player1 = server.AddFakePlayer();
             var player2 = server.AddFakePlayer();
+
+            var elementRepositoryMock = new Mock<IElementRepository>();
+            elementRepositoryMock.Setup(x => x.GetAll()).Returns(new Player[] { player1, player2 });
+            var elementRepository = elementRepositoryMock.Object;
+
+            var middleware = new BasicSyncHandlerMiddleware<PlayerPureSyncPacket>(elementRepository);
+            var handler = server.Instantiate<SyncQueueHandler>(QueueHandlerScalingConfig.Default, 0, elementRepository, middleware);
+
+            server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_PURESYNC, handler);
 
             server.HandlePacket(player1, PacketId.PACKET_ID_PLAYER_PURESYNC, testPacket);
 
