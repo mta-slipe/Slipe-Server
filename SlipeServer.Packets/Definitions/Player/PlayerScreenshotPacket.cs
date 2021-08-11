@@ -8,15 +8,6 @@ using System.Text;
 
 namespace SlipeServer.Packets.Definitions.Player
 {
-    public enum ScreenshotStatus : byte
-    {
-        Unknown,
-        Success,
-        Minimalized,
-        Disabled,
-        Error,
-    }
-
     public class PlayerScreenshotPacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_SCREENSHOT;
