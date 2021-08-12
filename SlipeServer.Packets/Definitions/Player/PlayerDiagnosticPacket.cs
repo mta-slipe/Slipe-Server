@@ -3,6 +3,7 @@ using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Text;
 
@@ -14,8 +15,13 @@ namespace SlipeServer.Packets.Definitions.Player
         public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
         public override PacketPriority Priority => PacketPriority.High;
 
+        public uint Level { get; set; }
         public string Message { get; set; }
 
+        public IEnumerable<byte> DetectedAC { get; set; }
+        public uint D3d9Size { get; set; }
+        public string D3d9Md5 { get; set; }
+        public string D3d9Sha256 { get; set; }
         public PlayerDiagnosticPacket()
         {
 
@@ -30,7 +36,24 @@ namespace SlipeServer.Packets.Definitions.Player
         {
             var reader = new PacketReader(bytes);
 
-            this.Message = reader.GetString();
+            string message = reader.GetString();
+            var splitMessage = message.Split(",", 2);
+            this.Level = uint.Parse(splitMessage[0]);
+            if(this.Level == 236)
+            {
+                var parts = splitMessage[1].Split(",");
+                if(parts.Length == 4)
+                {
+                    DetectedAC = parts[0].Split("|").Select(e => byte.Parse(e));
+                    D3d9Size = uint.Parse(parts[1]);
+                    D3d9Md5 = parts[2];
+                    D3d9Sha256 = parts[3];
+                }
+            }
+            else
+            {
+                Message = splitMessage[1];
+            }
         }
     }
 }

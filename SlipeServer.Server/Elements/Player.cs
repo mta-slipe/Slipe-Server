@@ -175,14 +175,19 @@ namespace SlipeServer.Server.Elements
             this.Client.ResendPlayerACInfo();
         }
 
-        internal void TriggerPlayerACInfo(List<byte> detectedACList, uint d3d9Size, string d3d9MD5, string D3d9SHA256)
+        internal void TriggerPlayerACInfo(IEnumerable<byte> detectedACList, uint d3d9Size, string d3d9MD5, string D3d9SHA256)
         {
             OnACInfo?.Invoke(this, new PlayerACInfoArgs(detectedACList, d3d9Size, d3d9MD5, D3d9SHA256));
         }
 
-        internal void TriggerPlayerModInfo(List<byte> detectedACList, uint d3d9Size, string d3d9MD5, string D3d9SHA256)
+        internal void TriggerPlayerDiagnosticInfo(uint level, string message)
         {
-            OnACInfo?.Invoke(this, new PlayerACInfoArgs(detectedACList, d3d9Size, d3d9MD5, D3d9SHA256));
+            OnDiagnosticInfo?.Invoke(this, new PlayerDiagnosticInfo(level, message));
+        }
+
+        internal void TriggerPlayerModInfo(IEnumerable<byte> detectedACList, uint d3d9Size, string d3d9MD5, string D3d9SHA256)
+        {
+            OnModInfo?.Invoke(this, new PlayerModInfoArgs(detectedACList, d3d9Size, d3d9MD5, D3d9SHA256));
         }
 
         public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
@@ -195,6 +200,7 @@ namespace SlipeServer.Server.Elements
         public event EventHandler<PlayerQuitEventArgs>? Disconnected;
         public event EventHandler<ScreenshotEventArgs>? OnScreenshot;
         public event EventHandler<PlayerACInfoArgs>? OnACInfo;
+        public event EventHandler<PlayerDiagnosticInfo>? OnDiagnosticInfo;
         public event EventHandler<PlayerModInfoArgs>? OnModInfo;
     }
 }

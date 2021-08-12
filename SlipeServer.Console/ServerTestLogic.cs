@@ -117,6 +117,7 @@ namespace SlipeServer.Console
             var forklift2 = new Vehicle(530, new Vector3(22, 5, 3)).AssociateWith(server);
             var firetruck = new Vehicle(407, new Vector3(30, 5, 3)).AssociateWith(server);
             var firetruck2 = new Vehicle(407, new Vector3(35, 5, 3)).AssociateWith(server);
+            var landstalker = new Vehicle(400, new Vector3(40, 5, 3)).AssociateWith(server);
 
             vehicle.PedEntered += async (sender, eventArgs) =>
             {
@@ -207,6 +208,11 @@ namespace SlipeServer.Console
             player.OnACInfo += (o, args) =>
             {
                 logger.LogInformation($"ACInfo for {player.Name} detectedACList:{string.Join(",", args.DetectedACList)} d3d9Size: {args.D3D9Size} d3d9SHA256: {args.D3D9SHA256}");
+            };
+            
+            player.OnDiagnosticInfo += (o, args) =>
+            {
+                logger.LogInformation($"DIAGNOSTIC: {player.Name} #{args.Level} {args.Message}");
             };
 
             player.OnScreenshot += HandlePlayerScreenshot;
