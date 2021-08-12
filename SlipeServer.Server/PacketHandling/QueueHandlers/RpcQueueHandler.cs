@@ -96,7 +96,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             if (result < configuration.MinVersion)
             {
                 client.SendPacket(PlayerPacketFactory.CreateUpdateInfoPacket(configuration.MinVersion));
-                client.Player.Kick($"Disconnected: Minimum mta version required: {configuration.MinVersion}", PlayerDisconnectType.CUSTOM);
+                client.Player.Kick($"Disconnected: Minimum mta version required: {configuration.MinVersion}");
                 return;
             }
 
