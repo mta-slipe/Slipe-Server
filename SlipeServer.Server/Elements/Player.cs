@@ -167,16 +167,16 @@ namespace SlipeServer.Server.Elements
             PendingScreenshots.Remove(screenshotId);
         }
 
-        public void Kick(PlayerDisconnectType type)
+        public void Kick(string reason)
         {
-            this.OnKick?.Invoke(this, new PlayerKickEventArgs("", type));
-            this.Client.SendPacket(new PlayerDisconnectPacket(type, ""));
+            this.OnKick?.Invoke(this, new PlayerKickEventArgs(reason, PlayerDisconnectType.CUSTOM));
+            this.Client.SendPacket(new PlayerDisconnectPacket(PlayerDisconnectType.CUSTOM, reason));
         }
 
-        public void Kick(string reason, PlayerDisconnectType type = PlayerDisconnectType.CUSTOM)
+        public void Kick(PlayerDisconnectType type = PlayerDisconnectType.CUSTOM)
         {
-            this.OnKick?.Invoke(this, new PlayerKickEventArgs(reason, type));
-            this.Client.SendPacket(new PlayerDisconnectPacket(type, reason));
+            this.OnKick?.Invoke(this, new PlayerKickEventArgs(string.Empty, type));
+            this.Client.SendPacket(new PlayerDisconnectPacket(type, string.Empty));
         }
 
         public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
