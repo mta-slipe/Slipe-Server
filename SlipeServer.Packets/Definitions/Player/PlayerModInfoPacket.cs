@@ -31,10 +31,10 @@ namespace SlipeServer.Packets.Definitions.Player
         public override void Read(byte[] bytes)
         {
             var reader = new PacketReader(bytes);
-            InfoType = reader.GetString();
-            Count = reader.GetUint32();
+            this.InfoType = reader.GetString();
+            this.Count = reader.GetUint32();
 
-            ModInfoItems = new List<ModInfoItem>((int)Count);
+            this.ModInfoItems = new List<ModInfoItem>((int)Count);
             for (int i = 0; i < Count;i++)
             {
                 ModInfoItem infoItem = new ModInfoItem();
@@ -43,14 +43,8 @@ namespace SlipeServer.Packets.Definitions.Player
                 infoItem.Name = reader.GetString();
                 infoItem.HasSize = reader.GetInt32() != 0;
 
-                Vector3 size = new Vector3();
-                size.X = reader.GetFloat();
-                size.Y = reader.GetFloat();
-                size.Z = reader.GetFloat();
-                Vector3 originalSize = new Vector3();
-                originalSize.X = reader.GetFloat();
-                originalSize.Y = reader.GetFloat();
-                originalSize.Z = reader.GetFloat();
+                infoItem.Size = reader.GetVector3();
+                infoItem.OriginalSize = reader.GetVector3();
                 infoItem.HasHashInfo = reader.GetInt32() != 0;
                 infoItem.ShortBytes = reader.GetUint32();
                 infoItem.ShortMd5 = reader.GetString();
@@ -58,9 +52,8 @@ namespace SlipeServer.Packets.Definitions.Player
                 infoItem.LongBytes = reader.GetUint32();
                 infoItem.LongMd5 = reader.GetString();
                 infoItem.LongSha256 = reader.GetString();
-                ModInfoItems.Add(infoItem);
+                this.ModInfoItems.Add(infoItem);
             }
-            int x = 5;
         }
     }
 }
