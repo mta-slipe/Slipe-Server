@@ -1,4 +1,5 @@
-﻿using SlipeServer.Server.ElementConcepts;
+﻿using SlipeServer.Packets.Definitions.Lua;
+using SlipeServer.Server.ElementConcepts;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Enums;
@@ -185,9 +186,9 @@ namespace SlipeServer.Server.Elements
             OnDiagnosticInfo?.Invoke(this, new PlayerDiagnosticInfo(level, message));
         }
 
-        internal void TriggerPlayerModInfo(IEnumerable<byte> detectedACList, uint d3d9Size, string d3d9MD5, string D3d9SHA256)
+        internal void TriggerPlayerModInfo(string infoType, IEnumerable<ModInfoItem> modInfoItems)
         {
-            OnModInfo?.Invoke(this, new PlayerModInfoArgs(detectedACList, d3d9Size, d3d9MD5, D3d9SHA256));
+            OnModInfo?.Invoke(this, new PlayerModInfoArgs(infoType, modInfoItems));
         }
 
         public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;

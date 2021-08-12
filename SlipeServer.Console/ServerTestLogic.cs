@@ -215,6 +215,15 @@ namespace SlipeServer.Console
                 logger.LogInformation($"DIAGNOSTIC: {player.Name} #{args.Level} {args.Message}");
             };
 
+            player.OnModInfo += (o, args) =>
+            {
+                logger.LogInformation($"Player: {player.Name} ModInfo:");
+                foreach (var item in args.ModInfoItems)
+                {
+                    logger.LogInformation($"\t{item.Name} - md5: {item.LongMd5}");
+                }
+            };
+
             player.OnScreenshot += HandlePlayerScreenshot;
 
             //player.AddWeapon(WeaponId.Ak47, 500, true);

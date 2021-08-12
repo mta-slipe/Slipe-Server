@@ -84,7 +84,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
         private void HandleModInfoPacket(Client client, PlayerModInfoPacket modInfoPacket)
         {
-
+            client.Player.TriggerPlayerModInfo(modInfoPacket.InfoType, modInfoPacket.ModInfoItems);
         }
         private void HandleAcInfoPacket(Client client, PlayerACInfoPacket acInfoPacket)
         {
