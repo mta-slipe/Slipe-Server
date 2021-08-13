@@ -7,6 +7,7 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Structs;
 using SlipeServer.Server.Enums;
+using SlipeServer.Server.Loaders.Map;
 using SlipeServer.Server.Repositories;
 using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.ResourceServing;
@@ -35,6 +36,7 @@ namespace SlipeServer.Console
         private readonly LuaEventService luaService;
         private readonly ExplosionService explosionService;
         private readonly FireService fireService;
+        private readonly DefaultMapLoader mapLoader;
         private Resource? testResource;
 
         public ServerTestLogic(
@@ -49,7 +51,8 @@ namespace SlipeServer.Console
             ClientConsole console,
             LuaEventService luaService,
             ExplosionService explosionService,
-            FireService fireService
+            FireService fireService,
+            DefaultMapLoader mapLoader
         )
         {
             this.server = server;
@@ -64,6 +67,7 @@ namespace SlipeServer.Console
             this.luaService = luaService;
             this.explosionService = explosionService;
             this.fireService = fireService;
+            this.mapLoader = mapLoader;
             this.SetupTestLogic();
         }
 
@@ -127,6 +131,21 @@ namespace SlipeServer.Console
                     eventArgs.Vehicle.RemovePassenger(eventArgs.Ped);
                 }
             };
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                using (StreamWriter streamWriter = new StreamWriter(memoryStream))
+                {
+                    streamWriter.WriteLine(@"<map edf:definitions=""editor_main"">");
+                    streamWriter.WriteLine(@"    <object id=""object(des_alphabit09)(1)"" breakable=""true"" interior=""0"" alpha=""255"" model=""16744"" doublesided=""false"" scale=""1"" dimension=""0"" posX=""1376.9"" posY=""466.10001"" posZ=""0"" rotX=""0"" rotY=""0"" rotZ=""0""></object>");
+                    streamWriter.WriteLine(@"    <object id=""object(des_alphabit09)(1)"" breakable=""true"" interior=""0"" alpha=""255"" model=""16744"" doublesided=""false"" scale=""1"" dimension=""0"" posX=""1376.9"" posY=""466.10001"" posZ=""0"" rotX=""0"" rotY=""0"" rotZ=""0""></object>");
+                    streamWriter.WriteLine(@"    <object id=""object(des_alphabit09)(1)"" breakable=""true"" interior=""0"" alpha=""255"" model=""16744"" doublesided=""false"" scale=""1"" dimension=""0"" posX=""1376.9"" posY=""466.10001"" posZ=""0"" rotX=""0"" rotY=""0"" rotZ=""0""></object>");
+                    streamWriter.WriteLine(@"    <object id=""object(des_alphabit09)(1)"" breakable=""true"" interior=""0"" alpha=""255"" model=""16744"" doublesided=""false"" scale=""1"" dimension=""0"" posX=""1376.9"" posY=""466.10001"" posZ=""0"" rotX=""0"" rotY=""0"" rotZ=""0""></object>");
+                    streamWriter.WriteLine("</map>");
+                    streamWriter.Flush();
+                    var map = mapLoader.LoadMap(memoryStream);
+                }
+            }
         }
 
         private void OnPlayerJoin(Player player)

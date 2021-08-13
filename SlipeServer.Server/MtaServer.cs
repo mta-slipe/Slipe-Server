@@ -19,6 +19,7 @@ using SlipeServer.Server.Services;
 using SlipeServer.Server.Resources.ResourceServing;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.PacketHandling.QueueHandlers.SyncMiddleware;
+using SlipeServer.Server.Loaders.Map;
 
 namespace SlipeServer.Server
 {
@@ -200,6 +201,7 @@ namespace SlipeServer.Server
             this.serviceCollection.AddSingleton<LuaEventService>();
             this.serviceCollection.AddSingleton<ExplosionService>();
             this.serviceCollection.AddSingleton<FireService>();
+            this.serviceCollection.AddSingleton<DefaultMapLoader>();
 
             this.serviceCollection.AddSingleton<HttpClient>();
             this.serviceCollection.AddSingleton<Configuration>(this.configuration);
