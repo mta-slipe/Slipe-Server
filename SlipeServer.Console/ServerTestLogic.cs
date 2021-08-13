@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlipeServer.Packets.Definitions.Lua;
+using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
@@ -157,6 +158,12 @@ namespace SlipeServer.Console
             //player.ForceMapVisible(true);
             //player.ToggleAllControls(false, true, true);
 
+            player.OnKick += (o, args) =>
+            {
+                Player? player = (Player?)o;
+                this.logger.LogWarning($"{player?.Name} has been kicked, reason: {args.Reason}");
+            };
+
             player.Wasted += async (o, args) =>
             {
                 await Task.Delay(500);
@@ -196,6 +203,11 @@ namespace SlipeServer.Console
 
                 if (args.Command == "ping")
                     this.chatBox.OutputTo(player, $"Your ping is {player.Client.Ping}", Color.YellowGreen);
+
+
+                if (args.Command == "kickme")
+                    player.Kick("You has been kicked by slipe");
+
             };
 
             player.OnScreenshot += HandlePlayerScreenshot;
@@ -228,15 +240,14 @@ namespace SlipeServer.Console
         private void HandlePlayerScreenshot(object? o, Server.Elements.Events.ScreenshotEventArgs e)
         {
             if(e.Stream != null)
-                using (FileStream file = new FileStream($"screenshot_${e.Tag}.jpg", FileMode.Create, FileAccess.Write))
-                {
-                    e.Stream.CopyTo(file);
-                }
+            {
+                using FileStream file = new FileStream($"screenshot_${e.Tag}.jpg", FileMode.Create, FileAccess.Write);
+                e.Stream.CopyTo(file);
+            }
             else
             {
                 Player? player = (Player?)o;
                 this.logger.LogWarning($"Failed to take a screenshot ({e.Tag}) of player: {player?.Name}, reason: {e.ErrorMessage}");
-
             }
         }
 
