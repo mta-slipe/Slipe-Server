@@ -17,7 +17,7 @@ namespace SlipeServer.Packets.Definitions.Join
         public uint RootId { get; }
         public HttpDownloadType HttpDownloadType { get; }
         public ushort HttpPort { get; }
-        public string HttpUrl { get; }
+        public string HttpUrl { get; } = string.Empty;
         public int HttpConnectionsPerClient { get; }
         public bool IsFakeLagCommandEnabled { get; }
         public int VoiceSampleRate { get; }
@@ -30,6 +30,7 @@ namespace SlipeServer.Packets.Definitions.Join
         {
 
         }
+
         public JoinedGamePacket(
             uint clientId,
             int playerCount,
@@ -64,31 +65,31 @@ namespace SlipeServer.Packets.Definitions.Join
         {
             var builder = new PacketBuilder();
 
-            builder.WriteElementId(ClientId);
-            builder.Write((byte)PlayerCount);
-            builder.WriteElementId(RootId);
+            builder.WriteElementId(this.ClientId);
+            builder.Write((byte)this.PlayerCount);
+            builder.WriteElementId(this.RootId);
 
-            builder.Write(EnableClientChecks);
+            builder.Write(this.EnableClientChecks);
 
-            builder.Write(IsVoiceEnabled);
-            builder.WriteCapped(VoiceSampleRate, 2);
-            builder.WriteCapped(VoiceQuality, 4);
-            builder.WriteCompressed((uint)VoiceBitRate);
+            builder.Write(this.IsVoiceEnabled);
+            builder.WriteCapped(this.VoiceSampleRate, 2);
+            builder.WriteCapped(this.VoiceQuality, 4);
+            builder.WriteCompressed((uint)this.VoiceBitRate);
 
-            builder.Write(IsFakeLagCommandEnabled);
+            builder.Write(this.IsFakeLagCommandEnabled);
 
-            builder.Write(HttpConnectionsPerClient);
-            builder.Write((byte)HttpDownloadType);
+            builder.Write(this.HttpConnectionsPerClient);
+            builder.Write((byte)this.HttpDownloadType);
 
-            switch (HttpDownloadType)
+            switch (this.HttpDownloadType)
             {
                 case HttpDownloadType.HTTP_DOWNLOAD_ENABLED_PORT:
-                    builder.Write(HttpPort);
+                    builder.Write(this.HttpPort);
                     break;
 
                 case HttpDownloadType.HTTP_DOWNLOAD_ENABLED_URL:
-                    builder.Write(HttpPort);
-                    builder.Write(HttpUrl);
+                    builder.Write(this.HttpPort);
+                    builder.Write(this.HttpUrl);
                     break;
             }
 

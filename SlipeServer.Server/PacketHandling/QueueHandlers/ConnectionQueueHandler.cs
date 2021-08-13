@@ -18,7 +18,6 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
     public class ConnectionQueueHandler : WorkerBasedQueueHandler
     {
         private readonly ILogger logger;
-        private readonly MtaServer server;
         private readonly IElementRepository elementRepository;
         private readonly ushort bitStreamVersion;
 
@@ -41,7 +40,6 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
         public ConnectionQueueHandler(
             ILogger logger,
-            MtaServer server, 
             IElementRepository elementRepository, 
             int sleepInterval, 
             int workerCount,
@@ -49,7 +47,6 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         ) : base(sleepInterval, workerCount)
         {
             this.logger = logger;
-            this.server = server;
             this.elementRepository = elementRepository;
 
             this.bitStreamVersion = configuration.BitStreamVersion;

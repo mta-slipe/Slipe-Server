@@ -13,8 +13,8 @@ namespace SlipeServer.Packets.Definitions.Commands
         public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
         public override PacketPriority Priority => PacketPriority.High;
 
-        public string Command { get; private set; }
-        public string[] Arguments { get; private set; }
+        public string Command { get; private set; } = string.Empty;
+        public string[] Arguments { get; private set; } = Array.Empty<string>();
 
         public CommandPacket()
         {
@@ -25,8 +25,8 @@ namespace SlipeServer.Packets.Definitions.Commands
         {
             var reader = new PacketReader(bytes);
             string[] commandArgs = reader.GetStringCharacters(bytes.Length).Split(' ');
-            Command = commandArgs[0];
-            Arguments = commandArgs.Skip(1).ToArray();
+            this.Command = commandArgs[0];
+            this.Arguments = commandArgs.Skip(1).ToArray();
         }
 
         public override byte[] Write()

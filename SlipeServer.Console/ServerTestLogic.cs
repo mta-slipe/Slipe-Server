@@ -85,38 +85,38 @@ namespace SlipeServer.Console
         {
             this.testResource = new Resource(this.server, this.root, this.resourceServer, "TestResource");
 
-            new WorldObject(321, new Vector3(5, 0, 3)).AssociateWith(server);
+            new WorldObject(321, new Vector3(5, 0, 3)).AssociateWith(this.server);
             new Water(new Vector3[]
             {
                 new Vector3(-6, 0, 4), new Vector3(-3, 0, 4),
                 new Vector3(-6, 3, 4), new Vector3(-3, 3, 4)
-            }).AssociateWith(server);
-            new WorldObject(321, new Vector3(5, 0, 3)).AssociateWith(server);
-            new Blip(new Vector3(20, 0, 0), BlipIcon.Bulldozer).AssociateWith(server);
-            new RadarArea(new Vector2(0, 0), new Vector2(200, 200), Color.FromArgb(100, Color.Aqua)).AssociateWith(server);
+            }).AssociateWith(this.server);
+            new WorldObject(321, new Vector3(5, 0, 3)).AssociateWith(this.server);
+            new Blip(new Vector3(20, 0, 0), BlipIcon.Bulldozer).AssociateWith(this.server);
+            new RadarArea(new Vector2(0, 0), new Vector2(200, 200), Color.FromArgb(100, Color.Aqua)).AssociateWith(this.server);
             new Marker(new Vector3(5, 0, 2), MarkerType.Cylinder)
             {
                 Color = Color.FromArgb(100, Color.Cyan)
-            }.AssociateWith(server);
-            new Pickup(new Vector3(0, 5, 3), PickupType.Health, 20).AssociateWith(server);
+            }.AssociateWith(this.server);
+            new Pickup(new Vector3(0, 5, 3), PickupType.Health, 20).AssociateWith(this.server);
 
             var values = Enum.GetValues(typeof(PedModel));
             PedModel randomPedModel = (PedModel)values.GetValue(new Random().Next(values.Length))!;
-            new Ped(randomPedModel, new Vector3(10, 0, 3)).AssociateWith(server);
+            new Ped(randomPedModel, new Vector3(10, 0, 3)).AssociateWith(this.server);
 
-            new WorldObject(ObjectModel.Drugred, new Vector3(15, 0, 3)).AssociateWith(server);
+            new WorldObject(ObjectModel.Drugred, new Vector3(15, 0, 3)).AssociateWith(this.server);
             
             new WeaponObject(355, new Vector3(10, 10, 5))
             {
                 TargetType = WeaponTargetType.Fixed,
                 TargetPosition = new Vector3(10, 10, 5)
-            }.AssociateWith(server);
-            var vehicle = new Vehicle(602, new Vector3(-10, 5, 3)).AssociateWith(server);
-            var aircraft = new Vehicle(520, new Vector3(10, 5, 3)).AssociateWith(server);
-            var forklift = new Vehicle(530, new Vector3(20, 5, 3)).AssociateWith(server);
-            var forklift2 = new Vehicle(530, new Vector3(22, 5, 3)).AssociateWith(server);
-            var firetruck = new Vehicle(407, new Vector3(30, 5, 3)).AssociateWith(server);
-            var firetruck2 = new Vehicle(407, new Vector3(35, 5, 3)).AssociateWith(server);
+            }.AssociateWith(this.server);
+            var vehicle = new Vehicle(602, new Vector3(-10, 5, 3)).AssociateWith(this.server);
+            var aircraft = new Vehicle(520, new Vector3(10, 5, 3)).AssociateWith(this.server);
+            var forklift = new Vehicle(530, new Vector3(20, 5, 3)).AssociateWith(this.server);
+            var forklift2 = new Vehicle(530, new Vector3(22, 5, 3)).AssociateWith(this.server);
+            var firetruck = new Vehicle(407, new Vector3(30, 5, 3)).AssociateWith(this.server);
+            var firetruck2 = new Vehicle(407, new Vector3(35, 5, 3)).AssociateWith(this.server);
 
             vehicle.PedEntered += async (sender, eventArgs) =>
             {
@@ -195,7 +195,7 @@ namespace SlipeServer.Console
                     player.TakeScreenshot(960, 540, "highqualitytag", 70);
 
                 if (args.Command == "ping")
-                    chatBox.OutputTo(player, $"Your ping is {player.Client.Ping}", Color.YellowGreen);
+                    this.chatBox.OutputTo(player, $"Your ping is {player.Client.Ping}", Color.YellowGreen);
             };
 
             player.OnScreenshot += HandlePlayerScreenshot;
@@ -235,7 +235,7 @@ namespace SlipeServer.Console
             else
             {
                 Player? player = (Player?)o;
-                logger.LogWarning($"Failed to take a screenshot ({e.Tag}) of player: {player?.Name}, reason: {e.ErrorMessage}");
+                this.logger.LogWarning($"Failed to take a screenshot ({e.Tag}) of player: {player?.Name}, reason: {e.ErrorMessage}");
 
             }
         }
@@ -251,7 +251,7 @@ namespace SlipeServer.Console
             });
             table.TableValue?.Add("self", table);
 
-            this.luaService.TriggerEvent(player, "Slipe.Test.ClientEvent", root, "String value", true, 23, table);
+            this.luaService.TriggerEvent(player, "Slipe.Test.ClientEvent", this.root, "String value", true, 23, table);
         }
     }
 }

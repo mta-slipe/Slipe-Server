@@ -33,9 +33,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlipeServer.Server.TestTool
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlipeServer.Lua", "SlipeServer.Lua\SlipeServer.Lua.csproj", "{F301E925-A4E9-47D2-AE59-BD86536C8795}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlipeServer.Scripting", "SlipeServer.Scripting\SlipeServer.Scripting.csproj", "{4146928E-A52C-4E9D-A398-5BF0C4F53662}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlipeServer.Scripting", "SlipeServer.Scripting\SlipeServer.Scripting.csproj", "{4146928E-A52C-4E9D-A398-5BF0C4F53662}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripting", "Scripting", "{DEAEE2A1-118A-4ED7-8CC5-7C446ED97AE3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B48D22BE-3412-4C0B-8203-EAA1D958117E}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
