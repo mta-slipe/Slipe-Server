@@ -20,6 +20,7 @@ namespace SlipeServer.Net
         private delegate void PacketCallback(byte packetId, uint binaryAddress, IntPtr payload, uint payloadSize, bool hasPing, uint ping);
 
 
+#pragma warning disable CA2101 // Specify marshaling for P/Invoke string arguments
         [DllImport(wrapperDllpath, EntryPoint = "initNetWrapper")]
         private static extern int InitNetWrapper(string path, string idFile, string ip, ushort port, uint playerCount, string serverName, PacketCallback callback);
 
@@ -49,6 +50,8 @@ namespace SlipeServer.Net
         private static extern void ResendModPackets(ushort id, uint binaryAddress);
         [DllImport(wrapperDllpath, EntryPoint = "resendPlayerACInfo")]
         private static extern void ResendPlayerACInfo(ushort id, uint binaryAddress);
+
+#pragma warning restore CA2101 // Specify marshaling for P/Invoke string arguments
 
         private readonly PacketCallback packetInterceptorDelegate;
         private readonly ushort id;
