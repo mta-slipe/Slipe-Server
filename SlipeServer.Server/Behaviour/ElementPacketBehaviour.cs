@@ -31,7 +31,7 @@ namespace SlipeServer.Server.Behaviour
             element.AlphaChanged += RelayAlphaChange;
             element.DimensionChanged += RelayDimensionChange;
             element.InteriorChanged += RelayInteriorChange;
-            //element.Destroyed += RelayElementDestroy;
+            element.Destroyed += RelayElementDestroy;
         }
 
         private void RelayElementDestroy(Element element)
