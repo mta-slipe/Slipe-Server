@@ -19,7 +19,7 @@ namespace SlipeServer.Server.Elements.IdGeneration
             this.idCounter = (this.idCounter + 1) % ElementConstants.MaxElementId;
             if (this.idCounter == 0)
                 this.idCounter++;
-            return idCounter;
+            return this.idCounter;
         }
     }
 }

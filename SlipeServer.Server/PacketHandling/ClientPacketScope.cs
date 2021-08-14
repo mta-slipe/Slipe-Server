@@ -20,7 +20,11 @@ namespace SlipeServer.Server.PacketHandling
         {
         }
 
-        public void Dispose() => AsyncLocalScopeStack.Instance.Pop();
+        public void Dispose()
+        {
+            AsyncLocalScopeStack.Instance.Pop();
+            GC.SuppressFinalize(this);
+        }
 
         public bool ContainsClient(Client client) => this.clients.Contains(client);
     }

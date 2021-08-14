@@ -7,7 +7,7 @@ namespace SlipeServer.Packets.Definitions.Entities.Structs
 {
     public class CustomData
     {
-        public CustomDataItem[] Items { get; set; } = new CustomDataItem[0];
+        public CustomDataItem[] Items { get; set; } = Array.Empty<CustomDataItem>();
 
     }
 }

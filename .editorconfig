@@ -128,6 +128,8 @@ dotnet_style_qualification_for_method = false:suggestion
 #prefer properties not to be prefaced with this. or Me. in Visual Basic
 dotnet_style_qualification_for_property = false:suggestion
 insert_final_newline=true
+csharp_style_prefer_range_operator=false:suggestion
+csharp_style_prefer_index_operator=false:suggestion
 
 [*.{cs,vb}]
 dotnet_style_qualification_for_field=true:suggestion

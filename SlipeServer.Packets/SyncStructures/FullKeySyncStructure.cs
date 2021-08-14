@@ -44,34 +44,34 @@ namespace SlipeServer.Packets.Structures
             byte buttonCrossByte
         )
         {
-            LeftStick = leftStick;
-            LeftShoulder1 = leftShoulder1;
-            RightShoulder1 = leftShoulder2;
-            ButtonSquare = buttonSquare;
-            ButtonCross = buttonCross;
-            ButtonCircle = buttonCircle;
-            ButtonTriangle = buttonTriangle;
-            ShockButton = shockButton;
-            PedWalk = pedWalk;
-            ButtonSquareByte = buttonSquareByte;
-            ButtonCrossByte = buttonCrossByte;
+            this.LeftStick = leftStick;
+            this.LeftShoulder1 = leftShoulder1;
+            this.RightShoulder1 = leftShoulder2;
+            this.ButtonSquare = buttonSquare;
+            this.ButtonCross = buttonCross;
+            this.ButtonCircle = buttonCircle;
+            this.ButtonTriangle = buttonTriangle;
+            this.ShockButton = shockButton;
+            this.PedWalk = pedWalk;
+            this.ButtonSquareByte = buttonSquareByte;
+            this.ButtonCrossByte = buttonCrossByte;
         }
 
         public void Read(PacketReader reader)
         {
-            PedWalk = reader.GetBit();
-            ShockButton = reader.GetBit();
-            ButtonTriangle = reader.GetBit();
-            ButtonCircle = reader.GetBit();
-            ButtonCross = reader.GetBit();
-            ButtonSquare = reader.GetBit();
-            RightShoulder1 = reader.GetBit();
-            LeftShoulder1 = reader.GetBit();
+            this.PedWalk = reader.GetBit();
+            this.ShockButton = reader.GetBit();
+            this.ButtonTriangle = reader.GetBit();
+            this.ButtonCircle = reader.GetBit();
+            this.ButtonCross = reader.GetBit();
+            this.ButtonSquare = reader.GetBit();
+            this.RightShoulder1 = reader.GetBit();
+            this.LeftShoulder1 = reader.GetBit();
 
             this.ButtonSquareByte = reader.GetBit() ? reader.GetByte() : (byte)0;
             this.ButtonCrossByte = reader.GetBit() ? reader.GetByte() : (byte)0;
 
-            LeftStick = new Vector2(
+            this.LeftStick = new Vector2(
                 (float)(reader.GetByte() * 128.0f / 127.0f),
                 (float)(reader.GetByte() * 128.0f / 127.0f)
             );
@@ -81,37 +81,37 @@ namespace SlipeServer.Packets.Structures
         public void Write(PacketBuilder builder)
         {
             builder.Write(new bool[] {
-                PedWalk,
-                ShockButton,
-                ButtonTriangle,
-                ButtonCircle,
-                ButtonCross,
-                ButtonSquare,
-                RightShoulder1,
-                LeftShoulder1,
+                this.PedWalk,
+                this.ShockButton,
+                this.ButtonTriangle,
+                this.ButtonCircle,
+                this.ButtonCross,
+                this.ButtonSquare,
+                this.RightShoulder1,
+                this.LeftShoulder1,
             });
 
 
-            if (ButtonSquareByte >= 1 && ButtonSquareByte <= 254)
+            if (this.ButtonSquareByte >= 1 && this.ButtonSquareByte <= 254)
             {
                 builder.Write(true);
-                builder.Write(ButtonSquareByte);
+                builder.Write(this.ButtonSquareByte);
             }
             else
                 builder.Write(false);
 
-            if (ButtonCrossByte >= 1 && ButtonCrossByte <= 254)
+            if (this.ButtonCrossByte >= 1 && this.ButtonCrossByte <= 254)
             {
                 builder.Write(true);
-                builder.Write(ButtonCrossByte);
+                builder.Write(this.ButtonCrossByte);
             }
             else
                 builder.Write(false);
 
             builder.Write(new byte[]
             {
-                (byte)((float)LeftStick.X * 127.0f / 128.0f),
-                (byte)((float)LeftStick.Y * 127.0f / 128.0f),
+                (byte)((float)this.LeftStick.X * 127.0f / 128.0f),
+                (byte)((float)this.LeftStick.Y * 127.0f / 128.0f),
             });
         }
     }

@@ -69,7 +69,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             switch (packet.FunctionId)
             {
                 case RpcFunctions.PLAYER_INGAME_NOTICE:
-                    HandleIngameNotice(client, packet);
+                    HandleIngameNotice(client);
                     break;
 
                 case RpcFunctions.PLAYER_WEAPON:
@@ -82,21 +82,21 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             }
         }
 
-        private void HandleIngameNotice(Client client, RpcPacket packet)
+        private void HandleIngameNotice(Client client)
         {
             var players = this.elementRepository.GetByType<Player>(ElementType.Player);
 
-            var isVersionValid = Version.TryParse(string.Join(".", client.Version.Replace("-", ".").Split(".").Take(4)), out Version result);
+            var isVersionValid = Version.TryParse(string.Join(".", client.Version!.Replace("-", ".").Split(".").Take(4)), out Version? result);
             if (!isVersionValid)
             {
                 client.Player.Kick(PlayerDisconnectType.BAD_VERSION);
                 return;
             }
 
-            if (result < configuration.MinVersion)
+            if (result < this.configuration.MinVersion)
             {
-                client.SendPacket(PlayerPacketFactory.CreateUpdateInfoPacket(configuration.MinVersion));
-                client.Player.Kick($"Disconnected: Minimum mta version required: {configuration.MinVersion}");
+                client.SendPacket(PlayerPacketFactory.CreateUpdateInfoPacket(this.configuration.MinVersion));
+                client.Player.Kick($"Disconnected: Minimum mta version required: {this.configuration.MinVersion}");
                 return;
             }
 
@@ -104,12 +104,12 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                 client.Player.Id,
                 players.Count() + 1,
                 this.root.Id,
-                configuration.HttpUrl != null ? HttpDownloadType.HTTP_DOWNLOAD_ENABLED_URL : HttpDownloadType.HTTP_DOWNLOAD_ENABLED_PORT,
-                configuration.HttpPort,
-                configuration.HttpUrl ?? "",
-                configuration.HttpConnectionsPerClient,
+                this.configuration.HttpUrl != null ? HttpDownloadType.HTTP_DOWNLOAD_ENABLED_URL : HttpDownloadType.HTTP_DOWNLOAD_ENABLED_PORT,
+                this.configuration.HttpPort,
+                this.configuration.HttpUrl ?? "",
+                this.configuration.HttpConnectionsPerClient,
                 1,
-                isVoiceEnabled: configuration.IsVoiceEnabled
+                isVoiceEnabled: this.configuration.IsVoiceEnabled
             ));
 
             var otherPlayers = players
@@ -143,7 +143,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             var slot = packet.Reader.GetWeaponSlot();
             client.Player.CurrentWeaponSlot = (WeaponSlot)slot;
 
-            if (WeaponConstants.slotsWithAmmo.Contains(slot) && client.Player.CurrentWeapon != null)
+            if (WeaponConstants.SlotsWithAmmo.Contains(slot) && client.Player.CurrentWeapon != null)
             {
                 (var ammo, var inClip) = packet.Reader.GetAmmoTuple(true);
                 client.Player.CurrentWeapon.Ammo = ammo;

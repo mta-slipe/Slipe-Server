@@ -30,8 +30,8 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player
         {
             var builder = new PacketBuilder();
             builder.Write((byte)ElementRpcFunction.SHOW_PLAYER_HUD_COMPONENT);
-            builder.Write((byte)HudComponent);
-            builder.Write((byte)(Show ? 1 : 0));
+            builder.Write((byte)this.HudComponent);
+            builder.Write((byte)(this.Show ? 1 : 0));
             return builder.Build();
         }
     }

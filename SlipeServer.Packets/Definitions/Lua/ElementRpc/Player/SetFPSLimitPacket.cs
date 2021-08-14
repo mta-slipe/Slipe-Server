@@ -29,7 +29,7 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player
         {
             var builder = new PacketBuilder();
             builder.Write((byte)ElementRpcFunction.SET_FPS_LIMIT);
-            builder.Write(Limit);
+            builder.Write(this.Limit);
             return builder.Build();
         }
     }

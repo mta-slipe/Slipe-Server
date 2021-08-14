@@ -32,7 +32,7 @@ namespace SlipeServer.Server.Behaviour
                 AutoReset = true,
                 Enabled = true
             };
-            timer.Elapsed += OnTimerElapsed;
+            this.timer.Elapsed += OnTimerElapsed;
 
             _ = this.AnnounceToMasterServer();
         }
@@ -47,10 +47,10 @@ namespace SlipeServer.Server.Behaviour
             try
             {
                 byte[] data = this.aseQueryService.QueryLight();
-                string version = "1.5.7-1.0";
+                string version = "1.5.8-1.0";
                 string extra = "0_0_0_0_0";
 
-                string url = $"{masterServerUrl}?g={configuration.Port}&a={configuration.Port + 123}&h={configuration.HttpPort}&v={version}&x={extra}&ip=0.0.0.0";
+                string url = $"{this.masterServerUrl}?g={this.configuration.Port}&a={this.configuration.Port + 123}&h={this.configuration.HttpPort}&v={version}&x={extra}&ip=0.0.0.0";
                 var response = await this.httpClient.PostAsync(url, new ByteArrayContent(data));
 
                 var keyValuePairCollection = HttpUtility.ParseQueryString(await response.Content.ReadAsStringAsync());

@@ -18,13 +18,13 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped
 
         public SetWeaponSlotRpcPacket(uint elementId, byte weaponSlot)
         {
-            ElementId = elementId;
-            WeaponSlot = weaponSlot;
+            this.ElementId = elementId;
+            this.WeaponSlot = weaponSlot;
         }
 
         public override void Read(byte[] bytes)
         {
-            var reader = new PacketReader(bytes);
+
         }
 
         public override byte[] Write()

@@ -72,7 +72,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                         HandleRequestIn(client, vehicle, packet);
                         break;
                     case VehicleInOutAction.NotifyIn:
-                        HandleNotifyIn(client, vehicle, packet);
+                        HandleNotifyIn(client, vehicle);
                         break;
                     case VehicleInOutAction.NotifyAbortIn:
                         HandleNotifyInAbort(client, vehicle, packet);
@@ -173,7 +173,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                             Seat = 0,
                             OutActionId = VehicleInOutActionReturns.RequestInConfirmed,
                         };
-                        server.BroadcastPacket(replyPacket);
+                        this.server.BroadcastPacket(replyPacket);
                     }
                 } else
                 {
@@ -199,7 +199,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                             Door = packet.Door,
                             OutActionId = VehicleInOutActionReturns.RequestJackConfirmed,
                         };
-                        server.BroadcastPacket(replyPacket);
+                        this.server.BroadcastPacket(replyPacket);
                     }
 
                 }
@@ -239,7 +239,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                         Door = packet.Door,
                         OutActionId = VehicleInOutActionReturns.RequestInConfirmed,
                     };
-                    server.BroadcastPacket(replyPacket);
+                    this.server.BroadcastPacket(replyPacket);
                 }
             }
         }
@@ -257,7 +257,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             replyPacket.SendTo(client);
         }
 
-        private void HandleNotifyIn(Client client, Vehicle vehicle, VehicleInOutPacket packet)
+        private void HandleNotifyIn(Client client, Vehicle vehicle)
         {
             if (client.Player.VehicleAction == VehicleAction.Entering)
             {
@@ -274,7 +274,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                         Seat = client.Player.Seat ?? 0,
                         OutActionId = VehicleInOutActionReturns.NotifyInReturn,
                     };
-                    server.BroadcastPacket(replyPacket);
+                    this.server.BroadcastPacket(replyPacket);
                 }
             }
         }
@@ -296,7 +296,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                     DoorOpenRatio = packet.DoorOpenRatio,
                     OutActionId = VehicleInOutActionReturns.NotifyInAbortReturn,
                 };
-                server.BroadcastPacket(replyPacket);
+                this.server.BroadcastPacket(replyPacket);
             }
         }
 

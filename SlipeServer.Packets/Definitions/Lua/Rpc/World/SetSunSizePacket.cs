@@ -15,7 +15,7 @@ namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
         public int SunSize { get; set; }
         public SetSunSizePacket(int size)
         {
-            SunSize = size;
+            this.SunSize = size;
         }
         public override void Read(byte[] bytes)
         {

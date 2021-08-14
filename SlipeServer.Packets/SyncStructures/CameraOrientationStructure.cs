@@ -58,7 +58,7 @@ namespace SlipeServer.Packets.Structures
                 reader.GetFloatFromBits(bitCount, -range, range),
                 reader.GetFloatFromBits(bitCount, -range, range)
             );
-            this.CameraPosition = useAbsolutePosition ? cameraPosition : (BasePosition - cameraPosition);
+            this.CameraPosition = useAbsolutePosition ? cameraPosition : (this.BasePosition - cameraPosition);
         }
 
         public void Write(PacketBuilder builder)

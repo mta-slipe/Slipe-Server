@@ -18,13 +18,13 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped
 
         public RemoveFromVehiclePacket(uint elementId, byte timeContext)
         {
-            ElementId = elementId;
-            TimeContext = timeContext;
+            this.ElementId = elementId;
+            this.TimeContext = timeContext;
         }
 
         public override void Read(byte[] bytes)
         {
-            var reader = new PacketReader(bytes);
+
         }
 
         public override byte[] Write()

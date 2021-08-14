@@ -27,7 +27,7 @@ namespace SlipeServer.Packets.Definitions.Sync
 
         public override void Read(byte[] bytes)
         {
-            var reader = new PacketReader(bytes);
+            //var reader = new PacketReader(bytes);
         }
 
         public override byte[] Write()

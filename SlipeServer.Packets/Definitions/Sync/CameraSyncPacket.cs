@@ -29,11 +29,11 @@ namespace SlipeServer.Packets.Definitions.Sync
 
         public CameraSyncPacket(byte timeContext, bool isFixed, Vector3 position, Vector3 lookAt, uint targetId)
         {
-            TimeContext = timeContext;
-            IsFixed = isFixed;
-            Position = position;
-            LookAt = lookAt;
-            TargetId = targetId;
+            this.TimeContext = timeContext;
+            this.IsFixed = isFixed;
+            this.Position = position;
+            this.LookAt = lookAt;
+            this.TargetId = targetId;
         }
 
         public CameraSyncPacket(byte timeContext, Vector3 position, Vector3 lookAt)

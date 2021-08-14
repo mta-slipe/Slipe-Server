@@ -174,14 +174,14 @@ namespace SlipeServer.Server.Elements
         }
 
         public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
-        public event EventHandler<PlayerDamagedEventArgs>? Damaged;
-        public event EventHandler<PlayerWastedEventArgs>? Wasted;
-        public event EventHandler<PlayerSpawnedEventArgs>? Spawned;
-        public event EventHandler<PlayerCommandEventArgs>? OnCommand;
-        public event EventHandler<PlayerVoiceStartArgs>? OnVoiceData;
-        public event EventHandler<PlayerVoiceEndArgs>? OnVoiceDataEnd;
-        public event EventHandler<PlayerQuitEventArgs>? Disconnected;
-        public event EventHandler<ScreenshotEventArgs>? OnScreenshot;
-        public event EventHandler<PlayerKickEventArgs>? OnKick;
+        public event ElementEventHandler<PlayerDamagedEventArgs>? Damaged;
+        public event ElementEventHandler<PlayerWastedEventArgs>? Wasted;
+        public event ElementEventHandler<PlayerSpawnedEventArgs>? Spawned;
+        public event ElementEventHandler<PlayerCommandEventArgs>? OnCommand;
+        public event ElementEventHandler<PlayerVoiceStartArgs>? OnVoiceData;
+        public event ElementEventHandler<PlayerVoiceEndArgs>? OnVoiceDataEnd;
+        public event ElementEventHandler<PlayerQuitEventArgs>? Disconnected;
+        public event ElementEventHandler<ScreenshotEventArgs>? OnScreenshot;
+        public event ElementEventHandler<PlayerKickEventArgs>? OnKick;
     }
 }

@@ -44,7 +44,7 @@ namespace SlipeServer.Server.Elements
         public Pickup(Vector3 position, ushort model)
         {
             this.Position = position;
-            Model = model;
+            this.Model = model;
             this.PickupType = PickupType.Custom;
         }
 

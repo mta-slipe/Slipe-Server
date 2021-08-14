@@ -29,7 +29,7 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player
         {
             var builder = new PacketBuilder();
             builder.Write((byte)ElementRpcFunction.SET_WANTED_LEVEL);
-            builder.Write(Level);
+            builder.Write(this.Level);
             return builder.Build();
         }
     }

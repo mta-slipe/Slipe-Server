@@ -13,8 +13,8 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element
         public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
         public override PacketPriority Priority => PacketPriority.High;
 
-        public string Type { get; set; }
-        public string Data { get; set; }
+        public string Type { get; set; } = string.Empty;
+        public string Data { get; set; } = string.Empty;
 
         public UpdateInfoPacket()
         {

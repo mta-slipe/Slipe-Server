@@ -90,10 +90,10 @@ namespace SlipeServer.Packets.Definitions.Lua
                 "nil";
         }
 
-        public static implicit operator LuaValue(string value) => new LuaValue(value);
-        public static implicit operator LuaValue(bool value) => new LuaValue(value);
-        public static implicit operator LuaValue(int value) => new LuaValue(value);
-        public static implicit operator LuaValue(float value) => new LuaValue(value);
-        public static implicit operator LuaValue(double value) => new LuaValue(value);
+        public static implicit operator LuaValue(string value) => new(value);
+        public static implicit operator LuaValue(bool value) => new(value);
+        public static implicit operator LuaValue(int value) => new(value);
+        public static implicit operator LuaValue(float value) => new(value);
+        public static implicit operator LuaValue(double value) => new(value);
     }
 }

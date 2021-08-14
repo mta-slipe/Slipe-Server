@@ -41,16 +41,20 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element
         {
             var builder = new PacketBuilder();
 
-            builder.WriteCapped((int)Type, 5);
+            builder.WriteCapped((int)this.Type, 5);
 
-            if(Type == PlayerDisconnectType.BAN || Type == PlayerDisconnectType.BANNED_SERIAL || Type == PlayerDisconnectType.BANNED_IP)
+            if(
+                this.Type == PlayerDisconnectType.BAN || 
+                this.Type == PlayerDisconnectType.BANNED_SERIAL || 
+                this.Type == PlayerDisconnectType.BANNED_IP
+            )
             {
-                builder.Write(Duration.ToString());
+                builder.Write(this.Duration.ToString());
             }
 
-            if(!string.IsNullOrEmpty(Reason))
+            if(!string.IsNullOrEmpty(this.Reason))
             {
-                builder.Write(Reason);
+                builder.Write(this.Reason);
             }
             return builder.Build();
         }

@@ -208,6 +208,10 @@ namespace SlipeServer.Console
                 if (args.Command == "kickme")
                     player.Kick("You has been kicked by slipe");
 
+                if (args.Command == "playerlist")
+                    foreach (var remotePlayer in this.elementRepository.GetByType<Player>(ElementType.Player))
+                        this.chatBox.OutputTo(player, remotePlayer.Name);
+
             };
 
             player.OnScreenshot += HandlePlayerScreenshot;

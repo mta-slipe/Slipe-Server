@@ -17,8 +17,8 @@ namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
 
         public SetTrafficLightStatePacket(byte state, bool forced)
         {
-            State = state;
-            Forced = forced;
+            this.State = state;
+            this.Forced = forced;
         }
 
         public override void Read(byte[] bytes)

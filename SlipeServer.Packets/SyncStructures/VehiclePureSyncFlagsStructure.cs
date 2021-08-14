@@ -41,51 +41,51 @@ namespace SlipeServer.Packets.Structures
             bool isHeliSearchLightVisible
         )
         {
-            IsWearingGoggles = isWearingGoggles;
-            IsDoingGangDriveby = isDoingGangDriveby;
-            IsSirenOrAlarmActive = isSirenOrAlarmActive;
-            IsSmokeTrailEnabled = isSmokeTrailEnabled;
-            IsLandingGearDown = isLandingGearDown;
-            IsOnGround = isOnGround;
-            IsInWater = isInWater;
-            IsDerailed = isDreailed;
-            IsAircraft = isAircraft;
-            HasAWeapon = hasAWeapon;
-            IsHeliSearchLightVisible = isHeliSearchLightVisible;
+            this.IsWearingGoggles = isWearingGoggles;
+            this.IsDoingGangDriveby = isDoingGangDriveby;
+            this.IsSirenOrAlarmActive = isSirenOrAlarmActive;
+            this.IsSmokeTrailEnabled = isSmokeTrailEnabled;
+            this.IsLandingGearDown = isLandingGearDown;
+            this.IsOnGround = isOnGround;
+            this.IsInWater = isInWater;
+            this.IsDerailed = isDreailed;
+            this.IsAircraft = isAircraft;
+            this.HasAWeapon = hasAWeapon;
+            this.IsHeliSearchLightVisible = isHeliSearchLightVisible;
         }
 
         public void Read(PacketReader reader)
         {
-            IsDerailed = reader.GetBit();
-            IsInWater = reader.GetBit();
-            IsOnGround = reader.GetBit();
-            IsLandingGearDown = reader.GetBit();
+            this.IsDerailed = reader.GetBit();
+            this.IsInWater = reader.GetBit();
+            this.IsOnGround = reader.GetBit();
+            this.IsLandingGearDown = reader.GetBit();
 
-            IsSmokeTrailEnabled = reader.GetBit();
-            IsSirenOrAlarmActive = reader.GetBit();
-            IsDoingGangDriveby = reader.GetBit();
-            IsWearingGoggles = reader.GetBit();
+            this.IsSmokeTrailEnabled = reader.GetBit();
+            this.IsSirenOrAlarmActive = reader.GetBit();
+            this.IsDoingGangDriveby = reader.GetBit();
+            this.IsWearingGoggles = reader.GetBit();
 
-            IsHeliSearchLightVisible = reader.GetBit();
-            HasAWeapon = reader.GetBit();
-            IsAircraft = reader.GetBit();
+            this.IsHeliSearchLightVisible = reader.GetBit();
+            this.HasAWeapon = reader.GetBit();
+            this.IsAircraft = reader.GetBit();
         }
 
         public void Write(PacketBuilder builder)
         {
-            builder.Write(IsDerailed);
-            builder.Write(IsInWater);
-            builder.Write(IsOnGround);
-            builder.Write(IsLandingGearDown);
+            builder.Write(this.IsDerailed);
+            builder.Write(this.IsInWater);
+            builder.Write(this.IsOnGround);
+            builder.Write(this.IsLandingGearDown);
 
-            builder.Write(IsSmokeTrailEnabled);
-            builder.Write(IsSirenOrAlarmActive);
-            builder.Write(IsDoingGangDriveby);
-            builder.Write(IsWearingGoggles);
+            builder.Write(this.IsSmokeTrailEnabled);
+            builder.Write(this.IsSirenOrAlarmActive);
+            builder.Write(this.IsDoingGangDriveby);
+            builder.Write(this.IsWearingGoggles);
 
-            builder.Write(IsHeliSearchLightVisible);
-            builder.Write(HasAWeapon);
-            builder.Write(IsAircraft);
+            builder.Write(this.IsHeliSearchLightVisible);
+            builder.Write(this.HasAWeapon);
+            builder.Write(this.IsAircraft);
         }
     }
 }

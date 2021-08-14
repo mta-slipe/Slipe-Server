@@ -4,6 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
+    <Nullable>enable</Nullable>
 
     <Platforms>AnyCPU;x86;x64</Platforms>
   </PropertyGroup>

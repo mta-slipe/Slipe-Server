@@ -9,7 +9,7 @@ namespace SlipeServer.Server.TestTools
 
         public TestingPlayer(Client client, uint address) : base(client)
         {
-            Address = address;
+            this.Address = address;
         }
 
         public new TestingPlayer AssociateWith(MtaServer server)

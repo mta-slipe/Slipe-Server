@@ -14,10 +14,10 @@ namespace SlipeServer.Server.Elements.Events
 
         public PlayerDamagedEventArgs(Player source, Element? damager, WeaponType weaponType, BodyPart bodyPart)
         {
-            Source = source;
-            Damager = damager;
-            WeaponType = weaponType;
-            BodyPart = bodyPart;
+            this.Source = source;
+            this.Damager = damager;
+            this.WeaponType = weaponType;
+            this.BodyPart = bodyPart;
         }
     }
 }

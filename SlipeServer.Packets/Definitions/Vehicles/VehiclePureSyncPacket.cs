@@ -124,7 +124,7 @@ namespace SlipeServer.Packets.Definitions.Vehicles
             {
                 this.WeaponSlot = reader.GetWeaponSlot();
 
-                if (this.VehiclePureSyncFlags.IsDoingGangDriveby && WeaponConstants.weaponsWithAmmo.Contains(this.WeaponSlot.Value))
+                if (this.VehiclePureSyncFlags.IsDoingGangDriveby && WeaponConstants.WeaponsWithAmmo.Contains(this.WeaponSlot.Value))
                 {
                     this.WeaponAmmo = reader.GetAmmo();
                     this.WeaponAmmoInClip = reader.GetAmmo();
@@ -138,17 +138,17 @@ namespace SlipeServer.Packets.Definitions.Vehicles
 
             if (this.Seat == 0)
             {
-                if (VehicleConstants.VehiclesWithTurrets.Contains(RemoteModel))
+                if (VehicleConstants.VehiclesWithTurrets.Contains(this.RemoteModel))
                 {
                     this.TurretRotation = reader.GetTurretRotation();
                 }
 
-                if (VehicleConstants.VehiclesWithAdjustableProperties.Contains(RemoteModel))
+                if (VehicleConstants.VehiclesWithAdjustableProperties.Contains(this.RemoteModel))
                 {
                     this.AdjustableProperty = reader.GetUint16();
                 }
 
-                if (VehicleConstants.VehiclesWithDoors.Contains(RemoteModel))
+                if (VehicleConstants.VehiclesWithDoors.Contains(this.RemoteModel))
                 {
                     this.DoorOpenRatios = new float[6];
                     for (int i = 0; i < 6; i++)
@@ -222,7 +222,7 @@ namespace SlipeServer.Packets.Definitions.Vehicles
             if (this.VehiclePureSyncFlags.HasAWeapon)
             {
                 builder.WriteWeaponSlot(this.WeaponSlot ?? 0);
-                if (this.VehiclePureSyncFlags.IsDoingGangDriveby && WeaponConstants.weaponsWithAmmo.Contains(this.WeaponSlot ?? 0))
+                if (this.VehiclePureSyncFlags.IsDoingGangDriveby && WeaponConstants.WeaponsWithAmmo.Contains(this.WeaponSlot ?? 0))
                 {
                     builder.WriteAmmo(this.WeaponAmmo, this.WeaponAmmoInClip);
 
@@ -244,7 +244,7 @@ namespace SlipeServer.Packets.Definitions.Vehicles
                     builder.Write(this.AdjustableProperty);
                 }
 
-                if (VehicleConstants.VehiclesWithDoors.Contains(RemoteModel) && this.DoorOpenRatios != null)
+                if (VehicleConstants.VehiclesWithDoors.Contains(this.RemoteModel) && this.DoorOpenRatios != null)
                 {
                     for (int i = 0; i < 6; i++)
                     {
