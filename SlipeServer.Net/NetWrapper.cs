@@ -20,7 +20,7 @@ namespace SlipeServer.Net
         private delegate void PacketCallback(byte packetId, uint binaryAddress, IntPtr payload, uint payloadSize, bool hasPing, uint ping);
 
 
-        [DllImport(wrapperDllpath, EntryPoint = "initNetWrapper", CharSet = CharSet.Unicode)]
+        [DllImport(wrapperDllpath, EntryPoint = "initNetWrapper")]
         private static extern int InitNetWrapper(string path, string idFile, string ip, ushort port, uint playerCount, string serverName, PacketCallback callback);
 
         [DllImport(wrapperDllpath, EntryPoint = "destroyNetWrapper")]
@@ -38,11 +38,11 @@ namespace SlipeServer.Net
         [DllImport(wrapperDllpath, EntryPoint = "setSocketVersion")]
         private static extern bool SetSocketVersion(ushort id, uint binaryAddress, ushort version);
 
-        [DllImport(wrapperDllpath, EntryPoint = "getClientSerialAndVersion", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.StdCall)]
+        [DllImport(wrapperDllpath, EntryPoint = "getClientSerialAndVersion", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
         [return: MarshalAs(UnmanagedType.BStr)]
         private static extern string GetClientSerialAndVersion(ushort id, uint binaryAddress, out ushort serialSize, out ushort extraSize, out ushort versionSize);
 
-        [DllImport(wrapperDllpath, EntryPoint = "setChecks", CharSet = CharSet.Unicode)]
+        [DllImport(wrapperDllpath, EntryPoint = "setChecks")]
         private static extern void SetChecks(ushort id, string szDisableComboACMap, string szDisableACMap, string szEnableSDMap, int iEnableClientChecks, bool bHideAC, string szImgMods);
 
         private readonly PacketCallback packetInterceptorDelegate;

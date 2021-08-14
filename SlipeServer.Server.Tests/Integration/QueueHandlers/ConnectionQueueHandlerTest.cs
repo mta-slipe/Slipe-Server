@@ -1,13 +1,10 @@
 ﻿using Moq;
 using MTAServerWrapper.Packets.Outgoing.Connection;
 using SlipeServer.Packets.Definitions.Join;
-using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.PacketHandling.QueueHandlers;
 using SlipeServer.Server.TestTools;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -31,7 +28,8 @@ namespace SlipeServer.Server.Tests.Integration.QueueHandlers
 
             server.HandlePacket(address, PacketId.PACKET_ID_PLAYER_JOIN, Array.Empty<byte>());
 
-            await connectionHandler.GetPulseTask();
+            while (connectionHandler.QueuedPacketCount > 0)
+                await connectionHandler.GetPulseTask();
 
             server.NetWrapperMock.Verify(x => x.SendPacket(
                 address,
@@ -40,7 +38,8 @@ namespace SlipeServer.Server.Tests.Integration.QueueHandlers
 
             server.HandlePacket(address, PacketId.PACKET_ID_PLAYER_JOINDATA, new PlayerJoinDataPacket().Write());
 
-            await connectionHandler.GetPulseTask();
+            while (connectionHandler.QueuedPacketCount > 0)
+                await connectionHandler.GetPulseTask();
 
             server.NetWrapperMock.Verify(x => x.SendPacket(
                 address,

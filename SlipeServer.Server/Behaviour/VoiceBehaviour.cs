@@ -17,7 +17,7 @@ namespace SlipeServer.Server.Behaviour
         {
             server.PlayerJoined += (player) =>
             {
-                player.OnVoiceData += (sender, args) =>
+                player.VoiceDataReceived += (sender, args) =>
                 {
                     var packet = new VoiceDataPacket(player.Id, args.DataBuffer);
                     var otherPlayers = elementRepository.GetByType<Player>(ElementType.Player)
@@ -26,7 +26,7 @@ namespace SlipeServer.Server.Behaviour
                     packet.SendTo(otherPlayers);
                 };
 
-                player.OnVoiceDataEnd += (sender, args) =>
+                player.VoiceDataEnded += (sender, args) =>
                 {
                     var packet = new VoiceEndPacket(player.Id);
                     var otherPlayers = elementRepository.GetByType<Player>(ElementType.Player)
