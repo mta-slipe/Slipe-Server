@@ -146,16 +146,39 @@ namespace SlipeServer.Server.Elements
             }
         }
 
+        private readonly HashSet<Player> subscribers;
+        public IEnumerable<Player> Subscribers => this.subscribers;
+
 
         public Element()
         {
-            this.children = new List<Element>();
+            this.children = new ();
+            this.subscribers = new();
         }
 
         public Element(Element parent) : this()
         {
             this.Parent = parent;
         }
+
+        public void AddSubscriber(Player player)
+        {
+            if (this.subscribers.Contains(player))
+                return;
+
+            this.subscribers.Add(player);
+            player.SubscribeTo(this);
+        }
+
+        public void RemoveSubscriber(Player player)
+        {
+            if (!this.subscribers.Contains(player))
+                return;
+
+            this.subscribers.Remove(player);
+            player.UnsubscribeFrom(this);
+        }
+
 
         public byte GetAndIncrementTimeContext()
         {

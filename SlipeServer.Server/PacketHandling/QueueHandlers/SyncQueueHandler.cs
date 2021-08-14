@@ -21,6 +21,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         private readonly IElementRepository elementRepository;
         private readonly ISyncHandlerMiddleware<PlayerPureSyncPacket> pureSyncMiddleware;
         private readonly ISyncHandlerMiddleware<ProjectileSyncPacket> projectileSyncMiddleware;
+        private readonly ISyncHandlerMiddleware<KeySyncPacket> keySyncMiddleware;
 
         public override IEnumerable<PacketId> SupportedPacketIds => new PacketId[] 
         { 
@@ -43,6 +44,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             IElementRepository elementRepository,
             ISyncHandlerMiddleware<PlayerPureSyncPacket> pureSyncMiddleware,
             ISyncHandlerMiddleware<ProjectileSyncPacket> projectileSyncMiddleware,
+            ISyncHandlerMiddleware<KeySyncPacket> keySyncMiddleware,
             int sleepInterval, 
             QueueHandlerScalingConfig config
         ): base(config, sleepInterval)
@@ -51,6 +53,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             this.elementRepository = elementRepository;
             this.pureSyncMiddleware = pureSyncMiddleware;
             this.projectileSyncMiddleware = projectileSyncMiddleware;
+            this.keySyncMiddleware = keySyncMiddleware;
         }
 
         protected override Task HandlePacket(Client client, Packet packet)
@@ -98,7 +101,8 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         private void HandleClientKeySyncPacket(Client client, KeySyncPacket packet)
         {
             packet.PlayerId = client.Player.Id;
-            packet.SendTo(this.elementRepository.GetByType<Player>(ElementType.Player).Where(p => p.Client != client));
+            var otherPlayers = this.keySyncMiddleware.GetPlayersToSyncTo(client.Player, packet);
+            packet.SendTo(otherPlayers);
         }
 
         private void HandleProjectileSyncPacket(Client client, ProjectileSyncPacket packet)

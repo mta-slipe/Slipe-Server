@@ -158,7 +158,7 @@ namespace SlipeServer.Console
             //player.ForceMapVisible(true);
             //player.ToggleAllControls(false, true, true);
 
-            player.OnKick += (o, args) =>
+            player.Kicked += (o, args) =>
             {
                 Player? player = (Player?)o;
                 this.logger.LogWarning($"{player?.Name} has been kicked, reason: {args.Reason}");
@@ -172,8 +172,75 @@ namespace SlipeServer.Console
                 player.Camera.Fade(CameraFade.In, 0);
                 player.Spawn(new Vector3(0, 0, 3), 0, 7, 0, 0);
             };
-            player.OnCommand += (o, args) => { if (args.Command == "kill") player.Kill(); };
-            player.OnCommand += (o, args) => {
+
+            player.ScreenshotTaken += HandlePlayerScreenshot;
+
+            //player.AddWeapon(WeaponId.Ak47, 500, true);
+            //player.AddWeapon(WeaponId.Tec9, 500, true);
+            //player.AddWeapon(WeaponId.Sniper, 500, true);
+            //player.AddWeapon(WeaponId.Deagle, 500, true);
+            //player.AddWeapon(WeaponId.Golfclub, 500, true);
+
+            //player.RemoveWeapon(WeaponId.Tec9, 500);
+            //player.RemoveWeapon(WeaponId.Sniper);
+            //player.RemoveWeapon(WeaponId.Deagle, 200);
+            //player.SetAmmoCount(WeaponSlot.AssaultRifles, 750, 25);
+
+            player.Weapons.Add(new Weapon(WeaponId.Ak47, 500));
+            player.Weapons.Add(new Weapon(WeaponId.Tec9, 500));
+            player.Weapons.Add(new Weapon(WeaponId.Sniper, 500));
+            player.Weapons.Add(new Weapon(WeaponId.Deagle, 500));
+            player.Weapons.Add(new Weapon(WeaponId.Golfclub, 1));
+            player.Weapons.Remove(WeaponId.Tec9);
+            player.Weapons.Remove(WeaponId.Sniper);
+            player.Weapons.First(weapon => weapon.Type == WeaponId.Deagle).Ammo -= 200;
+            player.Weapons.First(weapon => weapon.Type == WeaponId.Ak47).Ammo = 750;
+            player.Weapons.First(weapon => weapon.Type == WeaponId.Ak47).AmmoInClip = 25;
+            
+            this.testResource?.StartFor(player);
+
+            this.HandlePlayerSubscriptions(player);
+            this.HandlePlayerCommands(player);
+        }
+
+        private void HandlePlayerSubscriptions(Player player)
+        {
+            var otherPlayers = this.elementRepository.GetByType<Player>(ElementType.Player).Where(x => x != player);
+            foreach (var otherPlayer in otherPlayers)
+            {
+                otherPlayer.SubscribeTo(player);
+                player.SubscribeTo(otherPlayer);
+            }
+
+
+            player.CommandEntered += (o, args) => {
+                Player? otherPlayer;
+                switch (args.Command)
+                {
+                    case "sub":
+                        otherPlayer = this.elementRepository
+                            .GetByType<Player>(ElementType.Player)
+                            .SingleOrDefault(x => x.Name == args.Arguments[0]);
+
+                        if (otherPlayer != null)
+                            player.SubscribeTo(otherPlayer);
+                        break;
+                    case "unsub":
+                        otherPlayer = this.elementRepository
+                            .GetByType<Player>(ElementType.Player)
+                            .SingleOrDefault(x => x.Name == args.Arguments[0]);
+
+                        if (otherPlayer != null)
+                            player.UnsubscribeFrom(otherPlayer);
+                        break;
+                }
+            };
+        }
+
+        private void HandlePlayerCommands(Player player)
+        {
+            player.CommandEntered += (o, args) => { if (args.Command == "kill") player.Kill(); };
+            player.CommandEntered += (o, args) => {
                 if (args.Command == "boom")
                     this.explosionService.CreateExplosion(player.Position, ExplosionType.Tiny);
 
@@ -213,32 +280,6 @@ namespace SlipeServer.Console
                         this.chatBox.OutputTo(player, remotePlayer.Name);
 
             };
-
-            player.OnScreenshot += HandlePlayerScreenshot;
-
-            //player.AddWeapon(WeaponId.Ak47, 500, true);
-            //player.AddWeapon(WeaponId.Tec9, 500, true);
-            //player.AddWeapon(WeaponId.Sniper, 500, true);
-            //player.AddWeapon(WeaponId.Deagle, 500, true);
-            //player.AddWeapon(WeaponId.Golfclub, 500, true);
-
-            //player.RemoveWeapon(WeaponId.Tec9, 500);
-            //player.RemoveWeapon(WeaponId.Sniper);
-            //player.RemoveWeapon(WeaponId.Deagle, 200);
-            //player.SetAmmoCount(WeaponSlot.AssaultRifles, 750, 25);
-
-            player.Weapons.Add(new Weapon(WeaponId.Ak47, 500));
-            player.Weapons.Add(new Weapon(WeaponId.Tec9, 500));
-            player.Weapons.Add(new Weapon(WeaponId.Sniper, 500));
-            player.Weapons.Add(new Weapon(WeaponId.Deagle, 500));
-            player.Weapons.Add(new Weapon(WeaponId.Golfclub, 1));
-            player.Weapons.Remove(WeaponId.Tec9);
-            player.Weapons.Remove(WeaponId.Sniper);
-            player.Weapons.First(weapon => weapon.Type == WeaponId.Deagle).Ammo -= 200;
-            player.Weapons.First(weapon => weapon.Type == WeaponId.Ak47).Ammo = 750;
-            player.Weapons.First(weapon => weapon.Type == WeaponId.Ak47).AmmoInClip = 25;
-            
-            this.testResource?.StartFor(player);
         }
 
         private void HandlePlayerScreenshot(object? o, Server.Elements.Events.ScreenshotEventArgs e)

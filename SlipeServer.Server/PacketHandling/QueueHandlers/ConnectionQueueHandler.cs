@@ -86,8 +86,6 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
         private void HandleClientJoinData(Client client, PlayerJoinDataPacket joinDataPacket)
         {
-            HandleClientQuit(client, QuitReason.Quit);
-
             string osName =
                 RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "Windows" :
                 RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "Mac OS" :

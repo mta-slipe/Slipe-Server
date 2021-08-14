@@ -17,7 +17,7 @@ namespace SlipeServer.Server.Behaviour
         {
             server.PlayerJoined += (player) =>
             {
-                player.OnCommand += (sender, arguments) =>
+                player.CommandEntered += (sender, arguments) =>
                 {
                     if(arguments.Command == "nick")
                     {
