@@ -10,19 +10,19 @@
 #include <map>
 #include <iomanip>
 #include <queue>
+#include <mutex>
 
 typedef void(__stdcall* PacketCallback)(unsigned char, unsigned long, char[], unsigned long, bool, unsigned int);
 
 struct QueuedPacket {
-    unsigned long address;
+    NetServerPlayerID socket;
     unsigned char packetId;
-    unsigned char* payload;
-    unsigned long payloadSize;
+    NetBitStreamInterface* bitStream;
     unsigned char priority;
     unsigned char reliability;
 
-    QueuedPacket(unsigned long address, unsigned char packetId, unsigned char* payload, unsigned long payloadSize, unsigned char priority, unsigned char reliability)
-        : address(address), packetId(packetId), payload(payload), payloadSize(payloadSize), priority(priority), reliability(reliability) {
+    QueuedPacket(NetServerPlayerID socket, unsigned char packetId, NetBitStreamInterface* bitStream, unsigned char priority, unsigned char reliability)
+        : socket(socket), packetId(packetId), bitStream(bitStream), priority(priority), reliability(reliability) {
 
     }
 };
@@ -41,6 +41,7 @@ private:
 	PacketCallback registeredCallback;
 	std::thread runThread;
     std::queue<QueuedPacket> packetQueue;
+    std::mutex mutex;
 
     void runPulseLoop();
     void testMethod();

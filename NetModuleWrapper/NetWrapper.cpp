@@ -54,7 +54,18 @@ bool NetWrapper::packetHandler(unsigned char ucPacketID, const NetServerPlayerID
 
 void NetWrapper::sendPacket(unsigned long address, unsigned char packetId, unsigned char* payload, unsigned long payloadSize, unsigned char priority, unsigned char reliability)
 {
-    packetQueue.push(QueuedPacket(address, packetId, payload, payloadSize, priority, reliability));
+    NetBitStreamInterface* bitStream = network->AllocateNetServerBitStream(0);
+    if (bitStream)
+    {
+        for (int i = 0; i < payloadSize; i++)
+        {
+            bitStream->Write((char)payload[i]);
+        }
+        NetServerPlayerID& socket = sockets[address];
+        mutex.lock();
+        packetQueue.push(QueuedPacket(socket, packetId, bitStream, priority, reliability));
+        mutex.unlock();
+    }
 }
 
 void NetWrapper::setSocketVersion(unsigned long address, unsigned short version)
@@ -155,27 +166,20 @@ int NetWrapper::init(const char* netDllFilePath, const char* idFile, const char*
 void NetWrapper::runPulseLoop() {
     while (running)
     {
+        mutex.lock();
+        while (!packetQueue.empty()) {
+            QueuedPacket& entry = packetQueue.front();
+
+            network->SendPacket(entry.packetId, entry.socket, entry.bitStream, false, static_cast<NetServerPacketPriority>(entry.priority), static_cast<NetServerPacketReliability>(entry.reliability));
+            network->DeallocateNetServerBitStream(entry.bitStream);
+
+            packetQueue.pop();
+        }
+        mutex.unlock();
+
         network->DoPulse();
         network->GetHTTPDownloadManager(EDownloadMode::ASE)->ProcessQueuedFiles();
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
-
-        while (!packetQueue.empty()) {
-            auto entry = packetQueue.front();
-            packetQueue.pop();
-
-            NetBitStreamInterface* pBitStream = network->AllocateNetServerBitStream(0);
-            if (pBitStream)
-            {
-                for (int i = 0; i < entry.payloadSize; i++)
-                {
-                    pBitStream->Write((char)entry.payload[i]);
-                }
-
-                auto socket = sockets[entry.address];
-                network->SendPacket(entry.packetId, socket, pBitStream, false, static_cast<NetServerPacketPriority>(entry.priority), static_cast<NetServerPacketReliability>(entry.reliability));
-                network->DeallocateNetServerBitStream(pBitStream);
-            }
-        }
     }
 }
 
