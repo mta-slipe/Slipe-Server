@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace SlipeServer.Server.Loaders.Map.Resolvers
 {
-    public class WorldObjectSupport : IGenericElementSupport<WorldObject, WorldObjectDefinition>
+    public class WorldObjectResolver : IGenericElementSupport<WorldObject, WorldObjectDefinition>
     {
-        public WorldObjectSupport()
+        public WorldObjectResolver()
         {
 
         }

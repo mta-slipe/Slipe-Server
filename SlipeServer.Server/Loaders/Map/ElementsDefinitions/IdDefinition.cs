@@ -10,6 +10,6 @@ namespace SlipeServer.Server.Loaders.Map.ElementsDefinitions
     public abstract class IdDefinition
     {
         [XmlAttribute("id")]
-        public string Id { get; set; }
+        public string? Id { get; set; }
     }
 }

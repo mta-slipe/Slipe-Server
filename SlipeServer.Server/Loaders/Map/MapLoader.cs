@@ -28,13 +28,13 @@ namespace SlipeServer.Server.Loaders.Map
             this.xmlNamespaceManager.AddNamespace("edf", "https://wiki.multitheftauto.com/wiki/Resource:Editor/EDF");
         }
 
+        public abstract void Resolve(Resolver<T> resolver);
+
         public Map LoadMap(Stream stream)
         {
             Map map = new Map();
 
             stream.Position = 0;
-
-            XmlDocument xmlDocument = new XmlDocument();
 
             XmlReaderSettings settings = new XmlReaderSettings { NameTable = xmlNamespaceManager.NameTable };
 
@@ -42,7 +42,12 @@ namespace SlipeServer.Server.Loaders.Map
             XmlReader reader = XmlReader.Create(stream, settings, context);
 
             XmlSerializer serializer = new XmlSerializer(typeof(T), new XmlRootAttribute("map"));
-            T foo = serializer.Deserialize(reader) as T;
+            T? data = serializer.Deserialize(reader) as T;
+            if(data != null)
+            {
+                Resolver<T> resolver = new(map, data);
+                Resolve(resolver);
+            }
             return map;
         }
     }
