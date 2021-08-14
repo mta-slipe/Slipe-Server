@@ -286,17 +286,17 @@ namespace SlipeServer.Console
                     player.ResendPlayerACInfo();
             };
 
-            player.ACInfoRecived += (o, args) =>
+            player.AcInfoReceived += (o, args) =>
             {
                 logger.LogInformation($"ACInfo for {player.Name} detectedACList:{string.Join(",", args.DetectedACList)} d3d9Size: {args.D3D9Size} d3d9SHA256: {args.D3D9SHA256}");
             };
             
-            player.DiagnosticInfoRecived += (o, args) =>
+            player.DiagnosticInfoRecieved += (o, args) =>
             {
                 logger.LogInformation($"DIAGNOSTIC: {player.Name} #{args.Level} {args.Message}");
             };
 
-            player.ModInfoRecived += (o, args) =>
+            player.ModInfoRecieved += (o, args) =>
             {
                 logger.LogInformation($"Player: {player.Name} ModInfo:");
                 foreach (var item in args.ModInfoItems)
@@ -304,32 +304,6 @@ namespace SlipeServer.Console
                     logger.LogInformation($"\t{item.Name} - md5: {item.LongMd5}");
                 }
             };
-
-            player.ScreenshotTaken += HandlePlayerScreenshot;
-
-            //player.AddWeapon(WeaponId.Ak47, 500, true);
-            //player.AddWeapon(WeaponId.Tec9, 500, true);
-            //player.AddWeapon(WeaponId.Sniper, 500, true);
-            //player.AddWeapon(WeaponId.Deagle, 500, true);
-            //player.AddWeapon(WeaponId.Golfclub, 500, true);
-
-            //player.RemoveWeapon(WeaponId.Tec9, 500);
-            //player.RemoveWeapon(WeaponId.Sniper);
-            //player.RemoveWeapon(WeaponId.Deagle, 200);
-            //player.SetAmmoCount(WeaponSlot.AssaultRifles, 750, 25);
-
-            player.Weapons.Add(new Weapon(WeaponId.Ak47, 500));
-            player.Weapons.Add(new Weapon(WeaponId.Tec9, 500));
-            player.Weapons.Add(new Weapon(WeaponId.Sniper, 500));
-            player.Weapons.Add(new Weapon(WeaponId.Deagle, 500));
-            player.Weapons.Add(new Weapon(WeaponId.Golfclub, 1));
-            player.Weapons.Remove(WeaponId.Tec9);
-            player.Weapons.Remove(WeaponId.Sniper);
-            player.Weapons.First(weapon => weapon.Type == WeaponId.Deagle).Ammo -= 200;
-            player.Weapons.First(weapon => weapon.Type == WeaponId.Ak47).Ammo = 750;
-            player.Weapons.First(weapon => weapon.Type == WeaponId.Ak47).AmmoInClip = 25;
-            
-            this.testResource?.StartFor(player);
         }
 
         private void HandlePlayerScreenshot(object? o, Server.Elements.Events.ScreenshotEventArgs e)

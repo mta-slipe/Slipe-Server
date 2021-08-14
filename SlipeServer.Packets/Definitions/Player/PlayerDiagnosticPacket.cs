@@ -15,6 +15,8 @@ namespace SlipeServer.Packets.Definitions.Player
         public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
         public override PacketPriority Priority => PacketPriority.High;
 
+        private const int levelSpecialInfo = 236;
+
         public uint Level { get; set; }
         public string Message { get; set; }
 
@@ -22,9 +24,14 @@ namespace SlipeServer.Packets.Definitions.Player
         public uint D3d9Size { get; set; }
         public string D3d9Md5 { get; set; }
         public string D3d9Sha256 { get; set; }
-        public PlayerDiagnosticPacket()
+        public PlayerDiagnosticPacket(uint level, string message, IEnumerable<byte> detectedAC, uint d3d9Size, string d3d9Md5, string d3d9Sha256)
         {
-
+            this.Level = level;
+            this.Message = message;
+            this.DetectedAC = detectedAC;
+            this.D3d9Size = d3d9Size;
+            this.D3d9Md5 = d3d9Md5;
+            this.D3d9Sha256 = d3d9Sha256;
         }
 
         public override byte[] Write()
@@ -39,7 +46,8 @@ namespace SlipeServer.Packets.Definitions.Player
             string message = reader.GetString();
             var splitMessage = message.Split(",", 2);
             this.Level = uint.Parse(splitMessage[0]);
-            if(this.Level == 236)
+
+            if (this.Level == levelSpecialInfo)
             {
                 var parts = splitMessage[1].Split(",");
                 if(parts.Length == 4)

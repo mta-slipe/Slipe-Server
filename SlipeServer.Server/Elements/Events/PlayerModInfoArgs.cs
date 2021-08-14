@@ -9,13 +9,13 @@ namespace SlipeServer.Server.Elements.Events
 {
     public class PlayerModInfoArgs : EventArgs
     {
-        public PlayerModInfoArgs(string infoType, IEnumerable<ModInfoItem> modInfoItems)
-        {
-            InfoType = infoType;
-            ModInfoItems = modInfoItems;
-        }
-
         public string InfoType { get; set; }
         public IEnumerable<ModInfoItem> ModInfoItems { get; set; }
+
+        public PlayerModInfoArgs(string infoType, IEnumerable<ModInfoItem> modInfoItems)
+        {
+            this.InfoType = infoType;
+            this.ModInfoItems = modInfoItems;
+        }
     }
 }

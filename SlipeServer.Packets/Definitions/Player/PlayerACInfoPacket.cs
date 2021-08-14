@@ -18,9 +18,12 @@ namespace SlipeServer.Packets.Definitions.Player
         public uint D3d9Size { get; set; }
         public string D3d9MD5 { get; set; }
         public string D3d9SHA256 { get; set; }
-        public PlayerACInfoPacket()
+        public PlayerACInfoPacket(List<byte> detectedACList, uint d3d9Size, string d3d9MD5, string dD3d9SHA256)
         {
-
+            this.DetectedACList = detectedACList;
+            this.D3d9Size = d3d9Size;
+            this.D3d9MD5 = d3d9MD5;
+            this.D3d9SHA256 = dD3d9SHA256;
         }
 
         public override byte[] Write()
@@ -32,15 +35,15 @@ namespace SlipeServer.Packets.Definitions.Player
         {
             var reader = new PacketReader(bytes);
 
-            DetectedACList = new List<byte>();
+            this.DetectedACList = new List<byte>();
             byte numItems = reader.GetByte();
             for (byte i = 0; i < numItems; i++)
             {
                 DetectedACList.Add(reader.GetByte());
             }
-            D3d9Size = reader.GetUint32();
-            D3d9MD5 = reader.GetString();
-            D3d9SHA256 = reader.GetString();
+            this.D3d9Size = reader.GetUint32();
+            this.D3d9MD5 = reader.GetString();
+            this.D3d9SHA256 = reader.GetString();
         }
     }
 }

@@ -22,5 +22,14 @@ namespace SlipeServer.Packets.Definitions.Lua
         public uint LongBytes { get; set; }
         public string LongMd5 { get; set; }
         public string LongSha256 { get; set; }
+
+        public ModInfoItem()
+        {
+            this.Name = "";
+            this.ShortMd5 = "";
+            this.ShortSha256 = "";
+            this.LongMd5 = "";
+            this.LongSha256 = "";
+        }
     }
 }

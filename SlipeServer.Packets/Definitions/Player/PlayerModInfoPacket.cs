@@ -18,9 +18,11 @@ namespace SlipeServer.Packets.Definitions.Player
         public string InfoType { get; set; }
         public uint Count { get; set; }
         public List<ModInfoItem> ModInfoItems { get; set; }
-        public PlayerModInfoPacket()
+        public PlayerModInfoPacket(string infoType, uint count, List<ModInfoItem> modInfoItems)
         {
-
+            this.InfoType = infoType;
+            this.Count = count;
+            this.ModInfoItems = modInfoItems;
         }
 
         public override byte[] Write()
