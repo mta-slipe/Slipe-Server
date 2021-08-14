@@ -16,8 +16,8 @@ namespace MTAServerWrapper.Packets.Outgoing.Connection
 
         public PlayerQuitPacket(uint playerId, byte quitReason)
         {
-            PlayerId = playerId;
-            QuitReason = quitReason;
+            this.PlayerId = playerId;
+            this.QuitReason = quitReason;
         }
 
         public override byte[] Write()
@@ -25,8 +25,8 @@ namespace MTAServerWrapper.Packets.Outgoing.Connection
             var builder = new PacketBuilder();
 
             builder.Write(new byte[] { 0, 0 }); // 2 bytes of padding is required for some reason
-            builder.WriteElementId(PlayerId);
-            builder.WriteCapped(QuitReason, 3);
+            builder.WriteElementId(this.PlayerId);
+            builder.WriteCapped(this.QuitReason, 3);
 
             return builder.Build();
         }

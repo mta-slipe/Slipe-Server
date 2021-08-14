@@ -41,166 +41,152 @@ namespace SlipeServer.Server.AllSeeingEye
 
         public string? GetRule(string key)
         {
-
-            rules.TryGetValue(key, out string? value);
+            this.rules.TryGetValue(key, out string? value);
             return value;
         }
 
 
         public byte[] QueryFull()
         {
-            using (MemoryStream stream = new MemoryStream())
+            using MemoryStream stream = new MemoryStream();
+            using BinaryWriter bw = new BinaryWriter(stream);
+            IEnumerable<Player> players = this.elementRepository.GetByType<Player>(ElementType.Player);
+
+            string aseVersion = GetVersion();
+
+            bw.Write("EYE1".AsSpan());
+            bw.WriteWithLength("mta");
+            bw.WriteWithLength(this.configuration.Port);
+            bw.WriteWithLength(this.configuration.ServerName);
+            bw.WriteWithLength(this.mtaServer.GameType);
+            bw.WriteWithLength(this.mtaServer.MapName);
+            bw.WriteWithLength(aseVersion);
+            bw.WriteWithLength(this.mtaServer.HasPassword);
+            bw.WriteWithLength(players.Count().ToString());
+            bw.WriteWithLength(this.configuration.MaxPlayerCount.ToString());
+            foreach (var item in this.rules)
             {
-                using (BinaryWriter bw = new BinaryWriter(stream))
-                {
-                    IEnumerable<Player> players = elementRepository.GetByType<Player>(ElementType.Player);
-
-                    string aseVersion = GetVersion();
-
-                    bw.Write("EYE1".AsSpan());
-                    bw.WriteWithLength("mta");
-                    bw.WriteWithLength(configuration.Port);
-                    bw.WriteWithLength(configuration.ServerName);
-                    bw.WriteWithLength(mtaServer.GameType);
-                    bw.WriteWithLength(mtaServer.MapName);
-                    bw.WriteWithLength(aseVersion);
-                    bw.WriteWithLength(mtaServer.HasPassword);
-                    bw.WriteWithLength(players.Count().ToString());
-                    bw.WriteWithLength(configuration.MaxPlayerCount.ToString());
-                    foreach (var item in rules)
-                    {
-                        bw.WriteWithLength(item.Key);
-                        bw.WriteWithLength(item.Value);
-                    }
-                    bw.Write((byte)1);
-
-                    byte flags = 0;
-                    flags |= (byte)PlayerFlags.Nick;
-                    flags |= (byte)PlayerFlags.Team;
-                    flags |= (byte)PlayerFlags.Skin;
-                    flags |= (byte)PlayerFlags.Score;
-                    flags |= (byte)PlayerFlags.Ping;
-                    flags |= (byte)PlayerFlags.Time;
-
-                    foreach (Player player in players)
-                    {
-                        bw.Write(flags);
-                        bw.WriteWithLength(player.Name.StripColorCode());
-                        bw.Write((byte)1); // team, skip
-                        bw.Write((byte)1); // skin, skip
-                        bw.WriteWithLength(1); // score
-                        bw.WriteWithLength(1); // ping, skip right now
-                        bw.Write((byte)1); // time, skip
-                    }
-
-                    bw.Flush();
-                    return stream.ToArray();
-                }
+                bw.WriteWithLength(item.Key);
+                bw.WriteWithLength(item.Value);
             }
+            bw.Write((byte)1);
+
+            byte flags = 0;
+            flags |= (byte)PlayerFlags.Nick;
+            flags |= (byte)PlayerFlags.Team;
+            flags |= (byte)PlayerFlags.Skin;
+            flags |= (byte)PlayerFlags.Score;
+            flags |= (byte)PlayerFlags.Ping;
+            flags |= (byte)PlayerFlags.Time;
+
+            foreach (Player player in players)
+            {
+                bw.Write(flags);
+                bw.WriteWithLength(player.Name.StripColorCode());
+                bw.Write((byte)1); // team, skip
+                bw.Write((byte)1); // skin, skip
+                bw.WriteWithLength(1); // score
+                bw.WriteWithLength(1); // ping, skip right now
+                bw.Write((byte)1); // time, skip
+            }
+
+            bw.Flush();
+            return stream.ToArray();
         }
 
         public byte[] QueryXFireLight()
         {
-            using (MemoryStream stream = new MemoryStream())
-            {
-                using (BinaryWriter bw = new BinaryWriter(stream))
-                {
-                    int playerCount = elementRepository.GetByType<Player>(ElementType.Player).Count();
-                    string strPlayerCount = playerCount + "/" + configuration.MaxPlayerCount;
+            using MemoryStream stream = new MemoryStream();
+            using BinaryWriter bw = new BinaryWriter(stream);
+            int playerCount = this.elementRepository.GetByType<Player>(ElementType.Player).Count();
+            string strPlayerCount = playerCount + "/" + this.configuration.MaxPlayerCount;
 
-                    bw.Write("EYE3".AsSpan());
-                    bw.WriteWithLength("mta");
-                    bw.WriteWithLength(configuration.ServerName);
-                    bw.WriteWithLength(mtaServer.GameType);
+            bw.Write("EYE3".AsSpan());
+            bw.WriteWithLength("mta");
+            bw.WriteWithLength(this.configuration.ServerName);
+            bw.WriteWithLength(this.mtaServer.GameType);
 
-                    bw.Write((byte)(mtaServer.MapName.Length + strPlayerCount.Length + 2));
-                    bw.Write(mtaServer.MapName.AsSpan());
-                    bw.Write((byte)0);
-                    bw.Write(strPlayerCount.AsSpan());  // client double checks this field in clientside against fake players count function:
-                                                        // "CCore::GetSingleton().GetNetwork()->UpdatePingStatus(*strPingStatus, info.players);" 
-                    bw.WriteWithLength(GetVersion());
-                    bw.Write((byte)(mtaServer.HasPassword ? 1 : 0));
-                    bw.Write((byte)Math.Min(playerCount, 255));
-                    bw.Write((byte)Math.Min(configuration.MaxPlayerCount, (ushort)255));
+            bw.Write((byte)(this.mtaServer.MapName.Length + strPlayerCount.Length + 2));
+            bw.Write(this.mtaServer.MapName.AsSpan());
+            bw.Write((byte)0);
+            bw.Write(strPlayerCount.AsSpan());  // client double checks this field in clientside against fake players count function:
+                                                // "CCore::GetSingleton().GetNetwork()->UpdatePingStatus(*strPingStatus, info.players);" 
+            bw.WriteWithLength(GetVersion());
+            bw.Write((byte)(this.mtaServer.HasPassword ? 1 : 0));
+            bw.Write((byte)Math.Min(playerCount, 255));
+            bw.Write((byte)Math.Min(this.configuration.MaxPlayerCount, (ushort)255));
 
-                    bw.Flush();
-                    return stream.ToArray();
-                }
-            }
+            bw.Flush();
+            return stream.ToArray();
         }
 
 
         public byte[] QueryLight()
         {
-            using (MemoryStream stream = new MemoryStream())
+            using MemoryStream stream = new MemoryStream();
+            using BinaryWriter bw = new BinaryWriter(stream);
+            List<string> playerNames = this.elementRepository.GetByType<Player>(ElementType.Player)
+                .Select(o => o.Name.StripColorCode())
+                .ToList();
+
+            string aseVersion = GetVersion();
+            int playerCount = playerNames.Count;
+            string strPlayerCount = playerCount + "/" + this.configuration.MaxPlayerCount;
+            string buildType = $"{(byte)(VersionType.Release)} ";
+            string buildNumber = $"{(byte)this.buildType}";
+            string pingStatus = new('P', 32);
+            string strNetRoute = new('N', 32);
+            string strUpTime = $"{(int)this.mtaServer.Uptime.Ticks / 10000}";
+            string strHttpPort = this.configuration.HttpPort.ToString();
+            uint extraDataLength = (uint)(strPlayerCount.Length + buildType.Length + buildNumber.Length + pingStatus.Length + strNetRoute.Length + strUpTime.Length + strHttpPort.Length) + 7;
+
+            bw.Write("EYE2".AsSpan());
+            bw.WriteWithLength("mta");
+            bw.WriteWithLength(this.configuration.Port);
+            bw.WriteWithLength(this.configuration.ServerName);
+            bw.WriteWithLength(this.mtaServer.GameType);
+
+            bw.Write((byte)(this.mtaServer.MapName.Length + 1 + extraDataLength));
+            bw.Write(this.mtaServer.MapName.AsSpan());
+
+            bw.Write((byte)0);
+            bw.Write(strPlayerCount.AsSpan());
+            bw.Write((byte)0);
+            bw.Write(buildType.AsSpan());
+            bw.Write((byte)0);
+            bw.Write(buildNumber.AsSpan());
+            bw.Write((byte)0);
+            bw.Write(pingStatus.AsSpan());
+            bw.Write((byte)0);
+            bw.Write(strNetRoute.AsSpan());
+            bw.Write((byte)0);
+            bw.Write(strUpTime.AsSpan());
+            bw.Write((byte)0);
+            bw.Write(strHttpPort.AsSpan());
+            bw.WriteWithLength(aseVersion);
+            bw.Write((byte)(this.mtaServer.HasPassword ? 1 : 0));
+            bw.Write((byte)1); // serial verification
+            bw.Write((byte)Math.Min(playerCount, 255));
+            bw.Write((byte)Math.Min(this.configuration.MaxPlayerCount, (ushort)255));
+
+            int bytesLeft = (1340 - (int)bw.BaseStream.Position);
+            int playersLeftNum = playerNames.Count + 1;
+            foreach (string name in playerNames)
             {
-                using (BinaryWriter bw = new BinaryWriter(stream))
+                if (bytesLeft - name.Length + 2 > 0)
                 {
-                    List<string> playerNames = elementRepository.GetByType<Player>(ElementType.Player)
-                        .Select(o => o.Name.StripColorCode())
-                        .ToList();
-
-                    string aseVersion = GetVersion();
-                    int playerCount = playerNames.Count();
-                    string strPlayerCount = playerCount + "/" + configuration.MaxPlayerCount;
-                    string buildType = $"{(byte)(VersionType.Release)} ";
-                    string buildNumber = $"{(byte)this.buildType}";
-                    string pingStatus = new string('P', 32);
-                    string strNetRoute = new string('N', 32);
-                    string strUpTime = $"{(int)mtaServer.Uptime.Ticks / 10000}";
-                    string strHttpPort = configuration.HttpPort.ToString();
-                    uint extraDataLength = (uint)(strPlayerCount.Length + buildType.Length + buildNumber.Length + pingStatus.Length + strNetRoute.Length + strUpTime.Length + strHttpPort.Length) + 7;
-
-                    bw.Write("EYE2".AsSpan());
-                    bw.WriteWithLength("mta");
-                    bw.WriteWithLength(configuration.Port);
-                    bw.WriteWithLength(configuration.ServerName);
-                    bw.WriteWithLength(mtaServer.GameType);
-
-                    bw.Write((byte)(mtaServer.MapName.Length + 1 + extraDataLength));
-                    bw.Write(mtaServer.MapName.AsSpan());
-
-                    bw.Write((byte)0);
-                    bw.Write(strPlayerCount.AsSpan());
-                    bw.Write((byte)0);
-                    bw.Write(buildType.AsSpan());
-                    bw.Write((byte)0);
-                    bw.Write(buildNumber.AsSpan());
-                    bw.Write((byte)0);
-                    bw.Write(pingStatus.AsSpan());
-                    bw.Write((byte)0);
-                    bw.Write(strNetRoute.AsSpan());
-                    bw.Write((byte)0);
-                    bw.Write(strUpTime.AsSpan());
-                    bw.Write((byte)0);
-                    bw.Write(strHttpPort.AsSpan());
-                    bw.WriteWithLength(aseVersion);
-                    bw.Write((byte)(mtaServer.HasPassword ? 1 : 0));
-                    bw.Write((byte)1); // serial verification
-                    bw.Write((byte)Math.Min(playerCount, 255));
-                    bw.Write((byte)Math.Min(configuration.MaxPlayerCount, (ushort)255));
-
-                    int bytesLeft = (1340 - (int)bw.BaseStream.Position);
-                    int playersLeftNum = playerNames.Count + 1;
-                    foreach (string name in playerNames)
-                    {
-                        if (bytesLeft - name.Length + 2 > 0)
-                        {
-                            bw.WriteWithLength(name);
-                            bytesLeft -= name.Length + 2;
-                            playersLeftNum--;
-                        }
-                        else
-                        {
-                            string playersLeft = $"And {playersLeftNum} more";
-                            bw.WriteWithLength(playersLeft);
-                            break;
-                        }
-                    }
-                    bw.Flush();
-                    return stream.ToArray();
+                    bw.WriteWithLength(name);
+                    bytesLeft -= name.Length + 2;
+                    playersLeftNum--;
+                } else
+                {
+                    string playersLeft = $"And {playersLeftNum} more";
+                    bw.WriteWithLength(playersLeft);
+                    break;
                 }
             }
+            bw.Flush();
+            return stream.ToArray();
         }
 
         public string GetVersion()

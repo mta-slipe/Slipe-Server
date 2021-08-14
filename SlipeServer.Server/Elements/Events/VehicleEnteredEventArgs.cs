@@ -13,10 +13,10 @@ namespace SlipeServer.Server.Elements.Events
 
         public VehicleEnteredEventsArgs(Ped ped, Vehicle vehicle, byte seat, bool warpsIn)
         {
-            Ped = ped;
-            Vehicle = vehicle;
-            Seat = seat;
-            WarpsIn = warpsIn;
+            this.Ped = ped;
+            this.Vehicle = vehicle;
+            this.Seat = seat;
+            this.WarpsIn = warpsIn;
         }
     }
 }

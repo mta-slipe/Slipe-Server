@@ -27,17 +27,17 @@ namespace SlipeServer.Server.Services
 
         public void TriggerEvent(string eventName, Element? source = null, params LuaValue[] parameters)
         {
-            this.server.BroadcastPacket(new LuaEventPacket(eventName, (source ?? root).Id, parameters));
+            this.server.BroadcastPacket(new LuaEventPacket(eventName, (source ?? this.root).Id, parameters));
         }
 
         public void TriggerEvent(Player player, string eventName, Element? source = null, params LuaValue[] parameters)
         {
-            new LuaEventPacket(eventName, (source ?? root).Id, parameters).SendTo(player);
+            new LuaEventPacket(eventName, (source ?? this.root).Id, parameters).SendTo(player);
         }
 
         public void TriggerEvent(Player[] players, string eventName, Element? source = null, params LuaValue[] parameters)
         {
-            new LuaEventPacket(eventName, (source ?? root).Id, parameters).SendTo(players);
+            new LuaEventPacket(eventName, (source ?? this.root).Id, parameters).SendTo(players);
         }
 
         public void AddEventHandler(string eventName, Action<LuaEvent> handler)

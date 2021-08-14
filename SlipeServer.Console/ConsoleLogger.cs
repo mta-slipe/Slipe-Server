@@ -5,24 +5,24 @@ using System.Text;
 
 namespace SlipeServer.Console
 {
-    class ConsoleLoggerScope: IDisposable
-    {
-        private readonly Action onComplete;
-
-        public ConsoleLoggerScope(Action onComplete)
-        {
-            this.onComplete = onComplete;
-        }
-
-        public void Dispose()
-        {
-            this.onComplete();
-        }
-    }
-
     public class ConsoleLogger : ILogger
     {
-        private static Dictionary<LogLevel, Tuple<ConsoleColor, string>> prefixes = new Dictionary<LogLevel, Tuple<ConsoleColor, string>>()
+        private class ConsoleLoggerScope : IDisposable
+        {
+            private readonly Action onComplete;
+
+            public ConsoleLoggerScope(Action onComplete)
+            {
+                this.onComplete = onComplete;
+            }
+
+            public void Dispose()
+            {
+                this.onComplete();
+            }
+        }
+
+        private readonly static Dictionary<LogLevel, Tuple<ConsoleColor, string>> prefixes = new()
         {
             [LogLevel.Trace] = new Tuple<ConsoleColor, string>(ConsoleColor.Gray, " [trace]   "),
             [LogLevel.Debug] = new Tuple<ConsoleColor, string>(ConsoleColor.Yellow, " [debug]   "),
@@ -42,10 +42,10 @@ namespace SlipeServer.Console
 
         public IDisposable BeginScope<TState>(TState state)
         {
-            prefix += "  ";
+            this.prefix += "  ";
             System.Console.WriteLine($"{this.prefix}{state}:");
 
-            return new ConsoleLoggerScope(() => this.prefix = this.prefix.Substring(this.prefix.Length - 2));
+            return new ConsoleLoggerScope(() => this.prefix = this.prefix[^2..]);
         }
 
         public bool IsEnabled(LogLevel logLevel) => true;

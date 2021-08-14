@@ -16,16 +16,16 @@ namespace MTAServerWrapper.Packets.Outgoing.Connection
 
         public JoinCompletePacket(string welcomeMessage, string version)
         {
-            WelcomeMessage = welcomeMessage;
-            Version = version;
+            this.WelcomeMessage = welcomeMessage;
+            this.Version = version;
         }
 
         public override byte[] Write()
         {
             var builder = new PacketBuilder();
 
-            builder.Write(WelcomeMessage.Substring(0, Math.Min(128, WelcomeMessage.Length)));
-            builder.Write(Version);
+            builder.Write(this.WelcomeMessage.Substring(0, Math.Min(128, this.WelcomeMessage.Length)));
+            builder.Write(this.Version);
 
             return builder.Build();
         }

@@ -10,7 +10,7 @@ namespace SlipeServer.Server.Elements.Events
 
         public PlayerVoiceEndArgs(Player source)
         {
-            Source = source;
+            this.Source = source;
         }
     }
 }

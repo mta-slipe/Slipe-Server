@@ -17,7 +17,7 @@ namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
 
         public SetWindVelocityPacket(Vector3 velocity)
         {
-            WindVelocity = velocity;
+            this.WindVelocity = velocity;
         }
 
         public override void Read(byte[] bytes)

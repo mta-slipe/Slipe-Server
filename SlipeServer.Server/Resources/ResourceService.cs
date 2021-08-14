@@ -15,7 +15,7 @@ namespace SlipeServer.Server.Resources
 
         private readonly List<Resource> startedResources;
 
-        public IReadOnlyCollection<Resource> StartedResources => startedResources.AsReadOnly();
+        public IReadOnlyCollection<Resource> StartedResources => this.startedResources.AsReadOnly();
 
         public ResourceService(MtaServer server, RootElement root, IResourceServer resourceServer)
         {

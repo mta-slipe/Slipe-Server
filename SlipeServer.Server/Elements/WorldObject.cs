@@ -10,7 +10,6 @@ namespace SlipeServer.Server.Elements
         public override ElementType ElementType => ElementType.Object;
 
         public ushort Model { get; set; }
-        public byte Alpha { get; set; } = 255;
         public bool IsLowLod { get; set; } = false;
         public WorldObject? LowLodElement { get; set; }
         public bool DoubleSided { get; set; } = false;

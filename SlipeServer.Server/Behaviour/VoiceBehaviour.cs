@@ -13,19 +13,11 @@ namespace SlipeServer.Server.Behaviour
 {
     public class VoiceBehaviour
     {
-        private readonly MtaServer server;
-        private readonly ILogger logger;
-        private readonly IElementRepository elementRepository;
-
-        public VoiceBehaviour(MtaServer server, ILogger logger, IElementRepository elementRepository)
+        public VoiceBehaviour(MtaServer server, IElementRepository elementRepository)
         {
-            this.server = server;
-            this.logger = logger;
-            this.elementRepository = elementRepository;
-
             server.PlayerJoined += (player) =>
             {
-                player.OnVoiceData += (sender, args) =>
+                player.VoiceDataReceived += (sender, args) =>
                 {
                     var packet = new VoiceDataPacket(player.Id, args.DataBuffer);
                     var otherPlayers = elementRepository.GetByType<Player>(ElementType.Player)
@@ -34,7 +26,7 @@ namespace SlipeServer.Server.Behaviour
                     packet.SendTo(otherPlayers);
                 };
 
-                player.OnVoiceDataEnd += (sender, args) =>
+                player.VoiceDataEnded += (sender, args) =>
                 {
                     var packet = new VoiceEndPacket(player.Id);
                     var otherPlayers = elementRepository.GetByType<Player>(ElementType.Player)

@@ -23,9 +23,9 @@ namespace SlipeServer.Server.Elements.IdGeneration
             while (this.elementRepository.Get(this.idCounter) != null)
             {
                 this.idCounter = (this.idCounter + 1) % ElementConstants.MaxElementId;
-                if (idCounter == 0)
-                    idCounter++;
-                if (idCounter == start)
+                if (this.idCounter == 0)
+                    this.idCounter++;
+                if (this.idCounter == start)
                     throw new ElementIdsExhaustedException();
             }
 

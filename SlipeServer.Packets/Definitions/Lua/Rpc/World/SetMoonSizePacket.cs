@@ -15,7 +15,7 @@ namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
         public int MoonSize { get; set; }
         public SetMoonSizePacket(int size)
         {
-            MoonSize = size;
+            this.MoonSize = size;
         }
 
         public override void Read(byte[] bytes)

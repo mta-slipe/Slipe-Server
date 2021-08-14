@@ -11,10 +11,10 @@ namespace SlipeServer.Server.Elements.Events
 
         public VehicleLeftEventArgs(Ped ped, Vehicle vehicle, byte seat, bool warpsOut)
         {
-            Ped = ped;
-            Vehicle = vehicle;
-            Seat = seat;
-            WarpsOut = warpsOut;
+            this.Ped = ped;
+            this.Vehicle = vehicle;
+            this.Seat = seat;
+            this.WarpsOut = warpsOut;
         }
     }
 }

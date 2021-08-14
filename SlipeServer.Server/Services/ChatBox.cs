@@ -20,7 +20,7 @@ namespace SlipeServer.Server.Services
 
         public void Output(string message, Color? color = null, bool isColorCoded = false, ChatEchoType type = ChatEchoType.Player, Element? source = null)
         {
-            this.server.BroadcastPacket(new ChatEchoPacket(source?.Id ?? root.Id, message, color ?? Color.White, type, isColorCoded));
+            this.server.BroadcastPacket(new ChatEchoPacket(source?.Id ?? this.root.Id, message, color ?? Color.White, type, isColorCoded));
         }
 
         public void Clear()
@@ -30,7 +30,7 @@ namespace SlipeServer.Server.Services
 
         public void OutputTo(Player player, string message, Color? color = null, bool isColorCoded = false, ChatEchoType type = ChatEchoType.Player, Element? source = null)
         {
-            player.Client.SendPacket(new ChatEchoPacket(source?.Id ?? root.Id, message, color ?? Color.White, type, isColorCoded));
+            player.Client.SendPacket(new ChatEchoPacket(source?.Id ?? this.root.Id, message, color ?? Color.White, type, isColorCoded));
         }
 
         public void ClearFor(Player player)

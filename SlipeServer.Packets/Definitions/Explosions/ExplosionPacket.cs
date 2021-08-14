@@ -29,11 +29,11 @@ namespace SlipeServer.Packets.Definitions.Explosions
 
         public ExplosionPacket(uint? playerSource, uint? originId, Vector3 position, byte explosionType, ushort latency)
         {
-            PlayerSource = playerSource;
-            OriginId = originId;
-            Position = position;
-            ExplosionType = explosionType;
-            Latency = latency;
+            this.PlayerSource = playerSource;
+            this.OriginId = originId;
+            this.Position = position;
+            this.ExplosionType = explosionType;
+            this.Latency = latency;
         }
 
         public override void Read(byte[] bytes)

@@ -12,7 +12,7 @@ namespace SlipeServer.Scripting.EventDefinitions
                 "onPlayerWasted",
                 (element, callback) =>
                 {
-                    EventHandler<PlayerWastedEventArgs> callbackProxy = (object sender, PlayerWastedEventArgs e) => callback(e.Source);
+                    void callbackProxy(Element sender, PlayerWastedEventArgs e) => callback(e.Source);
                     return new EventHandlerActions<Player>()
                     {
                         Add = (element) => element.Wasted += callbackProxy,

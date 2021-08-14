@@ -60,44 +60,43 @@ namespace SlipeServer.Packets.Definitions.Join
             byte[] weapons
         )
         {
-            builder.WriteElementId(playerId);
-            builder.Write(timeContext);
-            builder.WriteStringWithByteAsLength(nickname);
+            this.builder.WriteElementId(playerId);
+            this.builder.Write(timeContext);
+            this.builder.WriteStringWithByteAsLength(nickname);
 
-            builder.Write(bitsreamVersion);
-            builder.Write(buildNumber);
+            this.builder.Write(bitsreamVersion);
+            this.builder.Write(buildNumber);
 
-            builder.Write(isDead);
-            builder.Write(true);
-            builder.Write(isInVehicle);
-            builder.Write(hasJetpack);
-            builder.Write(isNametagShowing);
-            builder.Write(isNametagColorOverriden);
-            builder.Write(isHeadless);
-            builder.Write(isFrozen);
+            this.builder.Write(isDead);
+            this.builder.Write(true);
+            this.builder.Write(isInVehicle);
+            this.builder.Write(hasJetpack);
+            this.builder.Write(isNametagShowing);
+            this.builder.Write(isNametagColorOverriden);
+            this.builder.Write(isHeadless);
+            this.builder.Write(isFrozen);
 
-            builder.WriteStringWithByteAsLength(nametagText);
+            this.builder.WriteStringWithByteAsLength(nametagText);
             if (isNametagColorOverriden)
             {
                 if (color == null)
                 {
                     throw new Exception($"Can not write player list packet. {nameof(isNametagColorOverriden)} is true, but required data is null");
-                }
-                else
+                } else
                 {
-                    builder.Write(color.Value);
+                    this.builder.Write(color.Value);
                 }
             }
 
-            builder.Write(moveAnimation);
-            builder.WriteCompressed(model);
+            this.builder.Write(moveAnimation);
+            this.builder.WriteCompressed(model);
             if (teamId != null)
             {
-                builder.Write(true);
-                builder.WriteElementId(teamId.Value);
+                this.builder.Write(true);
+                this.builder.WriteElementId(teamId.Value);
             } else
             {
-                builder.Write(false);
+                this.builder.Write(false);
             }
 
             if (isInVehicle)
@@ -106,32 +105,32 @@ namespace SlipeServer.Packets.Definitions.Join
                 {
                     throw new Exception($"Can not write player list packet. {nameof(isInVehicle)} is true, but required data is null");
                 }
-                builder.WriteElementId(vehicleId.Value);
-                builder.WriteCapped(seat.Value, 4);
+                this.builder.WriteElementId(vehicleId.Value);
+                this.builder.WriteCapped(seat.Value, 4);
             } else
             {
                 if (position == null || rotation == null)
                 {
                     throw new Exception($"Can not write player list packet. {nameof(isInVehicle)} is false, but required data is null");
                 }
-                builder.WriteVector3WithZAsFloat(position.Value);
-                builder.WriteFloatFromBits(rotation.Value, 16, -MathF.PI, MathF.PI, false);
+                this.builder.WriteVector3WithZAsFloat(position.Value);
+                this.builder.WriteFloatFromBits(rotation.Value, 16, -MathF.PI, MathF.PI, false);
             }
 
-            builder.WriteCompressed(dimension);
-            builder.Write(fightingStyle);
-            builder.WriteCompressed((byte)(255 - alpha));
-            builder.Write(interior);
+            this.builder.WriteCompressed(dimension);
+            this.builder.Write(fightingStyle);
+            this.builder.WriteCompressed((byte)(255 - alpha));
+            this.builder.Write(interior);
 
             for (int i = 0; i < 16; ++i)
             {
                 if (weapons[i] == 0)
                 {
-                    builder.Write(false);
+                    this.builder.Write(false);
                 } else
                 {
-                    builder.Write(true);
-                    builder.WriteCapped(weapons[i], 6);
+                    this.builder.Write(true);
+                    this.builder.WriteCapped(weapons[i], 6);
                 }
             }
         }
@@ -143,7 +142,7 @@ namespace SlipeServer.Packets.Definitions.Join
 
         public override byte[] Write()
         {
-            return builder.Build();
+            return this.builder.Build();
         }
     }
 }

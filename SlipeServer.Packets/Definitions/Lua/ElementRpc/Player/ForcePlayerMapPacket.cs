@@ -29,7 +29,7 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player
         {
             var builder = new PacketBuilder();
             builder.Write((byte)ElementRpcFunction.FORCE_PLAYER_MAP);
-            builder.Write((byte)(Visible ? 1 : 0));
+            builder.Write((byte)(this.Visible ? 1 : 0));
             return builder.Build();
         }
     }

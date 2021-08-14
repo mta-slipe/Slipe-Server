@@ -15,9 +15,8 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
     public class PlayerEventQueueHandler : WorkerBasedQueueHandler
     {
         private readonly ILogger logger;
-        private readonly MtaServer server;
         private readonly IElementRepository elementRepository;
-        public override IEnumerable<PacketId> SupportedPacketIds => PacketTypes.Keys;
+        public override IEnumerable<PacketId> SupportedPacketIds => this.PacketTypes.Keys;
 
         protected override Dictionary<PacketId, Type> PacketTypes { get; } = new Dictionary<PacketId, Type>()
         {
@@ -30,14 +29,12 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
         public PlayerEventQueueHandler(
             ILogger logger,
-            MtaServer server, 
             IElementRepository elementRepository, 
             int sleepInterval, 
             int workerCount
         ) : base(sleepInterval, workerCount)
         {
             this.logger = logger;
-            this.server = server;
             this.elementRepository = elementRepository;
         }
 

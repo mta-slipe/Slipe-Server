@@ -11,11 +11,8 @@ namespace SlipeServer.Server.Elements
 
         public Vector2 Position2
         {
-            get => new Vector2(Position.X, Position.Y);
-            set
-            {
-                Position = new Vector3(value.X, value.Y, 0);
-            }
+            get => new(this.Position.X, this.Position.Y);
+            set => this.Position = new Vector3(value.X, value.Y, 0);
         }
 
         public Vector2 Size { get; set; }

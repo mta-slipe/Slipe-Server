@@ -30,34 +30,34 @@ namespace SlipeServer.Packets.Definitions.Sync
 
         public ReturnSyncPacket(bool isInVehicle, Vector3 position, float rotation)
         {
-            IsInVechicle = isInVehicle;
-            Position = position;
-            Rotation = rotation;
+            this.IsInVechicle = isInVehicle;
+            this.Position = position;
+            this.Rotation = rotation;
         }
 
         public ReturnSyncPacket(Vector3 position, float rotation)
         {
-            IsInVechicle = true;
-            Position = position;
-            Rotation = rotation;
+            this.IsInVechicle = true;
+            this.Position = position;
+            this.Rotation = rotation;
         }
 
         public ReturnSyncPacket(Vector3 position)
         {
-            IsInVechicle = false;
-            Position = position;
+            this.IsInVechicle = false;
+            this.Position = position;
         }
 
         public override void Read(byte[] bytes)
         {
-            var reader = new PacketReader(bytes);
+
         }
 
         public override byte[] Write()
         {
             var builder = new PacketBuilder();
 
-            if (IsInVechicle)
+            if (this.IsInVechicle)
             {
                 builder.WriteVector3WithZAsFloat(this.Position);
                 // TODO: write vehicle rotation

@@ -31,7 +31,7 @@ namespace SlipeServer.Server.Behaviour
             element.AlphaChanged += RelayAlphaChange;
             element.DimensionChanged += RelayDimensionChange;
             element.InteriorChanged += RelayInteriorChange;
-            element.Destroyed += RelayElementDestroy;
+            //element.Destroyed += RelayElementDestroy;
         }
 
         private void RelayElementDestroy(Element element)
@@ -41,10 +41,10 @@ namespace SlipeServer.Server.Behaviour
                 var packet = new RemoveEntityPacket();
                 packet.AddEntity(element.Id);
 
-                var otherPlayers = this.elementRepository
+                var players = this.elementRepository
                     .GetByType<Player>(ElementType.Player)
                     .Where(p => p != element);
-                packet.SendTo(otherPlayers);
+                packet.SendTo(players);
             }
         }
 

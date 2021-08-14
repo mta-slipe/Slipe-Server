@@ -18,7 +18,7 @@ namespace SlipeServer.Server.Services
         public void CreateFire(Vector3 position, float size = 1.8f, Player? responsiblePlayer = null)
         {
             var packet = new FirePacket(position, size, responsiblePlayer?.Id, (ushort?)responsiblePlayer?.Client.Ping);
-            server.BroadcastPacket(packet);
+            this.server.BroadcastPacket(packet);
         }
 
         public void CreateFireFor(

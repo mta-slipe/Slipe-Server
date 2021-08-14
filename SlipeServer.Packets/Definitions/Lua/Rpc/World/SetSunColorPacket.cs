@@ -18,8 +18,8 @@ namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
 
         public SetSunColorPacket(Color coreColor, Color coronaColor)
         {
-            CoreSun = coreColor;
-            CoronaSun = coronaColor;
+            this.CoreSun = coreColor;
+            this.CoronaSun = coronaColor;
         }
 
         public override void Read(byte[] bytes)

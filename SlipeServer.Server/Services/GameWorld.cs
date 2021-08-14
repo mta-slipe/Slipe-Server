@@ -37,10 +37,10 @@ namespace SlipeServer.Server.Services
         private float? fogDistance;
         public float? FogDistance
         {
-            get => fogDistance;
+            get => this.fogDistance;
             set
             {
-                fogDistance = value;
+                this.fogDistance = value;
                 if (value != null)
                     this.server.BroadcastPacket(new SetFogDistancePacket(value.Value));
                 else
@@ -52,10 +52,10 @@ namespace SlipeServer.Server.Services
         public float? FarClipDistance
         {
 
-            get => farClipDistance;
+            get => this.farClipDistance;
             set
             {
-                farClipDistance = value;
+                this.farClipDistance = value;
                 if (value != null)
                     this.server.BroadcastPacket(new SetFarClipDistancePacket(value.Value));
                 else
@@ -67,10 +67,10 @@ namespace SlipeServer.Server.Services
         public float AircraftMaxHeight
         {
 
-            get => aircraftMaxHeight;
+            get => this.aircraftMaxHeight;
             set
             {
-                aircraftMaxHeight = value;
+                this.aircraftMaxHeight = value;
                 this.server.BroadcastPacket(new SetAircraftMaxHeightPacket(value));
             }
         }
@@ -79,10 +79,10 @@ namespace SlipeServer.Server.Services
         public float AircraftMaxVelocity
         {
 
-            get => aircraftMaxVelocity;
+            get => this.aircraftMaxVelocity;
             set
             {
-                aircraftMaxVelocity = value;
+                this.aircraftMaxVelocity = value;
                 this.server.BroadcastPacket(new SetAircraftMaxVelocityPacket(value));
             }
         }
@@ -91,10 +91,10 @@ namespace SlipeServer.Server.Services
         public bool CloudsEnabled
         {
 
-            get => cloudsEnabled;
+            get => this.cloudsEnabled;
             set
             {
-                cloudsEnabled = value;
+                this.cloudsEnabled = value;
                 this.server.BroadcastPacket(new SetCloudsEnabledPacket(value));
             }
         }
@@ -103,10 +103,10 @@ namespace SlipeServer.Server.Services
         public float GameSpeed
         {
 
-            get => gameSpeed;
+            get => this.gameSpeed;
             set
             {
-                gameSpeed = value;
+                this.gameSpeed = value;
                 this.server.BroadcastPacket(new SetGameSpeedPacket(value));
             }
         }
@@ -115,10 +115,10 @@ namespace SlipeServer.Server.Services
         public float Gravity
         {
 
-            get => gravity;
+            get => this.gravity;
             set
             {
-                gravity = value;
+                this.gravity = value;
                 this.server.BroadcastPacket(new SetGravityPacket(value));
             }
         }
@@ -127,10 +127,10 @@ namespace SlipeServer.Server.Services
         public bool InteriorSoundsEnabled
         {
 
-            get => interiorSoundsEnabled;
+            get => this.interiorSoundsEnabled;
             set
             {
-                interiorSoundsEnabled = value;
+                this.interiorSoundsEnabled = value;
                 this.server.BroadcastPacket(new SetInteriorSoundsEnabledPacket(value));
             }
         }
@@ -139,10 +139,10 @@ namespace SlipeServer.Server.Services
         public uint MinuteDuration
         {
 
-            get => minuteDuration;
+            get => this.minuteDuration;
             set
             {
-                minuteDuration = value;
+                this.minuteDuration = value;
                 this.timeTimer.Interval = value;
                 this.server.BroadcastPacket(new SetMinuteDurationPacket(value));
             }
@@ -152,10 +152,10 @@ namespace SlipeServer.Server.Services
         public int MoonSize
         {
 
-            get => moonSize;
+            get => this.moonSize;
             set
             {
-                moonSize = value;
+                this.moonSize = value;
                 this.server.BroadcastPacket(new SetMoonSizePacket(value));
             }
         }
@@ -164,10 +164,10 @@ namespace SlipeServer.Server.Services
         public bool OcclusionsEnabled
         {
 
-            get => occlusionsEnabled;
+            get => this.occlusionsEnabled;
             set
             {
-                occlusionsEnabled = value;
+                this.occlusionsEnabled = value;
                 this.server.BroadcastPacket(new SetOcclusionsEnabledPacket(value));
             }
         }
@@ -176,10 +176,10 @@ namespace SlipeServer.Server.Services
         public float RainLevel
         {
 
-            get => rainLevel;
+            get => this.rainLevel;
             set
             {
-                rainLevel = value;
+                this.rainLevel = value;
                 this.server.BroadcastPacket(new SetRainLevelPacket(value));
             }
         }
@@ -188,10 +188,10 @@ namespace SlipeServer.Server.Services
         public int SunSize
         {
 
-            get => sunSize;
+            get => this.sunSize;
             set
             {
-                sunSize = value;
+                this.sunSize = value;
                 this.server.BroadcastPacket(new SetSunSizePacket(value));
             }
         }
@@ -200,10 +200,10 @@ namespace SlipeServer.Server.Services
         public Vector3 WindVelocity
         {
 
-            get => windVelocity;
+            get => this.windVelocity;
             set
             {
-                windVelocity = value;
+                this.windVelocity = value;
                 this.server.BroadcastPacket(new SetWindVelocityPacket(value));
             }
         }
@@ -368,7 +368,7 @@ namespace SlipeServer.Server.Services
 
         public Tuple<byte, byte> GetTime()
         {
-            return new Tuple<byte, byte>(hour, minute);
+            return new Tuple<byte, byte>(this.hour, this.minute);
         }
 
         public void CreateProjectile(Vector3 from, Vector3 direction, Element sourceElement, WeaponType weaponType = WeaponType.WEAPONTYPE_ROCKET, ushort model = 345)

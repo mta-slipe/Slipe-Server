@@ -7,7 +7,7 @@ namespace SlipeServer.Server.Constants
 {
     public class WeaponConstants
     {
-        public static Dictionary<WeaponId, WeaponSlot> SlotPerWeapon = new Dictionary<WeaponId, WeaponSlot>()
+        public static Dictionary<WeaponId, WeaponSlot> SlotPerWeapon { get; } = new ()
         {
             [WeaponId.Fist] = WeaponSlot.Hand,
             [WeaponId.BrassKnuckle] = WeaponSlot.Melee,
@@ -57,7 +57,7 @@ namespace SlipeServer.Server.Constants
             [WeaponId.Parachute] = WeaponSlot.Special2,
         };
 
-        public static Dictionary<WeaponId, ushort> ClipCountsPerWeapon= new Dictionary<WeaponId, ushort>()
+        public static Dictionary<WeaponId, ushort> ClipCountsPerWeapon { get; } = new()
         {
             [WeaponId.Fist] = 1,
             [WeaponId.BrassKnuckle] = 1,

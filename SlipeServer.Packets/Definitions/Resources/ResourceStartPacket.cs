@@ -41,17 +41,17 @@ namespace SlipeServer.Packets.Definitions.Resources
             IEnumerable<string> exportedFunctions
         )
         {
-            Name = name;
-            NetId = netId;
-            ResourceElementId = resourceElementId;
-            ResourceDynamicElementId = resourceDynamicElementId;
-            UncachedScriptCount = uncachedScriptCount;
-            MinServerVersion = minServerVersion ?? "";
-            MinClientVersion = minClientVersion ?? "";
-            IsOopEnabled = isOopEnabled;
-            DownloadPriorityGroup = downloadPriorityGroup;
-            Files = files;
-            ExportedFunctions = exportedFunctions;
+            this.Name = name;
+            this.NetId = netId;
+            this.ResourceElementId = resourceElementId;
+            this.ResourceDynamicElementId = resourceDynamicElementId;
+            this.UncachedScriptCount = uncachedScriptCount;
+            this.MinServerVersion = minServerVersion ?? "";
+            this.MinClientVersion = minClientVersion ?? "";
+            this.IsOopEnabled = isOopEnabled;
+            this.DownloadPriorityGroup = downloadPriorityGroup;
+            this.Files = files;
+            this.ExportedFunctions = exportedFunctions;
         }
 
         public override void Read(byte[] bytes)
@@ -62,18 +62,18 @@ namespace SlipeServer.Packets.Definitions.Resources
         {
             var builder = new PacketBuilder();
 
-            builder.WriteStringWithByteAsLength(Name);
-            builder.Write(NetId);
-            builder.WriteElementId(ResourceElementId);
-            builder.WriteElementId(ResourceDynamicElementId);
+            builder.WriteStringWithByteAsLength(this.Name);
+            builder.Write(this.NetId);
+            builder.WriteElementId(this.ResourceElementId);
+            builder.WriteElementId(this.ResourceDynamicElementId);
 
-            builder.Write(UncachedScriptCount);
-            builder.Write(MinServerVersion);
-            builder.Write(MinClientVersion);
-            builder.Write(IsOopEnabled);
-            builder.Write(DownloadPriorityGroup);
+            builder.Write(this.UncachedScriptCount);
+            builder.Write(this.MinServerVersion);
+            builder.Write(this.MinClientVersion);
+            builder.Write(this.IsOopEnabled);
+            builder.Write(this.DownloadPriorityGroup);
 
-            foreach (var file in Files)
+            foreach (var file in this.Files)
             {
                 builder.Write((byte)'F');
 
@@ -89,7 +89,7 @@ namespace SlipeServer.Packets.Definitions.Resources
                 }
             }
 
-            foreach (var export in ExportedFunctions)
+            foreach (var export in this.ExportedFunctions)
             {
                 builder.Write((byte)'E');
                 builder.WriteStringWithByteAsLength(export);

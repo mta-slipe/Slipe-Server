@@ -14,10 +14,10 @@ namespace SlipeServer.Net
 {
     public class NetWrapper : IDisposable, INetWrapper
     {
-        const string wrapperDllpath = @"NetModuleWrapper";
+        private const string wrapperDllpath = @"NetModuleWrapper";
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        delegate void PacketCallback(byte packetId, uint binaryAddress, IntPtr payload, uint payloadSize, bool hasPing, uint ping);
+        private delegate void PacketCallback(byte packetId, uint binaryAddress, IntPtr payload, uint payloadSize, bool hasPing, uint ping);
 
 
         [DllImport(wrapperDllpath, EntryPoint = "initNetWrapper")]
@@ -58,8 +58,8 @@ namespace SlipeServer.Net
             string idFile = Path.Join(directory, "id");
             Directory.SetCurrentDirectory(directory);
 
-            packetInterceptorDelegate = PacketInterceptor;
-            int result = InitNetWrapper(netDllPath, idFile, host, port, 1024, "C# server", packetInterceptorDelegate);
+            this.packetInterceptorDelegate = PacketInterceptor;
+            int result = InitNetWrapper(netDllPath, idFile, host, port, 1024, "C# server", this.packetInterceptorDelegate);
 
             if (result < 0)
             {
@@ -73,19 +73,14 @@ namespace SlipeServer.Net
         public void Dispose()
         {
             DestroyNetWrapper(this.id);
+            GC.SuppressFinalize(this);
         }
 
-        public void Start()
-        {
-            StartNetWrapper(this.id);
-        }
+        public void Start() => StartNetWrapper(this.id);
 
-        public void Stop()
-        {
-            StopNetWrapper(this.id);
-        }
+        public void Stop() => StopNetWrapper(this.id);
 
-        void SendPacket(uint binaryAddress, byte packetId, byte[] payload, PacketPriority priority, PacketReliability reliability)
+        private void SendPacket(uint binaryAddress, byte packetId, byte[] payload, PacketPriority priority, PacketReliability reliability)
         {
             int size = Marshal.SizeOf((byte)0) * payload.Length;
             IntPtr pointer = Marshal.AllocHGlobal(size);
@@ -155,7 +150,7 @@ namespace SlipeServer.Net
                 allowGta3ImgMods.ToString().ToLower());
         }
 
-        void PacketInterceptor(byte packetId, uint binaryAddress, IntPtr payload, uint payloadSize, bool hasPing, uint ping)
+        private void PacketInterceptor(byte packetId, uint binaryAddress, IntPtr payload, uint payloadSize, bool hasPing, uint ping)
         {
             byte[] data = new byte[payloadSize];
             Marshal.Copy(payload, data, 0, (int)payloadSize);

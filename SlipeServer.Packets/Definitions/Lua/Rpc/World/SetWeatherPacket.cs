@@ -17,7 +17,7 @@ namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
 
         public SetWeatherPacket(byte weatherID)
         {
-            WeatherID = weatherID;
+            this.WeatherID = weatherID;
         }
 
         public override void Read(byte[] bytes)

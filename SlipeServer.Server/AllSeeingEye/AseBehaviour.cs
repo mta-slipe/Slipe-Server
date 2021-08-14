@@ -1,16 +1,9 @@
 using Microsoft.Extensions.Logging;
-using SlipeServer.Server.Elements;
-using SlipeServer.Server.Extensions;
-using SlipeServer.Server.Repositories;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading;
 
 namespace SlipeServer.Server.AllSeeingEye
 {
@@ -23,19 +16,16 @@ namespace SlipeServer.Server.AllSeeingEye
         private readonly Cache<byte[]> fullCache;
         private readonly Cache<byte[]> lightCache;
         private readonly Cache<byte[]> xFireCache;
-        private readonly AseVersion aseVersion;
-        private readonly Dictionary<string, string> rules = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> rules = new();
 
         public AseBehaviour(IAseQueryService aseQueryService, Configuration configuration, ILogger logger)
         {
             this.aseQueryService = aseQueryService;
             this.logger = logger;
 
-            aseVersion = AseVersion.v1_5;
-
-            lightCache = new Cache<byte[]>(() => aseQueryService.QueryLight(), cacheTime);
-            xFireCache = new Cache<byte[]>(() => aseQueryService.QueryXFireLight(), cacheTime);
-            fullCache = new Cache<byte[]>(() => aseQueryService.QueryFull(), cacheTime);
+            this.lightCache = new Cache<byte[]>(() => aseQueryService.QueryLight(), cacheTime);
+            this.xFireCache = new Cache<byte[]>(() => aseQueryService.QueryXFireLight(), cacheTime);
+            this.fullCache = new Cache<byte[]>(() => aseQueryService.QueryFull(), cacheTime);
 
             StartListening((ushort)(configuration.Port + 123));
         }
@@ -55,33 +45,21 @@ namespace SlipeServer.Server.AllSeeingEye
             {
                 try
                 {
-                    IPEndPoint source = new IPEndPoint(0, 0);
+                    IPEndPoint? source = new IPEndPoint(0, 0);
                     byte[] message = socket.EndReceive(result, ref source);
-                    byte[] data;
-
                     AseQueryType queryType = (AseQueryType)(message[0]);
 
                     this.logger.LogInformation($"ASE request received for query type {queryType}");
-                    switch (queryType)
+
+                    byte[] data = queryType switch
                     {
-                        case AseQueryType.Full:
-                            data = fullCache.Get();
-                            break;
-                        case AseQueryType.Light:
-                            data = lightCache.Get();
-                            break;
-                        case AseQueryType.LightRelease:
-                            data = lightCache.Get();
-                            break;
-                        case AseQueryType.XFire:
-                            data = xFireCache.Get();
-                            break;
-                        case AseQueryType.Version:
-                            data = this.aseQueryService.GetVersion().Select(c => (byte)c).ToArray();
-                            break;
-                        default:
-                            throw new NotImplementedException($"'{message[0]}' is not a valid ASE query");
-                    }
+                        AseQueryType.Full => this.fullCache.Get(),
+                        AseQueryType.Light => this.lightCache.Get(),
+                        AseQueryType.LightRelease => this.lightCache.Get(),
+                        AseQueryType.XFire => this.xFireCache.Get(),
+                        AseQueryType.Version => this.aseQueryService.GetVersion().Select(c => (byte)c).ToArray(),
+                        _ => throw new NotImplementedException($"'{message[0]}' is not a valid ASE query"),
+                    } ?? Array.Empty<byte>();
 
                     socket.Send(data, data.Length, source);
                     socket.BeginReceive(new AsyncCallback(OnUdpData), socket);

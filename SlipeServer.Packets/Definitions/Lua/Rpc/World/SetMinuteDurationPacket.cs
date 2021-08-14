@@ -16,7 +16,7 @@ namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
 
         public SetMinuteDurationPacket(uint duration)
         {
-            Duration = duration;
+            this.Duration = duration;
         }
         public override void Read(byte[] bytes)
         {

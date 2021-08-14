@@ -20,15 +20,15 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped
 
         public WarpIntoVehicleRpcPacket(uint elementId, uint vehicleId, byte seat, byte timeContext)
         {
-            ElementId = elementId;
-            VehicleId = vehicleId;
-            Seat = seat;
-            TimeContext = timeContext;
+            this.ElementId = elementId;
+            this.VehicleId = vehicleId;
+            this.Seat = seat;
+            this.TimeContext = timeContext;
         }
 
         public override void Read(byte[] bytes)
         {
-            var reader = new PacketReader(bytes);
+
         }
 
         public override byte[] Write()

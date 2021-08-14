@@ -12,7 +12,7 @@ namespace SlipeServer.Packets.Builder
     {
         private readonly BitArray bits;
 
-        public int Length => bits.Length;
+        public int Length => this.bits.Length;
 
         public PacketBuilder()
         {
@@ -201,13 +201,13 @@ namespace SlipeServer.Packets.Builder
             Write(bytes);
         }
 
-        float WrapAround(float low, float value, float high)
+        private float WrapAround(float low, float value, float high)
         {
             float size = high - low;
             return value - (size * MathF.Floor((value - low) / size));
         }
 
-        float Unlerp(double min, double value, double max)
+        private float Unlerp(double min, double value, double max)
         {
             if (min == max)
                 return 1.0f;

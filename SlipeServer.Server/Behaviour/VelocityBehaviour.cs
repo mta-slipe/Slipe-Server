@@ -7,7 +7,6 @@ namespace SlipeServer.Server.Behaviour
 {
     public class VelocityBehaviour
     {
-        private readonly MtaServer server;
         private readonly float factor;
 
         private readonly HashSet<Element> velocityElements;
@@ -15,7 +14,6 @@ namespace SlipeServer.Server.Behaviour
 
         public VelocityBehaviour(MtaServer server, float interval = 10)
         {
-            this.server = server;
             this.factor = interval / 50.0f;
 
             this.velocityElements = new HashSet<Element>();

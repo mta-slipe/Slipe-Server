@@ -19,9 +19,9 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player
 
         public DebugEchoPacket(string message, byte level, Color color)
         {
-            Message = message;
-            Level = level;
-            Color = color;
+            this.Message = message;
+            this.Level = level;
+            this.Color = color;
         }
 
         public override void Read(byte[] bytes)
@@ -33,12 +33,12 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player
         {
             var builder = new PacketBuilder();
 
-            builder.Write(Level);
-            if(Level == 0)
+            builder.Write(this.Level);
+            if(this.Level == 0)
             {
-                builder.Write(Color);
+                builder.Write(this.Color);
             }
-            builder.WriteStringWithoutLength(Message);
+            builder.WriteStringWithoutLength(this.Message);
 
             return builder.Build();
         }

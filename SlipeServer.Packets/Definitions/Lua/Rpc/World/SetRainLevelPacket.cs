@@ -16,7 +16,7 @@ namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
 
         public SetRainLevelPacket(float rainLevel)
         {
-            RainLevel = rainLevel;
+            this.RainLevel = rainLevel;
         }
 
         public override void Read(byte[] bytes)

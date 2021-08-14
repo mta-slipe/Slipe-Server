@@ -11,9 +11,9 @@ namespace SlipeServer.Server.Elements.Events
 
         public WeaponRemovedEventArgs(Ped ped, WeaponId weaponId, ushort? ammoCount)
         {
-            Ped = ped;
-            WeaponId = weaponId;
-            AmmoCount = ammoCount;
+            this.Ped = ped;
+            this.WeaponId = weaponId;
+            this.AmmoCount = ammoCount;
         }
     }
 }
