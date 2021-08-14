@@ -5,21 +5,12 @@ using SlipeServer.Server.Enums;
 using SlipeServer.Server.PacketHandling.Factories;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Numerics;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 using SlipeServer.Packets.Enums;
 
 namespace SlipeServer.Server.Elements
 {
-    public class PlayerPendingScreenshot
-    {
-        public MemoryStream? Stream { get; init; }
-        public string? ErrorMessage { get; init; }
-        public string Tag { get; init; } = "";
-        public uint TotalParts { get; init; }
-    }
-
     public class Player: Ped
     {
         public override ElementType ElementType => ElementType.Player;
@@ -30,11 +21,11 @@ namespace SlipeServer.Server.Elements
         private byte wantedLevel = 0;
         public byte WantedLevel
         {
-            get => wantedLevel;
+            get => this.wantedLevel;
             set
             {
                 var args = new ElementChangedEventArgs<Player, byte>(this, this.WantedLevel, value, this.IsSync);
-                wantedLevel = value;
+                this.wantedLevel = value;
                 WantedLevelChanged?.Invoke(this, args);
             }
         }
@@ -61,18 +52,44 @@ namespace SlipeServer.Server.Elements
         public bool IsVoiceMuted { get; set; }
         public bool IsChatMuted { get; set; }
 
-        public Dictionary<int, PlayerPendingScreenshot> PendingScreenshots { get; } = new Dictionary<int, PlayerPendingScreenshot>();
+        public Dictionary<int, PlayerPendingScreenshot> PendingScreenshots { get; } = new();
+
+        private readonly HashSet<Element> subscriptionElements;
+
 
         protected internal Player(Client client) : base(0, Vector3.Zero)
         {
             this.Client = client;
             this.Camera = new Camera(this);
+            this.subscriptionElements = new();
         }
 
         public new Player AssociateWith(MtaServer server)
         {
             return server.AssociateElement(this);
         }
+
+        public void SubscribeTo(Element element)
+        {
+            if (this.IsSubscribedTo(element))
+                return;
+
+            this.subscriptionElements.Add(element);
+            this.Subscribed?.Invoke(this, new PlayerSubscriptionEventArgs(this, element));
+            element.AddSubscriber(this);
+        }
+
+        public void UnsubscribeFrom(Element element)
+        {
+            if (!this.IsSubscribedTo(element))
+                return;
+
+            this.subscriptionElements.Remove(element);
+            this.UnSubscribed?.Invoke(this, new PlayerSubscriptionEventArgs(this, element));
+            element.RemoveSubscriber(this);
+        }
+
+        public bool IsSubscribedTo(Element element) => this.subscriptionElements.Contains(element);
 
         public void Spawn(Vector3 position, float rotation, ushort model, byte interior, ushort dimension)
         {
@@ -112,7 +129,7 @@ namespace SlipeServer.Server.Elements
 
         public void TriggerCommand(string command, string[] arguments)
         {
-            this.OnCommand?.Invoke(this, new PlayerCommandEventArgs(this, command, arguments));
+            this.CommandEntered?.Invoke(this, new PlayerCommandEventArgs(this, command, arguments));
         }
 
         public void TriggerDamaged(Element? damager, WeaponType damageType, BodyPart bodyPart)
@@ -137,12 +154,12 @@ namespace SlipeServer.Server.Elements
         public void VoiceDataStart(byte[] voiceData)
         {
             if (!this.IsVoiceMuted)
-                this.OnVoiceData?.Invoke(this, new PlayerVoiceStartArgs(this, voiceData));
+                this.VoiceDataReceived?.Invoke(this, new PlayerVoiceStartArgs(this, voiceData));
         }
 
         public void VoiceDataEnd()
         {
-            this.OnVoiceDataEnd.Invoke(this, new PlayerVoiceEndArgs(this));
+            this.VoiceDataEnded?.Invoke(this, new PlayerVoiceEndArgs(this));
         }
 
         public void TriggerDisconnected(QuitReason reason)
@@ -157,37 +174,42 @@ namespace SlipeServer.Server.Elements
             this.Client.SendPacket(ElementPacketFactory.CreateTakePlayerScreenshotPacket(this, width, height, tag, quality, maxBandwith, maxPacketSize, null));
         }
 
-        internal void ScreenshotEnd(int screenshotId)
+        public void ScreenshotEnd(int screenshotId)
         {
-            var pendingScreenshot = PendingScreenshots[screenshotId];
-            using(var stream = pendingScreenshot.Stream)
+            var pendingScreenshot = this.PendingScreenshots[screenshotId];
+            if (pendingScreenshot != null && pendingScreenshot.Stream != null)
             {
-                this.OnScreenshot?.Invoke(this, new ScreenshotEventArgs(pendingScreenshot.Stream, pendingScreenshot.ErrorMessage, pendingScreenshot.Tag));
+                using (var stream = pendingScreenshot.Stream)
+                {
+                    this.ScreenshotTaken?.Invoke(this, new ScreenshotEventArgs(pendingScreenshot.Stream, pendingScreenshot.ErrorMessage, pendingScreenshot.Tag));
+                }
+                this.PendingScreenshots.Remove(screenshotId);
             }
-            PendingScreenshots.Remove(screenshotId);
         }
 
         public void Kick(string reason)
         {
-            this.OnKick?.Invoke(this, new PlayerKickEventArgs(reason, PlayerDisconnectType.CUSTOM));
+            this.Kicked?.Invoke(this, new PlayerKickEventArgs(reason, PlayerDisconnectType.CUSTOM));
             this.Client.SendPacket(new PlayerDisconnectPacket(PlayerDisconnectType.CUSTOM, reason));
         }
 
         public void Kick(PlayerDisconnectType type = PlayerDisconnectType.CUSTOM)
         {
-            this.OnKick?.Invoke(this, new PlayerKickEventArgs(string.Empty, type));
+            this.Kicked?.Invoke(this, new PlayerKickEventArgs(string.Empty, type));
             this.Client.SendPacket(new PlayerDisconnectPacket(type, string.Empty));
         }
 
         public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
-        public event EventHandler<PlayerDamagedEventArgs>? Damaged;
-        public event EventHandler<PlayerWastedEventArgs>? Wasted;
-        public event EventHandler<PlayerSpawnedEventArgs>? Spawned;
-        public event EventHandler<PlayerCommandEventArgs>? OnCommand;
-        public event EventHandler<PlayerVoiceStartArgs> OnVoiceData;
-        public event EventHandler<PlayerVoiceEndArgs> OnVoiceDataEnd;
-        public event EventHandler<PlayerQuitEventArgs>? Disconnected;
-        public event EventHandler<ScreenshotEventArgs>? OnScreenshot;
-        public event EventHandler<PlayerKickEventArgs>? OnKick;
+        public event ElementEventHandler<Player, PlayerDamagedEventArgs>? Damaged;
+        public event ElementEventHandler<Player, PlayerWastedEventArgs>? Wasted;
+        public event ElementEventHandler<Player, PlayerSpawnedEventArgs>? Spawned;
+        public event ElementEventHandler<Player, PlayerCommandEventArgs>? CommandEntered;
+        public event ElementEventHandler<Player, PlayerVoiceStartArgs>? VoiceDataReceived;
+        public event ElementEventHandler<Player, PlayerVoiceEndArgs>? VoiceDataEnded;
+        public event ElementEventHandler<Player, PlayerQuitEventArgs>? Disconnected;
+        public event ElementEventHandler<Player, ScreenshotEventArgs>? ScreenshotTaken;
+        public event ElementEventHandler<Player, PlayerKickEventArgs>? Kicked;
+        public event ElementEventHandler<Player, PlayerSubscriptionEventArgs>? Subscribed;
+        public event ElementEventHandler<Player, PlayerSubscriptionEventArgs>? UnSubscribed;
     }
 }

@@ -11,7 +11,7 @@ namespace SlipeServer.Server.Elements.Events
 
         public PlayerQuitEventArgs(QuitReason reason)
         {
-            Reason = reason;
+            this.Reason = reason;
         }
     }
 }

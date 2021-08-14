@@ -13,7 +13,7 @@ namespace SlipeServer.Server.PacketHandling
         private readonly Dictionary<PacketId, List<IQueueHandler>> registeredQueueHandlers;
         private readonly ILogger logger;
 
-        public IEnumerable<IQueueHandler> RegisteredQueueHandlers => queueHandlers;
+        public IEnumerable<IQueueHandler> RegisteredQueueHandlers => this.queueHandlers;
 
         public PacketReducer(ILogger logger)
         {
@@ -51,7 +51,7 @@ namespace SlipeServer.Server.PacketHandling
                 }
             } else
             {
-                logger.LogWarning($"Received unregistered packet {packetId}");
+                this.logger.LogWarning($"Received unregistered packet {packetId}");
             }
         }
     }

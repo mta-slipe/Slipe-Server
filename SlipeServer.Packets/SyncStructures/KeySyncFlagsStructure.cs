@@ -27,26 +27,26 @@ namespace SlipeServer.Packets.Structures
             bool isSyncingVehicle
         )
         {
-            IsDucked = isDucked;
-            IsChoking = isChoking;
-            AkimboTargetUp = akimboTargetUp;
-            IsSyncingVehicle = isSyncingVehicle;
+            this.IsDucked = isDucked;
+            this.IsChoking = isChoking;
+            this.AkimboTargetUp = akimboTargetUp;
+            this.IsSyncingVehicle = isSyncingVehicle;
         }
 
         public void Read(PacketReader reader)
         {
-            IsSyncingVehicle = reader.GetBit();
-            AkimboTargetUp = reader.GetBit();
-            IsChoking = reader.GetBit();
-            IsDucked = reader.GetBit();
+            this.IsSyncingVehicle = reader.GetBit();
+            this.AkimboTargetUp = reader.GetBit();
+            this.IsChoking = reader.GetBit();
+            this.IsDucked = reader.GetBit();
         }
 
         public void Write(PacketBuilder builder)
         {
-            builder.Write(IsSyncingVehicle);
-            builder.Write(AkimboTargetUp);
-            builder.Write(IsChoking);
-            builder.Write(IsDucked);
+            builder.Write(this.IsSyncingVehicle);
+            builder.Write(this.AkimboTargetUp);
+            builder.Write(this.IsChoking);
+            builder.Write(this.IsDucked);
         }
     }
 }

@@ -29,9 +29,9 @@ namespace SlipeServer.Packets.Lua.Camera
 
         public FadeCameraPacket(CameraFade cameraFade, float fadeTime = 1, Color? color = null)
         {
-            CameraFade = cameraFade;
-            FadeTime = fadeTime;
-            Color = color ?? Color.Black;
+            this.CameraFade = cameraFade;
+            this.FadeTime = fadeTime;
+            this.Color = color ?? Color.Black;
         }
 
         public override void Read(byte[] bytes)
@@ -46,7 +46,7 @@ namespace SlipeServer.Packets.Lua.Camera
             builder.Write((byte)(this.CameraFade == CameraFade.In ? 1 : 0));
 
             builder.Write(this.FadeTime);
-            if (CameraFade == CameraFade.Out)
+            if (this.CameraFade == CameraFade.Out)
             {
                 builder.Write(this.Color);
             }

@@ -13,9 +13,9 @@ namespace SlipeServer.Server.Elements.Events
 
         public PlayerCommandEventArgs(Player source,string command, string[] arguments)
         {
-            Source = source;
-            Command = command;
-            Arguments = arguments;
+            this.Source = source;
+            this.Command = command;
+            this.Arguments = arguments;
         }
     }
 }

@@ -19,10 +19,10 @@ namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
         public byte Interior { get; set; }
         public RestoreWorldModelPacket(ushort model, float radius, Vector3 position, byte interior) 
         {
-            ModelID = model;
-            Radius = radius;
-            Position = position;
-            Interior = interior;
+            this.ModelID = model;
+            this.Radius = radius;
+            this.Position = position;
+            this.Interior = interior;
         }
 
         public override void Read(byte[] bytes)

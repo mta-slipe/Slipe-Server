@@ -76,11 +76,11 @@ namespace SlipeServer.Packets.Builder
                 }
                 else
                 {
-                    knownTables.Add(value, (ulong)knownTables.Count());
+                    knownTables.Add(value, (ulong)knownTables.Count);
 
                     builder.WriteCapped((byte)LuaType.Table, 4);
 
-                    builder.WriteCompressed((uint)value.TableValue.Count() * 2);
+                    builder.WriteCompressed((uint)value.TableValue.Count * 2);
                     foreach (var kvPair in value.TableValue)
                     {
                         Write(builder, kvPair.Key, knownTables);

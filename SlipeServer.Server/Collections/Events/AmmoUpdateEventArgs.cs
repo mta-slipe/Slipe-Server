@@ -12,9 +12,9 @@ namespace SlipeServer.Server.Collections.Events
 
         public AmmoUpdateEventArgs(Weapon weapon, ushort ammoCount, ushort? ammoInClipCount)
         {
-            Weapon = weapon;
-            AmmoCount = ammoCount;
-            AmmoInClipCount = ammoInClipCount;
+            this.Weapon = weapon;
+            this.AmmoCount = ammoCount;
+            this.AmmoInClipCount = ammoInClipCount;
         }
     }
 }

@@ -16,7 +16,7 @@ namespace SlipeServer.Server.Elements.ColShapes
         public bool AutoCallEvent { get; set; } = true;
 
         private readonly HashSet<Element> elementsWithin;
-        public IEnumerable<Element> ElementsWithin => elementsWithin.AsEnumerable();
+        public IEnumerable<Element> ElementsWithin => this.elementsWithin.AsEnumerable();
 
         public CollisionShape()
         {

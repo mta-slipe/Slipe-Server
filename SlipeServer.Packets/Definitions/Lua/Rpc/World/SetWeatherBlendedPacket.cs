@@ -14,10 +14,10 @@ namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
 
         public byte Weather { get; set; }
         public byte Hour { get; set; }
-        public SetWeatherBlendedPacket(byte weather,byte hour)
+        public SetWeatherBlendedPacket(byte weather, byte hour)
         {
-            Weather = weather;
-            Hour = hour;
+            this.Weather = weather;
+            this.Hour = hour;
         }
         public override void Read(byte[] bytes)
         {

@@ -41,11 +41,11 @@ namespace SlipeServer.Server
         public string GameType { get; set; } = "unknown";
         public string MapName { get; set; } = "unknown";
         public string Password { get; set; } = "";
-        public bool HasPassword => Password != "";
+        public bool HasPassword => this.Password != "";
 
         public bool IsRunning { get; private set; }
         public DateTime StartDatetime { get; private set; }
-        public TimeSpan Uptime => DateTime.Now - StartDatetime;
+        public TimeSpan Uptime => DateTime.Now - this.StartDatetime;
 
         public MtaServer(
             Configuration? configuration = null,
@@ -179,8 +179,8 @@ namespace SlipeServer.Server
 
             this.ElementCreated?.Invoke(element);
 
-            if (element != root)
-                element.Parent = root;
+            if (element != this.root)
+                element.Parent = this.root;
 
             return element;
         }
@@ -228,7 +228,7 @@ namespace SlipeServer.Server
         {
             if (!this.clients[netWrapper].ContainsKey(binaryAddress))
             {
-                var client = clientCreationMethod?.Invoke(binaryAddress, netWrapper) ??
+                var client = this.clientCreationMethod?.Invoke(binaryAddress, netWrapper) ??
                     new Client(binaryAddress, netWrapper); 
                 AssociateElement(client.Player);
 

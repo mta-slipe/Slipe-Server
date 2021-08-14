@@ -19,7 +19,7 @@ namespace SlipeServer.Packets.Rpc
 
         public RpcPacket()
         {
-            this.Reader = new PacketReader(new byte[0]);    
+            this.Reader = new PacketReader(Array.Empty<byte>());    
         }
 
         public override void Read(byte[] bytes)

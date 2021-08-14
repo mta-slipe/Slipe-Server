@@ -12,13 +12,13 @@ namespace SlipeServer.Server.TestTools
     {
         public Mock<INetWrapper> NetWrapperMock { get; }
         private uint binaryAddressCounter;
-        private Func<Client, uint, TPlayer> playerCreationMethod;
+        private readonly Func<Client, uint, TPlayer> playerCreationMethod;
 
         public TestingServer(Func<Client, uint, TPlayer> playerCreationMethod, Configuration configuration = null) : base(configuration, ConfigureOverrides)
         {
             this.playerCreationMethod = playerCreationMethod;
             this.NetWrapperMock = new Mock<INetWrapper>();
-            RegisterNetWrapper(NetWrapperMock.Object);
+            RegisterNetWrapper(this.NetWrapperMock.Object);
         }
 
         public static void ConfigureOverrides(ServiceCollection services)
@@ -29,7 +29,7 @@ namespace SlipeServer.Server.TestTools
 
         public TPlayer AddFakePlayer()
         {
-            var address = ++binaryAddressCounter;
+            var address = ++this.binaryAddressCounter;
             var client = new Client(address, this.NetWrapperMock.Object);
             var player = this.playerCreationMethod(client, address);
             player.AssociateWith(this);
@@ -46,7 +46,7 @@ namespace SlipeServer.Server.TestTools
             this.packetReducer.EnqueuePacket(new Client(address, this.NetWrapperMock.Object), packetId, data);
         }
 
-        public uint GenerateBinaryAddress() => ++binaryAddressCounter;
+        public uint GenerateBinaryAddress() => ++this.binaryAddressCounter;
     }
 
     public class TestingServer: TestingServer<TestingPlayer>

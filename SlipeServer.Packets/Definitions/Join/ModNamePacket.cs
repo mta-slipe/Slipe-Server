@@ -16,8 +16,8 @@ namespace MTAServerWrapper.Packets.Outgoing.Connection
 
         public ModNamePacket(ushort netVersion, string name)
         {
-            NetVersion = netVersion;
-            Name = name;
+            this.NetVersion = netVersion;
+            this.Name = name;
         }
 
         public override byte[] Write()

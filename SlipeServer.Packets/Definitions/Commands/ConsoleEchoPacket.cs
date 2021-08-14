@@ -13,7 +13,7 @@ namespace SlipeServer.Packets.Definitions.Commands
         public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
         public override PacketPriority Priority => PacketPriority.Low;
 
-        public string Message { get; set; }
+        public string Message { get; set; } = string.Empty;
 
         public ConsoleEchoPacket()
         {
@@ -22,7 +22,7 @@ namespace SlipeServer.Packets.Definitions.Commands
 
         public ConsoleEchoPacket(string message)
         {
-            Message = message;
+            this.Message = message;
         }
 
         public override void Read(byte[] bytes)

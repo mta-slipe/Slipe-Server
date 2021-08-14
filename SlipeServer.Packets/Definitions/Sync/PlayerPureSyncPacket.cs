@@ -49,7 +49,7 @@ namespace SlipeServer.Packets.Definitions.Sync
 
         public PlayerPureSyncPacket(byte timeContext)
         {
-            TimeContext = timeContext;
+            this.TimeContext = timeContext;
         }
 
         public override void Read(byte[] bytes)
@@ -85,7 +85,7 @@ namespace SlipeServer.Packets.Definitions.Sync
                 this.WeaponType = reader.GetByte();
                 this.WeaponSlot = reader.GetByteCapped(4);
 
-                if (WeaponConstants.slotsWithAmmo.Contains(this.WeaponSlot))
+                if (WeaponConstants.SlotsWithAmmo.Contains(this.WeaponSlot))
                 {
                     this.TotalAmmo = reader.GetAmmo();
                     this.AmmoInClip = reader.GetAmmo();
@@ -142,7 +142,7 @@ namespace SlipeServer.Packets.Definitions.Sync
             {
                 builder.WriteCapped(this.WeaponSlot, 4);
 
-                if (WeaponConstants.slotsWithAmmo.Contains(this.WeaponSlot))
+                if (WeaponConstants.SlotsWithAmmo.Contains(this.WeaponSlot))
                 {
                     builder.WriteAmmo(null, this.AmmoInClip);
 

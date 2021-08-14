@@ -24,15 +24,15 @@ namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
 
         public SetHeatHazePacket(byte intensity,byte randomShift = 0,ushort seedMin = 12,ushort speedMax = 18, short scanSizeX = 75,short scanSizeY = 80,byte renderSizeX = 80,byte renderSizeY = 85,bool insideBuilding = false)
         {
-            Intensity = intensity;
-            RandomShift = randomShift;
-            SpeedMin = seedMin;
-            SpeedMax = speedMax;
-            ScanSizeX = scanSizeX;
-            ScanSizeY = scanSizeY;
-            RenderSizeX = renderSizeX;
-            RenderSizeY = renderSizeY;
-            InsideBuilding = insideBuilding;
+            this.Intensity = intensity;
+            this.RandomShift = randomShift;
+            this.SpeedMin = seedMin;
+            this.SpeedMax = speedMax;
+            this.ScanSizeX = scanSizeX;
+            this.ScanSizeY = scanSizeY;
+            this.RenderSizeX = renderSizeX;
+            this.RenderSizeY = renderSizeY;
+            this.InsideBuilding = insideBuilding;
 
         }
         public override void Read(byte[] bytes)

@@ -20,6 +20,6 @@ namespace SlipeServer.Packets.Definitions.Player
         {
         }
 
-        public override byte[] Write() => new byte[0];
+        public override byte[] Write() => Array.Empty<byte>();
     }
 }

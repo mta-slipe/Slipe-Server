@@ -16,19 +16,20 @@ namespace SlipeServer.Packets.Lua.Event
         public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
         public override PacketPriority Priority => PacketPriority.High;
 
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
         public uint ElementId { get; set; }
-        public IEnumerable<LuaValue> LuaValues { get; set; }
+        public IEnumerable<LuaValue> LuaValues { get; set; } = Array.Empty<LuaValue>();
 
         public LuaEventPacket()
         {
+
         }
 
         public LuaEventPacket(string name, uint elementId, IEnumerable<LuaValue> luaValues)
         {
-            Name = name;
-            ElementId = elementId;
-            LuaValues = luaValues;
+            this.Name = name;
+            this.ElementId = elementId;
+            this.LuaValues = luaValues;
         }
 
         public override byte[] Write()

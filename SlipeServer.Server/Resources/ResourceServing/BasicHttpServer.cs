@@ -21,15 +21,15 @@ namespace SlipeServer.Server.Resources.ResourceServing
         private readonly Configuration configuration;
         private readonly ILogger logger;
         private readonly string httpAddress;
-        private bool running;
+        private bool isRunning;
 
         public BasicHttpServer(Configuration configuration, ILogger logger)
         {
             this.httpAddress = $"http://{configuration.HttpHost}:{configuration.HttpPort}/";
             this.httpListener = new HttpListener();
-            this.httpListener.Prefixes.Add(httpAddress);
+            this.httpListener.Prefixes.Add(this.httpAddress);
 
-            this.running = false;
+            this.isRunning = false;
             this.rootDirectory = configuration.ResourceDirectory;
             this.configuration = configuration;
             this.logger = logger;
@@ -37,12 +37,12 @@ namespace SlipeServer.Server.Resources.ResourceServing
 
         public void Start()
         {
-            if (this.running)
+            if (this.isRunning)
             {
                 return;
             }
 
-            this.running = true;
+            this.isRunning = true;
             try
             {
                 this.httpListener.Start();
@@ -52,34 +52,33 @@ namespace SlipeServer.Server.Resources.ResourceServing
                 if (exception.Message == "Access is denied." && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
                     string command = $@"netsh http add urlacl url=http://{this.configuration.HttpHost}:{this.configuration.HttpPort}/ sddl=D:(A;;GX;;;S-1-1-0)";
-                    throw new Exception($"Could not start http server on address {httpAddress}\n{exception.Message}\nYou might need to run the following command in an administrator command prompt: \n{command}", exception);
+                    throw new Exception($"Could not start http server on address {this.httpAddress}\n{exception.Message}\nYou might need to run the following command in an administrator command prompt: \n{command}", exception);
                 } else
                 {
-                    throw new Exception($"Could not start http server on address {httpAddress}\n{exception.Message}", exception);
+                    throw new Exception($"Could not start http server on address {this.httpAddress}\n{exception.Message}", exception);
                 }
             }
 
             Task.Run(async () =>
             {
-                while (running)
+                while (this.isRunning)
                 {
                     var context = await this.httpListener.GetContextAsync();
-                    Console.WriteLine(context.Request.Url.AbsoluteUri);
 
                     _ = Task.Run(async () =>
                     {
-                        var path = Path.Join(this.rootDirectory, context.Request.Url.LocalPath);
+                        var path = Path.Join(this.rootDirectory, context.Request.Url?.LocalPath);
 
                         if (File.Exists(path))
                         {
                             var content = await File.ReadAllBytesAsync(path);
 
-                            await context.Response.OutputStream.WriteAsync(content, 0, content.Length);
+                            await context.Response.OutputStream.WriteAsync(content.AsMemory(0, content.Length));
                             context.Response.StatusCode = 200;
                         } else
                         {
                             context.Response.StatusCode = 404;
-                            this.logger.LogWarning($"404 encountered while trying to download {context.Request.Url.LocalPath}", null);
+                            this.logger.LogWarning($"404 encountered while trying to download {context.Request.Url?.LocalPath}", null);
                         }
 
                         context.Response.Close();
@@ -92,7 +91,7 @@ namespace SlipeServer.Server.Resources.ResourceServing
 
         public void Stop()
         {
-            this.running = false;
+            this.isRunning = false;
         }
 
         public IEnumerable<ResourceFile> GetResourceFiles(string resource)
@@ -105,7 +104,6 @@ namespace SlipeServer.Server.Resources.ResourceServing
                 {
                     byte[] content = File.ReadAllBytes(file);
                     var hash = md5.ComputeHash(content);
-                    var stringHash = BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
                     var checksum = Crc32Algorithm.Compute(content);
 
                     string fileName = Path.GetRelativePath(Path.Join(this.rootDirectory, resource), file);
@@ -126,7 +124,7 @@ namespace SlipeServer.Server.Resources.ResourceServing
 
         public IEnumerable<ResourceFile> GetResourceFiles()
         {
-            IEnumerable<ResourceFile> resourceFiles = new ResourceFile[0];
+            IEnumerable<ResourceFile> resourceFiles = Array.Empty<ResourceFile>();
             foreach (var directory in Directory.GetDirectories(this.rootDirectory))
             {
                 resourceFiles = resourceFiles.Concat(GetResourceFiles(directory));

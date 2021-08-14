@@ -16,22 +16,22 @@ namespace SlipeServer.Server.Elements.Structs
         private ushort ammo;
         public ushort Ammo
         {
-            get => ammo;
+            get => this.ammo;
             set
             {
-                ammo = value;
-                this.AmmoUpdated?.Invoke(this, new AmmoUpdateEventArgs(this, ammo, ammoInClip));
+                this.ammo = value;
+                this.AmmoUpdated?.Invoke(this, new AmmoUpdateEventArgs(this, this.ammo, this.ammoInClip));
             }
         }
 
         private ushort ammoInClip;
         public ushort AmmoInClip
         {
-            get => ammoInClip;
+            get => this.ammoInClip;
             set
             {
-                ammoInClip = value;
-                this.AmmoInClipUpdated?.Invoke(this, new AmmoUpdateEventArgs(this, ammo, ammoInClip));
+                this.ammoInClip = value;
+                this.AmmoInClipUpdated?.Invoke(this, new AmmoUpdateEventArgs(this, this.ammo, this.ammoInClip));
             }
         }
 
@@ -50,7 +50,7 @@ namespace SlipeServer.Server.Elements.Structs
                 this.ammoInClip = ammoInClip.Value;
         }
 
-        public static implicit operator PedWeapon(Weapon weapon) => new PedWeapon() { Slot = (byte)weapon.Slot, Type = (byte)weapon.Type, Ammo = weapon.Ammo, AmmoInClip = weapon.AmmoInClip };
+        public static implicit operator PedWeapon(Weapon weapon) => new() { Slot = (byte)weapon.Slot, Type = (byte)weapon.Type, Ammo = weapon.Ammo, AmmoInClip = weapon.AmmoInClip };
 
         public event EventHandler<AmmoUpdateEventArgs>? AmmoUpdated;
         public event EventHandler<AmmoUpdateEventArgs>? AmmoInClipUpdated;

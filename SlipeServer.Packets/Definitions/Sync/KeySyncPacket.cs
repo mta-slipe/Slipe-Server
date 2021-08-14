@@ -17,10 +17,10 @@ namespace SlipeServer.Packets.Definitions.Sync
         public override PacketReliability Reliability => PacketReliability.UnreliableSequenced;
         public override PacketPriority Priority => PacketPriority.Medium;
 
-        public SmallKeySyncStructure SmallKeySyncStructure { get; set; }
+        public SmallKeySyncStructure SmallKeySyncStructure { get; set; } = new SmallKeySyncStructure();
         public float PlayerRotation { get; set; }
         public float CameraRotation { get; set; }
-        public KeySyncFlagsStructure KeySyncFlagsStructure { get; set; }
+        public KeySyncFlagsStructure KeySyncFlagsStructure { get; set; } = new KeySyncFlagsStructure();
 
 
         public bool HasWeapon { get; set; }
@@ -43,10 +43,10 @@ namespace SlipeServer.Packets.Definitions.Sync
 
         public KeySyncPacket(SmallKeySyncStructure smallKeySyncStructure, float playerRotation, float cameraRotation, KeySyncFlagsStructure keySyncFlagsStructure)
         {
-            SmallKeySyncStructure = smallKeySyncStructure;
-            PlayerRotation = playerRotation;
-            CameraRotation = cameraRotation;
-            KeySyncFlagsStructure = keySyncFlagsStructure;
+            this.SmallKeySyncStructure = smallKeySyncStructure;
+            this.PlayerRotation = playerRotation;
+            this.CameraRotation = cameraRotation;
+            this.KeySyncFlagsStructure = keySyncFlagsStructure;
         }
 
         public override void Read(byte[] bytes)
@@ -70,7 +70,7 @@ namespace SlipeServer.Packets.Definitions.Sync
                     this.WeaponType = reader.GetByte();
                     this.WeaponSlot = reader.GetByteCapped(4);
 
-                    if (WeaponConstants.weaponsWithAmmo.Contains(this.WeaponSlot))
+                    if (WeaponConstants.WeaponsWithAmmo.Contains(this.WeaponSlot))
                     {
                         this.TotalAmmo = reader.GetCompressedUint16();
                         this.AmmoInClip = reader.GetCompressedUint16();
@@ -101,7 +101,7 @@ namespace SlipeServer.Packets.Definitions.Sync
             {
                 builder.WriteCapped(this.WeaponSlot, 4);
 
-                if (WeaponConstants.weaponsWithAmmo.Contains(this.WeaponSlot))
+                if (WeaponConstants.WeaponsWithAmmo.Contains(this.WeaponSlot))
                 {
                     builder.WriteCompressed(this.TotalAmmo);
                     builder.WriteCompressed(this.AmmoInClip);

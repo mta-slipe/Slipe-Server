@@ -19,14 +19,14 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped
 
         public TakeWeaponRpcPacket(uint elementId, byte weaponType, ushort? ammo)
         {
-            ElementId = elementId;
-            WeaponType = weaponType;
-            Ammo = ammo;
+            this.ElementId = elementId;
+            this.WeaponType = weaponType;
+            this.Ammo = ammo;
         }
 
         public override void Read(byte[] bytes)
         {
-            var reader = new PacketReader(bytes);
+
         }
 
         public override byte[] Write()

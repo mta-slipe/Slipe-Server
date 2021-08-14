@@ -18,8 +18,8 @@ namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
 
         public SetSkyGradientPacket(Color? topColor = null, Color? bottomColor = null)
         {
-            Top = topColor ?? Color.FromArgb(0, 0, 0);
-            Bottom = bottomColor ?? Color.FromArgb(0, 0, 0);
+            this.Top = topColor ?? Color.FromArgb(0, 0, 0);
+            this.Bottom = bottomColor ?? Color.FromArgb(0, 0, 0);
         }
 
         public override void Read(byte[] bytes)

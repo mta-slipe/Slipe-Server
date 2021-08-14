@@ -19,7 +19,7 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element
 
         public void AddEntity(uint elementId)
         {
-            builder.WriteElementId(elementId);
+            this.builder.WriteElementId(elementId);
         }
 
         public override void Read(byte[] bytes)
@@ -29,9 +29,9 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element
 
         public override byte[] Write()
         {
-            builder.Write(builder.Build());
+            this.builder.Write(this.builder.Build());
 
-            return builder.Build();
+            return this.builder.Build();
         }
     }
 }

@@ -35,20 +35,20 @@ namespace SlipeServer.Packets.Definitions.Sync
             bool allowDriveByAnimationFix, bool allowShotgunDamageFix
         )
         {
-            BulletSyncWeaponIds = bulletSyncWeaponIds;
-            ExtrapolationEnabled = extrapolationEnabled;
-            ExtrapolationBaseMilliSeconds = extrapolationBaseMilliSeconds;
-            ExtrapolationPercentage = extrapolationPercentage;
-            ExtrapolationMaxMilliseconds = extrapolationMaxMilliseconds;
-            UseAlternativePulseOrder = useAlternativePulseOrder;
-            AllowFastSprintFix = allowFastSprintFix;
-            AllowDriveByAnimationFix = allowDriveByAnimationFix;
-            AllowShotgunDamageFix = allowShotgunDamageFix;
+            this.BulletSyncWeaponIds = bulletSyncWeaponIds;
+            this.ExtrapolationEnabled = extrapolationEnabled;
+            this.ExtrapolationBaseMilliSeconds = extrapolationBaseMilliSeconds;
+            this.ExtrapolationPercentage = extrapolationPercentage;
+            this.ExtrapolationMaxMilliseconds = extrapolationMaxMilliseconds;
+            this.UseAlternativePulseOrder = useAlternativePulseOrder;
+            this.AllowFastSprintFix = allowFastSprintFix;
+            this.AllowDriveByAnimationFix = allowDriveByAnimationFix;
+            this.AllowShotgunDamageFix = allowShotgunDamageFix;
         }
 
         public override void Read(byte[] bytes)
         {
-            var reader = new PacketReader(bytes);
+
         }
 
         public override byte[] Write()

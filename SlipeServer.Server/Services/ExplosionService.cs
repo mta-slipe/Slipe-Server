@@ -20,7 +20,7 @@ namespace SlipeServer.Server.Services
         public void CreateExplosion(Vector3 position, ExplosionType type, Player? responsiblePlayer = null)
         {
             var packet = new ExplosionPacket(responsiblePlayer?.Id, null, position, (byte)type, (ushort)(responsiblePlayer?.Client.Ping ?? 0));
-            server.BroadcastPacket(packet);
+            this.server.BroadcastPacket(packet);
         }
 
         public void CreateExplosionFor(

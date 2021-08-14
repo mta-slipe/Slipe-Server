@@ -32,7 +32,9 @@ namespace SlipeServer.Packets.Enums
         PACKET_ID_MTA_RESERVED_15,
 
         PACKET_ID_END_OF_INTERNAL_PACKETS,
+#pragma warning disable CA1069 // Enums values should not be duplicated
         PACKET_ID_SERVER_JOINEDGAME = 22,
+#pragma warning restore CA1069 // Enums values should not be duplicated
 
         PACKET_ID_SERVER_DISCONNECTED,
 

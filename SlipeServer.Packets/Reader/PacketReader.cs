@@ -13,7 +13,7 @@ namespace SlipeServer.Packets.Reader
 
         public int Counter { get; private set; }
         public int Size { get; private set; }
-        public bool IsFinishedReading => Counter == bitArray.Length;
+        public bool IsFinishedReading => this.Counter == this.bitArray.Length;
 
         public PacketReader(byte[] data)
         {
@@ -27,8 +27,8 @@ namespace SlipeServer.Packets.Reader
         private void Swap(int indexA, int indexB)
         {
             bool temp = this.bitArray[indexA];
-            bitArray[indexA] = this.bitArray[indexB];
-            bitArray[indexB] = temp;
+            this.bitArray[indexA] = this.bitArray[indexB];
+            this.bitArray[indexB] = temp;
         }
 
         private void FlipBytes()

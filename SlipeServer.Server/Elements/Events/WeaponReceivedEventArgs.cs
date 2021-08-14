@@ -12,10 +12,10 @@ namespace SlipeServer.Server.Elements.Events
 
         public WeaponReceivedEventArgs(Ped ped, WeaponId weaponId, ushort ammoCount, bool setAsCurrent)
         {
-            Ped = ped;
-            WeaponId = weaponId;
-            AmmoCount = ammoCount;
-            SetAsCurrent = setAsCurrent;
+            this.Ped = ped;
+            this.WeaponId = weaponId;
+            this.AmmoCount = ammoCount;
+            this.SetAsCurrent = setAsCurrent;
         }
     }
 }

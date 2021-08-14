@@ -13,10 +13,10 @@ namespace SlipeServer.Server.Elements.Events
 
         public ElementChangedEventArgs(TSource source, TValue oldValue, TValue newValue, bool isSync = false)
         {
-            Source = source;
-            OldValue = oldValue;
-            NewValue = newValue;
-            IsSync = isSync;
+            this.Source = source;
+            this.OldValue = oldValue;
+            this.NewValue = newValue;
+            this.IsSync = isSync;
         }
     }
 

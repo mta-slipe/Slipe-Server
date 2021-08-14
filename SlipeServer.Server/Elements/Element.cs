@@ -14,7 +14,7 @@ namespace SlipeServer.Server.Elements
         private Element? parent;
         public Element? Parent
         {
-            get => parent;
+            get => this.parent;
             set
             {
                 this.parent = value;
@@ -28,21 +28,21 @@ namespace SlipeServer.Server.Elements
         }
 
         private readonly List<Element> children;
-        public IReadOnlyCollection<Element> Children => children.AsReadOnly();
+        public IReadOnlyCollection<Element> Children => this.children.AsReadOnly();
 
         public uint Id { get; set; }
 
-        private readonly object timeContextLock = new object();
+        private readonly object timeContextLock = new();
         public byte TimeContext { get; private set; }
 
         private string name = "";
         public string Name
         {
-            get => name;
+            get => this.name;
             set
             {
                 var args = new ElementChangedEventArgs<string>(this, this.Name, value, this.IsSync);
-                name = value;
+                this.name = value;
                 NameChanged?.Invoke(this, args);
             }
         }
@@ -50,11 +50,11 @@ namespace SlipeServer.Server.Elements
         protected Vector3 position;
         public Vector3 Position
         {
-            get => position;
+            get => this.position;
             set
             {
                 var args = new ElementChangedEventArgs<Vector3>(this, this.Position, value, this.IsSync);
-                position = value;
+                this.position = value;
                 PositionChanged?.Invoke(this, args);
             }
         }
@@ -62,11 +62,11 @@ namespace SlipeServer.Server.Elements
         protected Vector3 rotation;
         public Vector3 Rotation
         {
-            get => rotation;
+            get => this.rotation;
             set
             {
                 var args = new ElementChangedEventArgs<Vector3>(this, this.Rotation, value, this.IsSync);
-                rotation = value;
+                this.rotation = value;
                 RotationChanged?.Invoke(this, args);
             }
         }
@@ -74,11 +74,11 @@ namespace SlipeServer.Server.Elements
         protected Vector3 velocity;
         public Vector3 Velocity
         {
-            get => velocity;
+            get => this.velocity;
             set
             {
                 var args = new ElementChangedEventArgs<Vector3>(this, this.Velocity, value, this.IsSync);
-                velocity = value;
+                this.velocity = value;
                 VelocityChanged?.Invoke(this, args);
             }
         }
@@ -86,11 +86,11 @@ namespace SlipeServer.Server.Elements
         protected Vector3 turnVelocity;
         public Vector3 TurnVelocity
         {
-            get => turnVelocity;
+            get => this.turnVelocity;
             set
             {
                 var args = new ElementChangedEventArgs<Vector3>(this, this.TurnVelocity, value, this.IsSync);
-                turnVelocity = value;
+                this.turnVelocity = value;
                 TurnVelocityChanged?.Invoke(this, args);
             }
         }
@@ -98,11 +98,11 @@ namespace SlipeServer.Server.Elements
         protected byte interior;
         public byte Interior
         {
-            get => interior;
+            get => this.interior;
             set
             {
                 var args = new ElementChangedEventArgs<byte>(this, this.Interior, value, this.IsSync);
-                interior = value;
+                this.interior = value;
                 InteriorChanged?.Invoke(this, args);
             }
         }
@@ -110,11 +110,11 @@ namespace SlipeServer.Server.Elements
         protected ushort dimension;
         public ushort Dimension
         {
-            get => dimension;
+            get => this.dimension;
             set
             {
                 var args = new ElementChangedEventArgs<ushort>(this, this.Dimension, value, this.IsSync);
-                dimension = value;
+                this.dimension = value;
                 DimensionChanged?.Invoke(this, args);
             }
         }
@@ -122,11 +122,11 @@ namespace SlipeServer.Server.Elements
         protected byte alpha = 255;
         public byte Alpha
         {
-            get => alpha;
+            get => this.alpha;
             set
             {
                 var args = new ElementChangedEventArgs<byte>(this, this.Alpha, value, this.IsSync);
-                alpha = value;
+                this.alpha = value;
                 AlphaChanged?.Invoke(this, args);
             }
         }
@@ -135,7 +135,7 @@ namespace SlipeServer.Server.Elements
         public bool IsCallPropagationEnabled { get; set; } = false;
 
 
-        private AsyncLocal<bool> isSync = new AsyncLocal<bool>();
+        private AsyncLocal<bool> isSync = new();
         public bool IsSync
         {
             get => this.isSync?.Value ?? false;
@@ -146,26 +146,49 @@ namespace SlipeServer.Server.Elements
             }
         }
 
+        private readonly HashSet<Player> subscribers;
+        public IEnumerable<Player> Subscribers => this.subscribers;
+
 
         public Element()
         {
-            this.children = new List<Element>();
+            this.children = new ();
+            this.subscribers = new();
         }
 
         public Element(Element parent) : this()
         {
-            Parent = parent;
+            this.Parent = parent;
         }
+
+        public void AddSubscriber(Player player)
+        {
+            if (this.subscribers.Contains(player))
+                return;
+
+            this.subscribers.Add(player);
+            player.SubscribeTo(this);
+        }
+
+        public void RemoveSubscriber(Player player)
+        {
+            if (!this.subscribers.Contains(player))
+                return;
+
+            this.subscribers.Remove(player);
+            player.UnsubscribeFrom(this);
+        }
+
 
         public byte GetAndIncrementTimeContext()
         {
-            lock (timeContextLock)
+            lock (this.timeContextLock)
             {
-                if (++TimeContext == 0)
+                if (++this.TimeContext == 0)
                 {
-                    TimeContext++;
+                    this.TimeContext++;
                 }
-                return TimeContext;
+                return this.TimeContext;
             }
         }
 

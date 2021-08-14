@@ -50,12 +50,12 @@ namespace SlipeServer.Packets.Definitions.Player
 
             builder.Write(this.SizeX);
             builder.Write(this.SizeY);
-            builder.Write(Tag);
-            builder.Write(Quality);
-            builder.Write(MaxBandwith);
-            builder.Write(MaxPacketSize);
-            builder.Write(ResourceId);
-            builder.Write(ResourceName);
+            builder.Write(this.Tag);
+            builder.Write(this.Quality);
+            builder.Write(this.MaxBandwith);
+            builder.Write(this.MaxPacketSize);
+            builder.Write(this.ResourceId);
+            builder.Write(this.ResourceName);
             builder.Write((uint)0);
 
             builder.Write(this.TimeContext);

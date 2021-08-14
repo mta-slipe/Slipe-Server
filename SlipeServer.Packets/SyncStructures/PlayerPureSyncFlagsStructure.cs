@@ -43,54 +43,54 @@ namespace SlipeServer.Packets.Structures
             bool isStealthAiming
         )
         {
-            IsInWater = isInWater;
-            IsOnGround = isOnGround;
-            HasJetpack = hasJetpack;
-            IsDucked = isDucked;
-            WearsGoggles = wearsGoggles;
-            HasContact = hasContact;
-            IsChoking = isChoking;
-            AkimboTargetUp = akimboTargetUp;
-            IsOnFire = isOnFire;
-            HasAWeapon = hasAWeapon;
-            IsSyncingVelocity = isSyncingVelocity;
-            IsStealthAiming = isStealthAiming;
+            this.IsInWater = isInWater;
+            this.IsOnGround = isOnGround;
+            this.HasJetpack = hasJetpack;
+            this.IsDucked = isDucked;
+            this.WearsGoggles = wearsGoggles;
+            this.HasContact = hasContact;
+            this.IsChoking = isChoking;
+            this.AkimboTargetUp = akimboTargetUp;
+            this.IsOnFire = isOnFire;
+            this.HasAWeapon = hasAWeapon;
+            this.IsSyncingVelocity = isSyncingVelocity;
+            this.IsStealthAiming = isStealthAiming;
         }
 
         public void Read(PacketReader reader)
         {
-            AkimboTargetUp = reader.GetBit();
-            IsChoking = reader.GetBit();
-            HasContact = reader.GetBit();
-            WearsGoggles = reader.GetBit();
+            this.AkimboTargetUp = reader.GetBit();
+            this.IsChoking = reader.GetBit();
+            this.HasContact = reader.GetBit();
+            this.WearsGoggles = reader.GetBit();
 
-            IsDucked = reader.GetBit();
-            HasJetpack = reader.GetBit();
-            IsOnGround = reader.GetBit();
-            IsInWater = reader.GetBit();
+            this.IsDucked = reader.GetBit();
+            this.HasJetpack = reader.GetBit();
+            this.IsOnGround = reader.GetBit();
+            this.IsInWater = reader.GetBit();
 
-            IsStealthAiming = reader.GetBit();
-            IsSyncingVelocity = reader.GetBit();
-            HasAWeapon = reader.GetBit();
-            IsOnFire = reader.GetBit();
+            this.IsStealthAiming = reader.GetBit();
+            this.IsSyncingVelocity = reader.GetBit();
+            this.HasAWeapon = reader.GetBit();
+            this.IsOnFire = reader.GetBit();
         }
 
         public void Write(PacketBuilder builder)
         {
-            builder.Write(AkimboTargetUp);
-            builder.Write(IsChoking);
-            builder.Write(HasContact);
-            builder.Write(WearsGoggles);
+            builder.Write(this.AkimboTargetUp);
+            builder.Write(this.IsChoking);
+            builder.Write(this.HasContact);
+            builder.Write(this.WearsGoggles);
 
-            builder.Write(IsDucked);
-            builder.Write(HasJetpack);
-            builder.Write(IsOnGround);
-            builder.Write(IsInWater);
+            builder.Write(this.IsDucked);
+            builder.Write(this.HasJetpack);
+            builder.Write(this.IsOnGround);
+            builder.Write(this.IsInWater);
 
-            builder.Write(IsStealthAiming);
-            builder.Write(IsSyncingVelocity);
-            builder.Write(HasAWeapon);
-            builder.Write(IsOnFire);
+            builder.Write(this.IsStealthAiming);
+            builder.Write(this.IsSyncingVelocity);
+            builder.Write(this.HasAWeapon);
+            builder.Write(this.IsOnFire);
         }
     }
 }
