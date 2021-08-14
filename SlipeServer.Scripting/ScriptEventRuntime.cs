@@ -65,7 +65,7 @@ namespace SlipeServer.Scripting
 
                 if (objects.Length == 0)
                 {
-                    callbackDelegate.DynamicInvoke(null, new object[0]);
+                    callbackDelegate.DynamicInvoke(null, Array.Empty<object>());
                 }
                 else if (objects.Length == 1)
                 {
@@ -122,14 +122,14 @@ namespace SlipeServer.Scripting
         }
     }
 
-    struct RegisteredEvent
+    internal struct RegisteredEvent
     {
         public string EventName { get; set; }
         public Type ElementType { get; set; }
         public Delegate Delegate { get; set; }
     }
 
-    struct RegisteredEventHandler
+    internal struct RegisteredEventHandler
     {
         public string EventName { get; set; }
         public RegisteredEvent RegisteredEvent { get; set; }
