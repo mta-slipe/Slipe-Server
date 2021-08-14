@@ -212,17 +212,17 @@ namespace SlipeServer.Server.Elements
 
         internal void TriggerPlayerACInfo(IEnumerable<byte> detectedACList, uint d3d9Size, string d3d9MD5, string D3d9SHA256)
         {
-            OnACInfo?.Invoke(this, new PlayerACInfoArgs(detectedACList, d3d9Size, d3d9MD5, D3d9SHA256));
+            ACInfoRecived?.Invoke(this, new PlayerACInfoArgs(detectedACList, d3d9Size, d3d9MD5, D3d9SHA256));
         }
 
         internal void TriggerPlayerDiagnosticInfo(uint level, string message)
         {
-            OnDiagnosticInfo?.Invoke(this, new PlayerDiagnosticInfo(level, message));
+            DiagnosticInfoRecived?.Invoke(this, new PlayerDiagnosticInfo(level, message));
         }
 
         internal void TriggerPlayerModInfo(string infoType, IEnumerable<ModInfoItem> modInfoItems)
         {
-            OnModInfo?.Invoke(this, new PlayerModInfoArgs(infoType, modInfoItems));
+            ModInfoRecived?.Invoke(this, new PlayerModInfoArgs(infoType, modInfoItems));
         }
 
         public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
@@ -237,8 +237,8 @@ namespace SlipeServer.Server.Elements
         public event ElementEventHandler<Player, PlayerKickEventArgs>? Kicked;
         public event ElementEventHandler<Player, PlayerSubscriptionEventArgs>? Subscribed;
         public event ElementEventHandler<Player, PlayerSubscriptionEventArgs>? UnSubscribed;
-        public event EventHandler<PlayerACInfoArgs>? OnACInfo;
-        public event EventHandler<PlayerDiagnosticInfo>? OnDiagnosticInfo;
-        public event EventHandler<PlayerModInfoArgs>? OnModInfo;
+        public event EventHandler<PlayerACInfoArgs>? ACInfoRecived;
+        public event EventHandler<PlayerDiagnosticInfo>? DiagnosticInfoRecived;
+        public event EventHandler<PlayerModInfoArgs>? ModInfoRecived;
     }
 }

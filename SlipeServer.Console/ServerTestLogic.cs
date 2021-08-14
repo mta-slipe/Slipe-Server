@@ -286,17 +286,17 @@ namespace SlipeServer.Console
                     player.ResendPlayerACInfo();
             };
 
-            player.OnACInfo += (o, args) =>
+            player.ACInfoRecived += (o, args) =>
             {
                 logger.LogInformation($"ACInfo for {player.Name} detectedACList:{string.Join(",", args.DetectedACList)} d3d9Size: {args.D3D9Size} d3d9SHA256: {args.D3D9SHA256}");
             };
             
-            player.OnDiagnosticInfo += (o, args) =>
+            player.DiagnosticInfoRecived += (o, args) =>
             {
                 logger.LogInformation($"DIAGNOSTIC: {player.Name} #{args.Level} {args.Message}");
             };
 
-            player.OnModInfo += (o, args) =>
+            player.ModInfoRecived += (o, args) =>
             {
                 logger.LogInformation($"Player: {player.Name} ModInfo:");
                 foreach (var item in args.ModInfoItems)
