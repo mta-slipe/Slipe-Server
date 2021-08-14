@@ -279,6 +279,20 @@ namespace SlipeServer.Console
                     foreach (var remotePlayer in this.elementRepository.GetByType<Player>(ElementType.Player))
                         this.chatBox.OutputTo(player, remotePlayer.Name);
 
+                if (args.Command == "crash")
+                {
+                    for (int i = 0; i < 1000; i++)
+                    {
+                        Task.Run(async () =>
+                        {
+                            for (int i = 0; i < 50; i++)
+                            {
+                                this.chatBox.OutputTo(player, "IS THIS GOING TO CRASH?");
+                                await Task.Delay(1);
+                            }
+                        });
+                    }
+                }
             };
         }
 

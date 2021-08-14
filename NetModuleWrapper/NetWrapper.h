@@ -9,8 +9,23 @@
 #include <bitset>
 #include <map>
 #include <iomanip>
+#include <queue>
 
 typedef void(__stdcall* PacketCallback)(unsigned char, unsigned long, char[], unsigned long, bool, unsigned int);
+
+struct QueuedPacket {
+    unsigned long address;
+    unsigned char packetId;
+    unsigned char* payload;
+    unsigned long payloadSize;
+    unsigned char priority;
+    unsigned char reliability;
+
+    QueuedPacket(unsigned long address, unsigned char packetId, unsigned char* payload, unsigned long payloadSize, unsigned char priority, unsigned char reliability)
+        : address(address), packetId(packetId), payload(payload), payloadSize(payloadSize), priority(priority), reliability(reliability) {
+
+    }
+};
 
 class NetWrapper
 {
@@ -25,6 +40,7 @@ private:
 	bool running;
 	PacketCallback registeredCallback;
 	std::thread runThread;
+    std::queue<QueuedPacket> packetQueue;
 
     void runPulseLoop();
     void testMethod();

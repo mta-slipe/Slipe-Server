@@ -54,18 +54,7 @@ bool NetWrapper::packetHandler(unsigned char ucPacketID, const NetServerPlayerID
 
 void NetWrapper::sendPacket(unsigned long address, unsigned char packetId, unsigned char* payload, unsigned long payloadSize, unsigned char priority, unsigned char reliability)
 {
-    NetBitStreamInterface* pBitStream = network->AllocateNetServerBitStream(0);
-    if (pBitStream)
-    {
-        for (int i = 0; i < payloadSize; i++)
-        {
-            pBitStream->Write((char)payload[i]);
-        }
-
-        auto socket = sockets[address];
-        network->SendPacket(packetId, socket, pBitStream, false, static_cast<NetServerPacketPriority>(priority), static_cast<NetServerPacketReliability>(reliability));
-        network->DeallocateNetServerBitStream(pBitStream);
-    }
+    packetQueue.push(QueuedPacket(address, packetId, payload, payloadSize, priority, reliability));
 }
 
 void NetWrapper::setSocketVersion(unsigned long address, unsigned short version)
@@ -169,6 +158,24 @@ void NetWrapper::runPulseLoop() {
         network->DoPulse();
         network->GetHTTPDownloadManager(EDownloadMode::ASE)->ProcessQueuedFiles();
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+        while (!packetQueue.empty()) {
+            auto entry = packetQueue.front();
+            packetQueue.pop();
+
+            NetBitStreamInterface* pBitStream = network->AllocateNetServerBitStream(0);
+            if (pBitStream)
+            {
+                for (int i = 0; i < entry.payloadSize; i++)
+                {
+                    pBitStream->Write((char)entry.payload[i]);
+                }
+
+                auto socket = sockets[entry.address];
+                network->SendPacket(entry.packetId, socket, pBitStream, false, static_cast<NetServerPacketPriority>(entry.priority), static_cast<NetServerPacketReliability>(entry.reliability));
+                network->DeallocateNetServerBitStream(pBitStream);
+            }
+        }
     }
 }
 
