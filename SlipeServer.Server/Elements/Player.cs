@@ -237,8 +237,8 @@ namespace SlipeServer.Server.Elements
         public event ElementEventHandler<Player, PlayerKickEventArgs>? Kicked;
         public event ElementEventHandler<Player, PlayerSubscriptionEventArgs>? Subscribed;
         public event ElementEventHandler<Player, PlayerSubscriptionEventArgs>? UnSubscribed;
-        public event EventHandler<PlayerACInfoArgs>? ACInfoRecived;
-        public event EventHandler<PlayerDiagnosticInfo>? DiagnosticInfoRecived;
-        public event EventHandler<PlayerModInfoArgs>? ModInfoRecived;
+        public event ElementEventHandler<Player, PlayerACInfoArgs>? ACInfoRecived;
+        public event ElementEventHandler<Player, PlayerDiagnosticInfo>? DiagnosticInfoRecived;
+        public event ElementEventHandler<Player, PlayerModInfoArgs>? ModInfoRecived;
     }
 }
