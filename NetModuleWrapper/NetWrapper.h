@@ -9,8 +9,23 @@
 #include <bitset>
 #include <map>
 #include <iomanip>
+#include <queue>
+#include <mutex>
 
 typedef void(__stdcall* PacketCallback)(unsigned char, unsigned long, char[], unsigned long, bool, unsigned int);
+
+struct QueuedPacket {
+    NetServerPlayerID socket;
+    unsigned char packetId;
+    NetBitStreamInterface* bitStream;
+    unsigned char priority;
+    unsigned char reliability;
+
+    QueuedPacket(NetServerPlayerID socket, unsigned char packetId, NetBitStreamInterface* bitStream, unsigned char priority, unsigned char reliability)
+        : socket(socket), packetId(packetId), bitStream(bitStream), priority(priority), reliability(reliability) {
+
+    }
+};
 
 class NetWrapper
 {
@@ -25,6 +40,8 @@ private:
 	bool running;
 	PacketCallback registeredCallback;
 	std::thread runThread;
+    std::queue<QueuedPacket> packetQueue;
+    std::mutex mutex;
 
     void runPulseLoop();
     void testMethod();
