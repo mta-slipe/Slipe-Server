@@ -154,6 +154,7 @@ namespace SlipeServer.Console
             this.server.Instantiate<PlayerPacketBehaviour>();
             this.server.Instantiate<VehicleWarpBehaviour>();
             this.server.Instantiate<VoiceBehaviour>();
+            this.server.Instantiate<LightSyncBehaviour>();
         }
 
         private void SetupLogic()

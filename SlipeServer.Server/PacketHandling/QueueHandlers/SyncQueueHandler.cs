@@ -161,6 +161,8 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                     player.TriggerDamaged(damager, (WeaponType)packet.DamageType, (BodyPart)packet.DamageBodypart);
                 }
             });
+
+            player.TriggerSync();
         }
     }
 }

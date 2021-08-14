@@ -40,6 +40,13 @@ namespace SlipeServer.Packets.Builder
             builder.Write(vector.Z);
         }
 
+        public static void WriteLowPrecisionVector3(this PacketBuilder builder, Vector3 vector)
+        {
+            builder.Write((ushort)(((vector.X + 8192.0f) / 16384.0f) * 65535.0f));
+            builder.Write((ushort)(((vector.Y + 8192.0f) / 16384.0f) * 65535.0f));
+            builder.WriteCapped((ushort)(vector.Z + 110), 11);
+        }
+
         public static void WriteVectorAsUshorts(this PacketBuilder builder, Vector3 vector)
         {
             builder.Write((ushort)(vector.X * (65536 / 360f)));

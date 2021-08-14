@@ -199,6 +199,11 @@ namespace SlipeServer.Server.Elements
             this.Client.SendPacket(new PlayerDisconnectPacket(type, string.Empty));
         }
 
+        public void TriggerSync()
+        {
+            this.PureSynced?.Invoke(this, EventArgs.Empty);
+        }
+
         public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
         public event ElementEventHandler<Player, PlayerDamagedEventArgs>? Damaged;
         public event ElementEventHandler<Player, PlayerWastedEventArgs>? Wasted;
@@ -211,5 +216,6 @@ namespace SlipeServer.Server.Elements
         public event ElementEventHandler<Player, PlayerKickEventArgs>? Kicked;
         public event ElementEventHandler<Player, PlayerSubscriptionEventArgs>? Subscribed;
         public event ElementEventHandler<Player, PlayerSubscriptionEventArgs>? UnSubscribed;
+        public event ElementEventHandler<Player, EventArgs>? PureSynced;
     }
 }

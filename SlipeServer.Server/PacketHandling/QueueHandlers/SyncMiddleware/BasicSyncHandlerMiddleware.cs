@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers.SyncMiddleware
 {
-    public class BasicSyncHandlerMiddleware<TPacket> : ISyncHandlerMiddleware<TPacket> where TPacket: Packet
+    public class BasicSyncHandlerMiddleware<TData> : ISyncHandlerMiddleware<TData>
     {
         private readonly IElementRepository elementRepository;
 
@@ -15,7 +15,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers.SyncMiddleware
             this.elementRepository = elementRepository;
         }
 
-        public IEnumerable<Player> GetPlayersToSyncTo(Player player, TPacket packet)
+        public IEnumerable<Player> GetPlayersToSyncTo(Player player, TData packet)
         {
             return this.elementRepository
                 .GetByType<Player>(ElementType.Player)
