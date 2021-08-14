@@ -52,10 +52,10 @@ namespace SlipeServer.Console
 
             var configurationProvider = args.Length > 0 ? GetConfigurationProvider(args[0]) : null;
 
-            this.configuration = (configurationProvider?.GetConfiguration() ?? new Configuration()
+            this.configuration = configurationProvider?.GetConfiguration() ?? new Configuration()
             {
                 IsVoiceEnabled = true
-            });
+            };
             this.server = new MtaServer(
                 Directory.GetCurrentDirectory(),
                 @"net.dll",
@@ -68,11 +68,11 @@ namespace SlipeServer.Console
             };
 
 #if DEBUG
-            server.AddNetWrapper(
+            this.server.AddNetWrapper(
                 Directory.GetCurrentDirectory(),
                 @"net_d.dll",
-                configuration?.Host ?? "0.0.0.0",
-                (ushort)((configuration?.Port + 1) ?? 50667)
+                this.configuration.Host ?? "0.0.0.0",
+                (ushort)(this.configuration.Port + 1)
             );
 #endif
 
