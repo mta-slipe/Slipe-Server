@@ -22,13 +22,12 @@ namespace SlipeServer.Packets.Definitions.Player
         public ushort TotalParts { get; set; }
 
         public ushort ResourceId { get; set; }
-        public string Tag { get; set; }
-        public string Error { get; set; }
+        public string Tag { get; set; } = string.Empty;
+        public string Error { get; set; } = string.Empty;
 
-        public byte[] Buffer { get; set; }
+        public byte[] Buffer { get; set; } = Array.Empty<byte>();
 
-        public PlayerScreenshotPacket(
-        )
+        public PlayerScreenshotPacket()
         {
         }
 
@@ -36,22 +35,22 @@ namespace SlipeServer.Packets.Definitions.Player
         {
             var reader = new PacketReader(bytes);
 
-            Status = (ScreenshotStatus)reader.GetByte();
+            this.Status = (ScreenshotStatus)reader.GetByte();
 
-            switch (Status)
+            switch (this.Status)
             {
                 case ScreenshotStatus.Success:
-                    ScreenshotId = reader.GetUint16();
-                    PartNumber = reader.GetUint16();
+                    this.ScreenshotId = reader.GetUint16();
+                    this.PartNumber = reader.GetUint16();
                     ushort partBytes = reader.GetUint16();
-                    Buffer = reader.GetBytes(partBytes);
-                    if(PartNumber == 0)
+                    this.Buffer = reader.GetBytes(partBytes);
+                    if(this.PartNumber == 0)
                     {
-                        ServerGrabTime = reader.GetUint32();
-                        TotalBytes = reader.GetUint32();
-                        TotalParts = reader.GetUint16();
-                        ResourceId = reader.GetUint16();
-                        Tag = reader.GetString();
+                        this.ServerGrabTime = reader.GetUint32();
+                        this.TotalBytes = reader.GetUint32();
+                        this.TotalParts = reader.GetUint16();
+                        this.ResourceId = reader.GetUint16();
+                        this.Tag = reader.GetString();
                     }
                     break;
                 case ScreenshotStatus.Unknown:
@@ -59,13 +58,13 @@ namespace SlipeServer.Packets.Definitions.Player
                 case ScreenshotStatus.Minimalized:
                 case ScreenshotStatus.Disabled:
                 case ScreenshotStatus.Error:
-                    ServerGrabTime = reader.GetUint32();
-                    ResourceId = reader.GetUint16();
-                    Tag = reader.GetString();
+                    this.ServerGrabTime = reader.GetUint32();
+                    this.ResourceId = reader.GetUint16();
+                    this.Tag = reader.GetString();
                     if (!reader.IsFinishedReading)
-                        Error = reader.GetString();
+                        this.Error = reader.GetString();
                     else
-                        Error = Status.ToString();
+                        this.Error = this.Status.ToString();
                     break;
                 default:
                     throw new NotImplementedException();

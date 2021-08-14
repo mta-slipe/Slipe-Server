@@ -12,7 +12,7 @@ namespace SlipeServer.Server.PacketHandling
     {
         internal static AsyncLocalScopeStack Instance { get; } = new AsyncLocalScopeStack();
 
-        private static readonly AsyncLocal<Stack<ClientPacketScope>> scopeStack = new AsyncLocal<Stack<ClientPacketScope>>();
+        private readonly static AsyncLocal<Stack<ClientPacketScope>> scopeStack = new();
 
         public AsyncLocalScopeStack()
         {

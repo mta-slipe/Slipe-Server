@@ -1,5 +1,7 @@
 ﻿using FluentAssertions;
+using Moq;
 using MTAServerWrapper.Packets.Outgoing.Connection;
+using SlipeServer.Net;
 using SlipeServer.Packets;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.PacketHandling.QueueHandlers;
@@ -10,9 +12,8 @@ using Xunit;
 
 namespace SlipeServer.Server.Tests.Integration.QueueHandlers
 {
-    class DummyQueueHandler : ScalingWorkerBasedQueueHandler
+    public class DummyQueueHandler : ScalingWorkerBasedQueueHandler
     {
-        private readonly int handleTimeout;
         private readonly TaskCompletionSource taskCompletionSource;
 
         public override IEnumerable<PacketId> SupportedPacketIds => new PacketId[]
@@ -20,7 +21,7 @@ namespace SlipeServer.Server.Tests.Integration.QueueHandlers
             PacketId.PACKET_ID_PLAYER_NO_SOCKET
         };
 
-        protected override Dictionary<PacketId, Type> PacketTypes => new Dictionary<PacketId, Type>()
+        protected override Dictionary<PacketId, Type> PacketTypes => new()
         {
             [PacketId.PACKET_ID_PLAYER_NO_SOCKET] = typeof(NoSocketPacket)
         };
@@ -64,7 +65,7 @@ namespace SlipeServer.Server.Tests.Integration.QueueHandlers
 
             for (int i = 1; i < 25; i++)
             {
-                handler.EnqueuePacket(null, PacketId.PACKET_ID_PLAYER_NO_SOCKET, Array.Empty<byte>());
+                handler.EnqueuePacket(CreateTestClient(), PacketId.PACKET_ID_PLAYER_NO_SOCKET, Array.Empty<byte>());
             }
 
             var startWorkerCount = handler.WorkerCount;
@@ -90,7 +91,7 @@ namespace SlipeServer.Server.Tests.Integration.QueueHandlers
 
             for (int i = 1; i < 50; i++)
             {
-                handler.EnqueuePacket(null, PacketId.PACKET_ID_PLAYER_NO_SOCKET, Array.Empty<byte>());
+                handler.EnqueuePacket(CreateTestClient(), PacketId.PACKET_ID_PLAYER_NO_SOCKET, Array.Empty<byte>());
             }
 
             var startWorkerCount = handler.WorkerCount;
@@ -121,7 +122,7 @@ namespace SlipeServer.Server.Tests.Integration.QueueHandlers
 
             for (int i = 1; i < 5; i++)
             {
-                handler.EnqueuePacket(null, PacketId.PACKET_ID_PLAYER_NO_SOCKET, Array.Empty<byte>());
+                handler.EnqueuePacket(CreateTestClient(), PacketId.PACKET_ID_PLAYER_NO_SOCKET, Array.Empty<byte>());
             }
 
             var startWorkerCount = handler.WorkerCount;
@@ -141,6 +142,12 @@ namespace SlipeServer.Server.Tests.Integration.QueueHandlers
             startWorkerCount.Should().Be(1);
             betweenWorkerCount.Should().Be(2);
             endWorkerCount.Should().Be(1);
+        }
+
+        private static Client CreateTestClient()
+        {
+            Mock<INetWrapper> netWrapperMock = new();
+            return new Client(0, netWrapperMock.Object);
         }
     }
 }

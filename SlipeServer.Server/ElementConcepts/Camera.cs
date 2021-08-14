@@ -15,10 +15,10 @@ namespace SlipeServer.Server.ElementConcepts
         private Element? target;
         public Element? Target
         {
-            get => target;
+            get => this.target;
             set
             {
-                if (!player.IsSync)
+                if (!this.player.IsSync)
                     this.player.Client.SendPacket(new SetCameraTargetPacket(value?.Id ?? this.player.Id));
 
                 this.target = value;

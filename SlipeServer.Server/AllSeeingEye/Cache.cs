@@ -6,29 +6,29 @@ namespace SlipeServer.Server.AllSeeingEye
 {
     public class Cache<T>
     {
-        private T Data { get; set; }
+        private T? Data { get; set; }
         private long CacheTime { get; set; } = 0;
         private int CachePeriod { get; } = 0;
         private Func<T> UpdateFunc { get; }
 
         private void UpdateCache()
         {
-            Data = UpdateFunc();
-            CacheTime = DateTime.Now.Ticks;
+            this.Data = this.UpdateFunc();
+            this.CacheTime = DateTime.Now.Ticks;
         }
 
         public Cache(Func<T> updateFunc, int cachePeriod)
         {
             this.UpdateFunc = updateFunc;
             this.CachePeriod = cachePeriod * 10000;
-            this.Data = default(T);
+            this.Data = default;
         }
 
-        public T Get(bool forceUpdate = false)
+        public T? Get(bool forceUpdate = false)
         {
-            if (forceUpdate || CacheTime + CachePeriod < DateTime.Now.Ticks)
+            if (forceUpdate || this.CacheTime + this.CachePeriod < DateTime.Now.Ticks)
                 UpdateCache();
-            return Data;
+            return this.Data;
         }
     }
 }

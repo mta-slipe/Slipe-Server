@@ -29,27 +29,18 @@ namespace SlipeServer.Packets.Reader
 
             LuaType type = (LuaType)reader.GetByteCapped(4);
 
-            switch (type)
+            return type switch
             {
-                case LuaType.Nil:
-                    return new LuaValue();
-                case LuaType.Boolean:
-                    return GetLuaBool(reader);
-                case LuaType.Table:
-                    return GetLuaTable(reader, knownTables);
-                case LuaType.TableRef:
-                    return GetLuaTableByReference(reader, knownTables);
-                case LuaType.Number:
-                    return GetLuaNumber(reader);
-                case LuaType.String:
-                    return GetLuaString(reader);
-                case LuaType.LongString:
-                    return GetLuaLongString(reader);
-                case LuaType.Userdata:
-                    return GetLuaUserdata(reader);
-                default:
-                    return new LuaValue();
-            }
+                LuaType.Nil => new LuaValue(),
+                LuaType.Boolean => GetLuaBool(reader),
+                LuaType.Table => GetLuaTable(reader, knownTables),
+                LuaType.TableRef => GetLuaTableByReference(reader, knownTables),
+                LuaType.Number => GetLuaNumber(reader),
+                LuaType.String => GetLuaString(reader),
+                LuaType.LongString => GetLuaLongString(reader),
+                LuaType.Userdata => GetLuaUserdata(reader),
+                _ => new LuaValue(),
+            };
         }
 
         public static LuaValue GetLuaBool(this PacketReader reader)

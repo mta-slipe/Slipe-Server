@@ -18,7 +18,7 @@ namespace SlipeServer.Console
 {
     public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             Program? program = null;
             try
@@ -40,7 +40,7 @@ namespace SlipeServer.Console
             }
         }
 
-        private readonly EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
+        private readonly EventWaitHandle waitHandle = new(false, EventResetMode.AutoReset);
         private readonly MtaServer server;
         private readonly Configuration configuration;
 
@@ -56,11 +56,11 @@ namespace SlipeServer.Console
             {
                 IsVoiceEnabled = true
             };
-            server = new MtaServer(
+            this.server = new MtaServer(
                 Directory.GetCurrentDirectory(),
                 @"net.dll",
-                configuration,
-                Configure
+                this.configuration,
+                this.Configure
             )
             {
                 GameType = "Slipe Server",
@@ -68,18 +68,18 @@ namespace SlipeServer.Console
             };
 
 #if DEBUG
-            server.AddNetWrapper(
+            this.server.AddNetWrapper(
                 Directory.GetCurrentDirectory(),
                 @"net_d.dll",
-                configuration?.Host ?? "0.0.0.0",
-                (ushort)((configuration?.Port + 1) ?? 50667)
+                this.configuration.Host ?? "0.0.0.0",
+                (ushort)(this.configuration.Port + 1)
             );
 #endif
 
             System.Console.CancelKeyPress += delegate
             {
-                server.Stop();
-                waitHandle.Set();
+                this.server.Stop();
+                this.waitHandle.Set();
             };
         }
 
@@ -89,8 +89,8 @@ namespace SlipeServer.Console
             SetupBehaviour();
             SetupLogic();
 
-            server.Start();
-            waitHandle.WaitOne();
+            this.server.Start();
+            this.waitHandle.WaitOne();
         }
 
         private void Configure(ServiceCollection services)
@@ -111,50 +111,46 @@ namespace SlipeServer.Console
             }
 
             string extension = Path.GetExtension(configPath);
-            switch (extension)
+            return extension switch
             {
-                case ".json":
-                    return new JsonConfigurationProvider(configPath);
-                case ".xml":
-                    return new XmlConfigurationProvider(configPath);
-                case ".toml":
-                    return new TomlConfigurationProvider(configPath);
-                default:
-                    throw new NotSupportedException($"Unsupported configuration extension {extension}");
-            }
+                ".json" => new JsonConfigurationProvider(configPath),
+                ".xml" => new XmlConfigurationProvider(configPath),
+                ".toml" => new TomlConfigurationProvider(configPath),
+                _ => throw new NotSupportedException($"Unsupported configuration extension {extension}"),
+            };
         }
 
         private void SetupQueueHandlers()
         {
-            server.RegisterPacketQueueHandler<ExplosionSyncQueueHandler>(10, 1);
-            server.RegisterPacketQueueHandler<ConnectionQueueHandler>(10, 1);
-            server.RegisterPacketQueueHandler<RpcQueueHandler>(10, 1);
-            server.RegisterPacketQueueHandler<SyncQueueHandler>(QueueHandlerScalingConfig.Aggressive, 10);
-            server.RegisterPacketQueueHandler<CommandQueueHandler>(10, 1);
-            server.RegisterPacketQueueHandler<LuaEventQueueHandler>(10, 1);
-            server.RegisterPacketQueueHandler<PlayerEventQueueHandler>(10, 1);
-            server.RegisterPacketQueueHandler<VehicleInOutHandler>(10, 1);
-            server.RegisterPacketQueueHandler<VehicleSyncQueueHandler>(QueueHandlerScalingConfig.Aggressive, 10);
-            server.RegisterPacketQueueHandler<VoiceHandler>(10, 1);
+            this.server.RegisterPacketQueueHandler<ExplosionSyncQueueHandler>(10, 1);
+            this.server.RegisterPacketQueueHandler<ConnectionQueueHandler>(10, 1);
+            this.server.RegisterPacketQueueHandler<RpcQueueHandler>(10, 1);
+            this.server.RegisterPacketQueueHandler<SyncQueueHandler>(QueueHandlerScalingConfig.Aggressive, 10);
+            this.server.RegisterPacketQueueHandler<CommandQueueHandler>(10, 1);
+            this.server.RegisterPacketQueueHandler<LuaEventQueueHandler>(10, 1);
+            this.server.RegisterPacketQueueHandler<PlayerEventQueueHandler>(10, 1);
+            this.server.RegisterPacketQueueHandler<VehicleInOutHandler>(10, 1);
+            this.server.RegisterPacketQueueHandler<VehicleSyncQueueHandler>(QueueHandlerScalingConfig.Aggressive, 10);
+            this.server.RegisterPacketQueueHandler<VoiceHandler>(10, 1);
         }
 
         private void SetupBehaviour()
         {
-            server.Instantiate<AseBehaviour>();
-            server.Instantiate<MasterServerAnnouncementBehaviour>("http://master.mtasa.com/ase/add.php");
+            this.server.Instantiate<AseBehaviour>();
+            this.server.Instantiate<MasterServerAnnouncementBehaviour>("http://master.mtasa.com/ase/add.php");
 
-            server.Instantiate<EventLoggingBehaviour>();
-            server.Instantiate<VelocityBehaviour>();
-            server.Instantiate<DefaultChatBehaviour>();
-            server.Instantiate<NicknameChangeBehaviour>();
+            this.server.Instantiate<EventLoggingBehaviour>();
+            this.server.Instantiate<VelocityBehaviour>();
+            this.server.Instantiate<DefaultChatBehaviour>();
+            this.server.Instantiate<NicknameChangeBehaviour>();
 
-            server.Instantiate<PlayerJoinElementBehaviour>();
+            this.server.Instantiate<PlayerJoinElementBehaviour>();
 
-            server.Instantiate<ElementPacketBehaviour>();
-            server.Instantiate<PedPacketBehaviour>();
-            server.Instantiate<PlayerPacketBehaviour>();
-            server.Instantiate<VehicleWarpBehaviour>();
-            server.Instantiate<VoiceBehaviour>();
+            this.server.Instantiate<ElementPacketBehaviour>();
+            this.server.Instantiate<PedPacketBehaviour>();
+            this.server.Instantiate<PlayerPacketBehaviour>();
+            this.server.Instantiate<VehicleWarpBehaviour>();
+            this.server.Instantiate<VoiceBehaviour>();
         }
 
         private void SetupLogic()

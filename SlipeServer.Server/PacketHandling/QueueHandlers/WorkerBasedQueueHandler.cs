@@ -37,8 +37,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                     try
                     {
                         var type = this.PacketTypes[queueEntry.PacketId];
-                        var packet = Activator.CreateInstance(type) as Packet;
-                        if (packet != null)
+                        if (Activator.CreateInstance(type) is Packet packet)
                         {
                             packet.Read(queueEntry.Data);
                             HandlePacket(queueEntry.Client, packet);

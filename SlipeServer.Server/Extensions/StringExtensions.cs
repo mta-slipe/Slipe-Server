@@ -10,7 +10,7 @@ namespace SlipeServer.Server.Extensions
 {
     public static class StringExtensions
     {
-        const string colorCodeRegex = "#[0-9a-fA-F]{6}";
+        private const string colorCodeRegex = "#[0-9a-fA-F]{6}";
 
         public static string StripColorCode(this string value)
         {

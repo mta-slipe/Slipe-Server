@@ -8,7 +8,7 @@ namespace SlipeServer.Server.Repositories
 {
     public class ElementByTypeRepository : IElementRepository
     {
-        public int Count => elements.Count;
+        public int Count => this.elements.Count;
 
         private readonly Dictionary<ElementType, List<Element>> elements;
 
@@ -51,7 +51,7 @@ namespace SlipeServer.Server.Repositories
 
         public IEnumerable<TElement> GetByType<TElement>(ElementType elementType) where TElement : Element
         {
-            return this.elements.ContainsKey(elementType) ? this.elements[elementType].Cast<TElement>() : new TElement[0];
+            return this.elements.ContainsKey(elementType) ? this.elements[elementType].Cast<TElement>() : Array.Empty<TElement>();
         }
 
         public IEnumerable<Element> GetWithinRange(Vector3 position, float range)
@@ -66,7 +66,7 @@ namespace SlipeServer.Server.Repositories
             return this.elements.ContainsKey(elementType) ? 
                 this.elements[elementType].Cast<TElement>()
                     .Where(element => Vector3.Distance(element.Position, position) < range) :
-                new TElement[0];
+                Array.Empty<TElement>();
         }
     }
 }

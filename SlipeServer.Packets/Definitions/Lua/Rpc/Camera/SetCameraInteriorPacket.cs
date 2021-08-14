@@ -16,7 +16,7 @@ namespace SlipeServer.Packets.Definitions.Lua.Rpc.Camera
 
         public SetCameraInteriorPacket(byte interior)
         {
-            Interior = interior;
+            this.Interior = interior;
         }
 
         public override void Read(byte[] bytes)

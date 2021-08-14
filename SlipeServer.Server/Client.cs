@@ -59,7 +59,7 @@ namespace SlipeServer.Server
 
         public void FetchSerial()
         {
-            Tuple<string, string, string> serialExtraAndVersion = netWrapper.GetClientSerialExtraAndVersion(binaryAddress);
+            Tuple<string, string, string> serialExtraAndVersion = this.netWrapper.GetClientSerialExtraAndVersion(this.binaryAddress);
             this.Serial = serialExtraAndVersion.Item1;
             this.Extra = serialExtraAndVersion.Item2;
             this.Version = serialExtraAndVersion.Item3;

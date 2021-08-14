@@ -7,44 +7,44 @@ namespace SlipeServer.Packets.Definitions.Entities.Structs
 {
     public struct VehicleHandling
     {
-        public float Mass;
+        public float Mass { get; set; }
 
-        public float TurnMass;
-        public float DragCoefficient;
-        public Vector3 CenterOfMass;
-        public byte PercentSubmerged;
+        public float TurnMass { get; set; }
+        public float DragCoefficient { get; set; }
+        public Vector3 CenterOfMass { get; set; }
+        public byte PercentSubmerged { get; set; }
 
-        public float TractionMultiplier;
+        public float TractionMultiplier { get; set; }
 
-        public byte DriveType;
-        public byte EngineType;
-        public byte NumberOfGears;
+        public byte DriveType { get; set; }
+        public byte EngineType { get; set; }
+        public byte NumberOfGears { get; set; }
 
-        public float EngineAcceleration;
-        public float EngineInertia;
-        public float MaxVelocity;
+        public float EngineAcceleration { get; set; }
+        public float EngineInertia { get; set; }
+        public float MaxVelocity { get; set; }
 
-        public float BrakeDeceleration;
-        public float BrakeBids;
-        public bool Abs;
+        public float BrakeDeceleration { get; set; }
+        public float BrakeBids { get; set; }
+        public bool Abs { get; set; }
 
-        public float SteeringLock;
-        public float TractionLoss;
-        public float TractionBias;
+        public float SteeringLock { get; set; }
+        public float TractionLoss { get; set; }
+        public float TractionBias { get; set; }
 
-        public float SuspensionForceLevel;
-        public float SuspensionDampening;
-        public float SuspensionHighSpeedDampening;
-        public float SuspennsionUpperLimit;
-        public float SuspenionLowerLimit;
-        public float SuspensionFrontRearBias;
-        public float SuspensionAntiDiveMultiplier;
+        public float SuspensionForceLevel { get; set; }
+        public float SuspensionDampening { get; set; }
+        public float SuspensionHighSpeedDampening { get; set; }
+        public float SuspennsionUpperLimit { get; set; }
+        public float SuspenionLowerLimit { get; set; }
+        public float SuspensionFrontRearBias { get; set; }
+        public float SuspensionAntiDiveMultiplier { get; set; }
 
-        public float CollisionDamageMultiplier;
+        public float CollisionDamageMultiplier { get; set; }
 
-        public uint ModelFlags;
-        public uint HandlingFlags;
-        public float SeatOffsetDistance;
-        public byte AnimGroup;
+        public uint ModelFlags { get; set; }
+        public uint HandlingFlags { get; set; }
+        public float SeatOffsetDistance { get; set; }
+        public byte AnimGroup { get; set; }
     }
 }

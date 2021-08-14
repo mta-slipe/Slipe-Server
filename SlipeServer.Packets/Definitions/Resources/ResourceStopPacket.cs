@@ -20,7 +20,7 @@ namespace SlipeServer.Packets.Definitions.Resources
             ushort netId
         )
         {
-            NetId = netId;
+            this.NetId = netId;
         }
 
         public override void Read(byte[] bytes)
@@ -31,7 +31,7 @@ namespace SlipeServer.Packets.Definitions.Resources
         {
             var builder = new PacketBuilder();
 
-            builder.Write(NetId);
+            builder.Write(this.NetId);
 
             return builder.Build();
         }

@@ -42,32 +42,32 @@ namespace SlipeServer.Packets.Structures
             bool pedWalk
         )
         {
-            LeftStick = leftStick;
-            LeftShoulder1 = leftShoulder1;
-            RightShoulder1 = leftShoulder2;
-            ButtonSquare = buttonSquare;
-            ButtonCross = buttonCross;
-            ButtonCircle = buttonCircle;
-            ButtonTriangle = buttonTriangle;
-            ShockButton = shockButton;
-            PedWalk = pedWalk;
+            this.LeftStick = leftStick;
+            this.LeftShoulder1 = leftShoulder1;
+            this.RightShoulder1 = leftShoulder2;
+            this.ButtonSquare = buttonSquare;
+            this.ButtonCross = buttonCross;
+            this.ButtonCircle = buttonCircle;
+            this.ButtonTriangle = buttonTriangle;
+            this.ShockButton = shockButton;
+            this.PedWalk = pedWalk;
         }
 
         public void Read(PacketReader reader)
         {
-            PedWalk = reader.GetBit();
-            ShockButton = reader.GetBit();
-            ButtonTriangle = reader.GetBit();
-            ButtonCircle = reader.GetBit();
-            ButtonCross = reader.GetBit();
-            ButtonSquare = reader.GetBit();
-            RightShoulder1 = reader.GetBit();
-            LeftShoulder1 = reader.GetBit();
+            this.PedWalk = reader.GetBit();
+            this.ShockButton = reader.GetBit();
+            this.ButtonTriangle = reader.GetBit();
+            this.ButtonCircle = reader.GetBit();
+            this.ButtonCross = reader.GetBit();
+            this.ButtonSquare = reader.GetBit();
+            this.RightShoulder1 = reader.GetBit();
+            this.LeftShoulder1 = reader.GetBit();
 
             //this.ButtonSquareByte = reader.GetBit() ? reader.GetByte() : (byte)0;
             //this.ButtonCrossByte = reader.GetBit() ? reader.GetByte() : (byte)0;
 
-            LeftStick = new Vector2(
+            this.LeftStick = new Vector2(
                 (float)(reader.GetByte() * 128.0f / 127.0f),
                 (float)(reader.GetByte() * 128.0f / 127.0f)
             );
@@ -77,19 +77,19 @@ namespace SlipeServer.Packets.Structures
         public void Write(PacketBuilder builder)
         {
             builder.Write(new bool[] {
-                PedWalk,
-                ShockButton,
-                ButtonTriangle,
-                ButtonCircle,
-                ButtonCross,
-                ButtonSquare,
-                RightShoulder1,
-                LeftShoulder1,
+                this.PedWalk,
+                this.ShockButton,
+                this.ButtonTriangle,
+                this.ButtonCircle,
+                this.ButtonCross,
+                this.ButtonSquare,
+                this.RightShoulder1,
+                this.LeftShoulder1,
             });
             builder.Write(new byte[]
             {
-                (byte)((float)LeftStick.X * 127.0f / 128.0f),
-                (byte)((float)LeftStick.Y * 127.0f / 128.0f),
+                (byte)(this.LeftStick.X * 127.0f / 128.0f),
+                (byte)(this.LeftStick.Y * 127.0f / 128.0f),
             });
         }
     }

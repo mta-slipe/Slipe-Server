@@ -30,7 +30,7 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player
         {
             var builder = new PacketBuilder();
             builder.Write((byte)ElementRpcFunction.TOGGLE_DEBUGGER);
-            builder.Write((byte)(Visible ? 1 : 0));
+            builder.Write((byte)(this.Visible ? 1 : 0));
             return builder.Build();
         }
     }

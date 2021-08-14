@@ -17,8 +17,8 @@ namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
 
         public SetTimePacket(byte hour, byte minute)
         {
-            Hour = hour;
-            Minute = minute;
+            this.Hour = hour;
+            this.Minute = minute;
         }
         public override void Read(byte[] bytes)
         {

@@ -25,14 +25,14 @@ namespace SlipeServer.Server.Elements
         private Vector2? turretDirection;
         public Vector2? TurretRotation
         {
-            get => VehicleConstants.TurretModels.Contains((VehicleModel)this.Model) ? turretDirection ?? Vector2.Zero : null;
+            get => VehicleConstants.TurretModels.Contains((VehicleModel)this.Model) ? this.turretDirection ?? Vector2.Zero : null;
             set => this.turretDirection = value;
         }
 
         private ushort? adjustableProperty;
         public ushort? AdjustableProperty
         {
-            get => VehicleConstants.AdjustablePropertyModels.Contains((VehicleModel)this.Model) ? adjustableProperty ?? 0 : null;
+            get => VehicleConstants.AdjustablePropertyModels.Contains((VehicleModel)this.Model) ? this.adjustableProperty ?? 0 : null;
             set => this.adjustableProperty = value;
         }
 
@@ -63,16 +63,16 @@ namespace SlipeServer.Server.Elements
         {
             get
             {
-                if (Occupants.ContainsKey(0))
-                    return Occupants[0];
+                if (this.Occupants.ContainsKey(0))
+                    return this.Occupants[0];
                 return null;
             }
             set
             {
                 if (value == null && this.Driver != null)
-                    RemovePassenger(this.Driver, true);
+                    this.RemovePassenger(this.Driver, true);
                 else if (value != null)
-                    AddPassenger(0, value, true);
+                    this.AddPassenger(0, value, true);
             }
         }
         public Dictionary<byte, Ped> Occupants { get; set; }
@@ -85,7 +85,7 @@ namespace SlipeServer.Server.Elements
             this.Colors = new Color[2] { Color.White, Color.White };
             this.Damage = VehicleDamage.Undamaged;
             this.DoorRatios = new float[6];
-            this.Upgrades = new VehicleUpgrade[0];
+            this.Upgrades = Array.Empty<VehicleUpgrade>();
 
             this.Name = $"vehicle{this.Id}";
             this.Occupants = new Dictionary<byte, Ped>();
@@ -108,7 +108,7 @@ namespace SlipeServer.Server.Elements
             this.Occupants.TryGetValue(seat, out Ped? occupant);
             if (occupant != null && occupant != ped)
             {
-                RemovePassenger(occupant, true);
+                this.RemovePassenger(occupant, true);
             }
             this.Occupants[seat] = ped;
             ped.Vehicle = this;
@@ -152,14 +152,14 @@ namespace SlipeServer.Server.Elements
         {
             this.Health = 0;
             this.IsEngineOn = false;
-            this.Blown?.Invoke(this, EventArgs.Empty);
+            this.Blown?.Invoke(this);
         }
 
         public virtual bool CanEnter(Ped ped) => true;
         public virtual bool CanExit(Ped ped) => true;
 
-        public event EventHandler? Blown;
-        public event EventHandler<VehicleLeftEventArgs>? PedLeft;
-        public event EventHandler<VehicleEnteredEventsArgs>? PedEntered;
+        public event ElementEventHandler? Blown;
+        public event ElementEventHandler<VehicleLeftEventArgs>? PedLeft;
+        public event ElementEventHandler<VehicleEnteredEventsArgs>? PedEntered;
     }
 }

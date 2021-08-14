@@ -23,14 +23,14 @@ namespace SlipeServer.Server.PacketHandling.Builders
 
         public void AddDummy(DummyElement element)
         {
-            packet.AddDummy(element.Id, (byte)element.ElementType, element.Parent?.Id ?? 0, element.Interior, element.Dimension,
+            this.packet.AddDummy(element.Id, (byte)element.ElementType, element.Parent?.Id ?? 0, element.Interior, element.Dimension,
                 null, element.AreCollisionsEnabled, element.IsCallPropagationEnabled, new CustomData(), element.Name, element.TimeContext, 
                 element.ElementTypeName, element.Position);
         }
 
         public void AddObject(WorldObject element)
         {
-            packet.AddObject(element.Id, (byte)element.ElementType, element.Parent?.Id ?? 0, element.Interior, element.Dimension,
+            this.packet.AddObject(element.Id, (byte)element.ElementType, element.Parent?.Id ?? 0, element.Interior, element.Dimension,
                 null, element.AreCollisionsEnabled, element.IsCallPropagationEnabled, new CustomData(), element.Name, element.TimeContext,
                 element.Position, element.Rotation, element.Model, element.Alpha, element.IsLowLod, element.LowLodElement?.Id, 
                 element.DoubleSided, element.IsVisibleInAllDimensions, element.Movement, element.Scale, element.IsFrozen, element.Health
@@ -39,7 +39,7 @@ namespace SlipeServer.Server.PacketHandling.Builders
 
         public void AddBlip(Blip element)
         {
-            packet.AddBlip(element.Id, (byte)element.ElementType, element.Parent?.Id ?? 0, element.Interior, element.Dimension,
+            this.packet.AddBlip(element.Id, (byte)element.ElementType, element.Parent?.Id ?? 0, element.Interior, element.Dimension,
                 null, element.AreCollisionsEnabled, element.IsCallPropagationEnabled, new CustomData(), element.Name, element.TimeContext,
                 element.Position, element.Ordering, element.VisibleDistance, (byte)element.Icon, element.Size, element.Color
             );
@@ -50,14 +50,14 @@ namespace SlipeServer.Server.PacketHandling.Builders
             switch (element)
             {
                 case CollisionCircle collisionCircle:
-                    packet.AddColCircle(collisionCircle.Id, (byte)collisionCircle.ElementType, collisionCircle.Parent?.Id ?? 0, collisionCircle.Interior, collisionCircle.Dimension,
+                    this.packet.AddColCircle(collisionCircle.Id, (byte)collisionCircle.ElementType, collisionCircle.Parent?.Id ?? 0, collisionCircle.Interior, collisionCircle.Dimension,
                         null, collisionCircle.AreCollisionsEnabled, collisionCircle.IsCallPropagationEnabled, new CustomData(), collisionCircle.Name, collisionCircle.TimeContext,
                         (byte)ColShapeType.Circle, collisionCircle.Position, collisionCircle.IsEnabled, collisionCircle.AutoCallEvent, collisionCircle.Radius
                     );
                     break;
 
                 case CollisionCuboid collisionCuboid:
-                    packet.AddColCuboid(collisionCuboid.Id, (byte)collisionCuboid.ElementType, collisionCuboid.Parent?.Id ?? 0, collisionCuboid.Interior,
+                    this.packet.AddColCuboid(collisionCuboid.Id, (byte)collisionCuboid.ElementType, collisionCuboid.Parent?.Id ?? 0, collisionCuboid.Interior,
                         collisionCuboid.Dimension, null, collisionCuboid.AreCollisionsEnabled, collisionCuboid.IsCallPropagationEnabled, new CustomData(),
                         collisionCuboid.Name, collisionCuboid.TimeContext, (byte)ColShapeType.Cuboid, collisionCuboid.Position, collisionCuboid.IsEnabled,
                         collisionCuboid.AutoCallEvent, collisionCuboid.Dimensions
@@ -65,7 +65,7 @@ namespace SlipeServer.Server.PacketHandling.Builders
                     break;
 
                 case CollisionRectangle collisionRectangle:
-                    packet.AddColRectangle(collisionRectangle.Id, (byte)collisionRectangle.ElementType, collisionRectangle.Parent?.Id ?? 0, collisionRectangle.Interior,
+                    this.packet.AddColRectangle(collisionRectangle.Id, (byte)collisionRectangle.ElementType, collisionRectangle.Parent?.Id ?? 0, collisionRectangle.Interior,
                         collisionRectangle.Dimension, null, collisionRectangle.AreCollisionsEnabled, collisionRectangle.IsCallPropagationEnabled, new CustomData(),
                         collisionRectangle.Name, collisionRectangle.TimeContext, (byte)ColShapeType.Rectangle, collisionRectangle.Position, collisionRectangle.IsEnabled,
                         collisionRectangle.AutoCallEvent, collisionRectangle.Dimensions
@@ -73,21 +73,21 @@ namespace SlipeServer.Server.PacketHandling.Builders
                     break;
 
                 case CollisionSphere collisionShpere:
-                    packet.AddColSphere(collisionShpere.Id, (byte)collisionShpere.ElementType, collisionShpere.Parent?.Id ?? 0, collisionShpere.Interior, collisionShpere.Dimension,
+                    this.packet.AddColSphere(collisionShpere.Id, (byte)collisionShpere.ElementType, collisionShpere.Parent?.Id ?? 0, collisionShpere.Interior, collisionShpere.Dimension,
                         null, collisionShpere.AreCollisionsEnabled, collisionShpere.IsCallPropagationEnabled, new CustomData(), collisionShpere.Name, collisionShpere.TimeContext,
                         (byte)ColShapeType.Sphere, collisionShpere.Position, collisionShpere.IsEnabled, collisionShpere.AutoCallEvent, collisionShpere.Radius
                     );
                     break;
 
                 case CollisionTube collisionTube:
-                    packet.AddColTube(collisionTube.Id, (byte)collisionTube.ElementType, collisionTube.Parent?.Id ?? 0, collisionTube.Interior, collisionTube.Dimension,
+                    this.packet.AddColTube(collisionTube.Id, (byte)collisionTube.ElementType, collisionTube.Parent?.Id ?? 0, collisionTube.Interior, collisionTube.Dimension,
                         null, collisionTube.AreCollisionsEnabled, collisionTube.IsCallPropagationEnabled, new CustomData(), collisionTube.Name, collisionTube.TimeContext,
                         (byte)ColShapeType.Tube, collisionTube.Position, collisionTube.IsEnabled, collisionTube.AutoCallEvent, collisionTube.Radius, collisionTube.Height
                     );
                     break;
 
                 case CollisionPolygon collisionPolygon:
-                    packet.AddColPolygon(collisionPolygon.Id, (byte)collisionPolygon.ElementType, collisionPolygon.Parent?.Id ?? 0, collisionPolygon.Interior, collisionPolygon.Dimension,
+                    this.packet.AddColPolygon(collisionPolygon.Id, (byte)collisionPolygon.ElementType, collisionPolygon.Parent?.Id ?? 0, collisionPolygon.Interior, collisionPolygon.Dimension,
                         null, collisionPolygon.AreCollisionsEnabled, collisionPolygon.IsCallPropagationEnabled, new CustomData(), collisionPolygon.Name, collisionPolygon.TimeContext,
                         (byte)ColShapeType.Polygon, collisionPolygon.Position, collisionPolygon.IsEnabled, collisionPolygon.AutoCallEvent, collisionPolygon.Vertices
                     );
@@ -98,7 +98,7 @@ namespace SlipeServer.Server.PacketHandling.Builders
 
         public void AddMarker(Marker element)
         {
-            packet.AddMarker(element.Id, (byte)element.ElementType, element.Parent?.Id ?? 0, element.Interior, element.Dimension,
+            this.packet.AddMarker(element.Id, (byte)element.ElementType, element.Parent?.Id ?? 0, element.Interior, element.Dimension,
                 null, element.AreCollisionsEnabled, element.IsCallPropagationEnabled, new CustomData(), element.Name, element.TimeContext,
                 element.Position, (byte)element.MarkerType, element.Size, element.Color, element.TargetPosition
             );
@@ -106,7 +106,7 @@ namespace SlipeServer.Server.PacketHandling.Builders
 
         public void AddPed(Ped element)
         {
-            packet.AddPed(element.Id, (byte)element.ElementType, element.Parent?.Id ?? 0, element.Interior, element.Dimension,
+            this.packet.AddPed(element.Id, (byte)element.ElementType, element.Parent?.Id ?? 0, element.Interior, element.Dimension,
                 null, element.AreCollisionsEnabled, element.IsCallPropagationEnabled, new CustomData(), element.Name, element.TimeContext,
                 element.Position, element.Model, element.PedRotation, element.Health, element.Armor, element.Vehicle?.Id, element.Seat,
                 element.HasJetpack, element.IsSyncable, element.IsHeadless, element.IsFrozen, element.Alpha, (byte)element.MoveAnimation,
@@ -116,7 +116,7 @@ namespace SlipeServer.Server.PacketHandling.Builders
 
         public void AddPickup(Pickup element)
         {
-            packet.AddPickup(element.Id, (byte)element.ElementType, element.Parent?.Id ?? 0, element.Interior, element.Dimension,
+            this.packet.AddPickup(element.Id, (byte)element.ElementType, element.Parent?.Id ?? 0, element.Interior, element.Dimension,
                 null, element.AreCollisionsEnabled, element.IsCallPropagationEnabled, new CustomData(), element.Name, element.TimeContext,
                 element.Position, element.Model, element.IsVisible, (byte)element.PickupType, element.Armor, element.Health, (byte?)element.WeaponType, element.Ammo
             );
@@ -124,7 +124,7 @@ namespace SlipeServer.Server.PacketHandling.Builders
 
         public void AddRadarArea(RadarArea element)
         {
-            packet.AddRadarArea(element.Id, (byte)element.ElementType, element.Parent?.Id ?? 0, element.Interior, element.Dimension,
+            this.packet.AddRadarArea(element.Id, (byte)element.ElementType, element.Parent?.Id ?? 0, element.Interior, element.Dimension,
                 null, element.AreCollisionsEnabled, element.IsCallPropagationEnabled, new CustomData(), element.Name, element.TimeContext,
                 element.Position2, element.Size, element.Color, element.IsFlashing
             );
@@ -132,7 +132,7 @@ namespace SlipeServer.Server.PacketHandling.Builders
 
         public void AddTeam(Team element)
         {
-            packet.AddTeam(element.Id, (byte)element.ElementType, element.Parent?.Id ?? 0, element.Interior, element.Dimension,
+            this.packet.AddTeam(element.Id, (byte)element.ElementType, element.Parent?.Id ?? 0, element.Interior, element.Dimension,
                 null, element.AreCollisionsEnabled, element.IsCallPropagationEnabled, new CustomData(), element.Name, element.TimeContext,
                 element.TeamName, element.Color, element.IsFriendlyFireEnabled, element.Players.Select(p => p.Id).ToArray()
             );
@@ -140,7 +140,7 @@ namespace SlipeServer.Server.PacketHandling.Builders
 
         public void AddWater(Water element)
         {
-            packet.AddWater(element.Id, (byte)element.ElementType, element.Parent?.Id ?? 0, element.Interior, element.Dimension,
+            this.packet.AddWater(element.Id, (byte)element.ElementType, element.Parent?.Id ?? 0, element.Interior, element.Dimension,
                 null, element.AreCollisionsEnabled, element.IsCallPropagationEnabled, new CustomData(), element.Name, element.TimeContext,
                 element.Vertices.ToArray(), element.IsShallow
             );
@@ -148,10 +148,10 @@ namespace SlipeServer.Server.PacketHandling.Builders
 
         public void AddVehicle(Vehicle element)
         {
-            packet.AddVehicle(element.Id, (byte)element.ElementType, element.Parent?.Id ?? 0, element.Interior, element.Dimension,
+            this.packet.AddVehicle(element.Id, (byte)element.ElementType, element.Parent?.Id ?? 0, element.Interior, element.Dimension,
                 null, element.AreCollisionsEnabled, element.IsCallPropagationEnabled, new CustomData(), element.Name, element.TimeContext,
                 element.Position, element.Rotation, element.Model, element.Health, element.Colors, element.PaintJob, element.Damage, element.Variant1,
-                element.Variant2, element.TurretRotation, element.AdjustableProperty, VehicleConstants.DoorsPerVehicle[(VehicleModel)element.Model] > 0 ? element.DoorRatios : new float[0], element.Upgrades.Select(u => (byte)u).ToArray(), element.PlateText, 
+                element.Variant2, element.TurretRotation, element.AdjustableProperty, VehicleConstants.DoorsPerVehicle[(VehicleModel)element.Model] > 0 ? element.DoorRatios : Array.Empty<float>(), element.Upgrades.Select(u => (byte)u).ToArray(), element.PlateText, 
                 element.OverrideLights, element.IsLandingGearDown, element.IsSirenActive, element.IsFuelTankExplodable, element.IsEngineOn, element.IsLocked, 
                 element.AreDoorsUndamageable, element.IsDamageProof, element.IsFrozen, element.IsDerailed, element.IsDerailable, element.TrainDirection, element.IsTaxiLightOn, 
                 element.Alpha, element.HeadlightColor, element.Handling, element.Sirens
@@ -160,7 +160,7 @@ namespace SlipeServer.Server.PacketHandling.Builders
 
         public void AddWeapon(WeaponObject element)
         {
-            packet.AddWeapon(element.Id, (byte)element.ElementType, element.Parent?.Id ?? 0, element.Interior, element.Dimension,
+            this.packet.AddWeapon(element.Id, (byte)element.ElementType, element.Parent?.Id ?? 0, element.Interior, element.Dimension,
                 null, element.AreCollisionsEnabled, element.IsCallPropagationEnabled, new CustomData(), element.Name, element.TimeContext,
                 element.Position, element.Rotation, element.Model, element.Alpha, element.IsLowLod, element.LowLodElement?.Id,
                 element.DoubleSided, element.IsVisibleInAllDimensions, element.Movement, element.Scale, element.IsFrozen, element.Health,

@@ -11,7 +11,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
     public abstract class ScalingWorkerBasedQueueHandler : BaseQueueHandler
     {
-        struct Worker
+        private struct Worker
         {
             public bool Active { get; set; }
         }
@@ -24,7 +24,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         private readonly int queueLowThreshold;
         private readonly Stack<Worker> workers;
 
-        public int WorkerCount => workers.Count;
+        public int WorkerCount => this.workers.Count;
 
         private TaskCompletionSource<int>? pulseTaskCompletionSource;
 
@@ -108,8 +108,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                     try
                     {
                         var type = this.PacketTypes[queueEntry.PacketId];
-                        var packet = Activator.CreateInstance(type) as Packet;
-                        if (packet != null)
+                        if (Activator.CreateInstance(type) is Packet packet)
                         {
                             packet.Read(queueEntry.Data);
                             await HandlePacket(queueEntry.Client, packet);

@@ -12,7 +12,7 @@ namespace SlipeServer.Packets.Definitions.Entities.Structs
         public byte[] Panels { get; set; }
         public byte[] Lights { get; set; }
 
-        public static VehicleDamage Undamaged => new VehicleDamage()
+        public static VehicleDamage Undamaged => new()
         {
             Doors = new byte[6],
             Wheels = new byte[4],

@@ -11,7 +11,7 @@ namespace SlipeServer.Server.Elements.Events
 
         public PlayerSpawnedEventArgs(Player source)
         {
-            Source = source;
+            this.Source = source;
         }
     }
 }

@@ -57,7 +57,7 @@ namespace SlipeServer.Packets.Definitions.Sync
             this.WeaponType = reader.GetWeaponType();
             this.Model = reader.GetUint16();
 
-            switch (WeaponType)
+            switch (this.WeaponType)
             {
                 case 16: // WEAPONTYPE_GRENADE
                 case 17: // WEAPONTYPE_TEARGAS
@@ -94,7 +94,7 @@ namespace SlipeServer.Packets.Definitions.Sync
                 builder.Write(false);
             }
 
-            if (OriginId != 0)
+            if (this.OriginId != 0)
             {
                 builder.Write(true);
                 builder.WriteElementId(this.OriginId);
@@ -106,19 +106,19 @@ namespace SlipeServer.Packets.Definitions.Sync
 
             builder.WriteVector3WithZAsFloat(this.VecOrigin);
             builder.WriteWeaponType(this.WeaponType);
-            builder.Write(Model);
-            switch (WeaponType)
+            builder.Write(this.Model);
+            switch (this.WeaponType)
             {
                 case 16:            // WEAPONTYPE_GRENADE
                 case 17:            // WEAPONTYPE_TEARGAS
                 case 18:            // WEAPONTYPE_MOLOTOV
                 case 39:            // WEAPONTYPE_REMOTE_SATCHEL_CHARGE
-                    builder.WriteFloat(Force, 7, 17);
-                    builder.WriteVelocityVector(VecMoveSpeed);
+                    builder.WriteFloat(this.Force, 7, 17);
+                    builder.WriteVelocityVector(this.VecMoveSpeed);
                     break;
                 case 19:            // WEAPONTYPE_ROCKET
                 case 20:            // WEAPONTYPE_ROCKET_HS
-                    if (TargetId != 0) // INVALID_ELEMENT_ID
+                    if (this.TargetId != 0) // INVALID_ELEMENT_ID
                     {
                         builder.Write(true);
                         builder.Write(this.TargetId);
@@ -127,8 +127,8 @@ namespace SlipeServer.Packets.Definitions.Sync
                     {
                         builder.Write(false);
                     }
-                    builder.WriteVelocityVector(VecMoveSpeed);
-                    builder.Write(VecRotation);
+                    builder.WriteVelocityVector(this.VecMoveSpeed);
+                    builder.Write(this.VecRotation);
                     break;
             }
 

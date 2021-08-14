@@ -66,7 +66,7 @@ namespace SlipeServer.Packets.Tests.Packets
             packet.AddPed(673, (byte)14, null, 0, 0,
                 null, true, true, new CustomData(), "Test ped",
                 0, new Vector3(10, 0, 3), 181, 45, 100, 50, null, null,
-                true, true, true, false, 200, 0, new PedClothing[0], new PedWeapon[0], 0);
+                true, true, true, false, 200, 0, Array.Empty<PedClothing>(), Array.Empty<PedWeapon>(), 0);
             packet.AddWeapon(674, (byte)18, null, 0, 0,
                 null, true, true, new CustomData(), "Test weapon",
                 0, new Vector3(5, 5, 5), Vector3.Zero, 355, 255, false, null,
@@ -86,7 +86,7 @@ namespace SlipeServer.Packets.Tests.Packets
                     Lights = new byte[] { 0, 0, 0, 0 }
                 }, 0, 0, null, null, new float[] {
                         0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f
-                }, new byte[0], "SLIPE", 0, true, false, false, false, false,
+                }, Array.Empty<byte>(), "SLIPE", 0, true, false, false, false, false,
                 false, false, false, false, false, false, true, 200, Color.MediumPurple, null, null);
 
             var result = packet.Write();

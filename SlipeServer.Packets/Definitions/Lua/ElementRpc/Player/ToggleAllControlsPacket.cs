@@ -33,9 +33,9 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player
         {
             var builder = new PacketBuilder();
             builder.Write((byte)ElementRpcFunction.TOGGLE_ALL_CONTROL_ABILITY);
-            builder.Write((byte)(GTAControls ? 1 : 0));
-            builder.Write((byte)(MTAControls ? 1 : 0));
-            builder.Write((byte)(Enabled ? 1 : 0));
+            builder.Write((byte)(this.GTAControls ? 1 : 0));
+            builder.Write((byte)(this.MTAControls ? 1 : 0));
+            builder.Write((byte)(this.Enabled ? 1 : 0));
             return builder.Build();
         }
     }

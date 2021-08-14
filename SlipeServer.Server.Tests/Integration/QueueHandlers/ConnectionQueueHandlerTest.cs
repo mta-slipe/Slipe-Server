@@ -29,7 +29,7 @@ namespace SlipeServer.Server.Tests.Integration.QueueHandlers
             server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_JOIN, connectionHandler);
             server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_JOINDATA, connectionHandler);
 
-            server.HandlePacket(address, PacketId.PACKET_ID_PLAYER_JOIN, new byte[] { });
+            server.HandlePacket(address, PacketId.PACKET_ID_PLAYER_JOIN, Array.Empty<byte>());
 
             await connectionHandler.GetPulseTask();
 

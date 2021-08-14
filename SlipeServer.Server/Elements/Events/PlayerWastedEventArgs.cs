@@ -19,12 +19,12 @@ namespace SlipeServer.Server.Elements.Events
             ulong animationGroup, ulong animationId
         )
         {
-            Source = source;
-            Killer = killer;
-            WeaponType = weaponType;
-            BodyPart = bodyPart;
-            AnimationGroup = animationGroup;
-            AnimationId = animationId;
+            this.Source = source;
+            this.Killer = killer;
+            this.WeaponType = weaponType;
+            this.BodyPart = bodyPart;
+            this.AnimationGroup = animationGroup;
+            this.AnimationId = animationId;
         }
     }
 }

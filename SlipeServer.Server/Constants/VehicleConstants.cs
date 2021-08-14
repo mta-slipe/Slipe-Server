@@ -7,7 +7,7 @@ namespace SlipeServer.Server.Constants
 {
     public class VehicleConstants
     {
-        public static HashSet<VehicleModel> TrailerModels = new HashSet<VehicleModel>()
+        public static HashSet<VehicleModel> TrailerModels { get; } = new()
         {
             VehicleModel.Trailer1,
             VehicleModel.Trailer2,
@@ -20,7 +20,7 @@ namespace SlipeServer.Server.Constants
             VehicleModel.FarmTrailerTwo
         };
 
-        public static HashSet<VehicleModel> WaterEntryVehicles = new HashSet<VehicleModel>()
+        public static HashSet<VehicleModel> WaterEntryVehicles { get; } = new()
         {
             VehicleModel.Leviathan,
             VehicleModel.Seasparrow,
@@ -28,7 +28,7 @@ namespace SlipeServer.Server.Constants
             VehicleModel.Vortex
         };
 
-        public static Dictionary<VehicleModel, byte> DoorsPerVehicle = new Dictionary<VehicleModel, byte>()
+        public static Dictionary<VehicleModel, byte> DoorsPerVehicle { get; } = new()
         {
             [VehicleModel.Landstalker] = 4,
             [VehicleModel.Bravura] = 4,
@@ -243,7 +243,7 @@ namespace SlipeServer.Server.Constants
             [VehicleModel.FarmTrailerTwo] = 0
         };
 
-        public static Dictionary<VehicleModel, byte> SeatsPerVehicle = new Dictionary<VehicleModel, byte>()
+        public static Dictionary<VehicleModel, byte> SeatsPerVehicle { get; } = new()
         {
             [VehicleModel.Landstalker] = 4,
             [VehicleModel.Bravura] = 4,
@@ -458,7 +458,7 @@ namespace SlipeServer.Server.Constants
             [VehicleModel.FarmTrailerTwo] = 0
         };
 
-        public static HashSet<VehicleModel> AdjustablePropertyModels = new HashSet<VehicleModel>()
+        public static HashSet<VehicleModel> AdjustablePropertyModels { get; } = new()
         {
             VehicleModel.Dumper,
             VehicleModel.Packer,
@@ -470,7 +470,7 @@ namespace SlipeServer.Server.Constants
             VehicleModel.Andromada,
         };
 
-        public static HashSet<VehicleModel> TurretModels = new HashSet<VehicleModel>()
+        public static HashSet<VehicleModel> TurretModels { get; } = new()
         {
             VehicleModel.FireTruck,
             VehicleModel.Rhino,

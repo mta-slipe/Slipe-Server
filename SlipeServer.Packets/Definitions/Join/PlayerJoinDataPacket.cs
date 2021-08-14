@@ -14,14 +14,18 @@ namespace SlipeServer.Packets.Definitions.Join
         public ushort NetVersion { get; private set; }
         public ushort MtaVersion { get; private set; }
         public ushort BitStreamVersion { get; private set; }
-        public string? PlayerVersion { get; private set; } // CMtaVersion type??
+        public string PlayerVersion { get; private set; } = string.Empty; // CMtaVersion type??
         public bool OptionalUpdateInfoRequired { get; private set; }
         public byte GameVersion { get; private set; } // unssigned
-        public string? Nickname { get; private set; }
-        public string? Password { get; private set; } // MD5 type??
-        public string? Serial { get; private set; }
-        public string? DiscordSecret { get; private set; }
+        public string Nickname { get; private set; } = string.Empty;
+        public string Password { get; private set; } = string.Empty; // MD5 type??
+        public string Serial { get; private set; } = string.Empty;
+        public string DiscordSecret { get; private set; } = string.Empty;
 
+        public PlayerJoinDataPacket()
+        {
+
+        }
 
         public override void Read(byte[] bytes)
         {
@@ -42,15 +46,15 @@ namespace SlipeServer.Packets.Definitions.Join
         {
             PacketBuilder builder = new PacketBuilder();
 
-            builder.Write(NetVersion);
-            builder.Write(MtaVersion);
-            builder.Write(BitStreamVersion);
-            builder.Write(PlayerVersion ?? "");
-            builder.Write(OptionalUpdateInfoRequired);
-            builder.Write(GameVersion);
-            builder.WriteStringWithoutLength((Nickname ?? "").PadRight(PacketConstants.MaxPlayerNickLength));
-            builder.WriteStringWithoutLength((Password ?? "").PadRight(16));
-            builder.WriteStringWithoutLength((Serial ?? "").PadRight(PacketConstants.MaxSerialLength));
+            builder.Write(this.NetVersion);
+            builder.Write(this.MtaVersion);
+            builder.Write(this.BitStreamVersion);
+            builder.Write(this.PlayerVersion);
+            builder.Write(this.OptionalUpdateInfoRequired);
+            builder.Write(this.GameVersion);
+            builder.WriteStringWithoutLength((this.Nickname).PadRight(PacketConstants.MaxPlayerNickLength));
+            builder.WriteStringWithoutLength((this.Password).PadRight(16));
+            builder.WriteStringWithoutLength((this.Serial).PadRight(PacketConstants.MaxSerialLength));
 
             return builder.Build();
         }

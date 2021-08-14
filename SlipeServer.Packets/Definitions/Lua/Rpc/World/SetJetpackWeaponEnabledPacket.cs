@@ -17,8 +17,8 @@ namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
 
         public SetJetpackWeaponEnabledPacket(byte weaponType,bool enabled)
         {
-            WeaponType = weaponType;
-            Enabled = enabled;
+            this.WeaponType = weaponType;
+            this.Enabled = enabled;
         }
         public override void Read(byte[] bytes)
         {

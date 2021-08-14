@@ -5,21 +5,12 @@ using SlipeServer.Server.Enums;
 using SlipeServer.Server.PacketHandling.Factories;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Numerics;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 using SlipeServer.Packets.Enums;
 
 namespace SlipeServer.Server.Elements
 {
-    public class PlayerPendingScreenshot
-    {
-        public MemoryStream? Stream { get; init; }
-        public string? ErrorMessage { get; init; }
-        public string Tag { get; init; } = "";
-        public uint TotalParts { get; init; }
-    }
-
     public class Player: Ped
     {
         public override ElementType ElementType => ElementType.Player;
@@ -30,11 +21,11 @@ namespace SlipeServer.Server.Elements
         private byte wantedLevel = 0;
         public byte WantedLevel
         {
-            get => wantedLevel;
+            get => this.wantedLevel;
             set
             {
                 var args = new ElementChangedEventArgs<Player, byte>(this, this.WantedLevel, value, this.IsSync);
-                wantedLevel = value;
+                this.wantedLevel = value;
                 WantedLevelChanged?.Invoke(this, args);
             }
         }
@@ -142,7 +133,7 @@ namespace SlipeServer.Server.Elements
 
         public void VoiceDataEnd()
         {
-            this.OnVoiceDataEnd.Invoke(this, new PlayerVoiceEndArgs(this));
+            this.OnVoiceDataEnd?.Invoke(this, new PlayerVoiceEndArgs(this));
         }
 
         public void TriggerDisconnected(QuitReason reason)
@@ -157,14 +148,17 @@ namespace SlipeServer.Server.Elements
             this.Client.SendPacket(ElementPacketFactory.CreateTakePlayerScreenshotPacket(this, width, height, tag, quality, maxBandwith, maxPacketSize, null));
         }
 
-        internal void ScreenshotEnd(int screenshotId)
+        public void ScreenshotEnd(int screenshotId)
         {
-            var pendingScreenshot = PendingScreenshots[screenshotId];
-            using(var stream = pendingScreenshot.Stream)
+            var pendingScreenshot = this.PendingScreenshots[screenshotId];
+            if (pendingScreenshot != null && pendingScreenshot.Stream != null)
             {
-                this.OnScreenshot?.Invoke(this, new ScreenshotEventArgs(pendingScreenshot.Stream, pendingScreenshot.ErrorMessage, pendingScreenshot.Tag));
+                using (var stream = pendingScreenshot.Stream)
+                {
+                    this.OnScreenshot?.Invoke(this, new ScreenshotEventArgs(pendingScreenshot.Stream, pendingScreenshot.ErrorMessage, pendingScreenshot.Tag));
+                }
+                this.PendingScreenshots.Remove(screenshotId);
             }
-            PendingScreenshots.Remove(screenshotId);
         }
 
         public void Kick(string reason)
@@ -180,14 +174,14 @@ namespace SlipeServer.Server.Elements
         }
 
         public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
-        public event EventHandler<PlayerDamagedEventArgs>? Damaged;
-        public event EventHandler<PlayerWastedEventArgs>? Wasted;
-        public event EventHandler<PlayerSpawnedEventArgs>? Spawned;
-        public event EventHandler<PlayerCommandEventArgs>? OnCommand;
-        public event EventHandler<PlayerVoiceStartArgs> OnVoiceData;
-        public event EventHandler<PlayerVoiceEndArgs> OnVoiceDataEnd;
-        public event EventHandler<PlayerQuitEventArgs>? Disconnected;
-        public event EventHandler<ScreenshotEventArgs>? OnScreenshot;
-        public event EventHandler<PlayerKickEventArgs>? OnKick;
+        public event ElementEventHandler<PlayerDamagedEventArgs>? Damaged;
+        public event ElementEventHandler<PlayerWastedEventArgs>? Wasted;
+        public event ElementEventHandler<PlayerSpawnedEventArgs>? Spawned;
+        public event ElementEventHandler<PlayerCommandEventArgs>? OnCommand;
+        public event ElementEventHandler<PlayerVoiceStartArgs>? OnVoiceData;
+        public event ElementEventHandler<PlayerVoiceEndArgs>? OnVoiceDataEnd;
+        public event ElementEventHandler<PlayerQuitEventArgs>? Disconnected;
+        public event ElementEventHandler<ScreenshotEventArgs>? OnScreenshot;
+        public event ElementEventHandler<PlayerKickEventArgs>? OnKick;
     }
 }

@@ -21,11 +21,11 @@ namespace SlipeServer.Server.Elements
         protected ushort model;
         public ushort Model
         {
-            get => model;
+            get => this.model;
             set
             {
                 var args = new ElementChangedEventArgs<Ped, ushort>(this, this.Model, value, this.IsSync);
-                model = value;
+                this.model = value;
                 ModelChanged?.Invoke(this, args);
             }
         }
@@ -33,11 +33,11 @@ namespace SlipeServer.Server.Elements
         protected float health = 100;
         public float Health
         {
-            get => health;
+            get => this.health;
             set
             {
                 var args = new ElementChangedEventArgs<Ped, float>(this, this.Health, value, this.IsSync);
-                health = value;
+                this.health = value;
                 HealthChanged?.Invoke(this, args);
             }
         }
@@ -45,11 +45,11 @@ namespace SlipeServer.Server.Elements
         protected float armor = 0;
         public float Armor
         {
-            get => armor;
+            get => this.armor;
             set
             {
                 var args = new ElementChangedEventArgs<Ped, float>(this, this.Armor, value, this.IsSync);
-                armor = value;
+                this.armor = value;
                 ArmourChanged?.Invoke(this, args);
             }
         }
@@ -57,11 +57,11 @@ namespace SlipeServer.Server.Elements
         private WeaponSlot currentWeaponSlot;
         public WeaponSlot CurrentWeaponSlot
         {
-            get => currentWeaponSlot;
+            get => this.currentWeaponSlot;
             set
             {
                 var args = new ElementChangedEventArgs<Ped, WeaponSlot>(this, this.CurrentWeaponSlot, value, this.IsSync);
-                currentWeaponSlot = value;
+                this.currentWeaponSlot = value;
                 WeaponSlotChanged?.Invoke(this, args);
             }
         }
@@ -109,7 +109,7 @@ namespace SlipeServer.Server.Elements
         public PedClothing[] Clothes { get; set; }
         public WeaponCollection Weapons { get; set; }
 
-        public bool IsAlive => health > 0;
+        public bool IsAlive => this.health > 0;
 
 
         public VehicleAction VehicleAction { get; set; } = VehicleAction.None;
@@ -121,7 +121,7 @@ namespace SlipeServer.Server.Elements
             this.Model = (ushort) model;
             this.Position = position;
 
-            this.Clothes = new PedClothing[0];
+            this.Clothes = Array.Empty<PedClothing>();
             this.Weapons = new WeaponCollection();
             this.Weapons.WeaponAdded += (sender, args) => this.WeaponReceived?.Invoke(this, new WeaponReceivedEventArgs(this, args.Type, args.Ammo, false));
             this.Weapons.WeaponRemoved += (sender, args) => this.WeaponRemoved?.Invoke(this, new WeaponRemovedEventArgs(this, args.Type, args.Ammo));
@@ -168,7 +168,8 @@ namespace SlipeServer.Server.Elements
         public void RemoveWeapon(WeaponSlot weaponSlot, ushort? ammoCount = null)
         {
             var weapon = this.Weapons.FirstOrDefault(weapon => weapon.Slot == weaponSlot);
-            RemoveWeapon(weapon.Type, ammoCount);
+            if (weapon != null)
+                RemoveWeapon(weapon.Type, ammoCount);
         }
 
         public void SetAmmoCount(WeaponId weaponId, ushort count, ushort? inClip)
@@ -188,15 +189,16 @@ namespace SlipeServer.Server.Elements
         public void SetAmmoCount(WeaponSlot weaponSlot, ushort count, ushort? inClip)
         {
             var weapon = this.Weapons.FirstOrDefault(weapon => weapon.Slot == weaponSlot);
-            SetAmmoCount(weapon.Type, count, inClip);
+            if (weapon != null)
+                SetAmmoCount(weapon.Type, count, inClip);
         }
 
         public event ElementChangedEventHandler<Ped, ushort>? ModelChanged;
         public event ElementChangedEventHandler<Ped, float>? HealthChanged;
         public event ElementChangedEventHandler<Ped, float>? ArmourChanged;
         public event ElementChangedEventHandler<Ped, WeaponSlot>? WeaponSlotChanged;
-        public event EventHandler<WeaponReceivedEventArgs>? WeaponReceived;
-        public event EventHandler<WeaponRemovedEventArgs>? WeaponRemoved;
-        public event EventHandler<AmmoUpdateEventArgs>? AmmoUpdated;
+        public event ElementEventHandler<WeaponReceivedEventArgs>? WeaponReceived;
+        public event ElementEventHandler<WeaponRemovedEventArgs>? WeaponRemoved;
+        public event ElementEventHandler<AmmoUpdateEventArgs>? AmmoUpdated;
     }
 }

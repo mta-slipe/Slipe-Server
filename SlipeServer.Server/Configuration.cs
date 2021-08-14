@@ -71,8 +71,8 @@ namespace SlipeServer.Server
     public class AntiCheatConfiguration
     {
         public AllowGta3ImgMods AllowGta3ImgMods { get; set; } = AllowGta3ImgMods.None;
-        public SpecialDetection[] EnableSpecialDetections { get; set; } = new SpecialDetection[] { };
-        public AntiCheat[] DisabledAntiCheat { get; set; } = new AntiCheat[] { };
+        public SpecialDetection[] EnableSpecialDetections { get; set; } = Array.Empty<SpecialDetection>();
+        public AntiCheat[] DisabledAntiCheat { get; set; } = Array.Empty<AntiCheat>();
         public DataFile FileChecks { get; set; } = DataFile.None;
         public bool HideAntiCheat { get; set; } = false;
         public int VerifyClientSettings { get; set; } = -1;

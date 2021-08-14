@@ -11,8 +11,8 @@ namespace SlipeServer.Server.Elements.ColShapes
 
         public CollisionCuboid(Vector3 position, Vector3 dimensions)
         {
-            Position = position;
-            Dimensions = dimensions;
+            this.Position = position;
+            this.Dimensions = dimensions;
         }
 
         public override bool IsWithin(Vector3 position)

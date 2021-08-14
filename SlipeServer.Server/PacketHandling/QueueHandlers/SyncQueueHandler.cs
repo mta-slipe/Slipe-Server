@@ -17,7 +17,6 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 {
     public class SyncQueueHandler : ScalingWorkerBasedQueueHandler
     {
-        private readonly Configuration configuration;
         private readonly ILogger logger;
         private readonly IElementRepository elementRepository;
         private readonly ISyncHandlerMiddleware<PlayerPureSyncPacket> pureSyncMiddleware;
@@ -40,7 +39,6 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         };
 
         public SyncQueueHandler(
-            Configuration configuration,
             ILogger logger,
             IElementRepository elementRepository,
             ISyncHandlerMiddleware<PlayerPureSyncPacket> pureSyncMiddleware,
@@ -49,7 +47,6 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             QueueHandlerScalingConfig config
         ): base(config, sleepInterval)
         {
-            this.configuration = configuration;
             this.logger = logger;
             this.elementRepository = elementRepository;
             this.pureSyncMiddleware = pureSyncMiddleware;

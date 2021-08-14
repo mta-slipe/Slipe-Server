@@ -13,16 +13,8 @@ namespace SlipeServer.Server.Behaviour
 {
     public class VoiceBehaviour
     {
-        private readonly MtaServer server;
-        private readonly ILogger logger;
-        private readonly IElementRepository elementRepository;
-
-        public VoiceBehaviour(MtaServer server, ILogger logger, IElementRepository elementRepository)
+        public VoiceBehaviour(MtaServer server, IElementRepository elementRepository)
         {
-            this.server = server;
-            this.logger = logger;
-            this.elementRepository = elementRepository;
-
             server.PlayerJoined += (player) =>
             {
                 player.OnVoiceData += (sender, args) =>

@@ -20,16 +20,13 @@ namespace SlipeServer.Server.PacketHandling.Factories
 
         public static Packet CreateSetRotationPacket(Element element, Vector3 rotation)
         {
-            switch (element)
+            return element switch
             {
-                case Vehicle:
-                    return new SetVehicleRotationRpcPacket(element.Id, element.GetAndIncrementTimeContext(), rotation);
-                case Ped:
-                    return new SetPedRotationRpcPacket(element.Id, element.GetAndIncrementTimeContext(), rotation.Z * (MathF.PI / 180), true);
-                case WorldObject:
-                    return new SetObjectRotationRpcPacket(element.Id, rotation);
-            }
-            throw new NotImplementedException($"Can not create set rotation packet for {element.GetType()}");
+                Vehicle => new SetVehicleRotationRpcPacket(element.Id, element.GetAndIncrementTimeContext(), rotation),
+                Ped => new SetPedRotationRpcPacket(element.Id, element.GetAndIncrementTimeContext(), rotation.Z * (MathF.PI / 180), true),
+                WorldObject => new SetObjectRotationRpcPacket(element.Id, rotation),
+                _ => throw new NotImplementedException($"Can not create set rotation packet for {element.GetType()}"),
+            };
         }
 
         public static SetElementHealthRpcPacket CreateSetHealthPacket(Element element, float health)

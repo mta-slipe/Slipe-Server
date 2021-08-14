@@ -45,7 +45,7 @@ namespace SlipeServer.Server.Tests.Integration.Miscellaneous
 
             var player = server.AddFakePlayer();
 
-            using var scope = new ClientPacketScope(new Client[] { });
+            using var scope = new ClientPacketScope(Array.Empty<Client>());
             player.Client.SendPacket(new SetElementModelRpcPacket(player.Id, 0));
 
             server.NetWrapperMock.Verify(x => x.SendPacket(
@@ -74,7 +74,7 @@ namespace SlipeServer.Server.Tests.Integration.Miscellaneous
                 }),
                 Task.Run(async() =>
                 {
-                    using var scope = new ClientPacketScope(new Client[] { });
+                    using var scope = new ClientPacketScope(Array.Empty<Client>());
                     await Task.Delay(25);
                     player.Client.SendPacket(new SetElementModelRpcPacket(player.Id, 2));
                 })

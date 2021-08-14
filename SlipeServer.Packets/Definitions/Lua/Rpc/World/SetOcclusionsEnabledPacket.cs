@@ -16,7 +16,7 @@ namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
 
         public SetOcclusionsEnabledPacket(bool enabled)
         {
-            Enabled = enabled;
+            this.Enabled = enabled;
         }
 
         public override void Read(byte[] bytes)
