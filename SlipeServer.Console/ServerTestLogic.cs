@@ -305,7 +305,7 @@ namespace SlipeServer.Console
                 }
             };
 
-            player.OnScreenshot += HandlePlayerScreenshot;
+            player.ScreenshotTaken += HandlePlayerScreenshot;
 
             //player.AddWeapon(WeaponId.Ak47, 500, true);
             //player.AddWeapon(WeaponId.Tec9, 500, true);
