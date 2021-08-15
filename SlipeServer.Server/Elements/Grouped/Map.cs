@@ -10,5 +10,13 @@ namespace SlipeServer.Server.Elements.Grouped
 {
     public class Map : Dictionary<string, object>
     {
+        public void AssociateWith(MtaServer server)
+        {
+            foreach (var pair in this)
+            {
+                if (pair.Value is Element element)
+                    server.AssociateElement(element);
+            }
+        }
     }
 }

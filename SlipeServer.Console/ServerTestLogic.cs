@@ -146,6 +146,7 @@ namespace SlipeServer.Console
                     var map = mapLoader.LoadMap(memoryStream);
                     WorldObject? obj = map["object(des_alphabit09)(4)"] as WorldObject;
                     int x = 5;
+                    map.AssociateWith(this.server);
                 }
             }
         }
