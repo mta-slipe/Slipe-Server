@@ -21,21 +21,28 @@ namespace SlipeServer.Server.Loaders.Map
             this.data = data;
         }
 
-        public void ResolveArray<Definition, Produces>(Expression<Func<T, Definition[]>> selector, Func<Definition, Produces> resolve) where Definition : IdDefinition
+        public void ResolveArray<Definition, Produces>(Expression<Func<T, Definition[]?>> selector, Func<Definition, Produces> resolve) where Definition : IdDefinition
         {
-            var memberExpression = selector.Body as MemberExpression;
-            var propertyInfo = memberExpression.Member as PropertyInfo;
-            var value = propertyInfo.GetValue(data, null);
+            if (selector.Body is not MemberExpression memberExpression)
+                return;
+
+            if (memberExpression.Member is not PropertyInfo propertyInfo)
+                return;
+
+            var value = propertyInfo.GetValue(this.data, null);
             if (value == null)
                 return;
 
             var select = selector.Compile();
-            var foo = select(data);
-            foreach (var item in foo)
+            var selectedType = select(this.data);
+            if (selectedType == null)
+                return;
+
+            foreach (var item in selectedType)
             {
                 var result = resolve(item);
                 if (result != null)
-                    map[item.Id ?? Guid.NewGuid().ToString()] = result;
+                    this.map[item.Id ?? Guid.NewGuid().ToString()] = result;
             }
         }
     }

@@ -137,14 +137,14 @@ namespace SlipeServer.Console
                 using (StreamWriter streamWriter = new StreamWriter(memoryStream))
                 {
                     streamWriter.WriteLine(@"<map edf:definitions=""editor_main"">");
-                    streamWriter.WriteLine(@"    <object id=""object(des_alphabit09)(1)"" breakable=""true"" interior=""0"" alpha=""255"" model=""16744"" doublesided=""false"" scale=""1"" dimension=""0"" posX=""1376.9"" posY=""466.10001"" posZ=""0"" rotX=""0"" rotY=""0"" rotZ=""0""></object>");
-                    streamWriter.WriteLine(@"    <object id=""object(des_alphabit09)(2)"" breakable=""true"" interior=""0"" alpha=""255"" model=""16744"" doublesided=""false"" scale=""1"" dimension=""0"" posX=""1376.9"" posY=""466.10001"" posZ=""0"" rotX=""0"" rotY=""0"" rotZ=""0""></object>");
-                    streamWriter.WriteLine(@"    <object id=""object(des_alphabit09)(3)"" breakable=""true"" interior=""0"" alpha=""255"" model=""16744"" doublesided=""false"" scale=""1"" dimension=""0"" posX=""1376.9"" posY=""466.10001"" posZ=""0"" rotX=""0"" rotY=""0"" rotZ=""0""></object>");
-                    streamWriter.WriteLine(@"    <object id=""object(des_alphabit09)(4)"" breakable=""true"" interior=""0"" alpha=""255"" model=""16744"" doublesided=""false"" scale=""1"" dimension=""0"" posX=""1376.9"" posY=""466.10001"" posZ=""0"" rotX=""0"" rotY=""0"" rotZ=""0""></object>");
+                    streamWriter.WriteLine(@"    <object id=""object(des_alphabit09)(1)"" breakable=""true"" interior=""0"" alpha=""255"" model=""1337"" doublesided=""false"" scale=""1"" dimension=""0"" posX=""1376.9"" posY=""466.10001"" posZ=""0"" rotX=""0"" rotY=""0"" rotZ=""0""></object>");
+                    streamWriter.WriteLine(@"    <object id=""object(des_alphabit09)(2)"" breakable=""true"" interior=""0"" alpha=""255"" model=""1337"" doublesided=""false"" scale=""1"" dimension=""0"" posX=""1376.9"" posY=""466.10001"" posZ=""0"" rotX=""0"" rotY=""0"" rotZ=""0""></object>");
+                    streamWriter.WriteLine(@"    <object id=""object(des_alphabit09)(3)"" breakable=""true"" interior=""0"" alpha=""255"" model=""1337"" doublesided=""false"" scale=""1"" dimension=""0"" posX=""1376.9"" posY=""466.10001"" posZ=""0"" rotX=""0"" rotY=""0"" rotZ=""0""></object>");
+                    streamWriter.WriteLine(@"    <object id=""object(des_alphabit09)(4)"" breakable=""true"" interior=""0"" alpha=""255"" model=""1337"" doublesided=""false"" scale=""1"" dimension=""0"" posX=""1376.9"" posY=""466.10001"" posZ=""0"" rotX=""0"" rotY=""0"" rotZ=""0""></object>");
                     streamWriter.WriteLine("</map>");
                     streamWriter.Flush();
                     var map = mapLoader.LoadMap(memoryStream);
-                    WorldObject obj = map["object(des_alphabit09)(4)"] as WorldObject;
+                    WorldObject? obj = map["object(des_alphabit09)(4)"] as WorldObject;
                     int x = 5;
                 }
             }

@@ -17,9 +17,9 @@ namespace SlipeServer.Server.Loaders.Map
     public class DefaultMap
     {
         [XmlElement("object")]
-        public WorldObjectDefinition[] Objects { get; set; }
+        public WorldObjectDefinition[]? Objects { get; set; }
         [XmlElement("vehicle")]
-        public VehicleDefinition[] Vehicles { get; set; }
+        public VehicleDefinition[]? Vehicles { get; set; }
     }
 
     public class DefaultMapLoader : MapLoader<DefaultMap>
@@ -30,9 +30,9 @@ namespace SlipeServer.Server.Loaders.Map
 
         public override void Resolve(Resolver<DefaultMap> resolver)
         {
-            resolver.ResolveArray(e => e.Objects, e =>
+            resolver.ResolveArray(e => e.Objects, @object =>
             {
-                return new WorldObject(Enums.ObjectModel.A51gatecontrol, Vector3.Zero);
+                return new WorldObject(@object.ObjectModel, @object.Position);
             });
             resolver.ResolveArray(e => e.Vehicles, e =>
             {
