@@ -278,6 +278,31 @@ namespace SlipeServer.Console
                 if (args.Command == "playerlist")
                     foreach (var remotePlayer in this.elementRepository.GetByType<Player>(ElementType.Player))
                         this.chatBox.OutputTo(player, remotePlayer.Name);
+
+                if (args.Command == "resendmodpackets")
+                    player.ResendModPackets();
+
+                if (args.Command == "ac")
+                    player.ResendPlayerACInfo();
+            };
+
+            player.AcInfoReceived += (o, args) =>
+            {
+                logger.LogInformation($"ACInfo for {player.Name} detectedACList:{string.Join(",", args.DetectedACList)} d3d9Size: {args.D3D9Size} d3d9SHA256: {args.D3D9SHA256}");
+            };
+            
+            player.DiagnosticInfoReceived += (o, args) =>
+            {
+                logger.LogInformation($"DIAGNOSTIC: {player.Name} #{args.Level} {args.Message}");
+            };
+
+            player.ModInfoReceived += (o, args) =>
+            {
+                logger.LogInformation($"Player: {player.Name} ModInfo:");
+                foreach (var item in args.ModInfoItems)
+                {
+                    logger.LogInformation($"\t{item.Name} - md5: {item.LongMd5}");
+                }
             };
         }
 

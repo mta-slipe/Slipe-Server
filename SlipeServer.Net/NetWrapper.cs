@@ -46,6 +46,11 @@ namespace SlipeServer.Net
         [DllImport(wrapperDllpath, EntryPoint = "setChecks")]
         private static extern void SetChecks(ushort id, string szDisableComboACMap, string szDisableACMap, string szEnableSDMap, int iEnableClientChecks, bool bHideAC, string szImgMods);
 
+        [DllImport(wrapperDllpath, EntryPoint = "resendModPackets")]
+        private static extern void ResendModPackets(ushort id, uint binaryAddress);
+        [DllImport(wrapperDllpath, EntryPoint = "resendPlayerACInfo")]
+        private static extern void ResendPlayerACInfo(ushort id, uint binaryAddress);
+
 #pragma warning restore CA2101 // Specify marshaling for P/Invoke string arguments
 
         private readonly PacketCallback packetInterceptorDelegate;
@@ -111,6 +116,15 @@ namespace SlipeServer.Net
             string extra = result.Substring(serialSize, extraSize);
             string version = result.Substring(serialSize + extraSize);
             return new Tuple<string, string, string>(serial, extra, version);
+        }
+
+        public void ResendModPackets(uint binaryAddress)
+        {
+            ResendModPackets(this.id, binaryAddress);
+        }
+        public void ResendPlayerACInfo(uint binaryAddress)
+        {
+            ResendPlayerACInfo(this.id, binaryAddress);
         }
 
         public void SetVersion(uint binaryAddress, ushort version)
