@@ -1,12 +1,8 @@
-﻿using SlipeServer.Packets.Definitions.Commands;
-using SlipeServer.Packets.Definitions.Player;
-using SlipeServer.Packets.DefinitionsTextITems;
-using SlipeServer.Packets.Enums;
+﻿using SlipeServer.Packets.DefinitionsTextITems;
 using SlipeServer.Server.ElementConcepts;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
