@@ -10,18 +10,23 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers.SyncMiddleware
     {
         private readonly IElementRepository elementRepository;
         private readonly float range;
+        private readonly bool excludesSource;
 
-        public RangeSyncHandlerMiddleware(IElementRepository elementRepository, float range)
+        public RangeSyncHandlerMiddleware(IElementRepository elementRepository, float range, bool excludesSource = true)
         {
             this.elementRepository = elementRepository;
             this.range = range;
+            this.excludesSource = excludesSource;
         }
 
         public IEnumerable<Player> GetPlayersToSyncTo(Player player, TData packet)
         {
-            return this.elementRepository
-                .GetWithinRange<Player>(player.Position, this.range, ElementType.Player)
-                .Where(x => x != player);
+            var elements = this.elementRepository
+                .GetWithinRange<Player>(player.Position, this.range, ElementType.Player);
+
+            if (this.excludesSource)
+                return elements.Where(x => x != player);
+            return elements;
         }
     }
 }

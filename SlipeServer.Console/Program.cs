@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using SlipeServer.ConfigurationProviders;
 using SlipeServer.ConfigurationProviders.Configurations;
 using SlipeServer.Lua;
+using SlipeServer.Packets.Definitions.Satchels;
 using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Server;
 using SlipeServer.Server.AllSeeingEye;
@@ -99,6 +100,12 @@ namespace SlipeServer.Console
             services.AddSingleton<ISyncHandlerMiddleware<ProjectileSyncPacket>, RangeSyncHandlerMiddleware<ProjectileSyncPacket>>(
                 x => new RangeSyncHandlerMiddleware<ProjectileSyncPacket>(x.GetRequiredService<IElementRepository>(), this.configuration.ExplosionSyncDistance)
             );
+            services.AddSingleton<ISyncHandlerMiddleware<DetonateSatchelsPacket>, RangeSyncHandlerMiddleware<DetonateSatchelsPacket>>(
+                x => new RangeSyncHandlerMiddleware<DetonateSatchelsPacket>(x.GetRequiredService<IElementRepository>(), this.configuration.ExplosionSyncDistance, false)
+            );
+            services.AddSingleton<ISyncHandlerMiddleware<DestroySatchelsPacket>, RangeSyncHandlerMiddleware<DestroySatchelsPacket>>(
+                x => new RangeSyncHandlerMiddleware<DestroySatchelsPacket>(x.GetRequiredService<IElementRepository>(), this.configuration.ExplosionSyncDistance, false)
+            );
 
             services.AddSingleton<ISyncHandlerMiddleware<PlayerPureSyncPacket>, SubscriptionSyncHandlerMiddleware<PlayerPureSyncPacket>>();
             services.AddSingleton<ISyncHandlerMiddleware<KeySyncPacket>, SubscriptionSyncHandlerMiddleware<KeySyncPacket>>();
@@ -139,6 +146,7 @@ namespace SlipeServer.Console
             this.server.RegisterPacketQueueHandler<VehicleInOutHandler>(10, 1);
             this.server.RegisterPacketQueueHandler<VehicleSyncQueueHandler>(QueueHandlerScalingConfig.Aggressive, 10);
             this.server.RegisterPacketQueueHandler<VoiceHandler>(10, 1);
+            this.server.RegisterPacketQueueHandler<SatchelQueueHandler>(10, 1);
         }
 
         private void SetupBehaviour()

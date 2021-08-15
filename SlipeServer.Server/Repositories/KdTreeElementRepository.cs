@@ -21,8 +21,8 @@ namespace SlipeServer.Server.Repositories
 
         public void Add(Element element)
         {
-            this.elements.Add(new float[] { element.Position.X, element.Position.Y, element.Position.Z }, element);
             element.PositionChanged += ReInsertElement;
+            this.elements.Add(new float[] { element.Position.X, element.Position.Y, element.Position.Z }, element);
         }
 
         public Element? Get(uint id)
@@ -34,8 +34,8 @@ namespace SlipeServer.Server.Repositories
 
         public void Remove(Element element)
         {
-            this.elements.RemoveAt(new float[] { element.Position.X, element.Position.Y, element.Position.Z });
             element.PositionChanged -= ReInsertElement;
+            this.elements.RemoveAt(new float[] { element.Position.X, element.Position.Y, element.Position.Z });
         }
 
         public IEnumerable<Element> GetAll()
@@ -69,7 +69,9 @@ namespace SlipeServer.Server.Repositories
 
         private void ReInsertElement(Element sender, ElementChangedEventArgs<Vector3> args)
         {
-            this.elements.RemoveAt(new float[] { sender.Position.X, sender.Position.Y, sender.Position.Z });
+            var neighbour = this.elements.GetNearestNeighbours(new float[] { args.OldValue.X, args.OldValue.Y, args.OldValue.Z }, 1).SingleOrDefault();
+            if (neighbour != null && neighbour.Value == sender)
+                this.elements.RemoveAt(neighbour.Point);
             this.elements.Add(new float[] { args.NewValue.X, args.NewValue.Y, args.NewValue.Z }, args.Source);
         }
     }
