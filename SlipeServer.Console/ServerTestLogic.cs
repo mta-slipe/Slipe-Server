@@ -35,6 +35,7 @@ namespace SlipeServer.Console
         private readonly LuaEventService luaService;
         private readonly ExplosionService explosionService;
         private readonly FireService fireService;
+        private readonly TextItemService textItemService;
         private Resource? testResource;
 
         public ServerTestLogic(
@@ -49,7 +50,8 @@ namespace SlipeServer.Console
             ClientConsole console,
             LuaEventService luaService,
             ExplosionService explosionService,
-            FireService fireService
+            FireService fireService,
+            TextItemService textItemService
         )
         {
             this.server = server;
@@ -64,6 +66,7 @@ namespace SlipeServer.Console
             this.luaService = luaService;
             this.explosionService = explosionService;
             this.fireService = fireService;
+            this.textItemService = textItemService;
             this.SetupTestLogic();
         }
 
@@ -276,8 +279,19 @@ namespace SlipeServer.Console
                     player.Kick("You has been kicked by slipe");
 
                 if (args.Command == "playerlist")
-                    foreach (var remotePlayer in this.elementRepository.GetByType<Player>(ElementType.Player))
+                {
+                    var players = this.elementRepository.GetByType<Player>(ElementType.Player);
+                    foreach (var remotePlayer in players)
                         this.chatBox.OutputTo(player, remotePlayer.Name);
+
+                    var text = string.Join('\n', players.Select(x => x.Name));
+                    var textItem = this.textItemService.CreateTextItemFor(player, text, Vector2.Zero, 5);
+                    Task.Run(async () =>
+                    {
+                        await Task.Delay(5000);
+                        this.textItemService.DeleteTextItemFor(player, textItem);
+                    });
+                }
 
 
                 if (args.Command == "increment")

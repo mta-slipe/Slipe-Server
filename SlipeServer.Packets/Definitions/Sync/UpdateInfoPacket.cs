@@ -8,7 +8,7 @@ using System.Text;
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element
 {
     public class UpdateInfoPacket : Packet
-    { 
+    {
         public override PacketId PacketId => PacketId.PACKET_ID_UPDATE_INFO;
         public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
         public override PacketPriority Priority => PacketPriority.High;
