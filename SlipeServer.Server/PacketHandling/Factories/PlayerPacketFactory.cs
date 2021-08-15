@@ -118,7 +118,7 @@ namespace SlipeServer.Server.PacketHandling.Factories
 
         public static SpawnPlayerPacket CreateSpawnPacket(Player player)
         {
-            return new SpawnPlayerPacket(player.Id, 0, player.Position, player.PedRotation, player.Model, 0, player.Interior, player.Dimension, player.GetAndIncrementTimeContext()); ;
+            return new SpawnPlayerPacket(player.Id, 0, player.Position, player.PedRotation, player.Model, 0, player.Interior, player.Dimension, player.GetAndIncrementTimeContext());
         }
 
         public static PlayerWastedPacket CreateWastedPacket(
