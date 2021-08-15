@@ -243,6 +243,7 @@ namespace SlipeServer.Console
         private void HandlePlayerCommands(Player player)
         {
             player.CommandEntered += (o, args) => { if (args.Command == "kill") player.Kill(); };
+            player.CommandEntered += (o, args) => { if (args.Command == "spawn") player.Spawn(new Vector3(20, 0, 3), 0, 9, 0, 0); };
             player.CommandEntered += (o, args) => {
                 if (args.Command == "boom")
                     this.explosionService.CreateExplosion(player.Position, ExplosionType.Tiny);

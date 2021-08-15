@@ -18,17 +18,59 @@ namespace SlipeServer.Packets.Definitions.Sync
         public override PacketReliability Reliability => PacketReliability.Unreliable;
         public override PacketPriority Priority => PacketPriority.Low;
 
-        public uint ElementId { get; set; }
-        public byte TimeContext { get; set; }
-        public ushort Latency { get; set; }
-        public float? Health { get; set; }
-        public float? Armor { get; set; }
-        public Vector3? Position{ get; set; }
-        public float? VehicleHealth { get; set; }
+        private readonly PacketBuilder builder;
+
 
         public LightSyncPacket()
         {
+            this.builder = new();
+        }
 
+        public LightSyncPacket(
+            uint elementId, 
+            byte timeContext,
+            ushort latency,
+            float? health,
+            float? armor,
+            Vector3? position,
+            float? vehicleHealth
+        ) : this()
+        {
+            this.AddPlayer(elementId, timeContext, latency, health, armor, position, vehicleHealth);
+        }
+
+        public void AddPlayer(
+            uint elementId,
+            byte timeContext,
+            ushort latency,
+            float? health,
+            float? armor,
+            Vector3? position,
+            float? vehicleHealth
+        )
+        {
+
+            this.builder.WriteElementId(elementId);
+            this.builder.Write(timeContext);
+            this.builder.WriteCompressed(latency);
+
+            this.builder.Write(health != null && armor != null);
+
+            if (health != null && armor != null)
+            {
+                this.builder.WritePlayerHealth(health.Value);
+                this.builder.WritePlayerArmor(armor.Value);
+            }
+
+            this.builder.Write(position != null);
+            if (position != null)
+            {
+                this.builder.WriteLowPrecisionVector3(position.Value);
+
+                this.builder.Write(vehicleHealth != null);
+                if (vehicleHealth != null)
+                    this.builder.WriteLowPrecisionVehicleHealth(vehicleHealth.Value);
+            }
         }
 
         public override void Read(byte[] bytes)
@@ -38,31 +80,7 @@ namespace SlipeServer.Packets.Definitions.Sync
 
         public override byte[] Write()
         {
-            var builder = new PacketBuilder();
-
-            builder.WriteElementId(this.ElementId);
-            builder.Write(this.TimeContext);
-            builder.WriteCompressed(this.Latency);
-
-            builder.Write(this.Health != null && this.Armor != null);
-
-            if (this.Health != null && this.Armor != null)
-            {
-                builder.WritePlayerHealth(this.Health.Value);
-                builder.WritePlayerArmor(this.Armor.Value);
-            }
-
-            builder.Write(this.Position != null);
-            if (this.Position != null)
-            {
-                builder.WriteLowPrecisionVector3(this.Position.Value);
-
-                builder.Write(this.VehicleHealth != null);
-                if (this.VehicleHealth != null)
-                    builder.WriteLowPrecisionVehicleHealth(this.VehicleHealth.Value);
-            }
-
-            return builder.Build();
+            return this.builder.Build();
         }
     }
 }
