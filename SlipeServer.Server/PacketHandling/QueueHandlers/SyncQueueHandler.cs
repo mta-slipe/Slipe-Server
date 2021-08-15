@@ -122,6 +122,12 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
         private void HandleClientPureSyncPacket(Client client, PlayerPureSyncPacket packet)
         {
+            if (packet.TimeContext != client.Player.TimeContext && packet.TimeContext > 0 && client.Player.TimeContext > 0)
+            {
+                this.logger.LogWarning($"Received outdated Pure sync packet from {client.Player.Name}");
+                return;
+            }
+
             client.SendPacket(new ReturnSyncPacket(packet.Position));
             packet.PlayerId = client.Player.Id;
             packet.Latency = (ushort)client.Ping;

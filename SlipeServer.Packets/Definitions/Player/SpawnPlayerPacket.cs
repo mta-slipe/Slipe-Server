@@ -72,7 +72,7 @@ namespace SlipeServer.Packets.Definitions.Player
             builder.Write(this.Skin);
             builder.Write(this.Interior);
             builder.Write(this.Dimension);
-            builder.Write(this.TeamId);
+            builder.WriteElementId(this.TeamId);
             builder.Write(this.TimeContext);
 
             return builder.Build();

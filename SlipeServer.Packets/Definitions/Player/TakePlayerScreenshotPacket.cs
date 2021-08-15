@@ -15,7 +15,6 @@ namespace SlipeServer.Packets.Definitions.Player
         public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
         public override PacketPriority Priority => PacketPriority.High;
 
-        public byte TimeContext { get; set; }
         public ushort SizeX { get; set; }
         public ushort SizeY { get; set; }
         public string Tag { get; set; }
@@ -25,9 +24,8 @@ namespace SlipeServer.Packets.Definitions.Player
         public ushort ResourceId { get; set; }
         public string ResourceName { get; set; } = "unknown";
 
-        public TakePlayerScreenshotPacket(byte timeContext, ushort sizeX, ushort sizeY, string tag, byte quality, uint maxBandwith, ushort maxPacketSize, ushort resourceId)
+        public TakePlayerScreenshotPacket(ushort sizeX, ushort sizeY, string tag, byte quality, uint maxBandwith, ushort maxPacketSize, ushort resourceId)
         {
-            this.TimeContext = timeContext;
             this.SizeX = sizeX;
             this.SizeY = sizeY;
             this.Tag = tag;
@@ -57,8 +55,6 @@ namespace SlipeServer.Packets.Definitions.Player
             builder.Write(this.ResourceId);
             builder.Write(this.ResourceName);
             builder.Write((uint)0);
-
-            builder.Write(this.TimeContext);
 
             return builder.Build();
         }

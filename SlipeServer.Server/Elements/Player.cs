@@ -172,7 +172,7 @@ namespace SlipeServer.Server.Elements
         public void TakeScreenshot(ushort width, ushort height, string tag = "", byte quality = 30, uint maxBandwith = 5000, ushort maxPacketSize = 500)
         {
             quality = Math.Clamp(quality, (byte)0, (byte)100);
-            this.Client.SendPacket(ElementPacketFactory.CreateTakePlayerScreenshotPacket(this, width, height, tag, quality, maxBandwith, maxPacketSize, null));
+            this.Client.SendPacket(ElementPacketFactory.CreateTakePlayerScreenshotPacket(width, height, tag, quality, maxBandwith, maxPacketSize, null));
         }
 
         public void ScreenshotEnd(int screenshotId)
