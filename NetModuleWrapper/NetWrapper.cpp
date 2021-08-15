@@ -73,6 +73,16 @@ void NetWrapper::setSocketVersion(unsigned long address, unsigned short version)
     network->SetClientBitStreamVersion(sockets[address], version);
 }
 
+void NetWrapper::resendModPackets(unsigned long address)
+{
+    network->ResendModPackets(sockets[address]);
+}
+
+void NetWrapper::resendACPackets(unsigned long address)
+{
+    network->ResendACPackets(sockets[address]);
+}
+
 BSTR NetWrapper::getClientSerialAndVersion(unsigned long address, uint16_t& serialSize, uint16_t& extraSize, uint16_t& versionSize)
 {
     auto socket = sockets[address];

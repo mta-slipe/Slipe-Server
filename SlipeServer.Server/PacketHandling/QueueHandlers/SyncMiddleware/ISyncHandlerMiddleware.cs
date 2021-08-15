@@ -6,8 +6,8 @@ using System.Text;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers.SyncMiddleware
 {
-    public interface ISyncHandlerMiddleware<TPacket> where TPacket: Packet
+    public interface ISyncHandlerMiddleware<TData>
     {
-        IEnumerable<Player> GetPlayersToSyncTo(Player player, TPacket packet);
+        IEnumerable<Player> GetPlayersToSyncTo(Player player, TData data);
     }
 }

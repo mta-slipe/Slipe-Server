@@ -1,4 +1,5 @@
-﻿using SlipeServer.Server.ElementConcepts;
+﻿using SlipeServer.Packets.Definitions.Lua;
+using SlipeServer.Server.ElementConcepts;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Enums;
@@ -199,6 +200,36 @@ namespace SlipeServer.Server.Elements
             this.Client.SendPacket(new PlayerDisconnectPacket(type, string.Empty));
         }
 
+        public void TriggerSync()
+        {
+            this.PureSynced?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void ResendModPackets()
+        {
+            this.Client.ResendModPackets();
+        }
+
+        public void ResendPlayerACInfo()
+        {
+            this.Client.ResendPlayerACInfo();
+        }
+
+        internal void TriggerPlayerACInfo(IEnumerable<byte> detectedACList, uint d3d9Size, string d3d9MD5, string D3d9SHA256)
+        {
+            this.AcInfoReceived?.Invoke(this, new PlayerACInfoArgs(detectedACList, d3d9Size, d3d9MD5, D3d9SHA256));
+        }
+
+        internal void TriggerPlayerDiagnosticInfo(uint level, string message)
+        {
+            this.DiagnosticInfoReceived?.Invoke(this, new PlayerDiagnosticInfo(level, message));
+        }
+
+        internal void TriggerPlayerModInfo(string infoType, IEnumerable<ModInfoItem> modInfoItems)
+        {
+            this.ModInfoReceived?.Invoke(this, new PlayerModInfoArgs(infoType, modInfoItems));
+        }
+
         public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
         public event ElementEventHandler<Player, PlayerDamagedEventArgs>? Damaged;
         public event ElementEventHandler<Player, PlayerWastedEventArgs>? Wasted;
@@ -211,5 +242,9 @@ namespace SlipeServer.Server.Elements
         public event ElementEventHandler<Player, PlayerKickEventArgs>? Kicked;
         public event ElementEventHandler<Player, PlayerSubscriptionEventArgs>? Subscribed;
         public event ElementEventHandler<Player, PlayerSubscriptionEventArgs>? UnSubscribed;
+        public event ElementEventHandler<Player, EventArgs>? PureSynced;
+        public event ElementEventHandler<Player, PlayerACInfoArgs>? AcInfoReceived;
+        public event ElementEventHandler<Player, PlayerDiagnosticInfo>? DiagnosticInfoReceived;
+        public event ElementEventHandler<Player, PlayerModInfoArgs>? ModInfoReceived;
     }
 }

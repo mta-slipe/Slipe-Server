@@ -31,7 +31,7 @@ namespace SlipeServer.Server.PacketHandling.Factories
                 packet.AddPlayer(
                     playerId: player.Id,
                     timeContext: player.TimeContext,
-                    nickname: player.Name ?? "???",
+                    nickname: player.Name,
                     bitsreamVersion: 343,
                     buildNumber: 0,
 
@@ -43,7 +43,7 @@ namespace SlipeServer.Server.PacketHandling.Factories
                     isHeadless: player.IsHeadless,
                     isFrozen: player.IsFrozen,
 
-                    nametagText: player.Name ?? "???",
+                    nametagText: player.Name,
                     color: Color.FromArgb(255, 255, 0, 255),
                     moveAnimation: 0,
 

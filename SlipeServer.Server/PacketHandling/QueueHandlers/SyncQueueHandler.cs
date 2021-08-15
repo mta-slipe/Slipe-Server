@@ -15,21 +15,17 @@ using System.Threading.Tasks;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers
 {
-    public class SyncQueueHandler : ScalingWorkerBasedQueueHandler
+    public class SyncQueueHandler : OrderedScalingWorkerBasedQueueHandler
     {
         private readonly ILogger logger;
         private readonly IElementRepository elementRepository;
         private readonly ISyncHandlerMiddleware<PlayerPureSyncPacket> pureSyncMiddleware;
         private readonly ISyncHandlerMiddleware<ProjectileSyncPacket> projectileSyncMiddleware;
         private readonly ISyncHandlerMiddleware<KeySyncPacket> keySyncMiddleware;
+        private readonly ISyncHandlerMiddleware<PlayerBulletSyncPacket> playerBulletSyncMiddleware;
+        private readonly ISyncHandlerMiddleware<WeaponBulletSyncPacket> weaponBulletSyncMiddleware;
 
-        public override IEnumerable<PacketId> SupportedPacketIds => new PacketId[] 
-        { 
-            PacketId.PACKET_ID_CAMERA_SYNC,
-            PacketId.PACKET_ID_PLAYER_KEYSYNC,
-            PacketId.PACKET_ID_PLAYER_PURESYNC,
-            PacketId.PACKET_ID_PROJECTILE
-        };
+        public override IEnumerable<PacketId> SupportedPacketIds => this.PacketTypes.Keys;
 
         protected override Dictionary<PacketId, Type> PacketTypes { get; } = new Dictionary<PacketId, Type>()
         {
@@ -37,6 +33,8 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             [PacketId.PACKET_ID_PLAYER_KEYSYNC] = typeof(KeySyncPacket),
             [PacketId.PACKET_ID_PLAYER_PURESYNC] = typeof(PlayerPureSyncPacket),
             [PacketId.PACKET_ID_PROJECTILE] = typeof(ProjectileSyncPacket),
+            [PacketId.PACKET_ID_PLAYER_BULLETSYNC] = typeof(PlayerBulletSyncPacket),
+            [PacketId.PACKET_ID_WEAPON_BULLETSYNC] = typeof(WeaponBulletSyncPacket),
         };
 
         public SyncQueueHandler(
@@ -45,21 +43,25 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             ISyncHandlerMiddleware<PlayerPureSyncPacket> pureSyncMiddleware,
             ISyncHandlerMiddleware<ProjectileSyncPacket> projectileSyncMiddleware,
             ISyncHandlerMiddleware<KeySyncPacket> keySyncMiddleware,
-            int sleepInterval, 
+            ISyncHandlerMiddleware<PlayerBulletSyncPacket> playerBulletSyncMiddleware,
+            ISyncHandlerMiddleware<WeaponBulletSyncPacket> weaponBulletSyncMiddleware,
+            int sleepInterval,
             QueueHandlerScalingConfig config
-        ): base(config, sleepInterval)
+        ) : base(config, sleepInterval)
         {
             this.logger = logger;
             this.elementRepository = elementRepository;
             this.pureSyncMiddleware = pureSyncMiddleware;
             this.projectileSyncMiddleware = projectileSyncMiddleware;
             this.keySyncMiddleware = keySyncMiddleware;
+            this.playerBulletSyncMiddleware = playerBulletSyncMiddleware;
+            this.weaponBulletSyncMiddleware = weaponBulletSyncMiddleware;
         }
 
         protected override Task HandlePacket(Client client, Packet packet)
         {
             try
-            { 
+            {
                 switch (packet)
                 {
                     case CameraSyncPacket cameraSyncPacket:
@@ -74,8 +76,15 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                     case ProjectileSyncPacket projectileSyncPacket:
                         HandleProjectileSyncPacket(client, projectileSyncPacket);
                         break;
+                    case PlayerBulletSyncPacket playerBulletSyncPacket:
+                        HandlePlayerBulletSyncPacket(client, playerBulletSyncPacket);
+                        break;
+                    case WeaponBulletSyncPacket weaponBulletSyncPacket:
+                        HandleWeaponBulletSyncPacket(client, weaponBulletSyncPacket);
+                        break;
                 }
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 this.logger.LogError($"Handling packet ({packet.PacketId}) failed.\n{e.Message}");
             }
@@ -114,12 +123,12 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         private void HandleClientPureSyncPacket(Client client, PlayerPureSyncPacket packet)
         {
             client.SendPacket(new ReturnSyncPacket(packet.Position));
-
             packet.PlayerId = client.Player.Id;
             packet.Latency = (ushort)client.Ping;
 
             var otherPlayers = this.pureSyncMiddleware.GetPlayersToSyncTo(client.Player, packet);
-            packet.SendTo(otherPlayers);
+            if (otherPlayers.Any())
+                packet.SendTo(otherPlayers);
 
             var player = client.Player;
             player.RunAsSync(() =>
@@ -161,6 +170,22 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                     player.TriggerDamaged(damager, (WeaponType)packet.DamageType, (BodyPart)packet.DamageBodypart);
                 }
             });
+
+            player.TriggerSync();
+        }
+
+        private void HandlePlayerBulletSyncPacket(Client client, PlayerBulletSyncPacket packet)
+        {
+            packet.SourceElementId = client.Player.Id;
+            var otherPlayers = this.playerBulletSyncMiddleware.GetPlayersToSyncTo(client.Player, packet);
+            packet.SendTo(otherPlayers);
+        }
+
+        private void HandleWeaponBulletSyncPacket(Client client, WeaponBulletSyncPacket packet)
+        {
+            packet.SourceElementId = client.Player.Id;
+            var otherPlayers = this.weaponBulletSyncMiddleware.GetPlayersToSyncTo(client.Player, packet);
+            packet.SendTo(otherPlayers);
         }
     }
 }

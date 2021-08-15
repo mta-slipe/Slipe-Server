@@ -22,6 +22,9 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         {
             [PacketId.PACKET_ID_PLAYER_WASTED] = typeof(PlayerWastedPacket),
             [PacketId.PACKET_ID_PLAYER_SCREENSHOT] = typeof(PlayerScreenshotPacket),
+            [PacketId.PACKET_ID_PLAYER_DIAGNOSTIC] = typeof(PlayerDiagnosticPacket),
+            [PacketId.PACKET_ID_PLAYER_ACINFO] = typeof(PlayerACInfoPacket),
+            [PacketId.PACKET_ID_PLAYER_MODINFO] = typeof(PlayerModInfoPacket),
         };
 
         public PlayerEventQueueHandler(
@@ -47,12 +50,42 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                     case PlayerScreenshotPacket screenshotPacket:
                         HandlePlayerScreenshot(client, screenshotPacket);
                         break;
+                    case PlayerDiagnosticPacket diagnosticPacket:
+                        HandleDiagnosticPacket(client, diagnosticPacket);
+                        break;
+                    case PlayerACInfoPacket acInfoPacket:
+                        HandleAcInfoPacket(client, acInfoPacket);
+                        break;
+                    case PlayerModInfoPacket modInfoPacket:
+                        HandleModInfoPacket(client, modInfoPacket);
+                        break;
                 }
             }
             catch (Exception e)
             {
                 this.logger.LogError($"Handling packet ({packet.PacketId}) failed.\n{e.Message}");
             }
+        }
+
+        private void HandleDiagnosticPacket(Client client, PlayerDiagnosticPacket diagnosticPacket)
+        {
+            if(diagnosticPacket.Level == PlayerDiagnosticPacket.levelSpecialInfo)
+            {
+                client.Player.TriggerPlayerACInfo(diagnosticPacket.DetectedAC, diagnosticPacket.D3d9Size, diagnosticPacket.D3d9Md5, diagnosticPacket.D3d9Sha256);
+            }
+            else
+            {
+                client.Player.TriggerPlayerDiagnosticInfo(diagnosticPacket.Level, diagnosticPacket.Message);
+            }
+        }
+
+        private void HandleModInfoPacket(Client client, PlayerModInfoPacket modInfoPacket)
+        {
+            client.Player.TriggerPlayerModInfo(modInfoPacket.InfoType, modInfoPacket.ModInfoItems);
+        }
+        private void HandleAcInfoPacket(Client client, PlayerACInfoPacket acInfoPacket)
+        {
+            client.Player.TriggerPlayerACInfo(acInfoPacket.DetectedACList, acInfoPacket.D3d9Size, acInfoPacket.D3d9MD5, acInfoPacket.D3d9SHA256);
         }
 
         private void HandlePlayerWasted(Client client, PlayerWastedPacket wastedPacket)

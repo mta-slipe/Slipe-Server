@@ -37,6 +37,7 @@ namespace SlipeServer.Console
         private readonly LuaEventService luaService;
         private readonly ExplosionService explosionService;
         private readonly FireService fireService;
+        private readonly TextItemService textItemService;
         private readonly DefaultMapLoader mapLoader;
         private Resource? testResource;
 
@@ -53,6 +54,7 @@ namespace SlipeServer.Console
             LuaEventService luaService,
             ExplosionService explosionService,
             FireService fireService,
+            TextItemService textItemService
             DefaultMapLoader mapLoader
         )
         {
@@ -68,6 +70,7 @@ namespace SlipeServer.Console
             this.luaService = luaService;
             this.explosionService = explosionService;
             this.fireService = fireService;
+            this.textItemService = textItemService;
             this.mapLoader = mapLoader;
             this.SetupTestLogic();
         }
@@ -276,6 +279,7 @@ namespace SlipeServer.Console
         private void HandlePlayerCommands(Player player)
         {
             player.CommandEntered += (o, args) => { if (args.Command == "kill") player.Kill(); };
+            player.CommandEntered += (o, args) => { if (args.Command == "spawn") player.Spawn(new Vector3(20, 0, 3), 0, 9, 0, 0); };
             player.CommandEntered += (o, args) => {
                 if (args.Command == "boom")
                     this.explosionService.CreateExplosion(player.Position, ExplosionType.Tiny);
@@ -312,8 +316,48 @@ namespace SlipeServer.Console
                     player.Kick("You has been kicked by slipe");
 
                 if (args.Command == "playerlist")
-                    foreach (var remotePlayer in this.elementRepository.GetByType<Player>(ElementType.Player))
+                {
+                    var players = this.elementRepository.GetByType<Player>(ElementType.Player);
+                    foreach (var remotePlayer in players)
                         this.chatBox.OutputTo(player, remotePlayer.Name);
+
+                    var text = string.Join('\n', players.Select(x => x.Name));
+                    var textItem = this.textItemService.CreateTextItemFor(player, text, Vector2.Zero, 5);
+                    Task.Run(async () =>
+                    {
+                        await Task.Delay(5000);
+                        this.textItemService.DeleteTextItemFor(player, textItem);
+                    });
+                }
+
+
+                if (args.Command == "increment")
+                    player.GetAndIncrementTimeContext();
+
+                if (args.Command == "resendmodpackets")
+                    player.ResendModPackets();
+
+                if (args.Command == "ac")
+                    player.ResendPlayerACInfo();
+            };
+
+            player.AcInfoReceived += (o, args) =>
+            {
+                this.logger.LogInformation($"ACInfo for {player.Name} detectedACList:{string.Join(",", args.DetectedACList)} d3d9Size: {args.D3D9Size} d3d9SHA256: {args.D3D9SHA256}");
+            };
+            
+            player.DiagnosticInfoReceived += (o, args) =>
+            {
+                this.logger.LogInformation($"DIAGNOSTIC: {player.Name} #{args.Level} {args.Message}");
+            };
+
+            player.ModInfoReceived += (o, args) =>
+            {
+                this.logger.LogInformation($"Player: {player.Name} ModInfo:");
+                foreach (var item in args.ModInfoItems)
+                {
+                    this.logger.LogInformation($"\t{item.Name} - md5: {item.LongMd5}");
+                }
             };
         }
 

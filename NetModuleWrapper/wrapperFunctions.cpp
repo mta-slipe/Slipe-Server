@@ -21,6 +21,16 @@ EXPORT BSTR __cdecl getClientSerialAndVersion(ushort id, unsigned long address, 
     return NetWrapper::getNetWrapper(id)->getClientSerialAndVersion(address, serialSize, extraSize, versionSize);
 }
 
+EXPORT void __cdecl resendModPackets(ushort id, unsigned long address)
+{
+    NetWrapper::getNetWrapper(id)->resendModPackets(address);
+}
+
+EXPORT void __cdecl resendPlayerACInfo(ushort id, unsigned long address)
+{
+    NetWrapper::getNetWrapper(id)->resendACPackets(address);
+}
+
 EXPORT int __cdecl initNetWrapper(const char* netDllFilePath, const char* idFile, const char* ip, unsigned short port,
     unsigned int playerCount, const char* serverName, PacketCallback callback)
 {

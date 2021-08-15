@@ -33,6 +33,8 @@ namespace SlipeServer.Server
 
         public float ExplosionSyncDistance { get; set; } = 400;
 
+        public float LightSyncRange { get; set; } = 800;
+
         public ushort BitStreamVersion { get; set; } = 114;
 
         public bool IsVoiceEnabled { get; set; }
@@ -65,7 +67,8 @@ namespace SlipeServer.Server
         public bool AllowShotgunDamageFix { get; set; } = true;
 
 
-        public AntiCheatConfiguration AntiCheat { get; set; } = new AntiCheatConfiguration();
+        public AntiCheatConfiguration AntiCheat { get; set; } = new();
+        public SyncIntervals SyncIntervals { get; set; } = new();
     }
 
     public class AntiCheatConfiguration
@@ -76,5 +79,17 @@ namespace SlipeServer.Server
         public DataFile FileChecks { get; set; } = DataFile.None;
         public bool HideAntiCheat { get; set; } = false;
         public int VerifyClientSettings { get; set; } = -1;
+    }
+
+    public class SyncIntervals
+    {
+        public int PureSync { get; set; } = 100;
+        public int LightSync { get; set; } = 1500;
+        public int CamSync { get; set; } = 500;
+        public int PedSync { get; set; } = 400;
+        public int UnoccupiedVehicle { get; set; } = 400;
+        public int ObjectSync { get; set; } = 500;
+        public int KeySyncRotation { get; set; } = 25;
+        public int KeySyncAnalogMove { get; set; } = 25;
     }
 }

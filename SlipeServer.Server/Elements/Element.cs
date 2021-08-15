@@ -154,6 +154,7 @@ namespace SlipeServer.Server.Elements
         {
             this.children = new ();
             this.subscribers = new();
+            this.TimeContext = 1;
         }
 
         public Element(Element parent) : this()

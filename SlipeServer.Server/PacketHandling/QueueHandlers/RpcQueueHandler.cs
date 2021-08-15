@@ -122,9 +122,10 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             var newPlayerListPacket = PlayerPacketFactory.CreatePlayerListPacket(new Player[] { client.Player }, false);
             newPlayerListPacket.SendTo(otherPlayers);
 
-            this.server.HandlePlayerJoin(client.Player);
-
             SyncPacketFactory.CreateSyncSettingsPacket(this.configuration).SendTo(client.Player);
+            SyncPacketFactory.CreateSyncIntervalPacket(this.configuration).SendTo(client.Player);
+
+            this.server.HandlePlayerJoin(client.Player);
         }
 
         private void HandlePlayerWeapon(Client client, RpcPacket packet)

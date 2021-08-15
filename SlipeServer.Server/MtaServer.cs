@@ -201,6 +201,7 @@ namespace SlipeServer.Server
             this.serviceCollection.AddSingleton<LuaEventService>();
             this.serviceCollection.AddSingleton<ExplosionService>();
             this.serviceCollection.AddSingleton<FireService>();
+            this.serviceCollection.AddSingleton<TextItemService>();
             this.serviceCollection.AddSingleton<DefaultMapLoader>();
 
             this.serviceCollection.AddSingleton<HttpClient>();
