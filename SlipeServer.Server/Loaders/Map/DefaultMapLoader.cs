@@ -1,6 +1,5 @@
 ﻿using SlipeServer.Server.Elements;
 using SlipeServer.Server.Loaders.Map.ElementsDefinitions;
-using SlipeServer.Server.Loaders.Map.Resolvers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -30,13 +29,13 @@ namespace SlipeServer.Server.Loaders.Map
 
         public override void Resolve(Resolver<DefaultMap> resolver)
         {
-            resolver.ResolveArray(e => e.Objects, @object =>
+            resolver.Resolve(e => e.Objects, @object =>
             {
                 return new WorldObject(@object.ObjectModel, @object.Position);
             });
-            resolver.ResolveArray(e => e.Vehicles, e =>
+            resolver.Resolve(e => e.Vehicles, vehicle =>
             {
-                return new Vehicle(404, Vector3.Zero);
+                return new Vehicle((ushort)vehicle.VehicleModel, vehicle.Position);
             });
         }
     }

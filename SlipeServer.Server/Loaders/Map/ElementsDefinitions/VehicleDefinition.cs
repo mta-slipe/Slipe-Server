@@ -1,4 +1,5 @@
 ﻿using SlipeServer.Server.Elements;
+using SlipeServer.Server.Loaders.Map.ElementsDefinitions.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ using System.Xml.Serialization;
 
 namespace SlipeServer.Server.Loaders.Map.ElementsDefinitions
 {
-    public class VehicleDefinition : Element3DDefinition
+    public class VehicleDefinition : Element3DDefinition, IDefinitionName
     {
         [XmlAttribute("model")]
         public int Model { get; set; }
@@ -79,6 +80,8 @@ namespace SlipeServer.Server.Loaders.Map.ElementsDefinitions
         public float respawnRotX { get; set; }
 
         [XmlIgnore]
-        public VehicleModel ObjectModel => (VehicleModel)Enum.Parse(typeof(VehicleModel), this.Model.ToString());
+        public VehicleModel VehicleModel => (VehicleModel)Enum.Parse(typeof(VehicleModel), this.Model.ToString());
+        [XmlIgnore]
+        public string DefinitionName => "vehicle";
     }
 }

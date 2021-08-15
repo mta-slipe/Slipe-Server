@@ -15,8 +15,25 @@ namespace SlipeServer.Server.Loaders.Map
 {
     using Map = Elements.Grouped.Map;
 
+    public enum EIdentifiersBehaviour
+    {
+        // Ignore missing/duplicated ids, if something wrong with id it gets generated automatically.
+        Ignore,
+        // Throw an exception if id is not set, invalid or duplicated.
+        Throw,
+    }
+
     public class MapLoaderOptions
     {
+        public EIdentifiersBehaviour IdentifiersBehaviour { get; set; }
+    }
+
+    public sealed class DefaultMapLoaderOptions : MapLoaderOptions
+    {
+        public DefaultMapLoaderOptions()
+        {
+            IdentifiersBehaviour = EIdentifiersBehaviour.Ignore;
+        }
     }
 
     public abstract class MapLoader<T> where T : class
@@ -30,9 +47,11 @@ namespace SlipeServer.Server.Loaders.Map
 
         public abstract void Resolve(Resolver<T> resolver);
 
-        public Map LoadMap(Stream stream)
+        public Map? LoadMap(Stream stream, MtaServer server, MapLoaderOptions? mapLoaderOptions = null)
         {
-            Map map = new Map();
+            if (mapLoaderOptions == null)
+                mapLoaderOptions = new DefaultMapLoaderOptions();
+
 
             stream.Position = 0;
 
@@ -45,10 +64,13 @@ namespace SlipeServer.Server.Loaders.Map
             T? data = serializer.Deserialize(reader) as T;
             if(data != null)
             {
-                Resolver<T> resolver = new(map, data);
+                Map map = new Map();
+                Resolver<T> resolver = new(map, data, mapLoaderOptions);
                 Resolve(resolver);
+                map.AssociateWith(server);
+                return map;
             }
-            return map;
+            return null;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using SlipeServer.Server.Enums;
+using SlipeServer.Server.Loaders.Map.ElementsDefinitions.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ using System.Xml.Serialization;
 
 namespace SlipeServer.Server.Loaders.Map.ElementsDefinitions
 {
-    public class WorldObjectDefinition : Element3DDefinition
+    public class WorldObjectDefinition : Element3DDefinition, IDefinitionName
     {
         [XmlAttribute("model")]
         public int Model { get; set; }
@@ -38,6 +39,7 @@ namespace SlipeServer.Server.Loaders.Map.ElementsDefinitions
 
         [XmlIgnore]
         public ObjectModel ObjectModel => (ObjectModel)Enum.Parse(typeof(ObjectModel), this.Model.ToString());
-
+        [XmlIgnore]
+        public string DefinitionName => "object";
     }
 }
