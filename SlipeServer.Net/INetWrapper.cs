@@ -14,6 +14,8 @@ namespace SlipeServer.Net
         void SendPacket(uint binaryAddress, Packet packet);
         void SendPacket(uint binaryAddress, PacketId packetId, byte[] data, PacketPriority priority = PacketPriority.High, PacketReliability reliability = PacketReliability.ReliableSequenced);
         void SetVersion(uint binaryAddress, ushort version);
+        void ResendModPackets(uint binaryAddress);
+        void ResendPlayerACInfo(uint binaryAddress);
         void SetAntiCheatConfig(
             IEnumerable<AntiCheat> disabledAntiCheats,
             bool hideAntiCheatFromClient,
