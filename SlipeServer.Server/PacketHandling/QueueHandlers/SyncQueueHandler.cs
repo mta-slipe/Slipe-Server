@@ -10,6 +10,7 @@ using SlipeServer.Server.PacketHandling.QueueHandlers.SyncMiddleware;
 using SlipeServer.Server.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers
@@ -122,12 +123,12 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         private void HandleClientPureSyncPacket(Client client, PlayerPureSyncPacket packet)
         {
             client.SendPacket(new ReturnSyncPacket(packet.Position));
-
             packet.PlayerId = client.Player.Id;
             packet.Latency = (ushort)client.Ping;
 
             var otherPlayers = this.pureSyncMiddleware.GetPlayersToSyncTo(client.Player, packet);
-            packet.SendTo(otherPlayers);
+            if (otherPlayers.Any())
+                packet.SendTo(otherPlayers);
 
             var player = client.Player;
             player.RunAsSync(() =>

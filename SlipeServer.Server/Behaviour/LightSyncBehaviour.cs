@@ -3,7 +3,6 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.QueueHandlers.SyncMiddleware;
 using SlipeServer.Server.Repositories;
-using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
 
@@ -16,10 +15,14 @@ namespace SlipeServer.Server.Behaviour
 
         private readonly Timer timer;
 
-        public LightSyncBehaviour(IElementRepository elementRepository, ISyncHandlerMiddleware<LightSyncBehaviour?> middleware, Configuration configuration)
+        public LightSyncBehaviour(
+            IElementRepository elementRepository,
+            ISyncHandlerMiddleware<LightSyncBehaviour?> middleware,
+            Configuration configuration)
         {
             this.elementRepository = elementRepository;
             this.middleware = middleware;
+
             this.timer = new Timer(configuration.SyncIntervals.LightSync)
             {
                 AutoReset = true,
@@ -36,16 +39,15 @@ namespace SlipeServer.Server.Behaviour
 
                 if (otherPlayers.Any())
                 {
-                    var lightSyncPacket = new LightSyncPacket()
-                    {
-                        ElementId = player.Id,
-                        TimeContext = player.TimeContext,
-                        Latency = (ushort)player.Client.Ping,
-                        Health = player.Health,
-                        Armor = player.Armor,
-                        Position = player.Position,
-                        VehicleHealth = player.Vehicle?.Health
-                    };
+                    var lightSyncPacket = new LightSyncPacket(
+                        elementId: player.Id,
+                        timeContext: player.TimeContext,
+                        latency: (ushort)player.Client.Ping,
+                        health: player.Health,
+                        armor: player.Armor,
+                        position: player.Position,
+                        vehicleHealth: player.Vehicle?.Health
+                    );
                     lightSyncPacket.SendTo(otherPlayers);
                 }
             }

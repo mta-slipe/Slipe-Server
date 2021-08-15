@@ -36,7 +36,7 @@ namespace SlipeServer.Server.PacketHandling.Factories
 
         public static SetElementAlphaRpcPacket CreateSetAlphaPacket(Element element, byte alpha)
         {
-            return new SetElementAlphaRpcPacket(element.Id, element.GetAndIncrementTimeContext(), alpha);
+            return new SetElementAlphaRpcPacket(element.Id, alpha);
         }
         
         public static TakePlayerScreenshotPacket CreateTakePlayerScreenshotPacket(Element element, ushort sizeX, ushort sizeY, string tag, byte quality, uint maxBandwith, ushort maxPacketSize, Resources.Resource? resource)

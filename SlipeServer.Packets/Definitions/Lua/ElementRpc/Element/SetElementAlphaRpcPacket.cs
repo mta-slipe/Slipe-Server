@@ -14,7 +14,6 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element
         public override PacketPriority Priority => PacketPriority.High;
 
         public uint ElementId { get; set; }
-        public byte TimeContext { get; set; }
         public byte Alpha { get; set; }
 
         public SetElementAlphaRpcPacket()
@@ -22,10 +21,9 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element
 
         }
 
-        public SetElementAlphaRpcPacket(uint elementId, byte timeContext, byte alpha)
+        public SetElementAlphaRpcPacket(uint elementId, byte alpha)
         {
             this.ElementId = elementId;
-            this.TimeContext = timeContext;
             this.Alpha = alpha;
         }
 
@@ -42,8 +40,6 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element
             builder.WriteElementId(this.ElementId);
 
             builder.Write(this.Alpha);
-
-            builder.Write(this.TimeContext);
 
             return builder.Build();
         }

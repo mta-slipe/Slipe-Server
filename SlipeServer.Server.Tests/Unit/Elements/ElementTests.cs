@@ -24,7 +24,7 @@ namespace SlipeServer.Server.Tests.Unit.Elements
         {
             var element = new Element();
 
-            for (int i = 0; i < 256; i++)
+            for (int i = 0; i < 255; i++)
             {
                 element.GetAndIncrementTimeContext();
             }
