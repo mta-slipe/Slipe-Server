@@ -2,39 +2,53 @@
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.QueueHandlers.SyncMiddleware;
+using SlipeServer.Server.Repositories;
+using System.Collections.Generic;
+using System.Linq;
+using System.Timers;
 
 namespace SlipeServer.Server.Behaviour
 {
     public class LightSyncBehaviour
     {
-        private readonly ISyncHandlerMiddleware<object> middleware;
+        private readonly IElementRepository elementRepository;
+        private readonly ISyncHandlerMiddleware<LightSyncBehaviour?> middleware;
 
-        public LightSyncBehaviour(MtaServer server, ISyncHandlerMiddleware<object> middleware)
+        private readonly Timer timer;
+
+        public LightSyncBehaviour(IElementRepository elementRepository, ISyncHandlerMiddleware<LightSyncBehaviour?> middleware, Configuration configuration)
         {
-            server.PlayerJoined += HandlePlayerJoin;
+            this.elementRepository = elementRepository;
             this.middleware = middleware;
-        }
-
-        private void HandlePlayerJoin(Player player)
-        {
-            player.PureSynced += HandlePlayerPuresync;
-        }
-
-        private void HandlePlayerPuresync(Player sender, System.EventArgs e)
-        {
-            var lightSyncPacket = new LightSyncPacket()
+            this.timer = new Timer(configuration.SyncIntervals.LightSync)
             {
-                ElementId = sender.Id,
-                TimeContext = sender.TimeContext,
-                Latency = (ushort)sender.Client.Ping,
-                Health = sender.Health,
-                Armor = sender.Armor,
-                Position = sender.Position,
-                VehicleHealth = sender.Vehicle?.Health
+                AutoReset = true,
             };
+            this.timer.Start();
+            this.timer.Elapsed += (sender, args) => SendLightSyncs();
+        }
 
-            var otherPlayers = this.middleware.GetPlayersToSyncTo(sender, new());
-            lightSyncPacket.SendTo(otherPlayers);
+        private void SendLightSyncs()
+        {
+            foreach (var player in this.elementRepository.GetByType<Player>(ElementType.Player))
+            {
+                var otherPlayers = this.middleware.GetPlayersToSyncTo(player, null);
+
+                if (otherPlayers.Any())
+                {
+                    var lightSyncPacket = new LightSyncPacket()
+                    {
+                        ElementId = player.Id,
+                        TimeContext = player.TimeContext,
+                        Latency = (ushort)player.Client.Ping,
+                        Health = player.Health,
+                        Armor = player.Armor,
+                        Position = player.Position,
+                        VehicleHealth = player.Vehicle?.Health
+                    };
+                    lightSyncPacket.SendTo(otherPlayers);
+                }
+            }
         }
     }
 }

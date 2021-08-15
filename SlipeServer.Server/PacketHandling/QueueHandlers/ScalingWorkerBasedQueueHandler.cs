@@ -11,7 +11,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
     public abstract class ScalingWorkerBasedQueueHandler : BaseQueueHandler
     {
-        private struct Worker
+        protected struct Worker
         {
             public bool Active { get; set; }
         }
@@ -26,7 +26,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
         public int WorkerCount => this.workers.Count;
 
-        private TaskCompletionSource<int>? pulseTaskCompletionSource;
+        protected TaskCompletionSource<int>? pulseTaskCompletionSource;
 
         private readonly Timer timer;
 
@@ -94,7 +94,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             worker.Active = false;
         }
 
-        private async void PulsePacketTask(Worker worker)
+        protected async virtual void PulsePacketTask(Worker worker)
         {
             while(worker.Active)
             {

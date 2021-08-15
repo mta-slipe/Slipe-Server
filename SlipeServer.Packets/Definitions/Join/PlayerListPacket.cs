@@ -29,7 +29,7 @@ namespace SlipeServer.Packets.Definitions.Join
             byte timeContext,
             string nickname,
             ushort bitsreamVersion,
-            int buildNumber,
+            uint buildNumber,
 
             bool isDead,
             bool isInVehicle,
@@ -130,7 +130,7 @@ namespace SlipeServer.Packets.Definitions.Join
                 } else
                 {
                     this.builder.Write(true);
-                    this.builder.WriteCapped(weapons[i], 6);
+                    this.builder.WriteWeaponType(weapons[i]);
                 }
             }
         }

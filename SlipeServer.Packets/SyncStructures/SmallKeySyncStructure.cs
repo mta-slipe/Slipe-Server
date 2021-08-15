@@ -1,10 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Reader;
-using System;
-using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
-using System.Xml;
 
 namespace SlipeServer.Packets.Structures
 {
@@ -64,14 +60,13 @@ namespace SlipeServer.Packets.Structures
             this.RightShoulder1 = reader.GetBit();
             this.LeftShoulder1 = reader.GetBit();
 
-            //this.ButtonSquareByte = reader.GetBit() ? reader.GetByte() : (byte)0;
-            //this.ButtonCrossByte = reader.GetBit() ? reader.GetByte() : (byte)0;
+            this.ButtonSquareByte = reader.GetBit() ? reader.GetByte() : (byte)0;
+            this.ButtonCrossByte = reader.GetBit() ? reader.GetByte() : (byte)0;
 
             this.LeftStick = new Vector2(
                 (float)(reader.GetByte() * 128.0f / 127.0f),
                 (float)(reader.GetByte() * 128.0f / 127.0f)
             );
-
         }
 
         public void Write(PacketBuilder builder)
@@ -86,6 +81,21 @@ namespace SlipeServer.Packets.Structures
                 this.RightShoulder1,
                 this.LeftShoulder1,
             });
+
+            if (this.ButtonSquareByte >= 1 && this.ButtonSquareByte <= 254)
+            {
+                builder.Write(true);
+                builder.Write(this.ButtonSquareByte);
+            } else
+                builder.Write(false);
+
+            if (this.ButtonCrossByte >= 1 && this.ButtonCrossByte <= 254)
+            {
+                builder.Write(true);
+                builder.Write(this.ButtonCrossByte);
+            } else
+                builder.Write(false);
+
             builder.Write(new byte[]
             {
                 (byte)(this.LeftStick.X * 127.0f / 128.0f),

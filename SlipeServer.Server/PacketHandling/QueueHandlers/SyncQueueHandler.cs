@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers
 {
-    public class SyncQueueHandler : ScalingWorkerBasedQueueHandler
+    public class SyncQueueHandler : OrderedScalingWorkerBasedQueueHandler
     {
         private readonly ILogger logger;
         private readonly IElementRepository elementRepository;
@@ -23,13 +23,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         private readonly ISyncHandlerMiddleware<ProjectileSyncPacket> projectileSyncMiddleware;
         private readonly ISyncHandlerMiddleware<KeySyncPacket> keySyncMiddleware;
 
-        public override IEnumerable<PacketId> SupportedPacketIds => new PacketId[] 
-        { 
-            PacketId.PACKET_ID_CAMERA_SYNC,
-            PacketId.PACKET_ID_PLAYER_KEYSYNC,
-            PacketId.PACKET_ID_PLAYER_PURESYNC,
-            PacketId.PACKET_ID_PROJECTILE
-        };
+        public override IEnumerable<PacketId> SupportedPacketIds => this.PacketTypes.Keys;
 
         protected override Dictionary<PacketId, Type> PacketTypes { get; } = new Dictionary<PacketId, Type>()
         {

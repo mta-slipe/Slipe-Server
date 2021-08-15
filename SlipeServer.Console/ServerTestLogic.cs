@@ -278,6 +278,9 @@ namespace SlipeServer.Console
                 if (args.Command == "playerlist")
                     foreach (var remotePlayer in this.elementRepository.GetByType<Player>(ElementType.Player))
                         this.chatBox.OutputTo(player, remotePlayer.Name);
+
+                if (args.Command == "increment")
+                    player.GetAndIncrementTimeContext();
             };
         }
 

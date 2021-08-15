@@ -16,5 +16,18 @@ namespace SlipeServer.Server.PacketHandling.Factories
                 configuration.AllowShotgunDamageFix
             );
         }
+        public static SetSyncIntervalPacket CreateSyncIntervalPacket(Configuration configuration)
+        {
+            return new SetSyncIntervalPacket(
+                configuration.SyncIntervals.PureSync,
+                configuration.SyncIntervals.LightSync,
+                configuration.SyncIntervals.CamSync,
+                configuration.SyncIntervals.PedSync,
+                configuration.SyncIntervals.UnoccupiedVehicle,
+                configuration.SyncIntervals.ObjectSync,
+                configuration.SyncIntervals.KeySyncRotation,
+                configuration.SyncIntervals.KeySyncAnalogMove
+            );
+        }
     }
 }
