@@ -15,14 +15,11 @@ namespace SlipeServer.Packets.Definitions.Player
         public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
         public override PacketPriority Priority => PacketPriority.High;
 
-        public string InfoType { get; set; }
+        public string InfoType { get; set; } = string.Empty;
         public uint Count { get; set; }
-        public List<ModInfoItem> ModInfoItems { get; set; }
-        public PlayerModInfoPacket(string infoType, uint count, List<ModInfoItem> modInfoItems)
+        public List<ModInfoItem> ModInfoItems { get; set; } = new();
+        public PlayerModInfoPacket()
         {
-            this.InfoType = infoType;
-            this.Count = count;
-            this.ModInfoItems = modInfoItems;
         }
 
         public override byte[] Write()

@@ -69,7 +69,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
         private void HandleDiagnosticPacket(Client client, PlayerDiagnosticPacket diagnosticPacket)
         {
-            if(diagnosticPacket.Level == 236)
+            if(diagnosticPacket.Level == PlayerDiagnosticPacket.levelSpecialInfo)
             {
                 client.Player.TriggerPlayerACInfo(diagnosticPacket.DetectedAC, diagnosticPacket.D3d9Size, diagnosticPacket.D3d9Md5, diagnosticPacket.D3d9Sha256);
             }

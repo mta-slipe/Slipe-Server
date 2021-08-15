@@ -291,12 +291,12 @@ namespace SlipeServer.Console
                 logger.LogInformation($"ACInfo for {player.Name} detectedACList:{string.Join(",", args.DetectedACList)} d3d9Size: {args.D3D9Size} d3d9SHA256: {args.D3D9SHA256}");
             };
             
-            player.DiagnosticInfoRecieved += (o, args) =>
+            player.DiagnosticInfoReceived += (o, args) =>
             {
                 logger.LogInformation($"DIAGNOSTIC: {player.Name} #{args.Level} {args.Message}");
             };
 
-            player.ModInfoRecieved += (o, args) =>
+            player.ModInfoReceived += (o, args) =>
             {
                 logger.LogInformation($"Player: {player.Name} ModInfo:");
                 foreach (var item in args.ModInfoItems)

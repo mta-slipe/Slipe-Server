@@ -14,16 +14,12 @@ namespace SlipeServer.Packets.Definitions.Player
         public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
         public override PacketPriority Priority => PacketPriority.High;
 
-        public List<byte> DetectedACList { get; set; }
+        public List<byte> DetectedACList { get; set; } = new();
         public uint D3d9Size { get; set; }
-        public string D3d9MD5 { get; set; }
-        public string D3d9SHA256 { get; set; }
-        public PlayerACInfoPacket(List<byte> detectedACList, uint d3d9Size, string d3d9MD5, string dD3d9SHA256)
+        public string D3d9MD5 { get; set; } = string.Empty;
+        public string D3d9SHA256 { get; set; } = string.Empty;
+        public PlayerACInfoPacket()
         {
-            this.DetectedACList = detectedACList;
-            this.D3d9Size = d3d9Size;
-            this.D3d9MD5 = d3d9MD5;
-            this.D3d9SHA256 = dD3d9SHA256;
         }
 
         public override byte[] Write()

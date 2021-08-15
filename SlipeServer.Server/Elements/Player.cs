@@ -217,12 +217,12 @@ namespace SlipeServer.Server.Elements
 
         internal void TriggerPlayerDiagnosticInfo(uint level, string message)
         {
-            this.DiagnosticInfoRecieved?.Invoke(this, new PlayerDiagnosticInfo(level, message));
+            this.DiagnosticInfoReceived?.Invoke(this, new PlayerDiagnosticInfo(level, message));
         }
 
         internal void TriggerPlayerModInfo(string infoType, IEnumerable<ModInfoItem> modInfoItems)
         {
-            this.ModInfoRecieved?.Invoke(this, new PlayerModInfoArgs(infoType, modInfoItems));
+            this.ModInfoReceived?.Invoke(this, new PlayerModInfoArgs(infoType, modInfoItems));
         }
 
         public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
@@ -238,7 +238,7 @@ namespace SlipeServer.Server.Elements
         public event ElementEventHandler<Player, PlayerSubscriptionEventArgs>? Subscribed;
         public event ElementEventHandler<Player, PlayerSubscriptionEventArgs>? UnSubscribed;
         public event ElementEventHandler<Player, PlayerACInfoArgs>? AcInfoReceived;
-        public event ElementEventHandler<Player, PlayerDiagnosticInfo>? DiagnosticInfoRecieved;
-        public event ElementEventHandler<Player, PlayerModInfoArgs>? ModInfoRecieved;
+        public event ElementEventHandler<Player, PlayerDiagnosticInfo>? DiagnosticInfoReceived;
+        public event ElementEventHandler<Player, PlayerModInfoArgs>? ModInfoReceived;
     }
 }

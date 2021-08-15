@@ -11,25 +11,20 @@ namespace SlipeServer.Packets.Definitions.Lua
     {
         public ushort Id { get; set; }
         public uint Hash { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
         public bool HasSize { get; set; }
         public bool HasHashInfo { get; set; }
         public Vector3 Size { get; set; }
         public Vector3 OriginalSize { get; set; }
         public uint ShortBytes { get; set; }
-        public string ShortMd5 { get; set; }
-        public string ShortSha256 { get; set; }
+        public string ShortMd5 { get; set; } = string.Empty;
+        public string ShortSha256 { get; set; } = string.Empty;
         public uint LongBytes { get; set; }
-        public string LongMd5 { get; set; }
-        public string LongSha256 { get; set; }
+        public string LongMd5 { get; set; } = string.Empty;
+        public string LongSha256 { get; set; } = string.Empty;
 
         public ModInfoItem()
         {
-            this.Name = "";
-            this.ShortMd5 = "";
-            this.ShortSha256 = "";
-            this.LongMd5 = "";
-            this.LongSha256 = "";
         }
     }
 }
