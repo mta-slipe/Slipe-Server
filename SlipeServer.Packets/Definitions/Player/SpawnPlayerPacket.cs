@@ -31,15 +31,15 @@ namespace SlipeServer.Packets.Definitions.Player
 
         public SpawnPlayerPacket(uint playerId, byte flags, Vector3 position, float rotation, ushort skin, uint teamId, byte interior, ushort dimension, byte timeContext)
         {
-            PlayerId = playerId;
-            Position = position;
-            SpawnFlags = flags;
-            Rotation = rotation;
-            Skin = skin;
-            TeamId = teamId;
-            Interior = interior;
-            Dimension = dimension;
-            TimeContext = timeContext;
+            this.PlayerId = playerId;
+            this.Position = position;
+            this.SpawnFlags = flags;
+            this.Rotation = rotation;
+            this.Skin = skin;
+            this.TeamId = teamId;
+            this.Interior = interior;
+            this.Dimension = dimension;
+            this.TimeContext = timeContext;
         }
 
         public override void Read(byte[] bytes)

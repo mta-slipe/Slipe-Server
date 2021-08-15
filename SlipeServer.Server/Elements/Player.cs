@@ -200,6 +200,11 @@ namespace SlipeServer.Server.Elements
             this.Client.SendPacket(new PlayerDisconnectPacket(type, string.Empty));
         }
 
+        public void TriggerSync()
+        {
+            this.PureSynced?.Invoke(this, EventArgs.Empty);
+        }
+
         public void ResendModPackets()
         {
             this.Client.ResendModPackets();
@@ -237,6 +242,7 @@ namespace SlipeServer.Server.Elements
         public event ElementEventHandler<Player, PlayerKickEventArgs>? Kicked;
         public event ElementEventHandler<Player, PlayerSubscriptionEventArgs>? Subscribed;
         public event ElementEventHandler<Player, PlayerSubscriptionEventArgs>? UnSubscribed;
+        public event ElementEventHandler<Player, EventArgs>? PureSynced;
         public event ElementEventHandler<Player, PlayerACInfoArgs>? AcInfoReceived;
         public event ElementEventHandler<Player, PlayerDiagnosticInfo>? DiagnosticInfoReceived;
         public event ElementEventHandler<Player, PlayerModInfoArgs>? ModInfoReceived;

@@ -11,7 +11,7 @@ namespace SlipeServer.Packets.Tests.Packets
     {
         private readonly byte[] testPacket = new byte[]
         {
-            16, 0, 0, 206, 100, 233, 24, 0, 0,
+            16,0,0,37,153,146,98,0,0
         };
 
         [Fact]

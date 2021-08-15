@@ -9,6 +9,7 @@ namespace SlipeServer.Packets.Builder
     {
         public static void WriteVehicleSeat(this PacketBuilder builder, byte seat) => builder.WriteCapped(seat, 4);
         public static void WriteVehicleHealth(this PacketBuilder builder, float health) => builder.WriteFloatFromBits(health, 12, 0f, 2047.5f, false);
+        public static void WriteLowPrecisionVehicleHealth(this PacketBuilder builder, float health) => builder.WriteFloatFromBits(health, 8, 0f, 2040, false);
 
         public static void WriteVehicleRotation(this PacketBuilder builder, Vector3 rotation)
         {

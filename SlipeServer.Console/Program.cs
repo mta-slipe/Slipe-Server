@@ -103,6 +103,10 @@ namespace SlipeServer.Console
             services.AddSingleton<ISyncHandlerMiddleware<PlayerPureSyncPacket>, SubscriptionSyncHandlerMiddleware<PlayerPureSyncPacket>>();
             services.AddSingleton<ISyncHandlerMiddleware<KeySyncPacket>, SubscriptionSyncHandlerMiddleware<KeySyncPacket>>();
 
+            services.AddSingleton<ISyncHandlerMiddleware<LightSyncBehaviour>, MaxRangeSyncHandlerMiddleware<LightSyncBehaviour>>(
+                x => new MaxRangeSyncHandlerMiddleware<LightSyncBehaviour>(x.GetRequiredService<IElementRepository>(), this.configuration.LightSyncRange)
+            );
+
             services.AddLua();
         }
 
@@ -154,6 +158,7 @@ namespace SlipeServer.Console
             this.server.Instantiate<PlayerPacketBehaviour>();
             this.server.Instantiate<VehicleWarpBehaviour>();
             this.server.Instantiate<VoiceBehaviour>();
+            this.server.Instantiate<LightSyncBehaviour>();
         }
 
         private void SetupLogic()

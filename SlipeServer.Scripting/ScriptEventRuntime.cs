@@ -69,7 +69,7 @@ namespace SlipeServer.Scripting
                 }
                 else if (objects.Length == 1)
                 {
-                    callbackDelegate.DynamicInvoke(objects.First(), new object[0]);
+                    callbackDelegate.DynamicInvoke(objects.First(), Array.Empty<object>());
                 } else
                 {
                     callbackDelegate.DynamicInvoke(objects.First(), objects.Skip(1));

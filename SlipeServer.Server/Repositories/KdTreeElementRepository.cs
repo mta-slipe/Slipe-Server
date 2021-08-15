@@ -67,9 +67,9 @@ namespace SlipeServer.Server.Repositories
                 .Cast<TElement>();
         }
 
-        private void ReInsertElement(object sender, ElementChangedEventArgs<Vector3> args)
+        private void ReInsertElement(Element sender, ElementChangedEventArgs<Vector3> args)
         {
-            this.Remove(args.Source);
+            this.elements.RemoveAt(new float[] { sender.Position.X, sender.Position.Y, sender.Position.Z });
             this.elements.Add(new float[] { args.NewValue.X, args.NewValue.Y, args.NewValue.Z }, args.Source);
         }
     }

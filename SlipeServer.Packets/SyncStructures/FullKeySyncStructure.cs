@@ -1,10 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Reader;
-using System;
-using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
-using System.Xml;
 
 namespace SlipeServer.Packets.Structures
 {
@@ -75,7 +71,6 @@ namespace SlipeServer.Packets.Structures
                 (float)(reader.GetByte() * 128.0f / 127.0f),
                 (float)(reader.GetByte() * 128.0f / 127.0f)
             );
-
         }
 
         public void Write(PacketBuilder builder)
@@ -96,16 +91,14 @@ namespace SlipeServer.Packets.Structures
             {
                 builder.Write(true);
                 builder.Write(this.ButtonSquareByte);
-            }
-            else
+            } else
                 builder.Write(false);
 
             if (this.ButtonCrossByte >= 1 && this.ButtonCrossByte <= 254)
             {
                 builder.Write(true);
                 builder.Write(this.ButtonCrossByte);
-            }
-            else
+            } else
                 builder.Write(false);
 
             builder.Write(new byte[]

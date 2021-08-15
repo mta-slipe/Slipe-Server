@@ -125,6 +125,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             this.server.HandlePlayerJoin(client.Player);
 
             SyncPacketFactory.CreateSyncSettingsPacket(this.configuration).SendTo(client.Player);
+            SyncPacketFactory.CreateSyncIntervalPacket(this.configuration).SendTo(client.Player);
         }
 
         private void HandlePlayerWeapon(Client client, RpcPacket packet)

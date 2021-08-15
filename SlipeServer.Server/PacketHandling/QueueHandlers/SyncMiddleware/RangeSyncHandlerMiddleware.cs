@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers.SyncMiddleware
 {
-    public class RangeSyncHandlerMiddleware<TPacket> : ISyncHandlerMiddleware<TPacket> where TPacket: Packet
+    public class RangeSyncHandlerMiddleware<TData> : ISyncHandlerMiddleware<TData>
     {
         private readonly IElementRepository elementRepository;
         private readonly float range;
@@ -17,7 +17,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers.SyncMiddleware
             this.range = range;
         }
 
-        public IEnumerable<Player> GetPlayersToSyncTo(Player player, TPacket packet)
+        public IEnumerable<Player> GetPlayersToSyncTo(Player player, TData packet)
         {
             return this.elementRepository
                 .GetWithinRange<Player>(player.Position, this.range, ElementType.Player)
