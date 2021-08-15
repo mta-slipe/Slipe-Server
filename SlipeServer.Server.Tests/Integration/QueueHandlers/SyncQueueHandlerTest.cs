@@ -31,9 +31,10 @@ namespace SlipeServer.Server.Tests.Integration.QueueHandlers
             var player1 = server.AddFakePlayer();
             var player2 = server.AddFakePlayer();
 
-            server.HandlePacket(player1, PacketId.PACKET_ID_PLAYER_PURESYNC, testPacket);
+            server.HandlePacket(player1, PacketId.PACKET_ID_PLAYER_PURESYNC, this.testPacket);
 
-            await handler.GetPulseTask();
+            while (handler.QueuedPacketCount > 0)
+                await handler.GetPulseTask();
 
 
             server.NetWrapperMock.Verify(x => x.SendPacket(
@@ -54,7 +55,8 @@ namespace SlipeServer.Server.Tests.Integration.QueueHandlers
 
             server.HandlePacket(player1, PacketId.PACKET_ID_PLAYER_PURESYNC, testPacket);
 
-            await handler.GetPulseTask();
+            while (handler.QueuedPacketCount > 0)
+                await handler.GetPulseTask();
 
             server.NetWrapperMock.Verify(x => x.SendPacket(
                 player2.Address,
@@ -84,7 +86,8 @@ namespace SlipeServer.Server.Tests.Integration.QueueHandlers
 
             server.HandlePacket(player1, PacketId.PACKET_ID_PLAYER_PURESYNC, testPacket);
 
-            await handler.GetPulseTask();
+            while (handler.QueuedPacketCount > 0)
+                await handler.GetPulseTask();
 
             server.NetWrapperMock.Verify(x => x.SendPacket(
                 player1.Address,
