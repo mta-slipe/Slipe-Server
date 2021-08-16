@@ -39,9 +39,9 @@ namespace SlipeServer.Server.PacketHandling.Factories
             return new SetElementAlphaRpcPacket(element.Id, alpha);
         }
         
-        public static TakePlayerScreenshotPacket CreateTakePlayerScreenshotPacket(Element element, ushort sizeX, ushort sizeY, string tag, byte quality, uint maxBandwith, ushort maxPacketSize, Resources.Resource? resource)
+        public static TakePlayerScreenshotPacket CreateTakePlayerScreenshotPacket(ushort sizeX, ushort sizeY, string tag, byte quality, uint maxBandwith, ushort maxPacketSize, Resources.Resource? resource)
         {
-            return new TakePlayerScreenshotPacket(element.GetAndIncrementTimeContext(), sizeX, sizeY, tag, quality, maxBandwith, maxPacketSize, resource?.NetId ?? 0);
+            return new TakePlayerScreenshotPacket(sizeX, sizeY, tag, quality, maxBandwith, maxPacketSize, resource?.NetId ?? 0);
         }
 
         public static SetElementDimensionRpcPacket CreateSetDimensionPacket(Element element, ushort dimension)

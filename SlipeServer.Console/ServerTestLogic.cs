@@ -251,6 +251,7 @@ namespace SlipeServer.Console
             player.Weapons.Add(new Weapon(WeaponId.Sniper, 500));
             player.Weapons.Add(new Weapon(WeaponId.Deagle, 500));
             player.Weapons.Add(new Weapon(WeaponId.Golfclub, 1));
+            player.Weapons.Add(new Weapon(WeaponId.Satchel, 25));
             player.Weapons.Remove(WeaponId.Tec9);
             player.Weapons.Remove(WeaponId.Sniper);
             player.Weapons.First(weapon => weapon.Type == WeaponId.Deagle).Ammo -= 200;

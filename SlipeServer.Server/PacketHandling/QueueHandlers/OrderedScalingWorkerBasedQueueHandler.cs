@@ -3,6 +3,7 @@ using SlipeServer.Packets.Enums;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
@@ -14,6 +15,8 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
     {
         private readonly ConcurrentQueue<Client> clientPacketQueue;
         private readonly ConcurrentDictionary<Client, Queue<PacketQueueEntry>> packetsPerClient;
+
+        public override int QueuedPacketCount => this.packetsPerClient.Values.Sum(x => x.Count);
 
         public OrderedScalingWorkerBasedQueueHandler(
             int sleepInterval = 10, 
