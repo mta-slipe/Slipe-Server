@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SlipeServer.Packets\SlipeServer.Packets.csproj" />
+    <ProjectReference Include="..\SlipeServer.Server\SlipeServer.Server.csproj" />
   </ItemGroup>
 
 </Project>
