@@ -28,7 +28,7 @@ namespace SlipeServer.Server.Loaders.Map
 
         public abstract void Resolve(Resolver<T> resolver);
 
-        public Map? LoadMap(string fileName, MtaServer server, MapLoaderOptions? mapLoaderOptions = null)
+        public Map? LoadMap(string fileName, MtaServer? server = null, MapLoaderOptions? mapLoaderOptions = null)
         {
             using(FileStream file = File.OpenRead(fileName))
             {
@@ -36,7 +36,7 @@ namespace SlipeServer.Server.Loaders.Map
             }
         }
 
-        public Map? LoadMap(Stream stream, MtaServer server, MapLoaderOptions? mapLoaderOptions = null)
+        public Map? LoadMap(Stream stream, MtaServer? server = null, MapLoaderOptions? mapLoaderOptions = null)
         {
             if (mapLoaderOptions == null)
                 mapLoaderOptions = new DefaultMapLoaderOptions();
@@ -55,7 +55,8 @@ namespace SlipeServer.Server.Loaders.Map
                 Map map = new Map();
                 Resolver<T> resolver = new(map, data, mapLoaderOptions);
                 Resolve(resolver);
-                map.AssociateWith(server);
+                if(server != null)
+                    map.AssociateWith(server);
                 return map;
             }
             return null;

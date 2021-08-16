@@ -138,55 +138,20 @@ namespace SlipeServer.Console
                 }
             };
 
-
             Map? map = null;
             try
             {
-                map = mapLoader.LoadMap("./Files/Maps/Sample.map", this.server, new MapLoaderOptions
-                {
-                    IdentifiersBehaviour = IdentifiersBehaviour.Throw,
-                });
+                map = mapLoader.LoadMap("./Files/Maps/Sample.map", this.server);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 map = null;
-                int asd = 5;
+                this.logger.LogWarning($"Failed to load map 'sample.map'.");
             }
             if (map != null)
             {
-                WorldObject? obj = map["objectA1"] as WorldObject;
+                this.logger.LogInformation($"Map 'sample.map' loaded. Objects: {map.Count}");
             }
-
-            //using (MemoryStream memoryStream = new MemoryStream())
-            //{
-            //    using (StreamWriter streamWriter = new StreamWriter(memoryStream))
-            //    {
-            //        streamWriter.WriteLine(@"<map edf:definitions=""editor_main"">");
-            //        streamWriter.WriteLine(@"    <object id=""objectA1"" posX=""0"" posY=""10"" posZ=""3"" model=""1337""></object>");
-            //        streamWriter.WriteLine(@"    <object id=""objectA2"" posX=""0"" posY=""11"" posZ=""3"" model=""1337""></object>");
-            //        streamWriter.WriteLine(@"    <object id=""objectA3"" posX=""0"" posY=""12"" posZ=""3"" model=""1333456""></object>");
-            //        streamWriter.WriteLine(@"    <object id=""objectA4"" posX=""0"" posY=""13"" posZ=""3"" model=""1337""></object>");
-            //        streamWriter.WriteLine("</map>");
-            //        streamWriter.Flush();
-            //        Map? map = null;
-            //        try
-            //        {
-            //            map = mapLoader.LoadMap(memoryStream, this.server, new MapLoaderOptions
-            //            {
-            //                IdentifiersBehaviour = EIdentifiersBehaviour.Throw,
-            //            });
-            //        }
-            //        catch(Exception ex)
-            //        {
-            //            map = null;
-            //            int asd = 5;
-            //        }
-            //        if(map != null)
-            //        {
-            //            WorldObject? obj = map["objectA1"] as WorldObject;
-            //        }
-            //    }
-            //}
         }
 
         private void OnPlayerJoin(Player player)
