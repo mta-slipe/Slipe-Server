@@ -26,6 +26,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Files\Maps\Sample.map">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Resources\TestResource\test.lua">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

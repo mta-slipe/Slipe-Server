@@ -9,6 +9,8 @@ using SlipeServer.Server.Elements.Grouped;
 using SlipeServer.Server.Elements.Structs;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Loaders.Map;
+using SlipeServer.Server.Loaders.Map.Enums;
+using SlipeServer.Server.Loaders.Map.Options;
 using SlipeServer.Server.Repositories;
 using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.ResourceServing;
@@ -54,7 +56,7 @@ namespace SlipeServer.Console
             LuaEventService luaService,
             ExplosionService explosionService,
             FireService fireService,
-            TextItemService textItemService
+            TextItemService textItemService,
             DefaultMapLoader mapLoader
         )
         {
@@ -136,36 +138,55 @@ namespace SlipeServer.Console
                 }
             };
 
-            using (MemoryStream memoryStream = new MemoryStream())
+
+            Map? map = null;
+            try
             {
-                using (StreamWriter streamWriter = new StreamWriter(memoryStream))
+                map = mapLoader.LoadMap("./Files/Maps/Sample.map", this.server, new MapLoaderOptions
                 {
-                    streamWriter.WriteLine(@"<map edf:definitions=""editor_main"">");
-                    streamWriter.WriteLine(@"    <object id=""objectA"" breakable=""true"" interior=""0"" alpha=""255"" model=""1337"" doublesided=""false"" scale=""1"" dimension=""0"" posX=""1376.9"" posY=""466.10001"" posZ=""0"" rotX=""0"" rotY=""0"" rotZ=""0""></object>");
-                    streamWriter.WriteLine(@"    <object id=""objectB"" breakable=""true"" interior=""0"" alpha=""255"" model=""1337"" doublesided=""false"" scale=""1"" dimension=""0"" posX=""1376.9"" posY=""466.10001"" posZ=""0"" rotX=""0"" rotY=""0"" rotZ=""0""></object>");
-                    streamWriter.WriteLine(@"    <object id=""objectC"" breakable=""true"" interior=""0"" alpha=""255"" model=""1337"" doublesided=""false"" scale=""1"" dimension=""0"" posX=""1376.9"" posY=""466.10001"" posZ=""0"" rotX=""0"" rotY=""0"" rotZ=""0""></object>");
-                    streamWriter.WriteLine(@"    <object id=""objectC"" breakable=""true"" interior=""0"" alpha=""255"" model=""1337"" doublesided=""false"" scale=""1"" dimension=""0"" posX=""1376.9"" posY=""466.10001"" posZ=""0"" rotX=""0"" rotY=""0"" rotZ=""0""></object>");
-                    streamWriter.WriteLine("</map>");
-                    streamWriter.Flush();
-                    Map? map = null;
-                    try
-                    {
-                        map = mapLoader.LoadMap(memoryStream, this.server, new MapLoaderOptions
-                        {
-                            IdentifiersBehaviour = EIdentifiersBehaviour.Throw,
-                        });
-                    }
-                    catch(Exception ex)
-                    {
-                        map = null;
-                        int asd = 5;
-                    }
-                    if(map != null)
-                    {
-                        WorldObject? obj = map["object(des_alphabit09)(4)"] as WorldObject;
-                    }
-                }
+                    IdentifiersBehaviour = IdentifiersBehaviour.Throw,
+                });
             }
+            catch (Exception ex)
+            {
+                map = null;
+                int asd = 5;
+            }
+            if (map != null)
+            {
+                WorldObject? obj = map["objectA1"] as WorldObject;
+            }
+
+            //using (MemoryStream memoryStream = new MemoryStream())
+            //{
+            //    using (StreamWriter streamWriter = new StreamWriter(memoryStream))
+            //    {
+            //        streamWriter.WriteLine(@"<map edf:definitions=""editor_main"">");
+            //        streamWriter.WriteLine(@"    <object id=""objectA1"" posX=""0"" posY=""10"" posZ=""3"" model=""1337""></object>");
+            //        streamWriter.WriteLine(@"    <object id=""objectA2"" posX=""0"" posY=""11"" posZ=""3"" model=""1337""></object>");
+            //        streamWriter.WriteLine(@"    <object id=""objectA3"" posX=""0"" posY=""12"" posZ=""3"" model=""1333456""></object>");
+            //        streamWriter.WriteLine(@"    <object id=""objectA4"" posX=""0"" posY=""13"" posZ=""3"" model=""1337""></object>");
+            //        streamWriter.WriteLine("</map>");
+            //        streamWriter.Flush();
+            //        Map? map = null;
+            //        try
+            //        {
+            //            map = mapLoader.LoadMap(memoryStream, this.server, new MapLoaderOptions
+            //            {
+            //                IdentifiersBehaviour = EIdentifiersBehaviour.Throw,
+            //            });
+            //        }
+            //        catch(Exception ex)
+            //        {
+            //            map = null;
+            //            int asd = 5;
+            //        }
+            //        if(map != null)
+            //        {
+            //            WorldObject? obj = map["objectA1"] as WorldObject;
+            //        }
+            //    }
+            //}
         }
 
         private void OnPlayerJoin(Player player)

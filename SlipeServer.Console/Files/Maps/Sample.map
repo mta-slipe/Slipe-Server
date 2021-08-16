@@ -1,0 +1,6 @@
+﻿<map edf:definitions="editor_main">
+	<object id="objectA1" posX="0" posY="10" posZ="3" model="1337"></object>
+	<object id="objectA2" posX="0" posY="11" posZ="3" model="1337"></object>
+	<object id="objectA3" posX="0" posY="12" posZ="3" model="1337"></object>
+	<object id="objectA4" posX="0" posY="13" posZ="3" model="1337"></object>
+</map>

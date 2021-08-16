@@ -38,7 +38,16 @@ namespace SlipeServer.Server.Loaders.Map.ElementsDefinitions
         public bool Frozen { get; set; }
 
         [XmlIgnore]
-        public ObjectModel ObjectModel => (ObjectModel)Enum.Parse(typeof(ObjectModel), this.Model.ToString());
+        public ObjectModel ObjectModel
+        {
+            get
+            {
+                if (Enum.IsDefined(typeof(ObjectModel), this.Model))
+                    if (Enum.TryParse(this.Model.ToString(), out ObjectModel value))
+                        return value;
+                throw new ArgumentException();
+            }
+        }
         [XmlIgnore]
         public string DefinitionName => "object";
     }
