@@ -7,6 +7,9 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Structs;
 using SlipeServer.Server.Enums;
+using SlipeServer.Server.Events;
+using SlipeServer.Server.Events.Attributes;
+using SlipeServer.Server.Events.Interfaces;
 using SlipeServer.Server.Repositories;
 using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.ResourceServing;
@@ -75,6 +78,8 @@ namespace SlipeServer.Console
             SetupTestElements();
 
             this.luaService.AddEventHandler("Slipe.Test.Event", (e) => this.TriggerTestEvent(e.Player));
+            this.luaService.AddEventHandler<SlipeEventHandler>(logger);
+            //this.luaService.RemoveEventHandler<SlipeEventHandler>();
 
             this.worldService.SetWeather(Weather.ExtraSunnyDesert);
             this.worldService.CloudsEnabled = false;

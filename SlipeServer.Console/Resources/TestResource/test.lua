@@ -7,6 +7,9 @@ triggerServerEvent("Slipe.Test.Event", root, "String value", true, 123, {
 	w = false
 })
 
+triggerServerEvent("Slipe.TestA", root, "testA", "b", "c");
+triggerServerEvent("Slipe.TestB", root, "testB", "b", "c");
+
 addEvent("Slipe.Test.ClientEvent", true)
 addEventHandler("Slipe.Test.ClientEvent", root, function(...) 
 	for k, v in pairs({...}) do
