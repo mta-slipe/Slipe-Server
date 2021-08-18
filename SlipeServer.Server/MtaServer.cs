@@ -96,12 +96,12 @@ namespace SlipeServer.Server
 
         public MtaServer(
             Action<ServerBuilder> builderAction,
-            Configuration configuration,
+            Configuration? configuration = null,
             Action<ServiceCollection>? dependencyCallback = null,
             Func<uint, INetWrapper, Client>? clientCreationMethod = null
         ) : this(configuration, dependencyCallback, clientCreationMethod)
         {
-            var builder = new ServerBuilder(configuration);
+            var builder = new ServerBuilder(this.configuration);
             builderAction(builder);
         }
 
