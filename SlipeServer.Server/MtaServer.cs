@@ -19,6 +19,7 @@ using SlipeServer.Server.Services;
 using SlipeServer.Server.Resources.ResourceServing;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.PacketHandling.QueueHandlers.SyncMiddleware;
+using SlipeServer.Packets.Definitions.Player;
 
 namespace SlipeServer.Server
 {
@@ -265,6 +266,12 @@ namespace SlipeServer.Server
 
         public void HandlePlayerJoin(Player player) => PlayerJoined?.Invoke(player);
         public void HandleLuaEvent(LuaEvent luaEvent) => LuaEventTriggered?.Invoke(luaEvent);
+
+        public void SetMaxPlayers(ushort slots)
+        {
+            this.configuration.MaxPlayerCount = slots;
+            BroadcastPacket(new ServerInfoSyncPacket(slots));
+        }
 
         public event Action<Element>? ElementCreated;
         public event Action<Player>? PlayerJoined;
