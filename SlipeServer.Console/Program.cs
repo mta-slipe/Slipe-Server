@@ -11,6 +11,7 @@ using SlipeServer.Server.Behaviour;
 using SlipeServer.Server.PacketHandling.QueueHandlers;
 using SlipeServer.Server.PacketHandling.QueueHandlers.SyncMiddleware;
 using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ServerOptions;
 using System;
 using System.IO;
 using System.Threading;
@@ -58,8 +59,17 @@ namespace SlipeServer.Console
                 IsVoiceEnabled = true
             };
             this.server = new MtaServer(
-                Directory.GetCurrentDirectory(),
-                @"net.dll",
+                (builder) =>
+                {
+                    builder.AddDefaults();
+
+                    #if DEBUG
+                        builder.AddNetWrapper(dllPath: "net_d.dll", port: (ushort)(this.configuration.Port + 1));
+                    #endif
+
+                    builder.AddLogic<ServerTestLogic>();
+                    builder.AddLogic<LuaTestLogic>();
+                },
                 this.configuration,
                 this.Configure
             )
@@ -67,15 +77,6 @@ namespace SlipeServer.Console
                 GameType = "Slipe Server",
                 MapName = "N/A"
             };
-
-#if DEBUG
-            this.server.AddNetWrapper(
-                Directory.GetCurrentDirectory(),
-                @"net_d.dll",
-                this.configuration.Host ?? "0.0.0.0",
-                (ushort)(this.configuration.Port + 1)
-            );
-#endif
 
             System.Console.CancelKeyPress += delegate
             {
@@ -86,10 +87,6 @@ namespace SlipeServer.Console
 
         public void Start()
         {
-            SetupQueueHandlers();
-            SetupBehaviour();
-            SetupLogic();
-
             this.server.Start();
             this.waitHandle.WaitOne();
         }
@@ -132,47 +129,6 @@ namespace SlipeServer.Console
                 ".toml" => new TomlConfigurationProvider(configPath),
                 _ => throw new NotSupportedException($"Unsupported configuration extension {extension}"),
             };
-        }
-
-        private void SetupQueueHandlers()
-        {
-            this.server.RegisterPacketQueueHandler<ExplosionSyncQueueHandler>(10, 1);
-            this.server.RegisterPacketQueueHandler<ConnectionQueueHandler>(10, 1);
-            this.server.RegisterPacketQueueHandler<RpcQueueHandler>(10, 1);
-            this.server.RegisterPacketQueueHandler<SyncQueueHandler>(QueueHandlerScalingConfig.Aggressive, 10);
-            this.server.RegisterPacketQueueHandler<CommandQueueHandler>(10, 1);
-            this.server.RegisterPacketQueueHandler<LuaEventQueueHandler>(10, 1);
-            this.server.RegisterPacketQueueHandler<PlayerEventQueueHandler>(10, 1);
-            this.server.RegisterPacketQueueHandler<VehicleInOutHandler>(10, 1);
-            this.server.RegisterPacketQueueHandler<VehicleSyncQueueHandler>(QueueHandlerScalingConfig.Aggressive, 10);
-            this.server.RegisterPacketQueueHandler<VoiceHandler>(10, 1);
-            this.server.RegisterPacketQueueHandler<SatchelQueueHandler>(10, 1);
-        }
-
-        private void SetupBehaviour()
-        {
-            this.server.Instantiate<AseBehaviour>();
-            this.server.Instantiate<MasterServerAnnouncementBehaviour>("http://master.mtasa.com/ase/add.php");
-
-            this.server.Instantiate<EventLoggingBehaviour>();
-            this.server.Instantiate<VelocityBehaviour>();
-            this.server.Instantiate<DefaultChatBehaviour>();
-            this.server.Instantiate<NicknameChangeBehaviour>();
-
-            this.server.Instantiate<PlayerJoinElementBehaviour>();
-
-            this.server.Instantiate<ElementPacketBehaviour>();
-            this.server.Instantiate<PedPacketBehaviour>();
-            this.server.Instantiate<PlayerPacketBehaviour>();
-            this.server.Instantiate<VehicleWarpBehaviour>();
-            this.server.Instantiate<VoiceBehaviour>();
-            this.server.Instantiate<LightSyncBehaviour>();
-        }
-
-        private void SetupLogic()
-        {
-            this.server.Instantiate<ServerTestLogic>();
-            this.server.Instantiate<LuaTestLogic>();
         }
     }
 }

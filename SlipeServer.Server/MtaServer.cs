@@ -20,6 +20,7 @@ using SlipeServer.Server.Resources.ResourceServing;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.PacketHandling.QueueHandlers.SyncMiddleware;
 using SlipeServer.Packets.Definitions.Player;
+using SlipeServer.Server.ServerOptions;
 
 namespace SlipeServer.Server
 {
@@ -91,6 +92,17 @@ namespace SlipeServer.Server
         ) : this(configuration, dependencyCallback, clientCreationMethod)
         {
             this.AddNetWrapper(directory, netDllPath, this.configuration.Host, this.configuration.Port, this.configuration.AntiCheat);
+        }
+
+        public MtaServer(
+            Action<ServerBuilder> builderAction,
+            Configuration configuration,
+            Action<ServiceCollection>? dependencyCallback = null,
+            Func<uint, INetWrapper, Client>? clientCreationMethod = null
+        ) : this(configuration, dependencyCallback, clientCreationMethod)
+        {
+            var builder = new ServerBuilder(configuration);
+            builderAction(builder);
         }
 
         public void Start()
