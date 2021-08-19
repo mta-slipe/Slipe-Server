@@ -25,6 +25,18 @@ namespace SlipeServer.Scripting.Definitions
         {
             return Math.Floor((DateTime.Now - start).TotalMilliseconds + 0.5);
         }
+        
+        [ScriptFunctionDefinition("base64Encode")]
+        public string Base64Encode(string data)
+        {
+            return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(data));
+        }
+        
+        [ScriptFunctionDefinition("base64Decode")]
+        public string Base64Decode(string data)
+        {
+            return System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(data));
+        }
 
 
     }

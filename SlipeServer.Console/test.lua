@@ -18,3 +18,5 @@ destroyElement(object2)
 destroyElement(object)
 
 outputDebugString("Debug message, elapsed time: "..getTickCount())
+
+print("base64 test:", base64Encode("sample text"), base64Decode(base64Encode("sample text")))
