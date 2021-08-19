@@ -103,6 +103,7 @@ namespace SlipeServer.Server
         {
             var builder = new ServerBuilder(this.configuration);
             builderAction(builder);
+            builder.ApplyTo(this);
         }
 
         public void Start()
