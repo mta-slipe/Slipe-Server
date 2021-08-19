@@ -3,6 +3,8 @@ using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Services;
 using System;
+using System.Collections;
+using System.Drawing;
 using System.Numerics;
 
 namespace SlipeServer.Scripting.Definitions
@@ -41,10 +43,13 @@ namespace SlipeServer.Scripting.Definitions
         [ScriptFunctionDefinition("tocolor")]
         public int ToColor(byte r, byte g, byte b, byte a = 255)
         {
-            //  unsigned char B, G, R, A;
             return b + g * 256 + r * 256 * 256 + a * 256 * 256 * 256;
         }
 
-
+        [ScriptFunctionDefinition("getColorFromString")]
+        public Color? GetColorFromString(string color)
+        {
+            return ColorTranslator.FromHtml(color);
+        }
     }
 }
