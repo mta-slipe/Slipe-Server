@@ -31,11 +31,18 @@ namespace SlipeServer.Scripting.Definitions
         {
             return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(data));
         }
-        
+
         [ScriptFunctionDefinition("base64Decode")]
         public string Base64Decode(string data)
         {
             return System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(data));
+        }
+
+        [ScriptFunctionDefinition("tocolor")]
+        public int ToColor(byte r, byte g, byte b, byte a = 255)
+        {
+            //  unsigned char B, G, R, A;
+            return b + g * 256 + r * 256 * 256 + a * 256 * 256 * 256;
         }
 
 

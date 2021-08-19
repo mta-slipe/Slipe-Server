@@ -20,3 +20,4 @@ destroyElement(object)
 outputDebugString("Debug message, elapsed time: "..getTickCount())
 
 print("base64 test:", base64Encode("sample text"), base64Decode(base64Encode("sample text")))
+print("Some color: ", tocolor(235,23,77,159), tocolor(235,23,77,159) == -1611983027)
