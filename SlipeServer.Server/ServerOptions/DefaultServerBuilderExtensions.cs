@@ -31,6 +31,7 @@ namespace SlipeServer.Server.ServerOptions
             builder.AddBehaviour<VelocityBehaviour>();
             builder.AddBehaviour<DefaultChatBehaviour>();
             builder.AddBehaviour<NicknameChangeBehaviour>();
+            builder.AddBehaviour<CollisionShapeBehaviour>();
 
             builder.AddBehaviour<PlayerJoinElementBehaviour>();
 
