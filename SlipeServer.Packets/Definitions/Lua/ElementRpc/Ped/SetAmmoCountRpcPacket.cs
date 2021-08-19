@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
+using System;
 using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped
@@ -28,7 +29,7 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped
 
         public override void Read(byte[] bytes)
         {
-
+            throw new NotSupportedException();
         }
 
         public override byte[] Write()

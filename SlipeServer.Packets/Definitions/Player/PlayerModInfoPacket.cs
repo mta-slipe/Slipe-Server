@@ -24,7 +24,7 @@ namespace SlipeServer.Packets.Definitions.Player
 
         public override byte[] Write()
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public override void Read(byte[] bytes)
