@@ -51,8 +51,8 @@ namespace SlipeServer.Packets.Definitions.Ped
         {
             var builder = new PacketBuilder();
 
-            builder.Write(this.PedId);
-            builder.Write(this.KillerId);
+            builder.WriteElementId(this.PedId);
+            builder.WriteElementId(this.KillerId);
 
             builder.Write(this.KillerWeapon);
 
@@ -74,11 +74,11 @@ namespace SlipeServer.Packets.Definitions.Ped
 
             this.AnimGroup = data.GetCompressedByte();
             this.AnimId = data.GetCompressedByte();
-            this.KillerId = data.GetUint16();
+            this.KillerId = data.GetElementId();
             this.KillerWeapon = data.GetByte();
             this.BodyPart = data.GetByte();
             this.Position = data.GetVector3WithZAsFloat();
-            this.PedId = data.GetUint16();
+            this.PedId = data.GetElementId();
 
             this.Ammo = data.GetByte();
         }

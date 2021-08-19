@@ -99,7 +99,7 @@ namespace SlipeServer.Packets.Definitions.Ped
                 SyncData data = new SyncData();
                 data.Send = false;
 
-                data.PedElementId = reader.GetUint16();
+                data.PedElementId = reader.GetElementId();
 
                 data.TimeSyncContext = reader.GetByte();
 
