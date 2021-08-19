@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 using SlipeServer.Packets.Lua.Camera;
@@ -326,6 +326,18 @@ namespace SlipeServer.Console
 
                 if (args.Command == "ac")
                     player.ResendPlayerACInfo();
+
+                if (args.Command == "setmaxplayers")
+                {
+                    if(args.Arguments.Length > 0)
+                    {
+                        if(ushort.TryParse(args.Arguments[0], out ushort slots))
+                        {
+                            this.server.SetMaxPlayers(slots);
+                            this.logger.LogInformation($"Slots has been changed to: {slots}");
+                        }
+                    }
+                }
             };
 
             player.AcInfoReceived += (o, args) =>
