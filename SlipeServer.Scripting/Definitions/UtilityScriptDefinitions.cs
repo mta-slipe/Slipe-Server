@@ -49,7 +49,14 @@ namespace SlipeServer.Scripting.Definitions
         [ScriptFunctionDefinition("getColorFromString")]
         public Color? GetColorFromString(string color)
         {
-            return ColorTranslator.FromHtml(color);
+            try
+            {
+                return ColorTranslator.FromHtml(color);
+            }
+            catch(Exception)
+            {
+                return null;
+            }
         }
     }
 }
