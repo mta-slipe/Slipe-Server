@@ -46,7 +46,6 @@ namespace SlipeServer.Lua
             if (obj is string str)
                 return new DynValue[] { DynValue.NewString(str) };
             if (obj is Color color)
-                    // b + g * 256 + r * 256 * 256 + a * 256 * 256 * 256;
                 return new DynValue[]
                 {
                     DynValue.NewNumber(color.R),
