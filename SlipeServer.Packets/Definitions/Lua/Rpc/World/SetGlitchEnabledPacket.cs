@@ -19,7 +19,7 @@ namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
         public SetGlitchEnabledPacket(byte glitchType, bool enabled)
         {
             this.GlitchType = glitchType;
-            this.Enabled = enabled ? 1 : 0;
+            this.Enabled = (byte)(enabled ? 1 : 0);
         }
 
         public override void Read(byte[] bytes)
