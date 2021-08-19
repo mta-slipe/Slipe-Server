@@ -28,6 +28,7 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped
 
         public override void Read(byte[] bytes)
         {
+
         }
 
         public override byte[] Write()
