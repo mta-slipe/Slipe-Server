@@ -17,4 +17,4 @@ print(x, y, z)
 destroyElement(object2)
 destroyElement(object)
 
-outputDebugString("Debug message")
+outputDebugString("Debug message, elapsed time: "..getTickCount())
