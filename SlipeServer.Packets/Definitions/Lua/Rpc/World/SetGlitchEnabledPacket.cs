@@ -13,13 +13,13 @@ namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
         public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
         public override PacketPriority Priority => PacketPriority.High;
 
-        public GlitchType GlitchType { get; set; }
-        public bool Enabled { get; set; }
+        public byte GlitchType { get; set; }
+        public byte Enabled { get; set; }
 
-        public SetGlitchEnabledPacket(GlitchType glitchType, bool enabled)
+        public SetGlitchEnabledPacket(byte glitchType, bool enabled)
         {
             this.GlitchType = glitchType;
-            this.Enabled = enabled;
+            this.Enabled = enabled ? 1 : 0;
         }
 
         public override void Read(byte[] bytes)
@@ -31,6 +31,7 @@ namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
         {
             PacketBuilder builder = new PacketBuilder();
             builder.Write((byte)ElementRpcFunction.SET_GLITCH_ENABLED);
+            builder.Write(this.GlitchType);
             builder.Write(this.Enabled);
 
             return builder.Build();

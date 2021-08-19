@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SlipeServer.Packets.Enums
+namespace SlipeServer.Server.Enums
 {
     public enum GlitchType
     {
