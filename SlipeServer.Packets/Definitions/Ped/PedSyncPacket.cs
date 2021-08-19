@@ -13,13 +13,13 @@ namespace SlipeServer.Packets.Definitions.Ped
     public class PedSyncPacket : Packet
     {
         public override PacketId PacketId { get; } = PacketId.PACKET_ID_PED_SYNC;
-        public override PacketReliability Reliability { get; } = PacketReliability.ReliableSequenced;
+        public override PacketReliability Reliability { get; } = PacketReliability.UnreliableSequenced;
         public override PacketPriority Priority { get; } = PacketPriority.Medium;
 
         public struct SyncData
         {
             public bool Send { get; set; }
-            public uint Model { get; set; }
+            public uint PedElementId { get; set; }
             public byte Flags { get; set; }
             public byte TimeSyncContext { get; set; }
             public Vector3 Position { get; set; }
@@ -47,7 +47,7 @@ namespace SlipeServer.Packets.Definitions.Ped
                 if (data.Send)
                 {
                     // Vehicle ID
-                    builder.Write(data.Model);
+                    builder.Write(data.PedElementId);
 
                     // Sync time context
                     builder.Write(data.TimeSyncContext);
@@ -99,7 +99,7 @@ namespace SlipeServer.Packets.Definitions.Ped
                 SyncData data = new SyncData();
                 data.Send = false;
 
-                data.Model = reader.GetByte();
+                data.PedElementId = reader.GetUint16();
 
                 data.TimeSyncContext = reader.GetByte();
 
@@ -119,7 +119,7 @@ namespace SlipeServer.Packets.Definitions.Ped
                 // Rotation
                 if ((flags & 0x02) != 0)
                 {
-                    data.Rotation = reader.GetByte();
+                    data.Rotation = reader.GetFloat();
                 }
                 
                 // Velocity
@@ -130,13 +130,13 @@ namespace SlipeServer.Packets.Definitions.Ped
                 // Health
                 if ((flags & 0x08) != 0)
                 {
-                    data.Health = reader.GetByte();
+                    data.Health = reader.GetFloat();
                 }
 
                 // Armor
                 if ((flags & 0x10) != 0)
                 {
-                    data.Armor = reader.GetByte();
+                    data.Armor = reader.GetFloat();
                 }
 
                 // On fire

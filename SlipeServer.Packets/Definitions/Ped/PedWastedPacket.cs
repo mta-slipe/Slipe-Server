@@ -74,11 +74,11 @@ namespace SlipeServer.Packets.Definitions.Ped
 
             this.AnimGroup = data.GetCompressedByte();
             this.AnimId = data.GetCompressedByte();
-            this.KillerId = data.GetByte();
+            this.KillerId = data.GetUint16();
             this.KillerWeapon = data.GetByte();
             this.BodyPart = data.GetByte();
             this.Position = data.GetVector3WithZAsFloat();
-            this.PedId = data.GetByte();
+            this.PedId = data.GetUint16();
 
             this.Ammo = data.GetByte();
         }
