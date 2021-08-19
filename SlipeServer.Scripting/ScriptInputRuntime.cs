@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Scripting.EventDefinitions;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Repositories;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,31 @@ namespace SlipeServer.Scripting
 
             this.server = server;
             this.elementRepository = elementRepository;
+            this.server.PlayerJoined += HandlePlayerJoined;
             //this.server.ElementCreated += HandleElementCreation;
+        }
+
+        private void HandlePlayerJoined(Player player)
+        {
+            player.CommandEntered += CommandEntered;
+            player.Destroyed += Destroyed;
+        }
+
+        private void Destroyed(Element obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void CommandEntered(Player player, PlayerCommandEventArgs e)
+        {
+            foreach (var commandHandler in registeredCommandHandlers)
+            {
+                if(commandHandler.CommandName == e.Command)
+                {
+                    commandHandler.Delegate.DynamicInvoke(player, e.Command, e.Arguments);
+                }
+            }
+//            callbackDelegate.DynamicInvoke(objects.First(), objects.Skip(1));
         }
 
         public void AddCommandHandler(string commandName, CommandDelegate callbackDelegate)

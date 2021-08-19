@@ -18,3 +18,7 @@ destroyElement(object2)
 destroyElement(object)
 
 outputDebugString("Debug message")
+
+addCommandHandler("foo", function(plr, cmd, ...)
+	print("command:",plr, cmd, ...)
+end)

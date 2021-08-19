@@ -58,6 +58,8 @@ namespace SlipeServer.Lua
             if (obj is DynValue dynValue)
                 return new DynValue[] { dynValue };
 
+            if (obj is IEnumerable<string> stringEnumerable)
+                return stringEnumerable.Select(x => DynValue.NewString(x)).ToArray();
             if (obj is IEnumerable<object> enumerable)
                 return enumerable.Select(x => ToDynValues(obj)).SelectMany(x => x).ToArray();
 
@@ -116,6 +118,11 @@ namespace SlipeServer.Lua
             {
                 var callback = dynValues.Dequeue().Function;
                 return (EventDelegate)((element, parameters) => callback.Call(new DynValue[] { UserData.Create(element) }.Concat(ToDynValues(parameters))));
+            }
+            if (targetType == typeof(CommandDelegate))
+            {
+                var callback = dynValues.Dequeue().Function;
+                return (CommandDelegate)((element, commandName, parameters) => callback.Call(new DynValue[] { UserData.Create(element), DynValue.NewString(commandName) }.Concat(ToDynValues(parameters)).ToArray()));
             }
 
             throw new NotImplementedException($"Conversion from Lua for {targetType} not implemented");
