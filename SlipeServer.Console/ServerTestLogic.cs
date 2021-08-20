@@ -81,6 +81,7 @@ namespace SlipeServer.Console
             this.worldService.SetTime(13, 37);
             this.worldService.MinuteDuration = 60_000;
             this.worldService.SetSkyGradient(Color.Aqua, Color.Teal);
+            this.worldService.SetGlitchEnabled(GlitchType.GLITCH_FASTSPRINT, true);
 
             this.server.PlayerJoined += OnPlayerJoin;
         }
