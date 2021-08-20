@@ -7,7 +7,7 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped
 {
-    public class SetRadarAreaColorPacket : Packet
+    public class SetRadarAreaSizePacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
 
@@ -16,12 +16,12 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped
         public override PacketPriority Priority => PacketPriority.High;
 
         public uint ElementId { get; }
-        public Color Color { get; }
+        public Vector2 Size { get; }
 
-        public SetRadarAreaColorPacket(uint elementId, Color color)
+        public SetRadarAreaSizePacket(uint elementId, Vector2 size)
         {
             this.ElementId = elementId;
-            this.Color = color;
+            this.Size = size;
         }
 
         public override void Read(byte[] bytes)
@@ -32,12 +32,10 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped
         public override byte[] Write()
         {
             var builder = new PacketBuilder();
-            builder.Write((byte)ElementRpcFunction.SET_RADAR_AREA_COLOR);
+            builder.Write((byte)ElementRpcFunction.SET_RADAR_AREA_SIZE);
             builder.WriteElementId(this.ElementId);
-            builder.Write(this.Color.R);
-            builder.Write(this.Color.G);
-            builder.Write(this.Color.B);
-            builder.Write(this.Color.A);
+            builder.Write(this.Size.X);
+            builder.Write(this.Size.Y);
 
             return builder.Build();
         }

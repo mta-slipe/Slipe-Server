@@ -101,7 +101,7 @@ namespace SlipeServer.Console
             }).AssociateWith(this.server);
             new WorldObject(321, new Vector3(5, 0, 3)).AssociateWith(this.server);
             new Blip(new Vector3(20, 0, 0), BlipIcon.Bulldozer).AssociateWith(this.server);
-            RadarArea = new RadarArea(new Vector2(0, 0), new Vector2(200, 200), Color.FromArgb(100, Color.Aqua)).AssociateWith(this.server);
+            this.RadarArea = new RadarArea(new Vector2(0, 0), new Vector2(200, 200), Color.FromArgb(100, Color.Aqua)).AssociateWith(this.server);
 
             new Marker(new Vector3(5, 0, 2), MarkerType.Cylinder)
             {
@@ -252,8 +252,10 @@ namespace SlipeServer.Console
             {
                 if (args.Command == "radararea")
                 {
-                    RadarArea.Color = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
-                    this.chatBox.OutputTo(player, "You have randomized color of radar area!", Color.YellowGreen);
+                    this.RadarArea.Color = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
+                    this.RadarArea.Size = new Vector2(this.random.Next(100, 200), this.random.Next(100, 200));
+                    this.RadarArea.IsFlashing = this.random.Next(2) == 1;
+                    this.chatBox.OutputTo(player, "You have randomized radar area!", Color.YellowGreen);
                 }
             };
 

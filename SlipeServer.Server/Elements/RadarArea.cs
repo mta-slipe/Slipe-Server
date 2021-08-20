@@ -10,16 +10,26 @@ namespace SlipeServer.Server.Elements
     {
         public override ElementType ElementType => ElementType.RadarArea;
         private Color color;
+        private Vector2 size;
         public Vector2 Position2
         {
             get => new(this.Position.X, this.Position.Y);
             set => this.Position = new Vector3(value.X, value.Y, 0);
         }
 
-        public Vector2 Size { get; set; }
+        public Vector2 Size
+        {
+            get => this.size; set
+            {
+                var args = new ElementChangedEventArgs<RadarArea, Vector2>(this, this.size, value, this.IsSync);
+                this.size = value;
+                SizeChanged?.Invoke(this, args);
+            }
+        }
+
         public Color Color
         {
-            get => color; set
+            get => this.color; set
             {
                 var args = new ElementChangedEventArgs<RadarArea, Color>(this, this.color, value, this.IsSync);
                 this.color = value;
@@ -40,6 +50,7 @@ namespace SlipeServer.Server.Elements
             return server.AssociateElement(this);
         }
 
+        public event ElementChangedEventHandler<RadarArea, Vector2>? SizeChanged;
         public event ElementChangedEventHandler<RadarArea, Color>? ColorChanged;
     }
 }

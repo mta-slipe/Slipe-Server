@@ -39,12 +39,19 @@ namespace SlipeServer.Server.Behaviour
             this.radarAreas.Add(collisionShape);
             collisionShape.Destroyed += (source) => this.radarAreas.Remove(collisionShape);
             collisionShape.ColorChanged += ColorChanged;
+            collisionShape.SizeChanged += SizeChanged;
         }
 
         private void ColorChanged(Element sender, ElementChangedEventArgs<RadarArea, Color> args)
         {
             if (!args.IsSync)
                 this.server.BroadcastPacket(new SetRadarAreaColorPacket(args.Source.Id, args.NewValue));
+        }
+
+        private void SizeChanged(Element sender, ElementChangedEventArgs<RadarArea, Vector2> args)
+        {
+            if (!args.IsSync)
+                this.server.BroadcastPacket(new SetRadarAreaSizePacket(args.Source.Id, args.NewValue));
         }
     }
 }
