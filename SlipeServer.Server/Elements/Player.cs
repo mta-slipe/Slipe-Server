@@ -52,6 +52,7 @@ namespace SlipeServer.Server.Elements
         public bool IsStealthAiming { get; set; }
         public bool IsVoiceMuted { get; set; }
         public bool IsChatMuted { get; set; }
+        public List<Ped> SyncingPeds { get; set; }
 
         public Dictionary<int, PlayerPendingScreenshot> PendingScreenshots { get; } = new();
 
