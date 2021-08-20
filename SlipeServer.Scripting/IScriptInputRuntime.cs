@@ -10,6 +10,7 @@ namespace SlipeServer.Scripting
     public interface IScriptInputRuntime
     {
         void AddCommandHandler(string eventName, CommandDelegate callbackDelegate);
+        void RemoveCommandHandler(string eventName, CommandDelegate? callbackDelegate = null);
     }
 
     public delegate void CommandDelegate(Element element, string commandName, params string[] parameters);

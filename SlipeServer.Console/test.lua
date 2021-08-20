@@ -1,4 +1,4 @@
-﻿local object = createObject(321, 5, 5, 5)
+local object = createObject(321, 5, 5, 5)
 setElementPosition(object, 50, 50, 250)
 setElementRotation(object, 180, 180, 90)
 
@@ -19,6 +19,23 @@ destroyElement(object)
 
 outputDebugString("Debug message")
 
-addCommandHandler("foo", function(plr, cmd, ...)
+function commandHandler(plr, cmd, ...)
 	print("command:",plr, cmd, ...)
-end)
+end
+
+function commandHandler21(plr, cmd, ...)
+	print("command21:",plr, cmd, ...)
+end
+function commandHandler22(plr, cmd, ...)
+	print("command22:",plr, cmd, ...)
+end
+
+addCommandHandler("foo1", commandHandler) --
+addCommandHandler("foo2", commandHandler)
+addCommandHandler("foo3", commandHandler) --
+addCommandHandler("foo4", commandHandler21)
+addCommandHandler("foo4", commandHandler22)
+addCommandHandler("foo5", commandHandler21) --
+addCommandHandler("foo5", commandHandler22) --
+removeCommandHandler("foo2", commandHandler)
+removeCommandHandler("foo4")

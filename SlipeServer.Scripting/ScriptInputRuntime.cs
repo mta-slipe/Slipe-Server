@@ -13,16 +13,13 @@ namespace SlipeServer.Scripting
     {
         private readonly List<RegisteredCommandHandler> registeredCommandHandlers;
         private readonly MtaServer server;
-        private readonly IElementRepository elementRepository;
 
-        public ScriptInputRuntime(MtaServer server, IElementRepository elementRepository)
+        public ScriptInputRuntime(MtaServer server)
         {
             this.registeredCommandHandlers = new List<RegisteredCommandHandler>();
 
             this.server = server;
-            this.elementRepository = elementRepository;
             this.server.PlayerJoined += HandlePlayerJoined;
-            //this.server.ElementCreated += HandleElementCreation;
         }
 
         private void HandlePlayerJoined(Player player)
@@ -33,28 +30,47 @@ namespace SlipeServer.Scripting
 
         private void Destroyed(Element obj)
         {
-            throw new NotImplementedException();
+            (obj as Player).CommandEntered -= CommandEntered;
         }
 
         private void CommandEntered(Player player, PlayerCommandEventArgs e)
         {
-            foreach (var commandHandler in registeredCommandHandlers)
+            foreach (var commandHandler in this.registeredCommandHandlers)
             {
-                if(commandHandler.CommandName == e.Command)
+                if (commandHandler.CommandName == e.Command)
                 {
                     commandHandler.Delegate.DynamicInvoke(player, e.Command, e.Arguments);
                 }
             }
-//            callbackDelegate.DynamicInvoke(objects.First(), objects.Skip(1));
         }
 
         public void AddCommandHandler(string commandName, CommandDelegate callbackDelegate)
         {
-            registeredCommandHandlers.Add(new RegisteredCommandHandler
+            this.registeredCommandHandlers.Add(new RegisteredCommandHandler
             {
                 CommandName = commandName,
                 Delegate = callbackDelegate,
             });
+        }
+
+        public void RemoveCommandHandler(string commandName, CommandDelegate? callbackDelegate = null)
+        {
+            if (callbackDelegate == null)
+                this.registeredCommandHandlers.RemoveAll(x => x.CommandName == commandName);
+            else
+                this.registeredCommandHandlers.RemoveAll(x =>
+                {
+                    var x1 = callbackDelegate.Target;
+                    var y2 = x.Delegate.Target;
+                    var foo = x1 == y2;
+                    var asd = x.Delegate == callbackDelegate;
+                    var asd2 = x.Delegate.Equals(callbackDelegate);
+                    if(foo || asd || asd2)
+                    {
+                        var asdasd = 5;
+                    }
+                    return x.CommandName == commandName && asd;
+                });
         }
     }
 
