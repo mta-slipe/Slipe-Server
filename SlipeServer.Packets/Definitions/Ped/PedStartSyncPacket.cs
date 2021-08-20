@@ -32,6 +32,11 @@ namespace SlipeServer.Packets.Definitions.Ped
             Armor = armor;
         }
 
+        public PedStartSyncPacket(uint sourceElementId)
+        {
+            this.SourceElementId = sourceElementId;
+        }
+
         public PedStartSyncPacket()
         {
             

@@ -17,7 +17,7 @@ namespace SlipeServer.Packets.Definitions.Ped
         public override PacketReliability Reliability { get; } = PacketReliability.ReliableSequenced;
         public override PacketPriority Priority { get; } = PacketPriority.High;
 
-        public uint PedId { get; set; }
+        public uint SourceElementId { get; set; }
         public uint KillerId { get; set; }
         public byte KillerWeapon { get; set; }
         public byte BodyPart { get; set; }
@@ -28,9 +28,9 @@ namespace SlipeServer.Packets.Definitions.Ped
         public ulong AnimGroup { get; set; }
         public ulong AnimId { get; set; }
 
-        public PedWastedPacket(uint pedId, uint killerId, byte killerWeapon, byte bodyPart, Vector3 position, ushort ammo, bool stealth, byte timeContext, ulong animGroup, ulong animId)
+        public PedWastedPacket(uint sourceElementId, uint killerId, byte killerWeapon, byte bodyPart, Vector3 position, ushort ammo, bool stealth, byte timeContext, ulong animGroup, ulong animId)
         {
-            this.PedId = pedId;
+            this.SourceElementId = sourceElementId;
             this.KillerId = killerId;
             this.KillerWeapon = killerWeapon;
             this.BodyPart = bodyPart;
@@ -51,7 +51,7 @@ namespace SlipeServer.Packets.Definitions.Ped
         {
             var builder = new PacketBuilder();
 
-            builder.WriteElementId(this.PedId);
+            builder.WriteElementId(this.SourceElementId);
             builder.WriteElementId(this.KillerId);
 
             builder.Write(this.KillerWeapon);
@@ -78,7 +78,7 @@ namespace SlipeServer.Packets.Definitions.Ped
             this.KillerWeapon = data.GetByte();
             this.BodyPart = data.GetByte();
             this.Position = data.GetVector3WithZAsFloat();
-            this.PedId = data.GetElementId();
+            this.SourceElementId = data.GetElementId();
 
             this.Ammo = data.GetByte();
         }

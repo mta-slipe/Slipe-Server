@@ -19,7 +19,8 @@ namespace SlipeServer.Packets.Definitions.Ped
         public struct SyncData
         {
             public bool Send { get; set; }
-            public uint PedElementId { get; set; }
+
+            public uint SourceElementId { get; set; }
             public byte Flags { get; set; }
             public byte TimeSyncContext { get; set; }
             public Vector3 Position { get; set; }
@@ -31,7 +32,7 @@ namespace SlipeServer.Packets.Definitions.Ped
             public bool IsInWater { get; set; }
         }
 
-        private List<SyncData> Syncs;
+        public List<SyncData> Syncs;
 
         public PedSyncPacket()
         {
@@ -47,7 +48,7 @@ namespace SlipeServer.Packets.Definitions.Ped
                 if (data.Send)
                 {
                     // Vehicle ID
-                    builder.Write(data.PedElementId);
+                    builder.Write(data.SourceElementId);
 
                     // Sync time context
                     builder.Write(data.TimeSyncContext);
@@ -99,7 +100,7 @@ namespace SlipeServer.Packets.Definitions.Ped
                 SyncData data = new SyncData();
                 data.Send = false;
 
-                data.PedElementId = reader.GetElementId();
+                data.SourceElementId = reader.GetElementId();
 
                 data.TimeSyncContext = reader.GetByte();
 
