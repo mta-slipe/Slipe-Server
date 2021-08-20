@@ -40,6 +40,13 @@ namespace SlipeServer.Server.Behaviour
             collisionShape.Destroyed += (source) => this.radarAreas.Remove(collisionShape);
             collisionShape.ColorChanged += ColorChanged;
             collisionShape.SizeChanged += SizeChanged;
+            collisionShape.FlashingStateChanged += FlashingStateChanged;
+        }
+
+        private void FlashingStateChanged(Element sender, ElementChangedEventArgs<RadarArea, bool> args)
+        {
+            if (!args.IsSync)
+                this.server.BroadcastPacket(new SetRadarAreaFlashingPacket(args.Source.Id, args.NewValue));
         }
 
         private void ColorChanged(Element sender, ElementChangedEventArgs<RadarArea, Color> args)
