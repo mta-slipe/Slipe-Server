@@ -38,6 +38,9 @@ namespace SlipeServer.Console
         private readonly TextItemService textItemService;
         private Resource? testResource;
 
+        private readonly Random random = new Random();
+        RadarArea RadarArea { get; set; }
+
         public ServerTestLogic(
             MtaServer server,
             IElementRepository elementRepository,
@@ -98,7 +101,8 @@ namespace SlipeServer.Console
             }).AssociateWith(this.server);
             new WorldObject(321, new Vector3(5, 0, 3)).AssociateWith(this.server);
             new Blip(new Vector3(20, 0, 0), BlipIcon.Bulldozer).AssociateWith(this.server);
-            new RadarArea(new Vector2(0, 0), new Vector2(200, 200), Color.FromArgb(100, Color.Aqua)).AssociateWith(this.server);
+            RadarArea = new RadarArea(new Vector2(0, 0), new Vector2(200, 200), Color.FromArgb(100, Color.Aqua)).AssociateWith(this.server);
+
             new Marker(new Vector3(5, 0, 2), MarkerType.Cylinder)
             {
                 Color = Color.FromArgb(100, Color.Cyan)
@@ -244,6 +248,15 @@ namespace SlipeServer.Console
 
         private void HandlePlayerCommands(Player player)
         {
+            player.CommandEntered += (o, args) =>
+            {
+                if (args.Command == "radararea")
+                {
+                    RadarArea.Color = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
+                    this.chatBox.OutputTo(player, "You have randomized color of radar area!", Color.YellowGreen);
+                }
+            };
+
             player.CommandEntered += (o, args) => { if (args.Command == "kill") player.Kill(); };
             player.CommandEntered += (o, args) => { if (args.Command == "spawn") player.Spawn(new Vector3(20, 0, 3), 0, 9, 0, 0); };
             player.CommandEntered += (o, args) => {
