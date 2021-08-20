@@ -31,7 +31,7 @@ namespace SlipeServer.Packets.Definitions.Commands
 
         public override byte[] Write()
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 }

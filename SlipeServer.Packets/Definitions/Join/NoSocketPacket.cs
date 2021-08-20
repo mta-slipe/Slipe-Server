@@ -1,4 +1,4 @@
-﻿using SlipeServer.Packets;
+using SlipeServer.Packets;
 using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
 using System;
@@ -17,7 +17,7 @@ namespace MTAServerWrapper.Packets.Outgoing.Connection
 
         public override byte[] Write()
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public override void Read(byte[] bytes)
