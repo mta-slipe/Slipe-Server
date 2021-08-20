@@ -91,5 +91,6 @@ namespace SlipeServer.Server
         public int ObjectSync { get; set; } = 500;
         public int KeySyncRotation { get; set; } = 25;
         public int KeySyncAnalogMove { get; set; } = 25;
+        public int PedSyncerDistance { get; set; } = 100;
     }
 }
