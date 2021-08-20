@@ -32,7 +32,7 @@ namespace MTAServerWrapper.Packets.Outgoing.Connection
 
         public override void Read(byte[] bytes)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 }
