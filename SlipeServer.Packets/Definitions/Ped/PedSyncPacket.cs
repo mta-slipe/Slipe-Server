@@ -34,16 +34,12 @@ namespace SlipeServer.Packets.Definitions.Ped
             {
                 if (data.Send)
                 {
-                    // Vehicle ID
                     builder.Write(data.SourceElementId);
 
-                    // Sync time context
                     builder.Write(data.TimeSyncContext);
 
-                    // Flags
                     builder.Write(data.Flags);
 
-                    // Position
                     if ((data.Flags & 0x01) != 0)
                     {
                         builder.Write(data.Position.X);
@@ -51,12 +47,10 @@ namespace SlipeServer.Packets.Definitions.Ped
                         builder.Write(data.Position.Z);
                     }
 
-                    // Rotation
                     if ((data.Flags & 0x02) != 0)
                         builder.Write(data.Rotation);
                     
 
-                    // Velocity
                     if ((data.Flags & 0x04) != 0)
                     {
                         builder.Write(data.Velocity.X);
@@ -64,7 +58,6 @@ namespace SlipeServer.Packets.Definitions.Ped
                         builder.Write(data.Velocity.Z);
                     }
 
-                    // Health, armor, on fire, is in water
                     if ((data.Flags & 0x08) != 0)
                         builder.Write(data.Health);
                     if ((data.Flags & 0x10) != 0)
@@ -97,43 +90,37 @@ namespace SlipeServer.Packets.Definitions.Ped
 
                 data.Flags = flags;
 
-                // Position
                 if ((flags & 0x01) != 0)
                 {
                     Vector3 position = reader.GetVector3WithZAsFloat();
                     data.Position = position;
                 }
 
-                // Rotation
                 if ((flags & 0x02) != 0)
                 {
                     data.Rotation = reader.GetFloat();
                 }
                 
-                // Velocity
                 if ((flags & 0x04) != 0)
                 {
                     data.Velocity = reader.GetVector3WithZAsFloat();
                 }
-                // Health
+
                 if ((flags & 0x08) != 0)
                 {
                     data.Health = reader.GetFloat();
                 }
 
-                // Armor
                 if ((flags & 0x10) != 0)
                 {
                     data.Armor = reader.GetFloat();
                 }
 
-                // On fire
                 if ((flags & 0x20) != 0)
                 {
                     data.IsOnFire = reader.GetBit();
                 }
 
-                // In water
                 if ((flags & 0x40) != 0)
                 {
                     data.IsInWater = reader.GetBit();
