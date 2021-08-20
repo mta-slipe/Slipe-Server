@@ -109,8 +109,9 @@ namespace SlipeServer.Server.Elements
         public PedClothing[] Clothes { get; set; }
         public WeaponCollection Weapons { get; set; }
         public bool IsAlive => this.health > 0;
-        public Player Syncer { get; set; }
-
+        public Player? Syncer { get; set; }
+        public bool IsOnFire { get; set; }
+        public bool IsInWater { get; set; }
 
         public VehicleAction VehicleAction { get; set; } = VehicleAction.None;
         public Vehicle? JackingVehicle { get; set; }
