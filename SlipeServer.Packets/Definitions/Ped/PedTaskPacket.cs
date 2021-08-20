@@ -23,7 +23,7 @@ namespace SlipeServer.Packets.Definitions.Ped
         public PedTaskPacket(uint sourceElementId)
         {
             this.SourceElementId = sourceElementId;
-            DataBuffer = new bool[56];
+            this.DataBuffer = new bool[56];
         }
 
         public override byte[] Write()
@@ -32,7 +32,7 @@ namespace SlipeServer.Packets.Definitions.Ped
 
             builder.WriteElementId(this.SourceElementId);
 
-            builder.Write(DataBuffer);
+            builder.Write(this.DataBuffer);
             
             return builder.Build();
         }
@@ -41,12 +41,12 @@ namespace SlipeServer.Packets.Definitions.Ped
         {
             var reader = new PacketReader(bytes);
 
-            NumberOfBitsInPacketBody = (uint)(reader.Size / 8);
+            this.NumberOfBitsInPacketBody = (uint)(reader.Size / 8);
 
-            uint numBytes = (NumberOfBitsInPacketBody + 1) / 8;
+            uint numBytes = (this.NumberOfBitsInPacketBody + 1) / 8;
             if (numBytes < DataBuffer.Length)
             {
-                DataBuffer = reader.GetBits((int)NumberOfBitsInPacketBody);
+                DataBuffer = reader.GetBits((int)this.NumberOfBitsInPacketBody);
             }
         }
     }

@@ -24,12 +24,12 @@ namespace SlipeServer.Packets.Definitions.Ped
 
         public PedStartSyncPacket(uint sourceElementId, Vector3 position, float rotation, Vector3 velocityVector, float health, float armor)
         {
-            SourceElementId = sourceElementId;
-            Position = position;
-            Rotation = rotation;
-            VelocityVector = velocityVector;
-            Health = health;
-            Armor = armor;
+            this.SourceElementId = sourceElementId;
+            this.Position = position;
+            this.Rotation = rotation;
+            this.VelocityVector = velocityVector;
+            this.Health = health;
+            this.Armor = armor;
         }
 
         public PedStartSyncPacket(uint sourceElementId)
@@ -46,20 +46,20 @@ namespace SlipeServer.Packets.Definitions.Ped
         {
             var builder = new PacketBuilder();
 
-            builder.WriteElementId(SourceElementId);
+            builder.WriteElementId(this.SourceElementId);
 
-            builder.Write(Position.X);
-            builder.Write(Position.Y);
-            builder.Write(Position.Z);
+            builder.Write(this.Position.X);
+            builder.Write(this.Position.Y);
+            builder.Write(this.Position.Z);
 
-            builder.Write(Rotation);
+            builder.Write(this.Rotation);
 
-            builder.Write(VelocityVector.X);
-            builder.Write(VelocityVector.Y);
-            builder.Write(VelocityVector.Z);
+            builder.Write(this.VelocityVector.X);
+            builder.Write(this.VelocityVector.Y);
+            builder.Write(this.VelocityVector.Z);
 
-            builder.Write(Health);
-            builder.Write(Armor);
+            builder.Write(this.Health);
+            builder.Write(this.Armor);
 
             return builder.Build();
         }
