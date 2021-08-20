@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
+using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Ped
 {
@@ -16,27 +17,13 @@ namespace SlipeServer.Packets.Definitions.Ped
         public override PacketReliability Reliability { get; } = PacketReliability.UnreliableSequenced;
         public override PacketPriority Priority { get; } = PacketPriority.Medium;
 
-        public struct SyncData
-        {
-            public bool Send { get; set; }
+        
 
-            public uint SourceElementId { get; set; }
-            public byte Flags { get; set; }
-            public byte TimeSyncContext { get; set; }
-            public Vector3 Position { get; set; }
-            public float Rotation { get; set; }
-            public Vector3 Velocity { get; set; }
-            public float Health { get; set; }
-            public float Armor { get; set; }
-            public bool IsOnFire { get; set; }
-            public bool IsInWater { get; set; }
-        }
-
-        public List<SyncData> Syncs;
+        public List<PedSyncData> Syncs;
 
         public PedSyncPacket()
         {
-            this.Syncs = new List<SyncData>();
+            this.Syncs = new List<PedSyncData>();
         }
 
         public override byte[] Write()
@@ -97,7 +84,7 @@ namespace SlipeServer.Packets.Definitions.Ped
             var reader = new PacketReader(bytes);
             while ((reader.Size / 8) > 32)
             {
-                SyncData data = new SyncData();
+                PedSyncData data = new PedSyncData();
                 data.Send = false;
 
                 data.SourceElementId = reader.GetElementId();
