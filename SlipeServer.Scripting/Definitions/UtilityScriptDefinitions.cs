@@ -13,33 +13,29 @@ namespace SlipeServer.Scripting.Definitions
 {
     public class UtilityScriptDefinitions
     {
-        private readonly DebugLog debugLog;
-        private readonly ILogger logger;
-        private readonly DateTime start;
+        private readonly MtaServer server;
 
-        public UtilityScriptDefinitions(DebugLog debugLog, ILogger logger)
+        public UtilityScriptDefinitions(MtaServer server)
         {
-            this.debugLog = debugLog;
-            this.logger = logger;
-            this.start = DateTime.Now;
+            this.server = server;
         }
 
         [ScriptFunctionDefinition("getTickCount")]
         public double GetTickCount()
         {
-            return Math.Floor((DateTime.Now - start).TotalMilliseconds + 0.5);
+            return Math.Floor(this.server.Uptime.TotalMilliseconds + 0.5);
         }
 
         [ScriptFunctionDefinition("base64Encode")]
         public string Base64Encode(string data)
         {
-            return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(data));
+            return Convert.ToBase64String(Encoding.UTF8.GetBytes(data));
         }
 
         [ScriptFunctionDefinition("base64Decode")]
         public string Base64Decode(string data)
         {
-            return System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(data));
+            return Encoding.UTF8.GetString(Convert.FromBase64String(data));
         }
 
         [ScriptFunctionDefinition("tocolor")]
@@ -64,7 +60,7 @@ namespace SlipeServer.Scripting.Definitions
         [ScriptFunctionDefinition("md5")]
         public string CreateMD5(string input)
         {
-            MD5 md5 = MD5.Create();
+            using MD5 md5 = MD5.Create();
             
             byte[] inputBytes = Encoding.ASCII.GetBytes(input);
             byte[] hashBytes = md5.ComputeHash(inputBytes);
