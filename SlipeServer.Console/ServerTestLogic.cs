@@ -262,12 +262,19 @@ namespace SlipeServer.Console
                 {
                     this.Vehicle.SetDoorState(VehicleDoor.Hood, VehicleDoorState.Missing, true);
                     this.Vehicle.SetWheelState(VehicleWheel.FrontLeft, VehicleWheelState.Collisionless);
-                    this.Vehicle.SetPanelState(VehiclePanel.Winscreen, VehiclePanelState.Damaged3);
+                    this.Vehicle.SetPanelState(VehiclePanel.Winscreen, VehiclePanelState.Damaged2);
+                    this.Vehicle.SetLightState(VehicleLight.FrontLeft, VehicleLightState.Broken);
                 }
             };
             player.CommandEntered += (o, args) => { if (args.Command == "kill") player.Kill(); };
             player.CommandEntered += (o, args) => { if (args.Command == "spawn") player.Spawn(new Vector3(20, 0, 3), 0, 9, 0, 0); };
             player.CommandEntered += (o, args) => {
+                if (args.Command == "day")
+                    this.worldService.SetTime(13, 37);
+
+                if (args.Command == "night")
+                    this.worldService.SetTime(2, 0);
+
                 if (args.Command == "boom")
                     this.explosionService.CreateExplosion(player.Position, ExplosionType.Tiny);
 

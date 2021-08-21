@@ -27,6 +27,7 @@ namespace SlipeServer.Server.Behaviour
                 vehicle.DoorStateChanged += HandleDoorStateChanged;
                 vehicle.WheelStateChanged += HandleWheelStateChanged;
                 vehicle.PanelStateChanged += HandlePanelStateChanged;
+                vehicle.LightStateChanged += HandleLightStateChanged;
             }
         }
 
@@ -37,12 +38,17 @@ namespace SlipeServer.Server.Behaviour
 
         private void HandleWheelStateChanged(object? sender, VehicleWheelStateChangedArgs args)
         {
-            this.server.BroadcastPacket(new SetVehicleDamageState(args.Vehicle.Id, (byte)VehicleDamagePart.Door, (byte)args.Wheel, (byte)args.State));
+            this.server.BroadcastPacket(new SetVehicleDamageState(args.Vehicle.Id, (byte)VehicleDamagePart.Wheel, (byte)args.Wheel, (byte)args.State));
         }
 
         private void HandlePanelStateChanged(object? sender, VehiclePanelStateChangedArgs args)
         {
             this.server.BroadcastPacket(new SetVehicleDamageState(args.Vehicle.Id, (byte)VehicleDamagePart.Panel, (byte)args.Panel, (byte)args.State));
+        }
+
+        private void HandleLightStateChanged(object? sender, VehicleLightStateChangedArgs args)
+        {
+            this.server.BroadcastPacket(new SetVehicleDamageState(args.Vehicle.Id, (byte)VehicleDamagePart.Light, (byte)args.Light, (byte)args.State));
         }
     }
 }

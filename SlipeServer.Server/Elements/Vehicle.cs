@@ -196,6 +196,12 @@ namespace SlipeServer.Server.Elements
             PanelStateChanged?.Invoke(this, new VehiclePanelStateChangedArgs(this, panel, state));
         }
 
+        public void SetLightState(VehicleLight light, VehicleLightState state)
+        {
+            this.LightStates[(byte)light] = (byte)state;
+            LightStateChanged?.Invoke(this, new VehicleLightStateChangedArgs(this, light, state));
+        }
+
         //public void SetWheelStates(VehicleWheelState frontLeft, VehicleWheelState rearLeft, VehicleWheelState frontRight, VehicleWheelState rearRight)
         //{
         //    this.WheelStates[(byte)VehicleWheel.FrontLeft] = (byte)frontLeft;
@@ -255,5 +261,6 @@ namespace SlipeServer.Server.Elements
         public event ElementEventHandler<VehicleDoorStateChangedArgs>? DoorStateChanged;
         public event ElementEventHandler<VehicleWheelStateChangedArgs>? WheelStateChanged;
         public event ElementEventHandler<VehiclePanelStateChangedArgs>? PanelStateChanged;
+        public event ElementEventHandler<VehicleLightStateChangedArgs>? LightStateChanged;
     }
 }
