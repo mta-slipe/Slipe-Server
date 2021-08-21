@@ -45,20 +45,17 @@ namespace SlipeServer.Server.Behaviour
 
         private void FlashingStateChanged(Element sender, ElementChangedEventArgs<RadarArea, bool> args)
         {
-            if (!args.IsSync)
-                this.server.BroadcastPacket(new SetRadarAreaFlashingPacket(args.Source.Id, args.NewValue));
+            this.server.BroadcastPacket(new SetRadarAreaFlashingPacket(args.Source.Id, args.NewValue));
         }
 
         private void ColorChanged(Element sender, ElementChangedEventArgs<RadarArea, Color> args)
         {
-            if (!args.IsSync)
-                this.server.BroadcastPacket(new SetRadarAreaColorPacket(args.Source.Id, args.NewValue));
+            this.server.BroadcastPacket(new SetRadarAreaColorPacket(args.Source.Id, args.NewValue));
         }
 
         private void SizeChanged(Element sender, ElementChangedEventArgs<RadarArea, Vector2> args)
         {
-            if (!args.IsSync)
-                this.server.BroadcastPacket(new SetRadarAreaSizePacket(args.Source.Id, args.NewValue));
+            this.server.BroadcastPacket(new SetRadarAreaSizePacket(args.Source.Id, args.NewValue));
         }
     }
 }

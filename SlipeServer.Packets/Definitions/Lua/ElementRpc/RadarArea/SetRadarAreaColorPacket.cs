@@ -34,10 +34,7 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped
             var builder = new PacketBuilder();
             builder.Write((byte)ElementRpcFunction.SET_RADAR_AREA_COLOR);
             builder.WriteElementId(this.ElementId);
-            builder.Write(this.Color.R);
-            builder.Write(this.Color.G);
-            builder.Write(this.Color.B);
-            builder.Write(this.Color.A);
+            builder.Write(this.Color, true);
 
             return builder.Build();
         }
