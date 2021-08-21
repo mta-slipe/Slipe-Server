@@ -52,12 +52,13 @@ namespace SlipeServer.Server.Elements
         public bool IsStealthAiming { get; set; }
         public bool IsVoiceMuted { get; set; }
         public bool IsChatMuted { get; set; }
+        public Team Team { get; set; }
 
         public Dictionary<int, PlayerPendingScreenshot> PendingScreenshots { get; } = new();
 
         private readonly HashSet<Element> subscriptionElements;
 
-
+        
         protected internal Player(Client client) : base(0, Vector3.Zero)
         {
             this.Client = client;
