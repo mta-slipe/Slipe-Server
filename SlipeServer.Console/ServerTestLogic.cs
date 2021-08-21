@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
+using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
@@ -70,6 +71,7 @@ namespace SlipeServer.Console
             this.SetupTestLogic();
         }
 
+        public Vehicle Vehicle { get; set; }
         private void SetupTestLogic()
         {
             SetupTestElements();
@@ -116,14 +118,14 @@ namespace SlipeServer.Console
                 TargetType = WeaponTargetType.Fixed,
                 TargetPosition = new Vector3(10, 10, 5)
             }.AssociateWith(this.server);
-            var vehicle = new Vehicle(602, new Vector3(-10, 5, 3)).AssociateWith(this.server);
+            this.Vehicle = new Vehicle(602, new Vector3(-10, 5, 3)).AssociateWith(this.server);
             var aircraft = new Vehicle(520, new Vector3(10, 5, 3)).AssociateWith(this.server);
             var forklift = new Vehicle(530, new Vector3(20, 5, 3)).AssociateWith(this.server);
             var forklift2 = new Vehicle(530, new Vector3(22, 5, 3)).AssociateWith(this.server);
             var firetruck = new Vehicle(407, new Vector3(30, 5, 3)).AssociateWith(this.server);
             var firetruck2 = new Vehicle(407, new Vector3(35, 5, 3)).AssociateWith(this.server);
 
-            vehicle.PedLeft += async (sender, eventArgs) =>
+            this.Vehicle.PedLeft += async (sender, eventArgs) =>
             {
                 if (eventArgs.Seat == 0)
                 {
@@ -133,7 +135,7 @@ namespace SlipeServer.Console
                 }
             };
 
-            vehicle.PedEntered += async (sender, eventArgs) =>
+            this.Vehicle.PedEntered += async (sender, eventArgs) =>
             {
                 if (eventArgs.Seat == 1)
                 {
@@ -254,6 +256,12 @@ namespace SlipeServer.Console
 
         private void HandlePlayerCommands(Player player)
         {
+            player.CommandEntered += (o, args) =>
+            {
+                if (args.Command == "vehtest")
+                    this.Vehicle.SetDoorState(VehicleDoor.Hood, VehicleDoorState.Missing, true);
+
+            };
             player.CommandEntered += (o, args) => { if (args.Command == "kill") player.Kill(); };
             player.CommandEntered += (o, args) => { if (args.Command == "spawn") player.Spawn(new Vector3(20, 0, 3), 0, 9, 0, 0); };
             player.CommandEntered += (o, args) => {

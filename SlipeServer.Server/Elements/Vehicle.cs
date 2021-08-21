@@ -1,4 +1,5 @@
 ﻿using SlipeServer.Packets.Definitions.Entities.Structs;
+using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Constants;
 using SlipeServer.Server.Elements.Events;
 using System;
@@ -40,9 +41,10 @@ namespace SlipeServer.Server.Elements
         }
 
         public float[] DoorRatios { get; set; }
-        public byte[] WheelStates { get; set; }
-        public byte[] PanelStates { get; set; }
-        public byte[] LightStates { get; set; }
+        private byte[] DoorStates { get; set; }
+        private byte[] WheelStates { get; set; }
+        private byte[] PanelStates { get; set; }
+        private byte[] LightStates { get; set; }
         public VehicleUpgrade[] Upgrades { get; set; }
         public string PlateText { get; set; } = "";
         public byte OverrideLights { get; set; } = 0;
@@ -92,6 +94,7 @@ namespace SlipeServer.Server.Elements
             this.Colors = new Color[2] { Color.White, Color.White };
             this.Damage = VehicleDamage.Undamaged;
             this.DoorRatios = new float[6];
+            this.DoorStates = new byte[6];
             this.WheelStates = new byte[4];
             this.PanelStates = new byte[7];
             this.LightStates = new byte[4];
@@ -175,6 +178,13 @@ namespace SlipeServer.Server.Elements
             // not implemented yet
         }
 
+        public void SetDoorState(VehicleDoor door, VehicleDoorState state, bool spawnFlyingComponent = false)
+        {
+            this.DoorStates[(byte)door] = (byte)state;
+            DamageStateChanged?.Invoke(this, new VehicleDamageStateChanged(this, VehicleDamagePart.Door, (byte)door, (byte)state, spawnFlyingComponent));
+        }
+
+
         internal void ResetWheelsPanelsLights()
         {
             Array.Clear(this.WheelStates, 0, this.WheelStates.Length);
@@ -223,5 +233,6 @@ namespace SlipeServer.Server.Elements
         public event ElementEventHandler<VehicleLeftEventArgs>? PedLeft;
         public event ElementEventHandler<VehicleEnteredEventsArgs>? PedEntered;
         public event ElementEventHandler<VehicleRespawnEventArgs>? Respawned;
+        public event ElementEventHandler<VehicleDamageStateChanged>? DamageStateChanged;
     }
 }

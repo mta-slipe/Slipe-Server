@@ -27,7 +27,7 @@ namespace SlipeServer.Server.AllSeeingEye
             this.xFireCache = new Cache<byte[]>(() => aseQueryService.QueryXFireLight(), cacheTime);
             this.fullCache = new Cache<byte[]>(() => aseQueryService.QueryFull(), cacheTime);
 
-            StartListening((ushort)(configuration.Port + 123));
+            //StartListening((ushort)(configuration.Port + 123));
         }
 
         public void SetRule(string key, string value)
