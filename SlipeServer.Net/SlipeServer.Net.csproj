@@ -18,9 +18,14 @@
 
   <ItemGroup>
     <None Remove="net.dll" />
+    <None Remove="net32.dll" />
+    <None Remove="net32.so" />
+    <None Remove="net32_d.dll" />
+    <None Remove="net64.dll" />
+    <None Remove="net64.so" />
     <None Remove="NetModuleWrapper.dll" />
+    <None Remove="NetModuleWrapper.so" />
     <None Remove="net_d.dll" />
-    <None Remove="net_no.dll" />
     <None Remove="pthread.dll" />
   </ItemGroup>
 
@@ -28,13 +33,28 @@
     <Content Include="net.dll" Pack="true" PackagePath="lib\net5.0">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="net32.dll" Pack="true" PackagePath="lib\net5.0">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="net32.so" Pack="true" PackagePath="lib\net5.0">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="net32_d.dll" Pack="true" PackagePath="lib\net5.0">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="net64.dll" Pack="true" PackagePath="lib\net5.0">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="net64.so" Pack="true" PackagePath="lib\net5.0">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="NetModuleWrapper.dll" Pack="true" PackagePath="lib\net5.0">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="net_d.dll" Pack="true" PackagePath="lib\net5.0">
+    <Content Include="NetModuleWrapper.so" Pack="true" PackagePath="lib\net5.0">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="net_no.dll" Pack="true" PackagePath="lib\net5.0">
+    <Content Include="net_d.dll" Pack="true" PackagePath="lib\net5.0">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="pthread.dll" Pack="true" PackagePath="lib\net5.0">

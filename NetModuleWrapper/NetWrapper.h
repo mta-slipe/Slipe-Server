@@ -1,17 +1,20 @@
 #include <iostream>
-#include "mta/shared/sdk/SharedUtil.h";
-#include "mta/server/core/CDynamicLibrary.h";
-#include "mta/server/sdk/core/CServerInterface.h";
-#include "mta/shared/sdk/SharedUtil.h";
-#include "mta/shared/sdk/net/Packets.h";
-#include "mta/shared/sdk/net/bitstream.h";
-#include "mta/server/sdk/net/CNetServer.h";
+#include "mta/sdk/SharedUtil.h"
+#include "mta/core/CDynamicLibrary.h"
+#include "mta/sdk/core/CServerInterface.h"
+#include "mta/sdk/SharedUtil.h"
+#include "mta/sdk/net/Packets.h"
+#include "mta/sdk/net/bitstream.h"
+#include "mta/sdk/net/CNetServer.h"
 #include <bitset>
 #include <map>
 #include <iomanip>
 #include <queue>
 #include <mutex>
 
+#ifndef WIN32
+#define __stdcall
+#endif
 typedef void(__stdcall* PacketCallback)(unsigned char, unsigned long, char[], unsigned long, bool, unsigned int);
 
 struct QueuedPacket {
@@ -56,7 +59,7 @@ public:
     void setSocketVersion(unsigned long address, unsigned short version);
     void resendModPackets(unsigned long address);
     void resendACPackets(unsigned long address);
-    BSTR getClientSerialAndVersion(unsigned long address, uint16_t& serialSize, uint16_t& extraSize, uint16_t& versionSize);
+    //BSTR getClientSerialAndVersion(unsigned long address, uint16_t& serialSize, uint16_t& extraSize, uint16_t& versionSize);
     int init(const char* netDllFilePath, const char* idFile, const char* ip, unsigned short port, unsigned int playerCount, const char* serverName, PacketCallback callback);
     void start();
     void stop();

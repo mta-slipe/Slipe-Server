@@ -12,9 +12,9 @@
 #pragma once
 
 #include "ns_common.h"
-#include "net/bitstream.h"
+#include "bitstream.h"
 #include "ns_playerid.h"
-#include "net/CNetHTTPDownloadManagerInterface.h"
+#include "CNetHTTPDownloadManagerInterface.h"
 
 #define MAX_CALL_REMOTE_QUEUES  100
 

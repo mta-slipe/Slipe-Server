@@ -11,9 +11,9 @@
 
 #pragma once
 
-#include "net/CNetServer.h"
-#include "CModManager.h"
-#include <xml/CXML.h>
+#include "../net/CNetServer.h"
+#include "./CModManager.h"
+#include "../xml/CXML.h"
 
 class CServerInterface
 {

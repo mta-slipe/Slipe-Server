@@ -11,7 +11,7 @@
 
 #include "StdInc.h"
 #include "CDynamicLibrary.h"
-#include "MTAPlatform.h"
+#include "../sdk/MTAPlatform.h"
 
 #ifdef WIN32
 #include <stdio.h>
@@ -80,10 +80,10 @@ bool CDynamicLibrary::Load(const char* szFilename)
     if (!m_hModule)
     {
         const char* szError = dlerror();
-        if (szError)
-            Print("%s\n", szError);
-        else
-            Print("Loading %s failed\n", szFilename);
+        //if (szError)
+            //Print("%s\n", szError);
+        //else
+            //Print("Loading %s failed\n", szFilename);
     }
     #endif
 

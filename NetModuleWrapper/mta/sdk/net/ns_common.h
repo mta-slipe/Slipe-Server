@@ -11,9 +11,9 @@
 
 #pragma once
 
-#include "net/bitstream.h"
-#include "net/packetenums.h"
-#include "ns_playerid.h"
+#include "./bitstream.h"
+#include "./packetenums.h"
+#include "./ns_playerid.h"
 
 const NetServerPlayerID NET_INVALID_PLAYER_ID;
 #define NET_INVALID_PLAYER_INDEX 255;

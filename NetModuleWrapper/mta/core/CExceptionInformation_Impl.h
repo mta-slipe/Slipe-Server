@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include <core/CExceptionInformation.h>
+#include "../sdk/core/CExceptionInformation.h"
 #include <windows.h>
 
 class CExceptionInformation_Impl : public CExceptionInformation

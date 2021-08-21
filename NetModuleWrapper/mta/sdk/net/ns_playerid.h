@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include <MTAPlatform.h>
+#include "../MTAPlatform.h"
 
 class SNetExtraInfo : public CRefCountable
 {

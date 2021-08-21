@@ -86,7 +86,7 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;NOMINMAX;_TIMESPEC_DEFINED;MTA_DEBUG;WIN32;_WIN32;_WIN32_WINNT=0x601;_MSC_PLATFORM_TOOLSET=$(PlatformToolsetVersion);DEBUG</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>mta\server\sdk;mta\shared\sdk;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>mta\sdk;mta\sdk;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -101,7 +101,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;WIN32;_WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -117,7 +117,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;NOMINMAX;_TIMESPEC_DEFINED;MTA_DEBUG;WIN32;_WIN32;_WIN32_WINNT=0x601;_MSC_PLATFORM_TOOLSET=$(PlatformToolsetVersion);DEBUG</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>mta\server\sdk;mta\shared\sdk;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>mta\sdk;mta\sdk;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -136,7 +136,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;NOMINMAX;_TIMESPEC_DEFINED;MTA_DEBUG;WIN32;_WIN32;_WIN32_WINNT=0x601;_MSC_PLATFORM_TOOLSET=$(PlatformToolsetVersion);DEBUG</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -148,110 +148,110 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="wrapperFunctions.cpp" />
-    <ClCompile Include="mta\server\core\CDynamicLibrary.cpp" />
+    <ClCompile Include="mta\core\CDynamicLibrary.cpp" />
     <ClCompile Include="NetWrapper.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="mta\server\build_overrides_s.h" />
-    <ClInclude Include="mta\server\core\CCrashHandler.h" />
-    <ClInclude Include="mta\server\core\CCrashHandlerAPI.h" />
-    <ClInclude Include="mta\server\core\CDynamicLibrary.h" />
-    <ClInclude Include="mta\server\core\CExceptionInformation_Impl.h" />
-    <ClInclude Include="mta\server\core\CModManagerImpl.h" />
-    <ClInclude Include="mta\server\core\CServerImpl.h" />
-    <ClInclude Include="mta\server\core\CThreadCommandQueue.h" />
-    <ClInclude Include="mta\server\core\ErrorCodes.h" />
-    <ClInclude Include="mta\server\core\StdInc.h" />
-    <ClInclude Include="mta\server\sdk\core\CExceptionInformation.h" />
-    <ClInclude Include="mta\server\sdk\core\CModManager.h" />
-    <ClInclude Include="mta\server\sdk\core\CServerBase.h" />
-    <ClInclude Include="mta\server\sdk\core\CServerInterface.h" />
-    <ClInclude Include="mta\server\sdk\MTAPlatform.h" />
-    <ClInclude Include="mta\server\sdk\net\CNetServer.h" />
-    <ClInclude Include="mta\server\sdk\net\ns_common.h" />
-    <ClInclude Include="mta\server\sdk\net\ns_playerid.h" />
-    <ClInclude Include="mta\server\version.h" />
-    <ClInclude Include="mta\shared\sdk\CBox.h" />
-    <ClInclude Include="mta\shared\sdk\CChecksum.h" />
-    <ClInclude Include="mta\shared\sdk\CDuplicateLineFilter.h" />
-    <ClInclude Include="mta\shared\sdk\CFastList.h" />
-    <ClInclude Include="mta\shared\sdk\CMatrix.h" />
-    <ClInclude Include="mta\shared\sdk\CMatrix4.h" />
-    <ClInclude Include="mta\shared\sdk\CMatrix_Pad.h" />
-    <ClInclude Include="mta\shared\sdk\CMtaVersion.h" />
-    <ClInclude Include="mta\shared\sdk\Common.h" />
-    <ClInclude Include="mta\shared\sdk\CRect2D.h" />
-    <ClInclude Include="mta\shared\sdk\CScriptArgReader.h" />
-    <ClInclude Include="mta\shared\sdk\CSphere.h" />
-    <ClInclude Include="mta\shared\sdk\CStringMap.h" />
-    <ClInclude Include="mta\shared\sdk\CVector.h" />
-    <ClInclude Include="mta\shared\sdk\CVector2D.h" />
-    <ClInclude Include="mta\shared\sdk\CVector4D.h" />
-    <ClInclude Include="mta\shared\sdk\net\bitstream.h" />
-    <ClInclude Include="mta\shared\sdk\net\CNetHTTPDownloadManagerInterface.h" />
-    <ClInclude Include="mta\shared\sdk\net\packetenums.h" />
-    <ClInclude Include="mta\shared\sdk\net\Packets.h" />
-    <ClInclude Include="mta\shared\sdk\net\rpc_enums.h" />
-    <ClInclude Include="mta\shared\sdk\net\SyncStructures.h" />
-    <ClInclude Include="mta\shared\sdk\profiler\SharedUtil.Profiler.h" />
-    <ClInclude Include="mta\shared\sdk\RTree.h" />
-    <ClInclude Include="mta\shared\sdk\sha1.h" />
-    <ClInclude Include="mta\shared\sdk\sha1.hpp" />
-    <ClInclude Include="mta\shared\sdk\sha2.h" />
-    <ClInclude Include="mta\shared\sdk\sha2.hpp" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.AllocTracking.h" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.AllocTracking.hpp" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.AsyncTaskScheduler.h" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.AsyncTaskScheduler.hpp" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.Buffer.h" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.ClassIdent.h" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.Crypto.h" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.Defines.h" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.FastHashMap.h" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.FastHashSet.h" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.File.h" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.File.hpp" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.Game.h" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.Game.hpp" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.h" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.Hash.h" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.Hash.hpp" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.HashMap.h" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.hpp" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.IntervalCounter.h" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.IntervalCounter.hpp" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.Legacy.h" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.Logging.h" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.Logging.hpp" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.Map.h" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.Math.h" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.MemAccess.h" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.MemAccess.hpp" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.Misc.h" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.Misc.hpp" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.Profiling.h" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.Profiling.hpp" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.SysInfo.h" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.SysInfo.hpp" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.Tests.hpp" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.Thread.h" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.ThreadPool.h" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.Time.h" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.Time.hpp" />
-    <ClInclude Include="mta\shared\sdk\SharedUtil.Win32Utf8FileHooks.hpp" />
-    <ClInclude Include="mta\shared\sdk\SString.h" />
-    <ClInclude Include="mta\shared\sdk\SString.hpp" />
-    <ClInclude Include="mta\shared\sdk\UTF8.h" />
-    <ClInclude Include="mta\shared\sdk\UTF8Detect.hpp" />
-    <ClInclude Include="mta\shared\sdk\WString.h" />
-    <ClInclude Include="mta\shared\sdk\WString.hpp" />
-    <ClInclude Include="mta\shared\sdk\xml\CXML.h" />
-    <ClInclude Include="mta\shared\sdk\xml\CXMLAttribute.h" />
-    <ClInclude Include="mta\shared\sdk\xml\CXMLAttributes.h" />
-    <ClInclude Include="mta\shared\sdk\xml\CXMLCommon.h" />
-    <ClInclude Include="mta\shared\sdk\xml\CXMLErrorCodes.h" />
-    <ClInclude Include="mta\shared\sdk\xml\CXMLFile.h" />
-    <ClInclude Include="mta\shared\sdk\xml\CXMLNode.h" />
+    <ClInclude Include="mta\build_overrides_s.h" />
+    <ClInclude Include="mta\core\CCrashHandler.h" />
+    <ClInclude Include="mta\core\CCrashHandlerAPI.h" />
+    <ClInclude Include="mta\core\CDynamicLibrary.h" />
+    <ClInclude Include="mta\core\CExceptionInformation_Impl.h" />
+    <ClInclude Include="mta\core\CModManagerImpl.h" />
+    <ClInclude Include="mta\core\CServerImpl.h" />
+    <ClInclude Include="mta\core\CThreadCommandQueue.h" />
+    <ClInclude Include="mta\core\ErrorCodes.h" />
+    <ClInclude Include="mta\core\StdInc.h" />
+    <ClInclude Include="mta\sdk\core\CExceptionInformation.h" />
+    <ClInclude Include="mta\sdk\core\CModManager.h" />
+    <ClInclude Include="mta\sdk\core\CServerBase.h" />
+    <ClInclude Include="mta\sdk\core\CServerInterface.h" />
+    <ClInclude Include="mta\sdk\MTAPlatform.h" />
+    <ClInclude Include="mta\sdk\net\CNetServer.h" />
+    <ClInclude Include="mta\sdk\net\ns_common.h" />
+    <ClInclude Include="mta\sdk\net\ns_playerid.h" />
+    <ClInclude Include="mta\version.h" />
+    <ClInclude Include="mta\sdk\CBox.h" />
+    <ClInclude Include="mta\sdk\CChecksum.h" />
+    <ClInclude Include="mta\sdk\CDuplicateLineFilter.h" />
+    <ClInclude Include="mta\sdk\CFastList.h" />
+    <ClInclude Include="mta\sdk\CMatrix.h" />
+    <ClInclude Include="mta\sdk\CMatrix4.h" />
+    <ClInclude Include="mta\sdk\CMatrix_Pad.h" />
+    <ClInclude Include="mta\sdk\CMtaVersion.h" />
+    <ClInclude Include="mta\sdk\Common.h" />
+    <ClInclude Include="mta\sdk\CRect2D.h" />
+    <ClInclude Include="mta\sdk\CScriptArgReader.h" />
+    <ClInclude Include="mta\sdk\CSphere.h" />
+    <ClInclude Include="mta\sdk\CStringMap.h" />
+    <ClInclude Include="mta\sdk\CVector.h" />
+    <ClInclude Include="mta\sdk\CVector2D.h" />
+    <ClInclude Include="mta\sdk\CVector4D.h" />
+    <ClInclude Include="mta\sdk\net\bitstream.h" />
+    <ClInclude Include="mta\sdk\net\CNetHTTPDownloadManagerInterface.h" />
+    <ClInclude Include="mta\sdk\net\packetenums.h" />
+    <ClInclude Include="mta\sdk\net\Packets.h" />
+    <ClInclude Include="mta\sdk\net\rpc_enums.h" />
+    <ClInclude Include="mta\sdk\net\SyncStructures.h" />
+    <ClInclude Include="mta\sdk\profiler\SharedUtilUtil.Profiler.h" />
+    <ClInclude Include="mta\sdk\RTree.h" />
+    <ClInclude Include="mta\sdk\sha1.h" />
+    <ClInclude Include="mta\sdk\sha1.hpp" />
+    <ClInclude Include="mta\sdk\sha2.h" />
+    <ClInclude Include="mta\sdk\sha2.hpp" />
+    <ClInclude Include="mta\sdk\SharedUtil.AllocTracking.h" />
+    <ClInclude Include="mta\sdk\SharedUtil.AllocTracking.hpp" />
+    <ClInclude Include="mta\sdk\SharedUtil.AsyncTaskScheduler.h" />
+    <ClInclude Include="mta\sdk\SharedUtil.AsyncTaskScheduler.hpp" />
+    <ClInclude Include="mta\sdk\SharedUtil.Buffer.h" />
+    <ClInclude Include="mta\sdk\SharedUtil.ClassIdent.h" />
+    <ClInclude Include="mta\sdk\SharedUtil.Crypto.h" />
+    <ClInclude Include="mta\sdk\SharedUtil.Defines.h" />
+    <ClInclude Include="mta\sdk\SharedUtil.FastHashMap.h" />
+    <ClInclude Include="mta\sdk\SharedUtil.FastHashSet.h" />
+    <ClInclude Include="mta\sdk\SharedUtil.File.h" />
+    <ClInclude Include="mta\sdk\SharedUtil.File.hpp" />
+    <ClInclude Include="mta\sdk\SharedUtil.Game.h" />
+    <ClInclude Include="mta\sdk\SharedUtil.Game.hpp" />
+    <ClInclude Include="mta\sdk\SharedUtil.h" />
+    <ClInclude Include="mta\sdk\SharedUtil.Hash.h" />
+    <ClInclude Include="mta\sdk\SharedUtil.Hash.hpp" />
+    <ClInclude Include="mta\sdk\SharedUtil.HashMap.h" />
+    <ClInclude Include="mta\sdk\SharedUtil.hpp" />
+    <ClInclude Include="mta\sdk\SharedUtil.IntervalCounter.h" />
+    <ClInclude Include="mta\sdk\SharedUtil.IntervalCounter.hpp" />
+    <ClInclude Include="mta\sdk\SharedUtil.Legacy.h" />
+    <ClInclude Include="mta\sdk\SharedUtil.Logging.h" />
+    <ClInclude Include="mta\sdk\SharedUtil.Logging.hpp" />
+    <ClInclude Include="mta\sdk\SharedUtil.Map.h" />
+    <ClInclude Include="mta\sdk\SharedUtil.Math.h" />
+    <ClInclude Include="mta\sdk\SharedUtil.MemAccess.h" />
+    <ClInclude Include="mta\sdk\SharedUtil.MemAccess.hpp" />
+    <ClInclude Include="mta\sdk\SharedUtil.Misc.h" />
+    <ClInclude Include="mta\sdk\SharedUtil.Misc.hpp" />
+    <ClInclude Include="mta\sdk\SharedUtil.Profiling.h" />
+    <ClInclude Include="mta\sdk\SharedUtil.Profiling.hpp" />
+    <ClInclude Include="mta\sdk\SharedUtil.SysInfo.h" />
+    <ClInclude Include="mta\sdk\SharedUtil.SysInfo.hpp" />
+    <ClInclude Include="mta\sdk\SharedUtil.Tests.hpp" />
+    <ClInclude Include="mta\sdk\SharedUtil.Thread.h" />
+    <ClInclude Include="mta\sdk\SharedUtil.ThreadPool.h" />
+    <ClInclude Include="mta\sdk\SharedUtil.Time.h" />
+    <ClInclude Include="mta\sdk\SharedUtil.Time.hpp" />
+    <ClInclude Include="mta\sdk\SharedUtil.Win32Utf8FileHooks.hpp" />
+    <ClInclude Include="mta\sdk\SString.h" />
+    <ClInclude Include="mta\sdk\SString.hpp" />
+    <ClInclude Include="mta\sdk\UTF8.h" />
+    <ClInclude Include="mta\sdk\UTF8Detect.hpp" />
+    <ClInclude Include="mta\sdk\WString.h" />
+    <ClInclude Include="mta\sdk\WString.hpp" />
+    <ClInclude Include="mta\sdk\xml\CXML.h" />
+    <ClInclude Include="mta\sdk\xml\CXMLAttribute.h" />
+    <ClInclude Include="mta\sdk\xml\CXMLAttributes.h" />
+    <ClInclude Include="mta\sdk\xml\CXMLCommon.h" />
+    <ClInclude Include="mta\sdk\xml\CXMLErrorCodes.h" />
+    <ClInclude Include="mta\sdk\xml\CXMLFile.h" />
+    <ClInclude Include="mta\sdk\xml\CXMLNode.h" />
     <ClInclude Include="NetWrapper.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

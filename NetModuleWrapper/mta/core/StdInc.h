@@ -11,17 +11,17 @@
 
 #include <string>
 
-#include "MTAPlatform.h"
+#include "../sdk/MTAPlatform.h"
 #ifndef WIN32
 // Linux allocation tracking doesn't work in this module for some reason
     #define WITH_ALLOC_TRACKING 0
 #endif
-#include "SharedUtil.h"
+#include "../sdk/SharedUtil.h"
 #include "../version.h"
 
 #ifdef WIN32
     #include "CExceptionInformation_Impl.h"
 #endif
 
-void WaitForKey(int iKey);
-void Print(const char* szFormat, ...);
+//void WaitForKey(int iKey);
+//void Print(const char* szFormat, ...);

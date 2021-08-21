@@ -1,9 +1,13 @@
-﻿#include "NetWrapper.h";
+﻿#include "NetWrapper.h"
 
+
+#ifndef WIN32
+#define __cdecl
+#endif
 #if defined _WIN32
 #define EXPORT extern "C" __declspec(dllexport)
 #else
-#define EXPORT extern "C" __attribute__ ((visibility ("default")))
+#define EXPORT extern "C" 
 #endif
 
 EXPORT void __cdecl sendPacket(ushort id, unsigned long address, unsigned char packetId, unsigned char* payload, unsigned long payloadSize, unsigned char priority, unsigned char reliability)
@@ -16,10 +20,10 @@ EXPORT void __cdecl setSocketVersion(ushort id, unsigned long address, unsigned 
     NetWrapper::getNetWrapper(id)->setSocketVersion(address, version);
 }
 
-EXPORT BSTR __cdecl getClientSerialAndVersion(ushort id, unsigned long address, uint16_t & serialSize, uint16_t & extraSize, uint16_t & versionSize)
-{
-    return NetWrapper::getNetWrapper(id)->getClientSerialAndVersion(address, serialSize, extraSize, versionSize);
-}
+//EXPORT BSTR __cdecl getClientSerialAndVersion(ushort id, unsigned long address, uint16_t & serialSize, uint16_t & extraSize, uint16_t & versionSize)
+//{
+//    return NetWrapper::getNetWrapper(id)->getClientSerialAndVersion(address, serialSize, extraSize, versionSize);
+//}
 
 EXPORT void __cdecl resendModPackets(ushort id, unsigned long address)
 {
