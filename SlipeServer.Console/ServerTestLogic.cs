@@ -337,6 +337,19 @@ namespace SlipeServer.Console
                     this.logger.LogInformation($"\t{item.Name} - md5: {item.LongMd5}");
                 }
             };
+
+            player.NetworkStatusReceived += (o, args) =>
+            {
+                switch(args.PlayerNetworkStatus)
+                {
+                    case Packets.Enums.PlayerNetworkStatusType.InterruptionBegan:
+                        this.logger.LogInformation($"(packets from {o.Name}) interruption began {args.Ticks} ticks ago");
+                        break;
+                    case Packets.Enums.PlayerNetworkStatusType.InterruptionEnd:
+                        this.logger.LogInformation($"(packets from {o.Name}) interruption began {args.Ticks} ticks ago and has just ended");
+                        break;
+                }
+            };
         }
 
         private void HandlePlayerScreenshot(object? o, Server.Elements.Events.ScreenshotEventArgs e)
