@@ -52,7 +52,21 @@ namespace SlipeServer.Server.Elements
         public bool IsStealthAiming { get; set; }
         public bool IsVoiceMuted { get; set; }
         public bool IsChatMuted { get; set; }
-        public Team Team { get; set; }
+
+        public Team? Team
+        {
+            get => this.Team;
+            set
+            {
+                if (value != null)
+                {
+                    this.TeamChanged.Invoke(this,
+                        this.Team != null
+                            ? new PlayerTeamChangedArgs(this, value, this.Team)
+                            : new PlayerTeamChangedArgs(this, value));
+                }
+            }
+        }
 
         public Dictionary<int, PlayerPendingScreenshot> PendingScreenshots { get; } = new();
 
@@ -247,5 +261,6 @@ namespace SlipeServer.Server.Elements
         public event ElementEventHandler<Player, PlayerACInfoArgs>? AcInfoReceived;
         public event ElementEventHandler<Player, PlayerDiagnosticInfo>? DiagnosticInfoReceived;
         public event ElementEventHandler<Player, PlayerModInfoArgs>? ModInfoReceived;
+        public event ElementEventHandler<Player, PlayerTeamChangedArgs> TeamChanged;
     }
 }
