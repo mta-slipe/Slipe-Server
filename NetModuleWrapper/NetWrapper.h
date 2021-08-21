@@ -30,6 +30,17 @@ struct QueuedPacket {
     }
 };
 
+struct SerialExtraAndVersion {
+    std::string serial;
+    std::string extra;
+    std::string version;
+
+    SerialExtraAndVersion(std::string serial, std::string extra, std::string version)
+        : serial(serial), extra(extra), version(version) {
+
+    }
+};
+
 class NetWrapper
 {
 private:
@@ -59,7 +70,7 @@ public:
     void setSocketVersion(unsigned long address, unsigned short version);
     void resendModPackets(unsigned long address);
     void resendACPackets(unsigned long address);
-    //BSTR getClientSerialAndVersion(unsigned long address, uint16_t& serialSize, uint16_t& extraSize, uint16_t& versionSize);
+    SerialExtraAndVersion getClientSerialAndVersion(unsigned long address);
     int init(const char* netDllFilePath, const char* idFile, const char* ip, unsigned short port, unsigned int playerCount, const char* serverName, PacketCallback callback);
     void start();
     void stop();

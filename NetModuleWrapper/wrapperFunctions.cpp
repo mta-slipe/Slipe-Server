@@ -21,9 +21,13 @@ EXPORT void __cdecl setSocketVersion(ushort id, unsigned long address, unsigned 
     NetWrapper::getNetWrapper(id)->setSocketVersion(address, version);
 }
 
-EXPORT BSTR __cdecl getClientSerialAndVersion(ushort id, unsigned long address, uint16_t & serialSize, uint16_t & extraSize, uint16_t & versionSize)
+EXPORT void __cdecl getClientSerialAndVersion(ushort id, unsigned long address, char* serial, char* extra, char* version)
 {
-    return NetWrapper::getNetWrapper(id)->getClientSerialAndVersion(address, serialSize, extraSize, versionSize);
+    auto result = NetWrapper::getNetWrapper(id)->getClientSerialAndVersion(address);
+
+    strcpy(serial, result.serial.c_str());
+    strcpy(extra, result.extra.c_str());
+    strcpy(version, result.version.c_str());
 }
 
 EXPORT void __cdecl resendModPackets(ushort id, unsigned long address)

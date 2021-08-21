@@ -83,29 +83,22 @@ void NetWrapper::resendACPackets(unsigned long address)
     network->ResendACPackets(sockets[address]);
 }
 
-//BSTR NetWrapper::getClientSerialAndVersion(unsigned long address, uint16_t& serialSize, uint16_t& extraSize, uint16_t& versionSize)
-//{
-//    auto socket = sockets[address];
-//
-//    SFixedString<32> strSerialTemp;
-//    SFixedString<64> strExtraTemp;
-//    SFixedString<32> strPlayerVersionTemp;
-//    network->GetClientSerialAndVersion(socket, strSerialTemp, strExtraTemp, strPlayerVersionTemp);
-//
-//    std::string serial = (std::string)SStringX(strSerialTemp);
-//    std::string extra = (std::string)SStringX(strExtraTemp);
-//    std::string version = (std::string)SStringX(strPlayerVersionTemp);
-//
-//    serialSize = serial.length();
-//    extraSize = extra.length();
-//    versionSize = version.length();
-//
-//    std::string result = serial + extra + version;
-//
-//    std::wstring widestr = std::wstring(result.begin(), result.end());
-//    BSTR bstr = SysAllocString(widestr.c_str());
-//    return bstr;
-//}
+SerialExtraAndVersion NetWrapper::getClientSerialAndVersion(unsigned long address)
+{
+    auto socket = sockets[address];
+
+    SFixedString<32> strSerialTemp;
+    SFixedString<64> strExtraTemp;
+    SFixedString<32> strPlayerVersionTemp;
+    network->GetClientSerialAndVersion(socket, strSerialTemp, strExtraTemp, strPlayerVersionTemp);
+
+    std::string serial = (std::string)SStringX(strSerialTemp);
+    std::string extra = (std::string)SStringX(strExtraTemp);
+    std::string version = (std::string)SStringX(strPlayerVersionTemp);
+
+    SerialExtraAndVersion result = SerialExtraAndVersion(serial, extra, version);
+    return result;
+}
 
 void NetWrapper::testMethod() {
     NetBitStreamInterface* bitStream = network->AllocateNetServerBitStream(0);

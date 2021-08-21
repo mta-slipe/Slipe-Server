@@ -9,6 +9,7 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using SlipeServer.Net.Enums;
+using System.Text;
 
 namespace SlipeServer.Net
 {
@@ -40,8 +41,8 @@ namespace SlipeServer.Net
         private static extern bool SetSocketVersion(ushort id, uint binaryAddress, ushort version);
 
         [DllImport(wrapperDllpath, EntryPoint = "getClientSerialAndVersion", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        [return: MarshalAs(UnmanagedType.BStr)]
-        private static extern string GetClientSerialAndVersion(ushort id, uint binaryAddress, out ushort serialSize, out ushort extraSize, out ushort versionSize);
+        //[return: MarshalAs(UnmanagedType.BStr)]
+        private static extern void GetClientSerialAndVersion(ushort id, uint binaryAddress, StringBuilder serial, StringBuilder extra, StringBuilder version);
 
         [DllImport(wrapperDllpath, EntryPoint = "setChecks")]
         private static extern void SetChecks(ushort id, string szDisableComboACMap, string szDisableACMap, string szEnableSDMap, int iEnableClientChecks, bool bHideAC, string szImgMods);
@@ -110,18 +111,19 @@ namespace SlipeServer.Net
 
         public Tuple<string, string, string> GetClientSerialExtraAndVersion(uint binaryAddress)
         {
-            string result = GetClientSerialAndVersion(this.id, binaryAddress, out ushort serialSize, out ushort extraSize, out _).ToString();
+            var serial = new StringBuilder(48);
+            var extra = new StringBuilder(48);
+            var version = new StringBuilder(48);
+            GetClientSerialAndVersion(this.id, binaryAddress, serial, extra, version);
 
-            string serial = result.Substring(0, serialSize);
-            string extra = result.Substring(serialSize, extraSize);
-            string version = result.Substring(serialSize + extraSize);
-            return new Tuple<string, string, string>(serial, extra, version);
+            return new Tuple<string, string, string>(serial.ToString(), extra.ToString(), version.ToString());
         }
 
         public void ResendModPackets(uint binaryAddress)
         {
             ResendModPackets(this.id, binaryAddress);
         }
+
         public void ResendPlayerACInfo(uint binaryAddress)
         {
             ResendPlayerACInfo(this.id, binaryAddress);
@@ -143,14 +145,14 @@ namespace SlipeServer.Net
             var defaultDisabledSdArray = (new int[] { 12, 14, 15, 16, 20, 22, 23, 28, 31, 32, 33, 34, 35, 36 })
                 .Where(x => !enabledSpecialDetections.Any(y => (int)y == x));
 
-            //SetChecks(this.id,
-            //    string.Join('&', defaultDisabledSdArray.Select(x => $"{x}=")),
-            //    string.Join('&', disabledAntiCheats.Select(x => $"{(int)x}=")),
-            //    string.Join('&', enabledSpecialDetections.Select(x => $"{(int)x}=")),
+            SetChecks(this.id,
+                string.Join('&', defaultDisabledSdArray.Select(x => $"{x}=")),
+                string.Join('&', disabledAntiCheats.Select(x => $"{(int)x}=")),
+                string.Join('&', enabledSpecialDetections.Select(x => $"{(int)x}=")),
 
-            //    (int)disallowedDataFiles,
-            //    hideAntiCheatFromClient,
-            //    allowGta3ImgMods.ToString().ToLower());
+                (int)disallowedDataFiles,
+                hideAntiCheatFromClient,
+                allowGta3ImgMods.ToString().ToLower());
         }
 
         private void PacketInterceptor(byte packetId, uint binaryAddress, IntPtr payload, uint payloadSize, bool hasPing, uint ping)
