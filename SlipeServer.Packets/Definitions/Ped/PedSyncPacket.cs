@@ -40,31 +40,31 @@ namespace SlipeServer.Packets.Definitions.Ped
 
                     builder.Write(data.Flags);
 
-                    if ((data.Flags & 0x01) != 0)
+                    if ((data.Flags & (int)PedSyncFlags.Position) != 0)
                     {
                         builder.Write(data.Position.X);
                         builder.Write(data.Position.Y);
                         builder.Write(data.Position.Z);
                     }
 
-                    if ((data.Flags & 0x02) != 0)
+                    if ((data.Flags & (int)PedSyncFlags.Rotation) != 0)
                         builder.Write(data.Rotation);
                     
 
-                    if ((data.Flags & 0x04) != 0)
+                    if ((data.Flags & (int)PedSyncFlags.Velocity) != 0)
                     {
                         builder.Write(data.Velocity.X);
                         builder.Write(data.Velocity.Y);
                         builder.Write(data.Velocity.Z);
                     }
 
-                    if ((data.Flags & 0x08) != 0)
+                    if ((data.Flags & (int)PedSyncFlags.Health) != 0)
                         builder.Write(data.Health);
-                    if ((data.Flags & 0x10) != 0)
+                    if ((data.Flags & (int)PedSyncFlags.Armor) != 0)
                         builder.Write(data.Armor);
-                    if ((data.Flags & 0x20) != 0)
+                    if ((data.Flags & (int)PedSyncFlags.IsOnFire) != 0)
                         builder.Write(data.IsOnFire);
-                    if ((data.Flags & 0x40) != 0)
+                    if ((data.Flags & (int)PedSyncFlags.IsInWater) != 0)
                         builder.Write(data.IsInWater);
                 }
             }
@@ -90,38 +90,38 @@ namespace SlipeServer.Packets.Definitions.Ped
 
                 data.Flags = flags;
 
-                if ((flags & 0x01) != 0)
+                if ((flags & (int)PedSyncFlags.Position) != 0)
                 {
                     Vector3 position = reader.GetVector3WithZAsFloat();
                     data.Position = position;
                 }
 
-                if ((flags & 0x02) != 0)
+                if ((flags & (int)PedSyncFlags.Rotation) != 0)
                 {
                     data.Rotation = reader.GetFloat();
                 }
                 
-                if ((flags & 0x04) != 0)
+                if ((flags & (int)PedSyncFlags.Velocity) != 0)
                 {
                     data.Velocity = reader.GetVector3WithZAsFloat();
                 }
 
-                if ((flags & 0x08) != 0)
+                if ((flags & (int)PedSyncFlags.Health) != 0)
                 {
                     data.Health = reader.GetFloat();
                 }
 
-                if ((flags & 0x10) != 0)
+                if ((flags & (int)PedSyncFlags.Armor) != 0)
                 {
                     data.Armor = reader.GetFloat();
                 }
 
-                if ((flags & 0x20) != 0)
+                if ((flags & (int)PedSyncFlags.IsOnFire) != 0)
                 {
                     data.IsOnFire = reader.GetBit();
                 }
 
-                if ((flags & 0x40) != 0)
+                if ((flags & (int)PedSyncFlags.IsInWater) != 0)
                 {
                     data.IsInWater = reader.GetBit();
                 }

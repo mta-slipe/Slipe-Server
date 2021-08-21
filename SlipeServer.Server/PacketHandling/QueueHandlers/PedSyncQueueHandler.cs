@@ -48,18 +48,6 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                     case PedSyncPacket pedSyncPacket:
                         this.HandlePedSyncPacket(client, pedSyncPacket);
                         break;
-                    case PedWastedPacket pedWastedPacket:
-                        this.HandlePedWastedPacket(client, pedWastedPacket);
-                        break;
-                    case PedTaskPacket pedTaskPacket:
-                        this.HandlePedTaskPacket(client, pedTaskPacket);
-                        break;
-                    case PedStartSyncPacket pedStartSyncPacket:
-                        this.HandlePedStartSyncPacket(client, pedStartSyncPacket);
-                        break;
-                    case PedStopSyncPacket pedStopSyncPacket:
-                        this.HandlePedStopSyncPacket(client, pedStopSyncPacket);
-                        break;
                 }
             }
             catch (Exception e)
@@ -207,9 +195,6 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                         if ((syncData.Flags & 0x01) != 0)
                         {
                             pedElement.Position = syncData.Position;
-
-                            // TODO: use DoHitDetection here
-
                         }
                         if ((syncData.Flags & 0x02) != 0)
                         {
@@ -252,24 +237,5 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             }
         }
 
-        private void HandlePedTaskPacket(Client client, PedTaskPacket packet)
-        {
-
-        }
-
-        private void HandlePedWastedPacket(Client client, PedWastedPacket packet)
-        {
-
-        }
-
-        private void HandlePedStartSyncPacket(Client client, PedStartSyncPacket packet)
-        {
-
-        }
-
-        private void HandlePedStopSyncPacket(Client client, PedStopSyncPacket packet)
-        {
-
-        }
     }
 }
