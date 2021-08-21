@@ -4,6 +4,7 @@ using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Numerics;
 
@@ -44,6 +45,14 @@ namespace SlipeServer.Lua
                 return new DynValue[] { DynValue.NewBoolean(boolean) };
             if (obj is string str)
                 return new DynValue[] { DynValue.NewString(str) };
+            if (obj is Color color)
+                return new DynValue[]
+                {
+                    DynValue.NewNumber(color.R),
+                    DynValue.NewNumber(color.G),
+                    DynValue.NewNumber(color.B),
+                    DynValue.NewNumber(color.A),
+                };
             if (obj is Vector3 vector)
                 return new DynValue[]
                 {
