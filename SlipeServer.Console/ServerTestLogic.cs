@@ -123,6 +123,16 @@ namespace SlipeServer.Console
             var firetruck = new Vehicle(407, new Vector3(30, 5, 3)).AssociateWith(this.server);
             var firetruck2 = new Vehicle(407, new Vector3(35, 5, 3)).AssociateWith(this.server);
 
+            vehicle.PedLeft += async (sender, eventArgs) =>
+            {
+                if (eventArgs.Seat == 0)
+                {
+                    await Task.Delay(2000);
+                    eventArgs.Vehicle.Respawn();
+                    this.logger.LogInformation("Vehicle has been respawned.");
+                }
+            };
+
             vehicle.PedEntered += async (sender, eventArgs) =>
             {
                 if (eventArgs.Seat == 1)

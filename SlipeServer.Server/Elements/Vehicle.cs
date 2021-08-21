@@ -21,6 +21,9 @@ namespace SlipeServer.Server.Elements
         public VehicleDamage Damage { get; set; }
         public byte Variant1 { get; set; } = 0;
         public byte Variant2 { get; set; } = 0;
+        public Vector3 RespawnPosition { get; set; }
+        public Vector3 RespawnRotation { get; set; }
+        public float RespawnHealth { get; set; }
 
         private Vector2? turretDirection;
         public Vector2? TurretRotation
@@ -37,6 +40,9 @@ namespace SlipeServer.Server.Elements
         }
 
         public float[] DoorRatios { get; set; }
+        public byte[] WheelStates { get; set; }
+        public byte[] PanelStates { get; set; }
+        public byte[] LightStates { get; set; }
         public VehicleUpgrade[] Upgrades { get; set; }
         public string PlateText { get; set; } = "";
         public byte OverrideLights { get; set; } = 0;
@@ -81,10 +87,14 @@ namespace SlipeServer.Server.Elements
         {
             this.Model = model;
             this.Position = position;
+            this.RespawnPosition = position;
 
             this.Colors = new Color[2] { Color.White, Color.White };
             this.Damage = VehicleDamage.Undamaged;
             this.DoorRatios = new float[6];
+            this.WheelStates = new byte[4];
+            this.PanelStates = new byte[7];
+            this.LightStates = new byte[4];
             this.Upgrades = Array.Empty<VehicleUpgrade>();
 
             this.Name = $"vehicle{this.Id}";
@@ -155,11 +165,63 @@ namespace SlipeServer.Server.Elements
             this.Blown?.Invoke(this);
         }
 
+        public void SetTowedByVehicle(Vehicle? vehicle)
+        {
+            // not implemented yet
+        }
+
+        public void AttachTo(Element? vehicle)
+        {
+            // not implemented yet
+        }
+
+        internal void ResetWheelsPanelsLights()
+        {
+            Array.Clear(this.WheelStates, 0, this.WheelStates.Length);
+            Array.Clear(this.PanelStates, 0, this.PanelStates.Length);
+            Array.Clear(this.LightStates, 0, this.LightStates.Length);
+        }
+
+        internal void ResetDoors()
+        {
+            Array.Clear(this.DoorRatios, 0, this.DoorRatios.Length);
+        }
+
+        internal void RespawnAt(Vector3 position, Vector3 rotation)
+        {
+            this.Respawned?.Invoke(this, new VehicleRespawnEventArgs(this, position, rotation));
+
+            ResetDoors();
+            ResetWheelsPanelsLights();
+            SetTowedByVehicle(null);
+            AttachTo(null);
+
+            this.IsLandingGearDown = true;
+            this.AdjustableProperty = 0;
+            this.TurnVelocity = Vector3.Zero;
+            this.Velocity = Vector3.Zero;
+            this.Position = position;
+            this.Rotation = rotation;
+            this.Health = this.RespawnHealth;
+        }
+
+        public void Spawn(Vector3 position, Vector3 rotation)
+        {
+            RespawnAt(position, rotation);
+        }
+        
+        public void Respawn()
+        {
+            RespawnAt(this.RespawnPosition, this.RespawnRotation);
+        }
+
+
         public virtual bool CanEnter(Ped ped) => true;
         public virtual bool CanExit(Ped ped) => true;
 
         public event ElementEventHandler? Blown;
         public event ElementEventHandler<VehicleLeftEventArgs>? PedLeft;
         public event ElementEventHandler<VehicleEnteredEventsArgs>? PedEntered;
+        public event ElementEventHandler<VehicleRespawnEventArgs>? Respawned;
     }
 }
