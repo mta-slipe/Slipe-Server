@@ -1,4 +1,4 @@
-﻿outputChatBox("This is a running Lua file")
+outputChatBox("This is a running Lua file")
 
 triggerServerEvent("Slipe.Test.Event", root, "String value", true, 123, {
 	x = 5.5,
@@ -21,3 +21,5 @@ addCommandHandler("crun", function(command, ...)
 	local code = table.concat({ ... }, " ")
 	loadstring(code)()
 end)
+
+setDevelopmentMode(true)
