@@ -45,8 +45,7 @@ namespace SlipeServer.Server.Behaviour
 
         private void OnRadiusChange(Element sender, ElementChangedEventArgs<float> args)
         {
-            if (!args.IsSync)
-                this.server.BroadcastPacket(CollisionShapePacketFactory.CreateSetRadius(args.Source, args.NewValue));
+            this.server.BroadcastPacket(CollisionShapePacketFactory.CreateSetRadius(args.Source, args.NewValue));
         }
 
         private void AddCollisionShape(CollisionShape collisionShape)
