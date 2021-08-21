@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -98,8 +99,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             {
                 if (syncer != null)
                 {
-                    if (!syncer.Position.IsNearAnotherPoint3D(ped.Position,
-                        this._configuration.SyncIntervals.PedSyncerDistance) || (ped.Dimension != syncer.Dimension))
+                    if (Vector3.Distance(syncer.Position, ped.Position) < this._configuration.SyncIntervals.PedSyncerDistance || (ped.Dimension != syncer.Dimension))
                     {
                         // Stop syncer from syncing it
                         StopSync(ped);
@@ -153,8 +153,6 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
         private Player FindPlayerCloseToPed(Ped ped, float maxDistance)
         {
-            var pedPosition = ped.Position;
-
             Player? lastPlayerSyncing = null;
             Player? player;
 
@@ -163,7 +161,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
             foreach (Player thePlayer in allPlayers)
             {
-                if (ped.Position.IsNearAnotherPoint3D(thePlayer.Position, maxDistance))
+                if (Vector3.Distance(ped.Position, thePlayer.Position) < this._configuration.SyncIntervals.PedSyncerDistance)
                 {
                     if (thePlayer.Dimension == ped.Dimension)
                     {
