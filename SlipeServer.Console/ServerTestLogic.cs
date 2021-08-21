@@ -137,7 +137,8 @@ namespace SlipeServer.Console
             shape.RadiusChanged += async (Element sender, Server.Elements.Events.ElementChangedEventArgs<float> args) =>
             {
                 await Task.Delay(5000);
-                shape.Radius += 1;
+                if(shape.Radius < 20)
+                    shape.Radius += 1;
             };
             shape.Radius = 10;
         }
