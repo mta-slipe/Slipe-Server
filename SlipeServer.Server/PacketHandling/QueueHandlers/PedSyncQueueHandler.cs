@@ -188,49 +188,52 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
                     // Is the player syncing this ped?
                     // Verify context matches
-                    if (pedElement.Syncer?.Client == client && pedElement.CanUpdateSync(syncData.TimeSyncContext))
+                    pedElement.RunAsSync(() =>
                     {
-                        if ((syncData.Flags & 0x01) != 0)
+                        if (pedElement.Syncer?.Client == client && pedElement.CanUpdateSync(syncData.TimeSyncContext))
                         {
-                            pedElement.Position = syncData.Position;
-                        }
-                        if ((syncData.Flags & 0x02) != 0)
-                        {
-                            pedElement.PedRotation = syncData.Rotation;
-                        }
-                        if ((syncData.Flags & 0x04) != 0)
-                        {
-                            pedElement.Velocity = syncData.Velocity;
-                        }
-                        if ((syncData.Flags & 0x08) != 0)
-                        {
-                            float previousHealth = pedElement.Health;
-                            pedElement.Health = syncData.Health;
+                            if ((syncData.Flags & 0x01) != 0)
+                            {
+                                pedElement.Position = syncData.Position;
+                            }
+                            if ((syncData.Flags & 0x02) != 0)
+                            {
+                                pedElement.PedRotation = syncData.Rotation;
+                            }
+                            if ((syncData.Flags & 0x04) != 0)
+                            {
+                                pedElement.Velocity = syncData.Velocity;
+                            }
+                            if ((syncData.Flags & 0x08) != 0)
+                            {
+                                float previousHealth = pedElement.Health;
+                                pedElement.Health = syncData.Health;
+                            }
+
+                            if ((syncData.Flags & 0x10) != 0)
+                            {
+                                pedElement.Armor = syncData.Armor;
+                            }
+
+                            if ((syncData.Flags & 0x20) != 0)
+                            {
+                                pedElement.IsOnFire = syncData.IsOnFire;
+                            }
+
+                            if ((syncData.Flags & 0x40) != 0)
+                            {
+                                pedElement.IsInWater = syncData.IsInWater;
+                            }
+
+                            // Send this sync
+                            // syncData.Send = true;
                         }
 
-                        if ((syncData.Flags & 0x10) != 0)
-                        {
-                            pedElement.Armor = syncData.Armor;
-                        }
+                        var players = this._elementRepository.GetByType<Player>(ElementType.Player)
+                            .Where(player => player.Client != client);
 
-                        if ((syncData.Flags & 0x20) != 0)
-                        {
-                            pedElement.IsOnFire = syncData.IsOnFire;
-                        }
-
-                        if ((syncData.Flags & 0x40) != 0)
-                        {
-                            pedElement.IsInWater = syncData.IsInWater;
-                        }
-
-                        // Send this sync
-                        // syncData.Send = true;
-                    }
-
-                    var players = this._elementRepository.GetByType<Player>(ElementType.Player)
-                        .Where(player => player.Client != client);
-
-                    packet.SendTo(players);
+                        packet.SendTo(players);
+                    });
                 }
             }
         }
