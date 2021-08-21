@@ -13,6 +13,7 @@
 #include "CDynamicLibrary.h"
 #include "../sdk/MTAPlatform.h"
 
+#include <iostream>
 #ifdef WIN32
 #include <stdio.h>
 #endif
@@ -80,9 +81,11 @@ bool CDynamicLibrary::Load(const char* szFilename)
     if (!m_hModule)
     {
         const char* szError = dlerror();
-        //if (szError)
+        if (szError)
+            std::cout << szError << "\n";
             //Print("%s\n", szError);
-        //else
+        else
+            std::cout << "Loading %s failed\n";
             //Print("Loading %s failed\n", szFilename);
     }
     #endif

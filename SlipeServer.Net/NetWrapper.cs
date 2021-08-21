@@ -62,7 +62,7 @@ namespace SlipeServer.Net
             Directory.SetCurrentDirectory(directory);
 
             this.packetInterceptorDelegate = PacketInterceptor;
-            int result = InitNetWrapper(netDllPath, idFile, host, port, 1024, "C# server", this.packetInterceptorDelegate);
+            int result = InitNetWrapper(Path.Join(directory, netDllPath), idFile, host, port, 1024, "C# server", this.packetInterceptorDelegate);
 
             if (result < 0)
             {
@@ -143,14 +143,14 @@ namespace SlipeServer.Net
             var defaultDisabledSdArray = (new int[] { 12, 14, 15, 16, 20, 22, 23, 28, 31, 32, 33, 34, 35, 36 })
                 .Where(x => !enabledSpecialDetections.Any(y => (int)y == x));
 
-            SetChecks(this.id,
-                string.Join('&', defaultDisabledSdArray.Select(x => $"{x}=")),
-                string.Join('&', disabledAntiCheats.Select(x => $"{(int)x}=")),
-                string.Join('&', enabledSpecialDetections.Select(x => $"{(int)x}=")),
+            //SetChecks(this.id,
+            //    string.Join('&', defaultDisabledSdArray.Select(x => $"{x}=")),
+            //    string.Join('&', disabledAntiCheats.Select(x => $"{(int)x}=")),
+            //    string.Join('&', enabledSpecialDetections.Select(x => $"{(int)x}=")),
 
-                (int)disallowedDataFiles,
-                hideAntiCheatFromClient,
-                allowGta3ImgMods.ToString().ToLower());
+            //    (int)disallowedDataFiles,
+            //    hideAntiCheatFromClient,
+            //    allowGta3ImgMods.ToString().ToLower());
         }
 
         private void PacketInterceptor(byte packetId, uint binaryAddress, IntPtr payload, uint payloadSize, bool hasPing, uint ping)

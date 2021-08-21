@@ -77,7 +77,6 @@ namespace SlipeServer.Console
                 GameType = "Slipe Server",
                 MapName = "N/A"
             };
-
             System.Console.CancelKeyPress += delegate
             {
                 this.server.Stop();

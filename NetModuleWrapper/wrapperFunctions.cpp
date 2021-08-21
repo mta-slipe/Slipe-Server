@@ -3,6 +3,7 @@
 
 #ifndef WIN32
 #define __cdecl
+#define BSTR char*
 #endif
 #if defined _WIN32
 #define EXPORT extern "C" __declspec(dllexport)
@@ -20,10 +21,10 @@ EXPORT void __cdecl setSocketVersion(ushort id, unsigned long address, unsigned 
     NetWrapper::getNetWrapper(id)->setSocketVersion(address, version);
 }
 
-//EXPORT BSTR __cdecl getClientSerialAndVersion(ushort id, unsigned long address, uint16_t & serialSize, uint16_t & extraSize, uint16_t & versionSize)
-//{
-//    return NetWrapper::getNetWrapper(id)->getClientSerialAndVersion(address, serialSize, extraSize, versionSize);
-//}
+EXPORT BSTR __cdecl getClientSerialAndVersion(ushort id, unsigned long address, uint16_t & serialSize, uint16_t & extraSize, uint16_t & versionSize)
+{
+    return NetWrapper::getNetWrapper(id)->getClientSerialAndVersion(address, serialSize, extraSize, versionSize);
+}
 
 EXPORT void __cdecl resendModPackets(ushort id, unsigned long address)
 {
@@ -51,6 +52,7 @@ EXPORT void __cdecl destroyNetWrapper(ushort id)
 }
 
 EXPORT void __cdecl startNetWrapper(ushort id) {
+    auto wrapper = NetWrapper::getNetWrapper(id);
     NetWrapper::getNetWrapper(id)->start();
 }
 

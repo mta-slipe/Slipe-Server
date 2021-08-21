@@ -195,6 +195,7 @@ void NetWrapper::runPulseLoop() {
 
 void NetWrapper::start() {
     running = true;
+    network->InitServerId("");
     runThread = std::thread(&NetWrapper::runPulseLoop, this);
 }
 
