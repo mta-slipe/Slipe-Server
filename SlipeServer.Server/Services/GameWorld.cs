@@ -16,6 +16,7 @@ namespace SlipeServer.Server.Services
         private readonly MtaServer server;
         private readonly Dictionary<GarageLocation, bool> garageStates;
         private readonly Dictionary<WeaponId, bool> jetpackEnabledWeapons;
+        private readonly Dictionary<GlitchType, bool> enabledGlitches;
         private readonly Timer timeTimer;
 
         private Color? skyGradientTopColor;
@@ -215,6 +216,19 @@ namespace SlipeServer.Server.Services
             this.server = server;
             this.garageStates = new Dictionary<GarageLocation, bool>();
             this.jetpackEnabledWeapons = new Dictionary<WeaponId, bool>();
+            this.enabledGlitches = new Dictionary<GlitchType, bool>
+            {
+                [GlitchType.GLITCH_QUICKRELOAD] = false,
+                [GlitchType.GLITCH_FASTFIRE] = false,
+                [GlitchType.GLITCH_FASTMOVE] = false,
+                [GlitchType.GLITCH_CROUCHBUG] = false,
+                [GlitchType.GLITCH_CLOSEDAMAGE] = false,
+                [GlitchType.GLITCH_HITANIM] = false,
+                [GlitchType.GLITCH_FASTSPRINT] = false,
+                [GlitchType.GLITCH_BADDRIVEBYHITBOX] = false,
+                [GlitchType.GLITCH_QUICKSTAND] = false,
+                [GlitchType.GLITCH_KICKOUTOFVEHICLE_ONMODELREPLACE] = false,
+            };
 
             this.timeTimer = new Timer(this.minuteDuration)
             {
@@ -280,6 +294,8 @@ namespace SlipeServer.Server.Services
             player.Client.SendPacket(new SetTrafficLightStatePacket((byte)this.trafficLightState, this.trafficLightStateForced));
             player.Client.SendPacket(new SetWeatherPacket(this.Weather));
             player.Client.SendPacket(new SetWindVelocityPacket(this.windVelocity));
+            foreach (var item in enabledGlitches)
+                player.Client.SendPacket(new SetGlitchEnabledPacket((byte)item.Key, item.Value));
         }
 
         public void SetWeather(byte weather)
@@ -375,6 +391,19 @@ namespace SlipeServer.Server.Services
         {
             this.server.BroadcastPacket(new ProjectileSyncPacket(from, direction, sourceElement.Id, (byte)weaponType, model));
         }
+
+        public void SetGlitchEnabled(GlitchType glitchType, bool enabled)
+        {
+            this.enabledGlitches[glitchType] = enabled;
+            this.server.BroadcastPacket(new SetGlitchEnabledPacket((byte)glitchType, enabled));
+        }
+
+        public bool IsGlitchEnabled(GlitchType glitchType)
+        {
+            this.enabledGlitches.TryGetValue(glitchType, out bool value);
+            return value;
+        }
+
 
         #endregion
     }
