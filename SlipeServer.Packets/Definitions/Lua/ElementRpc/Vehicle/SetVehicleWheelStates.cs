@@ -30,7 +30,7 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player
         {
             var builder = new PacketBuilder();
             builder.Write((byte)ElementRpcFunction.SET_VEHICLE_WHEEL_STATES);
-            builder.WriteElementId(ElementId);
+            builder.WriteElementId(this.ElementId);
             builder.Write(this.States);
             return builder.Build();
         }

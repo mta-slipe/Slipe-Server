@@ -168,16 +168,6 @@ namespace SlipeServer.Server.Elements
             this.Blown?.Invoke(this);
         }
 
-        public void SetTowedByVehicle(Vehicle? vehicle)
-        {
-            // not implemented
-        }
-
-        public void AttachTo(Element? vehicle)
-        {
-            // not implemented
-        }
-
         public void SetDoorState(VehicleDoor door, VehicleDoorState state, bool spawnFlyingComponent = false)
         {
             this.DoorStates[(int)door] = (byte)state;
@@ -214,34 +204,24 @@ namespace SlipeServer.Server.Elements
         public VehicleLightState GetLightState(VehicleLight light) => (VehicleLightState)this.LightStates[(int)light];
         public float GetDoorOpenRatio(VehicleDoor door) => this.DoorRatios[(int)door];
 
-        //public void SetWheelStates(VehicleWheelState frontLeft, VehicleWheelState rearLeft, VehicleWheelState frontRight, VehicleWheelState rearRight)
-        //{
-        //    this.WheelStates[(byte)VehicleWheel.FrontLeft] = (byte)frontLeft;
-        //    this.WheelStates[(byte)VehicleWheel.RearLeft] = (byte)rearLeft;
-        //    this.WheelStates[(byte)VehicleWheel.FrontRight] = (byte)frontRight;
-        //    this.WheelStates[(byte)VehicleWheel.RearRight] = (byte)rearRight;
-        //}
-
-        internal void ResetWheelsPanelsLights()
+        public void ResetDoorsWheelsPanelsLights()
         {
-            Array.Clear(this.WheelStates, 0, this.WheelStates.Length);
-            Array.Clear(this.PanelStates, 0, this.PanelStates.Length);
-            Array.Clear(this.LightStates, 0, this.LightStates.Length);
-        }
-
-        internal void ResetDoors()
-        {
-            Array.Clear(this.DoorRatios, 0, this.DoorRatios.Length);
+            foreach (var door in Enum.GetValues(typeof(VehicleDoor)).Cast<VehicleDoor>())
+                SetDoorState(door, VehicleDoorState.ShutIntact);
+            foreach (var wheel in Enum.GetValues(typeof(VehicleWheel)).Cast<VehicleWheel>())
+                SetWheelState(wheel, VehicleWheelState.Inflated);
+            foreach (var panel in Enum.GetValues(typeof(VehiclePanel)).Cast<VehiclePanel>())
+                SetPanelState(panel, VehiclePanelState.Undamaged);
+            foreach (var light in Enum.GetValues(typeof(VehicleLight)).Cast<VehicleLight>())
+                SetLightState(light, VehicleLightState.Intact);
+            foreach (var door in Enum.GetValues(typeof(VehicleDoor)).Cast<VehicleDoor>())
+                SetDoorOpenRatio(door, 0);
         }
 
         internal void RespawnAt(Vector3 position, Vector3 rotation)
         {
-            this.Respawned?.Invoke(this, new VehicleRespawnEventArgs(this, position, rotation));
-
-            ResetDoors();
-            ResetWheelsPanelsLights();
-            SetTowedByVehicle(null);
-            AttachTo(null);
+            ResetDoorsWheelsPanelsLights();
+            // TODO, reset: towed vehicle, attach to
 
             this.IsLandingGearDown = true;
             this.AdjustableProperty = 0;
@@ -250,6 +230,8 @@ namespace SlipeServer.Server.Elements
             this.Position = position;
             this.Rotation = rotation;
             this.Health = this.RespawnHealth;
+
+            this.Respawned?.Invoke(this, new VehicleRespawnEventArgs(this, position, rotation));
         }
 
         public void Spawn(Vector3 position, Vector3 rotation)

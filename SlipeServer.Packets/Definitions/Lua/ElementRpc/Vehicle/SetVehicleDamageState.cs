@@ -36,7 +36,7 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player
         {
             var builder = new PacketBuilder();
             builder.Write((byte)ElementRpcFunction.SET_VEHICLE_DAMAGE_STATE);
-            builder.WriteElementId(ElementId);
+            builder.WriteElementId(this.ElementId);
             builder.Write(this.Part);
             builder.Write(this.Door);
             builder.Write(this.State);

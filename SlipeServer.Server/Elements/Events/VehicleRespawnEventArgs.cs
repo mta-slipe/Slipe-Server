@@ -14,6 +14,8 @@ namespace SlipeServer.Server.Elements.Events
         public VehicleRespawnEventArgs(Vehicle vehicle, Vector3 respawnPosition, Vector3 respawnRotation)
         {
             this.Vehicle = vehicle;
+            this.RespawnPosition = respawnPosition;
+            this.RespawnRotation = respawnRotation;
         }
     }
 }

@@ -71,7 +71,7 @@ namespace SlipeServer.Console
             this.SetupTestLogic();
         }
 
-        public Vehicle Vehicle { get; set; }
+        public Vehicle? Vehicle { get; set; }
         private void SetupTestLogic()
         {
             SetupTestElements();
@@ -258,29 +258,31 @@ namespace SlipeServer.Console
         {
             player.CommandEntered += async (o, args) =>
             {
-                if (args.Command == "damageveh")
+                if (this.Vehicle != null)
                 {
-                    this.Vehicle.SetDoorState(VehicleDoor.Hood, VehicleDoorState.Missing, true);
-                    this.Vehicle.SetWheelState(VehicleWheel.FrontLeft, VehicleWheelState.Collisionless);
-                    this.Vehicle.SetPanelState(VehiclePanel.Winscreen, VehiclePanelState.Damaged2);
-                    this.Vehicle.SetLightState(VehicleLight.FrontLeft, VehicleLightState.Broken);
-                }
-                if (args.Command == "vehopen")
-                {
-                    this.Vehicle.SetDoorOpenRatio(VehicleDoor.FrontLeft, 1, 2500);
-                    await Task.Delay(500);
-                    this.Vehicle.SetDoorOpenRatio(VehicleDoor.FrontRight, 1, 2500);
-                    await Task.Delay(500);
-                    this.Vehicle.SetDoorOpenRatio(VehicleDoor.RearLeft, 1, 2500);
-                    await Task.Delay(500);
-                    this.Vehicle.SetDoorOpenRatio(VehicleDoor.RearRight, 1, 2500);
-                    await Task.Delay(3500);
-                    this.Vehicle.SetDoorOpenRatio(VehicleDoor.FrontLeft, 0);
-                    this.Vehicle.SetDoorOpenRatio(VehicleDoor.FrontRight, 0);
-                    this.Vehicle.SetDoorOpenRatio(VehicleDoor.RearLeft, 0);
-                    this.Vehicle.SetDoorOpenRatio(VehicleDoor.RearRight, 0);
+                    if (args.Command == "damageveh")
+                    {
+                        this.Vehicle.SetDoorState(VehicleDoor.Hood, VehicleDoorState.Missing, true);
+                        this.Vehicle.SetWheelState(VehicleWheel.FrontLeft, VehicleWheelState.Collisionless);
+                        this.Vehicle.SetPanelState(VehiclePanel.Winscreen, VehiclePanelState.Damaged2);
+                        this.Vehicle.SetLightState(VehicleLight.FrontLeft, VehicleLightState.Broken);
+                    }
+                    if (args.Command == "vehopen")
+                    {
+                        this.Vehicle.SetDoorOpenRatio(VehicleDoor.FrontLeft, 1, 2500);
+                        await Task.Delay(500);
+                        this.Vehicle.SetDoorOpenRatio(VehicleDoor.FrontRight, 1, 2500);
+                        await Task.Delay(500);
+                        this.Vehicle.SetDoorOpenRatio(VehicleDoor.RearLeft, 1, 2500);
+                        await Task.Delay(500);
+                        this.Vehicle.SetDoorOpenRatio(VehicleDoor.RearRight, 1, 2500);
+                        await Task.Delay(3500);
+                        this.Vehicle.SetDoorOpenRatio(VehicleDoor.RearLeft, 0);
+                        this.Vehicle.SetDoorOpenRatio(VehicleDoor.RearRight, 0);
+                    }
                 }
             };
+
             player.CommandEntered += (o, args) => { if (args.Command == "kill") player.Kill(); };
             player.CommandEntered += (o, args) => { if (args.Command == "spawn") player.Spawn(new Vector3(20, 0, 3), 0, 9, 0, 0); };
             player.CommandEntered += (o, args) => {

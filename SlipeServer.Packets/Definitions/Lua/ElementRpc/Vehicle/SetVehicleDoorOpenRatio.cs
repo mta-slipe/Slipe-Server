@@ -34,7 +34,7 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player
         {
             var builder = new PacketBuilder();
             builder.Write((byte)ElementRpcFunction.SET_VEHICLE_DOOR_OPEN_RATIO);
-            builder.WriteElementId(ElementId);
+            builder.WriteElementId(this.ElementId);
             builder.WriteCapped(this.Door, 3);
             if(this.Ratio == 0 || this.Ratio == 1)
             {
