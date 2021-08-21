@@ -127,7 +127,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>copy ..\Release\NetModuleWrapper.dll ..\MTAServerWrapper /y</Command>
+      <Command>copy ..\Release\NetModuleWrapper.dll ..\SlipeServer.Net /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

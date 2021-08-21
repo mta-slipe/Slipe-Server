@@ -12,39 +12,39 @@ namespace SlipeServer.Server.Tests.Integration.QueueHandlers
 {
     public class ConnectionQueueHandlerTest
     {
-        [Fact]
-        public async Task ConnectionFlowTest()
-        {
-            var server = new TestingServer();
-            var address = server.GenerateBinaryAddress();
+        //[Fact]
+        //public async Task ConnectionFlowTest()
+        //{
+        //    var server = new TestingServer();
+        //    var address = server.GenerateBinaryAddress();
 
-            server.NetWrapperMock
-                .Setup(x => x.GetClientSerialExtraAndVersion(address))
-                .Returns(new Tuple<string, string, string>("", "", ""));
+        //    server.NetWrapperMock
+        //        .Setup(x => x.GetClientSerialExtraAndVersion(address))
+        //        .Returns(new Tuple<string, string, string>("", "", ""));
 
-            var connectionHandler = server.Instantiate<ConnectionQueueHandler>(0, 1);
-            server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_JOIN, connectionHandler);
-            server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_JOINDATA, connectionHandler);
+        //    var connectionHandler = server.Instantiate<ConnectionQueueHandler>(0, 1);
+        //    server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_JOIN, connectionHandler);
+        //    server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_JOINDATA, connectionHandler);
 
-            server.HandlePacket(address, PacketId.PACKET_ID_PLAYER_JOIN, Array.Empty<byte>());
+        //    server.HandlePacket(address, PacketId.PACKET_ID_PLAYER_JOIN, Array.Empty<byte>());
 
-            while (connectionHandler.QueuedPacketCount > 0)
-                await connectionHandler.GetPulseTask();
+        //    while (connectionHandler.QueuedPacketCount > 0)
+        //        await connectionHandler.GetPulseTask();
 
-            server.NetWrapperMock.Verify(x => x.SendPacket(
-                address,
-                It.Is<ModNamePacket>(x => x.Name == "deathmatch")
-            ));
+        //    server.NetWrapperMock.Verify(x => x.SendPacket(
+        //        address,
+        //        It.Is<ModNamePacket>(x => x.Name == "deathmatch")
+        //    ));
 
-            server.HandlePacket(address, PacketId.PACKET_ID_PLAYER_JOINDATA, new PlayerJoinDataPacket().Write());
+        //    server.HandlePacket(address, PacketId.PACKET_ID_PLAYER_JOINDATA, new PlayerJoinDataPacket().Write());
 
-            while (connectionHandler.QueuedPacketCount > 0)
-                await connectionHandler.GetPulseTask();
+        //    while (connectionHandler.QueuedPacketCount > 0)
+        //        await connectionHandler.GetPulseTask();
 
-            server.NetWrapperMock.Verify(x => x.SendPacket(
-                address,
-                It.IsAny<JoinCompletePacket>()
-            ));
-        }
+        //    server.NetWrapperMock.Verify(x => x.SendPacket(
+        //        address,
+        //        It.IsAny<JoinCompletePacket>()
+        //    ));
+        //}
     }
 }
