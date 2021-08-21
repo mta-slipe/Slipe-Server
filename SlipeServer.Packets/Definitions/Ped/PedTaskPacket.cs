@@ -17,23 +17,40 @@ namespace SlipeServer.Packets.Definitions.Ped
         public override PacketPriority Priority { get; } = PacketPriority.High;
 
         public uint SourceElementId { get; set; }
-        public uint NumberOfBitsInPacketBody { get; set; }
-        public bool[] DataBuffer { get; set; }
+        public ushort TaskType { get; set; }
+        public uint AttackerId { get; set; }
+        public byte HitBodyPart { get; set; }
+        public byte HitBodySize { get; set; }
+        public byte WeaponId { get; set; }
 
-        public PedTaskPacket(uint sourceElementId)
+
+        public PedTaskPacket(uint sourceElementId, byte weaponId, byte hitBodySize, byte hitBodyPart, uint attackerId, ushort taskType)
         {
             this.SourceElementId = sourceElementId;
-            this.DataBuffer = new bool[56];
+            this.WeaponId = weaponId;
+            this.HitBodySize = hitBodySize;
+            this.HitBodyPart = hitBodyPart;
+            this.AttackerId = attackerId;
+            this.TaskType = taskType;
         }
 
+        public PedTaskPacket()
+        {
+            
+        }
+        
         public override byte[] Write()
         {
             var builder = new PacketBuilder();
 
             builder.WriteElementId(this.SourceElementId);
 
-            builder.Write(this.DataBuffer);
-            
+            builder.Write(this.TaskType);
+            builder.Write(this.AttackerId);
+            builder.Write(this.HitBodyPart);
+            builder.Write(this.HitBodySize);
+            builder.Write(this.WeaponId);
+
             return builder.Build();
         }
         
@@ -41,13 +58,11 @@ namespace SlipeServer.Packets.Definitions.Ped
         {
             var reader = new PacketReader(bytes);
 
-            this.NumberOfBitsInPacketBody = (uint)(reader.Size / 8);
-
-            uint numBytes = (this.NumberOfBitsInPacketBody + 1) / 8;
-            if (numBytes < DataBuffer.Length)
-            {
-                DataBuffer = reader.GetBits((int)this.NumberOfBitsInPacketBody);
-            }
+            this.TaskType = reader.GetByte();
+            this.AttackerId = reader.GetElementId();
+            this.HitBodyPart = reader.GetByte();
+            this.HitBodySize = reader.GetByte();
+            this.WeaponId = reader.GetByte();
         }
     }
 }
