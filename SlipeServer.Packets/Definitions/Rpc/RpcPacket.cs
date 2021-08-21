@@ -31,7 +31,7 @@ namespace SlipeServer.Packets.Rpc
 
         public override byte[] Write()
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 }

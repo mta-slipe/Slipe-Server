@@ -2,28 +2,26 @@
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
 using System;
-using System.Collections.Generic;
+using System.Drawing;
 using System.Numerics;
-using System.Text;
 
-namespace SlipeServer.Packets.Definitions.Player
+namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped
 {
-    public class ChangeNicknamePacket : Packet
+    public class SetRadarAreaColorPacket : Packet
     {
-        public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_CHANGE_NICK;
+        public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
+
         public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+
         public override PacketPriority Priority => PacketPriority.High;
 
-        public uint PlayerId { get; set; }
-        public string Name { get; set; }
+        public uint ElementId { get; }
+        public Color Color { get; }
 
-        public ChangeNicknamePacket(
-            uint playerId,
-            string name
-        )
+        public SetRadarAreaColorPacket(uint elementId, Color color)
         {
-            this.PlayerId = playerId;
-            this.Name = name;
+            this.ElementId = elementId;
+            this.Color = color;
         }
 
         public override void Read(byte[] bytes)
@@ -34,9 +32,9 @@ namespace SlipeServer.Packets.Definitions.Player
         public override byte[] Write()
         {
             var builder = new PacketBuilder();
-
-            builder.WriteElementId(this.PlayerId);
-            builder.WriteStringWithoutLength(this.Name);
+            builder.Write((byte)ElementRpcFunction.SET_RADAR_AREA_COLOR);
+            builder.WriteElementId(this.ElementId);
+            builder.Write(this.Color, true);
 
             return builder.Build();
         }

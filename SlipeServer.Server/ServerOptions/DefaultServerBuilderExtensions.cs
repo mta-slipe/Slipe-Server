@@ -31,6 +31,7 @@ namespace SlipeServer.Server.ServerOptions
             builder.AddBehaviour<VelocityBehaviour>();
             builder.AddBehaviour<DefaultChatBehaviour>();
             builder.AddBehaviour<NicknameChangeBehaviour>();
+            builder.AddBehaviour<CollisionShapeBehaviour>();
 
             builder.AddBehaviour<PlayerJoinElementBehaviour>();
 
@@ -40,7 +41,11 @@ namespace SlipeServer.Server.ServerOptions
             builder.AddBehaviour<VehicleWarpBehaviour>();
             builder.AddBehaviour<VoiceBehaviour>();
             builder.AddBehaviour<LightSyncBehaviour>();
+<<<<<<< HEAD
             builder.AddBehaviour<TeamBehaviour>();
+=======
+            builder.AddBehaviour<RadarAreaBehaviour>();
+>>>>>>> bbbf0b17b34ae6152c55d233e45e413c1a9d0909
         }
 
         public static void AddDefaults(this ServerBuilder builder)
