@@ -258,9 +258,12 @@ namespace SlipeServer.Console
         {
             player.CommandEntered += (o, args) =>
             {
-                if (args.Command == "vehtest")
+                if (args.Command == "damageveh")
+                {
                     this.Vehicle.SetDoorState(VehicleDoor.Hood, VehicleDoorState.Missing, true);
-
+                    this.Vehicle.SetWheelState(VehicleWheel.FrontLeft, VehicleWheelState.Collisionless);
+                    this.Vehicle.SetPanelState(VehiclePanel.Winscreen, VehiclePanelState.Damaged3);
+                }
             };
             player.CommandEntered += (o, args) => { if (args.Command == "kill") player.Kill(); };
             player.CommandEntered += (o, args) => { if (args.Command == "spawn") player.Spawn(new Vector3(20, 0, 3), 0, 9, 0, 0); };

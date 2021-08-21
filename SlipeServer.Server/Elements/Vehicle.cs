@@ -181,9 +181,28 @@ namespace SlipeServer.Server.Elements
         public void SetDoorState(VehicleDoor door, VehicleDoorState state, bool spawnFlyingComponent = false)
         {
             this.DoorStates[(byte)door] = (byte)state;
-            DamageStateChanged?.Invoke(this, new VehicleDamageStateChanged(this, VehicleDamagePart.Door, (byte)door, (byte)state, spawnFlyingComponent));
+            DoorStateChanged?.Invoke(this, new VehicleDoorStateChangedArgs(this, door, state, spawnFlyingComponent));
+        }
+        
+        public void SetWheelState(VehicleWheel wheel, VehicleWheelState state)
+        {
+            this.WheelStates[(byte)wheel] = (byte)state;
+            WheelStateChanged?.Invoke(this, new VehicleWheelStateChangedArgs(this, wheel, state));
         }
 
+        public void SetPanelState(VehiclePanel panel, VehiclePanelState state)
+        {
+            this.PanelStates[(byte)panel] = (byte)state;
+            PanelStateChanged?.Invoke(this, new VehiclePanelStateChangedArgs(this, panel, state));
+        }
+
+        //public void SetWheelStates(VehicleWheelState frontLeft, VehicleWheelState rearLeft, VehicleWheelState frontRight, VehicleWheelState rearRight)
+        //{
+        //    this.WheelStates[(byte)VehicleWheel.FrontLeft] = (byte)frontLeft;
+        //    this.WheelStates[(byte)VehicleWheel.RearLeft] = (byte)rearLeft;
+        //    this.WheelStates[(byte)VehicleWheel.FrontRight] = (byte)frontRight;
+        //    this.WheelStates[(byte)VehicleWheel.RearRight] = (byte)rearRight;
+        //}
 
         internal void ResetWheelsPanelsLights()
         {
@@ -233,6 +252,8 @@ namespace SlipeServer.Server.Elements
         public event ElementEventHandler<VehicleLeftEventArgs>? PedLeft;
         public event ElementEventHandler<VehicleEnteredEventsArgs>? PedEntered;
         public event ElementEventHandler<VehicleRespawnEventArgs>? Respawned;
-        public event ElementEventHandler<VehicleDamageStateChanged>? DamageStateChanged;
+        public event ElementEventHandler<VehicleDoorStateChangedArgs>? DoorStateChanged;
+        public event ElementEventHandler<VehicleWheelStateChangedArgs>? WheelStateChanged;
+        public event ElementEventHandler<VehiclePanelStateChangedArgs>? PanelStateChanged;
     }
 }
