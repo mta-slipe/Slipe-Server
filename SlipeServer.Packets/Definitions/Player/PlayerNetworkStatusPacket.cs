@@ -20,17 +20,7 @@ namespace SlipeServer.Packets.Definitions.Player
         public override void Read(byte[] bytes)
         {
             PacketReader reader = new PacketReader(bytes);
-            switch(reader.GetByte())
-            {
-                case 0:
-                    this.Type = PlayerNetworkStatusType.InterruptionBegan;
-                    break;
-                case 1:
-                    this.Type = PlayerNetworkStatusType.InterruptionEnd;
-                    break;
-                default:
-                    throw new NotSupportedException();
-            }
+            this.Type = (PlayerNetworkStatusType)reader.GetByte();
             this.Ticks = reader.GetUint32();
         }
 
