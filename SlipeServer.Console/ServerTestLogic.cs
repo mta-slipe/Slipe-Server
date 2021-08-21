@@ -41,6 +41,7 @@ namespace SlipeServer.Console
 
         private readonly Random random = new Random();
         RadarArea RadarArea { get; set; }
+        Blip Blip { get; set; }
 
         public ServerTestLogic(
             MtaServer server,
@@ -101,7 +102,7 @@ namespace SlipeServer.Console
                 new Vector3(-6, 3, 4), new Vector3(-3, 3, 4)
             }).AssociateWith(this.server);
             new WorldObject(321, new Vector3(5, 0, 3)).AssociateWith(this.server);
-            new Blip(new Vector3(20, 0, 0), BlipIcon.Bulldozer).AssociateWith(this.server);
+            this.Blip = new Blip(new Vector3(20, 0, 0), BlipIcon.Bulldozer).AssociateWith(this.server);
             this.RadarArea = new RadarArea(new Vector2(0, 0), new Vector2(200, 200), Color.FromArgb(100, Color.Aqua)).AssociateWith(this.server);
 
             new Marker(new Vector3(5, 0, 2), MarkerType.Cylinder)
