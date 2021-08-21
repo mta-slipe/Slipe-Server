@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.ColShapes;
 using SlipeServer.Server.Elements.Events;
+using SlipeServer.Server.PacketHandling.Factories;
 using SlipeServer.Server.Repositories;
 using System.Collections.Generic;
 using System.Numerics;
@@ -13,6 +14,7 @@ namespace SlipeServer.Server.Behaviour
     public class CollisionShapeBehaviour
     {
         private readonly HashSet<CollisionShape> collisionShapes;
+        private readonly MtaServer server;
 
         public CollisionShapeBehaviour(MtaServer server, IElementRepository elementRepository)
         {
@@ -23,6 +25,7 @@ namespace SlipeServer.Server.Behaviour
             }
 
             server.ElementCreated += OnElementCreate;
+            this.server = server;
         }
 
         private void OnElementCreate(Element element)
@@ -30,10 +33,19 @@ namespace SlipeServer.Server.Behaviour
             if (element is CollisionShape collisionShape)
             {
                 AddCollisionShape(collisionShape);
+                if (collisionShape is CollisionCircle collisionCircle)
+                {
+                    collisionCircle.RadiusChanged += OnRadiusChange;
+                }
             } else
             {
                 element.PositionChanged += OnElementPositionChange;
             }
+        }
+
+        private void OnRadiusChange(Element sender, ElementChangedEventArgs<float> args)
+        {
+            this.server.BroadcastPacket(CollisionShapePacketFactory.CreateSetRadius(args.Source, args.NewValue));
         }
 
         private void AddCollisionShape(CollisionShape collisionShape)
@@ -42,12 +54,17 @@ namespace SlipeServer.Server.Behaviour
             collisionShape.Destroyed += (source) => this.collisionShapes.Remove(collisionShape);
         }
 
-        private void OnElementPositionChange(object sender, ElementChangedEventArgs<Vector3> eventArgs)
+        private void RefreshColliders(Element element)
         {
             foreach (var shape in this.collisionShapes)
             {
-                shape.CheckElementWithin(eventArgs.Source);
+                shape.CheckElementWithin(element);
             }
+        }
+
+        private void OnElementPositionChange(object sender, ElementChangedEventArgs<Vector3> eventArgs)
+        {
+            RefreshColliders(eventArgs.Source);
         }
     }
 }
