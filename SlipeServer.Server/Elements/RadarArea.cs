@@ -9,9 +9,6 @@ namespace SlipeServer.Server.Elements
     public class RadarArea : Element
     {
         public override ElementType ElementType => ElementType.RadarArea;
-        private Color color;
-        private Vector2 size;
-        public bool isFlashing = false;
 
         public Vector2 Position2
         {
@@ -19,9 +16,11 @@ namespace SlipeServer.Server.Elements
             set => this.Position = new Vector3(value.X, value.Y, 0);
         }
 
+        private Vector2 size;
         public Vector2 Size
         {
-            get => this.size; set
+            get => this.size;
+            set
             {
                 var args = new ElementChangedEventArgs<RadarArea, Vector2>(this, this.size, value, this.IsSync);
                 this.size = value;
@@ -29,9 +28,11 @@ namespace SlipeServer.Server.Elements
             }
         }
 
+        private Color color;
         public Color Color
         {
-            get => this.color; set
+            get => this.color;
+            set
             {
                 var args = new ElementChangedEventArgs<RadarArea, Color>(this, this.color, value, this.IsSync);
                 this.color = value;
@@ -39,9 +40,11 @@ namespace SlipeServer.Server.Elements
             }
         }
 
+        private bool isFlashing = false;
         public bool IsFlashing
         {
-            get => this.isFlashing; set
+            get => this.isFlashing;
+            set
             {
                 var args = new ElementChangedEventArgs<RadarArea, bool>(this, this.isFlashing, value, this.IsSync);
                 this.isFlashing = value;

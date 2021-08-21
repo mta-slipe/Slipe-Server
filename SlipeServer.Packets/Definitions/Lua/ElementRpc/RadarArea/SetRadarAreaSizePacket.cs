@@ -34,8 +34,7 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped
             var builder = new PacketBuilder();
             builder.Write((byte)ElementRpcFunction.SET_RADAR_AREA_SIZE);
             builder.WriteElementId(this.ElementId);
-            builder.Write(this.Size.X);
-            builder.Write(this.Size.Y);
+            builder.Write(this.Size);
 
             return builder.Build();
         }

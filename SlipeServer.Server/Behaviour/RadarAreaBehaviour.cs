@@ -34,13 +34,13 @@ namespace SlipeServer.Server.Behaviour
             }
         }
 
-        private void AddRadarArea(RadarArea collisionShape)
+        private void AddRadarArea(RadarArea radarArea)
         {
-            this.radarAreas.Add(collisionShape);
-            collisionShape.Destroyed += (source) => this.radarAreas.Remove(collisionShape);
-            collisionShape.ColorChanged += ColorChanged;
-            collisionShape.SizeChanged += SizeChanged;
-            collisionShape.FlashingStateChanged += FlashingStateChanged;
+            this.radarAreas.Add(radarArea);
+            radarArea.Destroyed += (source) => this.radarAreas.Remove(radarArea);
+            radarArea.ColorChanged += ColorChanged;
+            radarArea.SizeChanged += SizeChanged;
+            radarArea.FlashingStateChanged += FlashingStateChanged;
         }
 
         private void FlashingStateChanged(Element sender, ElementChangedEventArgs<RadarArea, bool> args)
