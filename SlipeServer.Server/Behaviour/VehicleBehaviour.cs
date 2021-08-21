@@ -28,6 +28,7 @@ namespace SlipeServer.Server.Behaviour
                 vehicle.WheelStateChanged += HandleWheelStateChanged;
                 vehicle.PanelStateChanged += HandlePanelStateChanged;
                 vehicle.LightStateChanged += HandleLightStateChanged;
+                vehicle.DoorOpenRatioChanged += HandleDoorOpenRatioChanged;
             }
         }
 
@@ -49,6 +50,11 @@ namespace SlipeServer.Server.Behaviour
         private void HandleLightStateChanged(object? sender, VehicleLightStateChangedArgs args)
         {
             this.server.BroadcastPacket(new SetVehicleDamageState(args.Vehicle.Id, (byte)VehicleDamagePart.Light, (byte)args.Light, (byte)args.State));
+        }
+
+        private void HandleDoorOpenRatioChanged(object? sender, VehicleDoorOpenRatioChangedArgs args)
+        {
+            this.server.BroadcastPacket(new SetVehicleDoorOpenRatio(args.Vehicle.Id, (byte)args.Door, args.Ratio, args.Time));
         }
     }
 }

@@ -118,7 +118,7 @@ namespace SlipeServer.Console
                 TargetType = WeaponTargetType.Fixed,
                 TargetPosition = new Vector3(10, 10, 5)
             }.AssociateWith(this.server);
-            this.Vehicle = new Vehicle(602, new Vector3(-10, 5, 3)).AssociateWith(this.server);
+            this.Vehicle = new Vehicle(404, new Vector3(-10, 5, 3)).AssociateWith(this.server);
             var aircraft = new Vehicle(520, new Vector3(10, 5, 3)).AssociateWith(this.server);
             var forklift = new Vehicle(530, new Vector3(20, 5, 3)).AssociateWith(this.server);
             var forklift2 = new Vehicle(530, new Vector3(22, 5, 3)).AssociateWith(this.server);
@@ -256,7 +256,7 @@ namespace SlipeServer.Console
 
         private void HandlePlayerCommands(Player player)
         {
-            player.CommandEntered += (o, args) =>
+            player.CommandEntered += async (o, args) =>
             {
                 if (args.Command == "damageveh")
                 {
@@ -264,6 +264,21 @@ namespace SlipeServer.Console
                     this.Vehicle.SetWheelState(VehicleWheel.FrontLeft, VehicleWheelState.Collisionless);
                     this.Vehicle.SetPanelState(VehiclePanel.Winscreen, VehiclePanelState.Damaged2);
                     this.Vehicle.SetLightState(VehicleLight.FrontLeft, VehicleLightState.Broken);
+                }
+                if (args.Command == "vehopen")
+                {
+                    this.Vehicle.SetDoorOpenRatio(VehicleDoor.FrontLeft, 1, 2500);
+                    await Task.Delay(500);
+                    this.Vehicle.SetDoorOpenRatio(VehicleDoor.FrontRight, 1, 2500);
+                    await Task.Delay(500);
+                    this.Vehicle.SetDoorOpenRatio(VehicleDoor.RearLeft, 1, 2500);
+                    await Task.Delay(500);
+                    this.Vehicle.SetDoorOpenRatio(VehicleDoor.RearRight, 1, 2500);
+                    await Task.Delay(3500);
+                    this.Vehicle.SetDoorOpenRatio(VehicleDoor.FrontLeft, 0);
+                    this.Vehicle.SetDoorOpenRatio(VehicleDoor.FrontRight, 0);
+                    this.Vehicle.SetDoorOpenRatio(VehicleDoor.RearLeft, 0);
+                    this.Vehicle.SetDoorOpenRatio(VehicleDoor.RearRight, 0);
                 }
             };
             player.CommandEntered += (o, args) => { if (args.Command == "kill") player.Kill(); };

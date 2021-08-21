@@ -170,37 +170,49 @@ namespace SlipeServer.Server.Elements
 
         public void SetTowedByVehicle(Vehicle? vehicle)
         {
-            // not implemented yet
+            // not implemented
         }
 
         public void AttachTo(Element? vehicle)
         {
-            // not implemented yet
+            // not implemented
         }
 
         public void SetDoorState(VehicleDoor door, VehicleDoorState state, bool spawnFlyingComponent = false)
         {
-            this.DoorStates[(byte)door] = (byte)state;
-            DoorStateChanged?.Invoke(this, new VehicleDoorStateChangedArgs(this, door, state, spawnFlyingComponent));
+            this.DoorStates[(int)door] = (byte)state;
+            this.DoorStateChanged?.Invoke(this, new VehicleDoorStateChangedArgs(this, door, state, spawnFlyingComponent));
         }
         
         public void SetWheelState(VehicleWheel wheel, VehicleWheelState state)
         {
-            this.WheelStates[(byte)wheel] = (byte)state;
-            WheelStateChanged?.Invoke(this, new VehicleWheelStateChangedArgs(this, wheel, state));
+            this.WheelStates[(int)wheel] = (byte)state;
+            this.WheelStateChanged?.Invoke(this, new VehicleWheelStateChangedArgs(this, wheel, state));
         }
 
         public void SetPanelState(VehiclePanel panel, VehiclePanelState state)
         {
-            this.PanelStates[(byte)panel] = (byte)state;
-            PanelStateChanged?.Invoke(this, new VehiclePanelStateChangedArgs(this, panel, state));
+            this.PanelStates[(int)panel] = (byte)state;
+            this.PanelStateChanged?.Invoke(this, new VehiclePanelStateChangedArgs(this, panel, state));
         }
 
         public void SetLightState(VehicleLight light, VehicleLightState state)
         {
-            this.LightStates[(byte)light] = (byte)state;
-            LightStateChanged?.Invoke(this, new VehicleLightStateChangedArgs(this, light, state));
+            this.LightStates[(int)light] = (byte)state;
+            this.LightStateChanged?.Invoke(this, new VehicleLightStateChangedArgs(this, light, state));
         }
+
+        public void SetDoorOpenRatio(VehicleDoor door, float ratio, uint time = 0)
+        {
+            this.DoorRatios[(int)door] = ratio;
+            this.DoorOpenRatioChanged?.Invoke(this, new VehicleDoorOpenRatioChangedArgs(this, door, ratio, time));
+        }
+
+        public VehicleDoorState GetDoorState(VehicleDoor door) => (VehicleDoorState)this.DoorStates[(int)door];
+        public VehicleWheelState GetWheelState(VehicleWheel wheel) => (VehicleWheelState)this.WheelStates[(int)wheel];
+        public VehiclePanelState GetPanelState(VehiclePanel panel) => (VehiclePanelState)this.PanelStates[(int)panel];
+        public VehicleLightState GetLightState(VehicleLight light) => (VehicleLightState)this.LightStates[(int)light];
+        public float GetDoorOpenRatio(VehicleDoor door) => this.DoorRatios[(int)door];
 
         //public void SetWheelStates(VehicleWheelState frontLeft, VehicleWheelState rearLeft, VehicleWheelState frontRight, VehicleWheelState rearRight)
         //{
@@ -262,5 +274,6 @@ namespace SlipeServer.Server.Elements
         public event ElementEventHandler<VehicleWheelStateChangedArgs>? WheelStateChanged;
         public event ElementEventHandler<VehiclePanelStateChangedArgs>? PanelStateChanged;
         public event ElementEventHandler<VehicleLightStateChangedArgs>? LightStateChanged;
+        public event ElementEventHandler<VehicleDoorOpenRatioChangedArgs>? DoorOpenRatioChanged;
     }
 }
