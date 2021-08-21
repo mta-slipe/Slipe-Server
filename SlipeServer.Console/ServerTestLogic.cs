@@ -5,6 +5,7 @@ using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements.ColShapes;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Structs;
 using SlipeServer.Server.Enums;
@@ -143,6 +144,16 @@ namespace SlipeServer.Console
                     eventArgs.Vehicle.RemovePassenger(eventArgs.Ped);
                 }
             };
+
+            var shape = new CollisionCircle(new Vector2(0,25), 3).AssociateWith(this.server);
+
+            shape.RadiusChanged += async (Element sender, Server.Elements.Events.ElementChangedEventArgs<float> args) =>
+            {
+                await Task.Delay(5000);
+                if(shape.Radius < 20)
+                    shape.Radius += 1;
+            };
+            shape.Radius = 10;
         }
 
         private void OnPlayerJoin(Player player)
