@@ -6,6 +6,7 @@ using SlipeServer.Server.Enums;
 using SlipeServer.Server.PacketHandling.Factories;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 using SlipeServer.Packets.Enums;
@@ -59,9 +60,9 @@ namespace SlipeServer.Server.Elements
             get => this.team;
             set
             {
-                this.TeamChanged.Invoke(this, new PlayerTeamChangedArgs(this, value, this.team));
+                this.TeamChanged?.Invoke(this, new PlayerTeamChangedArgs(this, value, this.team));
                 this.team = value;
-
+                this.team?.Players.Add(this);
             }
         }
 
@@ -258,6 +259,6 @@ namespace SlipeServer.Server.Elements
         public event ElementEventHandler<Player, PlayerACInfoArgs>? AcInfoReceived;
         public event ElementEventHandler<Player, PlayerDiagnosticInfo>? DiagnosticInfoReceived;
         public event ElementEventHandler<Player, PlayerModInfoArgs>? ModInfoReceived;
-        public event ElementEventHandler<Player, PlayerTeamChangedArgs> TeamChanged;
+        public event ElementEventHandler<Player, PlayerTeamChangedArgs>? TeamChanged;
     }
 }
