@@ -1,4 +1,4 @@
-﻿using SlipeServer.Net;
+﻿using SlipeServer.Net.Wrappers;
 using SlipeServer.Packets;
 using SlipeServer.Packets.Definitions.Player;
 using SlipeServer.Packets.Enums;
