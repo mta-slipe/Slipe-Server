@@ -43,7 +43,7 @@ namespace SlipeServer.Console
         RadarArea RadarArea { get; set; }
         Blip BlipA { get; set; }
         Blip BlipB { get; set; }
-        private readonly Team _slipeDevsTeam;
+        private readonly Team slipeDevsTeam;
 
         public ServerTestLogic(
             MtaServer server,
@@ -75,7 +75,7 @@ namespace SlipeServer.Console
             this.fireService = fireService;
             this.textItemService = textItemService;
             this.SetupTestLogic();
-            this._slipeDevsTeam = new Team("Slipe devs", Color.FromArgb(255, 255, 81, 81));
+            this.slipeDevsTeam = new Team("Slipe devs", Color.FromArgb(255, 255, 81, 81));
         }
 
         private void SetupTestLogic()
@@ -232,7 +232,7 @@ namespace SlipeServer.Console
                 this.logger.LogDebug($"{thePlayer.Name} Joined {thePlayer.Team?.TeamName} team!");
             };
 
-            player.Team = this._slipeDevsTeam;
+            player.Team = this.slipeDevsTeam;
         }
 
         private void HandlePlayerSubscriptions(Player player)
