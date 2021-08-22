@@ -86,6 +86,29 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Binaries\x64\net.dll" Pack="true" PackagePath="\build\x64">
+    </Content>
+    <Content Include="Binaries\x64\net.so" Pack="true" PackagePath="\build\x64">
+    </Content>
+    <Content Include="Binaries\x64\NetModuleWrapper.so" Pack="true" PackagePath="\build\x64">
+    </Content>
+    <Content Include="Binaries\x64\NetModuleWrapper.dll" Pack="true" PackagePath="\build\x64">
+    </Content>
+    <Content Include="Binaries\x64\pthread.dll" Pack="true" PackagePath="\build\x64">
+    </Content>
+    <Content Include="Binaries\x86\net.dll" Pack="true" PackagePath="\build\x86">
+    </Content>
+    <Content Include="Binaries\x86\net.so" Pack="true" PackagePath="\build\x86">
+    </Content>
+    <Content Include="Binaries\x86\NetModuleWrapper.so" Pack="true" PackagePath="\build\x86">
+    </Content>
+    <Content Include="Binaries\x86\NetModuleWrapper.dll" Pack="true" PackagePath="\build\x86">
+    </Content>
+    <Content Include="Binaries\x86\pthread.dll" Pack="true" PackagePath="\build\x86">
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SlipeServer.Packets\SlipeServer.Packets.csproj" />
   </ItemGroup>
 

@@ -39,7 +39,6 @@ namespace SlipeServer.Net.Wrappers
         private static extern bool SetSocketVersion(ushort id, uint binaryAddress, ushort version);
 
         [DllImport(wrapperDllpath, EntryPoint = "getClientSerialAndVersion", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        //[return: MarshalAs(UnmanagedType.BStr)]
         private static extern void GetClientSerialAndVersion(ushort id, uint binaryAddress, StringBuilder serial, StringBuilder extra, StringBuilder version);
 
         [DllImport(wrapperDllpath, EntryPoint = "setChecks")]
