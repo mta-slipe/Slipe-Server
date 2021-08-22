@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SlipeServer.Server.Elements.Events;
+using System;
 using System.Drawing;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -9,10 +10,25 @@ namespace SlipeServer.Server.Elements.ColShapes
     {
         public Vector2[] Vertices { get; set; }
 
+        private Vector2 height;
+        public Vector2 Height
+        {
+            get => this.height; set
+            {
+                if(value.X > value.Y)
+                    value = new Vector2(value.Y, value.X);
+
+                var args = new ElementChangedEventArgs<Vector2>(this, this.height, value, this.IsSync);
+                this.height = value;
+                HeightChanged?.Invoke(this, args);
+            }
+        }
+
         public CollisionPolygon(Vector3 position, Vector2[] vertices)
         {
             this.Position = position;
             this.Vertices = vertices;
+            this.height = new Vector2(float.MinValue, float.MaxValue);
         }
 
         public override bool IsWithin(Vector3 position)
@@ -69,5 +85,7 @@ namespace SlipeServer.Server.Elements.ColShapes
                 (o3 == 0 && IsOnSegment(p2, p1, q2)) ||
                 (o4 == 0 && IsOnSegment(p2, q1, q2));
         }
+
+        public event ElementChangedEventHandler<Vector2>? HeightChanged;
     }
 }

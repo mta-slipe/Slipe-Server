@@ -6,6 +6,7 @@ using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.ColShapes;
 using SlipeServer.Server.Elements.Enums;
+using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Elements.Structs;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Repositories;
@@ -140,30 +141,40 @@ namespace SlipeServer.Console
             var circle = new CollisionCircle(new Vector2(0,25), 3).AssociateWith(this.server);
             var sphere = new CollisionSphere(new Vector3(0,25,0), 3).AssociateWith(this.server);
             var tube = new CollisionTube(new Vector3(0,25,0), 3, 3).AssociateWith(this.server);
+            var polygon = new CollisionPolygon(new Vector3(0,-25,0), new Vector2[] { new Vector2(-25, -25), new Vector2(-25, -50), new Vector2(-50, -25)}).AssociateWith(this.server);
 
-            circle.RadiusChanged += async (Element sender, Server.Elements.Events.ElementChangedEventArgs<float> args) =>
+            circle.RadiusChanged += async (Element sender, ElementChangedEventArgs<float> args) =>
             {
-                await Task.Delay(5000);
+                await Task.Delay(100);
                 if (circle.Radius < 20)
-                    circle.Radius += 1;
+                    circle.Radius += .03f;
             };
 
-            sphere.RadiusChanged += async (Element sender, Server.Elements.Events.ElementChangedEventArgs<float> args) =>
+            sphere.RadiusChanged += async (Element sender, ElementChangedEventArgs<float> args) =>
             {
-                await Task.Delay(5000);
+                await Task.Delay(100);
                 if (sphere.Radius < 20)
-                    sphere.Radius += 1;
-            }; ;
+                    sphere.Radius += .03f;
+            };
 
-            tube.RadiusChanged += async (Element sender, Server.Elements.Events.ElementChangedEventArgs<float> args) =>
+            tube.RadiusChanged += async (Element sender, ElementChangedEventArgs<float> args) =>
             {
-                await Task.Delay(5000);
+                await Task.Delay(100);
                 if (tube.Radius < 20)
-                    tube.Radius += 1;
-            }; ;
+                    tube.Radius += .03f;
+            };
+
+            polygon.HeightChanged += async (Element sender, ElementChangedEventArgs<Vector2> args) =>
+            {
+                await Task.Delay(100);
+                if (polygon.Height.X > -3)
+                    polygon.Height = new Vector2(polygon.Height.X - .03f, polygon.Height.Y - .03f);
+            };
+
             circle.Radius = 10;
             sphere.Radius = 10;
             tube.Radius = 10;
+            polygon.Height = new Vector2(10, 15);
         }
 
         private void OnPlayerJoin(Player player)

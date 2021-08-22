@@ -21,5 +21,10 @@ namespace SlipeServer.Server.PacketHandling.Factories
         {
             return new SetCollisionShapeRadiusRpcPacket(element.Id, radius);
         }
+
+        public static SetCollisionShapeHeightRpcPacket CreateSetHeight(Element element, Vector2 height)
+        {
+            return new SetCollisionShapeHeightRpcPacket(element.Id, height);
+        }
     }
 }

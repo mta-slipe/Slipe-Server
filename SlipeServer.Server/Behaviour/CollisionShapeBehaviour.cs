@@ -35,15 +35,19 @@ namespace SlipeServer.Server.Behaviour
                 AddCollisionShape(collisionShape);
                 if (collisionShape is CollisionCircle collisionCircle)
                 {
-                    collisionCircle.RadiusChanged += OnRadiusChange;
+                    collisionCircle.RadiusChanged += HandleRadiusChange;
                 }
                 else if (collisionShape is CollisionSphere collisionSphere)
                 {
-                    collisionSphere.RadiusChanged += OnRadiusChange;
+                    collisionSphere.RadiusChanged += HandleRadiusChange;
                 }
                 else if (collisionShape is CollisionTube collisionTube)
                 {
-                    collisionTube.RadiusChanged += OnRadiusChange;
+                    collisionTube.RadiusChanged += HandleRadiusChange;
+                }
+                else if (collisionShape is CollisionPolygon collisionPolygon)
+                {
+                    collisionPolygon.HeightChanged += HandleHeightChanged;
                 }
             } else
             {
@@ -51,7 +55,12 @@ namespace SlipeServer.Server.Behaviour
             }
         }
 
-        private void OnRadiusChange(Element sender, ElementChangedEventArgs<float> args)
+        private void HandleHeightChanged(Element sender, ElementChangedEventArgs<Vector2> args)
+        {
+            this.server.BroadcastPacket(CollisionShapePacketFactory.CreateSetHeight(args.Source, args.NewValue));
+        }
+
+        private void HandleRadiusChange(Element sender, ElementChangedEventArgs<float> args)
         {
             this.server.BroadcastPacket(CollisionShapePacketFactory.CreateSetRadius(args.Source, args.NewValue));
         }
