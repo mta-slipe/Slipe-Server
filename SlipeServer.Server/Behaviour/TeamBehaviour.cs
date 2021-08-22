@@ -23,7 +23,7 @@ namespace SlipeServer.Server.Behaviour
                         SourceElementId = sender.Id,
                         TeamId = args.NewTeam.Id
                     };
-
+                    Console.WriteLine($"Sent team changed packet!");
                     server.BroadcastPacket(packet);
                 };
             };

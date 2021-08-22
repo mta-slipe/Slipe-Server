@@ -60,8 +60,9 @@ namespace SlipeServer.Server.Elements
             get => this.team;
             set
             {
-                this.TeamChanged?.Invoke(this, new PlayerTeamChangedArgs(this, value, this.team));
+                var previousTeam = this.team;
                 this.team = value;
+                this.TeamChanged?.Invoke(this, new PlayerTeamChangedArgs(this, value, previousTeam));
                 this.team?.Players.Add(this);
             }
         }
