@@ -8,24 +8,24 @@ using System.Text;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element
 {
-    public class SetBlipColorRpcPacket : Packet
+    public class SetBlipSizeRpcPacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
         public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
         public override PacketPriority Priority => PacketPriority.High;
 
         public uint ElementId { get; set; }
-        public Color Color { get; set; }
+        public byte Size { get; set; }
 
-        public SetBlipColorRpcPacket()
+        public SetBlipSizeRpcPacket()
         {
 
         }
 
-        public SetBlipColorRpcPacket(uint elementId, Color color)
+        public SetBlipSizeRpcPacket(uint elementId, byte size)
         {
             this.ElementId = elementId;
-            this.Color = color;
+            this.Size = size;
         }
 
         public override void Read(byte[] bytes)
@@ -37,9 +37,9 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element
         {
             var builder = new PacketBuilder();
 
-            builder.Write((byte)ElementRpcFunction.SET_BLIP_COLOR);
+            builder.Write((byte)ElementRpcFunction.SET_BLIP_SIZE);
             builder.WriteElementId(this.ElementId);
-            builder.Write(this.Color, true);
+            builder.WriteCapped(this.Size, 5);
 
             return builder.Build();
         }

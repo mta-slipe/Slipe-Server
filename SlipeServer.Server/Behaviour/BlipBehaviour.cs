@@ -10,12 +10,12 @@ using System.Numerics;
 
 namespace SlipeServer.Server.Behaviour
 {
-    public class BlipsBehaviour
+    public class BlipBehaviour
     {
         private readonly MtaServer server;
         private readonly HashSet<Blip> blips;
 
-        public BlipsBehaviour(MtaServer server, IElementRepository elementRepository)
+        public BlipBehaviour(MtaServer server, IElementRepository elementRepository)
         {
             this.server = server;
             this.blips = new HashSet<Blip>();
@@ -54,22 +54,22 @@ namespace SlipeServer.Server.Behaviour
 
         private void HandleSizeChanged(Element sender, ElementChangedEventArgs<Blip, byte> args)
         {
-            throw new System.NotImplementedException();
+            this.server.BroadcastPacket(new SetBlipSizeRpcPacket(args.Source.Id, args.NewValue));
         }
 
         private void HandleIconChanged(Element sender, ElementChangedEventArgs<Blip, BlipIcon> args)
         {
-            throw new System.NotImplementedException();
+            this.server.BroadcastPacket(new SetBlipIconRpcPacket(args.Source.Id, (byte)args.NewValue));
         }
 
         private void HandleVisibleDistanceChanged(Element sender, ElementChangedEventArgs<Blip, ushort> args)
         {
-            throw new System.NotImplementedException();
+            this.server.BroadcastPacket(new SetBlipVisibleDistanceRpcPacket(args.Source.Id, args.NewValue));
         }
 
         private void HandleOrderingChanged(Element sender, ElementChangedEventArgs<Blip, short> args)
         {
-            throw new System.NotImplementedException();
+            this.server.BroadcastPacket(new SetBlipOrderingRpcPacket(args.Source.Id, args.NewValue));
         }
     }
 }
