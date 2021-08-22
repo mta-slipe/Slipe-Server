@@ -43,6 +43,7 @@ namespace SlipeServer.Server.ServerOptions
             builder.AddBehaviour<LightSyncBehaviour>();
             builder.AddBehaviour<TeamBehaviour>();
             builder.AddBehaviour<RadarAreaBehaviour>();
+            builder.AddBehaviour<BlipBehaviour>();
         }
 
         public static void AddDefaults(this ServerBuilder builder)
