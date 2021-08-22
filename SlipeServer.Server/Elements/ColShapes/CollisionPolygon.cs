@@ -8,7 +8,7 @@ namespace SlipeServer.Server.Elements.ColShapes
 {
     public class CollisionPolygon : CollisionShape
     {
-        public Vector2[] Vertices { get; set; }
+        private Vector2[] Vertices { get; set; }
 
         private Vector2 height;
         public Vector2 Height
@@ -29,6 +29,25 @@ namespace SlipeServer.Server.Elements.ColShapes
             this.Position = position;
             this.Vertices = vertices;
             this.height = new Vector2(float.MinValue, float.MaxValue);
+        }
+
+        public void SetPointPosition(uint index, Vector2 position)
+        {
+            this.Vertices[index] = position;
+            var args = new CollisionPolygonPointPositionChanged(this, index, position);
+            PointPositionChanged?.Invoke(this, args);
+        }
+
+        public Vector2 GetPointPosition(int index)
+        {
+            return this.Vertices[index];
+        }
+
+        public Vector2[] GetVertices() => Vertices;
+
+        public int GetPointsCount(int index)
+        {
+            return this.Vertices.Length;
         }
 
         public override bool IsWithin(Vector3 position)
@@ -87,5 +106,6 @@ namespace SlipeServer.Server.Elements.ColShapes
         }
 
         public event ElementChangedEventHandler<Vector2>? HeightChanged;
+        public event ElementEventHandler<CollisionPolygonPointPositionChanged>? PointPositionChanged;
     }
 }

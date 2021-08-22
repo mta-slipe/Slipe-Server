@@ -48,11 +48,17 @@ namespace SlipeServer.Server.Behaviour
                 else if (collisionShape is CollisionPolygon collisionPolygon)
                 {
                     collisionPolygon.HeightChanged += HandleHeightChanged;
+                    collisionPolygon.PointPositionChanged += HandlePointPositionChanged;
                 }
             } else
             {
                 element.PositionChanged += OnElementPositionChange;
             }
+        }
+
+        private void HandlePointPositionChanged(Element sender, CollisionPolygonPointPositionChanged args)
+        {
+            this.server.BroadcastPacket(CollisionShapePacketFactory.CreatePointPositionChanged(args.Polygon, args.Index, args.Position));
         }
 
         private void HandleHeightChanged(Element sender, ElementChangedEventArgs<Vector2> args)

@@ -171,10 +171,18 @@ namespace SlipeServer.Console
                     polygon.Height = new Vector2(polygon.Height.X - .03f, polygon.Height.Y - .03f);
             };
 
+            polygon.PointPositionChanged += async (Element sender, CollisionPolygonPointPositionChanged args) =>
+            {
+                await Task.Delay(100);
+                if (args.Position.X < 0.0f)
+                    args.Polygon.SetPointPosition(args.Index, new Vector2(args.Position.X + 0.03f, args.Position.Y));
+            };
+
             circle.Radius = 10;
             sphere.Radius = 10;
             tube.Radius = 10;
             polygon.Height = new Vector2(10, 15);
+            polygon.SetPointPosition(0, new Vector2(-25, -25));
         }
 
         private void OnPlayerJoin(Player player)
