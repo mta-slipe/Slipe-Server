@@ -37,6 +37,14 @@ namespace SlipeServer.Server.Behaviour
                 {
                     collisionCircle.RadiusChanged += OnRadiusChange;
                 }
+                else if (collisionShape is CollisionSphere collisionSphere)
+                {
+                    collisionSphere.RadiusChanged += OnRadiusChange;
+                }
+                else if (collisionShape is CollisionTube collisionTube)
+                {
+                    collisionTube.RadiusChanged += OnRadiusChange;
+                }
             } else
             {
                 element.PositionChanged += OnElementPositionChange;

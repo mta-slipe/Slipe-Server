@@ -137,15 +137,33 @@ namespace SlipeServer.Console
                 }
             };
 
-            var shape = new CollisionCircle(new Vector2(0,25), 3).AssociateWith(this.server);
+            var circle = new CollisionCircle(new Vector2(0,25), 3).AssociateWith(this.server);
+            var sphere = new CollisionSphere(new Vector3(0,25,0), 3).AssociateWith(this.server);
+            var tube = new CollisionTube(new Vector3(0,25,0), 3, 3).AssociateWith(this.server);
 
-            shape.RadiusChanged += async (Element sender, Server.Elements.Events.ElementChangedEventArgs<float> args) =>
+            circle.RadiusChanged += async (Element sender, Server.Elements.Events.ElementChangedEventArgs<float> args) =>
             {
                 await Task.Delay(5000);
-                if(shape.Radius < 20)
-                    shape.Radius += 1;
+                if (circle.Radius < 20)
+                    circle.Radius += 1;
             };
-            shape.Radius = 10;
+
+            sphere.RadiusChanged += async (Element sender, Server.Elements.Events.ElementChangedEventArgs<float> args) =>
+            {
+                await Task.Delay(5000);
+                if (sphere.Radius < 20)
+                    sphere.Radius += 1;
+            }; ;
+
+            tube.RadiusChanged += async (Element sender, Server.Elements.Events.ElementChangedEventArgs<float> args) =>
+            {
+                await Task.Delay(5000);
+                if (tube.Radius < 20)
+                    tube.Radius += 1;
+            }; ;
+            circle.Radius = 10;
+            sphere.Radius = 10;
+            tube.Radius = 10;
         }
 
         private void OnPlayerJoin(Player player)
