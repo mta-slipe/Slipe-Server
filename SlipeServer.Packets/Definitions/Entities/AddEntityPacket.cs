@@ -742,7 +742,7 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element
             ushort dimension, ElementAttachment? attachment, bool areCollisionsEnabled,
             bool isCallPropagationEnabled, CustomData customData, string name,
             byte timeContext, byte colShapeType, Vector3 position, bool isEnabled,
-            bool autoCallEvent, Vector2[] vertices
+            bool autoCallEvent, Vector2[] vertices, Vector2 height
         )
         {
             AddColshape(
@@ -757,6 +757,8 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element
             {
                 this.builder.WriteVector2(vertex);
             }
+
+            this.builder.Write(height);
         }
 
 
