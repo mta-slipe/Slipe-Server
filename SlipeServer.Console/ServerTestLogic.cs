@@ -4,6 +4,7 @@ using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements.ColShapes;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Structs;
 using SlipeServer.Server.Enums;
@@ -37,6 +38,11 @@ namespace SlipeServer.Console
         private readonly FireService fireService;
         private readonly TextItemService textItemService;
         private Resource? testResource;
+
+        private readonly Random random = new Random();
+        RadarArea RadarArea { get; set; }
+        Blip BlipA { get; set; }
+        Blip BlipB { get; set; }
 
         public ServerTestLogic(
             MtaServer server,
@@ -97,8 +103,10 @@ namespace SlipeServer.Console
                 new Vector3(-6, 3, 4), new Vector3(-3, 3, 4)
             }).AssociateWith(this.server);
             new WorldObject(321, new Vector3(5, 0, 3)).AssociateWith(this.server);
-            new Blip(new Vector3(20, 0, 0), BlipIcon.Bulldozer).AssociateWith(this.server);
-            new RadarArea(new Vector2(0, 0), new Vector2(200, 200), Color.FromArgb(100, Color.Aqua)).AssociateWith(this.server);
+            this.BlipA = new Blip(new Vector3(20, 0, 0), BlipIcon.Marker, 50).AssociateWith(this.server);
+            this.BlipB = new Blip(new Vector3(15, 0, 0), BlipIcon.Marker, 50).AssociateWith(this.server);
+            this.RadarArea = new RadarArea(new Vector2(0, 0), new Vector2(200, 200), Color.FromArgb(100, Color.Aqua)).AssociateWith(this.server);
+
             new Marker(new Vector3(5, 0, 2), MarkerType.Cylinder)
             {
                 Color = Color.FromArgb(100, Color.Cyan)
@@ -131,6 +139,16 @@ namespace SlipeServer.Console
                     eventArgs.Vehicle.RemovePassenger(eventArgs.Ped);
                 }
             };
+
+            var shape = new CollisionCircle(new Vector2(0,25), 3).AssociateWith(this.server);
+
+            shape.RadiusChanged += async (Element sender, Server.Elements.Events.ElementChangedEventArgs<float> args) =>
+            {
+                await Task.Delay(5000);
+                if(shape.Radius < 20)
+                    shape.Radius += 1;
+            };
+            shape.Radius = 10;
         }
 
         private void OnPlayerJoin(Player player)
@@ -244,9 +262,42 @@ namespace SlipeServer.Console
 
         private void HandlePlayerCommands(Player player)
         {
+            player.CommandEntered += (o, args) =>
+            {
+                if (args.Command == "radararea")
+                {
+                    this.RadarArea.Color = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
+                    this.RadarArea.Size = new Vector2(this.random.Next(100, 200), this.random.Next(100, 200));
+                    this.RadarArea.IsFlashing = this.random.Next(2) == 1;
+                    this.chatBox.OutputTo(player, "You have randomized radar area!", Color.YellowGreen);
+                }
+            };
+
+            bool flip = false;
             player.CommandEntered += (o, args) => { if (args.Command == "kill") player.Kill(); };
             player.CommandEntered += (o, args) => { if (args.Command == "spawn") player.Spawn(new Vector3(20, 0, 3), 0, 9, 0, 0); };
             player.CommandEntered += (o, args) => {
+                if (args.Command == "blip")
+                {
+                    var values = Enum.GetValues(typeof(BlipIcon));
+                    BlipIcon randomBlipIcon = (BlipIcon)values.GetValue(this.random.Next(values.Length))!;
+
+                    this.BlipB.Icon = randomBlipIcon;
+                    this.BlipA.Color = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
+                    this.BlipA.Size = (byte)this.random.Next(1, 4);
+                    this.BlipA.VisibleDistance = (ushort)this.random.Next(30, 100);
+                    flip = !flip;
+                    if (flip)
+                    {
+                        this.BlipA.Ordering = 1;
+                        this.BlipB.Ordering = 2;
+                    }
+                    else
+                    {
+                        this.BlipA.Ordering = 2;
+                        this.BlipB.Ordering = 1;
+                    }
+                }
                 if (args.Command == "boom")
                     this.explosionService.CreateExplosion(player.Position, ExplosionType.Tiny);
 
@@ -335,6 +386,19 @@ namespace SlipeServer.Console
                 foreach (var item in args.ModInfoItems)
                 {
                     this.logger.LogInformation($"\t{item.Name} - md5: {item.LongMd5}");
+                }
+            };
+
+            player.NetworkStatusReceived += (o, args) =>
+            {
+                switch(args.PlayerNetworkStatus)
+                {
+                    case Packets.Enums.PlayerNetworkStatusType.InterruptionBegan:
+                        this.logger.LogInformation($"(packets from {o.Name}) interruption began {args.Ticks} ticks ago");
+                        break;
+                    case Packets.Enums.PlayerNetworkStatusType.InterruptionEnd:
+                        this.logger.LogInformation($"(packets from {o.Name}) interruption began {args.Ticks} ticks ago and has just ended");
+                        break;
                 }
             };
         }
