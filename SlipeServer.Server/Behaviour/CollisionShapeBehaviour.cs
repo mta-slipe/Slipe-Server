@@ -50,6 +50,10 @@ namespace SlipeServer.Server.Behaviour
                     collisionPolygon.HeightChanged += HandleHeightChanged;
                     collisionPolygon.PointPositionChanged += HandlePointPositionChanged;
                 }
+                else if (collisionShape is CollisionRectangle collisionRectangle)
+                {
+                    collisionRectangle.DimensionsChanged += HandleDimensionChanged;
+                }
             } else
             {
                 element.PositionChanged += OnElementPositionChange;
@@ -69,6 +73,11 @@ namespace SlipeServer.Server.Behaviour
         private void HandleRadiusChange(Element sender, ElementChangedEventArgs<float> args)
         {
             this.server.BroadcastPacket(CollisionShapePacketFactory.CreateSetRadius(args.Source, args.NewValue));
+        }
+
+        private void HandleDimensionChanged(Element sender, ElementChangedEventArgs<Vector2> args)
+        {
+            //this.server.BroadcastPacket(CollisionShapePacketFactory.CreateSizeChangedChanged(args.Source, new Vector3(args.NewValue, 0)));
         }
 
         private void AddCollisionShape(CollisionShape collisionShape)

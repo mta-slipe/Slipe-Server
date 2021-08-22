@@ -142,6 +142,7 @@ namespace SlipeServer.Console
             var sphere = new CollisionSphere(new Vector3(0,25,0), 3).AssociateWith(this.server);
             var tube = new CollisionTube(new Vector3(0,25,0), 3, 3).AssociateWith(this.server);
             var polygon = new CollisionPolygon(new Vector3(0,-25,0), new Vector2[] { new Vector2(-25, -25), new Vector2(-25, -50), new Vector2(-50, -25)}).AssociateWith(this.server);
+            var rectangle = new CollisionRectangle(new Vector2(50, 20), new Vector2(2, 2)).AssociateWith(this.server);
 
             circle.RadiusChanged += async (Element sender, ElementChangedEventArgs<float> args) =>
             {
@@ -178,11 +179,21 @@ namespace SlipeServer.Console
                     args.Polygon.SetPointPosition(args.Index, new Vector2(args.Position.X + 0.03f, args.Position.Y));
             };
 
+            rectangle.DimensionsChanged += async (Element sender, ElementChangedEventArgs<Vector2> args) =>
+            {
+                await Task.Delay(100);
+                if (args.NewValue.Y < 10.0f)
+                {
+                    rectangle.Dimensions = args.OldValue + new Vector2(0.03f, 0.03f);
+                }
+            };
+
             circle.Radius = 10;
             sphere.Radius = 10;
             tube.Radius = 10;
             polygon.Height = new Vector2(10, 15);
             polygon.SetPointPosition(0, new Vector2(-25, -25));
+            rectangle.Dimensions = new Vector2(2, 2);
         }
 
         private void OnPlayerJoin(Player player)

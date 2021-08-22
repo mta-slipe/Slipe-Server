@@ -31,5 +31,10 @@ namespace SlipeServer.Server.PacketHandling.Factories
         {
             return new SetCollisionPolygonPointPosition(element.Id, index, position);
         }
+
+        public static SetCollisionShapeSizeRpcPacket CreateSizeChangedChanged(Element element, Vector3 size)
+        {
+            return new SetCollisionShapeSizeRpcPacket(element.Id, size);
+        }
     }
 }

@@ -14,7 +14,6 @@ namespace SlipeServer.Server.Elements.ColShapes
             set => this.Position = new Vector3(value.X, value.Y, 0);
         }
 
-
         private float radius;
         public float Radius { get => this.radius; set
             {
