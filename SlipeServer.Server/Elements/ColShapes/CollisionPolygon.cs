@@ -8,11 +8,13 @@ namespace SlipeServer.Server.Elements.ColShapes
     public class CollisionPolygon : CollisionShape
     {
         public Vector2[] Vertices { get; set; }
+        public Vector2 Height { get; set; }
 
         public CollisionPolygon(Vector3 position, Vector2[] vertices)
         {
             this.Position = position;
             this.Vertices = vertices;
+            this.Height = new Vector2(float.MinValue, float.MaxValue);
         }
 
         public override bool IsWithin(Vector3 position)
