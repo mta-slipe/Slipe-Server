@@ -20,7 +20,7 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element
 
             builder.Write((byte)ElementRPCFunction.SET_PLAYER_TEAM);
             builder.WriteElementId(this.SourceElementId);
-            builder.Write(this.TeamId);
+            builder.WriteElementId(this.TeamId);
 
             return builder.Build();
         }

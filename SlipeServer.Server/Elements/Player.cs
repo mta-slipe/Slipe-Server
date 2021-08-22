@@ -52,19 +52,16 @@ namespace SlipeServer.Server.Elements
         public bool IsStealthAiming { get; set; }
         public bool IsVoiceMuted { get; set; }
         public bool IsChatMuted { get; set; }
+        private Team? team { get; set; }
 
         public Team? Team
         {
-            get => this.Team;
+            get => this.team;
             set
             {
-                if (value != null)
-                {
-                    this.TeamChanged.Invoke(this,
-                        this.Team != null
-                            ? new PlayerTeamChangedArgs(this, value, this.Team)
-                            : new PlayerTeamChangedArgs(this, value));
-                }
+                this.TeamChanged.Invoke(this, new PlayerTeamChangedArgs(this, value, this.team));
+                this.team = value;
+
             }
         }
 
