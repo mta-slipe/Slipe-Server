@@ -110,7 +110,9 @@
     <Content Include="Binaries\x64\NetModuleWrapper.so" Pack="true" PackagePath="\runtimes\linux-x64\native">
     </Content>
 
-    <Content Include="SlipeServer.Net.targets" Pack="true" PackagePath="\build\SlipeServer.Net.targets">
+    <Content Include="SlipeServer.Net.targets" Pack="true" PackagePath="\build\net5.0\SlipeServer.Net.targets">
+    </Content>
+    <Content Include="SlipeServer.Net.targets" Pack="true" PackagePath="\buildTransitive\net5.0\SlipeServer.Net.targets">
     </Content>
   </ItemGroup>
 
