@@ -231,6 +231,11 @@ namespace SlipeServer.Server.Elements
             this.ModInfoReceived?.Invoke(this, new PlayerModInfoArgs(infoType, modInfoItems));
         }
 
+        internal void TriggerNetworkStatus(PlayerNetworkStatusType networkStatusType, uint ticks)
+        {
+            this.NetworkStatusReceived?.Invoke(this, new PlayerNetworkStatusArgs(networkStatusType, ticks));
+        }
+
         public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
         public event ElementEventHandler<Player, PlayerDamagedEventArgs>? Damaged;
         public event ElementEventHandler<Player, PlayerWastedEventArgs>? Wasted;
@@ -247,5 +252,6 @@ namespace SlipeServer.Server.Elements
         public event ElementEventHandler<Player, PlayerACInfoArgs>? AcInfoReceived;
         public event ElementEventHandler<Player, PlayerDiagnosticInfo>? DiagnosticInfoReceived;
         public event ElementEventHandler<Player, PlayerModInfoArgs>? ModInfoReceived;
+        public event ElementEventHandler<Player, PlayerNetworkStatusArgs>? NetworkStatusReceived;
     }
 }
