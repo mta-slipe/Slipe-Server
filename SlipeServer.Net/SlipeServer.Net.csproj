@@ -86,25 +86,31 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Binaries\x64\net.dll" Pack="true" PackagePath="\build\x64">
+    <Content Include="Binaries\x86\net.dll" Pack="true" PackagePath="\runtimes\win-x86\native">
     </Content>
-    <Content Include="Binaries\x64\net.so" Pack="true" PackagePath="\build\x64">
+    <Content Include="Binaries\x86\NetModuleWrapper.dll" Pack="true" PackagePath="\runtimes\win-x86\native">
     </Content>
-    <Content Include="Binaries\x64\NetModuleWrapper.so" Pack="true" PackagePath="\build\x64">
+    <Content Include="Binaries\x86\pthread.dll" Pack="true" PackagePath="\runtimes\win-x86\native">
     </Content>
-    <Content Include="Binaries\x64\NetModuleWrapper.dll" Pack="true" PackagePath="\build\x64">
+
+    <Content Include="Binaries\x86\net.so" Pack="true" PackagePath="\runtimes\linux-x86\native">
     </Content>
-    <Content Include="Binaries\x64\pthread.dll" Pack="true" PackagePath="\build\x64">
+    <Content Include="Binaries\x86\NetModuleWrapper.so" Pack="true" PackagePath="\runtimes\linux-x86\native">
     </Content>
-    <Content Include="Binaries\x86\net.dll" Pack="true" PackagePath="\build\x86">
+    
+    <Content Include="Binaries\x64\net.dll" Pack="true" PackagePath="\runtimes\win-x64\native">
     </Content>
-    <Content Include="Binaries\x86\net.so" Pack="true" PackagePath="\build\x86">
+    <Content Include="Binaries\x64\NetModuleWrapper.dll" Pack="true" PackagePath="\runtimes\win-x64\native">
     </Content>
-    <Content Include="Binaries\x86\NetModuleWrapper.so" Pack="true" PackagePath="\build\x86">
+    <Content Include="Binaries\x64\pthread.dll" Pack="true" PackagePath="\runtimes\win-x64\native">
     </Content>
-    <Content Include="Binaries\x86\NetModuleWrapper.dll" Pack="true" PackagePath="\build\x86">
+
+    <Content Include="Binaries\x64\net.so" Pack="true" PackagePath="\runtimes\linux-x64\native">
     </Content>
-    <Content Include="Binaries\x86\pthread.dll" Pack="true" PackagePath="\build\x86">
+    <Content Include="Binaries\x64\NetModuleWrapper.so" Pack="true" PackagePath="\runtimes\linux-x64\native">
+    </Content>
+
+    <Content Include="SlipeServer.Net.targets" Pack="true" PackagePath="\build\SlipeServer.Net.targets">
     </Content>
   </ItemGroup>
 
