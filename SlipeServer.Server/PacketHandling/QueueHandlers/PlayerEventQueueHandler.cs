@@ -25,6 +25,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             [PacketId.PACKET_ID_PLAYER_DIAGNOSTIC] = typeof(PlayerDiagnosticPacket),
             [PacketId.PACKET_ID_PLAYER_ACINFO] = typeof(PlayerACInfoPacket),
             [PacketId.PACKET_ID_PLAYER_MODINFO] = typeof(PlayerModInfoPacket),
+            [PacketId.PACKET_ID_PLAYER_NETWORK_STATUS] = typeof(PlayerNetworkStatusPacket),
         };
 
         public PlayerEventQueueHandler(
@@ -58,6 +59,9 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                         break;
                     case PlayerModInfoPacket modInfoPacket:
                         HandleModInfoPacket(client, modInfoPacket);
+                        break;
+                    case PlayerNetworkStatusPacket networkStatusPacket:
+                        HandleNetworkStatusPacket(client, networkStatusPacket);
                         break;
                 }
             }
@@ -135,6 +139,11 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                     client.Player.ScreenshotEnd(screenshotPacket.ScreenshotId);
                 }
             }
+        }
+
+        private void HandleNetworkStatusPacket(Client client, PlayerNetworkStatusPacket networkStatusPacket)
+        {
+            client.Player.TriggerNetworkStatus(networkStatusPacket.Type, networkStatusPacket.Ticks);
         }
     }
 }
