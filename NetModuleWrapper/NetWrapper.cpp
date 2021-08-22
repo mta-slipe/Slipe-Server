@@ -83,7 +83,7 @@ void NetWrapper::resendACPackets(unsigned long address)
     network->ResendACPackets(sockets[address]);
 }
 
-BSTR NetWrapper::getClientSerialAndVersion(unsigned long address, uint16_t& serialSize, uint16_t& extraSize, uint16_t& versionSize)
+SerialExtraAndVersion NetWrapper::getClientSerialAndVersion(unsigned long address)
 {
     auto socket = sockets[address];
 
@@ -96,15 +96,8 @@ BSTR NetWrapper::getClientSerialAndVersion(unsigned long address, uint16_t& seri
     std::string extra = (std::string)SStringX(strExtraTemp);
     std::string version = (std::string)SStringX(strPlayerVersionTemp);
 
-    serialSize = serial.length();
-    extraSize = extra.length();
-    versionSize = version.length();
-
-    std::string result = serial + extra + version;
-
-    std::wstring widestr = std::wstring(result.begin(), result.end());
-    BSTR bstr = SysAllocString(widestr.c_str());
-    return bstr;
+    SerialExtraAndVersion result = SerialExtraAndVersion(serial, extra, version);
+    return result;
 }
 
 void NetWrapper::testMethod() {
@@ -195,6 +188,7 @@ void NetWrapper::runPulseLoop() {
 
 void NetWrapper::start() {
     running = true;
+    network->InitServerId("");
     runThread = std::thread(&NetWrapper::runPulseLoop, this);
 }
 

@@ -64,7 +64,7 @@ namespace SlipeServer.Console
                     builder.AddDefaults();
 
                     #if DEBUG
-                        builder.AddNetWrapper(dllPath: "net_d.dll", port: (ushort)(this.configuration.Port + 1));
+                        builder.AddNetWrapper(dllPath: "net32_d", port: (ushort)(this.configuration.Port + 1));
                     #endif
 
                     builder.AddLogic<ServerTestLogic>();
@@ -77,7 +77,6 @@ namespace SlipeServer.Console
                 GameType = "Slipe Server",
                 MapName = "N/A"
             };
-
             System.Console.CancelKeyPress += delegate
             {
                 this.server.Stop();

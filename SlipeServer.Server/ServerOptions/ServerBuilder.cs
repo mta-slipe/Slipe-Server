@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace SlipeServer.Server.ServerOptions
 {
@@ -43,14 +44,14 @@ namespace SlipeServer.Server.ServerOptions
 
         public void AddNetWrapper(
             string? directory = null,
-            string dllPath = "net.dll",
+            string dllPath = "net",
             string? host = null,
             ushort? port = null,
             AntiCheatConfiguration? antiCheatConfiguration = null)
         {
             AddBuildStep(server => server.AddNetWrapper(
                 directory ?? Directory.GetCurrentDirectory(),
-                dllPath,
+                Path.GetFileNameWithoutExtension(dllPath) + (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".dll" : ".so"),
                 host ?? this.Configuration.Host,
                 port ?? this.Configuration.Port,
                 antiCheatConfiguration
