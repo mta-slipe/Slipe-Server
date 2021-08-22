@@ -1,17 +1,15 @@
-using SlipeServer.Net;
+using SlipeServer.Net.Wrappers.Enums;
 using SlipeServer.Packets;
 using SlipeServer.Packets.Enums;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
-using SlipeServer.Net.Enums;
+using System.Runtime.InteropServices;
 using System.Text;
 
-namespace SlipeServer.Net
+namespace SlipeServer.Net.Wrappers
 {
     public class NetWrapper : IDisposable, INetWrapper
     {
@@ -135,10 +133,10 @@ namespace SlipeServer.Net
         }
 
         public void SetAntiCheatConfig(
-            IEnumerable<AntiCheat> disabledAntiCheats, 
-            bool hideAntiCheatFromClient, 
-            AllowGta3ImgMods allowGta3ImgMods, 
-            IEnumerable<SpecialDetection> enabledSpecialDetections, 
+            IEnumerable<AntiCheat> disabledAntiCheats,
+            bool hideAntiCheatFromClient,
+            AllowGta3ImgMods allowGta3ImgMods,
+            IEnumerable<SpecialDetection> enabledSpecialDetections,
             DataFile disallowedDataFiles
         )
         {
@@ -165,7 +163,7 @@ namespace SlipeServer.Net
             this.PacketReceived?.Invoke(this, binaryAddress, parsedPacketId, data, hasPing ? ping : (uint?)null);
         }
 
-        public event Action<NetWrapper, uint, PacketId, byte[], uint?>? PacketReceived;
+        public event Action<INetWrapper, uint, PacketId, byte[], uint?>? PacketReceived;
 
     }
 }

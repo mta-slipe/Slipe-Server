@@ -17,49 +17,59 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="net.dll" />
+    <None Remove="Binaries\x64\pthread64.dll" />
+    <None Remove="Binaries\x86\pthread.dll" />
     <None Remove="net32.dll" />
     <None Remove="net32.so" />
     <None Remove="net32_d.dll" />
     <None Remove="net64.dll" />
     <None Remove="net64.so" />
-    <None Remove="NetModuleWrapper.dll" />
     <None Remove="NetModuleWrapper.so" />
-    <None Remove="net_d.dll" />
+    <None Remove="NetModuleWrapper32.dll" />
+    <None Remove="NetModuleWrapper64.dll" />
     <None Remove="pthread.dll" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="net.dll" Pack="true" PackagePath="lib\net5.0">
+  <ItemGroup Condition="'$(Platform)' == 'x64'">
+    <ContentWithTargetPath Include="Binaries\x64\net.dll" Pack="true" PackagePath="\build\x64">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="net32.dll" Pack="true" PackagePath="lib\net5.0">
+      <TargetPath>net.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Binaries\x64\net.so" Pack="true" PackagePath="\build\64">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="net32.so" Pack="true" PackagePath="lib\net5.0">
+      <TargetPath>net.so</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Binaries\x64\NetModuleWrapper.so" Pack="true" PackagePath="\build\64">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="net32_d.dll" Pack="true" PackagePath="lib\net5.0">
+      <TargetPath>NetModuleWrapper.so</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Binaries\x64\NetModuleWrapper.dll" Pack="true" PackagePath="\build\64">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="net64.dll" Pack="true" PackagePath="lib\net5.0">
+      <TargetPath>NetModuleWrapper.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Binaries\x64\pthread.dll" Pack="true" PackagePath="\build\64">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="net64.so" Pack="true" PackagePath="lib\net5.0">
+      <TargetPath>pthread.dll</TargetPath>
+    </ContentWithTargetPath>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Platform)' == 'x86'">
+    <ContentWithTargetPath Include="Binaries\x86\net.dll" Pack="true" PackagePath="\build\x86">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="NetModuleWrapper.dll" Pack="true" PackagePath="lib\net5.0">
+      <TargetPath>net.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Binaries\x86\net.so" Pack="true" PackagePath="\build\x86">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="NetModuleWrapper.so" Pack="true" PackagePath="lib\net5.0">
+      <TargetPath>net.so</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Binaries\x86\NetModuleWrapper.dll" Pack="true" PackagePath="\build\x86">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="net_d.dll" Pack="true" PackagePath="lib\net5.0">
+      <TargetPath>NetModuleWrapper.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Binaries\x86\pthread.dll" Pack="true" PackagePath="\build\x86">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="pthread.dll" Pack="true" PackagePath="lib\net5.0">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+      <TargetPath>pthread.dll</TargetPath>
+    </ContentWithTargetPath>
   </ItemGroup>
 
   <ItemGroup>

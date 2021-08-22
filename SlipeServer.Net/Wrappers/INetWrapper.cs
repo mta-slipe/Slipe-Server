@@ -1,14 +1,14 @@
-﻿using SlipeServer.Net.Enums;
+﻿using SlipeServer.Net.Wrappers.Enums;
 using SlipeServer.Packets;
 using SlipeServer.Packets.Enums;
 using System;
 using System.Collections.Generic;
 
-namespace SlipeServer.Net
+namespace SlipeServer.Net.Wrappers
 {
     public interface INetWrapper
     {
-        event Action<NetWrapper, uint, PacketId, byte[], uint?>? PacketReceived;
+        event Action<INetWrapper, uint, PacketId, byte[], uint?>? PacketReceived;
 
         Tuple<string, string, string> GetClientSerialExtraAndVersion(uint binaryAddress);
         void SendPacket(uint binaryAddress, Packet packet);

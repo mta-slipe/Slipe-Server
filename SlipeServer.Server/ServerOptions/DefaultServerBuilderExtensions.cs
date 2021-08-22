@@ -48,11 +48,9 @@ namespace SlipeServer.Server.ServerOptions
             builder.AddDefaultQueueHandlers();
             builder.AddDefaultBehaviours();
 
-            var platform = Environment.Is64BitProcess ? "64" : "32";
-
             builder.AddNetWrapper(
                 Directory.GetCurrentDirectory(), 
-                $"net{platform}", 
+                "net", 
                 builder.Configuration.Host, 
                 builder.Configuration.Port, 
                 builder.Configuration.AntiCheat);

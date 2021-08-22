@@ -1,7 +1,7 @@
 ﻿using SlipeServer.Packets.Enums;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SlipeServer.Net;
+using SlipeServer.Net.Wrappers;
 using SlipeServer.Packets;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Extensions;

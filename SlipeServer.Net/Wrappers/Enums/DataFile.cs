@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SlipeServer.Net.Enums
+namespace SlipeServer.Net.Wrappers.Enums
 {
     [Flags]
     public enum DataFile
