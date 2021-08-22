@@ -146,6 +146,18 @@ namespace SlipeServer.Console
                     shape.Radius += 1;
             };
             shape.Radius = 10;
+
+            var team = new Team("Slipe devs", Color.FromArgb(255, 255, 81, 81));
+            this.server.PlayerJoined += (thePlayer) =>
+            {
+                thePlayer.TeamChanged += (player, args) =>
+                {
+                    if (thePlayer.Team != null)
+                        this.chatBox.Output($"{thePlayer.Name} Joined {thePlayer.Team?.TeamName} team!");
+                    else
+                        this.chatBox.Output($"{thePlayer.Name} Has no team now!");
+                };
+            };
         }
 
         private void OnPlayerJoin(Player player)
