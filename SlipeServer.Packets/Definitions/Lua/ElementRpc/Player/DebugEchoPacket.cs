@@ -26,7 +26,7 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player
 
         public override void Read(byte[] bytes)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public override byte[] Write()

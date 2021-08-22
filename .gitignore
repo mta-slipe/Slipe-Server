@@ -354,3 +354,6 @@ MigrationBackup/
 
 # Jetbrains Rider .idea folder
 .idea/
+
+!SlipeServer.Net/Binaries/x64/
+!SlipeServer.Net/Binaries/x86/

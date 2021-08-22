@@ -1,7 +1,7 @@
 ﻿using SlipeServer.Packets.Enums;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SlipeServer.Net;
+using SlipeServer.Net.Wrappers;
 using SlipeServer.Packets;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Extensions;
@@ -19,6 +19,8 @@ using SlipeServer.Server.Services;
 using SlipeServer.Server.Resources.ResourceServing;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.PacketHandling.QueueHandlers.SyncMiddleware;
+using SlipeServer.Packets.Definitions.Player;
+using SlipeServer.Server.ServerOptions;
 
 namespace SlipeServer.Server
 {
@@ -90,6 +92,18 @@ namespace SlipeServer.Server
         ) : this(configuration, dependencyCallback, clientCreationMethod)
         {
             this.AddNetWrapper(directory, netDllPath, this.configuration.Host, this.configuration.Port, this.configuration.AntiCheat);
+        }
+
+        public MtaServer(
+            Action<ServerBuilder> builderAction,
+            Configuration? configuration = null,
+            Action<ServiceCollection>? dependencyCallback = null,
+            Func<uint, INetWrapper, Client>? clientCreationMethod = null
+        ) : this(configuration, dependencyCallback, clientCreationMethod)
+        {
+            var builder = new ServerBuilder(this.configuration);
+            builderAction(builder);
+            builder.ApplyTo(this);
         }
 
         public void Start()
@@ -265,6 +279,12 @@ namespace SlipeServer.Server
 
         public void HandlePlayerJoin(Player player) => PlayerJoined?.Invoke(player);
         public void HandleLuaEvent(LuaEvent luaEvent) => LuaEventTriggered?.Invoke(luaEvent);
+
+        public void SetMaxPlayers(ushort slots)
+        {
+            this.configuration.MaxPlayerCount = slots;
+            BroadcastPacket(new ServerInfoSyncPacket(slots));
+        }
 
         public event Action<Element>? ElementCreated;
         public event Action<Player>? PlayerJoined;
