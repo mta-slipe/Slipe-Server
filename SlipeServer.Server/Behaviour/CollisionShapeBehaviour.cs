@@ -50,6 +50,8 @@ namespace SlipeServer.Server.Behaviour
                 {
                     collisionPolygon.HeightChanged += HandlePolygonHeightChanged;
                     collisionPolygon.PointPositionChanged += HandlePointPositionChanged;
+                    collisionPolygon.PointAdded += HandlePointAdded;
+                    collisionPolygon.PointRemoved += HandlePointRemoved;
                 }
                 else if (collisionShape is CollisionRectangle collisionRectangle)
                 {
@@ -65,15 +67,26 @@ namespace SlipeServer.Server.Behaviour
             }
         }
 
-        private void HandlePointPositionChanged(Element sender, CollisionPolygonPointPositionChanged args)
+        private void HandlePointAdded(Element sender, CollisionPolygonPointAddedChangedArgs args)
+        {
+            this.server.BroadcastPacket(CollisionShapePacketFactory.CreatePointAdded(args.Polygon, args.Position, args.Index));
+        }
+
+        private void HandlePointRemoved(Element sender, CollisionPolygonPointRemovedChangedArgs args)
+        {
+            this.server.BroadcastPacket(CollisionShapePacketFactory.CreatePointRemoved(args.Polygon, args.Index));
+        }
+
+        private void HandlePointPositionChanged(Element sender, CollisionPolygonPointPositionChangedArgs args)
         {
             this.server.BroadcastPacket(CollisionShapePacketFactory.CreatePointPositionChanged(args.Polygon, args.Index, args.Position));
         }
 
         private void HandleHeightChanged(Element sender, ElementChangedEventArgs<float> args)
         {
-            this.server.BroadcastPacket(CollisionShapePacketFactory.CreateSizeChangedChanged(args.Source, new Vector3(args.NewValue, 0, 0)));
+            this.server.BroadcastPacket(CollisionShapePacketFactory.CreateSizeChanged(args.Source, new Vector3(args.NewValue, 0, 0)));
         }
+
         private void HandlePolygonHeightChanged(Element sender, ElementChangedEventArgs<Vector2> args)
         {
             this.server.BroadcastPacket(CollisionShapePacketFactory.CreateSetHeight(args.Source, args.NewValue));
@@ -86,12 +99,12 @@ namespace SlipeServer.Server.Behaviour
 
         private void Handle2DDimensionChanged(Element sender, ElementChangedEventArgs<Vector2> args)
         {
-            this.server.BroadcastPacket(CollisionShapePacketFactory.CreateSizeChangedChanged(args.Source, new Vector3(args.NewValue, 0)));
+            this.server.BroadcastPacket(CollisionShapePacketFactory.CreateSizeChanged(args.Source, new Vector3(args.NewValue, 0)));
         }
 
         private void Handle3DDimensionChanged(Element sender, ElementChangedEventArgs<Vector3> args)
         {
-            this.server.BroadcastPacket(CollisionShapePacketFactory.CreateSizeChangedChanged(args.Source, args.NewValue));
+            this.server.BroadcastPacket(CollisionShapePacketFactory.CreateSizeChanged(args.Source, args.NewValue));
         }
 
         private void AddCollisionShape(CollisionShape collisionShape)

@@ -183,7 +183,7 @@ namespace SlipeServer.Console
                     polygon.Height = new Vector2(polygon.Height.X - .03f, polygon.Height.Y - .03f);
             };
 
-            polygon.PointPositionChanged += async (Element sender, CollisionPolygonPointPositionChanged args) =>
+            polygon.PointPositionChanged += async (Element sender, CollisionPolygonPointPositionChangedArgs args) =>
             {
                 await Task.Delay(100);
                 if (args.Position.X < 0.0f)
@@ -203,6 +203,21 @@ namespace SlipeServer.Console
                 if (args.NewValue.Y < 10.0f)
                     cuboid.Dimensions = args.OldValue + new Vector3(0.03f, 0.03f, 0.03f);
             };
+
+            Task.Run(async () =>
+            {
+                await Task.Delay(5000);
+                for (int i = 0; i < 5; i++)
+                {
+                    await Task.Delay(2000);
+                    polygon.AddPoint(new Vector2(this.random.Next(-20, 20), this.random.Next(-20, 20)));
+                }
+                for (int i = 0; i < 5; i++)
+                {
+                    await Task.Delay(2000);
+                    polygon.RemovePoint(0);
+                }
+            });
 
             circle.Radius = 3;
             sphere.Radius = 3;

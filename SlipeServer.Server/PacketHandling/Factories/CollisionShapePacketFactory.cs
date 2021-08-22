@@ -1,17 +1,6 @@
-﻿using SlipeServer.Packets.Definitions.Join;
-using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
-using SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
+﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.CollisionShape;
 using SlipeServer.Server.Elements;
-using SlipeServer.Server.Elements.Enums;
-using SlipeServer.Server.Enums;
-using MTAServerWrapper.Packets.Outgoing.Connection;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Numerics;
-using System.Text;
-using SlipeServer.Packets.Definitions.Player;
-using SlipeServer.Server.Elements.ColShapes;
 
 namespace SlipeServer.Server.PacketHandling.Factories
 {
@@ -32,9 +21,22 @@ namespace SlipeServer.Server.PacketHandling.Factories
             return new SetCollisionPolygonPointPosition(element.Id, index, position);
         }
 
-        public static SetCollisionShapeSizeRpcPacket CreateSizeChangedChanged(Element element, Vector3 size)
+        public static SetCollisionShapeSizeRpcPacket CreateSizeChanged(Element element, Vector3 size)
         {
             return new SetCollisionShapeSizeRpcPacket(element.Id, size);
+        }
+
+        public static AddCollisionPolygonPointRpcPacket CreatePointAdded(Element element, Vector2 position, int index)
+        {
+            if(index == -1)
+                return new AddCollisionPolygonPointRpcPacket(element.Id, position);
+            else
+                return new AddCollisionPolygonPointRpcPacket(element.Id, position, (uint)index);
+        }
+
+        public static RemoveCollisionPolygonPointRpcPacket CreatePointRemoved(Element element, int index)
+        {
+            return new RemoveCollisionPolygonPointRpcPacket(element.Id, (uint)index);
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using SlipeServer.Server.Elements.Events;
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -8,7 +10,7 @@ namespace SlipeServer.Server.Elements.ColShapes
 {
     public class CollisionPolygon : CollisionShape
     {
-        private Vector2[] Vertices { get; set; }
+        private List<Vector2> Vertices { get; set; }
 
         private Vector2 height;
         public Vector2 Height
@@ -24,17 +26,17 @@ namespace SlipeServer.Server.Elements.ColShapes
             }
         }
 
-        public CollisionPolygon(Vector3 position, Vector2[] vertices)
+        public CollisionPolygon(Vector3 position, IEnumerable<Vector2> vertices)
         {
             this.Position = position;
-            this.Vertices = vertices;
+            this.Vertices = vertices.ToList();
             this.height = new Vector2(float.MinValue, float.MaxValue);
         }
 
         public void SetPointPosition(uint index, Vector2 position)
         {
-            this.Vertices[index] = position;
-            var args = new CollisionPolygonPointPositionChanged(this, index, position);
+            this.Vertices[(int)index] = position;
+            var args = new CollisionPolygonPointPositionChangedArgs(this, index, position);
             PointPositionChanged?.Invoke(this, args);
         }
 
@@ -43,11 +45,32 @@ namespace SlipeServer.Server.Elements.ColShapes
             return this.Vertices[index];
         }
 
-        public Vector2[] GetVertices() => Vertices;
+        public IEnumerable<Vector2> GetVertices() => this.Vertices;
 
-        public int GetPointsCount(int index)
+        public int GetPointsCount()
         {
-            return this.Vertices.Length;
+            return this.Vertices.Count;
+        }
+        
+        public void AddPoint(Vector2 position)
+        {
+            this.Vertices.Add(position);
+            var args = new CollisionPolygonPointAddedChangedArgs(this, -1, position);
+            PointAdded?.Invoke(this, args);
+        }
+
+        public void AddPoint(Vector2 position, int index)
+        {
+            this.Vertices.Insert(index, position);
+            var args = new CollisionPolygonPointAddedChangedArgs(this, index, position);
+            PointAdded?.Invoke(this, args);
+        }
+        
+        public void RemovePoint(int index)
+        {
+            this.Vertices.RemoveAt(index);
+            var args = new CollisionPolygonPointRemovedChangedArgs(this, index);
+            PointRemoved?.Invoke(this, args);
         }
 
         public override bool IsWithin(Vector3 position)
@@ -55,10 +78,10 @@ namespace SlipeServer.Server.Elements.ColShapes
             Vector2 point = new Vector2(position.X, position.Y);
 
             uint intersections = 0;
-            for (int i = 0; i < this.Vertices.Length; i++)
+            for (int i = 0; i < this.Vertices.Count; i++)
             {
                 var pointA = this.Vertices[i];
-                var pointB = this.Vertices[(i + 1 == this.Vertices.Length) ? 0 : (i + 1)];
+                var pointB = this.Vertices[(i + 1 == this.Vertices.Count) ? 0 : (i + 1)];
 
                 if (DoLinesIntersect(pointA, pointB, point - new Vector2(float.MaxValue, 0) ,point))
                     intersections++;
@@ -106,6 +129,8 @@ namespace SlipeServer.Server.Elements.ColShapes
         }
 
         public event ElementChangedEventHandler<Vector2>? HeightChanged;
-        public event ElementEventHandler<CollisionPolygonPointPositionChanged>? PointPositionChanged;
+        public event ElementEventHandler<CollisionPolygonPointPositionChangedArgs>? PointPositionChanged;
+        public event ElementEventHandler<CollisionPolygonPointAddedChangedArgs>? PointAdded;
+        public event ElementEventHandler<CollisionPolygonPointRemovedChangedArgs>? PointRemoved;
     }
 }
