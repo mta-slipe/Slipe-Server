@@ -1,4 +1,4 @@
-﻿using SlipeServer.Net.Enums;
+﻿using SlipeServer.Net.Wrappers.Enums;
 using SlipeServer.Server.Enums;
 using System;
 using System.ComponentModel.DataAnnotations;

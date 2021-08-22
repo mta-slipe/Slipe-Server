@@ -6,6 +6,7 @@ using SlipeServer.Server.Enums;
 using SlipeServer.Server.PacketHandling.Factories;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 using SlipeServer.Packets.Enums;
@@ -53,12 +54,25 @@ namespace SlipeServer.Server.Elements
         public bool IsVoiceMuted { get; set; }
         public bool IsChatMuted { get; set; }
         public List<Ped> SyncingPeds { get; set; }
+        private Team? team { get; set; }
+
+        public Team? Team
+        {
+            get => this.team;
+            set
+            {
+                var previousTeam = this.team;
+                this.team = value;
+                this.TeamChanged?.Invoke(this, new PlayerTeamChangedArgs(this, value, previousTeam));
+                this.team?.Players.Add(this);
+            }
+        }
 
         public Dictionary<int, PlayerPendingScreenshot> PendingScreenshots { get; } = new();
 
         private readonly HashSet<Element> subscriptionElements;
 
-
+        
         protected internal Player(Client client) : base(0, Vector3.Zero)
         {
             this.Client = client;
@@ -253,5 +267,6 @@ namespace SlipeServer.Server.Elements
         public event ElementEventHandler<Player, PlayerDiagnosticInfo>? DiagnosticInfoReceived;
         public event ElementEventHandler<Player, PlayerModInfoArgs>? ModInfoReceived;
         public event ElementEventHandler<Player, PlayerNetworkStatusArgs>? NetworkStatusReceived;
+        public event ElementEventHandler<Player, PlayerTeamChangedArgs>? TeamChanged;
     }
 }

@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Moq;
 using MTAServerWrapper.Packets.Outgoing.Connection;
-using SlipeServer.Net;
+using SlipeServer.Net.Wrappers;
 using SlipeServer.Packets;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.PacketHandling.QueueHandlers;
