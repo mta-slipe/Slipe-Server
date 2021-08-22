@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "SlipeServer.Console": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "DockerfileRunArguments": ""
+    }
+  }
+}

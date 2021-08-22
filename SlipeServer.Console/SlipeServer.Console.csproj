@@ -5,6 +5,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <Platforms>AnyCPU;x64;x86</Platforms>
     <Nullable>enable</Nullable>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -20,6 +21,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.14" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SlipeServer.ConfigurationProviders\SlipeServer.ConfigurationProviders.csproj" />
     <ProjectReference Include="..\SlipeServer.Lua\SlipeServer.Lua.csproj" />
     <ProjectReference Include="..\SlipeServer.Server\SlipeServer.Server.csproj" />
@@ -33,5 +38,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  
+  <PropertyGroup>
+    <DockerfileRunArguments>-p 50666:50666/udp -p 50667:50667/udp -p 50789:50789/udp -p 40680:40680</DockerfileRunArguments>
+  </PropertyGroup>
 
 </Project>
