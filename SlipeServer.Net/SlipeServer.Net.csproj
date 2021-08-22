@@ -39,6 +39,29 @@
     </ContentWithTargetPath>
   </ItemGroup>
 
+  <ItemGroup Condition="'$(Platform)' == 'AnyCPU'">
+    <ContentWithTargetPath Include="Binaries\x64\net.dll" Pack="true" PackagePath="\build\x64">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>net.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Binaries\x64\net.so" Pack="true" PackagePath="\build\64">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>net.so</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Binaries\x64\NetModuleWrapper.so" Pack="true" PackagePath="\build\64">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>NetModuleWrapper.so</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Binaries\x64\NetModuleWrapper.dll" Pack="true" PackagePath="\build\64">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>NetModuleWrapper.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Binaries\x64\pthread.dll" Pack="true" PackagePath="\build\64">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>pthread.dll</TargetPath>
+    </ContentWithTargetPath>
+  </ItemGroup>
+
   <ItemGroup Condition="'$(Platform)' == 'x86'">
     <ContentWithTargetPath Include="Binaries\x86\net.dll" Pack="true" PackagePath="\build\x86">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
