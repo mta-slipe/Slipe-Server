@@ -143,6 +143,7 @@ namespace SlipeServer.Console
             var tube = new CollisionTube(new Vector3(0,25,0), 3, 3).AssociateWith(this.server);
             var polygon = new CollisionPolygon(new Vector3(0,-25,0), new Vector2[] { new Vector2(-25, -25), new Vector2(-25, -50), new Vector2(-50, -25)}).AssociateWith(this.server);
             var rectangle = new CollisionRectangle(new Vector2(50, 20), new Vector2(2, 2)).AssociateWith(this.server);
+            var cuboid = new CollisionCuboid(new Vector3(30, 20, 4), new Vector3(2, 2, 2)).AssociateWith(this.server);
 
             circle.RadiusChanged += async (Element sender, ElementChangedEventArgs<float> args) =>
             {
@@ -165,6 +166,13 @@ namespace SlipeServer.Console
                     tube.Radius += .03f;
             };
 
+            tube.HeightChanged += async (Element sender, ElementChangedEventArgs<float> args) =>
+            {
+                await Task.Delay(100);
+                if (tube.Height < 20)
+                    tube.Height += .03f;
+            };
+
             polygon.HeightChanged += async (Element sender, ElementChangedEventArgs<Vector2> args) =>
             {
                 await Task.Delay(100);
@@ -183,17 +191,24 @@ namespace SlipeServer.Console
             {
                 await Task.Delay(100);
                 if (args.NewValue.Y < 10.0f)
-                {
                     rectangle.Dimensions = args.OldValue + new Vector2(0.03f, 0.03f);
-                }
             };
 
-            circle.Radius = 10;
-            sphere.Radius = 10;
-            tube.Radius = 10;
+            cuboid.DimensionsChanged += async (Element sender, ElementChangedEventArgs<Vector3> args) =>
+            {
+                await Task.Delay(100);
+                if (args.NewValue.Y < 10.0f)
+                    cuboid.Dimensions = args.OldValue + new Vector3(0.03f, 0.03f, 0.03f);
+            };
+
+            circle.Radius = 3;
+            sphere.Radius = 3;
+            tube.Radius = 3;
+            tube.Height = 3;
             polygon.Height = new Vector2(10, 15);
             polygon.SetPointPosition(0, new Vector2(-25, -25));
             rectangle.Dimensions = new Vector2(2, 2);
+            cuboid.Dimensions = new Vector3(2, 2, 2);
         }
 
         private void OnPlayerJoin(Player player)

@@ -19,7 +19,17 @@ namespace SlipeServer.Server.Elements.ColShapes
             }
         }
 
-        public float Height { get; set; }
+        private float height;
+        public float Height
+        {
+            get => this.height; set
+            {
+                var args = new ElementChangedEventArgs<float>(this, this.height, value, this.IsSync);
+                this.height = value;
+                HeightChanged?.Invoke(this, args);
+            }
+        }
+
 
         public CollisionTube(Vector3 position, float Radius, float Height)
         {
@@ -40,5 +50,6 @@ namespace SlipeServer.Server.Elements.ColShapes
         }
 
         public event ElementChangedEventHandler<float>? RadiusChanged;
+        public event ElementChangedEventHandler<float>? HeightChanged;
     }
 }

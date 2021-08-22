@@ -22,9 +22,9 @@ namespace SlipeServer.Server.PacketHandling.Factories
             return new SetCollisionShapeRadiusRpcPacket(element.Id, radius);
         }
 
-        public static SetCollisionShapeHeightRpcPacket CreateSetHeight(Element element, Vector2 height)
+        public static SetCollisionPolygonHeightRpcPacket CreateSetHeight(Element element, Vector2 height)
         {
-            return new SetCollisionShapeHeightRpcPacket(element.Id, height);
+            return new SetCollisionPolygonHeightRpcPacket(element.Id, height);
         }
 
         public static SetCollisionPolygonPointPosition CreatePointPositionChanged(Element element, uint index, Vector2 position)

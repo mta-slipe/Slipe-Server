@@ -7,7 +7,7 @@ using System.Text;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element
 {
-    public class SetCollisionShapeHeightRpcPacket : Packet
+    public class SetCollisionPolygonHeightRpcPacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
         public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
@@ -16,7 +16,7 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element
         public uint ElementId { get; set; }
         public Vector2 Height { get; set; }
 
-        public SetCollisionShapeHeightRpcPacket(uint elementId, Vector2 height)
+        public SetCollisionPolygonHeightRpcPacket(uint elementId, Vector2 height)
         {
             this.ElementId = elementId;
             this.Height = height;

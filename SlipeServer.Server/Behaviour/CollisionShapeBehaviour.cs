@@ -44,15 +44,20 @@ namespace SlipeServer.Server.Behaviour
                 else if (collisionShape is CollisionTube collisionTube)
                 {
                     collisionTube.RadiusChanged += HandleRadiusChange;
+                    collisionTube.HeightChanged += HandleHeightChanged;
                 }
                 else if (collisionShape is CollisionPolygon collisionPolygon)
                 {
-                    collisionPolygon.HeightChanged += HandleHeightChanged;
+                    collisionPolygon.HeightChanged += HandlePolygonHeightChanged;
                     collisionPolygon.PointPositionChanged += HandlePointPositionChanged;
                 }
                 else if (collisionShape is CollisionRectangle collisionRectangle)
                 {
-                    collisionRectangle.DimensionsChanged += HandleDimensionChanged;
+                    collisionRectangle.DimensionsChanged += Handle2DDimensionChanged;
+                }
+                else if (collisionShape is CollisionCuboid collisionCuboid)
+                {
+                    collisionCuboid.DimensionsChanged += Handle3DDimensionChanged;
                 }
             } else
             {
@@ -65,19 +70,28 @@ namespace SlipeServer.Server.Behaviour
             this.server.BroadcastPacket(CollisionShapePacketFactory.CreatePointPositionChanged(args.Polygon, args.Index, args.Position));
         }
 
-        private void HandleHeightChanged(Element sender, ElementChangedEventArgs<Vector2> args)
+        private void HandleHeightChanged(Element sender, ElementChangedEventArgs<float> args)
+        {
+            this.server.BroadcastPacket(CollisionShapePacketFactory.CreateSizeChangedChanged(args.Source, new Vector3(args.NewValue, 0, 0)));
+        }
+        private void HandlePolygonHeightChanged(Element sender, ElementChangedEventArgs<Vector2> args)
         {
             this.server.BroadcastPacket(CollisionShapePacketFactory.CreateSetHeight(args.Source, args.NewValue));
         }
-
+        
         private void HandleRadiusChange(Element sender, ElementChangedEventArgs<float> args)
         {
             this.server.BroadcastPacket(CollisionShapePacketFactory.CreateSetRadius(args.Source, args.NewValue));
         }
 
-        private void HandleDimensionChanged(Element sender, ElementChangedEventArgs<Vector2> args)
+        private void Handle2DDimensionChanged(Element sender, ElementChangedEventArgs<Vector2> args)
         {
-            //this.server.BroadcastPacket(CollisionShapePacketFactory.CreateSizeChangedChanged(args.Source, new Vector3(args.NewValue, 0)));
+            this.server.BroadcastPacket(CollisionShapePacketFactory.CreateSizeChangedChanged(args.Source, new Vector3(args.NewValue, 0)));
+        }
+
+        private void Handle3DDimensionChanged(Element sender, ElementChangedEventArgs<Vector3> args)
+        {
+            this.server.BroadcastPacket(CollisionShapePacketFactory.CreateSizeChangedChanged(args.Source, args.NewValue));
         }
 
         private void AddCollisionShape(CollisionShape collisionShape)
