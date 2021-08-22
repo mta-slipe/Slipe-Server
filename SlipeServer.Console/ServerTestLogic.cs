@@ -102,7 +102,7 @@ namespace SlipeServer.Console
                 new Vector3(-6, 3, 4), new Vector3(-3, 3, 4)
             }).AssociateWith(this.server);
             new WorldObject(321, new Vector3(5, 0, 3)).AssociateWith(this.server);
-            this.Blip = new Blip(new Vector3(20, 0, 0), BlipIcon.Bulldozer).AssociateWith(this.server);
+            this.Blip = new Blip(new Vector3(20, 0, 0), BlipIcon.Marker).AssociateWith(this.server);
             this.RadarArea = new RadarArea(new Vector2(0, 0), new Vector2(200, 200), Color.FromArgb(100, Color.Aqua)).AssociateWith(this.server);
 
             new Marker(new Vector3(5, 0, 2), MarkerType.Cylinder)
@@ -274,6 +274,10 @@ namespace SlipeServer.Console
             player.CommandEntered += (o, args) => { if (args.Command == "kill") player.Kill(); };
             player.CommandEntered += (o, args) => { if (args.Command == "spawn") player.Spawn(new Vector3(20, 0, 3), 0, 9, 0, 0); };
             player.CommandEntered += (o, args) => {
+                if (args.Command == "blip")
+                {
+                    this.Blip.Color = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
+                }
                 if (args.Command == "boom")
                     this.explosionService.CreateExplosion(player.Position, ExplosionType.Tiny);
 

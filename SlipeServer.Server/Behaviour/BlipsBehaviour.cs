@@ -1,4 +1,5 @@
-﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
+﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
+using SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.ColShapes;
 using SlipeServer.Server.Elements.Events;
@@ -24,6 +25,7 @@ namespace SlipeServer.Server.Behaviour
             }
 
             server.ElementCreated += OnElementCreate;
+
         }
 
         private void OnElementCreate(Element element)
@@ -38,6 +40,36 @@ namespace SlipeServer.Server.Behaviour
         {
             this.blips.Add(blip);
             blip.Destroyed += (source) => this.blips.Remove(blip);
+            blip.OrderingChanged += HandleOrderingChanged;
+            blip.VisibleDistanceChanged += HandleVisibleDistanceChanged;
+            blip.IconChanged += HandleIconChanged;
+            blip.SizeChanged += HandleSizeChanged;
+            blip.ColorChanged += HandleColorChanged;
+        }
+
+        private void HandleColorChanged(Element sender, ElementChangedEventArgs<Blip, Color> args)
+        {
+            this.server.BroadcastPacket(new SetBlipColorRpcPacket(args.Source.Id, args.NewValue));
+        }
+
+        private void HandleSizeChanged(Element sender, ElementChangedEventArgs<Blip, byte> args)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        private void HandleIconChanged(Element sender, ElementChangedEventArgs<Blip, BlipIcon> args)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        private void HandleVisibleDistanceChanged(Element sender, ElementChangedEventArgs<Blip, ushort> args)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        private void HandleOrderingChanged(Element sender, ElementChangedEventArgs<Blip, short> args)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
