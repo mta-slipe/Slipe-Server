@@ -42,6 +42,7 @@ namespace SlipeServer.Server.ServerOptions
             builder.AddBehaviour<VehicleWarpBehaviour>();
             builder.AddBehaviour<VoiceBehaviour>();
             builder.AddBehaviour<LightSyncBehaviour>();
+            builder.AddBehaviour<TeamBehaviour>();
             builder.AddBehaviour<RadarAreaBehaviour>();
             builder.AddBehaviour<BlipBehaviour>();
         }

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using SlipeServer.Server.Elements.Events;
 
 namespace SlipeServer.Server.Elements
 {
@@ -13,7 +15,7 @@ namespace SlipeServer.Server.Elements
         public string TeamName { get; set; }
         public Color Color { get; set; }
         public bool IsFriendlyFireEnabled { get; set; }
-        public IEnumerable<Player> Players { get; set; }
+        public List<Player> Players { get; set; }
 
         public Team(string name, Color color): base()
         {
