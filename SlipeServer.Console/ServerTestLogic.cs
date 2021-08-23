@@ -43,6 +43,7 @@ namespace SlipeServer.Console
         RadarArea RadarArea { get; set; }
         Blip BlipA { get; set; }
         Blip BlipB { get; set; }
+        private readonly Team slipeDevsTeam;
 
         public ServerTestLogic(
             MtaServer server,
@@ -74,6 +75,7 @@ namespace SlipeServer.Console
             this.fireService = fireService;
             this.textItemService = textItemService;
             this.SetupTestLogic();
+            this.slipeDevsTeam = new Team("Slipe devs", Color.FromArgb(255, 255, 81, 81));
         }
 
         private void SetupTestLogic()
@@ -130,6 +132,9 @@ namespace SlipeServer.Console
             var forklift2 = new Vehicle(530, new Vector3(22, 5, 3)).AssociateWith(this.server);
             var firetruck = new Vehicle(407, new Vector3(30, 5, 3)).AssociateWith(this.server);
             var firetruck2 = new Vehicle(407, new Vector3(35, 5, 3)).AssociateWith(this.server);
+
+            var polygon = new CollisionPolygon(new Vector3(0, -25, 0), new Vector2[] { new Vector2(-25, -25), new Vector2(-25, -50), new Vector2(-50, -25) }).AssociateWith(this.server);
+            var polygon2 = new CollisionPolygon(new Vector3(0, 25, 0), new Vector2[] { new Vector2(25, 25), new Vector2(25, 50), new Vector2(50, 25) }).AssociateWith(this.server);
 
             vehicle.PedEntered += async (sender, eventArgs) =>
             {
@@ -224,6 +229,13 @@ namespace SlipeServer.Console
 
             this.HandlePlayerSubscriptions(player);
             this.HandlePlayerCommands(player);
+
+            player.TeamChanged += (thePlayer, args) =>
+            {
+                this.logger.LogDebug($"{thePlayer.Name} Joined {thePlayer.Team?.TeamName} team!");
+            };
+
+            player.Team = this.slipeDevsTeam;
         }
 
         private void HandlePlayerSubscriptions(Player player)

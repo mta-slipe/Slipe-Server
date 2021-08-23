@@ -18,10 +18,9 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 {
     public class PedSyncQueueHandler : WorkerBasedQueueHandler
     {
-        private readonly ILogger _logger;
-        private readonly IElementRepository _elementRepository;
-        private readonly Configuration _configuration;
-        private readonly MtaServer _server;
+        private readonly ILogger logger;
+        private readonly IElementRepository elementRepository;
+        private readonly Configuration configuration;
 
         public override IEnumerable<PacketId> SupportedPacketIds => this.PacketTypes.Keys;
         protected override Dictionary<PacketId, Type> PacketTypes { get; } = new Dictionary<PacketId, Type>() {
@@ -32,12 +31,11 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             [PacketId.PACKET_ID_PED_STOPSYNC] = typeof(PedStopSyncPacket),
         };
 
-        public PedSyncQueueHandler(ILogger logger, IElementRepository elementRepository, MtaServer server, Configuration configuration, int sleepInterval = 10, int workerCount = 1) : base(sleepInterval, workerCount)
+        public PedSyncQueueHandler(ILogger logger, IElementRepository elementRepository, Configuration configuration, int sleepInterval = 10, int workerCount = 1) : base(sleepInterval, workerCount)
         {
-            this._logger = logger;
-            this._elementRepository = elementRepository;
-            this._configuration = configuration;
-            this._server = server;
+            this.logger = logger;
+            this.elementRepository = elementRepository;
+            this.configuration = configuration;
         }
 
         protected override void HandlePacket(Client client, Packet packet)
@@ -53,7 +51,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             }
             catch (Exception e)
             {
-                this._logger.LogError($"Handling packet ({packet.PacketId}) failed.\n{e.Message}");
+                this.logger.LogError($"Handling packet ({packet.PacketId}) failed.\n{e.Message}");
             }
         }
 
@@ -76,7 +74,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
         private void Update()
         {
-            IEnumerable<Ped> allPeds = this._elementRepository.GetByType<Ped>(ElementType.Ped).Where(ped =>
+            IEnumerable<Ped> allPeds = this.elementRepository.GetByType<Ped>(ElementType.Ped).Where(ped =>
                 !(ped is Player)).ToArray();
 
             foreach (var ped in allPeds)
@@ -87,7 +85,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
         private void UpdatePed(Ped ped)
         {
-            Player syncer = ped.Syncer;
+            Player? syncer = ped.Syncer;
 
             if (!ped.IsSyncable)
             {
@@ -99,19 +97,16 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             {
                 if (syncer != null)
                 {
-                    if (Vector3.Distance(syncer.Position, ped.Position) < this._configuration.SyncIntervals.PedSyncerDistance || (ped.Dimension != syncer.Dimension))
+                    if (Vector3.Distance(syncer.Position, ped.Position) < this.configuration.SyncIntervals.PedSyncerDistance || (ped.Dimension != syncer.Dimension))
                     {
-                        // Stop syncer from syncing it
                         StopSync(ped);
 
                         if (ped != null)
                         {
-                            // Find new sycer for it
                             FindSyncer(ped);
                         }
                     } else
                     {
-                        // Try to find a syncer for it
                         FindSyncer(ped);
                     }
                 }
@@ -122,8 +117,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         {
             if (ped.IsSyncable)
             {
-                // Find a player close enough to him
-                Player player = FindPlayerCloseToPed(ped, _configuration.SyncIntervals.PedSyncerDistance);
+                Player? player = FindPlayerCloseToPed(ped, this.configuration.SyncIntervals.PedSyncerDistance);
                 if (player != null)
                 {
                     StartSync(player, ped);
@@ -135,10 +129,8 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         {
             if (ped.IsSyncable)
             {
-                // Tell the player
                 player.Client.SendPacket(new PedStartSyncPacket(ped.Id));
 
-                // Mark player as the syncing player
                 ped.Syncer = player;
             }
         }
@@ -151,26 +143,21 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             ped.Syncer = null;
         }
 
-        private Player FindPlayerCloseToPed(Ped ped, float maxDistance)
+        private Player? FindPlayerCloseToPed(Ped ped, float maxDistance)
         {
             Player? lastPlayerSyncing = null;
-            Player? player;
 
-            var allPlayers = this._elementRepository.GetByType<Player>(ElementType.Player)
+            var allPlayers = this.elementRepository
+                .GetWithinRange<Player>(ped.Position, maxDistance, ElementType.Player)
+                .Where(x => x.Dimension == ped.Dimension)
                 .ToArray();
 
             foreach (Player thePlayer in allPlayers)
             {
-                if (Vector3.Distance(ped.Position, thePlayer.Position) < this._configuration.SyncIntervals.PedSyncerDistance)
+                if (lastPlayerSyncing != null ||
+                    thePlayer.SyncingPeds.Count < lastPlayerSyncing?.SyncingPeds.Count)
                 {
-                    if (thePlayer.Dimension == ped.Dimension)
-                    {
-                        if (lastPlayerSyncing != null ||
-                            thePlayer.SyncingPeds.Count < lastPlayerSyncing?.SyncingPeds.Count)
-                        {
-                            lastPlayerSyncing = thePlayer;
-                        }
-                    }
+                        lastPlayerSyncing = thePlayer;
                 }
             }
 
@@ -181,13 +168,10 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         {
             foreach (var syncData in packet.Syncs)
             {
-                Ped pedElement = (Ped)this._elementRepository.Get(syncData.SourceElementId);
+                Ped pedElement = (Ped)this.elementRepository.Get(syncData.SourceElementId)!;
 
                 if ((pedElement != null) && !(pedElement is Ped))
                 {
-
-                    // Is the player syncing this ped?
-                    // Verify context matches
                     pedElement.RunAsSync(() =>
                     {
                         if (pedElement.Syncer?.Client == client && pedElement.CanUpdateSync(syncData.TimeSyncContext))
@@ -225,11 +209,9 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                                 pedElement.IsInWater = syncData.IsInWater;
                             }
 
-                            // Send this sync
-                            // syncData.Send = true;
                         }
 
-                        var players = this._elementRepository.GetByType<Player>(ElementType.Player)
+                        var players = this.elementRepository.GetByType<Player>(ElementType.Player)
                             .Where(player => player.Client != client);
 
                         packet.SendTo(players);

@@ -150,8 +150,6 @@ namespace SlipeServer.Server.Elements
         private readonly HashSet<Player> subscribers;
         public IEnumerable<Player> Subscribers => this.subscribers;
 
-        public IEnumerable<CollisionShape> Collisions { get; set; }
-        
         public Element()
         {
             this.children = new ();

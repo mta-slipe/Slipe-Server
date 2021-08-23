@@ -1,4 +1,4 @@
-﻿using SlipeServer.Net.Enums;
+﻿using SlipeServer.Net.Wrappers.Enums;
 using SlipeServer.Server.Enums;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -29,7 +29,7 @@ namespace SlipeServer.Server
 
         public int HttpConnectionsPerClient { get; set; } = 1;
 
-        public string ResourceDirectory { get; set; } = "./resources";
+        public string ResourceDirectory { get; set; } = "./Resources";
 
         public float ExplosionSyncDistance { get; set; } = 400;
 
