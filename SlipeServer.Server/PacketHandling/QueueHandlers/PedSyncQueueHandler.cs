@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using Microsoft.Extensions.Logging;
 using SlipeServer.Packets;
 using SlipeServer.Packets.Definitions.Lua;
@@ -21,6 +22,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         private readonly ILogger logger;
         private readonly IElementRepository elementRepository;
         private readonly Configuration configuration;
+        private readonly Timer pulseTimer;
 
         public override IEnumerable<PacketId> SupportedPacketIds => this.PacketTypes.Keys;
         protected override Dictionary<PacketId, Type> PacketTypes { get; } = new Dictionary<PacketId, Type>() {
@@ -36,6 +38,12 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             this.logger = logger;
             this.elementRepository = elementRepository;
             this.configuration = configuration;
+            this.pulseTimer = new Timer() {
+                AutoReset = true,
+                Enabled = true,
+                Interval = 500
+            };
+            this.pulseTimer.Elapsed += Update;
         }
 
         protected override void HandlePacket(Client client, Packet packet)
@@ -72,7 +80,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             }
         }
 
-        private void Update()
+        private void Update(object sender, ElapsedEventArgs args)
         {
             IEnumerable<Ped> allPeds = this.elementRepository.GetByType<Ped>(ElementType.Ped).Where(ped =>
                 !(ped is Player)).ToArray();
@@ -132,6 +140,8 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                 player.Client.SendPacket(new PedStartSyncPacket(ped.Id));
 
                 ped.Syncer = player;
+                
+                player.SyncingPeds.Add(ped);
             }
         }
 
@@ -139,6 +149,9 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
         {
             var syncer = ped.Syncer;
             syncer?.Client.SendPacket(new PedStopSyncPacket(ped.Id));
+
+            if (syncer != null)
+                syncer.SyncingPeds.Remove(ped);
 
             ped.Syncer = null;
         }
