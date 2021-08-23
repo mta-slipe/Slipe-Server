@@ -1,6 +1,10 @@
-﻿using SlipeServer.Lua;
+﻿using Microsoft.Extensions.Logging;
+using SlipeServer.Console.LuaDefinitions;
+using SlipeServer.Lua;
 using SlipeServer.Scripting;
+using SlipeServer.Server.Services;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace SlipeServer.Console
@@ -17,7 +21,7 @@ namespace SlipeServer.Console
             {
                 using(StreamReader reader = new StreamReader(testLua))
                 {
-                    luaService.LoadScript("test.lua", reader.ReadToEnd());
+                    luaService.LoadScript("test.lua", reader.ReadToEnd(), new List<Type> { typeof(CustomMathDefinition) });
                 }
             }
         }

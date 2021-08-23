@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SlipeServer.Lua
@@ -93,16 +94,32 @@ namespace SlipeServer.Lua
             }
         }
 
-        public void LoadScript(string identifier, string code)
+        private void DoString(Script script, string code, string friendlyName)
+        {
+            try
+            {
+                script.DoString(code, codeFriendlyName: friendlyName);
+            }
+            catch(ScriptRuntimeException ex)
+            {
+                Console.WriteLine("Failed to load script\n\t{0}", ex.DecoratedMessage);
+            }
+        }
+
+        public void LoadScript(string identifier, string code, IEnumerable<Type> customDefinitions = null)
         {
             var script = new Script(CoreModules.Preset_SoftSandbox);
             script.Options.DebugPrint = (value) => this.logger.LogInformation(value);
             this.scripts[identifier] = script;
 
+            if(customDefinitions != null)
+                foreach (var type in customDefinitions)
+                    LoadDefinitions(this.server.Instantiate(type));
+
             LoadGlobals(script);
             LoadDefinitions(script);
 
-            script.DoString(code);
+            DoString(script, code, identifier);
         }
 
         public void LoadScript(string identifier, string[] codes)
@@ -119,7 +136,7 @@ namespace SlipeServer.Lua
             LoadDefinitions(script);
 
             foreach (var code in codes)
-                script.DoString(code);
+                DoString(script, code, identifier);
         }
 
         public async Task LoadScriptFromPath(string path) => LoadScript(path, await File.ReadAllTextAsync(path));
@@ -137,16 +154,19 @@ namespace SlipeServer.Lua
 
         private void LoadDefinitions(Script script)
         {
+            StringBuilder stringBuilder = new StringBuilder();
             foreach (var definition in this.methods)
             {
                 script.Globals["real"+ definition.Key] = definition.Value;
-                script.DoString($"function {definition.Key}(...) return table.unpack(real{definition.Key}({{...}})) end");
+                stringBuilder.AppendLine($"function {definition.Key}(...) return table.unpack(real{definition.Key}({{...}})) end");
             }
+            DoString(script, stringBuilder.ToString(), "SlipeDefinitions");
         }
 
         private void LoadGlobals(Script script)
         {
             script.Globals["root"] = this.translator.ToDynValues(this.root).First();
+            script.Globals["isSlipeServer"] = this.translator.ToDynValues(true).First();
         }
 
         public delegate DynValue[] LuaMethod(params DynValue[] values);
