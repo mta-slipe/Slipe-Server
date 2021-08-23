@@ -40,14 +40,12 @@ namespace SlipeServer.Server.Elements
         public Vector3 CameraDirection { get; set; }
         public float CameraRotation { get; set; }
 
-        public bool IsInWater { get; set; }
         public bool IsOnGround { get; set; }
         public bool IsDucked { get; set; }
         public bool WearsGoggles { get; set; }
         public bool HasContact { get; set; }
         public bool IsChoking { get; set; }
         public bool AkimboTargetUp { get; set; }
-        public bool IsOnFire { get; set; }
         public bool IsSyncingVelocity { get; set; }
         public bool IsStealthAiming { get; set; }
         public bool IsVoiceMuted { get; set; }
