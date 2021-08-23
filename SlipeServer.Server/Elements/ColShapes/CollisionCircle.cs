@@ -15,7 +15,9 @@ namespace SlipeServer.Server.Elements.ColShapes
         }
 
         private float radius;
-        public float Radius { get => this.radius; set
+        public float Radius {
+            get => this.radius;
+            set
             {
                 var args = new ElementChangedEventArgs<float>(this, this.radius, value, this.IsSync);
                 this.radius = value;
