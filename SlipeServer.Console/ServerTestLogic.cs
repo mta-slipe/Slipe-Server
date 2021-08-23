@@ -43,6 +43,7 @@ namespace SlipeServer.Console
         RadarArea RadarArea { get; set; }
         Blip BlipA { get; set; }
         Blip BlipB { get; set; }
+        WorldObject WorldObject { get; set; }
         private readonly Team slipeDevsTeam;
 
         public ServerTestLogic(
@@ -119,8 +120,18 @@ namespace SlipeServer.Console
             PedModel randomPedModel = (PedModel)values.GetValue(new Random().Next(values.Length))!;
             new Ped(randomPedModel, new Vector3(10, 0, 3)).AssociateWith(this.server);
 
-            new WorldObject(ObjectModel.Drugred, new Vector3(15, 0, 3)).AssociateWith(this.server);
-            
+            WorldObject = new WorldObject(ObjectModel.Drugred, new Vector3(15, 0, 3)).AssociateWith(this.server);
+            Task.Run(async () =>
+            {
+                while (true)
+                {
+                    await Task.Delay(1000);
+                    WorldObject.Model = (ushort)ObjectModel.Drugblue;
+                    await Task.Delay(1000);
+                    WorldObject.Model = (ushort)ObjectModel.Drugred;
+                }
+            });
+
             new WeaponObject(355, new Vector3(10, 10, 5))
             {
                 TargetType = WeaponTargetType.Fixed,
