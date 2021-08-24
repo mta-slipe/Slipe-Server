@@ -25,6 +25,8 @@ print("getColorFromString: ", getColorFromString("#ff0000"));
 print("md5 test: ", md5("qwerty") == "D8578EDF8458CE06FBC5BB76A58C5CA4");
 print("sha256 test: ", sha256("qwerty") == "65E84BE33532FB784C48129675F9EFF3A682B27168C0EA744B2CF58EE02337C5");
 
+createExplosion(-10, 0,0, 4);
+
 local radarArea = createRadarArea(-50, -50, 50, 50, 0, 255, 0, 255);
 local r,g,b,a = getRadarAreaColor(radarArea);
 local sx, sy = getRadarAreaSize(radarArea);
