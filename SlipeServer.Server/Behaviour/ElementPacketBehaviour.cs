@@ -38,14 +38,12 @@ namespace SlipeServer.Server.Behaviour
 
         private void RelayCollisionEnabledhanged(Element sender, ElementChangedEventArgs<bool> args)
         {
-            if (!args.IsSync)
-                this.server.BroadcastPacket(ElementPacketFactory.CreateSetCallPropagationEnabledPacket(args.Source, args.NewValue));
+            this.server.BroadcastPacket(ElementPacketFactory.CreateSetCallPropagationEnabledPacket(args.Source, args.NewValue));
         }
         
         private void RelayCallPropagationChanged(Element sender, ElementChangedEventArgs<bool> args)
         {
-            if (!args.IsSync)
-                this.server.BroadcastPacket(ElementPacketFactory.CreateSetCollisionsEnabledPacket(args.Source, args.NewValue));
+            this.server.BroadcastPacket(ElementPacketFactory.CreateSetCollisionsEnabledPacket(args.Source, args.NewValue));
         }
 
         private void RelayElementDestroy(Element element)
