@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using MoonSharp.Interpreter;
 using SlipeServer.Console.LuaDefinitions;
 using SlipeServer.Lua;
 using SlipeServer.Scripting;
@@ -23,10 +24,14 @@ namespace SlipeServer.Console
             {
                 using(StreamReader reader = new StreamReader(testLua))
                 {
-                    luaService.LoadScript("test.lua", reader.ReadToEnd(), (error) =>
+                    try
                     {
-                        System.Console.WriteLine("Failed to load script\n\t{0}", error);
-                    });
+                        luaService.LoadScript("test.lua", reader.ReadToEnd());
+                    }
+                    catch(InterpreterException ex)
+                    {
+                        System.Console.WriteLine("Failed to load script\n\t{0}", ex.DecoratedMessage);
+                    }
                 }
             }
         }

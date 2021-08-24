@@ -94,19 +94,7 @@ namespace SlipeServer.Lua
             }
         }
 
-        private void DoString(Script script, string code, string friendlyName, Action<string>? onError = null)
-        {
-            try
-            {
-                script.DoString(code, codeFriendlyName: friendlyName);
-            }
-            catch (InterpreterException ex)
-            {
-                onError?.Invoke(ex.DecoratedMessage);
-            }
-        }
-
-        public void LoadScript(string identifier, string code, Action<string>? onError = null)
+        public void LoadScript(string identifier, string code)
         {
             var script = new Script(CoreModules.Preset_SoftSandbox);
             script.Options.DebugPrint = (value) => this.logger.LogInformation(value);
@@ -115,10 +103,10 @@ namespace SlipeServer.Lua
             LoadGlobals(script);
             LoadDefinitions(script);
 
-            DoString(script, code, identifier, onError);
+            script.DoString(code, codeFriendlyName: identifier);
         }
 
-        public void LoadScript(string identifier, string[] codes, Action<string>? onError = null)
+        public void LoadScript(string identifier, string[] codes)
         {
             var script = new Script(CoreModules.Preset_SoftSandbox);
             script.Options.DebugPrint = (value) =>
@@ -132,7 +120,7 @@ namespace SlipeServer.Lua
             LoadDefinitions(script);
 
             foreach (var code in codes)
-                DoString(script, code, identifier, onError);
+                script.DoString(code, codeFriendlyName: identifier);
         }
 
         public async Task LoadScriptFromPath(string path) => LoadScript(path, await File.ReadAllTextAsync(path));
@@ -156,7 +144,7 @@ namespace SlipeServer.Lua
                 script.Globals["real"+ definition.Key] = definition.Value;
                 stringBuilder.AppendLine($"function {definition.Key}(...) return table.unpack(real{definition.Key}({{...}})) end");
             }
-            DoString(script, stringBuilder.ToString(), "SlipeDefinitions");
+            script.DoString(stringBuilder.ToString(), codeFriendlyName: "SlipeDefinitions");
         }
 
         private void LoadGlobals(Script script)
