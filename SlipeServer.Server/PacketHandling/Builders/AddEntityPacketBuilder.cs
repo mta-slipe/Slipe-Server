@@ -89,7 +89,7 @@ namespace SlipeServer.Server.PacketHandling.Builders
                 case CollisionPolygon collisionPolygon:
                     this.packet.AddColPolygon(collisionPolygon.Id, (byte)collisionPolygon.ElementType, collisionPolygon.Parent?.Id ?? 0, collisionPolygon.Interior, collisionPolygon.Dimension,
                         null, collisionPolygon.AreCollisionsEnabled, collisionPolygon.IsCallPropagationEnabled, new CustomData(), collisionPolygon.Name, collisionPolygon.TimeContext,
-                        (byte)ColShapeType.Polygon, collisionPolygon.Position, collisionPolygon.IsEnabled, collisionPolygon.AutoCallEvent, collisionPolygon.Vertices, collisionPolygon.Height
+                        (byte)ColShapeType.Polygon, collisionPolygon.Position, collisionPolygon.IsEnabled, collisionPolygon.AutoCallEvent, collisionPolygon.GetVertices().ToArray(), collisionPolygon.Height
                     );
                     break;
 
