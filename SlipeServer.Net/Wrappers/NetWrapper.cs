@@ -1,16 +1,15 @@
-using SlipeServer.Net;
+using SlipeServer.Net.Wrappers.Enums;
 using SlipeServer.Packets;
 using SlipeServer.Packets.Enums;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
-using SlipeServer.Net.Enums;
+using System.Runtime.InteropServices;
+using System.Text;
 
-namespace SlipeServer.Net
+namespace SlipeServer.Net.Wrappers
 {
     public class NetWrapper : IDisposable, INetWrapper
     {
@@ -40,8 +39,7 @@ namespace SlipeServer.Net
         private static extern bool SetSocketVersion(ushort id, uint binaryAddress, ushort version);
 
         [DllImport(wrapperDllpath, EntryPoint = "getClientSerialAndVersion", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-        [return: MarshalAs(UnmanagedType.BStr)]
-        private static extern string GetClientSerialAndVersion(ushort id, uint binaryAddress, out ushort serialSize, out ushort extraSize, out ushort versionSize);
+        private static extern void GetClientSerialAndVersion(ushort id, uint binaryAddress, StringBuilder serial, StringBuilder extra, StringBuilder version);
 
         [DllImport(wrapperDllpath, EntryPoint = "setChecks")]
         private static extern void SetChecks(ushort id, string szDisableComboACMap, string szDisableACMap, string szEnableSDMap, int iEnableClientChecks, bool bHideAC, string szImgMods);
@@ -62,7 +60,7 @@ namespace SlipeServer.Net
             Directory.SetCurrentDirectory(directory);
 
             this.packetInterceptorDelegate = PacketInterceptor;
-            int result = InitNetWrapper(netDllPath, idFile, host, port, 1024, "C# server", this.packetInterceptorDelegate);
+            int result = InitNetWrapper(Path.Join(directory, netDllPath), idFile, host, port, 1024, "C# server", this.packetInterceptorDelegate);
 
             if (result < 0)
             {
@@ -110,18 +108,19 @@ namespace SlipeServer.Net
 
         public Tuple<string, string, string> GetClientSerialExtraAndVersion(uint binaryAddress)
         {
-            string result = GetClientSerialAndVersion(this.id, binaryAddress, out ushort serialSize, out ushort extraSize, out _).ToString();
+            var serial = new StringBuilder(48);
+            var extra = new StringBuilder(48);
+            var version = new StringBuilder(48);
+            GetClientSerialAndVersion(this.id, binaryAddress, serial, extra, version);
 
-            string serial = result.Substring(0, serialSize);
-            string extra = result.Substring(serialSize, extraSize);
-            string version = result.Substring(serialSize + extraSize);
-            return new Tuple<string, string, string>(serial, extra, version);
+            return new Tuple<string, string, string>(serial.ToString(), extra.ToString(), version.ToString());
         }
 
         public void ResendModPackets(uint binaryAddress)
         {
             ResendModPackets(this.id, binaryAddress);
         }
+
         public void ResendPlayerACInfo(uint binaryAddress)
         {
             ResendPlayerACInfo(this.id, binaryAddress);
@@ -133,10 +132,10 @@ namespace SlipeServer.Net
         }
 
         public void SetAntiCheatConfig(
-            IEnumerable<AntiCheat> disabledAntiCheats, 
-            bool hideAntiCheatFromClient, 
-            AllowGta3ImgMods allowGta3ImgMods, 
-            IEnumerable<SpecialDetection> enabledSpecialDetections, 
+            IEnumerable<AntiCheat> disabledAntiCheats,
+            bool hideAntiCheatFromClient,
+            AllowGta3ImgMods allowGta3ImgMods,
+            IEnumerable<SpecialDetection> enabledSpecialDetections,
             DataFile disallowedDataFiles
         )
         {
@@ -163,7 +162,7 @@ namespace SlipeServer.Net
             this.PacketReceived?.Invoke(this, binaryAddress, parsedPacketId, data, hasPing ? ping : (uint?)null);
         }
 
-        public event Action<NetWrapper, uint, PacketId, byte[], uint?>? PacketReceived;
+        public event Action<INetWrapper, uint, PacketId, byte[], uint?>? PacketReceived;
 
     }
 }

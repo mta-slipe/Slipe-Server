@@ -1,4 +1,4 @@
-﻿namespace SlipeServer.Net
+﻿namespace SlipeServer.Net.Wrappers
 {
     public enum NetWrapperErrorCode
     {

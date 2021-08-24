@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Server.AllSeeingEye;
 using SlipeServer.Server.Behaviour;
 using SlipeServer.Server.PacketHandling.QueueHandlers;
+using System;
 using System.IO;
 
 namespace SlipeServer.Server.ServerOptions
@@ -43,6 +44,7 @@ namespace SlipeServer.Server.ServerOptions
             builder.AddBehaviour<VehicleBehaviour>();
             builder.AddBehaviour<VoiceBehaviour>();
             builder.AddBehaviour<LightSyncBehaviour>();
+            builder.AddBehaviour<TeamBehaviour>();
             builder.AddBehaviour<RadarAreaBehaviour>();
             builder.AddBehaviour<BlipBehaviour>();
         }
@@ -51,9 +53,10 @@ namespace SlipeServer.Server.ServerOptions
         {
             builder.AddDefaultQueueHandlers();
             builder.AddDefaultBehaviours();
+
             builder.AddNetWrapper(
                 Directory.GetCurrentDirectory(), 
-                "net.dll", 
+                "net", 
                 builder.Configuration.Host, 
                 builder.Configuration.Port, 
                 builder.Configuration.AntiCheat);
