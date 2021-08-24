@@ -27,3 +27,4 @@
 	print("sha256 test: ", sha256("qwerty") == "65E84BE33532FB784C48129675F9EFF3A682B27168C0EA744B2CF58EE02337C5");
 	print("custom definitions:",add(2,2), substract(2,2))
 end
+createExplosion(-10, 0,0, 4);
