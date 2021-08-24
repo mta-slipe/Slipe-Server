@@ -44,6 +44,9 @@ namespace SlipeServer.Console
         RadarArea RadarArea { get; set; }
         Blip BlipA { get; set; }
         Blip BlipB { get; set; }
+        WorldObject WorldObject { get; set; }
+        Vehicle Vehicle { get; set; }
+        Ped Ped { get; set; }
         private readonly Team slipeDevsTeam;
 
         public ServerTestLogic(
@@ -118,10 +121,10 @@ namespace SlipeServer.Console
 
             var values = Enum.GetValues(typeof(PedModel));
             PedModel randomPedModel = (PedModel)values.GetValue(new Random().Next(values.Length))!;
-            new Ped(randomPedModel, new Vector3(10, 0, 3)).AssociateWith(this.server);
+            Ped = new Ped(randomPedModel, new Vector3(10, 0, 3)).AssociateWith(this.server);
 
-            new WorldObject(ObjectModel.Drugred, new Vector3(15, 0, 3)).AssociateWith(this.server);
-            
+            WorldObject = new WorldObject(ObjectModel.Drugred, new Vector3(15, 0, 3)).AssociateWith(this.server);
+
             new WeaponObject(355, new Vector3(10, 10, 5))
             {
                 TargetType = WeaponTargetType.Fixed,
@@ -129,7 +132,7 @@ namespace SlipeServer.Console
             }.AssociateWith(this.server);
             var vehicle = new Vehicle(602, new Vector3(-10, 5, 3)).AssociateWith(this.server);
             var aircraft = new Vehicle(520, new Vector3(10, 5, 3)).AssociateWith(this.server);
-            var forklift = new Vehicle(530, new Vector3(20, 5, 3)).AssociateWith(this.server);
+            Vehicle = new Vehicle(530, new Vector3(20, 5, 3)).AssociateWith(this.server);
             var forklift2 = new Vehicle(530, new Vector3(22, 5, 3)).AssociateWith(this.server);
             var firetruck = new Vehicle(407, new Vector3(30, 5, 3)).AssociateWith(this.server);
             var firetruck2 = new Vehicle(407, new Vector3(35, 5, 3)).AssociateWith(this.server);
@@ -152,6 +155,22 @@ namespace SlipeServer.Console
             var polygon = new CollisionPolygon(new Vector3(0,-25,0), new Vector2[] { new Vector2(-25, -25), new Vector2(-25, -50), new Vector2(-50, -25)}).AssociateWith(this.server);
             var rectangle = new CollisionRectangle(new Vector2(50, 20), new Vector2(2, 2)).AssociateWith(this.server);
             var cuboid = new CollisionCuboid(new Vector3(30, 20, 4), new Vector3(2, 2, 2)).AssociateWith(this.server);
+            Task.Run(async () =>
+            {
+                while (true)
+                {
+                    await Task.Delay(1000);
+                    WorldObject.Model = (ushort)ObjectModel.Drugblue;
+                    Vehicle.Model = (ushort)VehicleModel.Bobcat;
+                    Ped.Model = (ushort)random.Next(20, 25);
+                    await Task.Delay(1000);
+                    WorldObject.Model = (ushort)ObjectModel.Drugred;
+                    Vehicle.Model = (ushort)VehicleModel.BMX;
+                    Ped.Model = (ushort)random.Next(20, 25);
+                }
+            });
+
+            var shape = new CollisionCircle(new Vector2(0,25), 3).AssociateWith(this.server);
 
             circle.RadiusChanged += async (Element sender, ElementChangedEventArgs<float> args) =>
             {
@@ -456,6 +475,21 @@ namespace SlipeServer.Console
                             this.server.SetMaxPlayers(slots);
                             this.logger.LogInformation($"Slots has been changed to: {slots}");
                         }
+                    }
+                }
+
+                if (args.Command == "changeskin")
+                {
+                    if (args.Arguments.Length > 0)
+                    {
+                        if (ushort.TryParse(args.Arguments[0], out ushort model))
+                        {
+                            player.Model = model;
+                        }
+                    }
+                    else
+                    {
+                        player.Model = (ushort)random.Next(20, 25);
                     }
                 }
             };
