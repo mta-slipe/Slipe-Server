@@ -7,24 +7,19 @@ using System.Text;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.CollisionShape
 {
-    public class SetCollisionShapeRadiusRpcPacket : Packet
+    public class SetCollisionPolygonHeightRpcPacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
         public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
         public override PacketPriority Priority => PacketPriority.High;
 
         public uint ElementId { get; set; }
-        public float Radius { get; set; }
+        public Vector2 Height { get; set; }
 
-        public SetCollisionShapeRadiusRpcPacket()
-        {
-
-        }
-
-        public SetCollisionShapeRadiusRpcPacket(uint elementId, float radius)
+        public SetCollisionPolygonHeightRpcPacket(uint elementId, Vector2 height)
         {
             this.ElementId = elementId;
-            this.Radius = radius;
+            this.Height = height;
         }
 
         public override void Read(byte[] bytes)
@@ -36,10 +31,10 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.CollisionShape
         {
             var builder = new PacketBuilder();
 
-            builder.Write((byte)ElementRpcFunction.SET_COLSHAPE_RADIUS);
+            builder.Write((byte)ElementRpcFunction.SET_COLPOLYGON_HEIGHT);
             builder.WriteElementId(this.ElementId);
 
-            builder.Write(this.Radius);
+            builder.Write(this.Height);
 
             return builder.Build();
         }

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SlipeServer.Lua
@@ -102,7 +103,7 @@ namespace SlipeServer.Lua
             LoadGlobals(script);
             LoadDefinitions(script);
 
-            script.DoString(code);
+            script.DoString(code, codeFriendlyName: identifier);
         }
 
         public void LoadScript(string identifier, string[] codes)
@@ -119,7 +120,7 @@ namespace SlipeServer.Lua
             LoadDefinitions(script);
 
             foreach (var code in codes)
-                script.DoString(code);
+                script.DoString(code, codeFriendlyName: identifier);
         }
 
         public async Task LoadScriptFromPath(string path) => LoadScript(path, await File.ReadAllTextAsync(path));
@@ -137,16 +138,19 @@ namespace SlipeServer.Lua
 
         private void LoadDefinitions(Script script)
         {
+            StringBuilder stringBuilder = new StringBuilder();
             foreach (var definition in this.methods)
             {
                 script.Globals["real"+ definition.Key] = definition.Value;
-                script.DoString($"function {definition.Key}(...) return table.unpack(real{definition.Key}({{...}})) end");
+                stringBuilder.AppendLine($"function {definition.Key}(...) return table.unpack(real{definition.Key}({{...}})) end");
             }
+            script.DoString(stringBuilder.ToString(), codeFriendlyName: "SlipeDefinitions");
         }
 
         private void LoadGlobals(Script script)
         {
             script.Globals["root"] = this.translator.ToDynValues(this.root).First();
+            script.Globals["isSlipeServer"] = this.translator.ToDynValues(true).First();
         }
 
         public delegate DynValue[] LuaMethod(params DynValue[] values);

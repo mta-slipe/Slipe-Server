@@ -75,6 +75,21 @@ namespace SlipeServer.Packets.Definitions.Lua
             this.IsNil = value == null;
         }
 
+        public LuaValue(IEnumerable<LuaValue>? value)
+        {
+            this.LuaType = LuaType.Table;
+
+            if (value != null)
+            {
+                this.TableValue = new Dictionary<LuaValue, LuaValue>();
+                int i = 1;
+                foreach (var arrayValue in value)
+                    this.TableValue[i++] = arrayValue;
+            }
+
+            this.IsNil = value == null;
+        }
+
         public override string ToString()
         {
             if (this.TableValue != null)
@@ -95,5 +110,7 @@ namespace SlipeServer.Packets.Definitions.Lua
         public static implicit operator LuaValue(int value) => new(value);
         public static implicit operator LuaValue(float value) => new(value);
         public static implicit operator LuaValue(double value) => new(value);
+        public static implicit operator LuaValue(Dictionary<LuaValue, LuaValue> value) => new(value);
+        public static implicit operator LuaValue(LuaValue[] value) => new(value);
     }
 }
