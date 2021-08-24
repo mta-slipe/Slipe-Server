@@ -23,13 +23,7 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element
 
         }
 
-        public SetElementModelRpcPacket(uint elementId, ushort model)
-        {
-            this.ElementId = elementId;
-            this.Model = model;
-        }
-
-        public SetElementModelRpcPacket(uint elementId, ushort model, byte variant1, byte variant2)
+        public SetElementModelRpcPacket(uint elementId, ushort model, byte? variant1, byte? variant2)
         {
             this.ElementId = elementId;
             this.Model = model;
