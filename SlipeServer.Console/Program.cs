@@ -58,13 +58,14 @@ namespace SlipeServer.Console
             {
                 IsVoiceEnabled = true
             };
+
             this.server = new MtaServer(
                 (builder) =>
                 {
                     builder.AddDefaults();
 
                     #if DEBUG
-                        builder.AddNetWrapper(dllPath: "net32_d", port: (ushort)(this.configuration.Port + 1));
+                        builder.AddNetWrapper(dllPath: "net_d", port: (ushort)(this.configuration.Port + 1));
                     #endif
 
                     builder.AddLogic<ServerTestLogic>();
