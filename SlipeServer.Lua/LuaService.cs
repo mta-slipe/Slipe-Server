@@ -94,35 +94,31 @@ namespace SlipeServer.Lua
             }
         }
 
-        private void DoString(Script script, string code, string friendlyName)
+        private void DoString(Script script, string code, string friendlyName, Action<string>? onError = null)
         {
             try
             {
                 script.DoString(code, codeFriendlyName: friendlyName);
             }
-            catch(ScriptRuntimeException ex)
+            catch (InterpreterException ex)
             {
-                Console.WriteLine("Failed to load script\n\t{0}", ex.DecoratedMessage);
+                onError?.Invoke(ex.DecoratedMessage);
             }
         }
 
-        public void LoadScript(string identifier, string code, IEnumerable<Type> customDefinitions = null)
+        public void LoadScript(string identifier, string code, Action<string>? onError = null)
         {
             var script = new Script(CoreModules.Preset_SoftSandbox);
             script.Options.DebugPrint = (value) => this.logger.LogInformation(value);
             this.scripts[identifier] = script;
 
-            if(customDefinitions != null)
-                foreach (var type in customDefinitions)
-                    LoadDefinitions(this.server.Instantiate(type));
-
             LoadGlobals(script);
             LoadDefinitions(script);
 
-            DoString(script, code, identifier);
+            DoString(script, code, identifier, onError);
         }
 
-        public void LoadScript(string identifier, string[] codes)
+        public void LoadScript(string identifier, string[] codes, Action<string>? onError = null)
         {
             var script = new Script(CoreModules.Preset_SoftSandbox);
             script.Options.DebugPrint = (value) =>
@@ -136,7 +132,7 @@ namespace SlipeServer.Lua
             LoadDefinitions(script);
 
             foreach (var code in codes)
-                DoString(script, code, identifier);
+                DoString(script, code, identifier, onError);
         }
 
         public async Task LoadScriptFromPath(string path) => LoadScript(path, await File.ReadAllTextAsync(path));
