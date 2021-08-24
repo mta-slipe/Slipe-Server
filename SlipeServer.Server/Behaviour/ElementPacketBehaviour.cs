@@ -31,7 +31,21 @@ namespace SlipeServer.Server.Behaviour
             element.AlphaChanged += RelayAlphaChange;
             element.DimensionChanged += RelayDimensionChange;
             element.InteriorChanged += RelayInteriorChange;
+            element.CallPropagationChanged += RelayCallPropagationChanged;
+            element.CollisionEnabledhanged += RelayCollisionEnabledhanged;
             element.Destroyed += RelayElementDestroy;
+        }
+
+        private void RelayCollisionEnabledhanged(Element sender, ElementChangedEventArgs<bool> args)
+        {
+            if (!args.IsSync)
+                this.server.BroadcastPacket(ElementPacketFactory.CreateSetCallPropagationEnabledPacket(args.Source, args.NewValue));
+        }
+        
+        private void RelayCallPropagationChanged(Element sender, ElementChangedEventArgs<bool> args)
+        {
+            if (!args.IsSync)
+                this.server.BroadcastPacket(ElementPacketFactory.CreateSetCollisionsEnabledPacket(args.Source, args.NewValue));
         }
 
         private void RelayElementDestroy(Element element)
