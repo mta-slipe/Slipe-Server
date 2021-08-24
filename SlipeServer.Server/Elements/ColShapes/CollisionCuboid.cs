@@ -11,7 +11,8 @@ namespace SlipeServer.Server.Elements.ColShapes
         private Vector3 dimensions;
         public Vector3 Dimensions
         {
-            get => this.dimensions; set
+            get => this.dimensions;
+            set
             {
                 var args = new ElementChangedEventArgs<Vector3>(this, this.dimensions, value, this.IsSync);
                 this.dimensions = value;

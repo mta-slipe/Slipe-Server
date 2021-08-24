@@ -15,21 +15,18 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.CollisionShape
 
         public uint ElementId { get; set; }
         public Vector2 Position { get; set; }
-        public uint Index { get; set; }
-        public bool HasIndex { get; set; }
+        public uint? Index { get; set; }
 
         public AddCollisionPolygonPointRpcPacket(uint elementId, Vector2 position)
         {
             this.ElementId = elementId;
             this.Position = position;
-            this.HasIndex = false;
         }
         public AddCollisionPolygonPointRpcPacket(uint elementId, Vector2 position, uint index)
         {
             this.ElementId = elementId;
             this.Position = position;
             this.Index = index;
-            this.HasIndex = true;
         }
 
         public override void Read(byte[] bytes)
@@ -44,7 +41,7 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.CollisionShape
             builder.Write((byte)ElementRpcFunction.ADD_COLPOLYGON_POINT);
             builder.WriteElementId(this.ElementId);
             builder.WriteVector2(this.Position);
-            if(this.HasIndex)
+            if(this.Index.HasValue)
                 builder.Write(this.Index);
 
             return builder.Build();

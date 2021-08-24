@@ -23,7 +23,8 @@ namespace SlipeServer.Server.Elements.ColShapes
         private float height;
         public float Height
         {
-            get => this.height; set
+            get => this.height;
+            set
             {
                 var args = new ElementChangedEventArgs<float>(this, this.height, value, this.IsSync);
                 this.height = value;

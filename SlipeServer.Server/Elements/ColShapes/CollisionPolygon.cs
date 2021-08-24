@@ -15,7 +15,8 @@ namespace SlipeServer.Server.Elements.ColShapes
         private Vector2 height;
         public Vector2 Height
         {
-            get => this.height; set
+            get => this.height;
+            set
             {
                 if(value.X > value.Y)
                     value = new Vector2(value.Y, value.X);
