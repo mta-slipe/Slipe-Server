@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SlipeServer.Server.Elements.Events;
+using System;
 using System.Drawing;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -7,12 +8,23 @@ namespace SlipeServer.Server.Elements.ColShapes
 {
     public class CollisionCuboid : CollisionShape
     {
-        public Vector3 Dimensions { get; set; }
+        private Vector3 dimensions;
+        public Vector3 Dimensions
+        {
+            get => this.dimensions;
+            set
+            {
+                var args = new ElementChangedEventArgs<Vector3>(this, this.dimensions, value, this.IsSync);
+                this.dimensions = value;
+                DimensionsChanged?.Invoke(this, args);
+            }
+        }
+
 
         public CollisionCuboid(Vector3 position, Vector3 dimensions)
         {
             this.Position = position;
-            this.Dimensions = dimensions;
+            this.dimensions = dimensions;
         }
 
         public override bool IsWithin(Vector3 position)
@@ -29,5 +41,7 @@ namespace SlipeServer.Server.Elements.ColShapes
         {
             return server.AssociateElement(this);
         }
+
+        public event ElementChangedEventHandler<Vector3>? DimensionsChanged;
     }
 }

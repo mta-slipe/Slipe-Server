@@ -1,6 +1,11 @@
-﻿using SlipeServer.Lua;
+﻿using Microsoft.Extensions.Logging;
+using MoonSharp.Interpreter;
+using SlipeServer.Console.LuaDefinitions;
+using SlipeServer.Lua;
 using SlipeServer.Scripting;
+using SlipeServer.Server.Services;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace SlipeServer.Console
@@ -13,11 +18,20 @@ namespace SlipeServer.Console
 
             luaService.LoadDefaultDefinitions();
 
-            using(FileStream testLua = File.OpenRead("test.lua"))
+            luaService.LoadDefinitions<CustomMathDefinition>();
+
+            using (FileStream testLua = File.OpenRead("test.lua"))
             {
                 using(StreamReader reader = new StreamReader(testLua))
                 {
-                    luaService.LoadScript("test.lua", reader.ReadToEnd());
+                    try
+                    {
+                        luaService.LoadScript("test.lua", reader.ReadToEnd());
+                    }
+                    catch(InterpreterException ex)
+                    {
+                        System.Console.WriteLine("Failed to load script\n\t{0}", ex.DecoratedMessage);
+                    }
                 }
             }
         }

@@ -6,6 +6,7 @@ using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.ColShapes;
 using SlipeServer.Server.Elements.Enums;
+using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Elements.Structs;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Repositories;
@@ -134,7 +135,7 @@ namespace SlipeServer.Console
             var firetruck = new Vehicle(407, new Vector3(30, 5, 3)).AssociateWith(this.server);
             var firetruck2 = new Vehicle(407, new Vector3(35, 5, 3)).AssociateWith(this.server);
 
-            var polygon = new CollisionPolygon(new Vector3(0, -25, 0), new Vector2[] { new Vector2(-25, -25), new Vector2(-25, -50), new Vector2(-50, -25) }).AssociateWith(this.server);
+            var polygon1 = new CollisionPolygon(new Vector3(0, -25, 0), new Vector2[] { new Vector2(-25, -25), new Vector2(-25, -50), new Vector2(-50, -25) }).AssociateWith(this.server);
             var polygon2 = new CollisionPolygon(new Vector3(0, 25, 0), new Vector2[] { new Vector2(25, 25), new Vector2(25, 50), new Vector2(50, 25) }).AssociateWith(this.server);
 
             vehicle.PedEntered += async (sender, eventArgs) =>
@@ -146,15 +147,92 @@ namespace SlipeServer.Console
                 }
             };
 
-            var shape = new CollisionCircle(new Vector2(0,25), 3).AssociateWith(this.server);
+            var circle = new CollisionCircle(new Vector2(0,25), 3).AssociateWith(this.server);
+            var sphere = new CollisionSphere(new Vector3(0,25,0), 3).AssociateWith(this.server);
+            var tube = new CollisionTube(new Vector3(0,25,0), 3, 3).AssociateWith(this.server);
+            var polygon = new CollisionPolygon(new Vector3(0,-25,0), new Vector2[] { new Vector2(-25, -25), new Vector2(-25, -50), new Vector2(-50, -25)}).AssociateWith(this.server);
+            var rectangle = new CollisionRectangle(new Vector2(50, 20), new Vector2(2, 2)).AssociateWith(this.server);
+            var cuboid = new CollisionCuboid(new Vector3(30, 20, 4), new Vector3(2, 2, 2)).AssociateWith(this.server);
 
-            shape.RadiusChanged += async (Element sender, Server.Elements.Events.ElementChangedEventArgs<float> args) =>
+            circle.RadiusChanged += async (Element sender, ElementChangedEventArgs<float> args) =>
+            {
+                await Task.Delay(100);
+                if (circle.Radius < 20)
+                    circle.Radius += .03f;
+            };
+
+            sphere.RadiusChanged += async (Element sender, ElementChangedEventArgs<float> args) =>
+            {
+                await Task.Delay(100);
+                if (sphere.Radius < 20)
+                    sphere.Radius += .03f;
+            };
+
+            tube.RadiusChanged += async (Element sender, ElementChangedEventArgs<float> args) =>
+            {
+                await Task.Delay(100);
+                if (tube.Radius < 20)
+                    tube.Radius += .03f;
+            };
+
+            tube.HeightChanged += async (Element sender, ElementChangedEventArgs<float> args) =>
+            {
+                await Task.Delay(100);
+                if (tube.Height < 20)
+                    tube.Height += .03f;
+            };
+
+            polygon.HeightChanged += async (Element sender, ElementChangedEventArgs<Vector2> args) =>
+            {
+                await Task.Delay(100);
+                if (polygon.Height.X > -3)
+                    polygon.Height = new Vector2(polygon.Height.X - .03f, polygon.Height.Y - .03f);
+            };
+
+            polygon.PointPositionChanged += async (Element sender, CollisionPolygonPointPositionChangedArgs args) =>
+            {
+                await Task.Delay(100);
+                if (args.Position.X < 0.0f)
+                    args.Polygon.SetPointPosition(args.Index, new Vector2(args.Position.X + 0.03f, args.Position.Y));
+            };
+
+            rectangle.DimensionsChanged += async (Element sender, ElementChangedEventArgs<Vector2> args) =>
+            {
+                await Task.Delay(100);
+                if (args.NewValue.Y < 10.0f)
+                    rectangle.Dimensions = args.OldValue + new Vector2(0.03f, 0.03f);
+            };
+
+            cuboid.DimensionsChanged += async (Element sender, ElementChangedEventArgs<Vector3> args) =>
+            {
+                await Task.Delay(100);
+                if (args.NewValue.Y < 10.0f)
+                    cuboid.Dimensions = args.OldValue + new Vector3(0.03f, 0.03f, 0.03f);
+            };
+
+            Task.Run(async () =>
             {
                 await Task.Delay(5000);
-                if(shape.Radius < 20)
-                    shape.Radius += 1;
-            };
-            shape.Radius = 10;
+                for (int i = 0; i < 5; i++)
+                {
+                    await Task.Delay(2000);
+                    polygon.AddPoint(new Vector2(this.random.Next(-20, 20), this.random.Next(-20, 20)));
+                }
+                for (int i = 0; i < 5; i++)
+                {
+                    await Task.Delay(2000);
+                    polygon.RemovePoint(0);
+                }
+            });
+
+            circle.Radius = 3;
+            sphere.Radius = 3;
+            tube.Radius = 3;
+            tube.Height = 3;
+            polygon.Height = new Vector2(10, 15);
+            polygon.SetPointPosition(0, new Vector2(-25, -25));
+            rectangle.Dimensions = new Vector2(2, 2);
+            cuboid.Dimensions = new Vector3(2, 2, 2);
         }
 
         private void OnPlayerJoin(Player player)
