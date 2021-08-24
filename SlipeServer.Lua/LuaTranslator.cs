@@ -53,12 +53,18 @@ namespace SlipeServer.Lua
                     DynValue.NewNumber(color.B),
                     DynValue.NewNumber(color.A),
                 };
-            if (obj is Vector3 vector)
+            if (obj is Vector2 vector2)
                 return new DynValue[]
                 {
-                    DynValue.NewNumber(vector.X),
-                    DynValue.NewNumber(vector.Y),
-                    DynValue.NewNumber(vector.Z)
+                    DynValue.NewNumber(vector2.X),
+                    DynValue.NewNumber(vector2.Y)
+                };
+            if (obj is Vector3 vector3)
+                return new DynValue[]
+                {
+                    DynValue.NewNumber(vector3.X),
+                    DynValue.NewNumber(vector3.Y),
+                    DynValue.NewNumber(vector3.Z)
                 };
             if (obj is Delegate del)
                 return new DynValue[] { DynValue.NewCallback((context, arguments) => ToDynValues(del.DynamicInvoke(arguments.GetArray())).First()) };
@@ -88,8 +94,18 @@ namespace SlipeServer.Lua
 
         public object FromDynValue(Type targetType, Queue<DynValue> dynValues)
         {
+            if (targetType == typeof(Color) || targetType == typeof(Color?))
+            {
+                byte red = GetByteFromDynValue(dynValues.Dequeue());
+                byte green = GetByteFromDynValue(dynValues.Dequeue());
+                byte blue = GetByteFromDynValue(dynValues.Dequeue());
+                byte alpha = GetByteFromDynValue(dynValues.Dequeue());
+                return Color.FromArgb(alpha, red, green, blue);
+            }
             if (targetType == typeof(Vector3))
                 return new Vector3(GetSingleFromDynValue(dynValues.Dequeue()), GetSingleFromDynValue(dynValues.Dequeue()), GetSingleFromDynValue(dynValues.Dequeue()));
+            if (targetType == typeof(Vector2))
+                return new Vector2(GetSingleFromDynValue(dynValues.Dequeue()), GetSingleFromDynValue(dynValues.Dequeue()));
             if (targetType == typeof(float))
                 return GetSingleFromDynValue(dynValues.Dequeue());
             if (targetType == typeof(double))
