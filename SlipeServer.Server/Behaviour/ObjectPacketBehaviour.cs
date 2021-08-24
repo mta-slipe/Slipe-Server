@@ -31,8 +31,7 @@ namespace SlipeServer.Server.Behaviour
 
         private void RelayModelChange(object sender, ElementChangedEventArgs<WorldObject, ushort> args)
         {
-            if (!args.IsSync)
-                this.server.BroadcastPacket(WorldObjectPacketFactory.CreateSetModelPacket(args.Source));
+            this.server.BroadcastPacket(WorldObjectPacketFactory.CreateSetModelPacket(args.Source));
         }
     }
 }
