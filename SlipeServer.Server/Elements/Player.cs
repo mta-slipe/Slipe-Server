@@ -53,8 +53,8 @@ namespace SlipeServer.Server.Elements
         public bool IsStealthAiming { get; set; }
         public bool IsVoiceMuted { get; set; }
         public bool IsChatMuted { get; set; }
-        private Team? team { get; set; }
 
+        private Team? team;
         public Team? Team
         {
             get => this.team;
