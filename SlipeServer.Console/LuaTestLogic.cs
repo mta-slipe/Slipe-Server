@@ -19,20 +19,17 @@ namespace SlipeServer.Console
             luaService.LoadDefaultDefinitions();
 
             luaService.LoadDefinitions<CustomMathDefinition>();
+            luaService.LoadDefinitions<TestDefinition>();
 
-            using (FileStream testLua = File.OpenRead("test.lua"))
+            using FileStream testLua = File.OpenRead("test.lua");
+            using StreamReader reader = new StreamReader(testLua);
+            try
             {
-                using(StreamReader reader = new StreamReader(testLua))
-                {
-                    try
-                    {
-                        luaService.LoadScript("test.lua", reader.ReadToEnd());
-                    }
-                    catch(InterpreterException ex)
-                    {
-                        System.Console.WriteLine("Failed to load script\n\t{0}", ex.DecoratedMessage);
-                    }
-                }
+                luaService.LoadScript("test.lua", reader.ReadToEnd());
+            }
+            catch (InterpreterException ex)
+            {
+                System.Console.WriteLine("Failed to load script\n\t{0}", ex.DecoratedMessage);
             }
         }
     }

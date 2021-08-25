@@ -1,4 +1,6 @@
 ﻿using SlipeServer.Server.Elements.Events;
+using SlipeServer.Server.Extensions;
+using SlipeServer.Server.PacketHandling.Factories;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
@@ -173,7 +175,7 @@ namespace SlipeServer.Server.Elements
 
         public Element()
         {
-            this.children = new ();
+            this.children = new();
             this.subscribers = new();
             this.TimeContext = 1;
         }
@@ -253,6 +255,18 @@ namespace SlipeServer.Server.Elements
         {
             return element != null && (this.parent == element || (this.parent != null && this.parent.IsChildOf(element)));
         }
+
+        public void CreateFor(IEnumerable<Player> players)
+            => AddEntityPacketFactory.CreateAddEntityPacket(new Element[] { this }).SendTo(players);
+
+        public void CreateFor(Player player)
+            => this.CreateFor(new Player[] { player });
+
+        public void DestroyFor(IEnumerable<Player> players)
+            => RemoveEntityPacketFactory.CreateRemoveEntityPacket(new Element[] { this }).SendTo(players);
+
+        public void DestroyFor(Player player)
+            => this.DestroyFor(new Player[] { player });
 
         public event ElementChangedEventHandler<Vector3>? PositionChanged;
         public event ElementChangedEventHandler<Vector3>? RotationChanged;

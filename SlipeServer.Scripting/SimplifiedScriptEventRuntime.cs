@@ -60,7 +60,7 @@ namespace SlipeServer.Scripting
             {
                 if (registeredEvent.ElementType.IsAssignableFrom(element.GetType()))
                 {
-                    var actions = (EventHandlerActions<Element>)registeredEvent.Delegate.DynamicInvoke(element, callbackDelegate);
+                    var actions = (EventHandlerActions<Element>)registeredEvent.Delegate.DynamicInvoke(element, callbackDelegate)!;
                     actions.Add(element);
                 }
             }
@@ -107,7 +107,7 @@ namespace SlipeServer.Scripting
             foreach (var type in typeof(ScriptEventRuntime).Assembly.DefinedTypes
                 .Where(type => typeof(IEventDefinitions).IsAssignableFrom(type) && type.IsClass))
             {
-                LoadEvents(this.server.Instantiate(type) as IEventDefinitions);
+                LoadEvents((this.server.Instantiate(type) as IEventDefinitions)!);
             }
         }
     }

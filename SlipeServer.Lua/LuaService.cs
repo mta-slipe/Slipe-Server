@@ -40,7 +40,7 @@ namespace SlipeServer.Lua
             {
                 var attribute = method.GetCustomAttribute<ScriptFunctionDefinitionAttribute>();
 
-                if (this.methods.ContainsKey(attribute.NiceName))
+                if (this.methods.ContainsKey(attribute!.NiceName))
                     throw new Exception($"Lua name conflict for '{attribute.NiceName}'");
 
                 var methodParameters = method.GetParameters();
@@ -60,11 +60,11 @@ namespace SlipeServer.Lua
                             else
                             {
                                 if (!methodParameters[i].IsOptional)
-                                    throw new LuaArgumentException(methodParameters[i].Name, methodParameters[i].ParameterType, i, DataType.Nil);
+                                    throw new LuaArgumentException(methodParameters[i].Name!, methodParameters[i].ParameterType, i, DataType.Nil);
                             }
                         } catch (NotImplementedException)
                         {
-                            valueQueue.TryDequeue(out DynValue valueType);
+                            valueQueue.TryDequeue(out DynValue? valueType);
                             throw new LuaException($"Unsupported Lua value translation for {methodParameters[i].ParameterType}");
                         } catch (Exception e)
                         {
@@ -73,14 +73,14 @@ namespace SlipeServer.Lua
                     }
                     var result = method.Invoke(methodSet, parameters);
 
-                    return translator.ToDynValues(result).ToArray();
+                    return this.translator.ToDynValues(result).ToArray();
                 };
             }
         }
 
         public void LoadDefinitions<T>()
         {
-            LoadDefinitions(this.server.Instantiate<T>());
+            LoadDefinitions(this.server.Instantiate<T>()!);
         }
 
         public void LoadDefaultDefinitions()

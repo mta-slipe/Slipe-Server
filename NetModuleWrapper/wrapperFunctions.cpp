@@ -7,6 +7,7 @@
 #endif
 #if defined _WIN32
 #define EXPORT extern "C" __declspec(dllexport)
+#pragma warning(disable:4996)
 #else
 #define EXPORT extern "C" 
 #endif
