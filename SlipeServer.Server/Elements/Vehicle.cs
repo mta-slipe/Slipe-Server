@@ -232,7 +232,6 @@ namespace SlipeServer.Server.Elements
         internal void RespawnAt(Vector3 position, Vector3 rotation)
         {
             ResetDoorsWheelsPanelsLights();
-            // TODO, reset: towed vehicle, attach to
 
             this.IsLandingGearDown = true;
             this.AdjustableProperty = 0;

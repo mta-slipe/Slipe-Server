@@ -4,7 +4,7 @@ using System;
 using System.Drawing;
 using System.Linq;
 
-namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player
+namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle
 {
     public class SetVehicleDoorOpenRatio : Packet
     {

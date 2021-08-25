@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Numerics;
 using System.Text;
 
-namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player
+namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle
 {
     public class VehicleSpawnPacket : Packet
     {

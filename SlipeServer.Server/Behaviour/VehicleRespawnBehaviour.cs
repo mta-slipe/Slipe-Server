@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
+using SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.PacketHandling.Factories;
@@ -30,7 +31,7 @@ namespace SlipeServer.Server.Behaviour
 
         private void HandleRespawn(object? sender, VehicleRespawnEventArgs args)
         {
-            this.server.BroadcastPacket(new VehicleSpawnPacket(new List<VehicleSpawnInfo> { new VehicleSpawnInfo
+            this.server.BroadcastPacket(new VehicleSpawnPacket(new VehicleSpawnInfo[] { new VehicleSpawnInfo
                 {
                     ElementId = args.Vehicle.Id,
                     TimeContext = args.Vehicle.GetAndIncrementTimeContext(),
