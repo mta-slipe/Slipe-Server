@@ -23,7 +23,13 @@ namespace SlipeServer.Server.Behaviour
             if (element is Vehicle vehicle)
             {
                 vehicle.ModelChanged += RelayModelChange;
+                vehicle.Colors.ColorChanged += RelayColorChanged;
             }
+        }
+
+        private void RelayColorChanged(Vehicle sender, VehicleColorChangedEventsArgs args)
+        {
+            this.server.BroadcastPacket(VehiclePacketFactory.CreateSetColorPacket(args.Vehicle));
         }
 
         private void RelayModelChange(object sender, ElementChangedEventArgs<Vehicle, ushort> args)

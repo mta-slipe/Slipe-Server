@@ -135,6 +135,7 @@ namespace SlipeServer.Console
             this.Vehicle = new Vehicle(530, new Vector3(20, 5, 3)).AssociateWith(this.server);
             var forklift2 = new Vehicle(530, new Vector3(22, 5, 3)).AssociateWith(this.server);
             var firetruck = new Vehicle(407, new Vector3(30, 5, 3)).AssociateWith(this.server);
+            firetruck.Colors.Primary = Color.Pink;
             var firetruck2 = new Vehicle(407, new Vector3(35, 5, 3)).AssociateWith(this.server);
 
             var polygon1 = new CollisionPolygon(new Vector3(0, -25, 0), new Vector2[] { new Vector2(-25, -25), new Vector2(-25, -50), new Vector2(-50, -25) }).AssociateWith(this.server);
@@ -167,6 +168,16 @@ namespace SlipeServer.Console
                     this.WorldObject.Model = (ushort)ObjectModel.Drugred;
                     this.Vehicle.Model = (ushort)VehicleModel.BMX;
                     this.Ped.Model = (ushort)this.random.Next(20, 25);
+                }
+            });
+
+            Task.Run(async () =>
+            {
+                while (true)
+                {
+                    await Task.Delay(100);
+                    this.Vehicle.Colors.Primary = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
+                    this.Vehicle.Colors.Secondary = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
                 }
             });
 

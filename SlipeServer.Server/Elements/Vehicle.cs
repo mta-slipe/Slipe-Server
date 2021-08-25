@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Definitions.Entities.Structs;
 using SlipeServer.Server.Constants;
+using SlipeServer.Server.ElementConcepts;
 using SlipeServer.Server.Elements.Events;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,8 @@ namespace SlipeServer.Server.Elements
         }
 
         public float Health { get; set; } = 1000;
-        public Color[] Colors { get; set; }
+        public Colors Colors { get; set; }
+
         public byte PaintJob { get; set; } = 0;
         public VehicleDamage Damage { get; set; }
         public byte Variant1 { get; set; } = 0;
@@ -93,7 +95,7 @@ namespace SlipeServer.Server.Elements
             this.Model = model;
             this.Position = position;
 
-            this.Colors = new Color[2] { Color.White, Color.White };
+            this.Colors = new Colors(this, Color.White, Color.White);
             this.Damage = VehicleDamage.Undamaged;
             this.DoorRatios = new float[6];
             this.Upgrades = Array.Empty<VehicleUpgrade>();
