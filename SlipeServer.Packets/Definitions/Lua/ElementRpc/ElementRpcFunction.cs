@@ -255,6 +255,8 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc
         UPDATE_COLPOLYGON_POINT,
   
         SET_DISCORD_JOIN_PARAMETERS,
+        SET_TRANSFER_BOX_VISIBILITY,
+        SET_COLPOLYGON_HEIGHT,
 
         NUM_RPC_FUNCS // Add above this line
     }

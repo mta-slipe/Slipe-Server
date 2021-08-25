@@ -30,7 +30,7 @@ namespace SlipeServer.Scripting
             var handlers = this.registeredEventHandlers.Where(handler => handler.GetType().IsAssignableFrom(element.GetType()));
             foreach (var handler in handlers)
             {
-                var actions = (EventHandlerActions<Element>)handler.RegisteredEvent.Delegate.DynamicInvoke(element, handler.Delegate);
+                var actions = (EventHandlerActions<Element>)handler.RegisteredEvent.Delegate.DynamicInvoke(element, handler.Delegate)!;
                 actions.Add(element);
             }
 
@@ -58,7 +58,8 @@ namespace SlipeServer.Scripting
 
             this.registeredEventHandlers.Add(registeredEventHandler);
 
-            ScriptCallbackDelegate elementCheckingDelegate = (objects) => {
+            void elementCheckingDelegate(object[] objects)
+            {
                 if (objects.First() is Element element)
                     if (element != attachedTo && !element.IsChildOf(attachedTo))
                         return;
@@ -66,21 +67,22 @@ namespace SlipeServer.Scripting
                 if (objects.Length == 0)
                 {
                     callbackDelegate.DynamicInvoke(null, Array.Empty<object>());
-                }
-                else if (objects.Length == 1)
+                } else if (objects.Length == 1)
                 {
                     callbackDelegate.DynamicInvoke(objects.First(), Array.Empty<object>());
                 } else
                 {
                     callbackDelegate.DynamicInvoke(objects.First(), objects.Skip(1));
                 }
-            };
+            }
+
+            ScriptCallbackDelegateWrapper wrapper = new ScriptCallbackDelegateWrapper(elementCheckingDelegate, new());
 
             foreach (var element in this.elementRepository.GetAll())
             {
                 if (registeredEvent.ElementType.IsAssignableFrom(element.GetType()))
                 {
-                    var actions = (EventHandlerActions<Element>)registeredEvent.Delegate.DynamicInvoke(element, elementCheckingDelegate);
+                    var actions = (EventHandlerActions<Element>)registeredEvent.Delegate.DynamicInvoke(element, wrapper)!;
                     actions.Add(element);
                 }
             }
@@ -117,7 +119,7 @@ namespace SlipeServer.Scripting
             foreach (var type in typeof(ScriptEventRuntime).Assembly.DefinedTypes
                 .Where(type => typeof(IEventDefinitions).IsAssignableFrom(type) && type.IsClass))
             {
-                LoadEvents(this.server.Instantiate(type) as IEventDefinitions);
+                LoadEvents((this.server.Instantiate(type) as IEventDefinitions)!);
             }
         }
     }

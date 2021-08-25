@@ -16,6 +16,7 @@
 #include <iostream>
 #ifdef WIN32
 #include <stdio.h>
+#pragma warning(disable:4996)
 #endif
 
 CDynamicLibrary::CDynamicLibrary()

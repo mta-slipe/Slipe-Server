@@ -15,7 +15,18 @@ namespace SlipeServer.Server.Elements
     {
         public override ElementType ElementType => ElementType.Vehicle;
 
-        public ushort Model { get; set; }
+        protected ushort model;
+        public ushort Model
+        {
+            get => this.model;
+            set
+            {
+                var args = new ElementChangedEventArgs<Vehicle, ushort>(this, this.Model, value, this.IsSync);
+                this.model = value;
+                ModelChanged?.Invoke(this, args);
+            }
+        }
+
         public float Health { get; set; } = 1000;
         public Color[] Colors { get; set; }
         public byte PaintJob { get; set; } = 0;
@@ -251,6 +262,7 @@ namespace SlipeServer.Server.Elements
         public event ElementEventHandler? Blown;
         public event ElementEventHandler<VehicleLeftEventArgs>? PedLeft;
         public event ElementEventHandler<VehicleEnteredEventsArgs>? PedEntered;
+        public event ElementChangedEventHandler<Vehicle, ushort>? ModelChanged;
         public event ElementEventHandler<VehicleRespawnEventArgs>? Respawned;
         public event ElementEventHandler<VehicleDoorStateChangedArgs>? DoorStateChanged;
         public event ElementEventHandler<VehicleWheelStateChangedArgs>? WheelStateChanged;

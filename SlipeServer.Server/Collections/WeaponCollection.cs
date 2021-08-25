@@ -54,6 +54,15 @@ namespace SlipeServer.Server.Collections
             return weapon;
         }
 
+        public void Clear(bool triggersUpdates = true)
+        {
+            if (triggersUpdates)
+                foreach (var weapon in this)
+                    Remove(weapon);
+            else
+                this.weapons.Clear();
+        }
+
         private void AmmoInClipUpdated(object? sender, AmmoUpdateEventArgs e) => this.WeaponAmmoUpdated?.Invoke(this, e.Weapon);
         private void AmmoUpdated(object? sender, AmmoUpdateEventArgs e) => this.WeaponAmmoUpdated?.Invoke(this, e.Weapon);
 
