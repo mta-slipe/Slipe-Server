@@ -1,21 +1,17 @@
-﻿using SlipeServer.Server;
-using SlipeServer.Server.Elements;
+﻿using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Services;
 using System;
 using System.Numerics;
-using System.Threading.Tasks;
 
 namespace SlipeServer.Scripting.Definitions
 {
     public class ExplosionScriptDefinitions
     {
-        private readonly MtaServer server;
         private readonly ExplosionService explosionService;
 
-        public ExplosionScriptDefinitions(MtaServer server, ExplosionService explosionService)
+        public ExplosionScriptDefinitions(ExplosionService explosionService)
         {
-            this.server = server;
             this.explosionService = explosionService;
         }
 

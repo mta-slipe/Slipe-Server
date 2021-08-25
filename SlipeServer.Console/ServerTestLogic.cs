@@ -40,13 +40,13 @@ namespace SlipeServer.Console
         private readonly TextItemService textItemService;
         private Resource? testResource;
 
-        private readonly Random random = new Random();
-        RadarArea RadarArea { get; set; }
-        Blip BlipA { get; set; }
-        Blip BlipB { get; set; }
-        WorldObject WorldObject { get; set; }
-        Vehicle Vehicle { get; set; }
-        Ped Ped { get; set; }
+        private readonly Random random = new();
+        private RadarArea? RadarArea { get; set; }
+        private Blip? BlipA { get; set; }
+        private Blip? BlipB { get; set; }
+        private WorldObject? WorldObject { get; set; }
+        private Vehicle? Vehicle { get; set; }
+        private Ped? Ped { get; set; }
         private readonly Team slipeDevsTeam;
 
         public ServerTestLogic(
@@ -121,9 +121,9 @@ namespace SlipeServer.Console
 
             var values = Enum.GetValues(typeof(PedModel));
             PedModel randomPedModel = (PedModel)values.GetValue(new Random().Next(values.Length))!;
-            Ped = new Ped(randomPedModel, new Vector3(10, 0, 3)).AssociateWith(this.server);
+            this.Ped = new Ped(randomPedModel, new Vector3(10, 0, 3)).AssociateWith(this.server);
 
-            WorldObject = new WorldObject(ObjectModel.Drugred, new Vector3(15, 0, 3)).AssociateWith(this.server);
+            this.WorldObject = new WorldObject(ObjectModel.Drugred, new Vector3(15, 0, 3)).AssociateWith(this.server);
 
             new WeaponObject(355, new Vector3(10, 10, 5))
             {
@@ -132,7 +132,7 @@ namespace SlipeServer.Console
             }.AssociateWith(this.server);
             var vehicle = new Vehicle(602, new Vector3(-10, 5, 3)).AssociateWith(this.server);
             var aircraft = new Vehicle(520, new Vector3(10, 5, 3)).AssociateWith(this.server);
-            Vehicle = new Vehicle(530, new Vector3(20, 5, 3)).AssociateWith(this.server);
+            this.Vehicle = new Vehicle(530, new Vector3(20, 5, 3)).AssociateWith(this.server);
             var forklift2 = new Vehicle(530, new Vector3(22, 5, 3)).AssociateWith(this.server);
             var firetruck = new Vehicle(407, new Vector3(30, 5, 3)).AssociateWith(this.server);
             var firetruck2 = new Vehicle(407, new Vector3(35, 5, 3)).AssociateWith(this.server);
@@ -160,13 +160,13 @@ namespace SlipeServer.Console
                 while (true)
                 {
                     await Task.Delay(1000);
-                    WorldObject.Model = (ushort)ObjectModel.Drugblue;
-                    Vehicle.Model = (ushort)VehicleModel.Bobcat;
-                    Ped.Model = (ushort)random.Next(20, 25);
+                    this.WorldObject.Model = (ushort)ObjectModel.Drugblue;
+                    this.Vehicle.Model = (ushort)VehicleModel.Bobcat;
+                    this.Ped.Model = (ushort)this.random.Next(20, 25);
                     await Task.Delay(1000);
-                    WorldObject.Model = (ushort)ObjectModel.Drugred;
-                    Vehicle.Model = (ushort)VehicleModel.BMX;
-                    Ped.Model = (ushort)random.Next(20, 25);
+                    this.WorldObject.Model = (ushort)ObjectModel.Drugred;
+                    this.Vehicle.Model = (ushort)VehicleModel.BMX;
+                    this.Ped.Model = (ushort)this.random.Next(20, 25);
                 }
             });
 
@@ -375,7 +375,7 @@ namespace SlipeServer.Console
             {
                 if (args.Command == "radararea")
                 {
-                    this.RadarArea.Color = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
+                    this.RadarArea!.Color = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
                     this.RadarArea.Size = new Vector2(this.random.Next(100, 200), this.random.Next(100, 200));
                     this.RadarArea.IsFlashing = this.random.Next(2) == 1;
                     this.chatBox.OutputTo(player, "You have randomized radar area!", Color.YellowGreen);
@@ -391,8 +391,8 @@ namespace SlipeServer.Console
                     var values = Enum.GetValues(typeof(BlipIcon));
                     BlipIcon randomBlipIcon = (BlipIcon)values.GetValue(this.random.Next(values.Length))!;
 
-                    this.BlipB.Icon = randomBlipIcon;
-                    this.BlipA.Color = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
+                    this.BlipB!.Icon = randomBlipIcon;
+                    this.BlipA!.Color = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
                     this.BlipA.Size = (byte)this.random.Next(1, 4);
                     this.BlipA.VisibleDistance = (ushort)this.random.Next(30, 100);
                     flip = !flip;
@@ -489,7 +489,7 @@ namespace SlipeServer.Console
                     }
                     else
                     {
-                        player.Model = (ushort)random.Next(20, 25);
+                        player.Model = (ushort)this.random.Next(20, 25);
                     }
 
                 if (args.Command == "togglecontrol")

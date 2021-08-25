@@ -1,4 +1,4 @@
-﻿using SlipeServer.Server.Elements.Events;
+using SlipeServer.Server.Elements.Events;
 using System;
 using System.Drawing;
 using System.Numerics;
@@ -57,6 +57,28 @@ namespace SlipeServer.Server.Elements
             this.Position2 = position;
             this.Size = size;
             this.Color = color;
+        }
+
+        private float[] MinMax(float left, float right)
+        {
+            if(right < left)
+            {
+                return new float[] { right, left };
+            }
+            return new float[] { left, right };
+        }
+
+        public bool IsInside(Vector2 position)
+        {
+            float[] horizontalBounds = MinMax(this.Position2.X, this.Position2.X + this.Size.X);
+            float[] verticalBounds = MinMax(this.Position2.Y, this.Position2.Y + this.Size.Y);
+
+            if (position.X >= horizontalBounds[0] && position.X <= horizontalBounds[1])
+                if (position.Y >= verticalBounds[0] && position.Y <= verticalBounds[1])
+                {
+                    return true;
+                }
+            return false;
         }
 
         public new RadarArea AssociateWith(MtaServer server)
