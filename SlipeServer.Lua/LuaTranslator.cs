@@ -15,6 +15,7 @@ namespace SlipeServer.Lua
         public LuaTranslator()
         {
             UserData.RegisterType<Element>(InteropAccessMode.Hardwired);
+            UserData.RegisterType<IUserdata>(InteropAccessMode.Hardwired);
         }
 
         public IEnumerable<DynValue> ToDynValues(object? obj)
@@ -23,6 +24,8 @@ namespace SlipeServer.Lua
                 return new DynValue[] { DynValue.Nil };
             if (obj is Element element)
                 return new DynValue[] { UserData.Create(element) };
+            if (obj is IUserdata userdata)
+                return new DynValue[] { UserData.Create(userdata) };
             if (obj is byte int8)
                 return new DynValue[] { DynValue.NewNumber(int8) };
             if (obj is short int16)
@@ -131,6 +134,8 @@ namespace SlipeServer.Lua
             if (targetType == typeof(Table))
                 return GetTableFromDynValue(dynValues.Dequeue());
             if (typeof(Element).IsAssignableFrom(targetType))
+                return dynValues.Dequeue().UserData.Object;
+            if (typeof(IUserdata).IsAssignableFrom(targetType))
                 return dynValues.Dequeue().UserData.Object;
             if (targetType == typeof(ScriptCallbackDelegateWrapper))
             {

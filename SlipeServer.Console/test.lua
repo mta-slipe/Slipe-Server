@@ -54,3 +54,6 @@ print("check radarArea: ",
 	insideD == true and insideE == false and insideF == false,
 	flashing == false
 )
+
+local foo = createFoo(49,51);
+print("custom userdata:", foo, sumFoo(foo), sumFoo(foo) == 100);

@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
+using SlipeServer.Console.LuaDefinitions.Userdatas;
+using SlipeServer.Lua;
 using SlipeServer.Scripting;
 using SlipeServer.Server.Services;
 
@@ -18,6 +20,22 @@ namespace SlipeServer.Console.LuaDefinitions
         {
             this.logger.LogInformation($"{a} == {b} : {a.Equals(b)}");
             return a.Equals(b);
+        }
+
+        [ScriptFunctionDefinition("createFoo")]
+        public FooUserdata CreateFoo(int a, int b)
+        {
+            return new FooUserdata
+            {
+                A = a,
+                B = b,
+            };
+        }
+
+        [ScriptFunctionDefinition("sumFoo")]
+        public int SumFoo(FooUserdata foo)
+        {
+            return foo.A + foo.B;
         }
     }
 }
