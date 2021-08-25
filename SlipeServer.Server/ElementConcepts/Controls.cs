@@ -25,662 +25,662 @@ namespace SlipeServer.Server.ElementConcepts
             player.Client.SendPacket(new ToggleControlAbility(args.Control, args.NewState));
         }
 
-        private bool fire = true;
+        private bool fireEnabled = true;
         public bool FireEnabled
         {
-            get => this.fire;
+            get => this.fireEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "fire", value);
-                this.fire = value;
+                this.fireEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool aimWeapon = true;
+        private bool aimWeaponEnabled = true;
         public bool AimWeaponEnabled
         {
-            get => this.aimWeapon;
+            get => this.aimWeaponEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "aim_weapon", value);
-                this.aimWeapon = value;
+                this.aimWeaponEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool nextWeapon = true;
+        private bool nextWeaponEnabled = true;
         public bool NextWeaponEnabled
         {
-            get => this.nextWeapon;
+            get => this.nextWeaponEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "next_weapon", value);
-                this.nextWeapon = value;
+                this.nextWeaponEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool previousWeapon = true;
+        private bool previousWeaponEnabled = true;
         public bool PreviousWeaponEnabled
         {
-            get => this.previousWeapon;
+            get => this.previousWeaponEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "previous_weapon", value);
-                this.previousWeapon = value;
+                this.previousWeaponEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool forwards = true;
+        private bool forwardsEnabled = true;
         public bool ForwardsEnabled
         {
-            get => this.forwards;
+            get => this.forwardsEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "forwards", value);
-                this.forwards = value;
+                this.forwardsEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool backwards = true;
+        private bool backwardsEnabled = true;
         public bool BackwardsEnabled
         {
-            get => this.backwards;
+            get => this.backwardsEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "backwards", value);
-                this.backwards = value;
+                this.backwardsEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool left = true;
+        private bool leftEnabled = true;
         public bool LeftEnabled
         {
-            get => this.left;
+            get => this.leftEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "left", value);
-                this.left = value;
+                this.leftEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool right = true;
+        private bool rightEnabled = true;
         public bool RightEnabled
         {
-            get => this.right;
+            get => this.rightEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "right", value);
-                this.right = value;
+                this.rightEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool zoomIn = true;
+        private bool zoomInEnabled = true;
         public bool ZoomInEnabled
         {
-            get => this.zoomIn;
+            get => this.zoomInEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "zoom_in", value);
-                this.zoomIn = value;
+                this.zoomInEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool zoomOut = true;
+        private bool zoomOutEnabled = true;
         public bool ZoomOutEnabled
         {
-            get => this.zoomOut;
+            get => this.zoomOutEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "zoom_out", value);
-                this.zoomOut = value;
+                this.zoomOutEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool changeCamera = true;
+        private bool changeCameraEnabled = true;
         public bool ChangeCameraEnabled
         {
-            get => this.changeCamera;
+            get => this.changeCameraEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "change_camera", value);
-                this.changeCamera = value;
+                this.changeCameraEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool jump = true;
+        private bool jumpEnabled = true;
         public bool JumpEnabled
         {
-            get => this.jump;
+            get => this.jumpEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "jump", value);
-                this.jump = value;
+                this.jumpEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool sprint = true;
+        private bool sprintEnabled = true;
         public bool SprintEnabled
         {
-            get => this.sprint;
+            get => this.sprintEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "sprint", value);
-                this.sprint = value;
+                this.sprintEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool lookBehind = true;
+        private bool lookBehindEnabled = true;
         public bool LookBehindEnabled
         {
-            get => this.lookBehind;
+            get => this.lookBehindEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "look_behind", value);
-                this.lookBehind = value;
+                this.lookBehindEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool crouch = true;
+        private bool crouchEnabled = true;
         public bool CrouchEnabled
         {
-            get => this.crouch;
+            get => this.crouchEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "crouch", value);
-                this.crouch = value;
+                this.crouchEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool action = true;
+        private bool actionEnabled = true;
         public bool ActionEnabled
         {
-            get => this.action;
+            get => this.actionEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "action", value);
-                this.action = value;
+                this.actionEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool walk = true;
+        private bool walkEnabled = true;
         public bool WalkEnabled
         {
-            get => this.walk;
+            get => this.walkEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "walk", value);
-                this.walk = value;
+                this.walkEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool conversationYes = true;
+        private bool conversationYesEnabled = true;
         public bool ConversationYesEnabled
         {
-            get => this.conversationYes;
+            get => this.conversationYesEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "conversation_yes", value);
-                this.conversationYes = value;
+                this.conversationYesEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool conversationNo = true;
+        private bool conversationNoEnabled = true;
         public bool ConversationNoEnabled
         {
-            get => this.conversationNo;
+            get => this.conversationNoEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "conversation_no", value);
-                this.conversationNo = value;
+                this.conversationNoEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool groupControlForwards = true;
+        private bool groupControlForwardsEnabled = true;
         public bool GroupControlForwardsEnabled
         {
-            get => this.groupControlForwards;
+            get => this.groupControlForwardsEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "group_control_forwards", value);
-                this.groupControlForwards = value;
+                this.groupControlForwardsEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool groupControlBack = true;
+        private bool groupControlBackEnabled = true;
         public bool GroupControlBackEnabled
         {
-            get => this.groupControlBack;
+            get => this.groupControlBackEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "group_control_back", value);
-                this.groupControlBack = value;
+                this.groupControlBackEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool vehicleFire = true;
+        private bool vehicleFireEnabled = true;
         public bool VehicleFireEnabled
         {
-            get => this.vehicleFire;
+            get => this.vehicleFireEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "vehicle_fire", value);
-                this.vehicleFire = value;
+                this.vehicleFireEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool vehicleSecondaryFire = true;
+        private bool vehicleSecondaryFireEnabled = true;
         public bool VehicleSecondaryFireEnabled
         {
-            get => this.vehicleSecondaryFire;
+            get => this.vehicleSecondaryFireEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "vehicle_secondary_fire", value);
-                this.vehicleSecondaryFire = value;
+                this.vehicleSecondaryFireEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool vehicleLeft = true;
+        private bool vehicleLeftEnabled = true;
         public bool VehicleLeftEnabled
         {
-            get => this.vehicleLeft;
+            get => this.vehicleLeftEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "vehicle_left", value);
-                this.vehicleLeft = value;
+                this.vehicleLeftEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool vehicleRight = true;
+        private bool vehicleRightEnabled = true;
         public bool VehicleRightEnabled
         {
-            get => this.vehicleRight;
+            get => this.vehicleRightEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "vehicle_right", value);
-                this.vehicleRight = value;
+                this.vehicleRightEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool steerForward = true;
+        private bool steerForwardEnabled = true;
         public bool SteerForwardEnabled
         {
-            get => this.steerForward;
+            get => this.steerForwardEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "steer_forward", value);
-                this.steerForward = value;
+                this.steerForwardEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool steerBack = true;
+        private bool steerBackEnabled = true;
         public bool SteerBackEnabled
         {
-            get => this.steerBack;
+            get => this.steerBackEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "steer_back", value);
-                this.steerBack = value;
+                this.steerBackEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool accelerate = true;
+        private bool accelerateEnabled = true;
         public bool AccelerateEnabled
         {
-            get => this.accelerate;
+            get => this.accelerateEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "accelerate", value);
-                this.accelerate = value;
+                this.accelerateEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool brakeReverse = true;
+        private bool brakeReverseEnabled = true;
         public bool BrakeReverseEnabled
         {
-            get => this.brakeReverse;
+            get => this.brakeReverseEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "brake_reverse", value);
-                this.brakeReverse = value;
+                this.brakeReverseEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool radioNext = true;
+        private bool radioNextEnabled = true;
         public bool RadioNextEnabled
         {
-            get => this.radioNext;
+            get => this.radioNextEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "radio_next", value);
-                this.radioNext = value;
+                this.radioNextEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool radioPrevious = true;
+        private bool radioPreviousEnabled = true;
         public bool RadioPreviousEnabled
         {
-            get => this.radioPrevious;
+            get => this.radioPreviousEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "radio_previous", value);
-                this.radioPrevious = value;
+                this.radioPreviousEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool radioUserTrackSkip = true;
+        private bool radioUserTrackSkipEnabled = true;
         public bool RadioUserTrackSkipEnabled
         {
-            get => this.radioUserTrackSkip;
+            get => this.radioUserTrackSkipEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "radio_user_track_skip", value);
-                this.radioUserTrackSkip = value;
+                this.radioUserTrackSkipEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool horn = true;
+        private bool hornEnabled = true;
         public bool HornEnabled
         {
-            get => this.horn;
+            get => this.hornEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "horn", value);
-                this.horn = value;
+                this.hornEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool subMission = true;
+        private bool subMissionEnabled = true;
         public bool SubMissionEnabled
         {
-            get => this.subMission;
+            get => this.subMissionEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "sub_mission", value);
-                this.subMission = value;
+                this.subMissionEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool handbrake = true;
+        private bool handbrakeEnabled = true;
         public bool HandbrakeEnabled
         {
-            get => this.handbrake;
+            get => this.handbrakeEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "handbrake", value);
-                this.handbrake = value;
+                this.handbrakeEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool vehicleLookLeft = true;
+        private bool vehicleLookLeftEnabled = true;
         public bool VehicleLookLeftEnabled
         {
-            get => this.vehicleLookLeft;
+            get => this.vehicleLookLeftEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "vehicle_look_left", value);
-                this.vehicleLookLeft = value;
+                this.vehicleLookLeftEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool vehicleLookRight = true;
+        private bool vehicleLookRightEnabled = true;
         public bool VehicleLookRightEnabled
         {
-            get => this.vehicleLookRight;
+            get => this.vehicleLookRightEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "vehicle_look_right", value);
-                this.vehicleLookRight = value;
+                this.vehicleLookRightEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool vehicleLookBehind = true;
+        private bool vehicleLookBehindEnabled = true;
         public bool VehicleLookBehindEnabled
         {
-            get => this.vehicleLookBehind;
+            get => this.vehicleLookBehindEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "vehicle_look_behind", value);
-                this.vehicleLookBehind = value;
+                this.vehicleLookBehindEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool vehicleMouseLook = true;
+        private bool vehicleMouseLookEnabled = true;
         public bool VehicleMouseLookEnabled
         {
-            get => this.vehicleMouseLook;
+            get => this.vehicleMouseLookEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "vehicle_mouse_look", value);
-                this.vehicleMouseLook = value;
+                this.vehicleMouseLookEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool specialControlLeft = true;
+        private bool specialControlLeftEnabled = true;
         public bool SpecialControlLeftEnabled
         {
-            get => this.specialControlLeft;
+            get => this.specialControlLeftEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "special_control_left", value);
-                this.specialControlLeft = value;
+                this.specialControlLeftEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool specialControlRight = true;
+        private bool specialControlRightEnabled = true;
         public bool SpecialControlRightEnabled
         {
-            get => this.specialControlRight;
+            get => this.specialControlRightEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "special_control_right", value);
-                this.specialControlRight = value;
+                this.specialControlRightEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool specialControlDown = true;
+        private bool specialControlDownEnabled = true;
         public bool SpecialControlDownEnabled
         {
-            get => this.specialControlDown;
+            get => this.specialControlDownEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "special_control_down", value);
-                this.specialControlDown = value;
+                this.specialControlDownEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool specialControlUp = true;
+        private bool specialControlUpEnabled = true;
         public bool SpecialControlUpEnabled
         {
-            get => this.specialControlUp;
+            get => this.specialControlUpEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "special_control_up", value);
-                this.specialControlUp = value;
+                this.specialControlUpEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool enterExit = true;
+        private bool enterExitEnabled = true;
         public bool EnterExitEnabled
         {
-            get => this.enterExit;
+            get => this.enterExitEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "enter_exit", value);
-                this.enterExit = value;
+                this.enterExitEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool enterPassenger = true;
+        private bool enterPassengerEnabled = true;
         public bool EnterPassengerEnabled
         {
-            get => this.enterPassenger;
+            get => this.enterPassengerEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "enter_passenger", value);
-                this.enterPassenger = value;
+                this.enterPassengerEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool screenshot = true;
+        private bool screenshotEnabled = true;
         public bool ScreenshotEnabled
         {
-            get => this.screenshot;
+            get => this.screenshotEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "screenshot", value);
-                this.screenshot = value;
+                this.screenshotEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool chatbox = true;
+        private bool chatboxEnabled = true;
         public bool ChatboxEnabled
         {
-            get => this.chatbox;
+            get => this.chatboxEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "chatbox", value);
-                this.chatbox = value;
+                this.chatboxEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool radar = true;
+        private bool radarEnabled = true;
         public bool RadarEnabled
         {
-            get => this.radar;
+            get => this.radarEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "radar", value);
-                this.radar = value;
+                this.radarEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool radarZoomIn = true;
+        private bool radarZoomInEnabled = true;
         public bool RadarZoomInEnabled
         {
-            get => this.radarZoomIn;
+            get => this.radarZoomInEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "radar_zoom_in", value);
-                this.radarZoomIn = value;
+                this.radarZoomInEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool radarZoomOut = true;
+        private bool radarZoomOutEnabled = true;
         public bool RadarZoomOutEnabled
         {
-            get => this.radarZoomOut;
+            get => this.radarZoomOutEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "radar_zoom_out", value);
-                this.radarZoomOut = value;
+                this.radarZoomOutEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool radarMoveNorth = true;
+        private bool radarMoveNorthEnabled = true;
         public bool RadarMoveNorthEnabled
         {
-            get => this.radarMoveNorth;
+            get => this.radarMoveNorthEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "radar_move_north", value);
-                this.radarMoveNorth = value;
+                this.radarMoveNorthEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool radarMoveSouth = true;
+        private bool radarMoveSouthEnabled = true;
         public bool RadarMoveSouthEnabled
         {
-            get => this.radarMoveSouth;
+            get => this.radarMoveSouthEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "radar_move_south", value);
-                this.radarMoveSouth = value;
+                this.radarMoveSouthEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool radarMoveEast = true;
+        private bool radarMoveEastEnabled = true;
         public bool RadarMoveEastEnabled
         {
-            get => this.radarMoveEast;
+            get => this.radarMoveEastEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "radar_move_east", value);
-                this.radarMoveEast = value;
+                this.radarMoveEastEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool radarMoveWest = true;
+        private bool radarMoveWestEnabled = true;
         public bool RadarMoveWestEnabled
         {
-            get => this.radarMoveWest;
+            get => this.radarMoveWestEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "radar_move_west", value);
-                this.radarMoveWest = value;
+                this.radarMoveWestEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
 
-        private bool radarAttach = true;
+        private bool radarAttachEnabled = true;
         public bool RadarAttachEnabled
         {
-            get => this.radarAttach;
+            get => this.radarAttachEnabled;
             set
             {
                 var args = new PlayerControlsChangedArgs(this.player, "radar_attach", value);
-                this.radarAttach = value;
+                this.radarAttachEnabled = value;
                 StateChanged?.Invoke(this.player, args);
             }
         }
