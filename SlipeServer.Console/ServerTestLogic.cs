@@ -46,6 +46,7 @@ namespace SlipeServer.Console
         private Blip? BlipB { get; set; }
         private WorldObject? WorldObject { get; set; }
         private Vehicle? Vehicle { get; set; }
+        private Marker? Marker { get; set; }
         private Ped? Ped { get; set; }
         private readonly Team slipeDevsTeam;
 
@@ -113,7 +114,7 @@ namespace SlipeServer.Console
             this.BlipB = new Blip(new Vector3(15, 0, 0), BlipIcon.Marker, 50).AssociateWith(this.server);
             this.RadarArea = new RadarArea(new Vector2(0, 0), new Vector2(200, 200), Color.FromArgb(100, Color.Aqua)).AssociateWith(this.server);
 
-            new Marker(new Vector3(5, 0, 2), MarkerType.Cylinder)
+            this.Marker = new Marker(new Vector3(5, 0, 2), MarkerType.Cylinder)
             {
                 Color = Color.FromArgb(100, Color.Cyan)
             }.AssociateWith(this.server);
@@ -379,6 +380,23 @@ namespace SlipeServer.Console
                     this.RadarArea.Size = new Vector2(this.random.Next(100, 200), this.random.Next(100, 200));
                     this.RadarArea.IsFlashing = this.random.Next(2) == 1;
                     this.chatBox.OutputTo(player, "You have randomized radar area!", Color.YellowGreen);
+                }
+                if (args.Command == "marker")
+                {
+                    var typeValues = Enum.GetValues(typeof(MarkerType));
+                    MarkerType? randomMarkerType = (MarkerType?)typeValues.GetValue(this.random.Next(typeValues.Length));
+                    var iconValues = Enum.GetValues(typeof(MarkerIcon));
+                    MarkerIcon? randomMarkerIcon = (MarkerIcon?)iconValues.GetValue(this.random.Next(iconValues.Length));
+
+                    this.Marker!.Color = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
+                    this.Marker!.Size = this.random.Next(1, 10) / 10.0f + 1.0f;
+                    if(randomMarkerType.HasValue)
+                        this.Marker!.MarkerType = randomMarkerType.Value;
+                    if(randomMarkerIcon.HasValue)
+                        this.Marker!.MarkerIcon = randomMarkerIcon.Value;
+
+                    this.Marker!.TargetPosition = new Vector3(this.random.Next(0, 20) - 5, this.random.Next(0, 20), this.random.Next(-50, 50));
+                    this.chatBox.OutputTo(player, "You have randomized marker!", Color.YellowGreen);
                 }
             };
 

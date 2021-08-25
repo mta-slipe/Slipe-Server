@@ -1,0 +1,76 @@
+﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
+using SlipeServer.Packets.Definitions.Lua.ElementRpc.Marker;
+using SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
+using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements.ColShapes;
+using SlipeServer.Server.Elements.Enums;
+using SlipeServer.Server.Elements.Events;
+using SlipeServer.Server.Repositories;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Numerics;
+
+namespace SlipeServer.Server.Behaviour
+{
+    public class MarkerBehaviour
+    {
+        private readonly MtaServer server;
+        private readonly HashSet<Marker> markers;
+
+        public MarkerBehaviour(MtaServer server, IElementRepository elementRepository)
+        {
+            this.server = server;
+            this.markers = new HashSet<Marker>();
+            foreach (var marker in elementRepository.GetByType<Marker>(ElementType.Marker))
+            {
+                AddMarker(marker);
+            }
+
+            server.ElementCreated += OnElementCreate;
+        }
+
+        private void OnElementCreate(Element element)
+        {
+            if (element is Marker marker)
+            {
+                AddMarker(marker);
+            }
+        }
+
+        private void AddMarker(Marker marker)
+        {
+            this.markers.Add(marker);
+            marker.Destroyed += (source) => this.markers.Remove(marker);
+            marker.SizeChanged += RelaySizeChanged;
+            marker.MarkerTypeChanged += RelayMarkerTypeChanged;
+            marker.MarkerIconChanged += RelayMarkerIconChanged;
+            marker.ColorChanged += RelayColorChanged;
+            marker.TargetPositionChanged += RelayTargetPositionChanged;
+        }
+
+        private void RelaySizeChanged(Element sender, ElementChangedEventArgs<Marker, float> args)
+        {
+            this.server.BroadcastPacket(new SetMarkerSizeRpcPacket(args.Source.Id, args.NewValue));
+        }
+
+        private void RelayMarkerTypeChanged(Element sender, ElementChangedEventArgs<Marker, MarkerType> args)
+        {
+            this.server.BroadcastPacket(new SetMarkerTypeRpcPacket(args.Source.Id, (byte)args.NewValue));
+        }
+
+        private void RelayMarkerIconChanged(Element sender, ElementChangedEventArgs<Marker, MarkerIcon> args)
+        {
+            this.server.BroadcastPacket(new SetMarkerIconRpcPacket(args.Source.Id, (byte)args.NewValue));
+        }
+
+        private void RelayColorChanged(Element sender, ElementChangedEventArgs<Marker, Color> args)
+        {
+            this.server.BroadcastPacket(new SetMarkerColorRpcPacket(args.Source.Id, args.NewValue));
+        }
+
+        private void RelayTargetPositionChanged(Element sender, ElementChangedEventArgs<Marker, Vector3?> args)
+        {
+            this.server.BroadcastPacket(new SetMarkerTargetPositionRpcPacket(args.Source.Id, args.NewValue));
+        }
+    }
+}
