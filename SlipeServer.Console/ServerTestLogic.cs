@@ -41,12 +41,12 @@ namespace SlipeServer.Console
         private Resource? testResource;
 
         private readonly Random random = new();
-        private RadarArea RadarArea { get; set; }
-        private Blip BlipA { get; set; }
-        private Blip BlipB { get; set; }
-        private WorldObject WorldObject { get; set; }
-        private Vehicle Vehicle { get; set; }
-        private Ped Ped { get; set; }
+        private RadarArea? RadarArea { get; set; }
+        private Blip? BlipA { get; set; }
+        private Blip? BlipB { get; set; }
+        private WorldObject? WorldObject { get; set; }
+        private Vehicle? Vehicle { get; set; }
+        private Ped? Ped { get; set; }
         private readonly Team slipeDevsTeam;
 
         public ServerTestLogic(
@@ -375,7 +375,7 @@ namespace SlipeServer.Console
             {
                 if (args.Command == "radararea")
                 {
-                    this.RadarArea.Color = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
+                    this.RadarArea!.Color = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
                     this.RadarArea.Size = new Vector2(this.random.Next(100, 200), this.random.Next(100, 200));
                     this.RadarArea.IsFlashing = this.random.Next(2) == 1;
                     this.chatBox.OutputTo(player, "You have randomized radar area!", Color.YellowGreen);
@@ -391,8 +391,8 @@ namespace SlipeServer.Console
                     var values = Enum.GetValues(typeof(BlipIcon));
                     BlipIcon randomBlipIcon = (BlipIcon)values.GetValue(this.random.Next(values.Length))!;
 
-                    this.BlipB.Icon = randomBlipIcon;
-                    this.BlipA.Color = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
+                    this.BlipB!.Icon = randomBlipIcon;
+                    this.BlipA!.Color = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
                     this.BlipA.Size = (byte)this.random.Next(1, 4);
                     this.BlipA.VisibleDistance = (ushort)this.random.Next(30, 100);
                     flip = !flip;

@@ -11,7 +11,7 @@
             this.BackingValue = function;
         }
 
-        public override bool Equals(object obj) => (this.BackingValue == (obj as ScriptCallbackDelegateWrapper)?.BackingValue);
+        public override bool Equals(object? obj) => (this.BackingValue == (obj as ScriptCallbackDelegateWrapper)?.BackingValue);
 
         public override int GetHashCode()
         {

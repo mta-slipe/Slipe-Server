@@ -61,7 +61,7 @@ namespace SlipeServer.Lua
                     DynValue.NewNumber(vector.Z)
                 };
             if (obj is Delegate del)
-                return new DynValue[] { DynValue.NewCallback((context, arguments) => ToDynValues(del.DynamicInvoke(arguments.GetArray())).First()) };
+                return new DynValue[] { DynValue.NewCallback((context, arguments) => ToDynValues(del.DynamicInvoke(arguments.GetArray())!).First()) };
             if (obj is Table table)
                 return new DynValue[] { DynValue.NewTable(table) };
             if (obj is DynValue dynValue)
