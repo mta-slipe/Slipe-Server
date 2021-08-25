@@ -17,7 +17,7 @@ namespace SlipeServer.Lua
             UserData.RegisterType<Element>(InteropAccessMode.Hardwired);
         }
 
-        public IEnumerable<DynValue> ToDynValues(object obj)
+        public IEnumerable<DynValue> ToDynValues(object? obj)
         {
             if (obj == null)
                 return new DynValue[] { DynValue.Nil };
@@ -67,7 +67,7 @@ namespace SlipeServer.Lua
                     DynValue.NewNumber(vector3.Z)
                 };
             if (obj is Delegate del)
-                return new DynValue[] { DynValue.NewCallback((context, arguments) => ToDynValues(del.DynamicInvoke(arguments.GetArray())).First()) };
+                return new DynValue[] { DynValue.NewCallback((context, arguments) => ToDynValues(del.DynamicInvoke(arguments.GetArray())!).First()) };
             if (obj is Table table)
                 return new DynValue[] { DynValue.NewTable(table) };
             if (obj is DynValue dynValue)
@@ -132,10 +132,10 @@ namespace SlipeServer.Lua
                 return GetTableFromDynValue(dynValues.Dequeue());
             if (typeof(Element).IsAssignableFrom(targetType))
                 return dynValues.Dequeue().UserData.Object;
-            if (targetType == typeof(ScriptCallbackDelegate))
+            if (targetType == typeof(ScriptCallbackDelegateWrapper))
             {
                 var callback = dynValues.Dequeue().Function;
-                return (ScriptCallbackDelegate)((parameters) => callback.Call(ToDynValues(parameters)));
+                return new ScriptCallbackDelegateWrapper(parameters => callback.Call(ToDynValues(parameters)), callback);
             }
             if (targetType == typeof(EventDelegate))
             {

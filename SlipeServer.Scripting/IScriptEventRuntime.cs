@@ -14,7 +14,7 @@ namespace SlipeServer.Scripting
     }
 
     public delegate void EventDelegate(Element element, params object[] parameters);
-    public delegate EventHandlerActions<T> EventRegistrationDelegate<T>(Element element, ScriptCallbackDelegate callback) where T : Element;
+    public delegate EventHandlerActions<T> EventRegistrationDelegate<T>(Element element, ScriptCallbackDelegateWrapper callback) where T : Element;
 
     public struct EventHandlerActions<T> where T : Element
     {
