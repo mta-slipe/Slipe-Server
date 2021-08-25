@@ -33,6 +33,27 @@ function foo()
 
 end
 callbackEqual(foo, foo)
+createExplosion(-10, 0,0, 4);
+
+local radarArea = createRadarArea(-50, -50, 50, 50, 0, 255, 0, 255);
+local r,g,b,a = getRadarAreaColor(radarArea);
+local sx, sy = getRadarAreaSize(radarArea);
+local flashing = isRadarAreaFlashing(radarArea);
+local insideA,insideB,insideC = isInsideRadarArea(radarArea, 1, 0),isInsideRadarArea(radarArea, 0, -51),isInsideRadarArea(radarArea, -25, -25)
+
+setRadarAreaColor(radarArea, getColorFromString("pink"))
+setRadarAreaFlashing(radarArea, true)
+setRadarAreaSize(radarArea, -50, -50);
+
+local insideD,insideE,insideF = isInsideRadarArea(radarArea, -75, -75),isInsideRadarArea(radarArea, -25, -25),isInsideRadarArea(radarArea, -101, -100)
+print("insideD,insideE,insideF",insideD,insideE,insideF)
+print("check radarArea: ",
+	r == 0 and g == 255 and b == 0 and a == 255,
+	sx == 50 and sy == 50,
+	insideA == false and insideB == false and insideC == true,
+	insideD == true and insideE == false and insideF == false,
+	flashing == false
+)
 
 function commandHandler1(plr, cmd, ...)
 	print("commandHandler1:",plr, cmd, ...)
