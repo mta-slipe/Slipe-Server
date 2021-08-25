@@ -57,6 +57,7 @@ namespace SlipeServer.Server.Elements
         public Controls Controls { get; private set; }
         private Team? team { get; set; }
 
+        private Team? team;
         public Team? Team
         {
             get => this.team;
