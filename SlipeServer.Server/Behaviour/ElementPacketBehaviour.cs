@@ -32,6 +32,8 @@ namespace SlipeServer.Server.Behaviour
             element.DimensionChanged += RelayDimensionChange;
             element.InteriorChanged += RelayInteriorChange;
             element.Destroyed += RelayElementDestroy;
+
+            this.server.BroadcastPacket(AddEntityPacketFactory.CreateAddEntityPacket(new Element[] { element }));
         }
 
         private void RelayElementDestroy(Element element)
