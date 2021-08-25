@@ -76,11 +76,13 @@ namespace SlipeServer.Scripting
                 }
             };
 
+            ScriptCallbackDelegateWrapper wrapper = new ScriptCallbackDelegateWrapper(elementCheckingDelegate, new());
+
             foreach (var element in this.elementRepository.GetAll())
             {
                 if (registeredEvent.ElementType.IsAssignableFrom(element.GetType()))
                 {
-                    var actions = (EventHandlerActions<Element>)registeredEvent.Delegate.DynamicInvoke(element, elementCheckingDelegate);
+                    var actions = (EventHandlerActions<Element>)registeredEvent.Delegate.DynamicInvoke(element, wrapper);
                     actions.Add(element);
                 }
             }

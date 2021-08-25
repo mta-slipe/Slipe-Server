@@ -116,10 +116,10 @@ namespace SlipeServer.Lua
                 return GetTableFromDynValue(dynValues.Dequeue());
             if (typeof(Element).IsAssignableFrom(targetType))
                 return dynValues.Dequeue().UserData.Object;
-            if (targetType == typeof(ScriptCallbackDelegate))
+            if (targetType == typeof(ScriptCallbackDelegateWrapper))
             {
                 var callback = dynValues.Dequeue().Function;
-                return (ScriptCallbackDelegate)((parameters) => callback.Call(ToDynValues(parameters)));
+                return new ScriptCallbackDelegateWrapper(parameters => callback.Call(ToDynValues(parameters)), callback);
             }
             if (targetType == typeof(EventDelegate))
             {
