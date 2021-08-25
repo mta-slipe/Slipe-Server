@@ -28,3 +28,8 @@
 	print("custom definitions:",add(2,2), substract(2,2))
 end
 createExplosion(-10, 0,0, 4);
+
+function foo()
+
+end
+callbackEqual(foo, foo)

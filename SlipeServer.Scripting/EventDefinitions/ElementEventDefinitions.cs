@@ -11,7 +11,7 @@ namespace SlipeServer.Scripting.EventDefinitions
                 "onElementDestroyed",
                 (element, callback) =>
                 {
-                    Action<Element> callbackProxy = (Element e) => callback(e);
+                    void callbackProxy(Element e) => callback.CallbackDelegate(e);
                     return new EventHandlerActions<Element>()
                     {
                         Add = (element) => element.Destroyed += callbackProxy,
