@@ -11,7 +11,7 @@ using System.Drawing;
 using System.Numerics;
 using System.Text;
 using SlipeServer.Packets.Definitions.Player;
-using SlipeServer.Packets.Lua.Vehicle;
+using SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
 
 namespace SlipeServer.Server.PacketHandling.Factories
 {
@@ -30,6 +30,11 @@ namespace SlipeServer.Server.PacketHandling.Factories
         public static SetVehicleLockedRpcPacket CreateSetLockedPacket(Vehicle vehicle)
         {
             return new SetVehicleLockedRpcPacket(vehicle.Id, vehicle.IsLocked);
+        }
+
+        public static SetVehicleLockedRpcPacket CreateSetEngineOnPacket(Vehicle vehicle)
+        {
+            return new SetVehicleLockedRpcPacket(vehicle.Id, vehicle.IsEngineOn);
         }
     }
 }

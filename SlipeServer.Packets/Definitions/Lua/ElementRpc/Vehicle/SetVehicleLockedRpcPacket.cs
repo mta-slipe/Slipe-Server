@@ -5,7 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Numerics;
 
-namespace SlipeServer.Packets.Lua.Vehicle
+namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle
 {
     public class SetVehicleLockedRpcPacket : Packet
     {

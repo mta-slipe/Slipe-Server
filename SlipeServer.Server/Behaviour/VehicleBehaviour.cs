@@ -25,6 +25,7 @@ namespace SlipeServer.Server.Behaviour
                 vehicle.ModelChanged += RelayModelChange;
                 vehicle.Colors.ColorChanged += RelayColorChanged;
                 vehicle.LockedStateChanged += RelayLockedStateChanged;
+                vehicle.EngineStateChanged += RelayEngineStateChanged; ;
             }
         }
 
@@ -39,6 +40,11 @@ namespace SlipeServer.Server.Behaviour
         }
 
         private void RelayLockedStateChanged(Element sender, ElementChangedEventArgs<Vehicle, bool> args)
+        {
+            this.server.BroadcastPacket(VehiclePacketFactory.CreateSetLockedPacket(args.Source));
+        }
+
+        private void RelayEngineStateChanged(Element sender, ElementChangedEventArgs<Vehicle, bool> args)
         {
             this.server.BroadcastPacket(VehiclePacketFactory.CreateSetLockedPacket(args.Source));
         }

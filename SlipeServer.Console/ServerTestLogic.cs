@@ -137,6 +137,8 @@ namespace SlipeServer.Console
             var firetruck = new Vehicle(407, new Vector3(30, 5, 3)).AssociateWith(this.server);
             firetruck.Colors.Primary = Color.Pink;
             firetruck.IsLocked = true;
+            firetruck.IsEngineOn = true;
+
             var firetruck2 = new Vehicle(407, new Vector3(35, 5, 3)).AssociateWith(this.server);
 
             var polygon1 = new CollisionPolygon(new Vector3(0, -25, 0), new Vector2[] { new Vector2(-25, -25), new Vector2(-25, -50), new Vector2(-50, -25) }).AssociateWith(this.server);

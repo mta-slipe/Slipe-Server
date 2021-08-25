@@ -7,19 +7,19 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle
 {
-    public class SetVehicleColorRpcPacket : Packet
+    public class SetVehicleEngineStateRpcPacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
         public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
         public override PacketPriority Priority => PacketPriority.High;
 
         public uint ElementId { get; set; }
-        public Color[] Colors { get; set; }
+        public bool State { get; set; }
 
-        public SetVehicleColorRpcPacket(uint elementId, Color[] colors)
+        public SetVehicleEngineStateRpcPacket(uint elementId, bool state)
         {
             this.ElementId = elementId;
-            this.Colors = colors;
+            this.State = state;
         }
 
         public override void Read(byte[] bytes)
@@ -30,11 +30,9 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle
         public override byte[] Write()
         {
             var builder = new PacketBuilder();
-            builder.Write((byte)ElementRPCFunction.SET_VEHICLE_COLOR);
+            builder.Write((byte)ElementRPCFunction.SET_VEHICLE_ENGINE_STATE);
             builder.WriteElementId(this.ElementId);
-            builder.WriteCapped((byte)this.Colors.Length, 2);
-            foreach (var color in this.Colors)
-                builder.Write(color);
+            builder.Write(this.State);
 
             return builder.Build();
         }
