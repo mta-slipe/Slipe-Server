@@ -6,6 +6,7 @@ using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.ColShapes;
 using SlipeServer.Server.Elements.Enums;
+using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Elements.Structs;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Repositories;
@@ -39,10 +40,13 @@ namespace SlipeServer.Console
         private readonly TextItemService textItemService;
         private Resource? testResource;
 
-        private readonly Random random = new Random();
-        RadarArea RadarArea { get; set; }
-        Blip BlipA { get; set; }
-        Blip BlipB { get; set; }
+        private readonly Random random = new();
+        private RadarArea? RadarArea { get; set; }
+        private Blip? BlipA { get; set; }
+        private Blip? BlipB { get; set; }
+        private WorldObject? WorldObject { get; set; }
+        private Vehicle? Vehicle { get; set; }
+        private Ped? Ped { get; set; }
         private readonly Team slipeDevsTeam;
 
         public ServerTestLogic(
@@ -117,10 +121,10 @@ namespace SlipeServer.Console
 
             var values = Enum.GetValues(typeof(PedModel));
             PedModel randomPedModel = (PedModel)values.GetValue(new Random().Next(values.Length))!;
-            new Ped(randomPedModel, new Vector3(10, 0, 3)).AssociateWith(this.server);
+            this.Ped = new Ped(randomPedModel, new Vector3(10, 0, 3)).AssociateWith(this.server);
 
-            new WorldObject(ObjectModel.Drugred, new Vector3(15, 0, 3)).AssociateWith(this.server);
-            
+            this.WorldObject = new WorldObject(ObjectModel.Drugred, new Vector3(15, 0, 3)).AssociateWith(this.server);
+
             new WeaponObject(355, new Vector3(10, 10, 5))
             {
                 TargetType = WeaponTargetType.Fixed,
@@ -128,12 +132,12 @@ namespace SlipeServer.Console
             }.AssociateWith(this.server);
             var vehicle = new Vehicle(602, new Vector3(-10, 5, 3)).AssociateWith(this.server);
             var aircraft = new Vehicle(520, new Vector3(10, 5, 3)).AssociateWith(this.server);
-            var forklift = new Vehicle(530, new Vector3(20, 5, 3)).AssociateWith(this.server);
+            this.Vehicle = new Vehicle(530, new Vector3(20, 5, 3)).AssociateWith(this.server);
             var forklift2 = new Vehicle(530, new Vector3(22, 5, 3)).AssociateWith(this.server);
             var firetruck = new Vehicle(407, new Vector3(30, 5, 3)).AssociateWith(this.server);
             var firetruck2 = new Vehicle(407, new Vector3(35, 5, 3)).AssociateWith(this.server);
 
-            var polygon = new CollisionPolygon(new Vector3(0, -25, 0), new Vector2[] { new Vector2(-25, -25), new Vector2(-25, -50), new Vector2(-50, -25) }).AssociateWith(this.server);
+            var polygon1 = new CollisionPolygon(new Vector3(0, -25, 0), new Vector2[] { new Vector2(-25, -25), new Vector2(-25, -50), new Vector2(-50, -25) }).AssociateWith(this.server);
             var polygon2 = new CollisionPolygon(new Vector3(0, 25, 0), new Vector2[] { new Vector2(25, 25), new Vector2(25, 50), new Vector2(50, 25) }).AssociateWith(this.server);
 
             vehicle.PedEntered += async (sender, eventArgs) =>
@@ -145,15 +149,108 @@ namespace SlipeServer.Console
                 }
             };
 
+            var circle = new CollisionCircle(new Vector2(0,25), 3).AssociateWith(this.server);
+            var sphere = new CollisionSphere(new Vector3(0,25,0), 3).AssociateWith(this.server);
+            var tube = new CollisionTube(new Vector3(0,25,0), 3, 3).AssociateWith(this.server);
+            var polygon = new CollisionPolygon(new Vector3(0,-25,0), new Vector2[] { new Vector2(-25, -25), new Vector2(-25, -50), new Vector2(-50, -25)}).AssociateWith(this.server);
+            var rectangle = new CollisionRectangle(new Vector2(50, 20), new Vector2(2, 2)).AssociateWith(this.server);
+            var cuboid = new CollisionCuboid(new Vector3(30, 20, 4), new Vector3(2, 2, 2)).AssociateWith(this.server);
+            Task.Run(async () =>
+            {
+                while (true)
+                {
+                    await Task.Delay(1000);
+                    this.WorldObject.Model = (ushort)ObjectModel.Drugblue;
+                    this.Vehicle.Model = (ushort)VehicleModel.Bobcat;
+                    this.Ped.Model = (ushort)this.random.Next(20, 25);
+                    await Task.Delay(1000);
+                    this.WorldObject.Model = (ushort)ObjectModel.Drugred;
+                    this.Vehicle.Model = (ushort)VehicleModel.BMX;
+                    this.Ped.Model = (ushort)this.random.Next(20, 25);
+                }
+            });
+
             var shape = new CollisionCircle(new Vector2(0,25), 3).AssociateWith(this.server);
 
-            shape.RadiusChanged += async (Element sender, Server.Elements.Events.ElementChangedEventArgs<float> args) =>
+            circle.RadiusChanged += async (Element sender, ElementChangedEventArgs<float> args) =>
+            {
+                await Task.Delay(100);
+                if (circle.Radius < 20)
+                    circle.Radius += .03f;
+            };
+
+            sphere.RadiusChanged += async (Element sender, ElementChangedEventArgs<float> args) =>
+            {
+                await Task.Delay(100);
+                if (sphere.Radius < 20)
+                    sphere.Radius += .03f;
+            };
+
+            tube.RadiusChanged += async (Element sender, ElementChangedEventArgs<float> args) =>
+            {
+                await Task.Delay(100);
+                if (tube.Radius < 20)
+                    tube.Radius += .03f;
+            };
+
+            tube.HeightChanged += async (Element sender, ElementChangedEventArgs<float> args) =>
+            {
+                await Task.Delay(100);
+                if (tube.Height < 20)
+                    tube.Height += .03f;
+            };
+
+            polygon.HeightChanged += async (Element sender, ElementChangedEventArgs<Vector2> args) =>
+            {
+                await Task.Delay(100);
+                if (polygon.Height.X > -3)
+                    polygon.Height = new Vector2(polygon.Height.X - .03f, polygon.Height.Y - .03f);
+            };
+
+            polygon.PointPositionChanged += async (Element sender, CollisionPolygonPointPositionChangedArgs args) =>
+            {
+                await Task.Delay(100);
+                if (args.Position.X < 0.0f)
+                    args.Polygon.SetPointPosition(args.Index, new Vector2(args.Position.X + 0.03f, args.Position.Y));
+            };
+
+            rectangle.DimensionsChanged += async (Element sender, ElementChangedEventArgs<Vector2> args) =>
+            {
+                await Task.Delay(100);
+                if (args.NewValue.Y < 10.0f)
+                    rectangle.Dimensions = args.OldValue + new Vector2(0.03f, 0.03f);
+            };
+
+            cuboid.DimensionsChanged += async (Element sender, ElementChangedEventArgs<Vector3> args) =>
+            {
+                await Task.Delay(100);
+                if (args.NewValue.Y < 10.0f)
+                    cuboid.Dimensions = args.OldValue + new Vector3(0.03f, 0.03f, 0.03f);
+            };
+
+            Task.Run(async () =>
             {
                 await Task.Delay(5000);
-                if(shape.Radius < 20)
-                    shape.Radius += 1;
-            };
-            shape.Radius = 10;
+                for (int i = 0; i < 5; i++)
+                {
+                    await Task.Delay(2000);
+                    polygon.AddPoint(new Vector2(this.random.Next(-20, 20), this.random.Next(-20, 20)));
+                }
+                for (int i = 0; i < 5; i++)
+                {
+                    await Task.Delay(2000);
+                    polygon.RemovePoint(0);
+                }
+            });
+
+            circle.Radius = 3;
+            sphere.Radius = 3;
+            tube.Radius = 3;
+            tube.Height = 3;
+            polygon.Height = new Vector2(10, 15);
+            polygon.SetPointPosition(0, new Vector2(-25, -25));
+            rectangle.Dimensions = new Vector2(2, 2);
+            cuboid.Dimensions = new Vector3(2, 2, 2);
         }
 
         private void OnPlayerJoin(Player player)
@@ -278,7 +375,7 @@ namespace SlipeServer.Console
             {
                 if (args.Command == "radararea")
                 {
-                    this.RadarArea.Color = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
+                    this.RadarArea!.Color = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
                     this.RadarArea.Size = new Vector2(this.random.Next(100, 200), this.random.Next(100, 200));
                     this.RadarArea.IsFlashing = this.random.Next(2) == 1;
                     this.chatBox.OutputTo(player, "You have randomized radar area!", Color.YellowGreen);
@@ -294,8 +391,8 @@ namespace SlipeServer.Console
                     var values = Enum.GetValues(typeof(BlipIcon));
                     BlipIcon randomBlipIcon = (BlipIcon)values.GetValue(this.random.Next(values.Length))!;
 
-                    this.BlipB.Icon = randomBlipIcon;
-                    this.BlipA.Color = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
+                    this.BlipB!.Icon = randomBlipIcon;
+                    this.BlipA!.Color = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
                     this.BlipA.Size = (byte)this.random.Next(1, 4);
                     this.BlipA.VisibleDistance = (ushort)this.random.Next(30, 100);
                     flip = !flip;
@@ -378,6 +475,21 @@ namespace SlipeServer.Console
                             this.server.SetMaxPlayers(slots);
                             this.logger.LogInformation($"Slots has been changed to: {slots}");
                         }
+                    }
+                }
+
+                if (args.Command == "changeskin")
+                {
+                    if (args.Arguments.Length > 0)
+                    {
+                        if (ushort.TryParse(args.Arguments[0], out ushort model))
+                        {
+                            player.Model = model;
+                        }
+                    }
+                    else
+                    {
+                        player.Model = (ushort)this.random.Next(20, 25);
                     }
                 }
             };
