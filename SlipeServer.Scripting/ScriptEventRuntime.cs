@@ -76,7 +76,7 @@ namespace SlipeServer.Scripting
                 }
             }
 
-            ScriptCallbackDelegateWrapper wrapper = new ScriptCallbackDelegateWrapper(elementCheckingDelegate, new());
+            ScriptCallbackDelegateWrapper<ScriptCallbackDelegate> wrapper = new ScriptCallbackDelegateWrapper<ScriptCallbackDelegate>(elementCheckingDelegate, new());
 
             foreach (var element in this.elementRepository.GetAll())
             {

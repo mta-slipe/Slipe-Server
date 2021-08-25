@@ -1,17 +1,17 @@
 ﻿namespace SlipeServer.Scripting
 {
-    public class ScriptCallbackDelegateWrapper
+    public class ScriptCallbackDelegateWrapper<TCallbackDelegate>
     {
-        public ScriptCallbackDelegate CallbackDelegate { get; init; }
+        public TCallbackDelegate CallbackDelegate { get; init; }
         public object BackingValue { get; init; }
 
-        public ScriptCallbackDelegateWrapper(ScriptCallbackDelegate callbackDelegate, object function)
+        public ScriptCallbackDelegateWrapper(TCallbackDelegate callbackDelegate, object function)
         {
             this.CallbackDelegate = callbackDelegate;
             this.BackingValue = function;
         }
 
-        public override bool Equals(object? obj) => (this.BackingValue == (obj as ScriptCallbackDelegateWrapper)?.BackingValue);
+        public override bool Equals(object? obj) => (this.BackingValue == (obj as ScriptCallbackDelegateWrapper<TCallbackDelegate>)?.BackingValue);
 
         public override int GetHashCode()
         {

@@ -118,20 +118,20 @@ namespace SlipeServer.Lua
                 return GetTableFromDynValue(dynValues.Dequeue());
             if (typeof(Element).IsAssignableFrom(targetType))
                 return dynValues.Dequeue().UserData.Object;
-            if (targetType == typeof(ScriptCallbackDelegateWrapper))
+            if (targetType == typeof(ScriptCallbackDelegateWrapper<ScriptCallbackDelegate>))
             {
                 var callback = dynValues.Dequeue().Function;
-                return new ScriptCallbackDelegateWrapper(parameters => callback.Call(ToDynValues(parameters)), callback);
+                return new ScriptCallbackDelegateWrapper<ScriptCallbackDelegate>(parameters => callback.Call(ToDynValues(parameters)), callback);
             }
             if (targetType == typeof(EventDelegate))
             {
                 var callback = dynValues.Dequeue().Function;
                 return (EventDelegate)((element, parameters) => callback.Call(new DynValue[] { UserData.Create(element) }.Concat(ToDynValues(parameters))));
             }
-            if (targetType == typeof(CommandDelegate))
+            if (targetType == typeof(ScriptCallbackDelegateWrapper<CommandDelegate>))
             {
                 var callback = dynValues.Dequeue().Function;
-                return (CommandDelegate)((element, commandName, parameters) => callback.Call(new DynValue[] { UserData.Create(element), DynValue.NewString(commandName) }.Concat(ToDynValues(parameters)).ToArray()));
+                return new ScriptCallbackDelegateWrapper<CommandDelegate>((element, commandName, parameters) => callback.Call(new DynValue[] { UserData.Create(element), DynValue.NewString(commandName) }.Concat(ToDynValues(parameters)).ToArray()), callback);
             }
 
             throw new NotImplementedException($"Conversion from Lua for {targetType} not implemented");

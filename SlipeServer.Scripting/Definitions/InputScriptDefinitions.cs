@@ -13,13 +13,13 @@ namespace SlipeServer.Scripting.Definitions
         }
 
         [ScriptFunctionDefinition("addCommandHandler")]
-        public void AddCommandHandler(string commandName, CommandDelegate callback)
+        public void AddCommandHandler(string commandName, ScriptCallbackDelegateWrapper<CommandDelegate> callback)
         {
             this.inputRuntime.AddCommandHandler(commandName, callback);
         }
 
         [ScriptFunctionDefinition("removeCommandHandler")]
-        public void RemoveCommandHandler(string commandName, CommandDelegate? callback = null)
+        public void RemoveCommandHandler(string commandName, ScriptCallbackDelegateWrapper<CommandDelegate>? callback = null)
         {
             this.inputRuntime.RemoveCommandHandler(commandName, callback);
         }

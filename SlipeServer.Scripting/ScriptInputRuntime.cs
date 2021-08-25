@@ -39,12 +39,12 @@ namespace SlipeServer.Scripting
             {
                 if (commandHandler.CommandName == e.Command)
                 {
-                    commandHandler.Delegate.DynamicInvoke(player, e.Command, e.Arguments);
+                    commandHandler.Delegate.CallbackDelegate.DynamicInvoke(player, e.Command, e.Arguments);
                 }
             }
         }
 
-        public void AddCommandHandler(string commandName, CommandDelegate callbackDelegate)
+        public void AddCommandHandler(string commandName, ScriptCallbackDelegateWrapper<CommandDelegate> callbackDelegate)
         {
             this.registeredCommandHandlers.Add(new RegisteredCommandHandler
             {
@@ -53,18 +53,18 @@ namespace SlipeServer.Scripting
             });
         }
 
-        public void RemoveCommandHandler(string commandName, CommandDelegate? callbackDelegate = null)
+        public void RemoveCommandHandler(string commandName, ScriptCallbackDelegateWrapper<CommandDelegate>? callbackDelegate = null)
         {
             if (callbackDelegate == null)
                 this.registeredCommandHandlers.RemoveAll(x => x.CommandName == commandName);
             else
-                this.registeredCommandHandlers.RemoveAll(x => x.CommandName == commandName && x.Delegate == callbackDelegate);
+                this.registeredCommandHandlers.RemoveAll(x => x.CommandName == commandName && x.Delegate.Equals(callbackDelegate));
         }
     }
 
     internal struct RegisteredCommandHandler
     {
         public string CommandName { get; set; }
-        public CommandDelegate Delegate { get; set; }
+        public ScriptCallbackDelegateWrapper<CommandDelegate> Delegate { get; set; }
     }
 }

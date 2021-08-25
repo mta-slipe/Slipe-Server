@@ -33,23 +33,27 @@ function foo()
 
 end
 callbackEqual(foo, foo)
-function commandHandler(plr, cmd, ...)
-	print("command:",plr, cmd, ...)
+
+function commandHandler1(plr, cmd, ...)
+	print("commandHandler1:",plr, cmd, ...)
 end
 
-function commandHandler21(plr, cmd, ...)
-	print("command21:",plr, cmd, ...)
-end
-	print("command22:",plr, cmd, ...)
-function commandHandler22(plr, cmd, ...)
+function commandHandler2(plr, cmd, ...)
+	if(cmd == "foo3" or cmd =="foo4" or cmd == "foo4")then
+		print("This should not be printed! commandHandler2", cmd);
+	end
+	print("commandHandler2:",plr, cmd, ...)
 end
 
-addCommandHandler("foo1", commandHandler) --
-addCommandHandler("foo2", commandHandler)
-addCommandHandler("foo4", commandHandler22)
-addCommandHandler("foo4", commandHandler21)
-addCommandHandler("foo3", commandHandler) --
-addCommandHandler("foo5", commandHandler21) --
-addCommandHandler("foo5", commandHandler22) --
-removeCommandHandler("foo2", commandHandler)
+function commandHandler3(plr, cmd, ...)
+	print("commandHandler3:",plr, cmd, ...)
+end
+
+addCommandHandler("foo1", commandHandler1)
+addCommandHandler("foo2", commandHandler1)
+addCommandHandler("foo3", commandHandler2)
+addCommandHandler("foo3", commandHandler3)
+addCommandHandler("foo4", commandHandler2)
+addCommandHandler("foo4", commandHandler3)
+removeCommandHandler("foo3", commandHandler2)
 removeCommandHandler("foo4")
