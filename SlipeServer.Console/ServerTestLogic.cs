@@ -148,6 +148,16 @@ namespace SlipeServer.Console
                     eventArgs.Vehicle.RemovePassenger(eventArgs.Ped);
                 }
             };
+            
+            vehicle.PedLeft += async (sender, eventArgs) =>
+            {
+                if (eventArgs.Seat == 0)
+                {
+                    await Task.Delay(1500);
+                    vehicle?.Respawn();
+                    this.logger.LogInformation("Vehicle has been respawned.");
+                }
+            };
 
             var circle = new CollisionCircle(new Vector2(0,25), 3).AssociateWith(this.server);
             var sphere = new CollisionSphere(new Vector3(0,25,0), 3).AssociateWith(this.server);
