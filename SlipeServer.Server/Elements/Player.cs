@@ -55,7 +55,6 @@ namespace SlipeServer.Server.Elements
         public bool IsVoiceMuted { get; set; }
         public bool IsChatMuted { get; set; }
         public Controls Controls { get; private set; }
-        private Team? team { get; set; }
 
         private Team? team;
         public Team? Team
