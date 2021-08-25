@@ -114,6 +114,8 @@ namespace SlipeServer.Server.Elements
             this.interior = interior;
             this.dimension = dimension;
 
+            this.Weapons.Clear(false);
+
             this.Spawned?.Invoke(this, new PlayerSpawnedEventArgs(this));
         }
 
