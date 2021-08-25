@@ -17,7 +17,7 @@ namespace SlipeServer.Lua
             UserData.RegisterType<Element>(InteropAccessMode.Hardwired);
         }
 
-        public IEnumerable<DynValue> ToDynValues(object obj)
+        public IEnumerable<DynValue> ToDynValues(object? obj)
         {
             if (obj == null)
                 return new DynValue[] { DynValue.Nil };
