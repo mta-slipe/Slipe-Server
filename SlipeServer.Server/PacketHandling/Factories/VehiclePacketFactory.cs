@@ -26,5 +26,10 @@ namespace SlipeServer.Server.PacketHandling.Factories
         {
             return new SetVehicleColorRpcPacket(vehicle.Id, vehicle.Colors.AsArray());
         }
+
+        public static SetVehicleLockedRpcPacket CreateSetLockedPacket(Vehicle vehicle)
+        {
+            return new SetVehicleLockedRpcPacket(vehicle.Id, vehicle.IsLocked);
+        }
     }
 }

@@ -57,7 +57,17 @@ namespace SlipeServer.Server.Elements
         public bool IsSirenActive { get; set; } = false;
         public bool IsFuelTankExplodable { get; set; } = false;
         public bool IsEngineOn { get; set; } = false;
-        public bool IsLocked { get; set; } = false;
+        private bool isLocked = false;
+        public bool IsLocked
+        {
+            get => this.isLocked;
+            set
+            {
+                var args = new ElementChangedEventArgs<Vehicle, bool>(this, this.isLocked, value, this.IsSync);
+                this.isLocked = value;
+                LockedStateChanged?.Invoke(this, args);
+            }
+        }
         public bool AreDoorsUndamageable { get; set; } = false;
         public bool IsDamageProof { get; set; } = false;
         public bool IsFrozen { get; set; } = false;
@@ -175,5 +185,6 @@ namespace SlipeServer.Server.Elements
         public event ElementEventHandler<VehicleLeftEventArgs>? PedLeft;
         public event ElementEventHandler<VehicleEnteredEventsArgs>? PedEntered;
         public event ElementChangedEventHandler<Vehicle, ushort>? ModelChanged;
+        public event ElementChangedEventHandler<Vehicle, bool>? LockedStateChanged;
     }
 }
