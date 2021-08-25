@@ -21,7 +21,7 @@ namespace SlipeServer.Server.Behaviour
                 {
                     var packet = new SetPlayerTeamRpcPacket() {
                         SourceElementId = sender.Id,
-                        TeamId = args.NewTeam.Id
+                        TeamId = args.NewTeam?.Id ?? 0
                     };
                     Console.WriteLine($"Sent team changed packet!");
                     server.BroadcastPacket(packet);
