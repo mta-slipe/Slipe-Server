@@ -35,7 +35,17 @@ namespace SlipeServer.Server.Behaviour
                 ped.WeaponReceived += RelayPedWeaponReceive;
                 ped.WeaponRemoved += RelayPedWeaponRemove;
                 ped.AmmoUpdated += RelayPedAmmoCountUpdate;
+                ped.JetpackStateChanged += RelayJetpackStateChanged;
             }
+        }
+
+        private void RelayJetpackStateChanged(Element sender, ElementChangedEventArgs<Ped, bool> args)
+        {
+            if (!args.IsSync)
+                if (args.NewValue)
+                    this.server.BroadcastPacket(PedPacketFactory.CreateGiveJetpack(args.Source));
+                else
+                    this.server.BroadcastPacket(PedPacketFactory.CreateRemoveJetpack(args.Source));
         }
 
         private void RelayModelChange(object sender, ElementChangedEventArgs<Ped, ushort> args)
