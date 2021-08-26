@@ -107,7 +107,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                     vehicle.Health = packet.Health;
                     vehicle.Velocity = packet.Velocity;
                     vehicle.TurnVelocity = packet.TurnVelocity;
-                    vehicle.TurretRotation = packet.TurretRotation;
+                    vehicle.TurretDirection = packet.TurretDirection;
                     vehicle.AdjustableProperty = packet.AdjustableProperty;
                 });
             }

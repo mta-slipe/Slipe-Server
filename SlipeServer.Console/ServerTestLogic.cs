@@ -48,6 +48,7 @@ namespace SlipeServer.Console
         private Vehicle? Vehicle { get; set; }
         private Vehicle? Aircraft { get; set; }
         private Vehicle? Taxi { get; set; }
+        private Vehicle? Rhino { get; set; }
         private Ped? Ped { get; set; }
         private readonly Team slipeDevsTeam;
 
@@ -136,6 +137,7 @@ namespace SlipeServer.Console
             this.Aircraft = new Vehicle(520, new Vector3(10, 5, 3)).AssociateWith(this.server);
             this.Vehicle = new Vehicle(530, new Vector3(20, 5, 3)).AssociateWith(this.server);
             this.Taxi = new Vehicle((ushort)VehicleModel.Taxi, new Vector3(20, -5, 3)).AssociateWith(this.server);
+            this.Rhino = new Vehicle((ushort)VehicleModel.Rhino, new Vector3(20, -25, 3)).AssociateWith(this.server);
             var forklift2 = new Vehicle(530, new Vector3(22, 5, 3)).AssociateWith(this.server);
             var firetruck = new Vehicle(407, new Vector3(30, 5, 3)).AssociateWith(this.server);
             var firetruck2 = new Vehicle(407, new Vector3(35, 5, 3)).AssociateWith(this.server);
@@ -531,6 +533,18 @@ namespace SlipeServer.Console
 
                 if (args.Command == "landinggear")
                     this.Aircraft!.IsLandingGearDown = !this.Aircraft!.IsLandingGearDown;
+
+                if (args.Command == "turret")
+                {
+                    Task.Run(async () =>
+                    {
+                        while (true)
+                        {
+                            await Task.Delay(30);
+                            this.Rhino!.TurretDirection = new Vector2(-MathF.Atan2(this.Rhino.Position.X - player.Position.X, this.Rhino.Position.Y - player.Position.Y) + MathF.PI, 0);
+                        }
+                    });
+                }
             };
 
             player.AcInfoReceived += (o, args) =>

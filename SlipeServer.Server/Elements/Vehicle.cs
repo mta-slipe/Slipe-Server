@@ -38,10 +38,15 @@ namespace SlipeServer.Server.Elements
         public float RespawnHealth { get; set; }
 
         private Vector2? turretDirection;
-        public Vector2? TurretRotation
+        public Vector2? TurretDirection
         {
             get => VehicleConstants.TurretModels.Contains((VehicleModel)this.Model) ? this.turretDirection ?? Vector2.Zero : null;
-            set => this.turretDirection = value;
+            set
+            {
+                var args = new ElementChangedEventArgs<Vehicle, Vector2?>(this, this.turretDirection, value, this.IsSync);
+                this.turretDirection = value;
+                TurretDirectionChanged?.Invoke(this, args);
+            }
         }
 
         private ushort? adjustableProperty;
@@ -288,6 +293,7 @@ namespace SlipeServer.Server.Elements
         public event ElementChangedEventHandler<Vehicle, ushort>? ModelChanged;
         public event ElementChangedEventHandler<Vehicle, bool>? LandingGearChanged;
         public event ElementChangedEventHandler<Vehicle, bool>? TaxiLightStateChanged;
+        public event ElementChangedEventHandler<Vehicle, Vector2?>? TurretDirectionChanged;
         public event ElementEventHandler<VehicleRespawnEventArgs>? Respawned;
         public event ElementEventHandler<VehicleDoorStateChangedArgs>? DoorStateChanged;
         public event ElementEventHandler<VehicleWheelStateChangedArgs>? WheelStateChanged;

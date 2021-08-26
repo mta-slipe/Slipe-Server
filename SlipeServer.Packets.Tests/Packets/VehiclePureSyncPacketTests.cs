@@ -40,7 +40,7 @@ namespace SlipeServer.Packets.Tests.Packets
             packet.PlayerArmor.Should().Be(0);
 
             packet.AdjustableProperty.Should().Be(0);
-            packet.TurretRotation.Should().Be(Vector2.Zero);
+            packet.TurretDirection.Should().Be(Vector2.Zero);
         }
 
         [Fact]
@@ -60,7 +60,7 @@ namespace SlipeServer.Packets.Tests.Packets
             packet.VehiclePureSyncFlags.IsLandingGearDown.Should().BeTrue();
 
             packet.AdjustableProperty.Should().NotBe(0);
-            packet.TurretRotation.Should().Be(Vector2.Zero);
+            packet.TurretDirection.Should().Be(Vector2.Zero);
         }
 
         [Fact]
@@ -78,7 +78,7 @@ namespace SlipeServer.Packets.Tests.Packets
             packet.PlayerArmor.Should().Be(0);
 
             packet.AdjustableProperty.Should().NotBe(0);
-            packet.TurretRotation.Should().Be(Vector2.Zero);
+            packet.TurretDirection.Should().Be(Vector2.Zero);
         }
 
         [Fact]
@@ -96,7 +96,7 @@ namespace SlipeServer.Packets.Tests.Packets
             packet.PlayerArmor.Should().Be(0);
 
             packet.AdjustableProperty.Should().Be(0);
-            packet.TurretRotation.Should().NotBe(Vector2.Zero);
+            packet.TurretDirection.Should().NotBe(Vector2.Zero);
         }
     }
 }
