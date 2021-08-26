@@ -87,6 +87,8 @@ namespace SlipeServer.Server.ServerOptions
             builder.AddBehaviour<PedPacketBehaviour>();
             builder.AddBehaviour<PlayerPacketBehaviour>();
             builder.AddBehaviour<VehicleWarpBehaviour>();
+            builder.AddBehaviour<VehicleRespawnBehaviour>();
+            builder.AddBehaviour<VehicleBehaviour>();
             builder.AddBehaviour<VoiceBehaviour>();
             builder.AddBehaviour<LightSyncBehaviour>();
             builder.AddBehaviour<TeamBehaviour>();
