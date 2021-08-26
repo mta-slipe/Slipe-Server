@@ -75,5 +75,18 @@ namespace SlipeServer.Packets.Definitions.Player
         {
             throw new NotSupportedException();
         }
+
+        public override void Reset()
+        {
+            this.ScreenshotId = 0;
+            this.PartNumber = 0;
+            this.Buffer = Array.Empty<byte>();
+            this.ServerGrabTime = 0;
+            this.TotalBytes = 0;
+            this.TotalParts = 0;
+            this.ResourceId = 0;
+            this.Tag = string.Empty;
+            this.Error = string.Empty;
+        }
     }
 }

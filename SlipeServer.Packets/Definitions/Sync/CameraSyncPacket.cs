@@ -80,5 +80,11 @@ namespace SlipeServer.Packets.Definitions.Sync
 
             return builder.Build();
         }
+
+        public override void Reset()
+        {
+            this.Position = Vector3.Zero;
+            this.LookAt = Vector3.Zero;
+        }
     }
 }
