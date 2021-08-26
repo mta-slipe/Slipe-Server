@@ -1,4 +1,6 @@
-﻿using SlipeServer.Server.PacketHandling;
+﻿using SlipeServer.Packets;
+using SlipeServer.Server.PacketHandling.Handlers;
+using SlipeServer.Server.PacketHandling.Handlers.QueueHandlers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,9 +24,19 @@ namespace SlipeServer.Server.ServerOptions
             this.buildSteps.Add(new ServerBuildStep(step, priority));
         }
 
-        public void AddQueueHandler<T>(params object[] parameters) where T : IQueueHandler
+        public void AddPacketHandler<TPacketQueueHandler, TPacketHandler, TPacket>(params object[] parameters)
+            where TPacketQueueHandler : class, IPacketQueueHandler<TPacket>
+            where TPacketHandler : IPacketHandler<TPacket>
+            where TPacket : Packet, new()
         {
-            AddBuildStep(server => server.RegisterPacketQueueHandler<T>(parameters));
+            AddBuildStep(server => server.RegisterPacketHandler<TPacket, TPacketQueueHandler, TPacketHandler>(parameters));
+        }
+
+        public void AddPacketHandler<TPacketHandler, TPacket>(params object[] parameters)
+            where TPacketHandler : IPacketHandler<TPacket>
+            where TPacket : Packet, new()
+        {
+            AddBuildStep(server => server.RegisterPacketHandler<TPacket, ScalingPacketQueueHandler<TPacket>, TPacketHandler>(parameters));
         }
 
         public void Instantiate<T>(params object[] parameters)

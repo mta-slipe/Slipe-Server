@@ -21,6 +21,7 @@ using SlipeServer.Server.Enums;
 using SlipeServer.Server.PacketHandling.QueueHandlers.SyncMiddleware;
 using SlipeServer.Packets.Definitions.Player;
 using SlipeServer.Server.ServerOptions;
+using SlipeServer.Server.PacketHandling.Handlers;
 
 namespace SlipeServer.Server
 {
@@ -152,20 +153,23 @@ namespace SlipeServer.Server
             );
         }
 
-        public void RegisterPacketQueueHandler(PacketId packetId, IQueueHandler queueHandler)
-        {
-            this.packetReducer.RegisterQueueHandler(packetId, queueHandler);
-        }
+        public void RegisterPacketHandler<T>(PacketId packetId, IPacketQueueHandler<T> queueHandler) where T : Packet, new()
+            => this.packetReducer.RegisterPacketHandler(packetId, queueHandler);
 
-        public void RegisterPacketQueueHandler(IQueueHandler queueHandler)
+        public void RegisterPacketHandler<TPacket, TPacketQueueHandler, TPacketHandler>(params object[] parameters) 
+            where TPacket : Packet, new()
+            where TPacketQueueHandler: class, IPacketQueueHandler<TPacket>
+            where TPacketHandler : IPacketHandler<TPacket>
         {
-            foreach (var packetId in queueHandler.SupportedPacketIds)
-                this.RegisterPacketQueueHandler(packetId, queueHandler);
-        }
-
-        public void RegisterPacketQueueHandler<T>(params object[] parameters) where T: IQueueHandler
-        {
-            this.RegisterPacketQueueHandler(this.Instantiate<T>(parameters));
+            var packetHandler = this.Instantiate<TPacketHandler>();
+            var queueHandler = Activator.CreateInstance(
+                typeof(TPacketQueueHandler),
+                Array.Empty<object>()
+                    .Concat(new object[] { packetHandler })
+                    .Concat(parameters)
+                    .ToArray()
+                ) as TPacketQueueHandler;
+            this.packetReducer.RegisterPacketHandler(packetHandler.PacketId, queueHandler!);
         }
 
         public object Instantiate(Type type) => ActivatorUtilities.CreateInstance(this.serviceProvider, type);
