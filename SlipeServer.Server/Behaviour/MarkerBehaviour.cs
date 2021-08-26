@@ -15,12 +15,12 @@ namespace SlipeServer.Server.Behaviour
     public class MarkerBehaviour
     {
         private readonly MtaServer server;
-        private readonly HashSet<Marker> markers;
+        private readonly List<Marker> markers;
 
         public MarkerBehaviour(MtaServer server, IElementRepository elementRepository)
         {
             this.server = server;
-            this.markers = new HashSet<Marker>();
+            this.markers = new List<Marker>();
             foreach (var marker in elementRepository.GetByType<Marker>(ElementType.Marker))
             {
                 AddMarker(marker);
