@@ -149,6 +149,16 @@ namespace SlipeServer.Console
                     eventArgs.Vehicle.RemovePassenger(eventArgs.Ped);
                 }
             };
+            
+            vehicle.PedLeft += async (sender, eventArgs) =>
+            {
+                if (eventArgs.Seat == 0)
+                {
+                    await Task.Delay(1500);
+                    vehicle?.Respawn();
+                    this.logger.LogInformation("Vehicle has been respawned.");
+                }
+            };
 
             var circle = new CollisionCircle(new Vector2(0,25), 3).AssociateWith(this.server);
             var sphere = new CollisionSphere(new Vector3(0,25,0), 3).AssociateWith(this.server);
@@ -486,12 +496,24 @@ namespace SlipeServer.Console
 
                 if (args.Command == "setmaxplayers")
                 {
-                    if(args.Arguments.Length > 0)
+                    if (args.Arguments.Length > 0)
                     {
-                        if(ushort.TryParse(args.Arguments[0], out ushort slots))
+                        if (ushort.TryParse(args.Arguments[0], out ushort slots))
                         {
                             this.server.SetMaxPlayers(slots);
                             this.logger.LogInformation($"Slots has been changed to: {slots}");
+                        }
+                    }
+                }
+
+                if (args.Command == "vehicle")
+                {
+                    if (args.Arguments.Length > 0)
+                    {
+                        if (ushort.TryParse(args.Arguments[0], out ushort model))
+                        {
+                            var vehicle = (new Vehicle(model, player.Position)).AssociateWith(this.server);
+                            player.WarpIntoVehicle(vehicle);
                         }
                     }
                 }
@@ -509,6 +531,9 @@ namespace SlipeServer.Console
                     {
                         player.Model = (ushort)this.random.Next(20, 25);
                     }
+
+                if (args.Command == "togglecontrol")
+                    player.Controls.JumpEnabled = !player.Controls.JumpEnabled;
                 }
             };
 
