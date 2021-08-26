@@ -46,6 +46,7 @@ namespace SlipeServer.Console
         private Blip? BlipB { get; set; }
         private WorldObject? WorldObject { get; set; }
         private Vehicle? Vehicle { get; set; }
+        private Vehicle? Aircraft { get; set; }
         private Ped? Ped { get; set; }
         private readonly Team slipeDevsTeam;
 
@@ -131,7 +132,7 @@ namespace SlipeServer.Console
                 TargetPosition = new Vector3(10, 10, 5)
             }.AssociateWith(this.server);
             var vehicle = new Vehicle(602, new Vector3(-10, 5, 3)).AssociateWith(this.server);
-            var aircraft = new Vehicle(520, new Vector3(10, 5, 3)).AssociateWith(this.server);
+            this.Aircraft = new Vehicle(520, new Vector3(10, 5, 3)).AssociateWith(this.server);
             this.Vehicle = new Vehicle(530, new Vector3(20, 5, 3)).AssociateWith(this.server);
             var forklift2 = new Vehicle(530, new Vector3(22, 5, 3)).AssociateWith(this.server);
             var firetruck = new Vehicle(407, new Vector3(30, 5, 3)).AssociateWith(this.server);
@@ -517,6 +518,9 @@ namespace SlipeServer.Console
                 if (args.Command == "togglecontrol")
                     player.Controls.JumpEnabled = !player.Controls.JumpEnabled;
                 }
+
+                if (args.Command == "landinggear")
+                    Aircraft!.IsLandingGearDown = !Aircraft!.IsLandingGearDown;
             };
 
             player.AcInfoReceived += (o, args) =>

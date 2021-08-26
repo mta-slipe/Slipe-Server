@@ -59,7 +59,19 @@ namespace SlipeServer.Server.Elements
         public VehicleUpgrade[] Upgrades { get; set; }
         public string PlateText { get; set; } = "";
         public byte OverrideLights { get; set; } = 0;
-        public bool IsLandingGearDown { get; set; } = true;
+
+        private bool isLandingGearDown = true;
+        public bool IsLandingGearDown
+        {
+            get => this.isLandingGearDown;
+            set
+            {
+                var args = new ElementChangedEventArgs<Vehicle, bool>(this, this.IsLandingGearDown, value, this.IsSync);
+                this.isLandingGearDown = value;
+                LandingGearChanged?.Invoke(this, args);
+            }
+        }
+
         public bool IsSirenActive { get; set; } = false;
         public bool IsFuelTankExplodable { get; set; } = false;
         public bool IsEngineOn { get; set; } = false;
@@ -262,6 +274,7 @@ namespace SlipeServer.Server.Elements
         public event ElementEventHandler<VehicleLeftEventArgs>? PedLeft;
         public event ElementEventHandler<VehicleEnteredEventsArgs>? PedEntered;
         public event ElementChangedEventHandler<Vehicle, ushort>? ModelChanged;
+        public event ElementChangedEventHandler<Vehicle, bool>? LandingGearChanged;
         public event ElementEventHandler<VehicleRespawnEventArgs>? Respawned;
         public event ElementEventHandler<VehicleDoorStateChangedArgs>? DoorStateChanged;
         public event ElementEventHandler<VehicleWheelStateChangedArgs>? WheelStateChanged;

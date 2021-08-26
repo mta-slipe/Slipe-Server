@@ -31,7 +31,13 @@ namespace SlipeServer.Server.Behaviour
                 vehicle.PanelStateChanged += HandlePanelStateChanged;
                 vehicle.LightStateChanged += HandleLightStateChanged;
                 vehicle.DoorOpenRatioChanged += HandleDoorOpenRatioChanged;
+                vehicle.LandingGearChanged += RelayLandingGearChanged;
             }
+        }
+
+        private void RelayLandingGearChanged(Element sender, ElementChangedEventArgs<Vehicle, bool> args)
+        {
+            this.server.BroadcastPacket(VehiclePacketFactory.CreateSetLandingGearDownPacket(args.Source));
         }
 
         private void RelayModelChange(object sender, ElementChangedEventArgs<Vehicle, ushort> args)
