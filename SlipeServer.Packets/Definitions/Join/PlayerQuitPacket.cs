@@ -14,6 +14,11 @@ namespace MTAServerWrapper.Packets.Outgoing.Connection
         public uint PlayerId { get; }
         public byte QuitReason { get; }
 
+        public PlayerQuitPacket()
+        {
+
+        }
+
         public PlayerQuitPacket(uint playerId, byte quitReason)
         {
             this.PlayerId = playerId;

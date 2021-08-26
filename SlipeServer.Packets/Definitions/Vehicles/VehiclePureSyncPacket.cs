@@ -272,6 +272,49 @@ namespace SlipeServer.Packets.Definitions.Vehicles
 
             return builder.Build();
         }
+
+        public override void Reset()
+        {
+            this.TrainPosition = default;
+            this.TrainDirection = default;
+            this.TrainTrack = default;
+            this.TrainSpeed = default;
+
+            this.Rotation = default;
+            this.Velocity = default;
+            this.TurnVelocity = default;
+            this.Health = default;
+
+            this.Trailers.Clear();
+
+            this.DamagerId = default;
+            this.DamageWeaponType = default;
+            this.DamageBodyPart = default;
+
+            this.PlayerHealth = default;
+            this.PlayerArmor = default;
+
+            this.VehiclePureSyncFlags = new();
+
+            this.WeaponSlot = default;
+
+            this.WeaponAmmo = default;
+            this.WeaponAmmoInClip = default;
+
+            this.AimArm = default;
+            this.AimOrigin = default;
+            this.AimDirection = default;
+            this.VehicleAimDirection = default;
+
+
+            this.TurretRotation = default;
+            this.AdjustableProperty = default;
+
+            this.DoorOpenRatios = new float[6];
+
+            this.LeftShoulder2 = default;
+            this.RightShoulder2 = default;
+        }
     }
 
     public struct TrailerSync
