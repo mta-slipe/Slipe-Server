@@ -513,6 +513,9 @@ namespace SlipeServer.Console
                     {
                         player.Model = (ushort)this.random.Next(20, 25);
                     }
+
+                if (args.Command == "togglecontrol")
+                    player.Controls.JumpEnabled = !player.Controls.JumpEnabled;
                 }
             };
 
