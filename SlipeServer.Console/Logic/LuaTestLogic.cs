@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace SlipeServer.Console
+namespace SlipeServer.Console.Logic
 {
     public class LuaTestLogic
     {
