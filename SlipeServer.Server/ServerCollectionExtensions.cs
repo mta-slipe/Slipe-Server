@@ -2,7 +2,6 @@
 using SlipeServer.Packets.Definitions.Satchels;
 using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Server.Behaviour;
-using SlipeServer.Server.PacketHandling.QueueHandlers.SyncMiddleware;
 using SlipeServer.Server.Repositories;
 using System;
 using System.Collections.Generic;
