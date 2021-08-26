@@ -159,5 +159,25 @@ namespace SlipeServer.Packets.Definitions.Sync
 
             return builder.Build();
         }
+
+        public override void Reset()
+        {
+            this.ContactElementId = 0;
+            this.Velocity = Vector3.Zero;
+
+            this.WeaponType = 0;
+            this.WeaponSlot = 0;
+
+            this.TotalAmmo = 0;
+            this.AmmoInClip = 0;
+
+            this.Arm = 0;
+            this.AimOrigin = Vector3.Zero;
+            this.AimDirection = Vector3.Zero;
+
+            this.DamagerId = 0;
+            this.DamageType = 0;
+            this.DamageBodypart = 0;
+        }
     }
 }
