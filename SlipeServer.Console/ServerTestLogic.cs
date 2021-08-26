@@ -517,6 +517,8 @@ namespace SlipeServer.Console
                 if (args.Command == "togglecontrol")
                     player.Controls.JumpEnabled = !player.Controls.JumpEnabled;
                 }
+                if (args.Command == "jp" || args.Command == "jetpack")
+                    player.HasJetpack = !player.HasJetpack;
             };
 
             player.AcInfoReceived += (o, args) =>
