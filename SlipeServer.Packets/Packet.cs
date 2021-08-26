@@ -13,5 +13,7 @@ namespace SlipeServer.Packets
 
         public abstract byte[] Write();
         public abstract void Read(byte[] bytes);
+
+        //public abstract void Reset();
     }
 }
