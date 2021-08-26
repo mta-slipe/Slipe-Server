@@ -8,7 +8,7 @@ using SlipeServer.Packets.Rpc;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Factories;
-using SlipeServer.Server.PacketHandling.QueueHandlers.SyncMiddleware;
+using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.Repositories;
 using System;
 using System.Linq;

@@ -1,7 +1,7 @@
 ﻿using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Extensions;
-using SlipeServer.Server.PacketHandling.QueueHandlers.SyncMiddleware;
+using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Player.Sync
 {
