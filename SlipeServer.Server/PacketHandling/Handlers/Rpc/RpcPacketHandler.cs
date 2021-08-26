@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlipeServer.Packets.Constants;
-using SlipeServer.Packets.Definitions.Explosions;
 using SlipeServer.Packets.Definitions.Join;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
@@ -8,7 +7,6 @@ using SlipeServer.Packets.Rpc;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Factories;
-using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.Repositories;
 using System;
 using System.Linq;
