@@ -39,11 +39,16 @@ namespace SlipeServer.Server.Elements
         public Vector3 RespawnRotation { get; set; }
         public float RespawnHealth { get; set; }
 
-        private Vector2? turretDirection;
+        private Vector2? turretRotation;
         public Vector2? TurretRotation
         {
-            get => VehicleConstants.TurretModels.Contains((VehicleModel)this.Model) ? this.turretDirection ?? Vector2.Zero : null;
-            set => this.turretDirection = value;
+            get => VehicleConstants.TurretModels.Contains((VehicleModel)this.Model) ? this.turretRotation ?? Vector2.Zero : null;
+            set
+            {
+                var args = new ElementChangedEventArgs<Vehicle, Vector2?>(this, this.turretRotation, value, this.IsSync);
+                this.turretRotation = value;
+                TurretRotationChanged?.Invoke(this, args);
+            }
         }
 
         private ushort? adjustableProperty;
@@ -59,9 +64,33 @@ namespace SlipeServer.Server.Elements
         private byte[] PanelStates { get; set; }
         private byte[] LightStates { get; set; }
         public VehicleUpgrade[] Upgrades { get; set; }
-        public string PlateText { get; set; } = "";
+
+        private string plateText = "";
+        public string PlateText
+        {
+            get => this.plateText;
+            set
+            {
+                var text = value.Substring(0, Math.Min(value.Length, 8));
+                var args = new ElementChangedEventArgs<Vehicle, string>(this, this.PlateText, text, this.IsSync);
+                this.plateText = text;
+                PlateTextChanged?.Invoke(this, args);
+            }
+        }
         public byte OverrideLights { get; set; } = 0;
-        public bool IsLandingGearDown { get; set; } = true;
+
+        private bool isLandingGearDown = true;
+        public bool IsLandingGearDown
+        {
+            get => this.isLandingGearDown;
+            set
+            {
+                var args = new ElementChangedEventArgs<Vehicle, bool>(this, this.IsLandingGearDown, value, this.IsSync);
+                this.isLandingGearDown = value;
+                LandingGearChanged?.Invoke(this, args);
+            }
+        }
+
         public bool IsSirenActive { get; set; } = false;
         public bool IsFuelTankExplodable { get; set; } = false;
         private bool isEngineOn = false;
@@ -93,7 +122,19 @@ namespace SlipeServer.Server.Elements
         public bool IsDerailed { get; set; } = false;
         public bool IsDerailable { get; set; } = true;
         public bool TrainDirection { get; set; } = true;
-        public bool IsTaxiLightOn { get; set; } = false;
+
+        private bool isTaxiLightOn = false;
+        public bool IsTaxiLightOn
+        {
+            get => this.isTaxiLightOn;
+            set
+            {
+                var args = new ElementChangedEventArgs<Vehicle, bool>(this, this.isTaxiLightOn, value, this.IsSync);
+                this.isTaxiLightOn = value;
+                TaxiLightStateChanged?.Invoke(this, args);
+            }
+        }
+
         public Color HeadlightColor { get; set; } = Color.White;
         public VehicleHandling? Handling { get; set; }
         public VehicleSirenSet? Sirens { get; set; }
@@ -285,6 +326,10 @@ namespace SlipeServer.Server.Elements
         public event ElementEventHandler<VehicleLeftEventArgs>? PedLeft;
         public event ElementEventHandler<VehicleEnteredEventsArgs>? PedEntered;
         public event ElementChangedEventHandler<Vehicle, ushort>? ModelChanged;
+        public event ElementChangedEventHandler<Vehicle, bool>? LandingGearChanged;
+        public event ElementChangedEventHandler<Vehicle, bool>? TaxiLightStateChanged;
+        public event ElementChangedEventHandler<Vehicle, Vector2?>? TurretRotationChanged;
+        public event ElementChangedEventHandler<Vehicle, string>? PlateTextChanged;
         public event ElementChangedEventHandler<Vehicle, bool>? LockedStateChanged;
         public event ElementChangedEventHandler<Vehicle, bool>? EngineStateChanged;
         public event ElementEventHandler<VehicleRespawnEventArgs>? Respawned;

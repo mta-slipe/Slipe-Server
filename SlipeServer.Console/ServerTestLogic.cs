@@ -46,6 +46,9 @@ namespace SlipeServer.Console
         private Blip? BlipB { get; set; }
         private WorldObject? WorldObject { get; set; }
         private Vehicle? Vehicle { get; set; }
+        private Vehicle? Aircraft { get; set; }
+        private Vehicle? Taxi { get; set; }
+        private Vehicle? Rhino { get; set; }
         private Ped? Ped { get; set; }
         private readonly Team slipeDevsTeam;
 
@@ -131,8 +134,10 @@ namespace SlipeServer.Console
                 TargetPosition = new Vector3(10, 10, 5)
             }.AssociateWith(this.server);
             var vehicle = new Vehicle(602, new Vector3(-10, 5, 3)).AssociateWith(this.server);
-            var aircraft = new Vehicle(520, new Vector3(10, 5, 3)).AssociateWith(this.server);
+            this.Aircraft = new Vehicle(520, new Vector3(10, 5, 3)).AssociateWith(this.server);
             this.Vehicle = new Vehicle(530, new Vector3(20, 5, 3)).AssociateWith(this.server);
+            this.Taxi = new Vehicle((ushort)VehicleModel.Taxi, new Vector3(20, -5, 3)).AssociateWith(this.server);
+            this.Rhino = new Vehicle((ushort)VehicleModel.Rhino, new Vector3(20, -25, 3)).AssociateWith(this.server);
             var forklift2 = new Vehicle(530, new Vector3(22, 5, 3)).AssociateWith(this.server);
             var firetruck = new Vehicle(407, new Vector3(30, 5, 3)).AssociateWith(this.server);
             firetruck.Colors.Primary = Color.Pink;
@@ -171,16 +176,20 @@ namespace SlipeServer.Console
             var cuboid = new CollisionCuboid(new Vector3(30, 20, 4), new Vector3(2, 2, 2)).AssociateWith(this.server);
             Task.Run(async () =>
             {
+                int i = 0;
                 while (true)
                 {
                     await Task.Delay(1000);
                     this.WorldObject.Model = (ushort)ObjectModel.Drugblue;
                     this.Vehicle.Model = (ushort)VehicleModel.Bobcat;
                     this.Ped.Model = (ushort)this.random.Next(20, 25);
+                    this.Taxi.IsTaxiLightOn = !this.Taxi.IsTaxiLightOn;
                     await Task.Delay(1000);
                     this.WorldObject.Model = (ushort)ObjectModel.Drugred;
                     this.Vehicle.Model = (ushort)VehicleModel.BMX;
                     this.Ped.Model = (ushort)this.random.Next(20, 25);
+                    this.Taxi.IsTaxiLightOn = !this.Taxi.IsTaxiLightOn;
+                    this.Taxi.PlateText = $"i {i++}";
                 }
             });
 
@@ -410,6 +419,12 @@ namespace SlipeServer.Console
             player.CommandEntered += (o, args) => { if (args.Command == "kill") player.Kill(); };
             player.CommandEntered += (o, args) => { if (args.Command == "spawn") player.Spawn(new Vector3(20, 0, 3), 0, 9, 0, 0); };
             player.CommandEntered += (o, args) => {
+                if (args.Command == "night")
+                    worldService.SetTime(0, 0);
+
+                if (args.Command == "day")
+                    worldService.SetTime(13, 37);
+
                 if (args.Command == "blip")
                 {
                     var values = Enum.GetValues(typeof(BlipIcon));
@@ -533,6 +548,21 @@ namespace SlipeServer.Console
                 }
                 if (args.Command == "jp" || args.Command == "jetpack")
                     player.HasJetpack = !player.HasJetpack;
+
+                if (args.Command == "landinggear")
+                    this.Aircraft!.IsLandingGearDown = !this.Aircraft!.IsLandingGearDown;
+
+                if (args.Command == "turret")
+                {
+                    Task.Run(async () =>
+                    {
+                        while (true)
+                        {
+                            await Task.Delay(30);
+                            this.Rhino!.TurretRotation = new Vector2(-MathF.Atan2(this.Rhino.Position.X - player.Position.X, this.Rhino.Position.Y - player.Position.Y) + MathF.PI, 0);
+                        }
+                    });
+                }
             };
 
             player.AcInfoReceived += (o, args) =>

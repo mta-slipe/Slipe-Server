@@ -34,7 +34,32 @@ namespace SlipeServer.Server.Behaviour
                 vehicle.PanelStateChanged += HandlePanelStateChanged;
                 vehicle.LightStateChanged += HandleLightStateChanged;
                 vehicle.DoorOpenRatioChanged += HandleDoorOpenRatioChanged;
+                vehicle.LandingGearChanged += RelayLandingGearChanged;
+                vehicle.TaxiLightStateChanged += RelayTaxiLightStateChanged;
+                vehicle.TurretRotationChanged += RelayTurretRotationChanged;
+                vehicle.PlateTextChanged += RelayPlateTextChanged;
             }
+        }
+
+        private void RelayPlateTextChanged(Element sender, ElementChangedEventArgs<Vehicle, string> args)
+        {
+            this.server.BroadcastPacket(VehiclePacketFactory.CreateSetPlateTextPacket(args.Source));
+        }
+
+        private void RelayTurretRotationChanged(Element sender, ElementChangedEventArgs<Vehicle, System.Numerics.Vector2?> args)
+        {
+            if(args.NewValue.HasValue)
+                this.server.BroadcastPacket(VehiclePacketFactory.CreateSetTurretRotationPacket(args.Source));
+        }
+
+        private void RelayTaxiLightStateChanged(Element sender, ElementChangedEventArgs<Vehicle, bool> args)
+        {
+            this.server.BroadcastPacket(VehiclePacketFactory.CreateSetVehicleTaxiLightOnPacket(args.Source));
+        }
+
+        private void RelayLandingGearChanged(Element sender, ElementChangedEventArgs<Vehicle, bool> args)
+        {
+            this.server.BroadcastPacket(VehiclePacketFactory.CreateSetLandingGearDownPacket(args.Source));
         }
 
         private void RelayColorChanged(Vehicle sender, VehicleColorChangedEventsArgs args)
