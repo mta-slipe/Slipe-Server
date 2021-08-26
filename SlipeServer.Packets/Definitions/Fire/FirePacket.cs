@@ -24,10 +24,10 @@ namespace SlipeServer.Packets.Definitions.Fire
 
         public FirePacket(Vector3 position, float size, uint? sourceElementId = null, ushort? latency = null)
         {
-            Position = position;
-            Size = size;
-            SourceElementId = sourceElementId;
-            Latency = latency;
+            this.Position = position;
+            this.Size = size;
+            this.SourceElementId = sourceElementId;
+            this.Latency = latency;
         }
 
         public override byte[] Write()

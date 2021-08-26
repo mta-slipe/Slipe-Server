@@ -35,7 +35,7 @@ namespace SlipeServer.Packets.Definitions.Player
             byte numItems = reader.GetByte();
             for (byte i = 0; i < numItems; i++)
             {
-                DetectedACList.Add(reader.GetByte());
+                this.DetectedACList.Add(reader.GetByte());
             }
             this.D3d9Size = reader.GetUint32();
             this.D3d9MD5 = reader.GetString();

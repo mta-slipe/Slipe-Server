@@ -70,5 +70,12 @@ namespace SlipeServer.Packets.Definitions.Explosions
 
             return builder.Build();
         }
+
+        public override void Reset()
+        {
+            this.OriginId = null;
+            this.PlayerSource = null;
+            this.Latency = null;
+        }
     }
 }
