@@ -1,7 +1,4 @@
 ﻿using SlipeServer.Packets.Enums;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SlipeServer.Packets
 {
@@ -14,6 +11,6 @@ namespace SlipeServer.Packets
         public abstract byte[] Write();
         public abstract void Read(byte[] bytes);
 
-        //public abstract void Reset();
+        public virtual void Reset() { }
     }
 }
