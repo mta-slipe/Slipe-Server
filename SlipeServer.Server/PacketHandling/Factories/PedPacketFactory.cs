@@ -11,6 +11,7 @@ using System.Drawing;
 using System.Numerics;
 using System.Text;
 using SlipeServer.Packets.Definitions.Player;
+using SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 
 namespace SlipeServer.Server.PacketHandling.Factories
 {
@@ -29,6 +30,16 @@ namespace SlipeServer.Server.PacketHandling.Factories
         public static SetPedArmourRpcPacket CreateSetArmourPacket(Ped ped)
         {
             return new SetPedArmourRpcPacket(ped.Id, ped.GetAndIncrementTimeContext(), ped.Armor);
+        }
+
+        public static GivePedJetpackRpcPacket CreateGiveJetpack(Ped ped)
+        {
+            return new GivePedJetpackRpcPacket(ped.Id);
+        }
+
+        public static RemovePedJetpackRpcPacket CreateRemoveJetpack(Ped ped)
+        {
+            return new RemovePedJetpackRpcPacket(ped.Id);
         }
     }
 }
