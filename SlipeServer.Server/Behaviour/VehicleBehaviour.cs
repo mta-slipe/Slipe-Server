@@ -34,7 +34,13 @@ namespace SlipeServer.Server.Behaviour
                 vehicle.LandingGearChanged += RelayLandingGearChanged;
                 vehicle.TaxiLightStateChanged += RelayTaxiLightStateChanged;
                 vehicle.TurretDirectionChanged += RelayTurretDirectionChanged;
+                vehicle.PlateTextChanged += RelayPlateTextChanged;
             }
+        }
+
+        private void RelayPlateTextChanged(Element sender, ElementChangedEventArgs<Vehicle, string> args)
+        {
+            this.server.BroadcastPacket(VehiclePacketFactory.CreateSetPlateTextPacket(args.Source));
         }
 
         private void RelayTurretDirectionChanged(Element sender, ElementChangedEventArgs<Vehicle, System.Numerics.Vector2?> args)

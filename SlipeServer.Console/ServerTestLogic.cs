@@ -172,6 +172,7 @@ namespace SlipeServer.Console
             var cuboid = new CollisionCuboid(new Vector3(30, 20, 4), new Vector3(2, 2, 2)).AssociateWith(this.server);
             Task.Run(async () =>
             {
+                int i = 0;
                 while (true)
                 {
                     await Task.Delay(1000);
@@ -184,6 +185,8 @@ namespace SlipeServer.Console
                     this.Vehicle.Model = (ushort)VehicleModel.BMX;
                     this.Ped.Model = (ushort)this.random.Next(20, 25);
                     this.Taxi.IsTaxiLightOn = !this.Taxi.IsTaxiLightOn;
+                    this.Taxi.PlateText = $"i {i}";
+                    i++;
                 }
             });
 
