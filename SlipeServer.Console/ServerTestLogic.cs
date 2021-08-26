@@ -478,12 +478,24 @@ namespace SlipeServer.Console
 
                 if (args.Command == "setmaxplayers")
                 {
-                    if(args.Arguments.Length > 0)
+                    if (args.Arguments.Length > 0)
                     {
-                        if(ushort.TryParse(args.Arguments[0], out ushort slots))
+                        if (ushort.TryParse(args.Arguments[0], out ushort slots))
                         {
                             this.server.SetMaxPlayers(slots);
                             this.logger.LogInformation($"Slots has been changed to: {slots}");
+                        }
+                    }
+                }
+
+                if (args.Command == "vehicle")
+                {
+                    if (args.Arguments.Length > 0)
+                    {
+                        if (ushort.TryParse(args.Arguments[0], out ushort model))
+                        {
+                            var vehicle = (new Vehicle(model, player.Position)).AssociateWith(this.server);
+                            player.WarpIntoVehicle(vehicle);
                         }
                     }
                 }

@@ -1,10 +1,4 @@
-﻿using SlipeServer.Packets;
-using SlipeServer.Server.Elements;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace SlipeServer.Server.Extensions
 {
