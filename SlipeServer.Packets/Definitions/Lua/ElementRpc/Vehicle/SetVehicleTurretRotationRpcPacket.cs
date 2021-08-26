@@ -14,12 +14,12 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle
         public override PacketPriority Priority => PacketPriority.High;
 
         public uint ElementId { get; set; }
-        public Vector2 Direction { get; set; }
+        public Vector2 Rotation { get; set; }
 
-        public SetVehicleTurretRotationRpcPacket(uint elementId, Vector2 direction)
+        public SetVehicleTurretRotationRpcPacket(uint elementId, Vector2 rotation)
         {
             this.ElementId = elementId;
-            this.Direction = direction;
+            this.Rotation = rotation;
         }
 
         public override void Read(byte[] bytes)
@@ -32,7 +32,7 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle
             var builder = new PacketBuilder();
             builder.Write((byte)ElementRpcFunction.SET_VEHICLE_TURRET_POSITION);
             builder.WriteElementId(this.ElementId);
-            builder.Write(this.Direction);
+            builder.Write(this.Rotation);
             return builder.Build();
         }
     }
