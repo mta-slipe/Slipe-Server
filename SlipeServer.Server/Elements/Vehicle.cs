@@ -29,7 +29,7 @@ namespace SlipeServer.Server.Elements
         }
 
         public float Health { get; set; } = 1000;
-        public Colors Colors { get; set; }
+        public Colors Colors { get; private set; }
 
         public byte PaintJob { get; set; } = 0;
         public VehicleDamage Damage { get; set; }
