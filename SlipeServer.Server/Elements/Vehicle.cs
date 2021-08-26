@@ -82,7 +82,19 @@ namespace SlipeServer.Server.Elements
         public bool IsDerailed { get; set; } = false;
         public bool IsDerailable { get; set; } = true;
         public bool TrainDirection { get; set; } = true;
-        public bool IsTaxiLightOn { get; set; } = false;
+
+        private bool isTaxiLightOn = false;
+        public bool IsTaxiLightOn
+        {
+            get => this.isTaxiLightOn;
+            set
+            {
+                var args = new ElementChangedEventArgs<Vehicle, bool>(this, this.isTaxiLightOn, value, this.IsSync);
+                this.isTaxiLightOn = value;
+                TaxiLightStateChanged?.Invoke(this, args);
+            }
+        }
+
         public Color HeadlightColor { get; set; } = Color.White;
         public VehicleHandling? Handling { get; set; }
         public VehicleSirenSet? Sirens { get; set; }
@@ -275,6 +287,7 @@ namespace SlipeServer.Server.Elements
         public event ElementEventHandler<VehicleEnteredEventsArgs>? PedEntered;
         public event ElementChangedEventHandler<Vehicle, ushort>? ModelChanged;
         public event ElementChangedEventHandler<Vehicle, bool>? LandingGearChanged;
+        public event ElementChangedEventHandler<Vehicle, bool>? TaxiLightStateChanged;
         public event ElementEventHandler<VehicleRespawnEventArgs>? Respawned;
         public event ElementEventHandler<VehicleDoorStateChangedArgs>? DoorStateChanged;
         public event ElementEventHandler<VehicleWheelStateChangedArgs>? WheelStateChanged;

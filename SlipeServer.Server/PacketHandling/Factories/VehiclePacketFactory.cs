@@ -21,9 +21,15 @@ namespace SlipeServer.Server.PacketHandling.Factories
         {
             return new SetElementModelRpcPacket(vehicle.Id, vehicle.Model, vehicle.Variant1, vehicle.Variant2);
         }
+
         public static SetVehicleLandingGearDownRpcPacket CreateSetLandingGearDownPacket(Vehicle vehicle)
         {
             return new SetVehicleLandingGearDownRpcPacket(vehicle.Id, vehicle.IsLandingGearDown);
+        }
+
+        public static SetVehicleTaxiLightOnRpcPacket CreateSetVehicleTaxiLightOnPacket(Vehicle vehicle)
+        {
+            return new SetVehicleTaxiLightOnRpcPacket(vehicle.Id, vehicle.IsTaxiLightOn);
         }
     }
 }

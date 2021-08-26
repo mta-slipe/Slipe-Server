@@ -32,7 +32,13 @@ namespace SlipeServer.Server.Behaviour
                 vehicle.LightStateChanged += HandleLightStateChanged;
                 vehicle.DoorOpenRatioChanged += HandleDoorOpenRatioChanged;
                 vehicle.LandingGearChanged += RelayLandingGearChanged;
+                vehicle.TaxiLightStateChanged += RelayTaxiLightStateChanged;
             }
+        }
+
+        private void RelayTaxiLightStateChanged(Element sender, ElementChangedEventArgs<Vehicle, bool> args)
+        {
+            this.server.BroadcastPacket(VehiclePacketFactory.CreateSetVehicleTaxiLightOnPacket(args.Source));
         }
 
         private void RelayLandingGearChanged(Element sender, ElementChangedEventArgs<Vehicle, bool> args)
