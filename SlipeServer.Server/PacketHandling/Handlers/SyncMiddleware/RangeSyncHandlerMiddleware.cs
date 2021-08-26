@@ -1,10 +1,9 @@
-﻿using SlipeServer.Packets;
-using SlipeServer.Server.Elements;
+﻿using SlipeServer.Server.Elements;
 using SlipeServer.Server.Repositories;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SlipeServer.Server.PacketHandling.QueueHandlers.SyncMiddleware
+namespace SlipeServer.Server.PacketHandling.Handlers.Middleware
 {
     public class RangeSyncHandlerMiddleware<TData> : ISyncHandlerMiddleware<TData>
     {
@@ -19,10 +18,10 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers.SyncMiddleware
             this.excludesSource = excludesSource;
         }
 
-        public IEnumerable<Player> GetPlayersToSyncTo(Player player, TData packet)
+        public IEnumerable<Elements.Player> GetPlayersToSyncTo(Elements.Player player, TData packet)
         {
             var elements = this.elementRepository
-                .GetWithinRange<Player>(player.Position, this.range, ElementType.Player);
+                .GetWithinRange<Elements.Player>(player.Position, this.range, ElementType.Player);
 
             if (this.excludesSource)
                 return elements.Where(x => x != player);

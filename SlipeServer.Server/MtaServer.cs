@@ -18,7 +18,7 @@ using SlipeServer.Server.Events;
 using SlipeServer.Server.Services;
 using SlipeServer.Server.Resources.ResourceServing;
 using SlipeServer.Server.Enums;
-using SlipeServer.Server.PacketHandling.QueueHandlers.SyncMiddleware;
+using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Packets.Definitions.Player;
 using SlipeServer.Server.ServerOptions;
 using SlipeServer.Server.PacketHandling.Handlers;

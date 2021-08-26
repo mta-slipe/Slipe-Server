@@ -5,7 +5,7 @@ using SlipeServer.Server.Constants;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
-using SlipeServer.Server.PacketHandling.QueueHandlers.SyncMiddleware;
+using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.Repositories;
 using System.Linq;
 

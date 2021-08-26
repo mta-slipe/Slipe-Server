@@ -5,26 +5,23 @@ using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
-using SlipeServer.Server.PacketHandling.QueueHandlers.SyncMiddleware;
+using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.Repositories;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync
 {
     public class VehiclePureSyncPacketHandler : IPacketHandler<VehiclePureSyncPacket>
     {
-        private readonly ILogger logger;
         private readonly ISyncHandlerMiddleware<VehiclePureSyncPacket> middleware;
         private readonly IElementRepository elementRepository;
 
         public PacketId PacketId => PacketId.PACKET_ID_PLAYER_VEHICLE_PURESYNC;
 
         public VehiclePureSyncPacketHandler(
-            ILogger logger,
             ISyncHandlerMiddleware<VehiclePureSyncPacket> middleware,
             IElementRepository elementRepository
         )
         {
-            this.logger = logger;
             this.middleware = middleware;
             this.elementRepository = elementRepository;
         }
