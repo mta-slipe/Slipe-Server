@@ -307,7 +307,7 @@ namespace SlipeServer.Packets.Definitions.Vehicles
             this.VehicleAimDirection = default;
 
 
-            this.TurretRotation = default;
+            this.TurretDirection = default;
             this.AdjustableProperty = default;
 
             this.DoorOpenRatios = new float[6];
