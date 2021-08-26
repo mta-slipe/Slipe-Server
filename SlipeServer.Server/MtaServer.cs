@@ -1,27 +1,27 @@
-﻿using SlipeServer.Packets.Enums;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SlipeServer.Net.Wrappers;
 using SlipeServer.Packets;
+using SlipeServer.Packets.Definitions.Player;
+using SlipeServer.Packets.Enums;
+using SlipeServer.Server.AllSeeingEye;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements.IdGeneration;
+using SlipeServer.Server.Enums;
+using SlipeServer.Server.Events;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling;
+using SlipeServer.Server.PacketHandling.Handlers;
+using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.Repositories;
+using SlipeServer.Server.Resources.ResourceServing;
+using SlipeServer.Server.ServerOptions;
+using SlipeServer.Server.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net.Http;
-using SlipeServer.Server.AllSeeingEye;
-using SlipeServer.Server.Elements.IdGeneration;
-using SlipeServer.Server.Events;
-using SlipeServer.Server.Services;
-using SlipeServer.Server.Resources.ResourceServing;
-using SlipeServer.Server.Enums;
-using SlipeServer.Server.PacketHandling.Handlers.Middleware;
-using SlipeServer.Packets.Definitions.Player;
-using SlipeServer.Server.ServerOptions;
-using SlipeServer.Server.PacketHandling.Handlers;
 
 namespace SlipeServer.Server
 {
@@ -156,9 +156,9 @@ namespace SlipeServer.Server
         public void RegisterPacketHandler<T>(PacketId packetId, IPacketQueueHandler<T> queueHandler) where T : Packet, new()
             => this.packetReducer.RegisterPacketHandler(packetId, queueHandler);
 
-        public void RegisterPacketHandler<TPacket, TPacketQueueHandler, TPacketHandler>(params object[] parameters) 
+        public void RegisterPacketHandler<TPacket, TPacketQueueHandler, TPacketHandler>(params object[] parameters)
             where TPacket : Packet, new()
-            where TPacketQueueHandler: class, IPacketQueueHandler<TPacket>
+            where TPacketQueueHandler : class, IPacketQueueHandler<TPacket>
             where TPacketHandler : IPacketHandler<TPacket>
         {
             var packetHandler = this.Instantiate<TPacketHandler>();
@@ -174,7 +174,7 @@ namespace SlipeServer.Server
 
         public object Instantiate(Type type) => ActivatorUtilities.CreateInstance(this.serviceProvider, type);
         public T Instantiate<T>() => ActivatorUtilities.CreateInstance<T>(this.serviceProvider);
-        public T Instantiate<T>(params object[] parameters) 
+        public T Instantiate<T>(params object[] parameters)
             => ActivatorUtilities.CreateInstance<T>(this.serviceProvider, parameters);
 
         public T GetService<T>() => this.serviceProvider.GetService<T>();
@@ -246,7 +246,7 @@ namespace SlipeServer.Server
             if (!this.clients[netWrapper].ContainsKey(binaryAddress))
             {
                 var client = this.clientCreationMethod?.Invoke(binaryAddress, netWrapper) ??
-                    new Client(binaryAddress, netWrapper); 
+                    new Client(binaryAddress, netWrapper);
                 AssociateElement(client.Player);
 
                 this.clients[netWrapper][binaryAddress] = client;
@@ -259,7 +259,7 @@ namespace SlipeServer.Server
             this.packetReducer.EnqueuePacket(this.clients[netWrapper][binaryAddress], packetId, data);
 
             if (
-                packetId == PacketId.PACKET_ID_PLAYER_QUIT || 
+                packetId == PacketId.PACKET_ID_PLAYER_QUIT ||
                 packetId == PacketId.PACKET_ID_PLAYER_TIMEOUT ||
                 packetId == PacketId.PACKET_ID_PLAYER_NO_SOCKET
             )

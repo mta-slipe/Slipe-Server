@@ -26,7 +26,7 @@ namespace SlipeServer.Server.PacketHandling
         {
             if (this.packets.Count < this.maxPacketCount || this.maxPacketCount == -1)
             {
-                //packet.Reset();
+                packet.Reset();
                 this.packets.Enqueue(packet);
             }
         }

@@ -22,8 +22,6 @@ namespace SlipeServer.Server.Tests.Integration.Miscellaneous
         public void ClientInScope_SendsPacket()
         {
             var server = new TestingServer();
-            var handler = server.Instantiate<SyncQueueHandler>(QueueHandlerScalingConfig.Default, 0);
-            server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_PURESYNC, handler);
 
             var player = server.AddFakePlayer();
 
@@ -40,8 +38,6 @@ namespace SlipeServer.Server.Tests.Integration.Miscellaneous
         public void ClientOutOfScope_DoesNotSendPacket()
         {
             var server = new TestingServer();
-            var handler = server.Instantiate<SyncQueueHandler>(QueueHandlerScalingConfig.Default, 0);
-            server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_PURESYNC, handler);
 
             var player = server.AddFakePlayer();
 
@@ -58,8 +54,6 @@ namespace SlipeServer.Server.Tests.Integration.Miscellaneous
         public async Task AsyncScopes_DoNotInterfere()
         {
             var server = new TestingServer();
-            var handler = server.Instantiate<SyncQueueHandler>(QueueHandlerScalingConfig.Default, 0);
-            server.RegisterPacketQueueHandler(PacketId.PACKET_ID_PLAYER_PURESYNC, handler);
 
             var player = server.AddFakePlayer();
 
