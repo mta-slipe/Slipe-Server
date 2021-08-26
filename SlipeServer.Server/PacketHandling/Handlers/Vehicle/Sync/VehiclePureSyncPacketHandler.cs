@@ -75,7 +75,7 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync
                     vehicle.Health = packet.Health;
                     vehicle.Velocity = packet.Velocity;
                     vehicle.TurnVelocity = packet.TurnVelocity;
-                    vehicle.TurretDirection = packet.TurretDirection;
+                    vehicle.TurretRotation = packet.TurretRotation;
                     vehicle.AdjustableProperty = packet.AdjustableProperty;
                 });
             }

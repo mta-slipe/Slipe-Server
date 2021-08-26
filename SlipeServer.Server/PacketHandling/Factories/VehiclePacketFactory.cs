@@ -32,9 +32,9 @@ namespace SlipeServer.Server.PacketHandling.Factories
             return new SetVehicleTaxiLightOnRpcPacket(vehicle.Id, vehicle.IsTaxiLightOn);
         }
 
-        public static SetVehicleTurretDirectionRpcPacket CreateSetTurretDirectionPacket(Vehicle vehicle)
+        public static SetVehicleTurretRotationRpcPacket CreateSetTurretRotationPacket(Vehicle vehicle)
         {
-            return new SetVehicleTurretDirectionRpcPacket(vehicle.Id, vehicle.TurretDirection!.Value);
+            return new SetVehicleTurretRotationRpcPacket(vehicle.Id, vehicle.TurretRotation!.Value);
         }
 
         public static SetVehiclePlateTextRpcPacket CreateSetPlateTextPacket(Vehicle vehicle)

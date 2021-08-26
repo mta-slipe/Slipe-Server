@@ -37,15 +37,15 @@ namespace SlipeServer.Server.Elements
         public Vector3 RespawnRotation { get; set; }
         public float RespawnHealth { get; set; }
 
-        private Vector2? turretDirection;
-        public Vector2? TurretDirection
+        private Vector2? turretRotation;
+        public Vector2? TurretRotation
         {
-            get => VehicleConstants.TurretModels.Contains((VehicleModel)this.Model) ? this.turretDirection ?? Vector2.Zero : null;
+            get => VehicleConstants.TurretModels.Contains((VehicleModel)this.Model) ? this.turretRotation ?? Vector2.Zero : null;
             set
             {
-                var args = new ElementChangedEventArgs<Vehicle, Vector2?>(this, this.turretDirection, value, this.IsSync);
-                this.turretDirection = value;
-                TurretDirectionChanged?.Invoke(this, args);
+                var args = new ElementChangedEventArgs<Vehicle, Vector2?>(this, this.turretRotation, value, this.IsSync);
+                this.turretRotation = value;
+                TurretRotationChanged?.Invoke(this, args);
             }
         }
 
@@ -305,7 +305,7 @@ namespace SlipeServer.Server.Elements
         public event ElementChangedEventHandler<Vehicle, ushort>? ModelChanged;
         public event ElementChangedEventHandler<Vehicle, bool>? LandingGearChanged;
         public event ElementChangedEventHandler<Vehicle, bool>? TaxiLightStateChanged;
-        public event ElementChangedEventHandler<Vehicle, Vector2?>? TurretDirectionChanged;
+        public event ElementChangedEventHandler<Vehicle, Vector2?>? TurretRotationChanged;
         public event ElementChangedEventHandler<Vehicle, string>? PlateTextChanged;
         public event ElementEventHandler<VehicleRespawnEventArgs>? Respawned;
         public event ElementEventHandler<VehicleDoorStateChangedArgs>? DoorStateChanged;

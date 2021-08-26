@@ -53,7 +53,7 @@ namespace SlipeServer.Packets.Definitions.Vehicles
         public Vector3 AimDirection { get; set; }
         public VehicleAimDirection VehicleAimDirection { get; set; }
         public List<TrailerSync> Trailers { get; set; }
-        public Vector2 TurretDirection { get; set; }
+        public Vector2 TurretRotation { get; set; }
         public ushort AdjustableProperty { get; set; }
         public float[] DoorOpenRatios { get; set; }
         public ushort LeftShoulder2 { get; set; }
@@ -140,7 +140,7 @@ namespace SlipeServer.Packets.Definitions.Vehicles
             {
                 if (VehicleConstants.VehiclesWithTurrets.Contains(this.RemoteModel))
                 {
-                    this.TurretDirection = reader.GetTurretRotation();
+                    this.TurretRotation = reader.GetTurretRotation();
                 }
 
                 if (VehicleConstants.VehiclesWithAdjustableProperties.Contains(this.RemoteModel))
@@ -237,7 +237,7 @@ namespace SlipeServer.Packets.Definitions.Vehicles
             {
                 if (VehicleConstants.VehiclesWithTurrets.Contains(this.RemoteModel))
                 {
-                    builder.WriteTurretRotation(this.TurretDirection);
+                    builder.WriteTurretRotation(this.TurretRotation);
                 }
                 if (VehicleConstants.VehiclesWithAdjustableProperties.Contains(this.RemoteModel))
                 {
@@ -307,7 +307,7 @@ namespace SlipeServer.Packets.Definitions.Vehicles
             this.VehicleAimDirection = default;
 
 
-            this.TurretDirection = default;
+            this.TurretRotation = default;
             this.AdjustableProperty = default;
 
             this.DoorOpenRatios = new float[6];

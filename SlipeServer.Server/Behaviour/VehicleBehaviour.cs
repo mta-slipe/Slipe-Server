@@ -33,7 +33,7 @@ namespace SlipeServer.Server.Behaviour
                 vehicle.DoorOpenRatioChanged += HandleDoorOpenRatioChanged;
                 vehicle.LandingGearChanged += RelayLandingGearChanged;
                 vehicle.TaxiLightStateChanged += RelayTaxiLightStateChanged;
-                vehicle.TurretDirectionChanged += RelayTurretDirectionChanged;
+                vehicle.TurretRotationChanged += RelayTurretRotationChanged;
                 vehicle.PlateTextChanged += RelayPlateTextChanged;
             }
         }
@@ -43,10 +43,10 @@ namespace SlipeServer.Server.Behaviour
             this.server.BroadcastPacket(VehiclePacketFactory.CreateSetPlateTextPacket(args.Source));
         }
 
-        private void RelayTurretDirectionChanged(Element sender, ElementChangedEventArgs<Vehicle, System.Numerics.Vector2?> args)
+        private void RelayTurretRotationChanged(Element sender, ElementChangedEventArgs<Vehicle, System.Numerics.Vector2?> args)
         {
             if(args.NewValue.HasValue)
-                this.server.BroadcastPacket(VehiclePacketFactory.CreateSetTurretDirectionPacket(args.Source));
+                this.server.BroadcastPacket(VehiclePacketFactory.CreateSetTurretRotationPacket(args.Source));
         }
 
         private void RelayTaxiLightStateChanged(Element sender, ElementChangedEventArgs<Vehicle, bool> args)

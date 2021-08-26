@@ -185,8 +185,7 @@ namespace SlipeServer.Console
                     this.Vehicle.Model = (ushort)VehicleModel.BMX;
                     this.Ped.Model = (ushort)this.random.Next(20, 25);
                     this.Taxi.IsTaxiLightOn = !this.Taxi.IsTaxiLightOn;
-                    this.Taxi.PlateText = $"i {i}";
-                    i++;
+                    this.Taxi.PlateText = $"i {i++}";
                 }
             });
 
@@ -546,7 +545,7 @@ namespace SlipeServer.Console
                         while (true)
                         {
                             await Task.Delay(30);
-                            this.Rhino!.TurretDirection = new Vector2(-MathF.Atan2(this.Rhino.Position.X - player.Position.X, this.Rhino.Position.Y - player.Position.Y) + MathF.PI, 0);
+                            this.Rhino!.TurretRotation = new Vector2(-MathF.Atan2(this.Rhino.Position.X - player.Position.X, this.Rhino.Position.Y - player.Position.Y) + MathF.PI, 0);
                         }
                     });
                 }

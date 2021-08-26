@@ -7,7 +7,7 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle
 {
-    public class SetVehicleTurretDirectionRpcPacket : Packet
+    public class SetVehicleTurretRotationRpcPacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
         public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
@@ -16,7 +16,7 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle
         public uint ElementId { get; set; }
         public Vector2 Direction { get; set; }
 
-        public SetVehicleTurretDirectionRpcPacket(uint elementId, Vector2 direction)
+        public SetVehicleTurretRotationRpcPacket(uint elementId, Vector2 direction)
         {
             this.ElementId = elementId;
             this.Direction = direction;
