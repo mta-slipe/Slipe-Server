@@ -130,5 +130,13 @@ namespace SlipeServer.Packets.Definitions.Vehicles
                 builder.WriteFloatFromBits(this.DoorOpenRatio, 10, 0.0f, 1.0f, true);
             }
         }
+
+        public override void Reset()
+        {
+            this.Seat = 0;
+            this.IsOnWater = false;
+            this.StartedJacking = false;
+            this.DoorOpenRatio = 0;
+        }
     }
 }

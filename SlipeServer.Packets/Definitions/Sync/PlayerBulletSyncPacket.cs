@@ -65,5 +65,13 @@ namespace SlipeServer.Packets.Definitions.Sync
 
             return builder.Build();
         }
+
+        public override void Reset()
+        {
+            this.Damage = null;
+            this.BodyPart = null;
+            this.DamagedElementId = null;
+            this.SourceElementId = 0;
+        }
     }
 }

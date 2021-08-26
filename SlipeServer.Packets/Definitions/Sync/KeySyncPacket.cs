@@ -122,5 +122,19 @@ namespace SlipeServer.Packets.Definitions.Sync
 
             return builder.Build();
         }
+
+        public override void Reset()
+        {
+            this.HasWeapon = false;
+            this.WeaponType = 0;
+            this.WeaponSlot = 0;
+            this.TotalAmmo = 0;
+            this.AmmoInClip = 0;
+
+            this.AimArm = 0;
+            this.AimOrigin = Vector3.Zero;
+            this.AimDirection = Vector3.Zero;
+            this.VehicleAimDirection = 0;
+        }
     }
 }
