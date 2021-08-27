@@ -97,13 +97,15 @@ namespace SlipeServer.Server
 
         public MtaServer(
             Action<ServerBuilder> builderAction,
-            Configuration? configuration = null,
             Func<uint, INetWrapper, Client>? clientCreationMethod = null
         )
         {
             this.netWrappers = new();
 
-            this.configuration = configuration ?? new();
+            var builder = new ServerBuilder();
+            builderAction(builder);
+
+            this.configuration = builder.Configuration;
             this.clientCreationMethod = clientCreationMethod;
             var validationResults = new List<ValidationResult>();
             if (!Validator.TryValidateObject(this.configuration, new ValidationContext(this.configuration), validationResults, true))
@@ -116,8 +118,6 @@ namespace SlipeServer.Server
 
             this.serviceCollection = new ServiceCollection();
 
-            var builder = new ServerBuilder(this.configuration);
-            builderAction(builder);
             builder.LoadDependencies(this.serviceCollection);
             builder.ApplyTo(this);
 

@@ -13,14 +13,19 @@ namespace SlipeServer.Server.ServerOptions
     public class ServerBuilder
     {
         private readonly List<ServerBuildStep> buildSteps;
-        public Configuration Configuration { get; init; }
+        public Configuration Configuration { get; private set; }
         private readonly List<Action<ServiceCollection>> dependecyLoaders;
 
-        public ServerBuilder(Configuration configuration)
+        public ServerBuilder()
         {
+            this.Configuration = new();
             this.buildSteps = new();
-            this.Configuration = configuration;
             this.dependecyLoaders = new();
+        }
+
+        public void UseConfiguration(Configuration configuration)
+        {
+            this.Configuration = configuration;
         }
 
         public void AddBuildStep(Action<MtaServer> step, ServerBuildStepPriority priority = ServerBuildStepPriority.Default)
