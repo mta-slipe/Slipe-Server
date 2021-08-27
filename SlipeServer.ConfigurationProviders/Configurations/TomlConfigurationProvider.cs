@@ -1,7 +1,7 @@
 using SlipeServer.Server;
 using Nett;
 
-namespace SlipeServer.ConfigurationProviders
+namespace SlipeServer.ConfigurationProviders.Configurations
 {
     public class TomlConfigurationProvider : IConfigurationProvider
     {
