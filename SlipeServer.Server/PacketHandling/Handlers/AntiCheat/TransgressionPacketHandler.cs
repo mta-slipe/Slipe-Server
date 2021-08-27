@@ -24,7 +24,7 @@ namespace SlipeServer.Server.PacketHandling.Handlers.AntiCheat
             if (!this.configuration.AntiCheat.DisabledAntiCheat.Contains(acRule))
             {
                 client.Player.Kick(packet.Message);
-                this.logger.LogWarning($"{client.Player} has trigger anticheat detection for {acRule} {packet.Message}");
+                this.logger.LogWarning($"{client.Player.Name} has trigger anticheat detection for {acRule} {packet.Message}");
             }
         }
     }
