@@ -21,7 +21,7 @@ using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 
-namespace SlipeServer.Console
+namespace SlipeServer.Console.Logic
 {
     public class ServerTestLogic
     {
