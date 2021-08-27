@@ -60,40 +60,47 @@ namespace SlipeServer.Server.Elements
             get => this.currentWeaponSlot;
             set
             {
-                var args = new ElementChangedEventArgs<Ped, WeaponSlot>(this, this.CurrentWeaponSlot, value, this.IsSync);
-                this.currentWeaponSlot = value;
-                WeaponSlotChanged?.Invoke(this, args);
+                lock (this.CurrentWeaponLock)
+                {
+                    var args = new ElementChangedEventArgs<Ped, WeaponSlot>(this, this.CurrentWeaponSlot, value, this.IsSync);
+                    this.currentWeaponSlot = value;
+                    WeaponSlotChanged?.Invoke(this, args);
+                }
             }
         }
 
 
+        public object CurrentWeaponLock { get; } = new();
         public Weapon? CurrentWeapon
         {
             get => this.Weapons.Get(this.CurrentWeaponSlot);
             set
             {
-                if (value == null)
+                lock (this.CurrentWeaponLock)
                 {
-                    this.currentWeaponSlot = WeaponSlot.Hand;
-                } else
-                {
-                    this.currentWeaponSlot = value.Slot;
-                    if (!this.Weapons.Any(w => w.Type == value.Type))
+                    if (value == null)
                     {
-                        if (this.Weapons.Any(w => w.Slot == value.Slot))
-                            this.Weapons.Remove(value.Slot);
-
-                        this.Weapons.Add(value);
+                        this.currentWeaponSlot = WeaponSlot.Hand;
                     } else
                     {
-                        var weapon = this.Weapons.Get(value.Slot);
-                        if (weapon != null && weapon.Ammo != value.Ammo)
-                            weapon.Ammo = value.Ammo;
-                        if (weapon != null && weapon.AmmoInClip != value.AmmoInClip)
-                            weapon.AmmoInClip = value.AmmoInClip;
+                        this.currentWeaponSlot = value.Slot;
+                        if (!this.Weapons.Any(w => w.Type == value.Type))
+                        {
+                            if (this.Weapons.Any(w => w.Slot == value.Slot))
+                                this.Weapons.Remove(value.Slot);
 
+                            this.Weapons.Add(value);
+                        } else
+                        {
+                            var weapon = this.Weapons.Get(value.Slot);
+                            if (weapon != null && weapon.Ammo != value.Ammo)
+                                weapon.Ammo = value.Ammo;
+                            if (weapon != null && weapon.AmmoInClip != value.AmmoInClip)
+                                weapon.AmmoInClip = value.AmmoInClip;
+
+                        }
+                        this.CurrentWeaponSlot = value.Slot;
                     }
-                    this.CurrentWeaponSlot = value.Slot;
                 }
             }
         }

@@ -55,7 +55,7 @@ namespace SlipeServer.Server.PacketHandling
                     }
                     catch (Exception e)
                     {
-                        this.logger.LogError($"Handling packet ({packetId}) failed.\n{e.Message}");
+                        this.logger.LogError($"Enqueueing packet ({packetId}) failed.\n{e.Message}");
                     }
             } else
             {

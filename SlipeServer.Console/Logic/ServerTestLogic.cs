@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
 using SlipeServer.Packets.Definitions.Lua;
-using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
@@ -153,7 +152,7 @@ namespace SlipeServer.Console.Logic
                     eventArgs.Vehicle.RemovePassenger(eventArgs.Ped);
                 }
             };
-            
+
             vehicle.PedLeft += async (sender, eventArgs) =>
             {
                 if (eventArgs.Seat == 0)
@@ -164,10 +163,10 @@ namespace SlipeServer.Console.Logic
                 }
             };
 
-            var circle = new CollisionCircle(new Vector2(0,25), 3).AssociateWith(this.server);
-            var sphere = new CollisionSphere(new Vector3(0,25,0), 3).AssociateWith(this.server);
-            var tube = new CollisionTube(new Vector3(0,25,0), 3, 3).AssociateWith(this.server);
-            var polygon = new CollisionPolygon(new Vector3(0,-25,0), new Vector2[] { new Vector2(-25, -25), new Vector2(-25, -50), new Vector2(-50, -25)}).AssociateWith(this.server);
+            var circle = new CollisionCircle(new Vector2(0, 25), 3).AssociateWith(this.server);
+            var sphere = new CollisionSphere(new Vector3(0, 25, 0), 3).AssociateWith(this.server);
+            var tube = new CollisionTube(new Vector3(0, 25, 0), 3, 3).AssociateWith(this.server);
+            var polygon = new CollisionPolygon(new Vector3(0, -25, 0), new Vector2[] { new Vector2(-25, -25), new Vector2(-25, -50), new Vector2(-50, -25) }).AssociateWith(this.server);
             var rectangle = new CollisionRectangle(new Vector2(50, 20), new Vector2(2, 2)).AssociateWith(this.server);
             var cuboid = new CollisionCuboid(new Vector3(30, 20, 4), new Vector3(2, 2, 2)).AssociateWith(this.server);
             Task.Run(async () =>
@@ -189,7 +188,7 @@ namespace SlipeServer.Console.Logic
                 }
             });
 
-            var shape = new CollisionCircle(new Vector2(0,25), 3).AssociateWith(this.server);
+            var shape = new CollisionCircle(new Vector2(0, 25), 3).AssociateWith(this.server);
 
             circle.RadiusChanged += async (Element sender, ElementChangedEventArgs<float> args) =>
             {
@@ -340,7 +339,7 @@ namespace SlipeServer.Console.Logic
             player.Weapons.First(weapon => weapon.Type == WeaponId.Deagle).Ammo -= 200;
             player.Weapons.First(weapon => weapon.Type == WeaponId.Ak47).Ammo = 750;
             player.Weapons.First(weapon => weapon.Type == WeaponId.Ak47).AmmoInClip = 25;
-            
+
             this.testResource?.StartFor(player);
 
             this.HandlePlayerSubscriptions(player);
@@ -364,7 +363,8 @@ namespace SlipeServer.Console.Logic
             }
 
 
-            player.CommandEntered += (o, args) => {
+            player.CommandEntered += (o, args) =>
+            {
                 Player? otherPlayer;
                 switch (args.Command)
                 {
@@ -404,12 +404,13 @@ namespace SlipeServer.Console.Logic
             bool flip = false;
             player.CommandEntered += (o, args) => { if (args.Command == "kill") player.Kill(); };
             player.CommandEntered += (o, args) => { if (args.Command == "spawn") player.Spawn(new Vector3(20, 0, 3), 0, 9, 0, 0); };
-            player.CommandEntered += (o, args) => {
+            player.CommandEntered += (o, args) =>
+            {
                 if (args.Command == "night")
-                    worldService.SetTime(0, 0);
+                    this.worldService.SetTime(0, 0);
 
                 if (args.Command == "day")
-                    worldService.SetTime(13, 37);
+                    this.worldService.SetTime(13, 37);
 
                 if (args.Command == "blip")
                 {
@@ -425,8 +426,7 @@ namespace SlipeServer.Console.Logic
                     {
                         this.BlipA.Ordering = 1;
                         this.BlipB.Ordering = 2;
-                    }
-                    else
+                    } else
                     {
                         this.BlipA.Ordering = 2;
                         this.BlipB.Ordering = 1;
@@ -523,14 +523,13 @@ namespace SlipeServer.Console.Logic
                         {
                             player.Model = model;
                         }
-                    }
-                    else
+                    } else
                     {
                         player.Model = (ushort)this.random.Next(20, 25);
                     }
 
-                if (args.Command == "togglecontrol")
-                    player.Controls.JumpEnabled = !player.Controls.JumpEnabled;
+                    if (args.Command == "togglecontrol")
+                        player.Controls.JumpEnabled = !player.Controls.JumpEnabled;
                 }
                 if (args.Command == "jp" || args.Command == "jetpack")
                     player.HasJetpack = !player.HasJetpack;
@@ -555,7 +554,7 @@ namespace SlipeServer.Console.Logic
             {
                 this.logger.LogInformation($"ACInfo for {player.Name} detectedACList:{string.Join(",", args.DetectedACList)} d3d9Size: {args.D3D9Size} d3d9SHA256: {args.D3D9SHA256}");
             };
-            
+
             player.DiagnosticInfoReceived += (o, args) =>
             {
                 this.logger.LogInformation($"DIAGNOSTIC: {player.Name} #{args.Level} {args.Message}");
@@ -572,7 +571,7 @@ namespace SlipeServer.Console.Logic
 
             player.NetworkStatusReceived += (o, args) =>
             {
-                switch(args.PlayerNetworkStatus)
+                switch (args.PlayerNetworkStatus)
                 {
                     case Packets.Enums.PlayerNetworkStatusType.InterruptionBegan:
                         this.logger.LogInformation($"(packets from {o.Name}) interruption began {args.Ticks} ticks ago");
@@ -586,12 +585,11 @@ namespace SlipeServer.Console.Logic
 
         private void HandlePlayerScreenshot(object? o, Server.Elements.Events.ScreenshotEventArgs e)
         {
-            if(e.Stream != null)
+            if (e.Stream != null)
             {
                 using FileStream file = new FileStream($"screenshot_${e.Tag}.jpg", FileMode.Create, FileAccess.Write);
                 e.Stream.CopyTo(file);
-            }
-            else
+            } else
             {
                 Player? player = (Player?)o;
                 this.logger.LogWarning($"Failed to take a screenshot ({e.Tag}) of player: {player?.Name}, reason: {e.ErrorMessage}");

@@ -45,7 +45,7 @@ namespace SlipeServer.Server.Behaviour
 
         private void RelayTurretRotationChanged(Element sender, ElementChangedEventArgs<Vehicle, System.Numerics.Vector2?> args)
         {
-            if(args.NewValue.HasValue)
+            if(args.NewValue.HasValue && !args.IsSync)
                 this.server.BroadcastPacket(VehiclePacketFactory.CreateSetTurretRotationPacket(args.Source));
         }
 
