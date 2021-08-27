@@ -55,9 +55,9 @@ namespace SlipeServer.Server
             Func<uint, INetWrapper, Client>? clientCreationMethod = null
         )
         {
-            this.netWrappers = new List<INetWrapper>();
+            this.netWrappers = new();
 
-            this.configuration = configuration ?? new Configuration();
+            this.configuration = configuration ?? new();
             this.clientCreationMethod = clientCreationMethod;
             var validationResults = new List<ValidationResult>();
             if (!Validator.TryValidateObject(this.configuration, new ValidationContext(this.configuration), validationResults, true))
@@ -98,13 +98,41 @@ namespace SlipeServer.Server
         public MtaServer(
             Action<ServerBuilder> builderAction,
             Configuration? configuration = null,
-            Action<ServiceCollection>? dependencyCallback = null,
             Func<uint, INetWrapper, Client>? clientCreationMethod = null
-        ) : this(configuration, dependencyCallback, clientCreationMethod)
+        )
         {
+            this.netWrappers = new();
+
+            this.configuration = configuration ?? new();
+            this.clientCreationMethod = clientCreationMethod;
+            var validationResults = new List<ValidationResult>();
+            if (!Validator.TryValidateObject(this.configuration, new ValidationContext(this.configuration), validationResults, true))
+            {
+                string invalidProperties = string.Join("\r\n\t", validationResults.Select(r => r.ErrorMessage));
+                throw new Exception($"An error has occurred while parsing configuration parameters:\r\n {invalidProperties}");
+            }
+
+            this.root = new RootElement();
+
+            this.serviceCollection = new ServiceCollection();
+
             var builder = new ServerBuilder(this.configuration);
             builderAction(builder);
+            builder.LoadDependencies(this.serviceCollection);
             builder.ApplyTo(this);
+
+            this.serviceProvider = this.serviceCollection.BuildServiceProvider();
+
+            this.resourceServer = this.serviceProvider.GetRequiredService<IResourceServer>();
+            this.resourceServer.Start();
+
+            this.elementRepository = this.serviceProvider.GetRequiredService<IElementRepository>();
+            this.elementIdGenerator = this.serviceProvider.GetService<IElementIdGenerator>();
+
+            this.root.AssociateWith(this);
+
+            this.packetReducer = new PacketReducer(this.serviceProvider.GetRequiredService<ILogger>());
+            this.clients = new Dictionary<INetWrapper, Dictionary<uint, Client>>();
         }
 
         public void Start()

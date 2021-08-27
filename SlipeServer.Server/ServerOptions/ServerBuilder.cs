@@ -1,4 +1,5 @@
-﻿using SlipeServer.Packets;
+﻿using Microsoft.Extensions.DependencyInjection;
+using SlipeServer.Packets;
 using SlipeServer.Server.PacketHandling.Handlers;
 using SlipeServer.Server.PacketHandling.Handlers.QueueHandlers;
 using System;
@@ -13,10 +14,13 @@ namespace SlipeServer.Server.ServerOptions
     {
         private readonly List<ServerBuildStep> buildSteps;
         public Configuration Configuration { get; init; }
+        private readonly List<Action<ServiceCollection>> dependecyLoaders;
+
         public ServerBuilder(Configuration configuration)
         {
             this.buildSteps = new();
             this.Configuration = configuration;
+            this.dependecyLoaders = new();
         }
 
         public void AddBuildStep(Action<MtaServer> step, ServerBuildStepPriority priority = ServerBuildStepPriority.Default)
@@ -54,6 +58,11 @@ namespace SlipeServer.Server.ServerOptions
             Instantiate<T>(parameters);
         }
 
+        public void ConfigureServices(Action<ServiceCollection> action)
+        {
+            this.dependecyLoaders.Add(action);
+        }
+
         public void AddNetWrapper(
             string? directory = null,
             string dllPath = "net",
@@ -74,6 +83,12 @@ namespace SlipeServer.Server.ServerOptions
         {
             foreach (var step in this.buildSteps.OrderBy(x => (int)x.Priority))
                 step.Step(server);
+        }
+
+        public void LoadDependencies(ServiceCollection services)
+        {
+            foreach (var loader in this.dependecyLoaders)
+                loader(services);
         }
     }
 }

@@ -70,9 +70,9 @@ namespace SlipeServer.Console
 
                     builder.AddLogic<ServerTestLogic>();
                     builder.AddLogic<LuaTestLogic>();
+                    builder.ConfigureServices(this.Configure);
                 },
-                this.configuration,
-                this.Configure
+                this.configuration
             )
             {
                 GameType = "Slipe Server",

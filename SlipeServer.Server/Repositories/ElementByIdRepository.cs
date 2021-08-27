@@ -1,5 +1,4 @@
-﻿using System;
-using SlipeServer.Server.Elements;
+﻿using SlipeServer.Server.Elements;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -8,7 +7,7 @@ namespace SlipeServer.Server.Repositories
 {
     public class ElementByIdRepository : IElementRepository
     {
-        public int Count => elements.Count;
+        public int Count => this.elements.Count;
 
         private readonly Dictionary<uint, Element> elements;
 
@@ -34,7 +33,7 @@ namespace SlipeServer.Server.Repositories
 
         public IEnumerable<Element> GetAll()
         {
-            return this.elements.Values;
+            return this.elements.Values.ToArray();
         }
 
         public IEnumerable<TElement> GetByType<TElement>(ElementType elementType) where TElement : Element
