@@ -549,6 +549,19 @@ namespace SlipeServer.Console
                         }
                     });
                 }
+
+                if (args.Command == "testbind")
+                {
+                    player.SetBindEnabled("a", KeyState.Both);
+                    player.SetBindEnabled("s", KeyState.Up);
+                    player.SetBindEnabled("d", KeyState.Down);
+                    this.chatBox.OutputTo(player, "Bind created for 'a' - both, 's' - up, 'd' - down.", Color.YellowGreen);
+                }
+
+                player.BindClicked += (Player sender, PlayerBindCallbackArgs e) =>
+                {
+                    this.chatBox.OutputTo(sender, $"BindClicked: {e.Key} {e.BindType} {e.KeyState}", Color.YellowGreen);
+                };
             };
 
             player.AcInfoReceived += (o, args) =>

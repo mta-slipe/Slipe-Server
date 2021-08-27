@@ -11,6 +11,7 @@ using System.Numerics;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements.Structs;
+using SlipeServer.Packets.Constants;
 
 namespace SlipeServer.Server.Elements
 {
@@ -73,7 +74,7 @@ namespace SlipeServer.Server.Elements
 
         private readonly HashSet<Element> subscriptionElements;
 
-        
+        private Dictionary<string, KeyState> BoundedKeys { get; set; }
         protected internal Player(Client client) : base(0, Vector3.Zero)
         {
             this.Client = client;
@@ -234,6 +235,22 @@ namespace SlipeServer.Server.Elements
             this.Client.ResendPlayerACInfo();
         }
 
+        public void SetBindEnabled(string key, KeyState keyState, bool enabled)
+        {
+            if(KeyConstants.Controls.Contains(key) || KeyConstants.Keys.Contains(key))
+            {
+                if(BoundedKeys.TryGetValue(key ,out KeyState value))
+                {
+                    if (value == KeyState.Both)
+                        return;
+                }
+                BoundedKeys[key] = value;
+                this.KeyBound?.Invoke(this, new PlayerBindKeyArgs(this, key, keyState));
+                return;
+            }
+            throw new ArgumentException($"Key '{key}' is not valid key.", key);
+        }
+
         internal void TriggerPlayerACInfo(IEnumerable<byte> detectedACList, uint d3d9Size, string d3d9MD5, string D3d9SHA256)
         {
             this.AcInfoReceived?.Invoke(this, new PlayerACInfoArgs(detectedACList, d3d9Size, d3d9MD5, D3d9SHA256));
@@ -254,6 +271,11 @@ namespace SlipeServer.Server.Elements
             this.NetworkStatusReceived?.Invoke(this, new PlayerNetworkStatusArgs(networkStatusType, ticks));
         }
 
+        internal void TriggerBindKey(BindType bindType, KeyState keyState, string key)
+        {
+            this.BindClicked?.Invoke(this, new PlayerBindCallbackArgs(this, bindType, keyState, key));
+        }
+
         public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
         public event ElementEventHandler<Player, PlayerDamagedEventArgs>? Damaged;
         public event ElementEventHandler<Player, PlayerWastedEventArgs>? Wasted;
@@ -272,5 +294,7 @@ namespace SlipeServer.Server.Elements
         public event ElementEventHandler<Player, PlayerModInfoArgs>? ModInfoReceived;
         public event ElementEventHandler<Player, PlayerNetworkStatusArgs>? NetworkStatusReceived;
         public event ElementEventHandler<Player, PlayerTeamChangedArgs>? TeamChanged;
+        public event ElementEventHandler<Player, PlayerBindKeyArgs>? KeyBound;
+        public event ElementEventHandler<Player, PlayerBindCallbackArgs>? BindClicked;
     }
 }

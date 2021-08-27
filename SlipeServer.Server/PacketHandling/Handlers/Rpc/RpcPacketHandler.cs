@@ -5,6 +5,7 @@ using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
 using SlipeServer.Packets.Rpc;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Factories;
 using SlipeServer.Server.Repositories;
@@ -49,6 +50,9 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Rpc
 
                 case RpcFunctions.PLAYER_WEAPON:
                     HandlePlayerWeapon(client, packet);
+                    break;
+                case RpcFunctions.KEY_BIND:
+                    HandlePlayerBindKey(client, packet);
                     break;
 
                 default:
@@ -125,6 +129,15 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Rpc
                 client.Player.CurrentWeapon.Ammo = ammo;
                 client.Player.CurrentWeapon.AmmoInClip = inClip;
             }
+        }
+
+        private void HandlePlayerBindKey(Client client, RpcPacket packet)
+        {
+            var type = packet.Reader.GetBit() ? BindType.ControlFunction : BindType.Function;
+            var state = packet.Reader.GetBit() ? KeyState.Down : KeyState.Up;
+            var size = (packet.Reader.Size - packet.Reader.Counter) >> 3;
+            var key = packet.Reader.GetStringCharacters(size);
+            client.Player.TriggerBindKey(type, state, key);
         }
     }
 }
