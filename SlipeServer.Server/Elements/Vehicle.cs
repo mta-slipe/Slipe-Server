@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets.Definitions.Entities.Structs;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Constants;
+using SlipeServer.Server.ElementConcepts;
 using SlipeServer.Server.Elements.Events;
 using System;
 using System.Collections.Generic;
@@ -61,7 +62,7 @@ namespace SlipeServer.Server.Elements
         private byte[] WheelStates { get; set; }
         private byte[] PanelStates { get; set; }
         private byte[] LightStates { get; set; }
-        public VehicleUpgrade[] Upgrades { get; set; }
+        public VehicleUpgrades Upgrades { get; set; }
 
         private string plateText = "";
         public string PlateText
@@ -150,7 +151,7 @@ namespace SlipeServer.Server.Elements
             this.WheelStates = new byte[4];
             this.PanelStates = new byte[7];
             this.LightStates = new byte[4];
-            this.Upgrades = Array.Empty<VehicleUpgrade>();
+            this.Upgrades = new VehicleUpgrades(this);
 
             this.Name = $"vehicle{this.Id}";
             this.Occupants = new Dictionary<byte, Ped>();
