@@ -6,16 +6,19 @@ using SlipeServer.Packets.Definitions.Join;
 using SlipeServer.Packets.Definitions.Player;
 using SlipeServer.Packets.Definitions.Satchels;
 using SlipeServer.Packets.Definitions.Sync;
+using SlipeServer.Packets.Definitions.Transgression;
 using SlipeServer.Packets.Definitions.Vehicles;
 using SlipeServer.Packets.Definitions.Voice;
 using SlipeServer.Packets.Lua.Event;
 using SlipeServer.Packets.Rpc;
 using SlipeServer.Server.AllSeeingEye;
 using SlipeServer.Server.Behaviour;
+using SlipeServer.Server.PacketHandling.Handlers.AntiCheat;
 using SlipeServer.Server.PacketHandling.Handlers.BulletSync;
 using SlipeServer.Server.PacketHandling.Handlers.Command;
 using SlipeServer.Server.PacketHandling.Handlers.Connection;
 using SlipeServer.Server.PacketHandling.Handlers.Explosions;
+using SlipeServer.Server.PacketHandling.Handlers.Lua;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.PacketHandling.Handlers.Player;
 using SlipeServer.Server.PacketHandling.Handlers.Player.Sync;
@@ -71,6 +74,8 @@ namespace SlipeServer.Server.ServerOptions
 
             builder.AddPacketHandler<VoiceDataPacketHandler, VoiceDataPacket>();
             builder.AddPacketHandler<VoiceEndPacketHandler, VoiceEndPacket>();
+
+            builder.AddPacketHandler<TransgressionPacketHandler, TransgressionPacket>();
         }
 
         public static void AddDefaultBehaviours(this ServerBuilder builder)

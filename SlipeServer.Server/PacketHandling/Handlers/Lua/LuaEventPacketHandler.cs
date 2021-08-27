@@ -4,7 +4,7 @@ using SlipeServer.Packets.Lua.Event;
 using SlipeServer.Server.Repositories;
 using System.Linq;
 
-namespace SlipeServer.Server.PacketHandling.Handlers.Command
+namespace SlipeServer.Server.PacketHandling.Handlers.Lua
 {
     public class LuaEventPacketHandler : IPacketHandler<LuaEventPacket>
     {
