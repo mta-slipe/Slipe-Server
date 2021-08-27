@@ -182,7 +182,7 @@ namespace SlipeServer.Server
             where TPacketHandler : IPacketHandler<TPacket>
         {
             var packetHandler = this.Instantiate<TPacketHandler>();
-            var queueHandler = Activator.CreateInstance(
+            var queueHandler = this.Instantiate(
                 typeof(TPacketQueueHandler),
                 Array.Empty<object>()
                     .Concat(new object[] { packetHandler })
@@ -192,7 +192,7 @@ namespace SlipeServer.Server
             this.packetReducer.RegisterPacketHandler(packetHandler.PacketId, queueHandler!);
         }
 
-        public object Instantiate(Type type) => ActivatorUtilities.CreateInstance(this.serviceProvider, type);
+        public object Instantiate(Type type, params object[] parameters) => ActivatorUtilities.CreateInstance(this.serviceProvider, type, parameters);
         public T Instantiate<T>() => ActivatorUtilities.CreateInstance<T>(this.serviceProvider);
         public T Instantiate<T>(params object[] parameters)
             => ActivatorUtilities.CreateInstance<T>(this.serviceProvider, parameters);
