@@ -4,6 +4,7 @@ using SlipeServer.Server.PacketHandling.Handlers;
 using SlipeServer.Server.PacketHandling.Handlers.QueueHandlers;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -25,6 +26,12 @@ namespace SlipeServer.Server.ServerOptions
 
         public void UseConfiguration(Configuration configuration)
         {
+            var validationResults = new List<ValidationResult>();
+            if (!Validator.TryValidateObject(configuration, new ValidationContext(configuration), validationResults, true))
+            {
+                string invalidProperties = string.Join("\r\n\t", validationResults.Select(r => r.ErrorMessage));
+                throw new Exception($"An error has occurred while parsing configuration parameters:\r\n {invalidProperties}");
+            }
             this.Configuration = configuration;
         }
 

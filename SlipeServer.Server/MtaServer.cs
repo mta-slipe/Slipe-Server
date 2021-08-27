@@ -56,9 +56,13 @@ namespace SlipeServer.Server
         )
         {
             this.netWrappers = new();
-
-            this.configuration = configuration ?? new();
+            this.clients = new();
             this.clientCreationMethod = clientCreationMethod;
+            this.configuration = configuration ?? new();
+
+            this.root = new();
+            this.serviceCollection = new();
+
             var validationResults = new List<ValidationResult>();
             if (!Validator.TryValidateObject(this.configuration, new ValidationContext(this.configuration), validationResults, true))
             {
@@ -66,9 +70,6 @@ namespace SlipeServer.Server
                 throw new Exception($"An error has occurred while parsing configuration parameters:\r\n {invalidProperties}");
             }
 
-            this.root = new RootElement();
-
-            this.serviceCollection = new ServiceCollection();
             this.SetupDependencies(dependencyCallback);
             this.serviceProvider = this.serviceCollection.BuildServiceProvider();
 
@@ -80,8 +81,7 @@ namespace SlipeServer.Server
 
             this.root.AssociateWith(this);
 
-            this.packetReducer = new PacketReducer(this.serviceProvider.GetRequiredService<ILogger>());
-            this.clients = new Dictionary<INetWrapper, Dictionary<uint, Client>>();
+            this.packetReducer = new(this.serviceProvider.GetRequiredService<ILogger>());
         }
 
         public MtaServer(
@@ -101,27 +101,20 @@ namespace SlipeServer.Server
         )
         {
             this.netWrappers = new();
+            this.clients = new();
+            this.clientCreationMethod = clientCreationMethod;
+
+            this.root = new();
+            this.serviceCollection = new();
 
             var builder = new ServerBuilder();
             builderAction(builder);
 
             this.configuration = builder.Configuration;
-            this.clientCreationMethod = clientCreationMethod;
-            var validationResults = new List<ValidationResult>();
-            if (!Validator.TryValidateObject(this.configuration, new ValidationContext(this.configuration), validationResults, true))
-            {
-                string invalidProperties = string.Join("\r\n\t", validationResults.Select(r => r.ErrorMessage));
-                throw new Exception($"An error has occurred while parsing configuration parameters:\r\n {invalidProperties}");
-            }
-
-            this.root = new RootElement();
-
-            this.serviceCollection = new ServiceCollection();
-
-            builder.LoadDependencies(this.serviceCollection);
-            builder.ApplyTo(this);
+            this.SetupDependencies(services => builder.LoadDependencies(services));
 
             this.serviceProvider = this.serviceCollection.BuildServiceProvider();
+            this.packetReducer = new(this.serviceProvider.GetRequiredService<ILogger>());
 
             this.resourceServer = this.serviceProvider.GetRequiredService<IResourceServer>();
             this.resourceServer.Start();
@@ -131,8 +124,7 @@ namespace SlipeServer.Server
 
             this.root.AssociateWith(this);
 
-            this.packetReducer = new PacketReducer(this.serviceProvider.GetRequiredService<ILogger>());
-            this.clients = new Dictionary<INetWrapper, Dictionary<uint, Client>>();
+            builder.ApplyTo(this);
         }
 
         public void Start()
