@@ -1,20 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SlipeServer.ConfigurationProviders;
-using SlipeServer.ConfigurationProviders.Configurations;
 using SlipeServer.Console.Logic;
 using SlipeServer.Lua;
-using SlipeServer.Packets.Definitions.Satchels;
-using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Server;
-using SlipeServer.Server.AllSeeingEye;
-using SlipeServer.Server.Behaviour;
-using SlipeServer.Server.PacketHandling.Handlers;
-using SlipeServer.Server.PacketHandling.Handlers.Middleware;
-using SlipeServer.Server.Repositories;
 using SlipeServer.Server.ServerOptions;
 using System;
-using System.IO;
 using System.Threading;
 
 namespace SlipeServer.Console
@@ -86,8 +77,7 @@ namespace SlipeServer.Console
                 MapName = "N/A"
             };
 
-            System.Console.CancelKeyPress += delegate
-            {
+            System.Console.CancelKeyPress += delegate {
                 this.server.Stop();
                 this.waitHandle.Set();
             };

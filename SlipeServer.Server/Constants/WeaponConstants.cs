@@ -106,5 +106,55 @@ namespace SlipeServer.Server.Constants
             [WeaponId.Infrared] = 1,
             [WeaponId.Parachute] = 1,
         };
+
+        public static Dictionary<WeaponId, ushort> ModelsPerWeapon { get; } = new()
+        {
+            [WeaponId.Fist] = 0,
+            [WeaponId.BrassKnuckle] = 331,
+            [WeaponId.Golfclub] = 333,
+            [WeaponId.Nightstick] = 334,
+            [WeaponId.Knife] = 335,
+            [WeaponId.Bat] = 336,
+            [WeaponId.Shovel] = 337,
+            [WeaponId.Poolstick] = 338,
+            [WeaponId.Katana] = 339,
+            [WeaponId.Chainsaw] = 341,
+
+            [WeaponId.Dildo] = 321,
+            [WeaponId.Dildo2] = 322,
+            [WeaponId.Vibrator] = 323,
+            [WeaponId.Flower] = 325,
+            [WeaponId.Cane] = 326,
+
+            [WeaponId.Grenade] = 342,
+            [WeaponId.Teargass] = 343,
+            [WeaponId.Molotov] = 344,
+
+            [WeaponId.Colt] = 346,
+            [WeaponId.Silenced] = 347,
+            [WeaponId.Deagle] = 348,
+            [WeaponId.Shotgun] = 349,
+            [WeaponId.Sawnoff] = 350,
+            [WeaponId.CombatShotgun] = 351,
+            [WeaponId.Uzi] = 352,
+            [WeaponId.Mp5] = 353,
+            [WeaponId.Ak47] = 355,
+            [WeaponId.M4] = 356,
+            [WeaponId.Tec9] = 372,
+            [WeaponId.Rifle] = 357,
+            [WeaponId.Sniper] = 358,
+            [WeaponId.RocketLauncher] = 359,
+            [WeaponId.HeatSeakingRocketLauncher] = 360,
+            [WeaponId.Flamethrower] = 361,
+            [WeaponId.Minigun] = 362,
+            [WeaponId.Satchel] = 363,
+            [WeaponId.Detonator] = 364,
+            [WeaponId.Spraycan] = 365,
+            [WeaponId.FireExtinguisher] = 366,
+            [WeaponId.Camera] = 367,
+            [WeaponId.Nightvision] = 368,
+            [WeaponId.Infrared] = 369,
+            [WeaponId.Parachute] = 371,
+        };
     }
 }

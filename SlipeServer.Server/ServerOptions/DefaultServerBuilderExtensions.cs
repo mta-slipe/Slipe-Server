@@ -104,6 +104,7 @@ namespace SlipeServer.Server.ServerOptions
             builder.AddBehaviour<BlipBehaviour>();
             builder.AddBehaviour<ObjectPacketBehaviour>();
             builder.AddBehaviour<VehicleBehaviour>();
+            builder.AddBehaviour<PickupBehaviour>();
         }
 
         public static void AddDefaultServices(this ServerBuilder builder)
