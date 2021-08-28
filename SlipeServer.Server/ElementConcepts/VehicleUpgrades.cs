@@ -17,6 +17,8 @@ namespace SlipeServer.Server.ElementConcepts
         {
             this.vehicle = vehicle;
         }
+
+        public byte[] Bytes { get; set; } = new byte[] { };
         private VehicleUpgradeHood hood = VehicleUpgradeHood.None;
         public VehicleUpgradeHood Hood
         {
@@ -43,7 +45,7 @@ namespace SlipeServer.Server.ElementConcepts
         public bool HasStereo { get; set; }
         //public VehicleUpgradeHood Unknown { get; set; }
         public VehicleUpgradeWheel Wheels { get; set; }
-        public VehicleUpgradeHood Exhaust { get; set; }
+        public VehicleUpgradeExhaust Exhaust { get; set; }
         public VehicleUpgradeHood FrontBumper { get; set; }
         public VehicleUpgradeHood RearBumper { get; set; }
         public VehicleUpgradeHood Misc { get; set; }
