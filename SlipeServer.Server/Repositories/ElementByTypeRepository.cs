@@ -51,7 +51,7 @@ namespace SlipeServer.Server.Repositories
 
         public IEnumerable<TElement> GetByType<TElement>(ElementType elementType) where TElement : Element
         {
-            return this.elements.ContainsKey(elementType) ? this.elements[elementType].Cast<TElement>() : Array.Empty<TElement>();
+            return this.elements.ContainsKey(elementType) ? this.elements[elementType].Cast<TElement>().ToArray() : Array.Empty<TElement>();
         }
 
         public IEnumerable<Element> GetWithinRange(Vector3 position, float range)

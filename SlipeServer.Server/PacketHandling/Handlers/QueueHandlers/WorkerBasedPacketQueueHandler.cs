@@ -1,4 +1,6 @@
-﻿using SlipeServer.Packets;
+﻿using Microsoft.Extensions.Logging;
+using SlipeServer.Packets;
+using System;
 using System.Threading.Tasks;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.QueueHandlers
@@ -7,14 +9,17 @@ namespace SlipeServer.Server.PacketHandling.Handlers.QueueHandlers
     {
         private readonly int workerCount;
         private readonly int sleepTime;
+        private readonly ILogger logger;
         private readonly IPacketHandler<T> packetHandler;
         private TaskCompletionSource<int>? pulseTaskCompletionSource;
 
-        public WorkerBasedPacketQueueHandler(IPacketHandler<T> packetHandler, int workerCount = 1, int sleepTime = 10)
+        public WorkerBasedPacketQueueHandler(ILogger logger, IPacketHandler<T> packetHandler, int workerCount = 1, int sleepTime = 10)
         {
+            this.logger = logger;
+            this.packetHandler = packetHandler;
             this.workerCount = workerCount;
             this.sleepTime = sleepTime;
-            this.packetHandler = packetHandler;
+
             for (int i = 0; i < this.workerCount; i++)
             {
                 Task.Run(PulsePacketTask);
@@ -27,7 +32,13 @@ namespace SlipeServer.Server.PacketHandling.Handlers.QueueHandlers
             {
                 while (this.packetQueue.TryDequeue(out var queueEntry))
                 {
-                    this.packetHandler.HandlePacket(queueEntry.Client, queueEntry.Packet);
+                    try
+                    {
+                        this.packetHandler.HandlePacket(queueEntry.Client, queueEntry.Packet);
+                    } catch (Exception e)
+                    {
+                         this.logger.LogError($"Handling packet ({queueEntry.Packet}) failed.\n{e.Message}");
+                    }
                 }
 
                 if (this.pulseTaskCompletionSource != null)

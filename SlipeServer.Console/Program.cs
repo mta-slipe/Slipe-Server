@@ -63,21 +63,29 @@ namespace SlipeServer.Console
             this.server = new MtaServer(
                 (builder) =>
                 {
+                    builder.UseConfiguration(this.configuration);
+
                     builder.AddDefaults();
 
                     #if DEBUG
                         builder.AddNetWrapper(dllPath: "net_d", port: (ushort)(this.configuration.Port + 1));
                     #endif
 
-                    SetupLogic(builder);
-                },
-                this.configuration,
-                this.Configure
+                    builder.ConfigureServices(services =>
+                    {
+                        services.AddSingleton<ILogger>(this.Logger);
+                    });
+                    builder.AddLua();
+
+                    builder.AddLogic<ServerTestLogic>();
+                    builder.AddLogic<LuaTestLogic>();
+                }
             )
             {
                 GameType = "Slipe Server",
                 MapName = "N/A"
             };
+
             System.Console.CancelKeyPress += delegate
             {
                 this.server.Stop();
@@ -89,19 +97,6 @@ namespace SlipeServer.Console
         {
             this.server.Start();
             this.waitHandle.WaitOne();
-        }
-
-        private void Configure(ServiceCollection services)
-        {
-            services.AddSingleton<ILogger>(this.Logger);
-            services.AddServerDefaults(this.configuration);
-            services.AddLua();
-        }
-        
-        private void SetupLogic(ServerBuilder builder)
-        {
-            builder.AddLogic<ServerTestLogic>();
-            builder.AddLogic<LuaTestLogic>();
         }
     }
 }
