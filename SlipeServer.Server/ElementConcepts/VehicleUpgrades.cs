@@ -151,7 +151,7 @@ namespace SlipeServer.Server.ElementConcepts
             {
                 if (this.HasHydraulics != value && CanHaveHydralics())
                 {
-                    var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.Nitro, this.HasHydraulics ? 0 : 1087, value ? 1087 : 0);
+                    var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.Nitro, (ushort)(this.HasHydraulics ? 0 : 1087), (ushort)(value ? 1087 : 0));
                     this.hasHydraulics = value;
                     UpgradeChanged?.Invoke(this.vehicle, args);
                 }
@@ -166,7 +166,7 @@ namespace SlipeServer.Server.ElementConcepts
             {
                 if (this.HasStereo != value && CanHaveStereo())
                 {
-                    var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.Nitro, this.HasStereo ? 0 : 1086, value ? 1086 : 0);
+                    var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.Nitro, (ushort)(this.HasStereo ? 0 : 1086), (ushort)(value ? 1086 : 0));
                     this.hasStereo = value;
                     UpgradeChanged?.Invoke(this.vehicle, args);
                 }
