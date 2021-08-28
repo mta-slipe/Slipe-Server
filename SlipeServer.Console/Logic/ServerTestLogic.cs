@@ -51,6 +51,11 @@ namespace SlipeServer.Console.Logic
         private Vehicle? Taxi { get; set; }
         private Vehicle? Rhino { get; set; }
         private Vehicle? Elegy { get; set; }
+        private Vehicle? Flash { get; set; }
+        private Vehicle? Stratum { get; set; }
+        private Vehicle? Sultan { get; set; }
+        private Vehicle? Jester { get; set; }
+        private Vehicle? Uranus { get; set; }
         private Ped? Ped { get; set; }
         private readonly Team slipeDevsTeam;
 
@@ -136,7 +141,14 @@ namespace SlipeServer.Console.Logic
                 TargetPosition = new Vector3(10, 10, 5)
             }.AssociateWith(this.server);
             var vehicle = new Vehicle(602, new Vector3(-10, 5, 3)).AssociateWith(this.server);
+
             this.Elegy = new Vehicle(562, new Vector3(30, -20, 3)).AssociateWith(this.server);
+            this.Flash = new Vehicle(565, new Vector3(34, -20, 3)).AssociateWith(this.server);
+            this.Stratum = new Vehicle(561, new Vector3(38, -20, 3)).AssociateWith(this.server);
+            this.Sultan = new Vehicle(560, new Vector3(42, -20, 3)).AssociateWith(this.server);
+            this.Jester = new Vehicle(559, new Vector3(46, -20, 3)).AssociateWith(this.server);
+            this.Uranus = new Vehicle(558, new Vector3(50, -20, 3)).AssociateWith(this.server);
+
             this.Aircraft = new Vehicle(520, new Vector3(10, 5, 3)).AssociateWith(this.server);
             this.Vehicle = new Vehicle(530, new Vector3(20, 5, 3)).AssociateWith(this.server);
             this.Taxi = new Vehicle((ushort)VehicleModel.Taxi, new Vector3(20, -5, 3)).AssociateWith(this.server);
@@ -555,8 +567,19 @@ namespace SlipeServer.Console.Logic
 
                 if (args.Command == "tuning" || args.Command == "upgrade")
                 {
+                    this.Flash!.Upgrades.Spoiler = VehicleUpgradeSpoiler.Alien;
+                    this.Stratum!.Upgrades.Spoiler = VehicleUpgradeSpoiler.Alien;
+                    this.Sultan!.Upgrades.Spoiler = VehicleUpgradeSpoiler.Alien;
                     this.Elegy!.Upgrades.Spoiler = VehicleUpgradeSpoiler.Alien;
-                    this.chatBox.OutputTo(player, "tuning applied, spoiler = alien", Color.YellowGreen);
+                    this.Jester!.Upgrades.Spoiler = VehicleUpgradeSpoiler.Alien;
+                    this.Uranus!.Upgrades.Spoiler = VehicleUpgradeSpoiler.Alien;
+                    this.Flash!.Upgrades.Wheels = VehicleUpgradeWheel.Cutter;
+                    this.Stratum!.Upgrades.Wheels = VehicleUpgradeWheel.Cutter;
+                    this.Sultan!.Upgrades.Wheels = VehicleUpgradeWheel.Cutter;
+                    this.Elegy!.Upgrades.Wheels = VehicleUpgradeWheel.Cutter;
+                    this.Jester!.Upgrades.Wheels = VehicleUpgradeWheel.Cutter;
+                    this.Uranus!.Upgrades.Wheels = VehicleUpgradeWheel.Cutter;
+                    this.chatBox.OutputTo(player, "tuning applied, spoiler = alien, wheels = cutter", Color.YellowGreen);
                 }
             };
 

@@ -694,6 +694,8 @@ namespace SlipeServer.Server.Constants
             ushort[] upgrades = new ushort[] { };
             if (upgradeType == typeof(VehicleUpgradeSpoiler))
                 upgrades = UpgradeToIds((VehicleUpgradeSpoiler)upgrade);
+            if (upgradeType == typeof(VehicleUpgradeWheel))
+                upgrades = UpgradeToIds((VehicleUpgradeWheel)upgrade);
 
             if (upgrades != null)
             {
