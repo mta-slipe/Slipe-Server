@@ -35,7 +35,18 @@ namespace SlipeServer.Server.Behaviour
                 vehicle.TaxiLightStateChanged += RelayTaxiLightStateChanged;
                 vehicle.TurretRotationChanged += RelayTurretRotationChanged;
                 vehicle.PlateTextChanged += RelayPlateTextChanged;
+                vehicle.Upgrades.UpgradeChanged += RelayUpgradeChanged;
             }
+        }
+
+        private void RelayUpgradeChanged(Vehicle sender, VehicleUpgradeChanged args)
+        {
+            if(args.PreviousUpgrade.HasValue)
+                this.server.BroadcastPacket(VehiclePacketFactory.CreateRemoveUpgradePacket(args.Vehicle, args.PreviousUpgrade.Value));
+
+            if(args.NewUpgrade.HasValue)
+                this.server.BroadcastPacket(VehiclePacketFactory.CreateAddUpgradePacket(args.Vehicle, args.NewUpgrade.Value));
+
         }
 
         private void RelayPlateTextChanged(Element sender, ElementChangedEventArgs<Vehicle, string> args)

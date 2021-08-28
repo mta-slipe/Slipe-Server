@@ -41,5 +41,15 @@ namespace SlipeServer.Server.PacketHandling.Factories
         {
             return new SetVehiclePlateTextRpcPacket(vehicle.Id, vehicle.PlateText);
         }
+
+        public static AddVehicleUpgradeRpcPacket CreateAddUpgradePacket(Vehicle vehicle, ushort upgradeId)
+        {
+            return new AddVehicleUpgradeRpcPacket(vehicle.Id, upgradeId);
+        }
+
+        public static RemoveVehicleUpgradeRpcPacket CreateRemoveUpgradePacket(Vehicle vehicle, ushort upgradeId)
+        {
+            return new RemoveVehicleUpgradeRpcPacket(vehicle.Id, upgradeId);
+        }
     }
 }

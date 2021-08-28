@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
+using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
@@ -49,6 +50,7 @@ namespace SlipeServer.Console.Logic
         private Vehicle? Aircraft { get; set; }
         private Vehicle? Taxi { get; set; }
         private Vehicle? Rhino { get; set; }
+        private Vehicle? Elegy { get; set; }
         private Ped? Ped { get; set; }
         private readonly Team slipeDevsTeam;
 
@@ -134,6 +136,7 @@ namespace SlipeServer.Console.Logic
                 TargetPosition = new Vector3(10, 10, 5)
             }.AssociateWith(this.server);
             var vehicle = new Vehicle(602, new Vector3(-10, 5, 3)).AssociateWith(this.server);
+            this.Elegy = new Vehicle(562, new Vector3(30, -20, 3)).AssociateWith(this.server);
             this.Aircraft = new Vehicle(520, new Vector3(10, 5, 3)).AssociateWith(this.server);
             this.Vehicle = new Vehicle(530, new Vector3(20, 5, 3)).AssociateWith(this.server);
             this.Taxi = new Vehicle((ushort)VehicleModel.Taxi, new Vector3(20, -5, 3)).AssociateWith(this.server);
@@ -548,6 +551,12 @@ namespace SlipeServer.Console.Logic
                             this.Rhino!.TurretRotation = new Vector2(-MathF.Atan2(this.Rhino.Position.X - player.Position.X, this.Rhino.Position.Y - player.Position.Y) + MathF.PI, 0);
                         }
                     });
+                }
+
+                if (args.Command == "tuning")
+                {
+                    this.Elegy!.Upgrades.Spoiler = VehicleUpgradeSpoiler.Alpha;
+                    this.chatBox.OutputTo(player, "tuning applied, spoiler = alpha", Color.YellowGreen);
                 }
             };
 
