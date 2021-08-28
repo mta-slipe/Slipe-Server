@@ -119,7 +119,19 @@ namespace SlipeServer.Console.Logic
             {
                 Color = Color.FromArgb(100, Color.Cyan)
             }.AssociateWith(this.server);
-            new Pickup(new Vector3(0, 5, 3), PickupType.Health, 20).AssociateWith(this.server);
+
+            new Pickup(new Vector3(0, -5, 3), PickupType.Health, 20)
+            {
+                RespawnTime = 5000
+            }.AssociateWith(this.server);
+            new Pickup(new Vector3(3, -5, 3), PickupType.Armor, 20)
+            {
+                RespawnTime = 5000
+            }.AssociateWith(this.server);
+            new Pickup(new Vector3(5, -5, 3), WeaponType.WEAPONTYPE_AK47, 100)
+            {
+                RespawnTime = 5000
+            }.AssociateWith(this.server);
 
             var values = Enum.GetValues(typeof(PedModel));
             PedModel randomPedModel = (PedModel)values.GetValue(new Random().Next(values.Length))!;

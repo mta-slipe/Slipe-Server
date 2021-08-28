@@ -200,18 +200,20 @@ namespace SlipeServer.Server.Elements
             this.Destroyed?.Invoke(this);
         }
 
-        public void RunAsSync(Action action)
+        public void RunAsSync(Action action, bool value = true)
         {
-            this.IsSync = true;
+            var oldValue = this.IsSync;
+            this.IsSync = value;
             action();
-            this.IsSync = false;
+            this.IsSync = oldValue;
         }
 
-        public async Task RunAsSync(Func<Task> action)
+        public async Task RunAsSync(Func<Task> action, bool value = true)
         {
-            this.IsSync = true;
+            var oldValue = this.IsSync;
+            this.IsSync = value;
             await action();
-            this.IsSync = false;
+            this.IsSync = oldValue;
         }
 
         public Element AssociateWith(MtaServer server)
