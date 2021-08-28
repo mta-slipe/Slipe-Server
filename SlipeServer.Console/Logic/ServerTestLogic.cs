@@ -553,10 +553,10 @@ namespace SlipeServer.Console.Logic
                     });
                 }
 
-                if (args.Command == "tuning")
+                if (args.Command == "tuning" || args.Command == "upgrade")
                 {
-                    this.Elegy!.Upgrades.Spoiler = VehicleUpgradeSpoiler.Alpha;
-                    this.chatBox.OutputTo(player, "tuning applied, spoiler = alpha", Color.YellowGreen);
+                    this.Elegy!.Upgrades.Spoiler = VehicleUpgradeSpoiler.Alien;
+                    this.chatBox.OutputTo(player, "tuning applied, spoiler = alien", Color.YellowGreen);
                 }
             };
 

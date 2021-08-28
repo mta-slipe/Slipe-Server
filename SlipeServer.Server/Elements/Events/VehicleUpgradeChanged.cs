@@ -12,12 +12,12 @@ namespace SlipeServer.Server.Elements.Events
     {
         public Vehicle Vehicle { get; set; }
         public VehicleUpgradeSlot Slot { get; set; }
-        public ushort? PreviousUpgrade { get; set; } = null;
-        public ushort? NewUpgrade { get; set; } = null;
+        public ushort PreviousUpgrade { get; set; }
+        public ushort NewUpgrade { get; set; }
         public ushort? PreviousUpgradeId { get; set; } = null;
         public ushort? NewUpgradeId { get; set; } = null;
 
-        public VehicleUpgradeChanged(Vehicle vehicle, VehicleUpgradeSlot slot, ushort? previousUpgrade = null, ushort? newUpgrade = null)
+        public VehicleUpgradeChanged(Vehicle vehicle, VehicleUpgradeSlot slot, ushort previousUpgrade, ushort newUpgrade)
         {
             this.Vehicle = vehicle;
             this.Slot = slot;
@@ -26,22 +26,22 @@ namespace SlipeServer.Server.Elements.Events
             switch (slot)
             {
                 case VehicleUpgradeSlot.Hood:
-                    if(previousUpgrade.HasValue)
-                        this.PreviousUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeHood), vehicle.Model, previousUpgrade.Value);
-                    if(newUpgrade.HasValue)
-                        this.NewUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeHood), vehicle.Model, newUpgrade.Value);
+                    if(previousUpgrade != 0)
+                        this.PreviousUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeHood), vehicle.Model, previousUpgrade);
+                    if(newUpgrade != 0)
+                        this.NewUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeHood), vehicle.Model, newUpgrade);
                     break;
                 case VehicleUpgradeSlot.Vent:
-                    if (previousUpgrade.HasValue)
-                        this.PreviousUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeVent), vehicle.Model, previousUpgrade.Value);
-                    if (newUpgrade.HasValue)
-                        this.NewUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeVent), vehicle.Model, newUpgrade.Value);
+                    if (previousUpgrade != 0)
+                        this.PreviousUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeVent), vehicle.Model, previousUpgrade);
+                    if (newUpgrade != 0)
+                        this.NewUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeVent), vehicle.Model, newUpgrade);
                     break;
                 case VehicleUpgradeSlot.Spoiler:
-                    if (previousUpgrade.HasValue)
-                        this.PreviousUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeSpoiler), vehicle.Model, previousUpgrade.Value);
-                    if (newUpgrade.HasValue)
-                        this.NewUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeSpoiler), vehicle.Model, newUpgrade.Value);
+                    if (previousUpgrade != 0)
+                        this.PreviousUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeSpoiler), vehicle.Model, previousUpgrade);
+                    if (newUpgrade != 0)
+                        this.NewUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeSpoiler), vehicle.Model, newUpgrade);
                     break;
                 case VehicleUpgradeSlot.Sideskirt:
                     break;
