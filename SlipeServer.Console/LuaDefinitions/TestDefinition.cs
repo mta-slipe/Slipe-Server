@@ -14,7 +14,7 @@ namespace SlipeServer.Console.LuaDefinitions
         }
 
         [ScriptFunctionDefinition("callbackEqual")]
-        public bool CallbackEqual(ScriptCallbackDelegateWrapper<ScriptCallbackDelegate> a, ScriptCallbackDelegateWrapper<ScriptCallbackDelegate> b)
+        public bool CallbackEqual(ScriptCallbackDelegateWrapper a, ScriptCallbackDelegateWrapper b)
         {
             this.logger.LogInformation($"{a} == {b} : {a.Equals(b)}");
             return a.Equals(b);

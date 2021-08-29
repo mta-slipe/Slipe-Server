@@ -76,7 +76,7 @@ namespace SlipeServer.Lua
             if (obj is IEnumerable<string> stringEnumerable)
                 return stringEnumerable.Select(x => DynValue.NewString(x)).ToArray();
             if (obj is IEnumerable<object> enumerable)
-                return enumerable.Select(x => ToDynValues(obj)).SelectMany(x => x).ToArray();
+                return enumerable.Select(x => ToDynValues(x)).SelectMany(x => x).ToArray();
 
             throw new NotImplementedException($"Conversion to Lua for {obj.GetType()} not implemented");
         }
@@ -134,20 +134,15 @@ namespace SlipeServer.Lua
                 return GetTableFromDynValue(dynValues.Dequeue());
             if (typeof(Element).IsAssignableFrom(targetType))
                 return dynValues.Dequeue().UserData.Object;
-            if (targetType == typeof(ScriptCallbackDelegateWrapper<ScriptCallbackDelegate>))
+            if (targetType == typeof(ScriptCallbackDelegateWrapper))
             {
                 var callback = dynValues.Dequeue().Function;
-                return new ScriptCallbackDelegateWrapper<ScriptCallbackDelegate>(parameters => callback.Call(ToDynValues(parameters)), callback);
+                return new ScriptCallbackDelegateWrapper(parameters => callback.Call(ToDynValues(parameters).Select(x => x).ToArray()), callback);
             }
             if (targetType == typeof(EventDelegate))
             {
                 var callback = dynValues.Dequeue().Function;
                 return (EventDelegate)((element, parameters) => callback.Call(new DynValue[] { UserData.Create(element) }.Concat(ToDynValues(parameters))));
-            }
-            if (targetType == typeof(ScriptCallbackDelegateWrapper<CommandDelegate>))
-            {
-                var callback = dynValues.Dequeue().Function;
-                return new ScriptCallbackDelegateWrapper<CommandDelegate>((element, commandName, parameters) => callback.Call(new DynValue[] { UserData.Create(element), DynValue.NewString(commandName) }.Concat(ToDynValues(parameters)).ToArray()), callback);
             }
 
             throw new NotImplementedException($"Conversion from Lua for {targetType} not implemented");

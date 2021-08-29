@@ -9,9 +9,7 @@ namespace SlipeServer.Scripting
 {
     public interface IScriptInputRuntime
     {
-        void AddCommandHandler(string eventName, ScriptCallbackDelegateWrapper<CommandDelegate> callbackDelegate);
-        void RemoveCommandHandler(string eventName, ScriptCallbackDelegateWrapper<CommandDelegate>? callbackDelegate = null);
+        void AddCommandHandler(string eventName, ScriptCallbackDelegateWrapper callbackDelegate);
+        void RemoveCommandHandler(string eventName, ScriptCallbackDelegateWrapper? callbackDelegate = null);
     }
-
-    public delegate void CommandDelegate(Element element, string commandName, params string[] parameters);
 }
