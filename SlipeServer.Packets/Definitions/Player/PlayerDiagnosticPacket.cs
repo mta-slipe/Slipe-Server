@@ -1,11 +1,8 @@
-﻿using SlipeServer.Packets.Builder;
-using SlipeServer.Packets.Enums;
+﻿using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
-using System.Text;
 
 namespace SlipeServer.Packets.Definitions.Player
 {
@@ -20,7 +17,7 @@ namespace SlipeServer.Packets.Definitions.Player
         public uint Level { get; set; }
         public string Message { get; set; } = string.Empty;
 
-        public IEnumerable<byte> DetectedAC { get; set; } = new List<byte> { };
+        public IEnumerable<byte> DetectedAC { get; set; } = Array.Empty<byte>();
         public uint D3d9Size { get; set; }
         public string D3d9Md5 { get; set; } = string.Empty;
         public string D3d9Sha256 { get; set; } = string.Empty;
@@ -44,18 +41,26 @@ namespace SlipeServer.Packets.Definitions.Player
             if (this.Level == levelSpecialInfo)
             {
                 var parts = splitMessage[1].Split(",");
-                if(parts.Length == 4)
+                if (parts.Length == 4)
                 {
-                    DetectedAC = parts[0].Split("|").Select(e => byte.Parse(e));
-                    D3d9Size = uint.Parse(parts[1]);
-                    D3d9Md5 = parts[2];
-                    D3d9Sha256 = parts[3];
+                    this.DetectedAC = parts[0].Split("|").Select(e => byte.Parse(e));
+                    this.D3d9Size = uint.Parse(parts[1]);
+                    this.D3d9Md5 = parts[2];
+                    this.D3d9Sha256 = parts[3];
                 }
-            }
-            else
+            } else
             {
-                Message = splitMessage[1];
+                this.Message = splitMessage[1];
             }
+        }
+
+        public override void Reset()
+        {
+            this.DetectedAC = Array.Empty<byte>();
+            this.D3d9Size = 0;
+            this.D3d9Md5 = string.Empty;
+            this.D3d9Sha256 = string.Empty;
+            this.Message = string.Empty;
         }
     }
 }

@@ -9,7 +9,6 @@ namespace SlipeServer.Server.Elements
         Health,
         Armor,
         Weapon,
-        Custom,
-        Invalid = 0xFF
+        Custom
     }
 }

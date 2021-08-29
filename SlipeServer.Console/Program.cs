@@ -1,19 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SlipeServer.ConfigurationProviders;
-using SlipeServer.ConfigurationProviders.Configurations;
+using SlipeServer.Console.Logic;
 using SlipeServer.Lua;
-using SlipeServer.Packets.Definitions.Satchels;
-using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Server;
-using SlipeServer.Server.AllSeeingEye;
-using SlipeServer.Server.Behaviour;
-using SlipeServer.Server.PacketHandling.QueueHandlers;
-using SlipeServer.Server.PacketHandling.QueueHandlers.SyncMiddleware;
-using SlipeServer.Server.Repositories;
 using SlipeServer.Server.ServerOptions;
 using System;
-using System.IO;
 using System.Threading;
 
 namespace SlipeServer.Console
@@ -52,7 +44,7 @@ namespace SlipeServer.Console
         {
             this.Logger = new ConsoleLogger();
 
-            var configurationProvider = args.Length > 0 ? GetConfigurationProvider(args[0]) : null;
+            var configurationProvider = args.Length > 0 ? ConfigurationLoader.GetConfigurationProvider(args[0]) : null;
 
             this.configuration = configurationProvider?.GetConfiguration() ?? new Configuration()
             {
@@ -62,24 +54,30 @@ namespace SlipeServer.Console
             this.server = new MtaServer(
                 (builder) =>
                 {
+                    builder.UseConfiguration(this.configuration);
+
                     builder.AddDefaults();
 
                     #if DEBUG
                         builder.AddNetWrapper(dllPath: "net_d", port: (ushort)(this.configuration.Port + 1));
                     #endif
 
+                    builder.ConfigureServices(services =>
+                    {
+                        services.AddSingleton<ILogger>(this.Logger);
+                    });
+                    builder.AddLua();
+
                     builder.AddLogic<ServerTestLogic>();
                     builder.AddLogic<LuaTestLogic>();
-                },
-                this.configuration,
-                this.Configure
+                }
             )
             {
                 GameType = "Slipe Server",
                 MapName = "N/A"
             };
-            System.Console.CancelKeyPress += delegate
-            {
+
+            System.Console.CancelKeyPress += delegate {
                 this.server.Stop();
                 this.waitHandle.Set();
             };
@@ -89,46 +87,6 @@ namespace SlipeServer.Console
         {
             this.server.Start();
             this.waitHandle.WaitOne();
-        }
-
-        private void Configure(ServiceCollection services)
-        {
-            services.AddSingleton<ILogger>(this.Logger);
-            services.AddSingleton<ISyncHandlerMiddleware<ProjectileSyncPacket>, RangeSyncHandlerMiddleware<ProjectileSyncPacket>>(
-                x => new RangeSyncHandlerMiddleware<ProjectileSyncPacket>(x.GetRequiredService<IElementRepository>(), this.configuration.ExplosionSyncDistance)
-            );
-            services.AddSingleton<ISyncHandlerMiddleware<DetonateSatchelsPacket>, RangeSyncHandlerMiddleware<DetonateSatchelsPacket>>(
-                x => new RangeSyncHandlerMiddleware<DetonateSatchelsPacket>(x.GetRequiredService<IElementRepository>(), this.configuration.ExplosionSyncDistance, false)
-            );
-            services.AddSingleton<ISyncHandlerMiddleware<DestroySatchelsPacket>, RangeSyncHandlerMiddleware<DestroySatchelsPacket>>(
-                x => new RangeSyncHandlerMiddleware<DestroySatchelsPacket>(x.GetRequiredService<IElementRepository>(), this.configuration.ExplosionSyncDistance, false)
-            );
-
-            services.AddSingleton<ISyncHandlerMiddleware<PlayerPureSyncPacket>, SubscriptionSyncHandlerMiddleware<PlayerPureSyncPacket>>();
-            services.AddSingleton<ISyncHandlerMiddleware<KeySyncPacket>, SubscriptionSyncHandlerMiddleware<KeySyncPacket>>();
-
-            services.AddSingleton<ISyncHandlerMiddleware<LightSyncBehaviour>, MaxRangeSyncHandlerMiddleware<LightSyncBehaviour>>(
-                x => new MaxRangeSyncHandlerMiddleware<LightSyncBehaviour>(x.GetRequiredService<IElementRepository>(), this.configuration.LightSyncRange)
-            );
-
-            services.AddLua();
-        }
-
-        private IConfigurationProvider GetConfigurationProvider(string configPath)
-        {
-            if (!File.Exists(configPath))
-            {
-                throw new FileNotFoundException($"Configuration file {configPath} does not exist.");
-            }
-
-            string extension = Path.GetExtension(configPath);
-            return extension switch
-            {
-                ".json" => new JsonConfigurationProvider(configPath),
-                ".xml" => new XmlConfigurationProvider(configPath),
-                ".toml" => new TomlConfigurationProvider(configPath),
-                _ => throw new NotSupportedException($"Unsupported configuration extension {extension}"),
-            };
         }
     }
 }

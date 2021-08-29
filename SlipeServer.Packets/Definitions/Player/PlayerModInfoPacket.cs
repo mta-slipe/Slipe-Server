@@ -1,11 +1,8 @@
-﻿using SlipeServer.Packets.Builder;
-using SlipeServer.Packets.Definitions.Lua;
+﻿using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
 using System;
 using System.Collections.Generic;
-using System.Numerics;
-using System.Text;
 
 namespace SlipeServer.Packets.Definitions.Player
 {
@@ -17,7 +14,7 @@ namespace SlipeServer.Packets.Definitions.Player
 
         public string InfoType { get; set; } = string.Empty;
         public uint Count { get; set; }
-        public List<ModInfoItem> ModInfoItems { get; set; } = new();
+        public ModInfoItem[] ModInfoItems { get; set; } = Array.Empty<ModInfoItem>();
         public PlayerModInfoPacket()
         {
         }
@@ -33,10 +30,10 @@ namespace SlipeServer.Packets.Definitions.Player
             this.InfoType = reader.GetString();
             this.Count = reader.GetUint32();
 
-            this.ModInfoItems = new List<ModInfoItem>((int)Count);
-            for (int i = 0; i < Count;i++)
+            this.ModInfoItems = new ModInfoItem[(int)this.Count];
+            for (int i = 0; i < this.Count; i++)
             {
-                ModInfoItem infoItem = new ModInfoItem();
+                ModInfoItem infoItem = new();
                 infoItem.Id = reader.GetUint16();
                 infoItem.Hash = reader.GetUint32();
                 infoItem.Name = reader.GetString();
@@ -51,7 +48,7 @@ namespace SlipeServer.Packets.Definitions.Player
                 infoItem.LongBytes = reader.GetUint32();
                 infoItem.LongMd5 = reader.GetString();
                 infoItem.LongSha256 = reader.GetString();
-                this.ModInfoItems.Add(infoItem);
+                this.ModInfoItems[i] = infoItem;
             }
         }
     }
