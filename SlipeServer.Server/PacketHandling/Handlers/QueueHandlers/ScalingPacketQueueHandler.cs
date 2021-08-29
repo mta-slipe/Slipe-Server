@@ -92,7 +92,7 @@ namespace SlipeServer.Server.PacketHandling.Handlers.QueueHandlers
                     }
                     catch (Exception e)
                     {
-                        this.logger.LogError($"Handling packet ({queueEntry.Packet}) failed.\n{e.Message}");
+                        this.logger.LogError($"Handling packet ({queueEntry.Packet}) failed.\n{e.Message}\n{e.StackTrace}");
                     }
                 }
 

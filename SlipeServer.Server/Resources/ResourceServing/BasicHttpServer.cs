@@ -107,13 +107,14 @@ namespace SlipeServer.Server.Resources.ResourceServing
                     var checksum = Crc32Algorithm.Compute(content);
 
                     string fileName = Path.GetRelativePath(Path.Join(this.rootDirectory, resource), file);
+                    var fileType = fileName.EndsWith(".lua") ? ResourceFileType.ClientScript : ResourceFileType.ClientFile;
                     resourceFiles.Add(new ResourceFile()
                     {
                         Name = fileName,
                         AproximateSize = content.Length,
-                        IsAutoDownload = false,
+                        IsAutoDownload = fileType == ResourceFileType.ClientFile ? true : null,
                         CheckSum = checksum,
-                        FileType = (byte)(fileName.EndsWith(".lua") ? ResourceFileType.ClientScript : ResourceFileType.ClientFile),
+                        FileType = (byte)fileType,
                         Md5 = hash
                     });
                 }

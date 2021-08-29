@@ -25,6 +25,8 @@ namespace SlipeServer.Server
         public bool IsConnected { get; internal set; }
         public uint Ping { get; set; }
 
+        private bool hasReceivedModNamePacket;
+
         public Client(uint binaryAddress, INetWrapper netWrapper)
         {
             this.binaryAddress = binaryAddress;
@@ -35,6 +37,14 @@ namespace SlipeServer.Server
 
         public void SendPacket(Packet packet)
         {
+            if (!this.hasReceivedModNamePacket)
+            {
+                if (packet.PacketId != PacketId.PACKET_ID_MOD_NAME)
+                    return;
+                this.hasReceivedModNamePacket = true;
+            }
+
+
             if (this.IsConnected && (ClientPacketScope.Current == null || ClientPacketScope.Current.ContainsClient(this)))
             {
                 this.netWrapper.SendPacket(this.binaryAddress, packet);
@@ -43,6 +53,13 @@ namespace SlipeServer.Server
 
         public void SendPacket(PacketId packetId, byte[] data, PacketPriority priority = PacketPriority.Medium, PacketReliability reliability = PacketReliability.Unreliable)
         {
+            if (!this.hasReceivedModNamePacket)
+            {
+                if (packetId != PacketId.PACKET_ID_MOD_NAME)
+                    return;
+                this.hasReceivedModNamePacket = true;
+            }
+
             if (this.IsConnected && (ClientPacketScope.Current == null || ClientPacketScope.Current.ContainsClient(this)))
             {
                 this.netWrapper.SendPacket(this.binaryAddress, packetId, data, priority, reliability);
