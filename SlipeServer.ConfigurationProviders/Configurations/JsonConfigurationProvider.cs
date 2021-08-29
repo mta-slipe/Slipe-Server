@@ -1,8 +1,8 @@
-﻿using SlipeServer.Server;
+using SlipeServer.Server;
 using Newtonsoft.Json;
 using System.IO;
 
-namespace SlipeServer.ConfigurationProviders
+namespace SlipeServer.ConfigurationProviders.Configurations
 {
     public class JsonConfigurationProvider : IConfigurationProvider
     {
