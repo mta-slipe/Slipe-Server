@@ -12,6 +12,8 @@ using System.Numerics;
 using System.Text;
 using SlipeServer.Packets.Definitions.Player;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
+using SlipeServer.Packets.Definitions.Entities.Structs;
+using SlipeServer.Server.Constants;
 
 namespace SlipeServer.Server.PacketHandling.Factories
 {
@@ -40,6 +42,11 @@ namespace SlipeServer.Server.PacketHandling.Factories
         public static RemovePedJetpackRpcPacket CreateRemoveJetpack(Ped ped)
         {
             return new RemovePedJetpackRpcPacket(ped.Id);
+        }
+
+        public static AddPedClothingRpcPacket CreateAddPedClothingPacket(Ped ped, Clothes cloth, byte index)
+        {
+            return new AddPedClothingRpcPacket(ped.Id, new PedClothing[] { ClothesConstants.ClothesTextureModel[cloth][index] });
         }
     }
 }

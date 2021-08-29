@@ -11,6 +11,7 @@ using SlipeServer.Server.Constants;
 using System.Linq;
 using SlipeServer.Server.Collections;
 using SlipeServer.Server.Elements.Enums;
+using SlipeServer.Server.ElementConcepts;
 
 namespace SlipeServer.Server.Elements
 {
@@ -124,8 +125,8 @@ namespace SlipeServer.Server.Elements
         public bool IsHeadless { get; set; } = false;
         public bool IsFrozen { get; set; } = false;
         public PedMoveAnimation MoveAnimation { get; set; } = 0;
-        public PedClothing[] Clothes { get; set; }
         public WeaponCollection Weapons { get; set; }
+        public Clothing Clothes { get; private set; }
 
         public bool IsAlive => this.health > 0;
 
@@ -139,7 +140,7 @@ namespace SlipeServer.Server.Elements
             this.Model = (ushort) model;
             this.Position = position;
 
-            this.Clothes = Array.Empty<PedClothing>();
+            this.Clothes = new Clothing(this);
             this.Weapons = new WeaponCollection();
             this.Weapons.WeaponAdded += (sender, args) => this.WeaponReceived?.Invoke(this, new WeaponReceivedEventArgs(this, args.Type, args.Ammo, false));
             this.Weapons.WeaponRemoved += (sender, args) => this.WeaponRemoved?.Invoke(this, new WeaponRemovedEventArgs(this, args.Type, args.Ammo));

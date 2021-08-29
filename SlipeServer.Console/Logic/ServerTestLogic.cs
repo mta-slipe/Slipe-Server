@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Server;
+using SlipeServer.Server.Constants;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.ColShapes;
 using SlipeServer.Server.Elements.Enums;
@@ -49,6 +50,7 @@ namespace SlipeServer.Console.Logic
         private Vehicle? Taxi { get; set; }
         private Vehicle? Rhino { get; set; }
         private Ped? Ped { get; set; }
+        private Ped? CJ { get; set; }
         private readonly Team slipeDevsTeam;
 
         public ServerTestLogic(
@@ -136,6 +138,7 @@ namespace SlipeServer.Console.Logic
             var values = Enum.GetValues(typeof(PedModel));
             PedModel randomPedModel = (PedModel)values.GetValue(new Random().Next(values.Length))!;
             this.Ped = new Ped(randomPedModel, new Vector3(10, 0, 3)).AssociateWith(this.server);
+            this.CJ = new Ped(0, new Vector3(2, -6, 3)).AssociateWith(this.server);
 
             this.WorldObject = new WorldObject(ObjectModel.Drugred, new Vector3(15, 0, 3)).AssociateWith(this.server);
 
@@ -559,6 +562,13 @@ namespace SlipeServer.Console.Logic
                             this.Rhino!.TurretRotation = new Vector2(-MathF.Atan2(this.Rhino.Position.X - player.Position.X, this.Rhino.Position.Y - player.Position.Y) + MathF.PI, 0);
                         }
                     });
+                }
+
+
+                if (args.Command == "cj")
+                {
+                    this.CJ!.Clothes.Shirt = (byte)this.random.Next(2);
+                    //this.CJ!.Clothes.Shirt = (byte)this.random.Next(ClothesConstants.ValidClothes[Clothes.Shirt]);
                 }
             };
 

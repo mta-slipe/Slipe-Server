@@ -36,7 +36,13 @@ namespace SlipeServer.Server.Behaviour
                 ped.WeaponRemoved += RelayPedWeaponRemove;
                 ped.AmmoUpdated += RelayPedAmmoCountUpdate;
                 ped.JetpackStateChanged += RelayJetpackStateChanged;
+                ped.Clothes.ClothChanged += RelayClothChanged;
             }
+        }
+
+        private void RelayClothChanged(Ped sender, ClothChangedEventArgs args)
+        {
+            this.server.BroadcastPacket(PedPacketFactory.CreateAddPedClothingPacket(args.Ped, args.Cloth, args.Current));
         }
 
         private void RelayJetpackStateChanged(Element sender, ElementChangedEventArgs<Ped, bool> args)
