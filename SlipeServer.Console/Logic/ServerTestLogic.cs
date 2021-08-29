@@ -567,8 +567,20 @@ namespace SlipeServer.Console.Logic
 
                 if (args.Command == "cj")
                 {
-                    this.CJ!.Clothes.Shirt = (byte)this.random.Next(2);
-                    //this.CJ!.Clothes.Shirt = (byte)this.random.Next(ClothesConstants.ValidClothes[Clothes.Shirt]);
+                    var shirt = ClothesConstants.ValidClothes[Clothes.Shirt];
+
+                    Task.Run(async () =>
+                    {
+                        byte i = 0;
+                        while (true)
+                        {
+                            await Task.Delay(100);
+                            this.CJ!.Clothes.Shirt = i;
+                            i++;
+                            if (i > shirt)
+                                i = 0;
+                        }
+                    });
                 }
             };
 
