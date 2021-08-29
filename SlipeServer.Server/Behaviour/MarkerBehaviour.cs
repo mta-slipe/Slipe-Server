@@ -15,12 +15,10 @@ namespace SlipeServer.Server.Behaviour
     public class MarkerBehaviour
     {
         private readonly MtaServer server;
-        private readonly List<Marker> markers;
 
         public MarkerBehaviour(MtaServer server, IElementRepository elementRepository)
         {
             this.server = server;
-            this.markers = new List<Marker>();
             foreach (var marker in elementRepository.GetByType<Marker>(ElementType.Marker))
             {
                 AddMarker(marker);
@@ -39,8 +37,6 @@ namespace SlipeServer.Server.Behaviour
 
         private void AddMarker(Marker marker)
         {
-            this.markers.Add(marker);
-            marker.Destroyed += (source) => this.markers.Remove(marker);
             marker.SizeChanged += RelaySizeChanged;
             marker.MarkerTypeChanged += RelayMarkerTypeChanged;
             marker.MarkerIconChanged += RelayMarkerIconChanged;
