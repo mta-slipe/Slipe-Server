@@ -50,7 +50,6 @@ namespace SlipeServer.Console.Logic
         private Vehicle? Taxi { get; set; }
         private Vehicle? Rhino { get; set; }
         private Ped? Ped { get; set; }
-        private Ped? CJ { get; set; }
         private readonly Team slipeDevsTeam;
 
         public ServerTestLogic(
@@ -138,7 +137,6 @@ namespace SlipeServer.Console.Logic
             var values = Enum.GetValues(typeof(PedModel));
             PedModel randomPedModel = (PedModel)values.GetValue(new Random().Next(values.Length))!;
             this.Ped = new Ped(randomPedModel, new Vector3(10, 0, 3)).AssociateWith(this.server);
-            this.CJ = new Ped(0, new Vector3(2, -6, 3)).AssociateWith(this.server);
 
             this.WorldObject = new WorldObject(ObjectModel.Drugred, new Vector3(15, 0, 3)).AssociateWith(this.server);
 
@@ -565,18 +563,51 @@ namespace SlipeServer.Console.Logic
                 }
 
 
-                if (args.Command == "cj")
+                if (args.Command == "clothes")
                 {
+                    var CJ0 = new Ped(0, new Vector3(0, -14, 3)).AssociateWith(this.server);
+                    var CJ1 = new Ped(0, new Vector3(2, -14, 3)).AssociateWith(this.server);
+                    var CJ2 = new Ped(0, new Vector3(4, -14, 3)).AssociateWith(this.server);
+                    var CJ3 = new Ped(0, new Vector3(6, -14, 3)).AssociateWith(this.server);
+                    var CJ4 = new Ped(0, new Vector3(8, -14, 3)).AssociateWith(this.server);
+                    var CJ5 = new Ped(0, new Vector3(10, -14, 3)).AssociateWith(this.server);
+                    var CJ6 = new Ped(0, new Vector3(12, -14, 3)).AssociateWith(this.server);
+                    var CJ7 = new Ped(0, new Vector3(14, -14, 3)).AssociateWith(this.server);
+                    var CJ8 = new Ped(0, new Vector3(16, -14, 3)).AssociateWith(this.server);
+                    var CJ9 = new Ped(0, new Vector3(18, -14, 3)).AssociateWith(this.server);
+                    var CJ10 = new Ped(0, new Vector3(20, -14, 3)).AssociateWith(this.server);
+                    var CJ11 = new Ped(0, new Vector3(22, -14, 3)).AssociateWith(this.server);
+                    var CJ12 = new Ped(0, new Vector3(24, -14, 3)).AssociateWith(this.server);
+                    var CJ13 = new Ped(0, new Vector3(26, -14, 3)).AssociateWith(this.server);
+                    var CJ14 = new Ped(0, new Vector3(28, -14, 3)).AssociateWith(this.server);
+                    var CJ15 = new Ped(0, new Vector3(30, -14, 3)).AssociateWith(this.server);
+                    var CJ16 = new Ped(0, new Vector3(32, -14, 3)).AssociateWith(this.server);
+                    var CJ17 = new Ped(0, new Vector3(34, -14, 3)).AssociateWith(this.server);
                     Task.Run(async () =>
                     {
-                        byte i = 0;
+                        int i = 0;
                         while (true)
                         {
-                            await Task.Delay(100);
-                            this.CJ!.Clothes.Shirt = i;
+                            await Task.Delay(1000);
+                            CJ0.Clothes.Shirt = (byte)(i % ClothesConstants.ShirtsCount);
+                            CJ1.Clothes.Head = (byte)(i % ClothesConstants.HeadsCount);
+                            CJ2.Clothes.Trousers = (byte)(i % ClothesConstants.TrousersCount);
+                            CJ3.Clothes.Shoes = (byte)(i % ClothesConstants.ShoesCount);
+                            CJ4.Clothes.TattoosLeftUpperArm = (byte)(i % ClothesConstants.TattoosLeftUpperArmCount);
+                            CJ5.Clothes.TattoosLeftLowerArm = (byte)(i % ClothesConstants.TattoosLeftLowerArmCount);
+                            CJ6.Clothes.TattoosRightUpperArm = (byte)(i % ClothesConstants.TattoosRightUpperArmCount);
+                            CJ7.Clothes.TattoosRightLowerArm = (byte)(i % ClothesConstants.TattoosRightLowerArmCount);
+                            CJ8.Clothes.TattoosBack = (byte)(i % ClothesConstants.TattoosBackCount);
+                            CJ9.Clothes.TattoosLeftChest = (byte)(i % ClothesConstants.TattoosLeftChestCount);
+                            CJ10.Clothes.TattoosRightChest = (byte)(i % ClothesConstants.TattoosRightChestCount);
+                            CJ11.Clothes.TattoosStomach = (byte)(i % ClothesConstants.TattoosStomachCount);
+                            CJ12.Clothes.TattoosLowerBack = (byte)(i % ClothesConstants.TattoosLowerBackCount);
+                            CJ13.Clothes.Necklace = (byte)(i % ClothesConstants.NecklaceCount);
+                            CJ14.Clothes.Watch = (byte)(i % ClothesConstants.WatchesCount);
+                            CJ15.Clothes.Glasses = (byte)(i % ClothesConstants.GlassesCount);
+                            CJ16.Clothes.Hat = (byte)(i % ClothesConstants.HatsCount);
+                            CJ17.Clothes.Extra = (byte)(i % ClothesConstants.ExtraCount);
                             i++;
-                            if (i > ClothesConstants.ShirtsCount)
-                                i = 0;
                         }
                     });
                 }
