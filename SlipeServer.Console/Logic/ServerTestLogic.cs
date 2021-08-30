@@ -362,6 +362,14 @@ namespace SlipeServer.Console.Logic
             {
                 this.logger.LogDebug($"{thePlayer.Name} Joined {thePlayer.Team?.TeamName} team!");
             };
+            player.TargetChanged += (thePlayer, args) =>
+            {
+                if(args.NewValue != null && args.NewValue is Vehicle vehicle)
+                {
+                    if(vehicle.Model == (ushort)VehicleModel.Rhino)
+                        this.logger.LogDebug($"{thePlayer.Name} Changed target rhino");
+                }
+            };
 
             player.Team = this.slipeDevsTeam;
         }

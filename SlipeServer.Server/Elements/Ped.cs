@@ -131,6 +131,17 @@ namespace SlipeServer.Server.Elements
         public bool IsAlive => this.health > 0;
 
 
+        private Element? target = null;
+        public Element? Target
+        {
+            get => this.target;
+            set
+            {
+                var args = new ElementChangedEventArgs<Ped, Element?>(this, this.Target, value, this.IsSync);
+                this.target = value;
+                TargetChanged?.Invoke(this, args);
+            }
+        }
         public VehicleAction VehicleAction { get; set; } = VehicleAction.None;
         public Vehicle? JackingVehicle { get; set; }
 
@@ -217,6 +228,7 @@ namespace SlipeServer.Server.Elements
         public event ElementChangedEventHandler<Ped, float>? ArmourChanged;
         public event ElementChangedEventHandler<Ped, WeaponSlot>? WeaponSlotChanged;
         public event ElementChangedEventHandler<Ped, bool>? JetpackStateChanged;
+        public event ElementChangedEventHandler<Ped, Element?>? TargetChanged;
         public event ElementEventHandler<WeaponReceivedEventArgs>? WeaponReceived;
         public event ElementEventHandler<WeaponRemovedEventArgs>? WeaponRemoved;
         public event ElementEventHandler<AmmoUpdateEventArgs>? AmmoUpdated;
