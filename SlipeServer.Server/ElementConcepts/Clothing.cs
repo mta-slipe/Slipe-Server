@@ -37,7 +37,7 @@ namespace SlipeServer.Server.ElementConcepts
             {
                 if(this.ped.Model == 0 && value != this.Shirt)
                 {
-                    if (value >= 0 && value <= ClothesConstants.ValidClothes[Enums.Clothes.Shirt])
+                    if (value >= 0 && value <= ClothesConstants.ShirtsCount)
                     {
                         ClothChanged?.Invoke(this.ped, new ClothChangedEventArgs(this.ped, Enums.Clothes.Shirt, this.Shirt, value));
                         this.shirt = value;

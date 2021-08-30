@@ -567,8 +567,6 @@ namespace SlipeServer.Console.Logic
 
                 if (args.Command == "cj")
                 {
-                    var shirt = ClothesConstants.ValidClothes[Clothes.Shirt];
-
                     Task.Run(async () =>
                     {
                         byte i = 0;
@@ -577,7 +575,7 @@ namespace SlipeServer.Console.Logic
                             await Task.Delay(100);
                             this.CJ!.Clothes.Shirt = i;
                             i++;
-                            if (i > shirt)
+                            if (i > ClothesConstants.ShirtsCount)
                                 i = 0;
                         }
                     });
