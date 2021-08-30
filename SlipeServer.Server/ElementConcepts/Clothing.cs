@@ -13,23 +13,35 @@ namespace SlipeServer.Server.ElementConcepts
     public class Clothing
     {
         private readonly Ped ped;
-        public List<PedClothing> PedClothings { get; set; }
 
         public Clothing(Ped ped)
         {
             this.ped = ped;
-            this.PedClothings = new();
-
-            ClothChanged += HandleClothChanged;
         }
 
-        private void HandleClothChanged(Ped sender, ClothChangedEventArgs e)
+        public IEnumerable<PedClothing> GetClothing()
         {
-            this.PedClothings.RemoveAll(p => p.Type == (byte)e.Cloth);
-            this.PedClothings.Add(ClothesConstants.ClothesTextureModel[e.Cloth][e.Current]);
+            if(this.Shirt != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Shirt][this.Shirt];
+            if(this.Head != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Head][this.Head];
+            if(this.Trousers != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Trousers][this.Trousers];
+            if(this.Shoes != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Shoes][this.Shoes];
+            if(this.TattoosLeftUpperArm != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosLeftUpperArm][this.TattoosLeftUpperArm];
+            if(this.TattoosLeftLowerArm != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosLeftLowerArm][this.TattoosLeftLowerArm];
+            if(this.TattoosRightUpperArm != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosRightUpperArm][this.TattoosRightUpperArm];
+            if(this.TattoosRightLowerArm != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosRightLowerArm][this.TattoosRightLowerArm];
+            if(this.TattoosBack != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosBack][this.TattoosBack];
+            if(this.TattoosLeftChest != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosLeftChest][this.TattoosLeftChest];
+            if(this.TattoosRightChest != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosRightChest][this.TattoosRightChest];
+            if(this.TattoosStomach != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosStomach][this.TattoosStomach];
+            if(this.TattoosLowerBack != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosLowerBack][this.TattoosLowerBack];
+            if(this.Necklace != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Necklace][this.Necklace];
+            if(this.Watch != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Watches][this.Watch];
+            if(this.Glasses != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Glasses][this.Glasses];
+            if(this.Hat != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Hats][this.Hat];
+            if(this.Extra != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Extra][this.Extra];
         }
 
-        private byte shirt;
+        private byte shirt = 255;
         public byte Shirt
         {
             get => this.shirt;
@@ -49,7 +61,7 @@ namespace SlipeServer.Server.ElementConcepts
             }
         }
 
-        private byte head;
+        private byte head = 255;
         public byte Head
         {
             get => this.head;
@@ -69,7 +81,7 @@ namespace SlipeServer.Server.ElementConcepts
             }
         }
 
-        private byte trousers;
+        private byte trousers = 255;
         public byte Trousers
         {
             get => this.trousers;
@@ -89,7 +101,7 @@ namespace SlipeServer.Server.ElementConcepts
             }
         }
 
-        private byte shoes;
+        private byte shoes = 255;
         public byte Shoes
         {
             get => this.shoes;
@@ -109,7 +121,7 @@ namespace SlipeServer.Server.ElementConcepts
             }
         }
 
-        private byte tattoosLeftUpperArm;
+        private byte tattoosLeftUpperArm = 255;
         public byte TattoosLeftUpperArm
         {
             get => this.tattoosLeftUpperArm;
@@ -129,7 +141,7 @@ namespace SlipeServer.Server.ElementConcepts
             }
         }
 
-        private byte tattoosLeftLowerArm;
+        private byte tattoosLeftLowerArm = 255;
         public byte TattoosLeftLowerArm
         {
             get => this.tattoosLeftLowerArm;
@@ -149,7 +161,7 @@ namespace SlipeServer.Server.ElementConcepts
             }
         }
 
-        private byte tattoosRightUpperArm;
+        private byte tattoosRightUpperArm = 255;
         public byte TattoosRightUpperArm
         {
             get => this.tattoosRightUpperArm;
@@ -169,7 +181,7 @@ namespace SlipeServer.Server.ElementConcepts
             }
         }
 
-        private byte tattoosRightLowerArm;
+        private byte tattoosRightLowerArm = 255;
         public byte TattoosRightLowerArm
         {
             get => this.tattoosRightLowerArm;
@@ -189,7 +201,7 @@ namespace SlipeServer.Server.ElementConcepts
             }
         }
 
-        private byte tattoosBack;
+        private byte tattoosBack = 255;
         public byte TattoosBack
         {
             get => this.tattoosBack;
@@ -209,7 +221,7 @@ namespace SlipeServer.Server.ElementConcepts
             }
         }
 
-        private byte tattoosLeftChest;
+        private byte tattoosLeftChest = 255;
         public byte TattoosLeftChest
         {
             get => this.tattoosLeftChest;
@@ -229,7 +241,7 @@ namespace SlipeServer.Server.ElementConcepts
             }
         }
 
-        private byte tattoosRightChest;
+        private byte tattoosRightChest = 255;
         public byte TattoosRightChest
         {
             get => this.tattoosRightChest;
@@ -249,7 +261,7 @@ namespace SlipeServer.Server.ElementConcepts
             }
         }
 
-        private byte tattoosStomach;
+        private byte tattoosStomach = 255;
         public byte TattoosStomach
         {
             get => this.tattoosStomach;
@@ -269,7 +281,7 @@ namespace SlipeServer.Server.ElementConcepts
             }
         }
 
-        private byte tattoosLowerBack;
+        private byte tattoosLowerBack = 255;
         public byte TattoosLowerBack
         {
             get => this.tattoosLowerBack;
@@ -289,7 +301,7 @@ namespace SlipeServer.Server.ElementConcepts
             }
         }
 
-        private byte necklace;
+        private byte necklace = 255;
         public byte Necklace
         {
             get => this.necklace;
@@ -309,7 +321,7 @@ namespace SlipeServer.Server.ElementConcepts
             }
         }
 
-        private byte watch;
+        private byte watch = 255;
         public byte Watch
         {
             get => this.watch;
@@ -329,7 +341,7 @@ namespace SlipeServer.Server.ElementConcepts
             }
         }
 
-        private byte glasses;
+        private byte glasses = 255;
         public byte Glasses
         {
             get => this.glasses;
@@ -349,7 +361,7 @@ namespace SlipeServer.Server.ElementConcepts
             }
         }
 
-        private byte hat;
+        private byte hat = 255;
         public byte Hat
         {
             get => this.hat;
@@ -369,7 +381,7 @@ namespace SlipeServer.Server.ElementConcepts
             }
         }
 
-        private byte extra;
+        private byte extra = 255;
         public byte Extra
         {
             get => this.extra;

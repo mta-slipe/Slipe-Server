@@ -50,6 +50,7 @@ namespace SlipeServer.Console.Logic
         private Vehicle? Taxi { get; set; }
         private Vehicle? Rhino { get; set; }
         private Ped? Ped { get; set; }
+        private Ped? CJ { get; set; }
         private readonly Team slipeDevsTeam;
 
         public ServerTestLogic(
@@ -137,6 +138,13 @@ namespace SlipeServer.Console.Logic
             var values = Enum.GetValues(typeof(PedModel));
             PedModel randomPedModel = (PedModel)values.GetValue(new Random().Next(values.Length))!;
             this.Ped = new Ped(randomPedModel, new Vector3(10, 0, 3)).AssociateWith(this.server);
+            this.CJ = new Ped(0, new Vector3(-2, -12, 3)).AssociateWith(this.server);
+            this.CJ.Clothes.Shirt = 0; // no shirt
+            this.CJ.Clothes.Head = 5; // pink hair
+            this.CJ.Clothes.Trousers = 9; // heart-shaped panties
+            this.CJ.Clothes.Shoes = 8; // sandal + sock
+            this.CJ.Clothes.Glasses = 1; // zorro
+
 
             this.WorldObject = new WorldObject(ObjectModel.Drugred, new Vector3(15, 0, 3)).AssociateWith(this.server);
 
