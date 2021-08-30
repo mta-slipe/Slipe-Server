@@ -50,6 +50,10 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Rpc
                 case RpcFunctions.PLAYER_WEAPON:
                     HandlePlayerWeapon(client, packet);
                     break;
+                    
+                case RpcFunctions.PLAYER_TARGET:
+                    HandlePlayerTarget(client, packet);
+                    break;
 
                 default:
                     this.logger.LogWarning($"Received RPC of type {packet.FunctionId}");
@@ -128,6 +132,13 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Rpc
                     client.Player.CurrentWeapon.AmmoInClip = inClip;
                 }
             }
+        }
+
+        private void HandlePlayerTarget(Client client, RpcPacket packet)
+        {
+            uint id = packet.Reader.GetElementId();
+            Element? element = elementRepository.Get(id);
+            client.Player.Target = element;
         }
     }
 }
