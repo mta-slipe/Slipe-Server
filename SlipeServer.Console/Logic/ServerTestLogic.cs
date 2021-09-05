@@ -39,6 +39,7 @@ namespace SlipeServer.Console.Logic
         private readonly FireService fireService;
         private readonly TextItemService textItemService;
         private Resource? testResource;
+        private Resource? secondTestResource;
 
         private readonly Random random = new();
         private RadarArea? RadarArea { get; set; }
@@ -105,6 +106,7 @@ namespace SlipeServer.Console.Logic
         private void SetupTestElements()
         {
             this.testResource = new Resource(this.server, this.root, this.resourceServer, "TestResource");
+            this.secondTestResource = new Resource(this.server, this.root, this.resourceServer, "SecondTestResource");
 
             new WorldObject(321, new Vector3(5, 0, 3)).AssociateWith(this.server);
             new Water(new Vector3[]
@@ -321,10 +323,9 @@ namespace SlipeServer.Console.Logic
             //player.ForceMapVisible(true);
             //player.ToggleAllControls(false, true, true);
 
-            player.Kicked += (o, args) =>
+            player.Kicked += (player, args) =>
             {
-                Player? player = (Player?)o;
-                this.logger.LogWarning($"{player?.Name} has been kicked, reason: {args.Reason}");
+                this.logger.LogWarning($"{player.Name} has been kicked, reason: {args.Reason}");
             };
 
             player.Wasted += async (o, args) =>
@@ -337,17 +338,6 @@ namespace SlipeServer.Console.Logic
             };
 
             player.ScreenshotTaken += HandlePlayerScreenshot;
-
-            //player.AddWeapon(WeaponId.Ak47, 500, true);
-            //player.AddWeapon(WeaponId.Tec9, 500, true);
-            //player.AddWeapon(WeaponId.Sniper, 500, true);
-            //player.AddWeapon(WeaponId.Deagle, 500, true);
-            //player.AddWeapon(WeaponId.Golfclub, 500, true);
-
-            //player.RemoveWeapon(WeaponId.Tec9, 500);
-            //player.RemoveWeapon(WeaponId.Sniper);
-            //player.RemoveWeapon(WeaponId.Deagle, 200);
-            //player.SetAmmoCount(WeaponSlot.AssaultRifles, 750, 25);
 
             player.Weapons.Add(new Weapon(WeaponId.Ak47, 500));
             player.Weapons.Add(new Weapon(WeaponId.Tec9, 500));
@@ -362,6 +352,7 @@ namespace SlipeServer.Console.Logic
             player.Weapons.First(weapon => weapon.Type == WeaponId.Ak47).AmmoInClip = 25;
 
             this.testResource?.StartFor(player);
+            //this.secondTestResource?.StartFor(player);
 
             this.HandlePlayerSubscriptions(player);
             this.HandlePlayerCommands(player);
