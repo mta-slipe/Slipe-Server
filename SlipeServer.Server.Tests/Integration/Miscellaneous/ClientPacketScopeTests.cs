@@ -1,16 +1,8 @@
 ﻿using Moq;
-using MTAServerWrapper.Packets.Outgoing.Connection;
-using SlipeServer.Packets;
-using SlipeServer.Packets.Definitions.Join;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
-using SlipeServer.Packets.Definitions.Sync;
-using SlipeServer.Packets.Enums;
 using SlipeServer.Server.PacketHandling;
-using SlipeServer.Server.PacketHandling.Handlers;
 using SlipeServer.Server.TestTools;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 

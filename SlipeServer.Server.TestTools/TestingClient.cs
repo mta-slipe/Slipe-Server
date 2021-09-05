@@ -14,7 +14,7 @@ namespace SlipeServer.Server.TestTools
 
         public TestingClient(uint address, INetWrapper netWrapper) : base(address, netWrapper)
         {
-
+            this.hasReceivedModNamePacket = true;
         }
     }
 }

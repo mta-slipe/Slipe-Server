@@ -25,7 +25,7 @@ namespace SlipeServer.Server
         public bool IsConnected { get; internal set; }
         public uint Ping { get; set; }
 
-        private bool hasReceivedModNamePacket;
+        protected bool hasReceivedModNamePacket;
 
         public Client(uint binaryAddress, INetWrapper netWrapper)
         {

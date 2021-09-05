@@ -38,10 +38,10 @@ namespace SlipeServer.Server.Tests.Unit.PacketHandlers
 
             foreach (var player in otherPlayers)
                 server.NetWrapperMock.Verify(x => x.SendPacket(
-                    player.Address, 
-                    PacketId.PACKET_ID_PLAYER_PURESYNC, 
-                    It.IsAny<byte[]>(), 
-                    It.IsAny<PacketPriority>(), 
+                    player.Address,
+                    PacketId.PACKET_ID_PLAYER_PURESYNC,
+                    It.IsAny<byte[]>(),
+                    It.IsAny<PacketPriority>(),
                     It.IsAny<PacketReliability>()));
         }
 
