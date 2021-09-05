@@ -105,7 +105,12 @@ namespace SlipeServer.Server.Elements
             }
         }
 
-        public float PedRotation { get; set; } = 0;
+        public float PedRotation
+        {
+            get => this.Rotation.Z;
+            set => this.Rotation = new Vector3(this.rotation.X, this.rotation.Y, value);
+        }
+
         public Vehicle? Vehicle { get; set; }
         public byte? Seat { get; set; }
 
