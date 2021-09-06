@@ -8,6 +8,7 @@ namespace SlipeServer.Lua
         public static void AddLua(this ServiceCollection services)
         {
             services.AddSingleton<IScriptEventRuntime, ScriptEventRuntime>();
+            services.AddSingleton<IScriptInputRuntime, ScriptInputRuntime>();
             services.AddSingleton<LuaService>();
         }
 
