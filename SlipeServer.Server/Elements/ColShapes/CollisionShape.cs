@@ -34,7 +34,10 @@ namespace SlipeServer.Server.Elements.ColShapes
                 if (!this.elementsWithin.Contains(element))
                 {
                     this.elementsWithin.Add(element);
-                    this.ElementEntered?.Invoke(element);
+                    element.RunAsSync(() =>
+                    {
+                        this.ElementEntered?.Invoke(element);
+                    }, false);
                     element.Destroyed += OnElementDestroyed;
                 }
             } else
@@ -42,7 +45,9 @@ namespace SlipeServer.Server.Elements.ColShapes
                 if (this.elementsWithin.Contains(element))
                 {
                     this.elementsWithin.Remove(element);
-                    this.ElementLeft?.Invoke(element);
+                    element.RunAsSync(() => {
+                        this.ElementLeft?.Invoke(element);
+                    }, false);
                     element.Destroyed -= OnElementDestroyed;
                 }
             }

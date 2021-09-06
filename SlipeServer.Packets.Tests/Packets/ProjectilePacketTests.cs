@@ -29,9 +29,9 @@ namespace SlipeServer.Packets.Tests.Packets
             packet.Force.Should().Be(0);
             packet.Model.Should().Be(345);
             packet.WeaponType.Should().Be(19);
-            packet.VecMoveSpeed.Should().Be(new Vector3(-0.3635011f, -0.112092786f, 0.12370186f));
+            packet.MoveSpeed.Should().Be(new Vector3(-0.3635011f, -0.112092786f, 0.12370186f));
             packet.VecOrigin.Should().Be(new Vector3(2.0458984f, -7.7402344f, 4.119508f));
-            packet.VecRotation.Should().Be(new Vector3(-0.3144375f, 7.450581E-09f, 1.2716883f));
+            packet.Rotation.Should().Be(new Vector3(-0.3144375f, 7.450581E-09f, 1.2716883f));
             packet.SourceElement.Should().Be(0);
             packet.OriginId.Should().Be(0);
             packet.TargetId.Should().Be(0);

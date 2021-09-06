@@ -30,8 +30,9 @@ namespace SlipeServer.Server.TestTools
         public TPlayer AddFakePlayer()
         {
             var address = ++this.binaryAddressCounter;
-            var client = new Client(address, this.NetWrapperMock.Object);
+            var client = new TestingClient(address, this.NetWrapperMock.Object);
             var player = this.playerCreationMethod(client, address);
+            client.TestingPlayer = player;
             player.AssociateWith(this);
             return player;
         }

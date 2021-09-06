@@ -1,26 +1,27 @@
-﻿using SlipeServer.Packets.Enums;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SlipeServer.Net.Wrappers;
 using SlipeServer.Packets;
+using SlipeServer.Packets.Definitions.Player;
+using SlipeServer.Packets.Enums;
+using SlipeServer.Server.AllSeeingEye;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements.IdGeneration;
+using SlipeServer.Server.Enums;
+using SlipeServer.Server.Events;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling;
+using SlipeServer.Server.PacketHandling.Handlers;
+using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.Repositories;
+using SlipeServer.Server.Resources.ResourceServing;
+using SlipeServer.Server.ServerOptions;
+using SlipeServer.Server.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net.Http;
-using SlipeServer.Server.AllSeeingEye;
-using SlipeServer.Server.Elements.IdGeneration;
-using SlipeServer.Server.Events;
-using SlipeServer.Server.Services;
-using SlipeServer.Server.Resources.ResourceServing;
-using SlipeServer.Server.Enums;
-using SlipeServer.Server.PacketHandling.QueueHandlers.SyncMiddleware;
-using SlipeServer.Packets.Definitions.Player;
-using SlipeServer.Server.ServerOptions;
 
 namespace SlipeServer.Server
 {
@@ -54,10 +55,14 @@ namespace SlipeServer.Server
             Func<uint, INetWrapper, Client>? clientCreationMethod = null
         )
         {
-            this.netWrappers = new List<INetWrapper>();
-
-            this.configuration = configuration ?? new Configuration();
+            this.netWrappers = new();
+            this.clients = new();
             this.clientCreationMethod = clientCreationMethod;
+            this.configuration = configuration ?? new();
+
+            this.root = new();
+            this.serviceCollection = new();
+
             var validationResults = new List<ValidationResult>();
             if (!Validator.TryValidateObject(this.configuration, new ValidationContext(this.configuration), validationResults, true))
             {
@@ -65,9 +70,6 @@ namespace SlipeServer.Server
                 throw new Exception($"An error has occurred while parsing configuration parameters:\r\n {invalidProperties}");
             }
 
-            this.root = new RootElement();
-
-            this.serviceCollection = new ServiceCollection();
             this.SetupDependencies(dependencyCallback);
             this.serviceProvider = this.serviceCollection.BuildServiceProvider();
 
@@ -79,8 +81,7 @@ namespace SlipeServer.Server
 
             this.root.AssociateWith(this);
 
-            this.packetReducer = new PacketReducer(this.serviceProvider.GetRequiredService<ILogger>());
-            this.clients = new Dictionary<INetWrapper, Dictionary<uint, Client>>();
+            this.packetReducer = new(this.serviceProvider.GetRequiredService<ILogger>());
         }
 
         public MtaServer(
@@ -96,13 +97,33 @@ namespace SlipeServer.Server
 
         public MtaServer(
             Action<ServerBuilder> builderAction,
-            Configuration? configuration = null,
-            Action<ServiceCollection>? dependencyCallback = null,
             Func<uint, INetWrapper, Client>? clientCreationMethod = null
-        ) : this(configuration, dependencyCallback, clientCreationMethod)
+        )
         {
-            var builder = new ServerBuilder(this.configuration);
+            this.netWrappers = new();
+            this.clients = new();
+            this.clientCreationMethod = clientCreationMethod;
+
+            this.root = new();
+            this.serviceCollection = new();
+
+            var builder = new ServerBuilder();
             builderAction(builder);
+
+            this.configuration = builder.Configuration;
+            this.SetupDependencies(services => builder.LoadDependencies(services));
+
+            this.serviceProvider = this.serviceCollection.BuildServiceProvider();
+            this.packetReducer = new(this.serviceProvider.GetRequiredService<ILogger>());
+
+            this.resourceServer = this.serviceProvider.GetRequiredService<IResourceServer>();
+            this.resourceServer.Start();
+
+            this.elementRepository = this.serviceProvider.GetRequiredService<IElementRepository>();
+            this.elementIdGenerator = this.serviceProvider.GetService<IElementIdGenerator>();
+
+            this.root.AssociateWith(this);
+
             builder.ApplyTo(this);
         }
 
@@ -152,25 +173,28 @@ namespace SlipeServer.Server
             );
         }
 
-        public void RegisterPacketQueueHandler(PacketId packetId, IQueueHandler queueHandler)
+        public void RegisterPacketHandler<T>(PacketId packetId, IPacketQueueHandler<T> queueHandler) where T : Packet, new()
+            => this.packetReducer.RegisterPacketHandler(packetId, queueHandler);
+
+        public void RegisterPacketHandler<TPacket, TPacketQueueHandler, TPacketHandler>(params object[] parameters)
+            where TPacket : Packet, new()
+            where TPacketQueueHandler : class, IPacketQueueHandler<TPacket>
+            where TPacketHandler : IPacketHandler<TPacket>
         {
-            this.packetReducer.RegisterQueueHandler(packetId, queueHandler);
+            var packetHandler = this.Instantiate<TPacketHandler>();
+            var queueHandler = this.Instantiate(
+                typeof(TPacketQueueHandler),
+                Array.Empty<object>()
+                    .Concat(new object[] { packetHandler })
+                    .Concat(parameters)
+                    .ToArray()
+                ) as TPacketQueueHandler;
+            this.packetReducer.RegisterPacketHandler(packetHandler.PacketId, queueHandler!);
         }
 
-        public void RegisterPacketQueueHandler(IQueueHandler queueHandler)
-        {
-            foreach (var packetId in queueHandler.SupportedPacketIds)
-                this.RegisterPacketQueueHandler(packetId, queueHandler);
-        }
-
-        public void RegisterPacketQueueHandler<T>(params object[] parameters) where T: IQueueHandler
-        {
-            this.RegisterPacketQueueHandler(this.Instantiate<T>(parameters));
-        }
-
-        public object Instantiate(Type type) => ActivatorUtilities.CreateInstance(this.serviceProvider, type);
+        public object Instantiate(Type type, params object[] parameters) => ActivatorUtilities.CreateInstance(this.serviceProvider, type, parameters);
         public T Instantiate<T>() => ActivatorUtilities.CreateInstance<T>(this.serviceProvider);
-        public T Instantiate<T>(params object[] parameters) 
+        public T Instantiate<T>(params object[] parameters)
             => ActivatorUtilities.CreateInstance<T>(this.serviceProvider, parameters);
 
         public T GetService<T>() => this.serviceProvider.GetService<T>();
@@ -242,7 +266,7 @@ namespace SlipeServer.Server
             if (!this.clients[netWrapper].ContainsKey(binaryAddress))
             {
                 var client = this.clientCreationMethod?.Invoke(binaryAddress, netWrapper) ??
-                    new Client(binaryAddress, netWrapper); 
+                    new Client(binaryAddress, netWrapper);
                 AssociateElement(client.Player);
 
                 this.clients[netWrapper][binaryAddress] = client;
@@ -255,7 +279,7 @@ namespace SlipeServer.Server
             this.packetReducer.EnqueuePacket(this.clients[netWrapper][binaryAddress], packetId, data);
 
             if (
-                packetId == PacketId.PACKET_ID_PLAYER_QUIT || 
+                packetId == PacketId.PACKET_ID_PLAYER_QUIT ||
                 packetId == PacketId.PACKET_ID_PLAYER_TIMEOUT ||
                 packetId == PacketId.PACKET_ID_PLAYER_NO_SOCKET
             )
