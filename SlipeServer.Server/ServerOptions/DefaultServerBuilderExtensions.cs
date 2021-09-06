@@ -1,20 +1,25 @@
-﻿using MTAServerWrapper.Packets.Outgoing.Connection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using MTAServerWrapper.Packets.Outgoing.Connection;
 using SlipeServer.Packets.Definitions.Commands;
 using SlipeServer.Packets.Definitions.Explosions;
 using SlipeServer.Packets.Definitions.Join;
 using SlipeServer.Packets.Definitions.Player;
 using SlipeServer.Packets.Definitions.Satchels;
 using SlipeServer.Packets.Definitions.Sync;
+using SlipeServer.Packets.Definitions.Transgression;
 using SlipeServer.Packets.Definitions.Vehicles;
 using SlipeServer.Packets.Definitions.Voice;
 using SlipeServer.Packets.Lua.Event;
 using SlipeServer.Packets.Rpc;
 using SlipeServer.Server.AllSeeingEye;
 using SlipeServer.Server.Behaviour;
+using SlipeServer.Server.PacketHandling.Handlers.AntiCheat;
 using SlipeServer.Server.PacketHandling.Handlers.BulletSync;
 using SlipeServer.Server.PacketHandling.Handlers.Command;
 using SlipeServer.Server.PacketHandling.Handlers.Connection;
 using SlipeServer.Server.PacketHandling.Handlers.Explosions;
+using SlipeServer.Server.PacketHandling.Handlers.Lua;
+using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.PacketHandling.Handlers.Player;
 using SlipeServer.Server.PacketHandling.Handlers.Player.Sync;
 using SlipeServer.Server.PacketHandling.Handlers.Projectile;
@@ -23,6 +28,7 @@ using SlipeServer.Server.PacketHandling.Handlers.Satchel;
 using SlipeServer.Server.PacketHandling.Handlers.Vehicle;
 using SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync;
 using SlipeServer.Server.PacketHandling.Handlers.Voice;
+using SlipeServer.Server.Repositories;
 using System.IO;
 
 namespace SlipeServer.Server.ServerOptions
@@ -68,6 +74,8 @@ namespace SlipeServer.Server.ServerOptions
 
             builder.AddPacketHandler<VoiceDataPacketHandler, VoiceDataPacket>();
             builder.AddPacketHandler<VoiceEndPacketHandler, VoiceEndPacket>();
+
+            builder.AddPacketHandler<TransgressionPacketHandler, TransgressionPacket>();
         }
 
         public static void AddDefaultBehaviours(this ServerBuilder builder)
@@ -96,12 +104,37 @@ namespace SlipeServer.Server.ServerOptions
             builder.AddBehaviour<BlipBehaviour>();
             builder.AddBehaviour<ObjectPacketBehaviour>();
             builder.AddBehaviour<VehicleBehaviour>();
+            builder.AddBehaviour<PickupBehaviour>();
+        }
+
+        public static void AddDefaultServices(this ServerBuilder builder)
+        {
+            builder.ConfigureServices(services =>
+            {
+                services.AddSingleton<ISyncHandlerMiddleware<ProjectileSyncPacket>, RangeSyncHandlerMiddleware<ProjectileSyncPacket>>(
+                    x => new RangeSyncHandlerMiddleware<ProjectileSyncPacket>(x.GetRequiredService<IElementRepository>(), builder.Configuration.ExplosionSyncDistance)
+                );
+                services.AddSingleton<ISyncHandlerMiddleware<DetonateSatchelsPacket>, RangeSyncHandlerMiddleware<DetonateSatchelsPacket>>(
+                    x => new RangeSyncHandlerMiddleware<DetonateSatchelsPacket>(x.GetRequiredService<IElementRepository>(), builder.Configuration.ExplosionSyncDistance, false)
+                );
+                services.AddSingleton<ISyncHandlerMiddleware<DestroySatchelsPacket>, RangeSyncHandlerMiddleware<DestroySatchelsPacket>>(
+                    x => new RangeSyncHandlerMiddleware<DestroySatchelsPacket>(x.GetRequiredService<IElementRepository>(), builder.Configuration.ExplosionSyncDistance, false)
+                );
+
+                services.AddSingleton<ISyncHandlerMiddleware<PlayerPureSyncPacket>, SubscriptionSyncHandlerMiddleware<PlayerPureSyncPacket>>();
+                services.AddSingleton<ISyncHandlerMiddleware<KeySyncPacket>, SubscriptionSyncHandlerMiddleware<KeySyncPacket>>();
+
+                services.AddSingleton<ISyncHandlerMiddleware<LightSyncBehaviour>, MaxRangeSyncHandlerMiddleware<LightSyncBehaviour>>(
+                    x => new MaxRangeSyncHandlerMiddleware<LightSyncBehaviour>(x.GetRequiredService<IElementRepository>(), builder.Configuration.LightSyncRange)
+                );
+            });
         }
 
         public static void AddDefaults(this ServerBuilder builder)
         {
             builder.AddDefaultQueueHandlers();
             builder.AddDefaultBehaviours();
+            builder.AddDefaultServices();
 
             builder.AddNetWrapper(
                 Directory.GetCurrentDirectory(),

@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Definitions.Resources;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Extensions;
 using SlipeServer.Server.Resources.ResourceServing;
 using System;
 using System.Collections.Generic;
@@ -57,16 +58,13 @@ namespace SlipeServer.Server.Resources
         public void StartFor(Player player)
         {
             var files = this.resourceServer.GetResourceFiles(this.path);
-            player.Client.SendPacket(new ResourceStartPacket(
-                this.Name, this.NetId, this.Root.Id, this.DynamicRoot.Id, 0, null, null, false, this.PriorityGroup, files, this.Exports)
-            );
+            new ResourceStartPacket(this.Name, this.NetId, this.Root.Id, this.DynamicRoot.Id, 0, null, null, false, this.PriorityGroup, files, this.Exports)
+                .SendTo(player);
         }
 
         public void StopFor(Player player)
         {
-            player.Client.SendPacket(new ResourceStopPacket(this.NetId));
+            new ResourceStopPacket(this.NetId).SendTo(player);
         }
-
-
     }
 }
