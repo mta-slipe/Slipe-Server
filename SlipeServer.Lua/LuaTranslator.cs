@@ -73,8 +73,10 @@ namespace SlipeServer.Lua
             if (obj is DynValue dynValue)
                 return new DynValue[] { dynValue };
 
+            if (obj is IEnumerable<string> stringEnumerable)
+                return stringEnumerable.Select(x => DynValue.NewString(x)).ToArray();
             if (obj is IEnumerable<object> enumerable)
-                return enumerable.Select(x => ToDynValues(obj)).SelectMany(x => x).ToArray();
+                return enumerable.Select(x => ToDynValues(x)).SelectMany(x => x).ToArray();
 
             throw new NotImplementedException($"Conversion to Lua for {obj.GetType()} not implemented");
         }
