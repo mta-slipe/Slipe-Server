@@ -18,6 +18,7 @@ namespace SlipeServer.Server.TestTools
         {
             this.playerCreationMethod = playerCreationMethod;
             this.NetWrapperMock = new Mock<INetWrapper>();
+            this.clients[this.NetWrapperMock.Object] = new();
             RegisterNetWrapper(this.NetWrapperMock.Object);
         }
 
@@ -30,8 +31,12 @@ namespace SlipeServer.Server.TestTools
         public TPlayer AddFakePlayer()
         {
             var address = ++this.binaryAddressCounter;
-            var client = new Client(address, this.NetWrapperMock.Object);
+            var client = new TestingClient(address, this.NetWrapperMock.Object);
             var player = this.playerCreationMethod(client, address);
+
+            this.clients[this.NetWrapperMock.Object].Add(address, client);
+
+            client.TestingPlayer = player;
             player.AssociateWith(this);
             return player;
         }
