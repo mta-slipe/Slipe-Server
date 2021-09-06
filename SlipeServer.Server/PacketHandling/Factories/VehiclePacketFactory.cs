@@ -41,5 +41,20 @@ namespace SlipeServer.Server.PacketHandling.Factories
         {
             return new SetVehiclePlateTextRpcPacket(vehicle.Id, vehicle.PlateText);
         }
+
+        public static SetVehicleColorRpcPacket CreateSetColorPacket(Vehicle vehicle)
+        {
+            return new SetVehicleColorRpcPacket(vehicle.Id, vehicle.Colors.AsArray());
+        }
+
+        public static SetVehicleLockedRpcPacket CreateSetLockedPacket(Vehicle vehicle)
+        {
+            return new SetVehicleLockedRpcPacket(vehicle.Id, vehicle.IsLocked);
+        }
+
+        public static SetVehicleLockedRpcPacket CreateSetEngineOnPacket(Vehicle vehicle)
+        {
+            return new SetVehicleLockedRpcPacket(vehicle.Id, vehicle.IsEngineOn);
+        }
     }
 }

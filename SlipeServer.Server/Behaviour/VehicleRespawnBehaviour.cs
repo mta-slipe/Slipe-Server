@@ -38,7 +38,7 @@ namespace SlipeServer.Server.Behaviour
                     VehicleId = args.Vehicle.Model,
                     Position = args.Vehicle.RespawnPosition,
                     Rotation = args.Vehicle.RespawnRotation,
-                    Colors = args.Vehicle.Colors,
+                    Colors = args.Vehicle.Colors.AsArray(),
                 } }));
         }
     }

@@ -26,6 +26,9 @@ namespace SlipeServer.Server.Behaviour
             if (element is Vehicle vehicle)
             {
                 vehicle.ModelChanged += RelayModelChange;
+                vehicle.Colors.ColorChanged += RelayColorChanged;
+                vehicle.LockedStateChanged += RelayLockedStateChanged;
+                vehicle.EngineStateChanged += RelayEngineStateChanged;
                 vehicle.DoorStateChanged += HandleDoorStateChanged;
                 vehicle.WheelStateChanged += HandleWheelStateChanged;
                 vehicle.PanelStateChanged += HandlePanelStateChanged;
@@ -59,6 +62,11 @@ namespace SlipeServer.Server.Behaviour
             this.server.BroadcastPacket(VehiclePacketFactory.CreateSetLandingGearDownPacket(args.Source));
         }
 
+        private void RelayColorChanged(Vehicle sender, VehicleColorChangedEventsArgs args)
+        {
+            this.server.BroadcastPacket(VehiclePacketFactory.CreateSetColorPacket(args.Vehicle));
+        }
+
         private void RelayModelChange(object sender, ElementChangedEventArgs<Vehicle, ushort> args)
         {
             this.server.BroadcastPacket(VehiclePacketFactory.CreateSetModelPacket(args.Source));
@@ -68,6 +76,16 @@ namespace SlipeServer.Server.Behaviour
             this.server.BroadcastPacket(new SetVehicleDamageState(args.Vehicle.Id, (byte)VehicleDamagePart.Door, (byte)args.Door, (byte)args.State, args.SpawnFlyingComponent));
         }
 
+        private void RelayLockedStateChanged(Element sender, ElementChangedEventArgs<Vehicle, bool> args)
+        {
+            this.server.BroadcastPacket(VehiclePacketFactory.CreateSetLockedPacket(args.Source));
+        }
+
+        private void RelayEngineStateChanged(Element sender, ElementChangedEventArgs<Vehicle, bool> args)
+        {
+            this.server.BroadcastPacket(VehiclePacketFactory.CreateSetLockedPacket(args.Source));
+        }
+      
         private void HandleWheelStateChanged(object? sender, VehicleWheelStateChangedArgs args)
         {
             this.server.BroadcastPacket(new SetVehicleDamageState(args.Vehicle.Id, (byte)VehicleDamagePart.Wheel, (byte)args.Wheel, (byte)args.State));
