@@ -137,7 +137,7 @@ namespace SlipeServer.Lua
             if (targetType == typeof(ScriptCallbackDelegateWrapper))
             {
                 var callback = dynValues.Dequeue().Function;
-                return new ScriptCallbackDelegateWrapper(parameters => callback.Call(ToDynValues(parameters).Select(x => x).ToArray()), callback);
+                return new ScriptCallbackDelegateWrapper(parameters => callback.Call(ToDynValues(parameters)), callback);
             }
             if (targetType == typeof(EventDelegate))
             {
