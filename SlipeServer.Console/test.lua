@@ -54,3 +54,31 @@ print("check radarArea: ",
 	insideD == true and insideE == false and insideF == false,
 	flashing == false
 )
+
+function commandHandler1(plr, cmd, ...)
+	print("commandHandler1:",plr, cmd, ...)
+end
+
+function commandHandler2(plr, cmd, ...)
+	if(cmd == "foo3" or cmd =="foo4")then
+		print("This should not be printed! commandHandler2", cmd);
+	end
+	print("commandHandler2:",plr, cmd, ...)
+end
+
+function commandHandler3(plr, cmd, ...)
+	if(cmd =="foo4")then
+		print("This should not be printed! commandHandler3", cmd);
+	end
+	print("commandHandler3:",plr, cmd, ...)
+end
+
+addCommandHandler("foo1", commandHandler1)
+addCommandHandler("foo1", commandHandler2)
+addCommandHandler("foo2", commandHandler1)
+addCommandHandler("foo3", commandHandler2)
+addCommandHandler("foo3", commandHandler3)
+addCommandHandler("foo4", commandHandler2)
+addCommandHandler("foo4", commandHandler3)
+removeCommandHandler("foo3", commandHandler2)
+removeCommandHandler("foo4")

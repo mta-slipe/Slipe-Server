@@ -1,5 +1,7 @@
-﻿using SlipeServer.Packets;
+﻿using Microsoft.Extensions.Logging;
+using SlipeServer.Packets;
 using SlipeServer.Server.PacketHandling.QueueHandlers;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Timers;
@@ -10,6 +12,7 @@ namespace SlipeServer.Server.PacketHandling.Handlers.QueueHandlers
     {
         private readonly QueueHandlerScalingConfig config;
         private readonly int sleepTime;
+        private readonly ILogger logger;
         private readonly IPacketHandler<T> packetHandler;
         private readonly Timer timer;
         private readonly Stack<Worker> workers;
@@ -20,8 +23,9 @@ namespace SlipeServer.Server.PacketHandling.Handlers.QueueHandlers
             public bool Active { get; set; }
         }
 
-        public ScalingPacketQueueHandler(IPacketHandler<T> packetHandler, QueueHandlerScalingConfig? config = null, int sleepTime = 10)
+        public ScalingPacketQueueHandler(ILogger logger, IPacketHandler<T> packetHandler, QueueHandlerScalingConfig? config = null, int sleepTime = 10)
         {
+            this.logger = logger;
             this.packetHandler = packetHandler;
             this.config = config ?? new();
             this.sleepTime = sleepTime;
@@ -42,8 +46,8 @@ namespace SlipeServer.Server.PacketHandling.Handlers.QueueHandlers
             this.pulseTaskCompletionSource = new();
         }
 
-        public ScalingPacketQueueHandler(IPacketHandler<T> packetHandler)
-            : this(packetHandler, null)
+        public ScalingPacketQueueHandler(ILogger logger, IPacketHandler<T> packetHandler)
+            : this(logger, packetHandler, null)
         {
         }
 
@@ -82,7 +86,14 @@ namespace SlipeServer.Server.PacketHandling.Handlers.QueueHandlers
             {
                 while (this.packetQueue.TryDequeue(out var queueEntry))
                 {
-                    this.packetHandler.HandlePacket(queueEntry.Client, queueEntry.Packet);
+                    try
+                    {
+                        this.packetHandler.HandlePacket(queueEntry.Client, queueEntry.Packet);
+                    }
+                    catch (Exception e)
+                    {
+                        this.logger.LogError($"Handling packet ({queueEntry.Packet}) failed.\n{e.Message}\n{e.StackTrace}");
+                    }
                 }
 
                 if (this.pulseTaskCompletionSource != null)

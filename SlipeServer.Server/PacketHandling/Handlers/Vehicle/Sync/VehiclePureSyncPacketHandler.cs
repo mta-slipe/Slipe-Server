@@ -47,8 +47,9 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync
                 player.AimOrigin = packet.AimOrigin;
                 player.AimDirection = packet.AimDirection;
 
+                if (packet.WeaponSlot != null)
+                    player.CurrentWeaponSlot = (WeaponSlot)packet.WeaponSlot;
 
-                player.CurrentWeaponSlot = (WeaponSlot)packet.WeaponSlot!;
                 if (player.CurrentWeapon != null && packet.WeaponAmmo != null && packet.WeaponAmmoInClip != null)
                 {
                     player.CurrentWeapon.UpdateAmmoCountWithoutTriggerEvent(packet.WeaponAmmo.Value, packet.WeaponAmmoInClip.Value);

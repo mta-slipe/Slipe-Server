@@ -1,20 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SlipeServer.ConfigurationProviders;
-using SlipeServer.ConfigurationProviders.Configurations;
 using SlipeServer.Console.Logic;
 using SlipeServer.Lua;
-using SlipeServer.Packets.Definitions.Satchels;
-using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Server;
-using SlipeServer.Server.AllSeeingEye;
-using SlipeServer.Server.Behaviour;
-using SlipeServer.Server.PacketHandling.Handlers;
-using SlipeServer.Server.PacketHandling.Handlers.Middleware;
-using SlipeServer.Server.Repositories;
 using SlipeServer.Server.ServerOptions;
 using System;
-using System.IO;
 using System.Threading;
 
 namespace SlipeServer.Console
@@ -63,23 +54,30 @@ namespace SlipeServer.Console
             this.server = new MtaServer(
                 (builder) =>
                 {
+                    builder.UseConfiguration(this.configuration);
+
                     builder.AddDefaults();
 
                     #if DEBUG
                         builder.AddNetWrapper(dllPath: "net_d", port: (ushort)(this.configuration.Port + 1));
                     #endif
 
-                    SetupLogic(builder);
-                },
-                this.configuration,
-                this.Configure
+                    builder.ConfigureServices(services =>
+                    {
+                        services.AddSingleton<ILogger>(this.Logger);
+                    });
+                    builder.AddLua();
+
+                    builder.AddLogic<ServerTestLogic>();
+                    builder.AddLogic<LuaTestLogic>();
+                }
             )
             {
                 GameType = "Slipe Server",
                 MapName = "N/A"
             };
-            System.Console.CancelKeyPress += delegate
-            {
+
+            System.Console.CancelKeyPress += delegate {
                 this.server.Stop();
                 this.waitHandle.Set();
             };
@@ -89,19 +87,6 @@ namespace SlipeServer.Console
         {
             this.server.Start();
             this.waitHandle.WaitOne();
-        }
-
-        private void Configure(ServiceCollection services)
-        {
-            services.AddSingleton<ILogger>(this.Logger);
-            services.AddServerDefaults(this.configuration);
-            services.AddLua();
-        }
-        
-        private void SetupLogic(ServerBuilder builder)
-        {
-            builder.AddLogic<ServerTestLogic>();
-            builder.AddLogic<LuaTestLogic>();
         }
     }
 }

@@ -72,7 +72,6 @@ namespace SlipeServer.Server.Elements
         public Dictionary<int, PlayerPendingScreenshot> PendingScreenshots { get; } = new();
 
         private readonly HashSet<Element> subscriptionElements;
-
         
         protected internal Player(Client client) : base(0, Vector3.Zero)
         {
