@@ -30,7 +30,7 @@ namespace SlipeServer.Server
         private readonly List<INetWrapper> netWrappers;
         private readonly IResourceServer resourceServer;
         protected readonly PacketReducer packetReducer;
-        private readonly Dictionary<INetWrapper, Dictionary<uint, Client>> clients;
+        protected readonly Dictionary<INetWrapper, Dictionary<uint, Client>> clients;
         private readonly ServiceCollection serviceCollection;
         private readonly ServiceProvider serviceProvider;
         private readonly IElementRepository elementRepository;
