@@ -3,17 +3,17 @@ using System;
 
 namespace SlipeServer.Server.Elements.Events
 {
-    public class ClothChangedEventArgs : EventArgs
+    public class ClothingChangedEventArgs : EventArgs
     {
         public Ped Ped { get; set; }
-        public Clothes Cloth { get; set; }
+        public Clothes Clothes { get; set; }
         public byte Previous { get; set; }
         public byte Current { get; set; }
 
-        public ClothChangedEventArgs(Ped ped, Clothes cloth, byte previous, byte current)
+        public ClothingChangedEventArgs(Ped ped, Clothes clothes, byte previous, byte current)
         {
             this.Ped = ped;
-            this.Cloth = cloth;
+            this.Clothes = clothes;
             this.Previous = previous;
             this.Current = current;
         }

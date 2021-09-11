@@ -131,7 +131,7 @@ namespace SlipeServer.Server.Elements
         public bool IsFrozen { get; set; } = false;
         public PedMoveAnimation MoveAnimation { get; set; } = 0;
         public WeaponCollection Weapons { get; set; }
-        public Clothing Clothes { get; private set; }
+        public Clothing Clothes { get; init; }
 
         public bool IsAlive => this.health > 0;
 

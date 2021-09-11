@@ -21,24 +21,42 @@ namespace SlipeServer.Server.ElementConcepts
 
         public IEnumerable<PedClothing> GetClothing()
         {
-            if(this.Shirt != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Shirt][this.Shirt];
-            if(this.Head != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Head][this.Head];
-            if(this.Trousers != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Trousers][this.Trousers];
-            if(this.Shoes != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Shoes][this.Shoes];
-            if(this.TattoosLeftUpperArm != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosLeftUpperArm][this.TattoosLeftUpperArm];
-            if(this.TattoosLeftLowerArm != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosLeftLowerArm][this.TattoosLeftLowerArm];
-            if(this.TattoosRightUpperArm != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosRightUpperArm][this.TattoosRightUpperArm];
-            if(this.TattoosRightLowerArm != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosRightLowerArm][this.TattoosRightLowerArm];
-            if(this.TattoosBack != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosBack][this.TattoosBack];
-            if(this.TattoosLeftChest != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosLeftChest][this.TattoosLeftChest];
-            if(this.TattoosRightChest != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosRightChest][this.TattoosRightChest];
-            if(this.TattoosStomach != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosStomach][this.TattoosStomach];
-            if(this.TattoosLowerBack != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosLowerBack][this.TattoosLowerBack];
-            if(this.Necklace != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Necklace][this.Necklace];
-            if(this.Watch != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Watches][this.Watch];
-            if(this.Glasses != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Glasses][this.Glasses];
-            if(this.Hat != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Hats][this.Hat];
-            if(this.Extra != 255) yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Extra][this.Extra];
+            if(this.Shirt != 255)
+                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Shirt][this.Shirt];
+            if(this.Head != 255)
+                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Head][this.Head];
+            if(this.Trousers != 255)
+                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Trousers][this.Trousers];
+            if(this.Shoes != 255)
+                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Shoes][this.Shoes];
+            if(this.TattoosLeftUpperArm != 255)
+                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosLeftUpperArm][this.TattoosLeftUpperArm];
+            if(this.TattoosLeftLowerArm != 255)
+                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosLeftLowerArm][this.TattoosLeftLowerArm];
+            if(this.TattoosRightUpperArm != 255)
+                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosRightUpperArm][this.TattoosRightUpperArm];
+            if(this.TattoosRightLowerArm != 255)
+                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosRightLowerArm][this.TattoosRightLowerArm];
+            if(this.TattoosBack != 255)
+                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosBack][this.TattoosBack];
+            if(this.TattoosLeftChest != 255)
+                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosLeftChest][this.TattoosLeftChest];
+            if(this.TattoosRightChest != 255)
+                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosRightChest][this.TattoosRightChest];
+            if(this.TattoosStomach != 255)
+                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosStomach][this.TattoosStomach];
+            if(this.TattoosLowerBack != 255)
+                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosLowerBack][this.TattoosLowerBack];
+            if(this.Necklace != 255)
+                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Necklace][this.Necklace];
+            if(this.Watch != 255)
+                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Watches][this.Watch];
+            if(this.Glasses != 255)
+                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Glasses][this.Glasses];
+            if(this.Hat != 255)
+                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Hats][this.Hat];
+            if(this.Extra != 255)
+                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Extra][this.Extra];
         }
 
         private byte shirt = 255;
@@ -51,7 +69,7 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.ShirtsCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothChangedEventArgs(this.ped, Enums.Clothes.Shirt, this.Shirt, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.Shirt, this.Shirt, value));
                         this.shirt = value;
                     } else
                     {
@@ -71,7 +89,7 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.HeadsCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothChangedEventArgs(this.ped, Enums.Clothes.Head, this.Head, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.Head, this.Head, value));
                         this.head = value;
                     } else
                     {
@@ -91,7 +109,7 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.TrousersCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothChangedEventArgs(this.ped, Enums.Clothes.Trousers, this.Trousers, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.Trousers, this.Trousers, value));
                         this.trousers = value;
                     } else
                     {
@@ -111,7 +129,7 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.ShoesCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothChangedEventArgs(this.ped, Enums.Clothes.Shoes, this.Shoes, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.Shoes, this.Shoes, value));
                         this.shoes = value;
                     } else
                     {
@@ -131,7 +149,7 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.TattoosLeftUpperArmCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothChangedEventArgs(this.ped, Enums.Clothes.TattoosLeftUpperArm, this.TattoosLeftUpperArm, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.TattoosLeftUpperArm, this.TattoosLeftUpperArm, value));
                         this.tattoosLeftUpperArm = value;
                     } else
                     {
@@ -151,7 +169,7 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.TattoosLeftLowerArmCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothChangedEventArgs(this.ped, Enums.Clothes.TattoosLeftLowerArm, this.TattoosLeftLowerArm, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.TattoosLeftLowerArm, this.TattoosLeftLowerArm, value));
                         this.tattoosLeftLowerArm = value;
                     } else
                     {
@@ -171,7 +189,7 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.TattoosRightUpperArmCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothChangedEventArgs(this.ped, Enums.Clothes.TattoosRightUpperArm, this.TattoosRightUpperArm, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.TattoosRightUpperArm, this.TattoosRightUpperArm, value));
                         this.tattoosRightUpperArm = value;
                     } else
                     {
@@ -191,7 +209,7 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.TattoosRightLowerArmCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothChangedEventArgs(this.ped, Enums.Clothes.TattoosRightLowerArm, this.TattoosRightLowerArm, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.TattoosRightLowerArm, this.TattoosRightLowerArm, value));
                         this.tattoosRightLowerArm = value;
                     } else
                     {
@@ -211,7 +229,7 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.TattoosBackCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothChangedEventArgs(this.ped, Enums.Clothes.TattoosBack, this.TattoosBack, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.TattoosBack, this.TattoosBack, value));
                         this.tattoosBack = value;
                     } else
                     {
@@ -231,7 +249,7 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.TattoosLeftChestCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothChangedEventArgs(this.ped, Enums.Clothes.TattoosLeftChest, this.TattoosLeftChest, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.TattoosLeftChest, this.TattoosLeftChest, value));
                         this.tattoosLeftChest = value;
                     } else
                     {
@@ -251,7 +269,7 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.TattoosRightChestCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothChangedEventArgs(this.ped, Enums.Clothes.TattoosRightChest, this.TattoosRightChest, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.TattoosRightChest, this.TattoosRightChest, value));
                         this.tattoosRightChest = value;
                     } else
                     {
@@ -271,7 +289,7 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.TattoosStomachCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothChangedEventArgs(this.ped, Enums.Clothes.TattoosStomach, this.TattoosStomach, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.TattoosStomach, this.TattoosStomach, value));
                         this.tattoosStomach = value;
                     } else
                     {
@@ -291,7 +309,7 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.TattoosLowerBackCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothChangedEventArgs(this.ped, Enums.Clothes.TattoosLowerBack, this.TattoosLowerBack, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.TattoosLowerBack, this.TattoosLowerBack, value));
                         this.tattoosLowerBack = value;
                     } else
                     {
@@ -311,7 +329,7 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.NecklaceCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothChangedEventArgs(this.ped, Enums.Clothes.Necklace, this.Necklace, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.Necklace, this.Necklace, value));
                         this.necklace = value;
                     } else
                     {
@@ -331,7 +349,7 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.WatchesCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothChangedEventArgs(this.ped, Enums.Clothes.Watches, this.Watch, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.Watches, this.Watch, value));
                         this.watch = value;
                     } else
                     {
@@ -351,7 +369,7 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.GlassesCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothChangedEventArgs(this.ped, Enums.Clothes.Glasses, this.glasses, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.Glasses, this.glasses, value));
                         this.glasses = value;
                     } else
                     {
@@ -371,7 +389,7 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.HatsCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothChangedEventArgs(this.ped, Enums.Clothes.Hats, this.hat, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.Hats, this.hat, value));
                         this.hat = value;
                     } else
                     {
@@ -391,7 +409,7 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.ExtraCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothChangedEventArgs(this.ped, Enums.Clothes.Extra, this.extra, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.Extra, this.extra, value));
                         this.extra = value;
                     } else
                     {
@@ -401,6 +419,6 @@ namespace SlipeServer.Server.ElementConcepts
             }
         }
 
-        public event ElementEventHandler<Ped, ClothChangedEventArgs>? ClothChanged;
+        public event ElementEventHandler<Ped, ClothingChangedEventArgs>? ClothChanged;
     }
 }
