@@ -11,7 +11,6 @@ using SlipeServer.Server.Enums;
 using SlipeServer.Server.Repositories;
 using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Providers;
-using SlipeServer.Server.Resources.ResourceServing;
 using SlipeServer.Server.Services;
 using System;
 using System.Collections.Generic;
