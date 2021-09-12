@@ -1,4 +1,5 @@
-﻿using SlipeServer.Packets.Lua.Camera;
+﻿using SlipeServer.Packets.Definitions.Lua.Rpc.Camera;
+using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Server.Elements;
 using System;
 using System.Collections.Generic;
@@ -30,6 +31,18 @@ namespace SlipeServer.Server.ElementConcepts
         public Vector3? Position { get; internal set; }
         public Vector3? LookAt { get; internal set; }
 
+        private byte interior;
+        public byte Interior
+        {
+            get => this.interior;
+            set
+            {
+                if (!this.player.IsSync)
+                    this.player.Client.SendPacket(new SetCameraInteriorPacket(value));
+
+                this.interior = value;
+            }
+        }
         public Camera(Player player)
         {
             this.player = player;

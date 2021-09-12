@@ -343,7 +343,7 @@ namespace SlipeServer.Console.Logic
             player.Weapons.First(weapon => weapon.Type == WeaponId.Ak47).AmmoInClip = 25;
 
             this.testResource?.StartFor(player);
-            //this.secondTestResource?.StartFor(player);
+            this.secondTestResource?.StartFor(player);
 
             this.HandlePlayerSubscriptions(player);
             this.HandlePlayerCommands(player);
@@ -558,6 +558,18 @@ namespace SlipeServer.Console.Logic
                             this.Rhino!.TurretRotation = new Vector2(-MathF.Atan2(this.Rhino.Position.X - player.Position.X, this.Rhino.Position.Y - player.Position.Y) + MathF.PI, 0);
                         }
                     });
+                }
+
+                if (args.Command == "camerainterior")
+                {
+                    if (args.Arguments.Length > 0)
+                    {
+                        if (byte.TryParse(args.Arguments[0], out byte interior))
+                        {
+                            player.Camera.Interior = interior;
+                            this.logger.LogInformation($"Camera interior changed to: {interior}");
+                        }
+                    }
                 }
             };
 

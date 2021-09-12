@@ -12,6 +12,8 @@ namespace SlipeServer.Server.Resources.ResourceServing
     {
         void Start();
         void Stop();
+        ushort AllocateNetId();
+        void ReleaseNetId(ushort netId);
 
         IEnumerable<ResourceFile> GetResourceFiles();
         IEnumerable<ResourceFile> GetResourceFiles(string resource);
