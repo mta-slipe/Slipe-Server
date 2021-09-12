@@ -30,7 +30,7 @@ namespace SlipeServer.Scripting
 
         private void Destroyed(Element obj)
         {
-            (obj as Player).CommandEntered -= CommandEntered;
+            (obj as Player)!.CommandEntered -= CommandEntered;
         }
 
         private void CommandEntered(Player player, PlayerCommandEventArgs e)

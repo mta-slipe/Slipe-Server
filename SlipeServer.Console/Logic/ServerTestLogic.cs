@@ -10,7 +10,7 @@ using SlipeServer.Server.Elements.Structs;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Repositories;
 using SlipeServer.Server.Resources;
-using SlipeServer.Server.Resources.ResourceServing;
+using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.Services;
 using System;
 using System.Collections.Generic;
@@ -27,7 +27,6 @@ namespace SlipeServer.Console.Logic
         private readonly MtaServer server;
         private readonly IElementRepository elementRepository;
         private readonly RootElement root;
-        private readonly IResourceServer resourceServer;
         private readonly GameWorld worldService;
         private readonly DebugLog debugLog;
         private readonly ILogger logger;
@@ -37,6 +36,7 @@ namespace SlipeServer.Console.Logic
         private readonly ExplosionService explosionService;
         private readonly FireService fireService;
         private readonly TextItemService textItemService;
+        private readonly IResourceProvider resourceProvider;
         private Resource? testResource;
         private Resource? secondTestResource;
 
@@ -57,7 +57,6 @@ namespace SlipeServer.Console.Logic
             MtaServer server,
             IElementRepository elementRepository,
             RootElement root,
-            IResourceServer resourceServer,
             GameWorld world,
             DebugLog debugLog,
             ILogger logger,
@@ -66,13 +65,13 @@ namespace SlipeServer.Console.Logic
             LuaEventService luaService,
             ExplosionService explosionService,
             FireService fireService,
-            TextItemService textItemService
+            TextItemService textItemService,
+            IResourceProvider resourceProvider
         )
         {
             this.server = server;
             this.elementRepository = elementRepository;
             this.root = root;
-            this.resourceServer = resourceServer;
             this.worldService = world;
             this.debugLog = debugLog;
             this.logger = logger;
@@ -82,6 +81,7 @@ namespace SlipeServer.Console.Logic
             this.explosionService = explosionService;
             this.fireService = fireService;
             this.textItemService = textItemService;
+            this.resourceProvider = resourceProvider;
             this.SetupTestLogic();
             this.slipeDevsTeam = new Team("Slipe devs", Color.FromArgb(255, 255, 81, 81));
         }
@@ -104,8 +104,8 @@ namespace SlipeServer.Console.Logic
 
         private void SetupTestElements()
         {
-            this.testResource = new Resource(this.server, this.root, this.resourceServer, "TestResource");
-            this.secondTestResource = new Resource(this.server, this.root, this.resourceServer, "SecondTestResource");
+            this.testResource = this.resourceProvider.GetResource("TestResource");
+            this.secondTestResource = this.resourceProvider.GetResource("SecondTestResource");
 
             new WorldObject(321, new Vector3(5, 0, 3)).AssociateWith(this.server);
             new Water(new Vector3[]
