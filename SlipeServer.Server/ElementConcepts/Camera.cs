@@ -27,8 +27,8 @@ namespace SlipeServer.Server.ElementConcepts
             }
         }
 
-        public Vector3? Position { get; set; }
-        public Vector3? LookAt { get; set; }
+        public Vector3? Position { get; internal set; }
+        public Vector3? LookAt { get; internal set; }
 
         public Camera(Player player)
         {
