@@ -22,6 +22,7 @@ namespace SlipeServer.Server.Resources.ResourceServing
         private readonly ILogger logger;
         private readonly string httpAddress;
         private bool isRunning;
+        private HashSet<ushort> usedNetIds;
 
         public BasicHttpServer(Configuration configuration, ILogger logger)
         {
@@ -33,6 +34,7 @@ namespace SlipeServer.Server.Resources.ResourceServing
             this.rootDirectory = configuration.ResourceDirectory;
             this.configuration = configuration;
             this.logger = logger;
+            this.usedNetIds = new();
         }
 
         public void Start()
@@ -92,6 +94,20 @@ namespace SlipeServer.Server.Resources.ResourceServing
         public void Stop()
         {
             this.isRunning = false;
+        }
+
+        public ushort AllocateNetId()
+        {
+            ushort id = 0;
+            while (this.usedNetIds.Contains(id))
+                id++;
+            this.usedNetIds.Add(id);
+            return id;
+        }
+
+        public void ReleaseNetId(ushort id)
+        {
+            this.usedNetIds.Remove(id);
         }
 
         public IEnumerable<ResourceFile> GetResourceFiles(string resource)

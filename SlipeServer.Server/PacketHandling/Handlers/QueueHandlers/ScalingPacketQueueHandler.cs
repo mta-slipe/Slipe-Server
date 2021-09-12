@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlipeServer.Packets;
+using SlipeServer.Packets.Rpc;
 using SlipeServer.Server.PacketHandling.QueueHandlers;
 using System;
 using System.Collections.Generic;
@@ -92,7 +93,10 @@ namespace SlipeServer.Server.PacketHandling.Handlers.QueueHandlers
                     }
                     catch (Exception e)
                     {
-                        this.logger.LogError($"Handling packet ({queueEntry.Packet}) failed.\n{e.Message}\n{e.StackTrace}");
+                        if(queueEntry.Packet is RpcPacket rpcPacket)
+                            this.logger.LogError($"Handling rpcPacket ({rpcPacket.FunctionId}) failed.\n{e.Message}\n{e.StackTrace}");
+                        else
+                            this.logger.LogError($"Handling packet ({queueEntry.Packet}) failed.\n{e.Message}\n{e.StackTrace}");
                     }
                 }
 
