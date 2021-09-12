@@ -2,6 +2,7 @@
 using System;
 using System.Numerics;
 using SlipeServer.Server.Enums;
+using SlipeServer.Server.Elements.Events;
 
 namespace SlipeServer.Server.Elements
 {
@@ -9,7 +10,18 @@ namespace SlipeServer.Server.Elements
     {
         public override ElementType ElementType => ElementType.Object;
 
-        public ushort Model { get; set; }
+        protected ushort model;
+        public ushort Model
+        {
+            get => this.model;
+            set
+            {
+                var args = new ElementChangedEventArgs<WorldObject, ushort>(this, this.Model, value, this.IsSync);
+                this.model = value;
+                ModelChanged?.Invoke(this, args);
+            }
+        }
+
         public bool IsLowLod { get; set; } = false;
         public WorldObject? LowLodElement { get; set; }
         public bool DoubleSided { get; set; } = false;
@@ -35,5 +47,7 @@ namespace SlipeServer.Server.Elements
         {
             return server.AssociateElement(this);
         }
+
+        public event ElementChangedEventHandler<WorldObject, ushort>? ModelChanged;
     }
 }

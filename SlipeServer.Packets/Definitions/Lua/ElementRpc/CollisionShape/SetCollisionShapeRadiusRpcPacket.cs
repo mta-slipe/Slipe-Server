@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 
-namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element
+namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.CollisionShape
 {
     public class SetCollisionShapeRadiusRpcPacket : Packet
     {
