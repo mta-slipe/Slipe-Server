@@ -559,6 +559,18 @@ namespace SlipeServer.Console.Logic
                         }
                     });
                 }
+
+                if (args.Command == "camerainterior")
+                {
+                    if (args.Arguments.Length > 0)
+                    {
+                        if (byte.TryParse(args.Arguments[0], out byte interior))
+                        {
+                            player.Camera.Interior = interior;
+                            this.logger.LogInformation($"Camera interior changed to: {interior}");
+                        }
+                    }
+                }
             };
 
             player.AcInfoReceived += (o, args) =>
