@@ -10,7 +10,6 @@ namespace SlipeServer.Server.Elements
         Ring,
         Cylinder,
         Arrow,
-        Corona,
-        Invalid = 0xFF,
+        Corona
     }
 }
