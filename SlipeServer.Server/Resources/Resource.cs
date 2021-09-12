@@ -1,18 +1,16 @@
 ﻿using SlipeServer.Packets.Definitions.Resources;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Extensions;
-using SlipeServer.Server.Resources.ResourceServing;
-using System;
+using SlipeServer.Server.Resources.Providers;
+using SlipeServer.Server.Resources.Serving;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SlipeServer.Server.Resources
 {
     public class Resource
     {
         private readonly MtaServer server;
-        private readonly IResourceServer resourceServer;
-        private readonly string path;
+        private readonly IResourceProvider resourceProvider;
 
         public DummyElement Root { get; }
         public DummyElement DynamicRoot { get; }
@@ -20,14 +18,14 @@ namespace SlipeServer.Server.Resources
         public int PriorityGroup { get; set; }
         public List<string> Exports { get; }
         public string Name { get; }
+        public string Path { get; }
 
-        public Resource(MtaServer server, RootElement root, IResourceServer resourceServer, string name, string? path = null)
+        public Resource(MtaServer server, RootElement root, IResourceProvider resourceProvider, string name, string? path = null)
         {
-            this.NetId = resourceServer.AllocateNetId();
             this.server = server;
-            this.resourceServer = resourceServer;
+            this.resourceProvider = resourceProvider;
             this.Name = name;
-            this.path = path ?? $"./{name}";
+            this.Path = path ?? $"./{name}";
 
             this.Root = new DummyElement()
             {
@@ -45,7 +43,7 @@ namespace SlipeServer.Server.Resources
 
         public void Start()
         {
-            var files = this.resourceServer.GetResourceFiles(this.path);
+            var files = this.resourceProvider.GetFilesForResource(this);
             this.server.BroadcastPacket(new ResourceStartPacket(
                 this.Name, this.NetId, this.Root.Id, this.DynamicRoot.Id, 0, null, null, false, this.PriorityGroup, files, this.Exports)
             );
@@ -58,7 +56,7 @@ namespace SlipeServer.Server.Resources
 
         public void StartFor(Player player)
         {
-            var files = this.resourceServer.GetResourceFiles(this.path);
+            var files = this.resourceProvider.GetFilesForResource(this);
             new ResourceStartPacket(this.Name, this.NetId, this.Root.Id, this.DynamicRoot.Id, 0, null, null, false, this.PriorityGroup, files, this.Exports)
                 .SendTo(player);
         }

@@ -137,7 +137,7 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Rpc
         private void HandlePlayerTarget(Client client, RpcPacket packet)
         {
             uint id = packet.Reader.GetElementId();
-            Element? element = elementRepository.Get(id);
+            Element? element = this.elementRepository.Get(id);
             client.Player.Target = element;
         }
     }

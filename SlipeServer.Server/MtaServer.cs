@@ -14,7 +14,8 @@ using SlipeServer.Server.PacketHandling;
 using SlipeServer.Server.PacketHandling.Handlers;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.Repositories;
-using SlipeServer.Server.Resources.ResourceServing;
+using SlipeServer.Server.Resources.Providers;
+using SlipeServer.Server.Resources.Serving;
 using SlipeServer.Server.ServerOptions;
 using SlipeServer.Server.Services;
 using System;
@@ -227,6 +228,7 @@ namespace SlipeServer.Server
             this.serviceCollection.AddSingleton<IElementRepository, CompoundElementRepository>();
             this.serviceCollection.AddSingleton<ILogger, DefaultLogger>();
             this.serviceCollection.AddSingleton<IResourceServer, BasicHttpServer>();
+            this.serviceCollection.AddSingleton<IResourceProvider, FileSystemResourceProvider>();
             this.serviceCollection.AddSingleton<IElementIdGenerator, RepositoryBasedElementIdGenerator>();
             this.serviceCollection.AddSingleton<IAseQueryService, AseQueryService>();
             this.serviceCollection.AddSingleton(typeof(ISyncHandlerMiddleware<>), typeof(BasicSyncHandlerMiddleware<>));
