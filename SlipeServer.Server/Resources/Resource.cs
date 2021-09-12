@@ -23,6 +23,7 @@ namespace SlipeServer.Server.Resources
 
         public Resource(MtaServer server, RootElement root, IResourceServer resourceServer, string name, string? path = null)
         {
+            this.NetId = resourceServer.AllocateNetId();
             this.server = server;
             this.resourceServer = resourceServer;
             this.Name = name;

@@ -344,7 +344,7 @@ namespace SlipeServer.Console.Logic
             player.Weapons.First(weapon => weapon.Type == WeaponId.Ak47).AmmoInClip = 25;
 
             this.testResource?.StartFor(player);
-            //this.secondTestResource?.StartFor(player);
+            this.secondTestResource?.StartFor(player);
 
             this.HandlePlayerSubscriptions(player);
             this.HandlePlayerCommands(player);
@@ -577,6 +577,18 @@ namespace SlipeServer.Console.Logic
 
                     this.Marker!.TargetPosition = new Vector3(this.random.Next(0, 20) - 5, this.random.Next(0, 20), this.random.Next(-50, 50));
                     this.chatBox.OutputTo(player, "You have randomized marker!", Color.YellowGreen);
+                }
+              
+                if (args.Command == "camerainterior")
+                {
+                    if (args.Arguments.Length > 0)
+                    {
+                        if (byte.TryParse(args.Arguments[0], out byte interior))
+                        {
+                            player.Camera.Interior = interior;
+                            this.logger.LogInformation($"Camera interior changed to: {interior}");
+                        }
+                    }
                 }
             };
 
