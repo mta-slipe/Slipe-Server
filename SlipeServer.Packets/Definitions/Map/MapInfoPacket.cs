@@ -1,6 +1,10 @@
 ﻿using SlipeServer.Packets.Builder;
+using SlipeServer.Packets.Definitions.Map.Structs;
 using SlipeServer.Packets.Enums;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Map
@@ -16,7 +20,7 @@ namespace SlipeServer.Packets.Definitions.Map
         public byte BlendedWeatherHour { get; set; }
         public (Color top, Color bottom)? SkyGradient { get; set; }
         public (byte intensity, byte randomShift, ushort speedMin, ushort speedMax, short scanSizeX, short scanSizeY, ushort renderSizeX, ushort renderSizeY, bool isInsideBuilder)? HeatHaze { get; set; }
-        public (ushort hour, ushort minute) Time { get; set; }
+        public (byte hour, byte minute) Time { get; set; }
         public ulong MinuteDuration { get; set; }
         public (bool isRadarShowing, bool areNametagsShowing, bool areCloudsEnabled) Flags { get; set; }
         public float Gravity { get; set; }
@@ -45,12 +49,11 @@ namespace SlipeServer.Packets.Definitions.Map
         public float? FogDistance { get; set; }
         public float AircraftMaxHeight { get; set; }
         public float AircraftMaxVelocity { get; set; }
-
-        // Weapons 
+        public MapInfoWeaponProperty[] WeaponProperties { get; set; } = Array.Empty<MapInfoWeaponProperty>();
 
 
         public (ushort model, float radius, Vector3 position, byte interior)[] RemovedWorldModels { get; set; } 
-            = System.Array.Empty<(ushort model, float radius, Vector3 position, byte interior)>();
+            = Array.Empty<(ushort model, float radius, Vector3 position, byte interior)>();
 
         public bool OcclusionsEnabled { get; set; }
 
@@ -147,12 +150,10 @@ namespace SlipeServer.Packets.Definitions.Map
             builder.Write(this.AircraftMaxHeight);
             builder.Write(this.AircraftMaxVelocity);
 
-            // weapons
-
+            this.WriteWeapons(builder);
             this.WriteRemovals(builder);
 
             builder.Write(this.OcclusionsEnabled);
-
 
             return builder.Build();
         }
@@ -208,23 +209,76 @@ namespace SlipeServer.Packets.Definitions.Map
                 builder.Write(this.OutsideWorldSeaLevel.Value);
         }
 
-        private void WriteRemovals(PacketBuilder builder)
+        private void WriteWeapons(PacketBuilder builder)
         {
-            builder.Write(this.WaveHeight);
-            builder.Write(this.SeaLevel);
+            var propertiesPerWeapon = this.WeaponProperties.ToDictionary(x => x.WeaponType);
+            for (byte weapon = 0; weapon < 42; weapon++)
+            {
+                if (!propertiesPerWeapon.ContainsKey(weapon))
+                    propertiesPerWeapon[weapon] = new();
+            }
 
-            builder.Write(this.NonSeaLevel.HasValue);
-            if (this.NonSeaLevel.HasValue)
-                builder.Write(this.NonSeaLevel.Value);
-
-            builder.Write(this.OutsideWorldSeaLevel.HasValue);
-            if (this.OutsideWorldSeaLevel.HasValue)
-                builder.Write(this.OutsideWorldSeaLevel.Value);
+            this.WriteMeleeWeapons(builder, propertiesPerWeapon);
+            this.WriteRangeWeapons(builder, propertiesPerWeapon);
+            this.WriteStatWeapons(builder, propertiesPerWeapon);
+            this.WriteSpecialWeapons(builder, propertiesPerWeapon);
         }
 
-        private void WriteFoo(PacketBuilder builder)
+        private void WriteMeleeWeapons(PacketBuilder builder, Dictionary<byte, MapInfoWeaponProperty> properties)
         {
+            for (byte weapon = 1; weapon < 22; weapon++)
+            {
+                var property = properties[weapon];
+                builder.Write(property.EnabledWhenUsingJetpack);
+            }
+        }
 
+        private void WriteRangeWeapons(PacketBuilder builder, Dictionary<byte, MapInfoWeaponProperty> properties)
+        {
+            for (byte weapon = 22; weapon < 43; weapon++)
+            {
+                var property = properties[weapon];
+                builder.Write(true);
+                builder.Write(property.WeaponConfigurations.First());
+                builder.Write(property.EnabledWhenUsingJetpack);
+            }
+        }
+
+        private void WriteStatWeapons(PacketBuilder builder, Dictionary<byte, MapInfoWeaponProperty> properties)
+        {
+            for (byte weapon = 22; weapon < 33; weapon++)
+            {
+                var property = properties[weapon];
+                builder.Write(true);
+
+                for (int i = 0; i < 3; i++)
+                    builder.Write(property.WeaponConfigurations[i]);
+
+                builder.Write(property.EnabledWhenUsingJetpack);
+            }
+        }
+
+        private void WriteSpecialWeapons(PacketBuilder builder, Dictionary<byte, MapInfoWeaponProperty> properties)
+        {
+            for (byte weapon = 43; weapon < 47; weapon++)
+            {
+                var property = properties[weapon];
+                builder.Write(property.EnabledWhenUsingJetpack);
+            }
+        }
+
+        private void WriteRemovals(PacketBuilder builder)
+        {
+            foreach (var (model, radius, position, interior) in this.RemovedWorldModels)
+            {
+                builder.Write(true);
+                builder.Write(model);
+                builder.Write(radius);
+                builder.Write(position);
+                builder.Write(interior);
+            }
+
+            builder.Write(false);
         }
     }
 }

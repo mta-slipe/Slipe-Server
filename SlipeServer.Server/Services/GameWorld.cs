@@ -33,7 +33,20 @@ namespace SlipeServer.Server.Services
 
         #region Properties
 
-        public byte Weather { get; set; }
+        public (byte hour, byte minute) Time => (this.hour, this.minute);
+
+        private byte weather;
+        public byte Weather
+        {
+            get => this.weather;
+            set
+            {
+                this.weather = value;
+                this.PreviousWeather = value;
+            }
+        }
+        public byte PreviousWeather { get; private set; }
+        public byte WeatherBlendStopHour { get; private set; }
 
         private float? fogDistance;
         public float? FogDistance
@@ -294,7 +307,7 @@ namespace SlipeServer.Server.Services
             player.Client.SendPacket(new SetTrafficLightStatePacket((byte)this.trafficLightState, this.trafficLightStateForced));
             player.Client.SendPacket(new SetWeatherPacket(this.Weather));
             player.Client.SendPacket(new SetWindVelocityPacket(this.windVelocity));
-            foreach (var item in enabledGlitches)
+            foreach (var item in this.enabledGlitches)
                 player.Client.SendPacket(new SetGlitchEnabledPacket((byte)item.Key, item.Value));
         }
 
@@ -308,7 +321,9 @@ namespace SlipeServer.Server.Services
 
         public void SetWeatherBlended(byte weather, byte hours = 1)
         {
-            this.Weather = weather;
+            this.PreviousWeather = this.weather;
+            this.weather = weather;
+            this.WeatherBlendStopHour = (byte)(this.hour + hours);
             this.server.BroadcastPacket(new SetWeatherBlendedPacket(weather, (byte)((this.hour + hours) % 24)));
         }
 
@@ -346,10 +361,10 @@ namespace SlipeServer.Server.Services
             this.server.BroadcastPacket(new SetSkyGradientPacket(top, bottom));
         }
 
-        public Tuple<Color, Color>? GetSkyGradient()
+        public (Color, Color)? GetSkyGradient()
         {
             return (this.skyGradientTopColor != null && this.skyGradientBottomColor != null) ?
-                new Tuple<Color, Color>(this.skyGradientTopColor.Value, this.skyGradientBottomColor.Value) :
+                (this.skyGradientTopColor.Value, this.skyGradientBottomColor.Value) :
                 null;
         }
 
@@ -361,10 +376,10 @@ namespace SlipeServer.Server.Services
             this.server.BroadcastPacket(new SetSunColorPacket(core, corona));
         }
 
-        public Tuple<Color, Color>? GetSunColor()
+        public (Color, Color)? GetSunColor()
         {
             return (this.sunCoreColor != null && this.sunCoronaColor != null) ?
-                new Tuple<Color, Color>(this.sunCoreColor.Value, this.sunCoronaColor.Value) :
+                (this.sunCoreColor.Value, this.sunCoronaColor.Value) :
                 null;
         }
 
