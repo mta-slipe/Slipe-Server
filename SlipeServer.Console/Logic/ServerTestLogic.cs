@@ -343,7 +343,7 @@ namespace SlipeServer.Console.Logic
             player.Weapons.First(weapon => weapon.Type == WeaponId.Ak47).AmmoInClip = 25;
 
             this.testResource?.StartFor(player);
-            //this.secondTestResource?.StartFor(player);
+            this.secondTestResource?.StartFor(player);
 
             this.HandlePlayerSubscriptions(player);
             this.HandlePlayerCommands(player);
