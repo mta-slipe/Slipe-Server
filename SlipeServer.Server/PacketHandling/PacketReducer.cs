@@ -85,8 +85,8 @@ namespace SlipeServer.Server.PacketHandling
                 var packet = pool.GetPacket();
                 packet.Read(data);
                 handler.EnqueuePacket(client, packet);
-                pool.ReturnPacket(packet);
             });
+            handler.PacketHandled += (packet) => pool.ReturnPacket(packet);
         }
     }
 }

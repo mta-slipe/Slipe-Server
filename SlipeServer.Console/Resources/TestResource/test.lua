@@ -23,3 +23,8 @@ addCommandHandler("crun", function(command, ...)
 end)
 
 setDevelopmentMode(true)
+
+addCommandHandler("TriggerTests", function(command, ...)
+    triggerServerEvent("Test1", resourceRoot, "Test1")
+    triggerServerEvent("Test2", resourceRoot, "Test2")
+end)
