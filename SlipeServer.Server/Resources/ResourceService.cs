@@ -38,7 +38,7 @@ namespace SlipeServer.Server.Resources
         {
             if (!this.startedResources.Any(r => r.Name == name))
             {
-                var resource = new Resource(this.server, this.root, this.resourceProvider, name);
+                var resource = this.resourceProvider.GetResource(name);
                 resource.Start();
                 this.startedResources.Add(resource);
 
