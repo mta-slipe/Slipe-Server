@@ -6,6 +6,6 @@ namespace SlipeServer.Packets.Definitions.Map.Structs
     {
         public byte WeaponType { get; set; }
         public bool EnabledWhenUsingJetpack { get; set; }
-        public WeaponConfiguration[] WeaponConfigurations { get; set; }
+        public MapInfoWeaponConfiguration[] WeaponConfigurations { get; set; }
     }
 }

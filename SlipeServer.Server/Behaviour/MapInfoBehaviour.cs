@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets.Definitions.Map;
 using SlipeServer.Packets.Definitions.Map.Structs;
 using SlipeServer.Packets.Structs;
+using SlipeServer.Server.ElementConcepts;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
@@ -14,10 +15,12 @@ namespace SlipeServer.Server.Behaviour
     public class MapInfoBehaviour
     {
         private readonly GameWorld gameWorld;
+        private readonly WeaponConfigurationService weaponConfigurationService;
 
-        public MapInfoBehaviour(MtaServer server, GameWorld gameWorld)
+        public MapInfoBehaviour(MtaServer server, GameWorld gameWorld, WeaponConfigurationService weaponConfigurationService)
         {
             this.gameWorld = gameWorld;
+            this.weaponConfigurationService = weaponConfigurationService;
 
             server.PlayerJoined += HandlePlayerJoin;
         }
@@ -65,20 +68,41 @@ namespace SlipeServer.Server.Behaviour
                 FogDistance = this.gameWorld.FogDistance,
                 AircraftMaxHeight = this.gameWorld.AircraftMaxHeight,
                 AircraftMaxVelocity = this.gameWorld.AircraftMaxVelocity,
-                WeaponProperties = Enum.GetValues<WeaponType>().Select(x => new MapInfoWeaponProperty()
+                WeaponProperties = Enum.GetValues<WeaponId>().Select(x => new MapInfoWeaponProperty()
                 {
                     WeaponType = (byte)x,
                     EnabledWhenUsingJetpack = false,
-                    WeaponConfigurations = new WeaponConfiguration[]
+                    WeaponConfigurations = Enum.GetValues<WeaponSkillLevel>().Select(skill =>
                     {
-                        new(),
-                        new(),
-                        new()
-                    }
+                        //return new() { WeaponType = (byte)x };
+                        return MapWeaponConfiguration(this.weaponConfigurationService.GetWeaponConfiguration(x, skill));
+                    }).ToArray()
                 }).ToArray(),
                 RemovedWorldModels = Array.Empty<(ushort model, float radius, Vector3 position, byte interior)>(),
                 OcclusionsEnabled = this.gameWorld.OcclusionsEnabled,
             }.SendTo(player);
+        }
+
+        private MapInfoWeaponConfiguration MapWeaponConfiguration(WeaponConfiguration weaponConfiguration)
+        {
+            return new MapInfoWeaponConfiguration()
+            {
+                WeaponType = (int)weaponConfiguration.WeaponType,
+                TargetRange = weaponConfiguration.TargetRange,
+                WeaponRange = weaponConfiguration.WeaponRange,
+                Flags = weaponConfiguration.Flags,
+                MaximumClipAmmo = weaponConfiguration.MaximumClipAmmo,
+                Damage = weaponConfiguration.Damage,
+                Accuracy = weaponConfiguration.Accuracy,
+                MoveSpeed = weaponConfiguration.MoveSpeed,
+                AnimationLoopStart = weaponConfiguration.AnimationLoopStart,
+                AnimationLoopStop = weaponConfiguration.AnimationLoopStop,
+                AnimationLoopBulletFire = weaponConfiguration.AnimationLoopBulletFire,
+                Animation2LoopStart = weaponConfiguration.Animation2LoopStart,
+                Animation2LoopStop = weaponConfiguration.Animation2LoopStop,
+                Animation2LoopBulletFire = weaponConfiguration.Animation2LoopBulletFire,
+                AnimationBreakoutTime = weaponConfiguration.AnimationBreakoutTime
+            };
         }
     }
 }

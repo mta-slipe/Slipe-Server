@@ -1,6 +1,6 @@
 ﻿namespace SlipeServer.Packets.Structs
 {
-    public struct WeaponConfiguration
+    public struct MapInfoWeaponConfiguration
     {
         public int WeaponType { get; set; }
         public float TargetRange { get; set; }
@@ -8,7 +8,7 @@
 
         public int Flags { get; set; }
 
-        public short Ammo { get; set; }
+        public short MaximumClipAmmo { get; set; }
         public short Damage { get; set; }
 
         public float Accuracy { get; set; }

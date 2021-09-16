@@ -22,13 +22,13 @@ namespace SlipeServer.Packets.Builder
                 builder.WriteCompressed(inClip.Value);
         }
 
-        public static void Write(this PacketBuilder builder, WeaponConfiguration weaponConfiguration)
+        public static void Write(this PacketBuilder builder, MapInfoWeaponConfiguration weaponConfiguration)
         {
             builder.Write(weaponConfiguration.WeaponType);
             builder.Write(weaponConfiguration.TargetRange);
             builder.Write(weaponConfiguration.WeaponRange);
             builder.Write(weaponConfiguration.Flags);
-            builder.Write(weaponConfiguration.Ammo);
+            builder.Write(weaponConfiguration.MaximumClipAmmo);
             builder.Write(weaponConfiguration.Damage);
             builder.Write(weaponConfiguration.Accuracy);
             builder.Write(weaponConfiguration.MoveSpeed);
