@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets.Definitions.Entities.Structs;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Constants;
+using SlipeServer.Server.ElementConcepts;
 using SlipeServer.Server.Elements.Events;
 using System;
 using System.Collections.Generic;
@@ -28,7 +29,8 @@ namespace SlipeServer.Server.Elements
         }
 
         public float Health { get; set; } = 1000;
-        public Color[] Colors { get; set; }
+        public Colors Colors { get; private set; }
+
         public byte PaintJob { get; set; } = 0;
         public VehicleDamage Damage { get; set; }
         public byte Variant1 { get; set; } = 0;
@@ -91,8 +93,29 @@ namespace SlipeServer.Server.Elements
 
         public bool IsSirenActive { get; set; } = false;
         public bool IsFuelTankExplodable { get; set; } = false;
-        public bool IsEngineOn { get; set; } = false;
-        public bool IsLocked { get; set; } = false;
+        private bool isEngineOn = false;
+        public bool IsEngineOn
+        {
+            get => this.isEngineOn;
+            set
+            {
+                var args = new ElementChangedEventArgs<Vehicle, bool>(this, this.isEngineOn, value, this.IsSync);
+                this.isEngineOn = value;
+                EngineStateChanged?.Invoke(this, args);
+            }
+        }
+
+        private bool isLocked = false;
+        public bool IsLocked
+        {
+            get => this.isLocked;
+            set
+            {
+                var args = new ElementChangedEventArgs<Vehicle, bool>(this, this.isLocked, value, this.IsSync);
+                this.isLocked = value;
+                LockedStateChanged?.Invoke(this, args);
+            }
+        }
         public bool AreDoorsUndamageable { get; set; } = false;
         public bool IsDamageProof { get; set; } = false;
         public bool IsFrozen { get; set; } = false;
@@ -143,7 +166,7 @@ namespace SlipeServer.Server.Elements
             this.Position = position;
             this.RespawnPosition = position;
 
-            this.Colors = new Color[2] { Color.White, Color.White };
+            this.Colors = new Colors(this, Color.White, Color.White);
             this.Damage = VehicleDamage.Undamaged;
             this.DoorRatios = new float[6];
             this.DoorStates = new byte[6];
@@ -307,6 +330,8 @@ namespace SlipeServer.Server.Elements
         public event ElementChangedEventHandler<Vehicle, bool>? TaxiLightStateChanged;
         public event ElementChangedEventHandler<Vehicle, Vector2?>? TurretRotationChanged;
         public event ElementChangedEventHandler<Vehicle, string>? PlateTextChanged;
+        public event ElementChangedEventHandler<Vehicle, bool>? LockedStateChanged;
+        public event ElementChangedEventHandler<Vehicle, bool>? EngineStateChanged;
         public event ElementEventHandler<VehicleRespawnEventArgs>? Respawned;
         public event ElementEventHandler<VehicleDoorStateChangedArgs>? DoorStateChanged;
         public event ElementEventHandler<VehicleWheelStateChangedArgs>? WheelStateChanged;

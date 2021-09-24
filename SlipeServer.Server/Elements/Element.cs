@@ -133,9 +133,30 @@ namespace SlipeServer.Server.Elements
             }
         }
 
-        public bool AreCollisionsEnabled { get; set; } = true;
-        public bool IsCallPropagationEnabled { get; set; } = false;
 
+        protected bool areCollisionsEnabled = true;
+        public bool AreCollisionsEnabled
+        {
+            get => this.areCollisionsEnabled;
+            set
+            {
+                var args = new ElementChangedEventArgs<bool>(this, this.areCollisionsEnabled, value, this.IsSync);
+                this.areCollisionsEnabled = value;
+                CollisionEnabledhanged?.Invoke(this, args);
+            }
+        }
+
+        protected bool isCallPropagationEnabled = false;
+        public bool IsCallPropagationEnabled
+        {
+            get => this.isCallPropagationEnabled;
+            set
+            {
+                var args = new ElementChangedEventArgs<bool>(this, this.isCallPropagationEnabled, value, this.IsSync);
+                this.isCallPropagationEnabled = value;
+                CallPropagationChanged?.Invoke(this, args);
+            }
+        }
 
         private AsyncLocal<bool> isSync = new();
         public bool IsSync
@@ -200,18 +221,20 @@ namespace SlipeServer.Server.Elements
             this.Destroyed?.Invoke(this);
         }
 
-        public void RunAsSync(Action action)
+        public void RunAsSync(Action action, bool value = true)
         {
-            this.IsSync = true;
+            var oldValue = this.IsSync;
+            this.IsSync = value;
             action();
-            this.IsSync = false;
+            this.IsSync = oldValue;
         }
 
-        public async Task RunAsSync(Func<Task> action)
+        public async Task RunAsSync(Func<Task> action, bool value = true)
         {
-            this.IsSync = true;
+            var oldValue = this.IsSync;
+            this.IsSync = value;
             await action();
-            this.IsSync = false;
+            this.IsSync = oldValue;
         }
 
         public Element AssociateWith(MtaServer server)
@@ -255,6 +278,8 @@ namespace SlipeServer.Server.Elements
         public event ElementChangedEventHandler<ushort>? DimensionChanged;
         public event ElementChangedEventHandler<byte>? AlphaChanged;
         public event ElementChangedEventHandler<string>? NameChanged;
+        public event ElementChangedEventHandler<bool>? CallPropagationChanged;
+        public event ElementChangedEventHandler<bool>? CollisionEnabledhanged;
         public event Action<Element>? Destroyed;
     }
 }

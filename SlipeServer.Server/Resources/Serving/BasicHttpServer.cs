@@ -1,20 +1,13 @@
-﻿using Force.Crc32;
-using Microsoft.Extensions.Logging;
-using SlipeServer.Packets.Structs;
-using SlipeServer.Server.Elements.Enums;
+﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace SlipeServer.Server.Resources.ResourceServing
+namespace SlipeServer.Server.Resources.Serving
 {
-    public class BasicHttpServer: IResourceServer
+    public class BasicHttpServer : IResourceServer
     {
         private readonly HttpListener httpListener;
         private readonly string rootDirectory;
@@ -47,7 +40,7 @@ namespace SlipeServer.Server.Resources.ResourceServing
             {
                 this.httpListener.Start();
             }
-            catch(HttpListenerException exception)
+            catch (HttpListenerException exception)
             {
                 if (exception.Message == "Access is denied." && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
@@ -92,45 +85,6 @@ namespace SlipeServer.Server.Resources.ResourceServing
         public void Stop()
         {
             this.isRunning = false;
-        }
-
-        public IEnumerable<ResourceFile> GetResourceFiles(string resource)
-        {
-            List<ResourceFile> resourceFiles = new List<ResourceFile>();
-
-            using (var md5 = MD5.Create())
-            {
-                foreach (var file in Directory.GetFiles(Path.Join(this.rootDirectory, resource)))
-                {
-                    byte[] content = File.ReadAllBytes(file);
-                    var hash = md5.ComputeHash(content);
-                    var checksum = Crc32Algorithm.Compute(content);
-
-                    string fileName = Path.GetRelativePath(Path.Join(this.rootDirectory, resource), file);
-                    resourceFiles.Add(new ResourceFile()
-                    {
-                        Name = fileName,
-                        AproximateSize = content.Length,
-                        IsAutoDownload = false,
-                        CheckSum = checksum,
-                        FileType = (byte)(fileName.EndsWith(".lua") ? ResourceFileType.ClientScript : ResourceFileType.ClientFile),
-                        Md5 = hash
-                    });
-                }
-            }
-
-            return resourceFiles.ToArray();
-        }
-
-        public IEnumerable<ResourceFile> GetResourceFiles()
-        {
-            IEnumerable<ResourceFile> resourceFiles = Array.Empty<ResourceFile>();
-            foreach (var directory in Directory.GetDirectories(this.rootDirectory))
-            {
-                resourceFiles = resourceFiles.Concat(GetResourceFiles(directory));
-            }
-
-            return resourceFiles;
         }
     }
 }

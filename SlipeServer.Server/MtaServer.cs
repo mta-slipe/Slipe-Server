@@ -14,7 +14,8 @@ using SlipeServer.Server.PacketHandling;
 using SlipeServer.Server.PacketHandling.Handlers;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.Repositories;
-using SlipeServer.Server.Resources.ResourceServing;
+using SlipeServer.Server.Resources.Providers;
+using SlipeServer.Server.Resources.Serving;
 using SlipeServer.Server.ServerOptions;
 using SlipeServer.Server.Services;
 using System;
@@ -30,7 +31,7 @@ namespace SlipeServer.Server
         private readonly List<INetWrapper> netWrappers;
         private readonly IResourceServer resourceServer;
         protected readonly PacketReducer packetReducer;
-        private readonly Dictionary<INetWrapper, Dictionary<uint, Client>> clients;
+        protected readonly Dictionary<INetWrapper, Dictionary<uint, Client>> clients;
         private readonly ServiceCollection serviceCollection;
         private readonly ServiceProvider serviceProvider;
         private readonly IElementRepository elementRepository;
@@ -55,10 +56,14 @@ namespace SlipeServer.Server
             Func<uint, INetWrapper, Client>? clientCreationMethod = null
         )
         {
-            this.netWrappers = new List<INetWrapper>();
-
-            this.configuration = configuration ?? new Configuration();
+            this.netWrappers = new();
+            this.clients = new();
             this.clientCreationMethod = clientCreationMethod;
+            this.configuration = configuration ?? new();
+
+            this.root = new();
+            this.serviceCollection = new();
+
             var validationResults = new List<ValidationResult>();
             if (!Validator.TryValidateObject(this.configuration, new ValidationContext(this.configuration), validationResults, true))
             {
@@ -66,9 +71,6 @@ namespace SlipeServer.Server
                 throw new Exception($"An error has occurred while parsing configuration parameters:\r\n {invalidProperties}");
             }
 
-            this.root = new RootElement();
-
-            this.serviceCollection = new ServiceCollection();
             this.SetupDependencies(dependencyCallback);
             this.serviceProvider = this.serviceCollection.BuildServiceProvider();
 
@@ -80,8 +82,7 @@ namespace SlipeServer.Server
 
             this.root.AssociateWith(this);
 
-            this.packetReducer = new PacketReducer(this.serviceProvider.GetRequiredService<ILogger>());
-            this.clients = new Dictionary<INetWrapper, Dictionary<uint, Client>>();
+            this.packetReducer = new(this.serviceProvider.GetRequiredService<ILogger>());
         }
 
         public MtaServer(
@@ -97,13 +98,33 @@ namespace SlipeServer.Server
 
         public MtaServer(
             Action<ServerBuilder> builderAction,
-            Configuration? configuration = null,
-            Action<ServiceCollection>? dependencyCallback = null,
             Func<uint, INetWrapper, Client>? clientCreationMethod = null
-        ) : this(configuration, dependencyCallback, clientCreationMethod)
+        )
         {
-            var builder = new ServerBuilder(this.configuration);
+            this.netWrappers = new();
+            this.clients = new();
+            this.clientCreationMethod = clientCreationMethod;
+
+            this.root = new();
+            this.serviceCollection = new();
+
+            var builder = new ServerBuilder();
             builderAction(builder);
+
+            this.configuration = builder.Configuration;
+            this.SetupDependencies(services => builder.LoadDependencies(services));
+
+            this.serviceProvider = this.serviceCollection.BuildServiceProvider();
+            this.packetReducer = new(this.serviceProvider.GetRequiredService<ILogger>());
+
+            this.resourceServer = this.serviceProvider.GetRequiredService<IResourceServer>();
+            this.resourceServer.Start();
+
+            this.elementRepository = this.serviceProvider.GetRequiredService<IElementRepository>();
+            this.elementIdGenerator = this.serviceProvider.GetService<IElementIdGenerator>();
+
+            this.root.AssociateWith(this);
+
             builder.ApplyTo(this);
         }
 
@@ -162,7 +183,7 @@ namespace SlipeServer.Server
             where TPacketHandler : IPacketHandler<TPacket>
         {
             var packetHandler = this.Instantiate<TPacketHandler>();
-            var queueHandler = Activator.CreateInstance(
+            var queueHandler = this.Instantiate(
                 typeof(TPacketQueueHandler),
                 Array.Empty<object>()
                     .Concat(new object[] { packetHandler })
@@ -172,7 +193,7 @@ namespace SlipeServer.Server
             this.packetReducer.RegisterPacketHandler(packetHandler.PacketId, queueHandler!);
         }
 
-        public object Instantiate(Type type) => ActivatorUtilities.CreateInstance(this.serviceProvider, type);
+        public object Instantiate(Type type, params object[] parameters) => ActivatorUtilities.CreateInstance(this.serviceProvider, type, parameters);
         public T Instantiate<T>() => ActivatorUtilities.CreateInstance<T>(this.serviceProvider);
         public T Instantiate<T>(params object[] parameters)
             => ActivatorUtilities.CreateInstance<T>(this.serviceProvider, parameters);
@@ -207,6 +228,7 @@ namespace SlipeServer.Server
             this.serviceCollection.AddSingleton<IElementRepository, CompoundElementRepository>();
             this.serviceCollection.AddSingleton<ILogger, DefaultLogger>();
             this.serviceCollection.AddSingleton<IResourceServer, BasicHttpServer>();
+            this.serviceCollection.AddSingleton<IResourceProvider, FileSystemResourceProvider>();
             this.serviceCollection.AddSingleton<IElementIdGenerator, RepositoryBasedElementIdGenerator>();
             this.serviceCollection.AddSingleton<IAseQueryService, AseQueryService>();
             this.serviceCollection.AddSingleton(typeof(ISyncHandlerMiddleware<>), typeof(BasicSyncHandlerMiddleware<>));

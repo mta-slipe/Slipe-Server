@@ -51,6 +51,9 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Rpc
                 case RpcFunctions.PLAYER_WEAPON:
                     HandlePlayerWeapon(client, packet);
                     break;
+                case RpcFunctions.PLAYER_TARGET:
+                    HandlePlayerTarget(client, packet);
+                    break;
                 case RpcFunctions.KEY_BIND:
                     HandlePlayerBindKey(client, packet);
                     break;
@@ -109,26 +112,36 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Rpc
 
         private void HandlePlayerWeapon(Client client, RpcPacket packet)
         {
-            var previousSlot = client.Player.CurrentWeaponSlot;
-            if (packet.Reader.GetBit() && client.Player.CurrentWeapon != null && (
-                previousSlot == WeaponSlot.Projectiles ||
-                previousSlot == WeaponSlot.HeavyWeapons ||
-                previousSlot == WeaponSlot.Special1
-            ))
+            lock (client.Player.CurrentWeaponLock)
             {
-                client.Player.CurrentWeapon.Ammo = 0;
-                client.Player.CurrentWeapon.AmmoInClip = 0;
-            }
+                var previousSlot = client.Player.CurrentWeaponSlot;
+                if (packet.Reader.GetBit() && client.Player.CurrentWeapon != null && (
+                    previousSlot == WeaponSlot.Projectiles ||
+                    previousSlot == WeaponSlot.HeavyWeapons ||
+                    previousSlot == WeaponSlot.Special1
+                ))
+                {
+                    client.Player.CurrentWeapon.Ammo = 0;
+                    client.Player.CurrentWeapon.AmmoInClip = 0;
+                }
 
-            var slot = packet.Reader.GetWeaponSlot();
-            client.Player.CurrentWeaponSlot = (WeaponSlot)slot;
+                var slot = packet.Reader.GetWeaponSlot();
+                client.Player.CurrentWeaponSlot = (WeaponSlot)slot;
 
-            if (WeaponConstants.SlotsWithAmmo.Contains(slot) && client.Player.CurrentWeapon != null)
-            {
-                (var ammo, var inClip) = packet.Reader.GetAmmoTuple(true);
-                client.Player.CurrentWeapon.Ammo = ammo;
-                client.Player.CurrentWeapon.AmmoInClip = inClip;
+                if (WeaponConstants.SlotsWithAmmo.Contains(slot) && client.Player.CurrentWeapon != null)
+                {
+                    (var ammo, var inClip) = packet.Reader.GetAmmoTuple(true);
+                    client.Player.CurrentWeapon.Ammo = ammo;
+                    client.Player.CurrentWeapon.AmmoInClip = inClip;
+                }
             }
+        }
+
+        private void HandlePlayerTarget(Client client, RpcPacket packet)
+        {
+            uint id = packet.Reader.GetElementId();
+            Element? element = this.elementRepository.Get(id);
+            client.Player.Target = element;
         }
 
         private void HandlePlayerBindKey(Client client, RpcPacket packet)

@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
 using SlipeServer.Packets.Definitions.Lua;
-using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
@@ -11,7 +10,7 @@ using SlipeServer.Server.Elements.Structs;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Repositories;
 using SlipeServer.Server.Resources;
-using SlipeServer.Server.Resources.ResourceServing;
+using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.Services;
 using System;
 using System.Collections.Generic;
@@ -21,14 +20,13 @@ using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 
-namespace SlipeServer.Console
+namespace SlipeServer.Console.Logic
 {
     public class ServerTestLogic
     {
         private readonly MtaServer server;
         private readonly IElementRepository elementRepository;
         private readonly RootElement root;
-        private readonly IResourceServer resourceServer;
         private readonly GameWorld worldService;
         private readonly DebugLog debugLog;
         private readonly ILogger logger;
@@ -38,10 +36,13 @@ namespace SlipeServer.Console
         private readonly ExplosionService explosionService;
         private readonly FireService fireService;
         private readonly TextItemService textItemService;
+        private readonly IResourceProvider resourceProvider;
         private Resource? testResource;
+        private Resource? secondTestResource;
 
         private readonly Random random = new();
         private RadarArea? RadarArea { get; set; }
+        private Marker? Marker { get; set; }
         private Blip? BlipA { get; set; }
         private Blip? BlipB { get; set; }
         private WorldObject? WorldObject { get; set; }
@@ -56,7 +57,6 @@ namespace SlipeServer.Console
             MtaServer server,
             IElementRepository elementRepository,
             RootElement root,
-            IResourceServer resourceServer,
             GameWorld world,
             DebugLog debugLog,
             ILogger logger,
@@ -65,13 +65,13 @@ namespace SlipeServer.Console
             LuaEventService luaService,
             ExplosionService explosionService,
             FireService fireService,
-            TextItemService textItemService
+            TextItemService textItemService,
+            IResourceProvider resourceProvider
         )
         {
             this.server = server;
             this.elementRepository = elementRepository;
             this.root = root;
-            this.resourceServer = resourceServer;
             this.worldService = world;
             this.debugLog = debugLog;
             this.logger = logger;
@@ -81,6 +81,7 @@ namespace SlipeServer.Console
             this.explosionService = explosionService;
             this.fireService = fireService;
             this.textItemService = textItemService;
+            this.resourceProvider = resourceProvider;
             this.SetupTestLogic();
             this.slipeDevsTeam = new Team("Slipe devs", Color.FromArgb(255, 255, 81, 81));
         }
@@ -103,7 +104,8 @@ namespace SlipeServer.Console
 
         private void SetupTestElements()
         {
-            this.testResource = new Resource(this.server, this.root, this.resourceServer, "TestResource");
+            this.testResource = this.resourceProvider.GetResource("TestResource");
+            this.secondTestResource = this.resourceProvider.GetResource("SecondTestResource");
 
             new WorldObject(321, new Vector3(5, 0, 3)).AssociateWith(this.server);
             new Water(new Vector3[]
@@ -116,11 +118,23 @@ namespace SlipeServer.Console
             this.BlipB = new Blip(new Vector3(15, 0, 0), BlipIcon.Marker, 50).AssociateWith(this.server);
             this.RadarArea = new RadarArea(new Vector2(0, 0), new Vector2(200, 200), Color.FromArgb(100, Color.Aqua)).AssociateWith(this.server);
 
-            new Marker(new Vector3(5, 0, 2), MarkerType.Cylinder)
+            this.Marker = new Marker(new Vector3(5, 0, 2), MarkerType.Cylinder)
             {
                 Color = Color.FromArgb(100, Color.Cyan)
             }.AssociateWith(this.server);
-            new Pickup(new Vector3(0, 5, 3), PickupType.Health, 20).AssociateWith(this.server);
+
+            new Pickup(new Vector3(0, -5, 3), PickupType.Health, 20)
+            {
+                RespawnTime = 5000
+            }.AssociateWith(this.server);
+            new Pickup(new Vector3(3, -5, 3), PickupType.Armor, 20)
+            {
+                RespawnTime = 5000
+            }.AssociateWith(this.server);
+            new Pickup(new Vector3(5, -5, 3), WeaponType.WEAPONTYPE_AK47, 100)
+            {
+                RespawnTime = 5000
+            }.AssociateWith(this.server);
 
             var values = Enum.GetValues(typeof(PedModel));
             PedModel randomPedModel = (PedModel)values.GetValue(new Random().Next(values.Length))!;
@@ -153,7 +167,7 @@ namespace SlipeServer.Console
                     eventArgs.Vehicle.RemovePassenger(eventArgs.Ped);
                 }
             };
-            
+
             vehicle.PedLeft += async (sender, eventArgs) =>
             {
                 if (eventArgs.Seat == 0)
@@ -164,10 +178,10 @@ namespace SlipeServer.Console
                 }
             };
 
-            var circle = new CollisionCircle(new Vector2(0,25), 3).AssociateWith(this.server);
-            var sphere = new CollisionSphere(new Vector3(0,25,0), 3).AssociateWith(this.server);
-            var tube = new CollisionTube(new Vector3(0,25,0), 3, 3).AssociateWith(this.server);
-            var polygon = new CollisionPolygon(new Vector3(0,-25,0), new Vector2[] { new Vector2(-25, -25), new Vector2(-25, -50), new Vector2(-50, -25)}).AssociateWith(this.server);
+            var circle = new CollisionCircle(new Vector2(0, 25), 3).AssociateWith(this.server);
+            var sphere = new CollisionSphere(new Vector3(0, 25, 0), 3).AssociateWith(this.server);
+            var tube = new CollisionTube(new Vector3(0, 25, 0), 3, 3).AssociateWith(this.server);
+            var polygon = new CollisionPolygon(new Vector3(0, -25, 0), new Vector2[] { new Vector2(-25, -25), new Vector2(-25, -50), new Vector2(-50, -25) }).AssociateWith(this.server);
             var rectangle = new CollisionRectangle(new Vector2(50, 20), new Vector2(2, 2)).AssociateWith(this.server);
             var cuboid = new CollisionCuboid(new Vector3(30, 20, 4), new Vector3(2, 2, 2)).AssociateWith(this.server);
             Task.Run(async () =>
@@ -189,7 +203,7 @@ namespace SlipeServer.Console
                 }
             });
 
-            var shape = new CollisionCircle(new Vector2(0,25), 3).AssociateWith(this.server);
+            var shape = new CollisionCircle(new Vector2(0, 25), 3).AssociateWith(this.server);
 
             circle.RadiusChanged += async (Element sender, ElementChangedEventArgs<float> args) =>
             {
@@ -301,10 +315,9 @@ namespace SlipeServer.Console
             //player.ForceMapVisible(true);
             //player.ToggleAllControls(false, true, true);
 
-            player.Kicked += (o, args) =>
+            player.Kicked += (player, args) =>
             {
-                Player? player = (Player?)o;
-                this.logger.LogWarning($"{player?.Name} has been kicked, reason: {args.Reason}");
+                this.logger.LogWarning($"{player.Name} has been kicked, reason: {args.Reason}");
             };
 
             player.Wasted += async (o, args) =>
@@ -318,17 +331,6 @@ namespace SlipeServer.Console
 
             player.ScreenshotTaken += HandlePlayerScreenshot;
 
-            //player.AddWeapon(WeaponId.Ak47, 500, true);
-            //player.AddWeapon(WeaponId.Tec9, 500, true);
-            //player.AddWeapon(WeaponId.Sniper, 500, true);
-            //player.AddWeapon(WeaponId.Deagle, 500, true);
-            //player.AddWeapon(WeaponId.Golfclub, 500, true);
-
-            //player.RemoveWeapon(WeaponId.Tec9, 500);
-            //player.RemoveWeapon(WeaponId.Sniper);
-            //player.RemoveWeapon(WeaponId.Deagle, 200);
-            //player.SetAmmoCount(WeaponSlot.AssaultRifles, 750, 25);
-
             player.Weapons.Add(new Weapon(WeaponId.Ak47, 500));
             player.Weapons.Add(new Weapon(WeaponId.Tec9, 500));
             player.Weapons.Add(new Weapon(WeaponId.Sniper, 500));
@@ -340,8 +342,9 @@ namespace SlipeServer.Console
             player.Weapons.First(weapon => weapon.Type == WeaponId.Deagle).Ammo -= 200;
             player.Weapons.First(weapon => weapon.Type == WeaponId.Ak47).Ammo = 750;
             player.Weapons.First(weapon => weapon.Type == WeaponId.Ak47).AmmoInClip = 25;
-            
+
             this.testResource?.StartFor(player);
+            this.secondTestResource?.StartFor(player);
 
             this.HandlePlayerSubscriptions(player);
             this.HandlePlayerCommands(player);
@@ -349,6 +352,14 @@ namespace SlipeServer.Console
             player.TeamChanged += (thePlayer, args) =>
             {
                 this.logger.LogDebug($"{thePlayer.Name} Joined {thePlayer.Team?.TeamName} team!");
+            };
+            player.TargetChanged += (thePlayer, args) =>
+            {
+                if(args.NewValue != null && args.NewValue is Vehicle vehicle)
+                {
+                    if(vehicle.Model == (ushort)VehicleModel.Rhino)
+                        this.logger.LogDebug($"{thePlayer.Name} Changed target rhino");
+                }
             };
 
             player.Team = this.slipeDevsTeam;
@@ -364,7 +375,8 @@ namespace SlipeServer.Console
             }
 
 
-            player.CommandEntered += (o, args) => {
+            player.CommandEntered += (o, args) =>
+            {
                 Player? otherPlayer;
                 switch (args.Command)
                 {
@@ -404,12 +416,13 @@ namespace SlipeServer.Console
             bool flip = false;
             player.CommandEntered += (o, args) => { if (args.Command == "kill") player.Kill(); };
             player.CommandEntered += (o, args) => { if (args.Command == "spawn") player.Spawn(new Vector3(20, 0, 3), 0, 9, 0, 0); };
-            player.CommandEntered += (o, args) => {
+            player.CommandEntered += (o, args) =>
+            {
                 if (args.Command == "night")
-                    worldService.SetTime(0, 0);
+                    this.worldService.SetTime(0, 0);
 
                 if (args.Command == "day")
-                    worldService.SetTime(13, 37);
+                    this.worldService.SetTime(13, 37);
 
                 if (args.Command == "blip")
                 {
@@ -425,8 +438,7 @@ namespace SlipeServer.Console
                     {
                         this.BlipA.Ordering = 1;
                         this.BlipB.Ordering = 2;
-                    }
-                    else
+                    } else
                     {
                         this.BlipA.Ordering = 2;
                         this.BlipB.Ordering = 1;
@@ -523,14 +535,13 @@ namespace SlipeServer.Console
                         {
                             player.Model = model;
                         }
-                    }
-                    else
+                    } else
                     {
                         player.Model = (ushort)this.random.Next(20, 25);
                     }
 
-                if (args.Command == "togglecontrol")
-                    player.Controls.JumpEnabled = !player.Controls.JumpEnabled;
+                    if (args.Command == "togglecontrol")
+                        player.Controls.JumpEnabled = !player.Controls.JumpEnabled;
                 }
                 if (args.Command == "jp" || args.Command == "jetpack")
                     player.HasJetpack = !player.HasJetpack;
@@ -550,25 +561,42 @@ namespace SlipeServer.Console
                     });
                 }
 
-                if (args.Command == "testbind")
+                if (args.Command == "marker")
                 {
-                    player.SetBindEnabled("a", KeyState.Both);
-                    player.SetBindEnabled("s", KeyState.Up);
-                    player.SetBindEnabled("d", KeyState.Down);
-                    this.chatBox.OutputTo(player, "Bind created for 'a' - both, 's' - up, 'd' - down.", Color.YellowGreen);
-                }
+                    var typeValues = Enum.GetValues(typeof(MarkerType));
+                    MarkerType? randomMarkerType = (MarkerType?)typeValues.GetValue(this.random.Next(typeValues.Length));
+                    var iconValues = Enum.GetValues(typeof(MarkerIcon));
+                    MarkerIcon? randomMarkerIcon = (MarkerIcon?)iconValues.GetValue(this.random.Next(iconValues.Length));
 
-                player.BindClicked += (Player sender, PlayerBindCallbackArgs e) =>
+                    this.Marker!.Color = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
+                    this.Marker!.Size = this.random.Next(1, 10) / 10.0f + 1.0f;
+                    if (randomMarkerType.HasValue)
+                        this.Marker!.MarkerType = randomMarkerType.Value;
+                    if (randomMarkerIcon.HasValue)
+                        this.Marker!.MarkerIcon = randomMarkerIcon.Value;
+
+                    this.Marker!.TargetPosition = new Vector3(this.random.Next(0, 20) - 5, this.random.Next(0, 20), this.random.Next(-50, 50));
+                    this.chatBox.OutputTo(player, "You have randomized marker!", Color.YellowGreen);
+                }
+              
+                if (args.Command == "camerainterior")
                 {
-                    this.chatBox.OutputTo(sender, $"BindClicked: {e.Key} {e.BindType} {e.KeyState}", Color.YellowGreen);
-                };
+                    if (args.Arguments.Length > 0)
+                    {
+                        if (byte.TryParse(args.Arguments[0], out byte interior))
+                        {
+                            player.Camera.Interior = interior;
+                            this.logger.LogInformation($"Camera interior changed to: {interior}");
+                        }
+                    }
+                }
             };
 
             player.AcInfoReceived += (o, args) =>
             {
                 this.logger.LogInformation($"ACInfo for {player.Name} detectedACList:{string.Join(",", args.DetectedACList)} d3d9Size: {args.D3D9Size} d3d9SHA256: {args.D3D9SHA256}");
             };
-            
+
             player.DiagnosticInfoReceived += (o, args) =>
             {
                 this.logger.LogInformation($"DIAGNOSTIC: {player.Name} #{args.Level} {args.Message}");
@@ -585,7 +613,7 @@ namespace SlipeServer.Console
 
             player.NetworkStatusReceived += (o, args) =>
             {
-                switch(args.PlayerNetworkStatus)
+                switch (args.PlayerNetworkStatus)
                 {
                     case Packets.Enums.PlayerNetworkStatusType.InterruptionBegan:
                         this.logger.LogInformation($"(packets from {o.Name}) interruption began {args.Ticks} ticks ago");
@@ -599,12 +627,11 @@ namespace SlipeServer.Console
 
         private void HandlePlayerScreenshot(object? o, Server.Elements.Events.ScreenshotEventArgs e)
         {
-            if(e.Stream != null)
+            if (e.Stream != null)
             {
                 using FileStream file = new FileStream($"screenshot_${e.Tag}.jpg", FileMode.Create, FileAccess.Write);
                 e.Stream.CopyTo(file);
-            }
-            else
+            } else
             {
                 Player? player = (Player?)o;
                 this.logger.LogWarning($"Failed to take a screenshot ({e.Tag}) of player: {player?.Name}, reason: {e.ErrorMessage}");

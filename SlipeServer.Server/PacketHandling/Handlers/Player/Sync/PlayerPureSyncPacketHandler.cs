@@ -51,6 +51,7 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Player.Sync
             player.RunAsSync(() =>
             {
                 player.Position = packet.Position;
+                player.PedRotation = packet.Rotation;
                 player.Velocity = packet.Velocity;
                 player.Health = packet.Health;
                 player.Armor = packet.Armor;
@@ -59,7 +60,7 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Player.Sync
 
                 player.ContactElement = this.elementRepository.Get(packet.ContactElementId);
 
-                player.CurrentWeaponSlot = WeaponConstants.SlotPerWeapon[(WeaponId)packet.WeaponType];
+                player.CurrentWeaponSlot = (WeaponSlot)packet.WeaponSlot;
                 if (player.CurrentWeapon != null && player.CurrentWeapon.Type == (WeaponId)packet.WeaponType)
                 {
                     player.CurrentWeapon.UpdateAmmoCountWithoutTriggerEvent(packet.TotalAmmo, packet.AmmoInClip);

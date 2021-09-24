@@ -1,5 +1,4 @@
-﻿using System;
-using SlipeServer.Server.Elements;
+﻿using SlipeServer.Server.Elements;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -8,7 +7,7 @@ namespace SlipeServer.Server.Repositories
 {
     public class FlatElementRepository : IElementRepository
     {
-        public int Count => elements.Count;
+        public int Count => this.elements.Count;
 
         private readonly List<Element> elements;
 
