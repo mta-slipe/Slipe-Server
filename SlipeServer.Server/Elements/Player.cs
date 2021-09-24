@@ -74,7 +74,7 @@ namespace SlipeServer.Server.Elements
 
         private readonly HashSet<Element> subscriptionElements;
 
-        private Dictionary<string, KeyState> BoundedKeys { get; set; }
+        private Dictionary<string, KeyState> BoundKeys { get; } = new();
         protected internal Player(Client client) : base(0, Vector3.Zero)
         {
             this.Client = client;
@@ -239,12 +239,12 @@ namespace SlipeServer.Server.Elements
         {
             if(KeyConstants.Controls.Contains(key) || KeyConstants.Keys.Contains(key))
             {
-                if(BoundedKeys.TryGetValue(key ,out KeyState value))
+                if(BoundKeys.TryGetValue(key, out KeyState value))
                 {
                     if (value == KeyState.Both)
                         return;
                 }
-                BoundedKeys[key] = value;
+                BoundKeys[key] = value;
                 this.KeyBound?.Invoke(this, new PlayerBindKeyArgs(this, key, keyState));
                 return;
             }
@@ -273,7 +273,7 @@ namespace SlipeServer.Server.Elements
 
         internal void TriggerBindKey(BindType bindType, KeyState keyState, string key)
         {
-            this.BindClicked?.Invoke(this, new PlayerBindCallbackArgs(this, bindType, keyState, key));
+            this.BindExecuted?.Invoke(this, new PlayerBindCallbackArgs(this, bindType, keyState, key));
         }
 
         public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
@@ -295,6 +295,6 @@ namespace SlipeServer.Server.Elements
         public event ElementEventHandler<Player, PlayerNetworkStatusArgs>? NetworkStatusReceived;
         public event ElementEventHandler<Player, PlayerTeamChangedArgs>? TeamChanged;
         public event ElementEventHandler<Player, PlayerBindKeyArgs>? KeyBound;
-        public event ElementEventHandler<Player, PlayerBindCallbackArgs>? BindClicked;
+        public event ElementEventHandler<Player, PlayerBindCallbackArgs>? BindExecuted;
     }
 }

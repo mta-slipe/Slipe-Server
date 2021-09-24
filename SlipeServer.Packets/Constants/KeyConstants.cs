@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SlipeServer.Packets.Constants
 {
-    class KeyConstants
+    public class KeyConstants
     {
         public static HashSet<string> Controls { get; } = new()
         {

@@ -623,6 +623,19 @@ namespace SlipeServer.Console.Logic
                         break;
                 }
             };
+
+            player.SetBindEnabled("j", KeyState.Down, true);
+            player.BindExecuted += (Player sender, PlayerBindCallbackArgs e) =>
+            {
+                if(e.Key == "j")
+                {
+                    player.HasJetpack = !player.HasJetpack;
+                    if(player.HasJetpack)
+                        this.logger.LogInformation($"{sender.Name} put on a jetpack!");
+                    else
+                        this.logger.LogInformation($"{sender.Name} pulled off his jetpack!");
+                }
+            };
         }
 
         private void HandlePlayerScreenshot(object? o, Server.Elements.Events.ScreenshotEventArgs e)
