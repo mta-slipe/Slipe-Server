@@ -596,10 +596,16 @@ namespace SlipeServer.Console.Logic
                     this.worldService.SetWaterColor(Color.FromArgb(random.Next(255), random.Next(255), random.Next(255)));
                     this.chatBox.OutputTo(player, "You have randomized water color!", Color.YellowGreen);
                 }
-                if (args.Command == "flood")
+                if (args.Command == "waterlevel")
                 {
-                    this.worldService.SetWaterLevel(5);
-                    this.chatBox.OutputTo(player, "You have flooded the map!", Color.YellowGreen);
+                    if (args.Arguments.Length > 0)
+                    {
+                        if (float.TryParse(args.Arguments[0], out float waveHeight))
+                        {
+                            this.worldService.SetWaterLevel(waveHeight);
+                            this.chatBox.OutputTo(player, $"Water level changed to {waveHeight}.", Color.YellowGreen);
+                        }
+                    }
                 }
                 if (args.Command == "wave")
                 {

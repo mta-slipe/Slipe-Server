@@ -27,6 +27,9 @@ namespace SlipeServer.Server.Services
 
         private Color? waterColor;
         private float waterLevel;
+        private bool includeWaterFeatures = true;
+        private bool includeWorldSea = true;
+        private bool includeOutsideWorldSea = false;
         private float waveHeight;
 
         private TrafficLightState trafficLightState;
@@ -304,7 +307,10 @@ namespace SlipeServer.Server.Services
             if(this.waterColor != null)
                 player.Client.SendPacket(new SetWaterColorPacket(this.waterColor.Value));
 
-            if(this.waveHeight != 0)
+            if(this.waterLevel != 0)
+                this.server.BroadcastPacket(new SetWaterLevelPacket(this.waterLevel, this.includeWaterFeatures, this.includeWorldSea, this.includeOutsideWorldSea));
+
+            if (this.waveHeight != 0)
                 this.server.BroadcastPacket(new SetWaveHeightPacket(this.waveHeight));
         }
 
@@ -392,8 +398,11 @@ namespace SlipeServer.Server.Services
         public void SetWaterLevel(float waterLevel, bool includeWaterFeatures = true, bool includeWorldSea = true, bool includeOutsideWorldSea = false)
         {
             this.waterLevel = waterLevel;
+            this.includeWaterFeatures = includeWaterFeatures;
+            this.includeWorldSea = includeWorldSea;
+            this.includeOutsideWorldSea = includeOutsideWorldSea;
 
-            this.server.BroadcastPacket(new SetWaterLevelPacket(waterLevel, includeWaterFeatures, includeWorldSea, includeOutsideWorldSea));
+            this.server.BroadcastPacket(new SetWaterLevelPacket(this.waterLevel, this.includeWaterFeatures, this.includeWorldSea, this.includeOutsideWorldSea));
         }
 
         public void SetWaveHeight(float waveHeight)
