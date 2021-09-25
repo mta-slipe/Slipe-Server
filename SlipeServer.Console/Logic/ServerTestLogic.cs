@@ -590,6 +590,10 @@ namespace SlipeServer.Console.Logic
                         }
                     }
                 }
+                if (args.Command == "kungfu")
+                {
+                    player.FightingStyle = FightingStyle.KungFu;
+                }
             };
 
             player.AcInfoReceived += (o, args) =>
