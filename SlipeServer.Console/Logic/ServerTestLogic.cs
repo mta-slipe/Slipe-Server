@@ -590,6 +590,31 @@ namespace SlipeServer.Console.Logic
                         }
                     }
                 }
+
+                if (args.Command == "attachbin")
+                {
+                    var bin = new WorldObject(ObjectModel.BinNt07LA, Vector3.Zero).AssociateWith(this.server);
+                    player.AttachElement(bin, new Vector3(0,2,0));
+                }
+
+                if (args.Command == "attachdebug")
+                {
+                    this.chatBox.OutputTo(player, "Attached elements to you:", Color.YellowGreen);
+                    foreach (var element in player.AttachedElements)
+                    {
+                        switch(element)
+                        {
+                            case WorldObject worldObject:
+                                var testObject = new WorldObject(worldObject.Model, worldObject.Position).AssociateWith(this.server);
+                                testObject.Rotation = worldObject.Rotation;
+                                this.chatBox.OutputTo(player, $"Element worldObject: {worldObject.Model}, position: {worldObject.Position}, rotation: {worldObject.Rotation}", Color.YellowGreen);
+                                break;
+                            default:
+                                this.chatBox.OutputTo(player, $"Element: {element}", Color.YellowGreen);
+                                break;
+                        }
+                    }
+                }
             };
 
             player.AcInfoReceived += (o, args) =>

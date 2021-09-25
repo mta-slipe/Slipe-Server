@@ -34,8 +34,14 @@ namespace SlipeServer.Server.Behaviour
             element.CallPropagationChanged += RelayCallPropagationChanged;
             element.CollisionEnabledhanged += RelayCollisionEnabledhanged;
             element.Destroyed += RelayElementDestroy;
+            element.Attached += RelayAttached;
 
             this.server.BroadcastPacket(AddEntityPacketFactory.CreateAddEntityPacket(new Element[] { element }));
+        }
+
+        private void RelayAttached(Element sender, ElementAttachedEventArgs args)
+        {
+            this.server.BroadcastPacket(ElementPacketFactory.CreateAttachElementPacket(args.Source, args.AttachedTo, args.OffsetPosition, args.OffsetRotation));
         }
 
         private void RelayCollisionEnabledhanged(Element sender, ElementChangedEventArgs<bool> args)

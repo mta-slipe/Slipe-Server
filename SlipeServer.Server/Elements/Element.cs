@@ -52,7 +52,7 @@ namespace SlipeServer.Server.Elements
         protected Vector3 position;
         public Vector3 Position
         {
-            get => this.position;
+            get => this.position + (this.AttachedToElement?.position ?? Vector3.Zero) + (this?.AttachedPositionOffset ?? Vector3.Zero);
             set
             {
                 var args = new ElementChangedEventArgs<Vector3>(this, this.Position, value, this.IsSync);
@@ -270,6 +270,22 @@ namespace SlipeServer.Server.Elements
         public void DestroyFor(Player player)
             => this.DestroyFor(new Player[] { player });
 
+
+        public Vector3? AttachedPositionOffset { get; set; }
+        public Vector3? AttachedRotationOffset { get; set; }
+        public Element? AttachedToElement { get; private set; }
+        public HashSet<Element> AttachedElements { get; init; } = new();
+        public void AttachElement(Element other, Vector3? positionOffset = null, Vector3? rotationOffset = null)
+        {
+            if (this.AttachedElements.Add(other))
+            {
+                other.AttachedToElement = this;
+                other.AttachedPositionOffset = positionOffset ?? Vector3.Zero;
+                other.AttachedRotationOffset = rotationOffset ?? Vector3.Zero;
+                Attached?.Invoke(this, new ElementAttachedEventArgs(other, this, positionOffset ?? Vector3.Zero, rotationOffset ?? Vector3.Zero));
+            }
+        }
+
         public event ElementChangedEventHandler<Vector3>? PositionChanged;
         public event ElementChangedEventHandler<Vector3>? RotationChanged;
         public event ElementChangedEventHandler<Vector3>? VelocityChanged;
@@ -280,6 +296,7 @@ namespace SlipeServer.Server.Elements
         public event ElementChangedEventHandler<string>? NameChanged;
         public event ElementChangedEventHandler<bool>? CallPropagationChanged;
         public event ElementChangedEventHandler<bool>? CollisionEnabledhanged;
+        public event ElementEventHandler<Element, ElementAttachedEventArgs>? Attached;
         public event Action<Element>? Destroyed;
     }
 }

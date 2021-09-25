@@ -63,5 +63,9 @@ namespace SlipeServer.Server.PacketHandling.Factories
         {
             return new SetElementCollisionsEnabledRpcPacket(element.Id, enabled);
         }
+        public static AttachElementRpcPacket CreateAttachElementPacket(Element element, Element attachedTo, Vector3 offsetPosition, Vector3 offsetRotation)
+        {
+            return new AttachElementRpcPacket(element.Id, attachedTo.Id, offsetPosition, offsetRotation);
+        }
     }
 }
