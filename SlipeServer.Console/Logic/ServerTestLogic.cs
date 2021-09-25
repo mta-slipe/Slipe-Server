@@ -601,6 +601,17 @@ namespace SlipeServer.Console.Logic
                     this.worldService.SetWaterLevel(5);
                     this.chatBox.OutputTo(player, "You have flooded the map!", Color.YellowGreen);
                 }
+                if (args.Command == "wave")
+                {
+                    if (args.Arguments.Length > 0)
+                    {
+                        if (float.TryParse(args.Arguments[0], out float waveHeight))
+                        {
+                            this.worldService.SetWaveHeight(waveHeight);
+                            this.chatBox.OutputTo(player, $"Wave height changed to {waveHeight}.", Color.YellowGreen);
+                        }
+                    }
+                }
             };
 
             player.AcInfoReceived += (o, args) =>
