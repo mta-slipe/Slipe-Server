@@ -1,4 +1,4 @@
-﻿using SlipeServer.Packets.Definitions.Lua.Rpc.World;
+using SlipeServer.Packets.Definitions.Lua.Rpc.World;
 using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
@@ -24,6 +24,8 @@ namespace SlipeServer.Server.Services
 
         private Color? sunCoreColor;
         private Color? sunCoronaColor;
+
+        private Color? waterColor;
 
         private TrafficLightState trafficLightState;
         private bool trafficLightStateForced;
@@ -296,6 +298,9 @@ namespace SlipeServer.Server.Services
             player.Client.SendPacket(new SetWindVelocityPacket(this.windVelocity));
             foreach (var item in enabledGlitches)
                 player.Client.SendPacket(new SetGlitchEnabledPacket((byte)item.Key, item.Value));
+
+            if(this.waterColor != null)
+                player.Client.SendPacket(new SetWaterColorPacket(this.waterColor.Value));
         }
 
         public void SetWeather(byte weather)
@@ -366,6 +371,18 @@ namespace SlipeServer.Server.Services
             return (this.sunCoreColor != null && this.sunCoronaColor != null) ?
                 new Tuple<Color, Color>(this.sunCoreColor.Value, this.sunCoronaColor.Value) :
                 null;
+        }
+        
+        public void SetWaterColor(Color color)
+        {
+            this.waterColor = color;
+
+            this.server.BroadcastPacket(new SetWaterColorPacket(color));
+        }
+
+        public Color? GetWaterColor()
+        {
+            return this.waterColor;
         }
 
         public void SetTrafficLightState(TrafficLightState state, bool forced = false)
