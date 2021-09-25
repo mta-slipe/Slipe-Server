@@ -590,6 +590,12 @@ namespace SlipeServer.Console.Logic
                         }
                     }
                 }
+
+                if (args.Command == "money")
+                {
+                    player.ShowHudComponent(HudComponent.Money, true);
+                    player.SetMoney(this.random.Next(0, 1000), this.random.Next(1, 1000) > 500);
+                }
             };
 
             player.AcInfoReceived += (o, args) =>

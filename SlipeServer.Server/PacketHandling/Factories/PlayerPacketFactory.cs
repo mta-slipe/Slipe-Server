@@ -85,6 +85,11 @@ namespace SlipeServer.Server.PacketHandling.Factories
         {
             return new SetWantedLevelPacket(level);
         }
+
+        public static SetMoneyPacket CreateSetMoneyPacket(int money, bool instant)
+        {
+            return new SetMoneyPacket(money, instant);
+        }
         
         public static ToggleDebuggerPacket CreateToggleDebuggerPacket(bool visible)
         {
