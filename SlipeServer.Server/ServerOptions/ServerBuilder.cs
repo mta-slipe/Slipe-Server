@@ -1,6 +1,10 @@
-﻿using SlipeServer.Server.PacketHandling;
+﻿using Microsoft.Extensions.DependencyInjection;
+using SlipeServer.Packets;
+using SlipeServer.Server.PacketHandling.Handlers;
+using SlipeServer.Server.PacketHandling.Handlers.QueueHandlers;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -10,10 +14,24 @@ namespace SlipeServer.Server.ServerOptions
     public class ServerBuilder
     {
         private readonly List<ServerBuildStep> buildSteps;
-        public Configuration Configuration { get; init; }
-        public ServerBuilder(Configuration configuration)
+        public Configuration Configuration { get; private set; }
+        private readonly List<Action<ServiceCollection>> dependecyLoaders;
+
+        public ServerBuilder()
         {
+            this.Configuration = new();
             this.buildSteps = new();
+            this.dependecyLoaders = new();
+        }
+
+        public void UseConfiguration(Configuration configuration)
+        {
+            var validationResults = new List<ValidationResult>();
+            if (!Validator.TryValidateObject(configuration, new ValidationContext(configuration), validationResults, true))
+            {
+                string invalidProperties = string.Join("\r\n\t", validationResults.Select(r => r.ErrorMessage));
+                throw new Exception($"An error has occurred while parsing configuration parameters:\r\n {invalidProperties}");
+            }
             this.Configuration = configuration;
         }
 
@@ -22,9 +40,19 @@ namespace SlipeServer.Server.ServerOptions
             this.buildSteps.Add(new ServerBuildStep(step, priority));
         }
 
-        public void AddQueueHandler<T>(params object[] parameters) where T : IQueueHandler
+        public void AddPacketHandler<TPacketQueueHandler, TPacketHandler, TPacket>(params object[] parameters)
+            where TPacketQueueHandler : class, IPacketQueueHandler<TPacket>
+            where TPacketHandler : IPacketHandler<TPacket>
+            where TPacket : Packet, new()
         {
-            AddBuildStep(server => server.RegisterPacketQueueHandler<T>(parameters));
+            AddBuildStep(server => server.RegisterPacketHandler<TPacket, TPacketQueueHandler, TPacketHandler>(parameters));
+        }
+
+        public void AddPacketHandler<TPacketHandler, TPacket>(params object[] parameters)
+            where TPacketHandler : IPacketHandler<TPacket>
+            where TPacket : Packet, new()
+        {
+            AddBuildStep(server => server.RegisterPacketHandler<TPacket, ScalingPacketQueueHandler<TPacket>, TPacketHandler>(parameters));
         }
 
         public void Instantiate<T>(params object[] parameters)
@@ -40,6 +68,11 @@ namespace SlipeServer.Server.ServerOptions
         public void AddLogic<T>(params object[] parameters)
         {
             Instantiate<T>(parameters);
+        }
+
+        public void ConfigureServices(Action<ServiceCollection> action)
+        {
+            this.dependecyLoaders.Add(action);
         }
 
         public void AddNetWrapper(
@@ -62,6 +95,12 @@ namespace SlipeServer.Server.ServerOptions
         {
             foreach (var step in this.buildSteps.OrderBy(x => (int)x.Priority))
                 step.Step(server);
+        }
+
+        public void LoadDependencies(ServiceCollection services)
+        {
+            foreach (var loader in this.dependecyLoaders)
+                loader(services);
         }
     }
 }

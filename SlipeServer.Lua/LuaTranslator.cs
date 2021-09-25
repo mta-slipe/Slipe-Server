@@ -17,7 +17,7 @@ namespace SlipeServer.Lua
             UserData.RegisterType<Element>(InteropAccessMode.Hardwired);
         }
 
-        public IEnumerable<DynValue> ToDynValues(object obj)
+        public IEnumerable<DynValue> ToDynValues(object? obj)
         {
             if (obj == null)
                 return new DynValue[] { DynValue.Nil };
@@ -53,22 +53,30 @@ namespace SlipeServer.Lua
                     DynValue.NewNumber(color.B),
                     DynValue.NewNumber(color.A),
                 };
-            if (obj is Vector3 vector)
+            if (obj is Vector2 vector2)
                 return new DynValue[]
                 {
-                    DynValue.NewNumber(vector.X),
-                    DynValue.NewNumber(vector.Y),
-                    DynValue.NewNumber(vector.Z)
+                    DynValue.NewNumber(vector2.X),
+                    DynValue.NewNumber(vector2.Y)
+                };
+            if (obj is Vector3 vector3)
+                return new DynValue[]
+                {
+                    DynValue.NewNumber(vector3.X),
+                    DynValue.NewNumber(vector3.Y),
+                    DynValue.NewNumber(vector3.Z)
                 };
             if (obj is Delegate del)
-                return new DynValue[] { DynValue.NewCallback((context, arguments) => ToDynValues(del.DynamicInvoke(arguments.GetArray())).First()) };
+                return new DynValue[] { DynValue.NewCallback((context, arguments) => ToDynValues(del.DynamicInvoke(arguments.GetArray())!).First()) };
             if (obj is Table table)
                 return new DynValue[] { DynValue.NewTable(table) };
             if (obj is DynValue dynValue)
                 return new DynValue[] { dynValue };
 
+            if (obj is IEnumerable<string> stringEnumerable)
+                return stringEnumerable.Select(x => DynValue.NewString(x)).ToArray();
             if (obj is IEnumerable<object> enumerable)
-                return enumerable.Select(x => ToDynValues(obj)).SelectMany(x => x).ToArray();
+                return enumerable.Select(x => ToDynValues(x)).SelectMany(x => x).ToArray();
 
             throw new NotImplementedException($"Conversion to Lua for {obj.GetType()} not implemented");
         }
@@ -88,8 +96,18 @@ namespace SlipeServer.Lua
 
         public object FromDynValue(Type targetType, Queue<DynValue> dynValues)
         {
+            if (targetType == typeof(Color) || targetType == typeof(Color?))
+            {
+                byte red = GetByteFromDynValue(dynValues.Dequeue());
+                byte green = GetByteFromDynValue(dynValues.Dequeue());
+                byte blue = GetByteFromDynValue(dynValues.Dequeue());
+                byte alpha = GetByteFromDynValue(dynValues.Dequeue());
+                return Color.FromArgb(alpha, red, green, blue);
+            }
             if (targetType == typeof(Vector3))
                 return new Vector3(GetSingleFromDynValue(dynValues.Dequeue()), GetSingleFromDynValue(dynValues.Dequeue()), GetSingleFromDynValue(dynValues.Dequeue()));
+            if (targetType == typeof(Vector2))
+                return new Vector2(GetSingleFromDynValue(dynValues.Dequeue()), GetSingleFromDynValue(dynValues.Dequeue()));
             if (targetType == typeof(float))
                 return GetSingleFromDynValue(dynValues.Dequeue());
             if (targetType == typeof(double))
@@ -116,10 +134,10 @@ namespace SlipeServer.Lua
                 return GetTableFromDynValue(dynValues.Dequeue());
             if (typeof(Element).IsAssignableFrom(targetType))
                 return dynValues.Dequeue().UserData.Object;
-            if (targetType == typeof(ScriptCallbackDelegate))
+            if (targetType == typeof(ScriptCallbackDelegateWrapper))
             {
                 var callback = dynValues.Dequeue().Function;
-                return (ScriptCallbackDelegate)((parameters) => callback.Call(ToDynValues(parameters)));
+                return new ScriptCallbackDelegateWrapper(parameters => callback.Call(ToDynValues(parameters)), callback);
             }
             if (targetType == typeof(EventDelegate))
             {

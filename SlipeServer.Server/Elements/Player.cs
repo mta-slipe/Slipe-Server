@@ -10,6 +10,7 @@ using System.Linq;
 using System.Numerics;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Server.Elements.Structs;
 
 namespace SlipeServer.Server.Elements
 {
@@ -53,7 +54,9 @@ namespace SlipeServer.Server.Elements
         public bool IsChatMuted { get; set; }
         private Team? team { get; set; }
         public List<Ped> SyncingPeds { get; set; }
+        public Controls Controls { get; private set; }
 
+        private Team? team;
         public Team? Team
         {
             get => this.team;
@@ -69,7 +72,6 @@ namespace SlipeServer.Server.Elements
         public Dictionary<int, PlayerPendingScreenshot> PendingScreenshots { get; } = new();
 
         private readonly HashSet<Element> subscriptionElements;
-
         
         protected internal Player(Client client) : base(0, Vector3.Zero)
         {
@@ -77,6 +79,7 @@ namespace SlipeServer.Server.Elements
             this.Camera = new Camera(this);
             this.subscriptionElements = new();
             this.SyncingPeds = new();
+            this.Controls = new(this);
         }
 
         public new Player AssociateWith(MtaServer server)
@@ -113,6 +116,8 @@ namespace SlipeServer.Server.Elements
             this.model = model;
             this.interior = interior;
             this.dimension = dimension;
+
+            this.Weapons.Clear(false);
 
             this.Spawned?.Invoke(this, new PlayerSpawnedEventArgs(this));
         }

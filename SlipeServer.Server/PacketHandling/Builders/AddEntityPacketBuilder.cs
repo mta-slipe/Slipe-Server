@@ -89,7 +89,7 @@ namespace SlipeServer.Server.PacketHandling.Builders
                 case CollisionPolygon collisionPolygon:
                     this.packet.AddColPolygon(collisionPolygon.Id, (byte)collisionPolygon.ElementType, collisionPolygon.Parent?.Id ?? 0, collisionPolygon.Interior, collisionPolygon.Dimension,
                         null, collisionPolygon.AreCollisionsEnabled, collisionPolygon.IsCallPropagationEnabled, new CustomData(), collisionPolygon.Name, collisionPolygon.TimeContext,
-                        (byte)ColShapeType.Polygon, collisionPolygon.Position, collisionPolygon.IsEnabled, collisionPolygon.AutoCallEvent, collisionPolygon.Vertices, collisionPolygon.Height
+                        (byte)ColShapeType.Polygon, collisionPolygon.Position, collisionPolygon.IsEnabled, collisionPolygon.AutoCallEvent, collisionPolygon.GetVertices().ToArray(), collisionPolygon.Height
                     );
                     break;
 
@@ -150,7 +150,7 @@ namespace SlipeServer.Server.PacketHandling.Builders
         {
             this.packet.AddVehicle(element.Id, (byte)element.ElementType, element.Parent?.Id ?? 0, element.Interior, element.Dimension,
                 null, element.AreCollisionsEnabled, element.IsCallPropagationEnabled, new CustomData(), element.Name, element.TimeContext,
-                element.Position, element.Rotation, element.Model, element.Health, element.Colors, element.PaintJob, element.Damage, element.Variant1,
+                element.Position, element.Rotation, element.Model, element.Health, element.Colors.AsArray(), element.PaintJob, element.Damage, element.Variant1,
                 element.Variant2, element.TurretRotation, element.AdjustableProperty, VehicleConstants.DoorsPerVehicle[(VehicleModel)element.Model] > 0 ? element.DoorRatios : Array.Empty<float>(), element.Upgrades.Select(u => (byte)u).ToArray(), element.PlateText, 
                 element.OverrideLights, element.IsLandingGearDown, element.IsSirenActive, element.IsFuelTankExplodable, element.IsEngineOn, element.IsLocked, 
                 element.AreDoorsUndamageable, element.IsDamageProof, element.IsFrozen, element.IsDerailed, element.IsDerailable, element.TrainDirection, element.IsTaxiLightOn, 

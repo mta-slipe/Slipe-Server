@@ -60,48 +60,71 @@ namespace SlipeServer.Server.Elements
             get => this.currentWeaponSlot;
             set
             {
-                var args = new ElementChangedEventArgs<Ped, WeaponSlot>(this, this.CurrentWeaponSlot, value, this.IsSync);
-                this.currentWeaponSlot = value;
-                WeaponSlotChanged?.Invoke(this, args);
+                lock (this.CurrentWeaponLock)
+                {
+                    var args = new ElementChangedEventArgs<Ped, WeaponSlot>(this, this.CurrentWeaponSlot, value, this.IsSync);
+                    this.currentWeaponSlot = value;
+                    WeaponSlotChanged?.Invoke(this, args);
+                }
             }
         }
 
 
+        public object CurrentWeaponLock { get; } = new();
         public Weapon? CurrentWeapon
         {
             get => this.Weapons.Get(this.CurrentWeaponSlot);
             set
             {
-                if (value == null)
+                lock (this.CurrentWeaponLock)
                 {
-                    this.currentWeaponSlot = WeaponSlot.Hand;
-                } else
-                {
-                    this.currentWeaponSlot = value.Slot;
-                    if (!this.Weapons.Any(w => w.Type == value.Type))
+                    if (value == null)
                     {
-                        if (this.Weapons.Any(w => w.Slot == value.Slot))
-                            this.Weapons.Remove(value.Slot);
-
-                        this.Weapons.Add(value);
+                        this.currentWeaponSlot = WeaponSlot.Hand;
                     } else
                     {
-                        var weapon = this.Weapons.Get(value.Slot);
-                        if (weapon != null && weapon.Ammo != value.Ammo)
-                            weapon.Ammo = value.Ammo;
-                        if (weapon != null && weapon.AmmoInClip != value.AmmoInClip)
-                            weapon.AmmoInClip = value.AmmoInClip;
+                        this.currentWeaponSlot = value.Slot;
+                        if (!this.Weapons.Any(w => w.Type == value.Type))
+                        {
+                            if (this.Weapons.Any(w => w.Slot == value.Slot))
+                                this.Weapons.Remove(value.Slot);
 
+                            this.Weapons.Add(value);
+                        } else
+                        {
+                            var weapon = this.Weapons.Get(value.Slot);
+                            if (weapon != null && weapon.Ammo != value.Ammo)
+                                weapon.Ammo = value.Ammo;
+                            if (weapon != null && weapon.AmmoInClip != value.AmmoInClip)
+                                weapon.AmmoInClip = value.AmmoInClip;
+
+                        }
+                        this.CurrentWeaponSlot = value.Slot;
                     }
-                    this.CurrentWeaponSlot = value.Slot;
                 }
             }
         }
 
-        public float PedRotation { get; set; } = 0;
+        public float PedRotation
+        {
+            get => this.Rotation.Z;
+            set => this.Rotation = new Vector3(this.rotation.X, this.rotation.Y, value);
+        }
+
         public Vehicle? Vehicle { get; set; }
         public byte? Seat { get; set; }
-        public bool HasJetpack { get; set; } = false;
+
+        private bool hasJetpack = false;
+        public bool HasJetpack
+        {
+            get => this.hasJetpack;
+            set
+            {
+                var args = new ElementChangedEventArgs<Ped, bool>(this, this.hasJetpack, value, this.IsSync);
+                this.hasJetpack = value;
+                JetpackStateChanged?.Invoke(this, args);
+            }
+        }
         public bool IsSyncable { get; set; } = true;
         public bool IsHeadless { get; set; } = false;
         public bool IsFrozen { get; set; } = false;
@@ -113,6 +136,17 @@ namespace SlipeServer.Server.Elements
         public bool IsOnFire { get; set; }
         public bool IsInWater { get; set; }
 
+        private Element? target = null;
+        public Element? Target
+        {
+            get => this.target;
+            set
+            {
+                var args = new ElementChangedEventArgs<Ped, Element?>(this, this.Target, value, this.IsSync);
+                this.target = value;
+                TargetChanged?.Invoke(this, args);
+            }
+        }
         public VehicleAction VehicleAction { get; set; } = VehicleAction.None;
         public Vehicle? JackingVehicle { get; set; }
 
@@ -198,6 +232,8 @@ namespace SlipeServer.Server.Elements
         public event ElementChangedEventHandler<Ped, float>? HealthChanged;
         public event ElementChangedEventHandler<Ped, float>? ArmourChanged;
         public event ElementChangedEventHandler<Ped, WeaponSlot>? WeaponSlotChanged;
+        public event ElementChangedEventHandler<Ped, bool>? JetpackStateChanged;
+        public event ElementChangedEventHandler<Ped, Element?>? TargetChanged;
         public event ElementEventHandler<WeaponReceivedEventArgs>? WeaponReceived;
         public event ElementEventHandler<WeaponRemovedEventArgs>? WeaponRemoved;
         public event ElementEventHandler<AmmoUpdateEventArgs>? AmmoUpdated;

@@ -53,5 +53,15 @@ namespace SlipeServer.Server.PacketHandling.Factories
         {
             return new SetElementInteriorRpcPacket(element.Id, interior);
         }
+
+        public static SetElementCallPropagationEnabledRpcPacket CreateSetCallPropagationEnabledPacket(Element element, bool enabled)
+        {
+            return new SetElementCallPropagationEnabledRpcPacket(element.Id, enabled);
+        }
+
+        public static SetElementCollisionsEnabledRpcPacket CreateSetCollisionsEnabledPacket(Element element, bool enabled)
+        {
+            return new SetElementCollisionsEnabledRpcPacket(element.Id, enabled);
+        }
     }
 }
