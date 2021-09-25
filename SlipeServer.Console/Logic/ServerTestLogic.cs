@@ -590,6 +590,10 @@ namespace SlipeServer.Console.Logic
                         }
                     }
                 }
+                if (args.Command == "cameramatrix")
+                {
+                    player.Camera.SetMatrix(new Vector3(20, 20, 20), new Vector3(200, 200, 0));
+                }
             };
 
             player.AcInfoReceived += (o, args) =>
