@@ -13,27 +13,21 @@ using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Events;
 using SlipeServer.Server.Extensions;
+using SlipeServer.Server.PacketHandling.Handlers;
 using SlipeServer.Server.Repositories;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers
 {
-    public class PedSyncQueueHandler : WorkerBasedQueueHandler
+    public class PedSyncQueueHandler : IPacketHandler<PedSyncPacket>
     {
         private readonly ILogger logger;
         private readonly IElementRepository elementRepository;
         private readonly Configuration configuration;
         private readonly Timer pulseTimer;
 
-        public override IEnumerable<PacketId> SupportedPacketIds => this.PacketTypes.Keys;
-        protected override Dictionary<PacketId, Type> PacketTypes { get; } = new Dictionary<PacketId, Type>() {
-            [PacketId.PACKET_ID_PED_SYNC] = typeof(PedSyncPacket),
-            [PacketId.PACKET_ID_PED_TASK] = typeof(PedTaskPacket),
-            [PacketId.PACKET_ID_PED_WASTED] = typeof(PedWastedPacket),
-            [PacketId.PACKET_ID_PED_STARTSYNC] = typeof(PedStartSyncPacket),
-            [PacketId.PACKET_ID_PED_STOPSYNC] = typeof(PedStopSyncPacket),
-        };
+        public PacketId PacketId => PacketId.PACKET_ID_PED_SYNC;
 
-        public PedSyncQueueHandler(ILogger logger, IElementRepository elementRepository, Configuration configuration, int sleepInterval = 10, int workerCount = 1) : base(sleepInterval, workerCount)
+        public PedSyncQueueHandler(ILogger logger, IElementRepository elementRepository, Configuration configuration)
         {
             this.logger = logger;
             this.elementRepository = elementRepository;
@@ -44,23 +38,6 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                 Interval = 500
             };
             this.pulseTimer.Elapsed += Update;
-        }
-
-        protected override void HandlePacket(Client client, Packet packet)
-        {
-            try
-            {
-                switch (packet)
-                {
-                    case PedSyncPacket pedSyncPacket:
-                        this.HandlePedSyncPacket(client, pedSyncPacket);
-                        break;
-                }
-            }
-            catch (Exception e)
-            {
-                this.logger.LogError($"Handling packet ({packet.PacketId}) failed.\n{e.Message}");
-            }
         }
 
         private void OverrideSyncer(Ped ped, Player player)
@@ -177,7 +154,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
             return lastPlayerSyncing;
         }
 
-        private void HandlePedSyncPacket(Client client, PedSyncPacket packet)
+        public void HandlePacket(Client client, PedSyncPacket packet)
         {
             foreach (var syncData in packet.Syncs)
             {
@@ -232,6 +209,5 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                 }
             }
         }
-
     }
 }

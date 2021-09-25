@@ -56,7 +56,6 @@ namespace SlipeServer.Server.Elements
         public List<Ped> SyncingPeds { get; set; }
         public Controls Controls { get; private set; }
 
-        private Team? team;
         public Team? Team
         {
             get => this.team;
