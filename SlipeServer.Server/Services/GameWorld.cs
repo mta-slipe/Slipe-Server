@@ -1,4 +1,4 @@
-using SlipeServer.Packets.Definitions.Lua.Rpc.World;
+﻿using SlipeServer.Packets.Definitions.Lua.Rpc.World;
 using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
@@ -26,6 +26,7 @@ namespace SlipeServer.Server.Services
         private Color? sunCoronaColor;
 
         private Color? waterColor;
+        private float waterLevel;
 
         private TrafficLightState trafficLightState;
         private bool trafficLightStateForced;
@@ -365,7 +366,6 @@ namespace SlipeServer.Server.Services
 
             this.server.BroadcastPacket(new SetSunColorPacket(core, corona));
         }
-
         public Tuple<Color, Color>? GetSunColor()
         {
             return (this.sunCoreColor != null && this.sunCoronaColor != null) ?
@@ -383,6 +383,13 @@ namespace SlipeServer.Server.Services
         public Color? GetWaterColor()
         {
             return this.waterColor;
+        }
+
+        public void SetWaterLevel(float waterLevel, bool includeWaterFeatures = true, bool includeWorldSea = true, bool includeOutsideWorldSea = false)
+        {
+            this.waterLevel = waterLevel;
+
+            this.server.BroadcastPacket(new SetWaterLevelPacket(waterLevel, includeWaterFeatures, includeWorldSea, includeOutsideWorldSea));
         }
 
         public void SetTrafficLightState(TrafficLightState state, bool forced = false)
