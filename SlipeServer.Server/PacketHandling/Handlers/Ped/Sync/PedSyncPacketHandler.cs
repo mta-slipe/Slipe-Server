@@ -18,7 +18,7 @@ using SlipeServer.Server.Repositories;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers
 {
-    public class PedSyncQueueHandler : IPacketHandler<PedSyncPacket>
+    public class PedSyncPacketHandler : IPacketHandler<PedSyncPacket>
     {
         private readonly ILogger logger;
         private readonly IElementRepository elementRepository;
@@ -27,7 +27,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
         public PacketId PacketId => PacketId.PACKET_ID_PED_SYNC;
 
-        public PedSyncQueueHandler(ILogger logger, IElementRepository elementRepository, Configuration configuration)
+        public PedSyncPacketHandler(ILogger logger, IElementRepository elementRepository, Configuration configuration)
         {
             this.logger = logger;
             this.elementRepository = elementRepository;
