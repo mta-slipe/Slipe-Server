@@ -280,6 +280,6 @@ namespace SlipeServer.Server.Elements
         public event ElementEventHandler<Player, PlayerModInfoArgs>? ModInfoReceived;
         public event ElementEventHandler<Player, PlayerNetworkStatusArgs>? NetworkStatusReceived;
         public event ElementEventHandler<Player, PlayerTeamChangedArgs>? TeamChanged;
-        public event ElementEventHandler<Player, PlayerMoneyChangedEventArgs> MoneyChanged;
+        public event ElementEventHandler<Player, PlayerMoneyChangedEventArgs>? MoneyChanged;
     }
 }
