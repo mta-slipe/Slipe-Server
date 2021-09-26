@@ -401,6 +401,7 @@ namespace SlipeServer.Console.Logic
         }
 
         private WorldObject? PreviousBinObject { get; set; }
+        private List<WorldObject> Attached { get; } = new();
         private void HandlePlayerCommands(Player player)
         {
             player.CommandEntered += (o, args) =>
@@ -598,16 +599,23 @@ namespace SlipeServer.Console.Logic
                     if(this.PreviousBinObject != null)
                     {
                         this.PreviousBinObject.AttachElement(bin, new Vector3(0,2,0));
+                        this.Attached.Add(bin);
                     }
                     else
                     {
                         player.AttachElement(bin, new Vector3(0,2,0));
-                        //var testObject = new WorldObject(ObjectModel.BinNt07LA, player.Position + new Vector3(0, 2, 0)).AssociateWith(this.server);
-
                     }
                     this.PreviousBinObject = bin;
                 }
 
+                if (args.Command == "attachbend")
+                {
+                    foreach (var item in this.Attached)
+                    {
+                        item.AttachedRotationOffset = new Vector3(item.AttachedRotationOffset.X, item.AttachedRotationOffset.Y + 0.03f, item.AttachedRotationOffset.Z);
+                    }
+                }
+                
                 if (args.Command == "attachdebug")
                 {
                     this.chatBox.OutputTo(player, $"Attached elements to you: {player.Position.X:f2}, {player.Position.Y:f2}, {player.Position.Z:f2}:", Color.YellowGreen);
@@ -622,6 +630,7 @@ namespace SlipeServer.Console.Logic
                                     var testObject = new WorldObject(worldObject.Model, worldObject.Position).AssociateWith(this.server);
                                     testObject.Rotation = worldObject.Rotation;
                                     this.chatBox.OutputTo(player, $"WorldObject: {worldObject.Model}, pos: {worldObject.Position.X:f2}, {worldObject.Position.Y:f2}, {worldObject.Position.Z:f2} | rot: {worldObject.Rotation.X:f2}, {worldObject.Rotation.Y:f2}, {worldObject.Rotation.Z:f2} attached to: {baseElement.ElementType}", Color.YellowGreen);
+                                    this.logger.LogInformation($"WorldObject: {worldObject.Model}, pos: {worldObject.Position.X:f2}, {worldObject.Position.Y:f2}, {worldObject.Position.Z:f2} | rot: {worldObject.Rotation.X:f2}, {worldObject.Rotation.Y:f2}, {worldObject.Rotation.Z:f2} attached to: {baseElement.ElementType}");
                                     break;
                                 default:
                                     this.chatBox.OutputTo(player, $"Element: {element} attached to: {baseElement.ElementType}", Color.YellowGreen);
