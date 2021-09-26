@@ -71,10 +71,7 @@ namespace SlipeServer.Server.Elements
             get
             {
                 if (this.attachedPositionOffset != null && this.attachedRotationOffset != null)
-                    if (this.attachedToElement != null)
-                        return this.attachedToElement.AttachOffsetMatrix * Matrix4x4.CreateTranslation(this.attachedPositionOffset.Value.X, this.attachedPositionOffset.Value.Y, this.attachedPositionOffset.Value.Z) * Matrix4x4.CreateFromYawPitchRoll(this.attachedRotationOffset.Value.X, this.attachedRotationOffset.Value.Y, -this.attachedRotationOffset.Value.Z + MathF.PI);
-                    else
-                        return Matrix4x4.CreateTranslation(this.attachedPositionOffset.Value.X, this.attachedPositionOffset.Value.Y, this.attachedPositionOffset.Value.Z) * Matrix4x4.CreateFromYawPitchRoll(this.attachedRotationOffset.Value.X, this.attachedRotationOffset.Value.Y, -this.attachedRotationOffset.Value.Z + MathF.PI);
+                    return Matrix4x4.CreateTranslation(this.attachedPositionOffset.Value.X, this.attachedPositionOffset.Value.Y, this.attachedPositionOffset.Value.Z) * Matrix4x4.CreateFromYawPitchRoll(this.attachedRotationOffset.Value.X, this.attachedRotationOffset.Value.Y, -this.attachedRotationOffset.Value.Z + MathF.PI);
 
                 return Matrix4x4.Identity;
             }
@@ -85,7 +82,7 @@ namespace SlipeServer.Server.Elements
             {
                 if (this.attachedToElement != null)
                 {
-                    return this.attachedToElement.Matrix * this.AttachOffsetMatrix;
+                    return this.attachedToElement.Matrix * Matrix4x4.CreateTranslation(-(this.attachedToElement.attachedPositionOffset ?? Vector3.Zero + this.attachedPositionOffset ?? Vector3.Zero));
                 }
                 return Matrix4x4.CreateTranslation(this.position.X, this.position.Y, this.position.Z) * Matrix4x4.CreateFromYawPitchRoll(this.rotation.X, this.rotation.Y, -this.rotation.Z + MathF.PI);
             }
@@ -115,7 +112,7 @@ namespace SlipeServer.Server.Elements
             {
                 if (this.AttachedToElement != null && this.AttachedRotationOffset != null)
                 {
-                    return this.AttachedRotationOffset.Value + this.AttachedToElement.rotation;
+                    return this.AttachedRotationOffset.Value + this.AttachedToElement.Rotation;
                 }
                 return this.rotation;
             }
