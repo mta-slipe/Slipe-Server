@@ -400,6 +400,7 @@ namespace SlipeServer.Console.Logic
             };
         }
 
+        private WorldObject? PreviousBinObject { get; set; }
         private void HandlePlayerCommands(Player player)
         {
             player.CommandEntered += (o, args) =>
@@ -594,26 +595,42 @@ namespace SlipeServer.Console.Logic
                 if (args.Command == "attachbin")
                 {
                     var bin = new WorldObject(ObjectModel.BinNt07LA, Vector3.Zero).AssociateWith(this.server);
-                    player.AttachElement(bin, new Vector3(0,2,0));
+                    if(this.PreviousBinObject != null)
+                    {
+                        this.PreviousBinObject.AttachElement(bin, new Vector3(0,2,0));
+                    }
+                    else
+                    {
+                        player.AttachElement(bin, new Vector3(0,2,0));
+                        //var testObject = new WorldObject(ObjectModel.BinNt07LA, player.Position + new Vector3(0, 2, 0)).AssociateWith(this.server);
+
+                    }
+                    this.PreviousBinObject = bin;
                 }
 
                 if (args.Command == "attachdebug")
                 {
-                    this.chatBox.OutputTo(player, "Attached elements to you:", Color.YellowGreen);
-                    foreach (var element in player.AttachedElements)
+                    this.chatBox.OutputTo(player, $"Attached elements to you: {player.Position.X:f2}, {player.Position.Y:f2}, {player.Position.Z:f2}:", Color.YellowGreen);
+                    Action<Element>? debug = null;
+                    debug = (Element baseElement) =>
                     {
-                        switch(element)
+                        foreach (var element in baseElement.AttachedElements)
                         {
-                            case WorldObject worldObject:
-                                var testObject = new WorldObject(worldObject.Model, worldObject.Position).AssociateWith(this.server);
-                                testObject.Rotation = worldObject.Rotation;
-                                this.chatBox.OutputTo(player, $"Element worldObject: {worldObject.Model}, position: {worldObject.Position}, rotation: {worldObject.Rotation}", Color.YellowGreen);
-                                break;
-                            default:
-                                this.chatBox.OutputTo(player, $"Element: {element}", Color.YellowGreen);
-                                break;
+                            switch (element)
+                            {
+                                case WorldObject worldObject:
+                                    var testObject = new WorldObject(worldObject.Model, worldObject.Position).AssociateWith(this.server);
+                                    testObject.Rotation = worldObject.Rotation;
+                                    this.chatBox.OutputTo(player, $"WorldObject: {worldObject.Model}, pos: {worldObject.Position.X:f2}, {worldObject.Position.Y:f2}, {worldObject.Position.Z:f2} | rot: {worldObject.Rotation.X:f2}, {worldObject.Rotation.Y:f2}, {worldObject.Rotation.Z:f2} attached to: {baseElement.ElementType}", Color.YellowGreen);
+                                    break;
+                                default:
+                                    this.chatBox.OutputTo(player, $"Element: {element} attached to: {baseElement.ElementType}", Color.YellowGreen);
+                                    break;
+                            }
+                            debug!(element);
                         }
-                    }
+                    };
+                    debug(player);
                 }
             };
 

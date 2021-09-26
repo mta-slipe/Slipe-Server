@@ -9,6 +9,23 @@ using System.Threading.Tasks;
 
 namespace SlipeServer.Server.Elements
 {
+    public static class Matrix4x4Extensions
+    {
+        public static Vector3 Transform(this Matrix4x4 matrix, Vector3 offset)
+        {
+            matrix.M14 = 0;
+            matrix.M24 = 0;
+            matrix.M34 = 0;
+            matrix.M44 = 1;
+            Matrix4x4.Invert(matrix, out matrix);
+            return -(new Vector3
+            {
+                X = offset.X * matrix.M11 + offset.Y * matrix.M21 + offset.Z * matrix.M31 + matrix.M41,
+                Y = offset.X * matrix.M12 + offset.Y * matrix.M22 + offset.Z * matrix.M32 + matrix.M42,
+                Z = offset.X * matrix.M13 + offset.Y * matrix.M23 + offset.Z * matrix.M33 + matrix.M43
+            });
+        }
+    }
     public class Element
     {
         public virtual ElementType ElementType => ElementType.Unknown;
@@ -49,10 +66,40 @@ namespace SlipeServer.Server.Elements
             }
         }
 
+        public Matrix4x4 AttachOffsetMatrix
+        {
+            get
+            {
+                if (this.attachedPositionOffset != null && this.attachedRotationOffset != null)
+                    if (this.attachedToElement != null)
+                        return this.attachedToElement.AttachOffsetMatrix * Matrix4x4.CreateTranslation(this.attachedPositionOffset.Value.X, this.attachedPositionOffset.Value.Y, this.attachedPositionOffset.Value.Z) * Matrix4x4.CreateFromYawPitchRoll(this.attachedRotationOffset.Value.X, this.attachedRotationOffset.Value.Y, -this.attachedRotationOffset.Value.Z + MathF.PI);
+                    else
+                        return Matrix4x4.CreateTranslation(this.attachedPositionOffset.Value.X, this.attachedPositionOffset.Value.Y, this.attachedPositionOffset.Value.Z) * Matrix4x4.CreateFromYawPitchRoll(this.attachedRotationOffset.Value.X, this.attachedRotationOffset.Value.Y, -this.attachedRotationOffset.Value.Z + MathF.PI);
+
+                return Matrix4x4.Identity;
+            }
+        }
+
+        public Matrix4x4 Matrix {
+            get
+            {
+                if (this.attachedToElement != null)
+                {
+                    return this.attachedToElement.Matrix * this.AttachOffsetMatrix;
+                }
+                return Matrix4x4.CreateTranslation(this.position.X, this.position.Y, this.position.Z) * Matrix4x4.CreateFromYawPitchRoll(this.rotation.X, this.rotation.Y, -this.rotation.Z + MathF.PI);
+            }
+        }
+
         protected Vector3 position;
         public Vector3 Position
         {
-            get => this.position + (this.AttachedToElement?.position ?? Vector3.Zero) + (this?.AttachedPositionOffset ?? Vector3.Zero);
+            get
+            {
+                if (this.AttachedToElement != null && this.AttachedPositionOffset != null)
+                    return (this.AttachedToElement.Matrix).Transform(this.AttachedPositionOffset.Value);
+                return this.position;
+            }
             set
             {
                 var args = new ElementChangedEventArgs<Vector3>(this, this.Position, value, this.IsSync);
@@ -64,7 +111,14 @@ namespace SlipeServer.Server.Elements
         protected Vector3 rotation;
         public Vector3 Rotation
         {
-            get => this.rotation;
+            get
+            {
+                if (this.AttachedToElement != null && this.AttachedRotationOffset != null)
+                {
+                    return this.AttachedRotationOffset.Value + this.AttachedToElement.rotation;
+                }
+                return this.rotation;
+            }
             set
             {
                 var args = new ElementChangedEventArgs<Vector3>(this, this.Rotation, value, this.IsSync);
@@ -270,14 +324,17 @@ namespace SlipeServer.Server.Elements
         public void DestroyFor(Player player)
             => this.DestroyFor(new Player[] { player });
 
-
-        public Vector3? AttachedPositionOffset { get; set; }
-        public Vector3? AttachedRotationOffset { get; set; }
-        public Element? AttachedToElement { get; private set; }
-        public HashSet<Element> AttachedElements { get; init; } = new();
+        private Vector3? attachedPositionOffset = null;
+        private Vector3? attachedRotationOffset = null;
+        private Element? attachedToElement = null;
+        public Vector3? AttachedPositionOffset { get => this.attachedPositionOffset; set => this.attachedPositionOffset = value; }
+        public Vector3? AttachedRotationOffset { get => this.attachedRotationOffset; set => this.attachedRotationOffset = value; }
+        public Element? AttachedToElement { get => attachedToElement; private set => attachedToElement = value; }
+        private readonly HashSet<Element> attachedElements = new();
+        public IReadOnlyCollection<Element> AttachedElements => this.attachedElements;
         public void AttachElement(Element other, Vector3? positionOffset = null, Vector3? rotationOffset = null)
         {
-            if (this.AttachedElements.Add(other))
+            if (this.attachedElements.Add(other))
             {
                 other.AttachedToElement = this;
                 other.AttachedPositionOffset = positionOffset ?? Vector3.Zero;
