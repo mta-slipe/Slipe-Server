@@ -1,7 +1,7 @@
 ﻿using SlipeServer.Packets.Definitions.Entities.Structs;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Constants;
-using SlipeServer.Server.ElementConcepts;
+using SlipeServer.Server.Concepts;
 using SlipeServer.Server.Elements.Events;
 using System;
 using System.Collections.Generic;
@@ -177,6 +177,11 @@ namespace SlipeServer.Server.Elements
 
             this.Name = $"vehicle{this.Id}";
             this.Occupants = new Dictionary<byte, Ped>();
+        }
+
+        public Vehicle(VehicleModel model, Vector3 position) : this((ushort)model, position)
+        {
+
         }
 
         public new Vehicle AssociateWith(MtaServer server)
