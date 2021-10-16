@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SlipeServer.Server.ElementConcepts
+namespace SlipeServer.Server.Concepts
 {
     public class Controls
     {
