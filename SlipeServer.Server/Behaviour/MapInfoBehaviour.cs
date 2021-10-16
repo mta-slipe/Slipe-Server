@@ -58,9 +58,9 @@ namespace SlipeServer.Server.Behaviour
                 ),
                 MaximumJetpackHeight = default,
                 WaterColor = default,
-                AreInteriorSoundsEnabled = default,
-                RainLevel = default,
-                MoonSize = default,
+                AreInteriorSoundsEnabled = this.gameWorld.AreInteriorSoundsEnabled,
+                RainLevel = this.gameWorld.RainLevel,
+                MoonSize = this.gameWorld.MoonSize,
                 SunSize = this.gameWorld.SunSize,
                 SunColor = this.gameWorld.GetSunColor(),
                 WindVelocity = this.gameWorld.WindVelocity,
@@ -74,7 +74,6 @@ namespace SlipeServer.Server.Behaviour
                     EnabledWhenUsingJetpack = false,
                     WeaponConfigurations = Enum.GetValues<WeaponSkillLevel>().Select(skill =>
                     {
-                        //return new() { WeaponType = (byte)x };
                         return MapWeaponConfiguration(this.weaponConfigurationService.GetWeaponConfiguration(x, skill));
                     }).ToArray()
                 }).ToArray(),

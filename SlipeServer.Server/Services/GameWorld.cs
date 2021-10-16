@@ -138,7 +138,7 @@ namespace SlipeServer.Server.Services
         }
 
         private bool interiorSoundsEnabled = true;
-        public bool InteriorSoundsEnabled
+        public bool AreInteriorSoundsEnabled
         {
 
             get => this.interiorSoundsEnabled;
