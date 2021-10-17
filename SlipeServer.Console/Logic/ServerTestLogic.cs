@@ -204,6 +204,8 @@ namespace SlipeServer.Console.Logic
                     this.Ped.Model = (ushort)this.random.Next(20, 25);
                     this.Taxi.IsTaxiLightOn = !this.Taxi.IsTaxiLightOn;
                     this.Taxi.PlateText = $"i {i++}";
+
+                    this.WorldObject.Scale = Vector3.One * ((float)this.random.NextDouble() * 3 + 1);
                 }
             });
 
