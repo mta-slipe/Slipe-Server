@@ -27,7 +27,19 @@ namespace SlipeServer.Server.Elements
         public bool DoubleSided { get; set; } = false;
         public bool IsVisibleInAllDimensions { get; set; } = true;
         public PositionRotationAnimation? Movement { get; set; }
-        public Vector3 Scale { get; set; } = Vector3.One;
+
+        protected Vector3 scale = Vector3.One;
+        public Vector3 Scale
+        {
+            get => this.scale;
+            set
+            {
+                var args = new ElementChangedEventArgs<WorldObject, Vector3>(this, this.Scale, value, this.IsSync);
+                this.scale = value;
+                ScaleChanged?.Invoke(this, args);
+            }
+        }
+
         public bool IsFrozen { get; set; } = false;
         public float Health { get; set; } = 1000;
 
@@ -49,5 +61,6 @@ namespace SlipeServer.Server.Elements
         }
 
         public event ElementChangedEventHandler<WorldObject, ushort>? ModelChanged;
+        public event ElementChangedEventHandler<WorldObject, Vector3>? ScaleChanged;
     }
 }
