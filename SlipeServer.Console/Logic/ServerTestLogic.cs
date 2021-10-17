@@ -37,6 +37,7 @@ namespace SlipeServer.Console.Logic
         private readonly FireService fireService;
         private readonly TextItemService textItemService;
         private readonly IResourceProvider resourceProvider;
+        private readonly CommandService commandService;
         private Resource? testResource;
         private Resource? secondTestResource;
 
@@ -66,7 +67,8 @@ namespace SlipeServer.Console.Logic
             ExplosionService explosionService,
             FireService fireService,
             TextItemService textItemService,
-            IResourceProvider resourceProvider
+            IResourceProvider resourceProvider,
+            CommandService commandService
         )
         {
             this.server = server;
@@ -82,6 +84,7 @@ namespace SlipeServer.Console.Logic
             this.fireService = fireService;
             this.textItemService = textItemService;
             this.resourceProvider = resourceProvider;
+            this.commandService = commandService;
             this.SetupTestLogic();
             this.slipeDevsTeam = new Team("Slipe devs", Color.FromArgb(255, 255, 81, 81));
         }
@@ -89,6 +92,7 @@ namespace SlipeServer.Console.Logic
         private void SetupTestLogic()
         {
             SetupTestElements();
+            SetupTestCommands();
 
             this.luaService.AddEventHandler("Slipe.Test.Event", (e) => this.TriggerTestEvent(e.Player));
 
@@ -286,6 +290,194 @@ namespace SlipeServer.Console.Logic
             cuboid.Dimensions = new Vector3(2, 2, 2);
         }
 
+        private void SetupTestCommands()
+        {
+            this.commandService.AddCommand("radararea").Triggered += (source, args) => {
+                this.RadarArea!.Color = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
+                this.RadarArea.Size = new Vector2(this.random.Next(100, 200), this.random.Next(100, 200));
+                this.RadarArea.IsFlashing = this.random.Next(2) == 1;
+                this.chatBox.OutputTo(args.Player, "You have randomized radar area!", Color.YellowGreen);
+            };
+            this.commandService.AddCommand("kill").Triggered += (source, args) => args.Player.Kill();
+            this.commandService.AddCommand("spawn").Triggered += (source, args) => args.Player.Spawn(new Vector3(20, 0, 3), 0, 9, 0, 0);
+
+            this.commandService.AddCommand("night").Triggered += (source, args) => this.worldService.SetTime(0, 0);
+            this.commandService.AddCommand("day").Triggered += (source, args) => this.worldService.SetTime(13, 37);
+
+            bool flip = false;
+            this.commandService.AddCommand("blip").Triggered += (source, args) =>
+            {
+                var values = Enum.GetValues(typeof(BlipIcon));
+                BlipIcon randomBlipIcon = (BlipIcon)values.GetValue(this.random.Next(values.Length))!;
+
+                this.BlipB!.Icon = randomBlipIcon;
+                this.BlipA!.Color = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
+                this.BlipA.Size = (byte)this.random.Next(1, 4);
+                this.BlipA.VisibleDistance = (ushort)this.random.Next(30, 100);
+                flip = !flip;
+                if (flip)
+                {
+                    this.BlipA.Ordering = 1;
+                    this.BlipB.Ordering = 2;
+                } else
+                {
+                    this.BlipA.Ordering = 2;
+                    this.BlipB.Ordering = 1;
+                }
+            };
+
+            this.commandService.AddCommand("boom").Triggered += (source, args) 
+                => this.explosionService.CreateExplosion(args.Player.Position, ExplosionType.Tiny);
+
+            this.commandService.AddCommand("m4").Triggered += (source, args)
+                => args.Player.CurrentWeapon = new Weapon(WeaponId.M4, 500);
+
+            this.commandService.AddCommand("assault").Triggered += (source, args)
+                => args.Player.CurrentWeaponSlot = WeaponSlot.AssaultRifles;
+
+            this.commandService.AddCommand("rocket").Triggered += (source, args)
+                => args.Player.CurrentWeapon = new Weapon(WeaponId.RocketLauncher, 500);
+
+            this.commandService.AddCommand("shootrocket").Triggered += (source, args) =>
+            {
+                var position = args.Player.Position + new Vector3(0, 0, 0.7f);
+                this.worldService.CreateProjectile(position, args.Player.Rotation, args.Player);
+            };
+
+            this.commandService.AddCommand("fire").Triggered += (source, args)
+                => this.fireService.CreateFire(args.Player.Position);
+
+            this.commandService.AddCommand("ts").Triggered += (source, args)
+                => args.Player.TakeScreenshot(256, 256, "lowqualitytag", 30);
+
+            this.commandService.AddCommand("tshq").Triggered += (source, args)
+                => args.Player.TakeScreenshot(960, 540, "highqualitytag", 70);
+
+            this.commandService.AddCommand("ping").Triggered += (source, args)
+                => this.chatBox.OutputTo(args.Player, $"Your ping is {args.Player.Client.Ping}", Color.YellowGreen);
+
+            this.commandService.AddCommand("kickme").Triggered += (source, args)
+                => args.Player.Kick("You have been kicked by slipe");
+
+            this.commandService.AddCommand("playerlist").Triggered += (source, args) =>
+            {
+                var players = this.elementRepository.GetByType<Player>(ElementType.Player);
+                foreach (var remotePlayer in players)
+                    this.chatBox.OutputTo(args.Player, remotePlayer.Name);
+
+                var text = string.Join('\n', players.Select(x => x.Name));
+                var textItem = this.textItemService.CreateTextItemFor(args.Player, text, Vector2.Zero, 5);
+                Task.Run(async () =>
+                {
+                    await Task.Delay(5000);
+                    this.textItemService.DeleteTextItemFor(args.Player, textItem);
+                });
+            };
+
+            this.commandService.AddCommand("increment").Triggered += (source, args)
+                => args.Player.GetAndIncrementTimeContext();
+
+            this.commandService.AddCommand("resendmodpackets").Triggered += (source, args)
+                => args.Player.ResendModPackets();
+
+            this.commandService.AddCommand("ac").Triggered += (source, args)
+                => args.Player.ResendPlayerACInfo();
+
+            this.commandService.AddCommand("setmaxplayers").Triggered += (source, args) =>
+            {
+                if (args.Arguments.Length > 0)
+                {
+                    if (ushort.TryParse(args.Arguments[0], out ushort slots))
+                    {
+                        this.server.SetMaxPlayers(slots);
+                        this.logger.LogInformation($"Slots has been changed to: {slots}");
+                    }
+                }
+            };
+
+            this.commandService.AddCommand("vehicle").Triggered += (source, args) =>
+            {
+                if (args.Arguments.Length > 0)
+                {
+                    if (ushort.TryParse(args.Arguments[0], out ushort numericModel))
+                    {
+                        var vehicle = (new Vehicle(numericModel, args.Player.Position)).AssociateWith(this.server);
+                        args.Player.WarpIntoVehicle(vehicle);
+                    }
+                    if (Enum.TryParse(args.Arguments[0], true, out VehicleModel model) && Enum.IsDefined(model))
+                    {
+                        var vehicle = (new Vehicle(model, args.Player.Position)).AssociateWith(this.server);
+                        args.Player.WarpIntoVehicle(vehicle);
+                    }
+                }
+            };
+
+            this.commandService.AddCommand("changeskin").Triggered += (source, args) =>
+            {
+                if (args.Arguments.Length > 0)
+                {
+                    if (ushort.TryParse(args.Arguments[0], out ushort model))
+                    {
+                        args.Player.Model = model;
+                    }
+                } else
+                {
+                    args.Player.Model = (ushort)this.random.Next(20, 25);
+                }
+            };
+
+            this.commandService.AddCommand("togglecontrol").Triggered += (source, args)
+                => args.Player.Controls.JumpEnabled = !args.Player.Controls.JumpEnabled;
+
+            this.commandService.AddCommand("jetpack").Triggered += (source, args)
+                => args.Player.HasJetpack = !args.Player.HasJetpack;
+
+            this.commandService.AddCommand("landinggear").Triggered += (source, args)
+                => this.Aircraft!.IsLandingGearDown = !this.Aircraft!.IsLandingGearDown;
+
+            this.commandService.AddCommand("turret").Triggered += (source, args) =>
+            {
+                Task.Run(async () =>
+                {
+                    while (true)
+                    {
+                        await Task.Delay(30);
+                        this.Rhino!.TurretRotation = new Vector2(-MathF.Atan2(this.Rhino.Position.X - args.Player.Position.X, this.Rhino.Position.Y - args.Player.Position.Y) + MathF.PI, 0);
+                    }
+                });
+            };
+
+            this.commandService.AddCommand("marker").Triggered += (source, args) =>
+            {
+                var typeValues = Enum.GetValues(typeof(MarkerType));
+                MarkerType? randomMarkerType = (MarkerType?)typeValues.GetValue(this.random.Next(typeValues.Length));
+                var iconValues = Enum.GetValues(typeof(MarkerIcon));
+                MarkerIcon? randomMarkerIcon = (MarkerIcon?)iconValues.GetValue(this.random.Next(iconValues.Length));
+
+                this.Marker!.Color = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
+                this.Marker!.Size = this.random.Next(1, 10) / 10.0f + 1.0f;
+                if (randomMarkerType.HasValue)
+                    this.Marker!.MarkerType = randomMarkerType.Value;
+                if (randomMarkerIcon.HasValue)
+                    this.Marker!.MarkerIcon = randomMarkerIcon.Value;
+
+                this.Marker!.TargetPosition = new Vector3(this.random.Next(0, 20) - 5, this.random.Next(0, 20), this.random.Next(-50, 50));
+                this.chatBox.OutputTo(args.Player, "You have randomized marker!", Color.YellowGreen);
+            };
+
+            this.commandService.AddCommand("camerainterior").Triggered += (source, args) =>
+            {
+                if (args.Arguments.Length > 0)
+                {
+                    if (byte.TryParse(args.Arguments[0], out byte interior))
+                    {
+                        args.Player.Camera.Interior = interior;
+                        this.logger.LogInformation($"Camera interior changed to: {interior}");
+                    }
+                }
+            };
+        }
+
         private void OnPlayerJoin(Player player)
         {
             var client = player.Client;
@@ -347,12 +539,44 @@ namespace SlipeServer.Console.Logic
             this.secondTestResource?.StartFor(player);
 
             this.HandlePlayerSubscriptions(player);
-            this.HandlePlayerCommands(player);
+
+            player.AcInfoReceived += (o, args) =>
+            {
+                this.logger.LogInformation($"ACInfo for {player.Name} detectedACList:{string.Join(",", args.DetectedACList)} d3d9Size: {args.D3D9Size} d3d9SHA256: {args.D3D9SHA256}");
+            };
+
+            player.DiagnosticInfoReceived += (o, args) =>
+            {
+                this.logger.LogInformation($"DIAGNOSTIC: {player.Name} #{args.Level} {args.Message}");
+            };
+
+            player.ModInfoReceived += (o, args) =>
+            {
+                this.logger.LogInformation($"Player: {player.Name} ModInfo:");
+                foreach (var item in args.ModInfoItems)
+                {
+                    this.logger.LogInformation($"\t{item.Name} - md5: {item.LongMd5}");
+                }
+            };
+
+            player.NetworkStatusReceived += (o, args) =>
+            {
+                switch (args.PlayerNetworkStatus)
+                {
+                    case Packets.Enums.PlayerNetworkStatusType.InterruptionBegan:
+                        this.logger.LogInformation($"(packets from {o.Name}) interruption began {args.Ticks} ticks ago");
+                        break;
+                    case Packets.Enums.PlayerNetworkStatusType.InterruptionEnd:
+                        this.logger.LogInformation($"(packets from {o.Name}) interruption began {args.Ticks} ticks ago and has just ended");
+                        break;
+                }
+            };
 
             player.TeamChanged += (thePlayer, args) =>
             {
                 this.logger.LogDebug($"{thePlayer.Name} Joined {thePlayer.Team?.TeamName} team!");
             };
+
             player.TargetChanged += (thePlayer, args) =>
             {
                 if(args.NewValue != null && args.NewValue is Vehicle vehicle)
@@ -395,231 +619,6 @@ namespace SlipeServer.Console.Logic
 
                         if (otherPlayer != null)
                             player.UnsubscribeFrom(otherPlayer);
-                        break;
-                }
-            };
-        }
-
-        private void HandlePlayerCommands(Player player)
-        {
-            player.CommandEntered += (o, args) =>
-            {
-                if (args.Command == "radararea")
-                {
-                    this.RadarArea!.Color = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
-                    this.RadarArea.Size = new Vector2(this.random.Next(100, 200), this.random.Next(100, 200));
-                    this.RadarArea.IsFlashing = this.random.Next(2) == 1;
-                    this.chatBox.OutputTo(player, "You have randomized radar area!", Color.YellowGreen);
-                }
-            };
-
-            bool flip = false;
-            player.CommandEntered += (o, args) => { if (args.Command == "kill") player.Kill(); };
-            player.CommandEntered += (o, args) => { if (args.Command == "spawn") player.Spawn(new Vector3(20, 0, 3), 0, 9, 0, 0); };
-            player.CommandEntered += (o, args) =>
-            {
-                if (args.Command == "night")
-                    this.worldService.SetTime(0, 0);
-
-                if (args.Command == "day")
-                    this.worldService.SetTime(13, 37);
-
-                if (args.Command == "blip")
-                {
-                    var values = Enum.GetValues(typeof(BlipIcon));
-                    BlipIcon randomBlipIcon = (BlipIcon)values.GetValue(this.random.Next(values.Length))!;
-
-                    this.BlipB!.Icon = randomBlipIcon;
-                    this.BlipA!.Color = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
-                    this.BlipA.Size = (byte)this.random.Next(1, 4);
-                    this.BlipA.VisibleDistance = (ushort)this.random.Next(30, 100);
-                    flip = !flip;
-                    if (flip)
-                    {
-                        this.BlipA.Ordering = 1;
-                        this.BlipB.Ordering = 2;
-                    } else
-                    {
-                        this.BlipA.Ordering = 2;
-                        this.BlipB.Ordering = 1;
-                    }
-                }
-                if (args.Command == "boom")
-                    this.explosionService.CreateExplosion(player.Position, ExplosionType.Tiny);
-
-                if (args.Command == "m4")
-                    player.CurrentWeapon = new Weapon(WeaponId.M4, 500);
-
-                if (args.Command == "assault")
-                    player.CurrentWeaponSlot = WeaponSlot.AssaultRifles;
-
-                if (args.Command == "rocket")
-                    player.CurrentWeapon = new Weapon(WeaponId.RocketLauncher, 500);
-
-                if (args.Command == "shootrocket")
-                {
-                    var position = player.Position + new Vector3(0, 0, 0.7f);
-                    this.worldService.CreateProjectile(position, player.Rotation, player);
-                }
-
-                if (args.Command == "fire")
-                    this.fireService.CreateFire(player.Position);
-
-                if (args.Command == "ts")
-                    player.TakeScreenshot(256, 256, "lowqualitytag", 30);
-
-                if (args.Command == "tshq")
-                    player.TakeScreenshot(960, 540, "highqualitytag", 70);
-
-                if (args.Command == "ping")
-                    this.chatBox.OutputTo(player, $"Your ping is {player.Client.Ping}", Color.YellowGreen);
-
-
-                if (args.Command == "kickme")
-                    player.Kick("You has been kicked by slipe");
-
-                if (args.Command == "playerlist")
-                {
-                    var players = this.elementRepository.GetByType<Player>(ElementType.Player);
-                    foreach (var remotePlayer in players)
-                        this.chatBox.OutputTo(player, remotePlayer.Name);
-
-                    var text = string.Join('\n', players.Select(x => x.Name));
-                    var textItem = this.textItemService.CreateTextItemFor(player, text, Vector2.Zero, 5);
-                    Task.Run(async () =>
-                    {
-                        await Task.Delay(5000);
-                        this.textItemService.DeleteTextItemFor(player, textItem);
-                    });
-                }
-
-
-                if (args.Command == "increment")
-                    player.GetAndIncrementTimeContext();
-
-                if (args.Command == "resendmodpackets")
-                    player.ResendModPackets();
-
-                if (args.Command == "ac")
-                    player.ResendPlayerACInfo();
-
-                if (args.Command == "setmaxplayers")
-                {
-                    if (args.Arguments.Length > 0)
-                    {
-                        if (ushort.TryParse(args.Arguments[0], out ushort slots))
-                        {
-                            this.server.SetMaxPlayers(slots);
-                            this.logger.LogInformation($"Slots has been changed to: {slots}");
-                        }
-                    }
-                }
-
-                if (args.Command == "vehicle")
-                {
-                    if (args.Arguments.Length > 0)
-                    {
-                        if (ushort.TryParse(args.Arguments[0], out ushort model))
-                        {
-                            var vehicle = (new Vehicle(model, player.Position)).AssociateWith(this.server);
-                            player.WarpIntoVehicle(vehicle);
-                        }
-                    }
-                }
-
-                if (args.Command == "changeskin")
-                {
-                    if (args.Arguments.Length > 0)
-                    {
-                        if (ushort.TryParse(args.Arguments[0], out ushort model))
-                        {
-                            player.Model = model;
-                        }
-                    } else
-                    {
-                        player.Model = (ushort)this.random.Next(20, 25);
-                    }
-
-                    if (args.Command == "togglecontrol")
-                        player.Controls.JumpEnabled = !player.Controls.JumpEnabled;
-                }
-                if (args.Command == "jp" || args.Command == "jetpack")
-                    player.HasJetpack = !player.HasJetpack;
-
-                if (args.Command == "landinggear")
-                    this.Aircraft!.IsLandingGearDown = !this.Aircraft!.IsLandingGearDown;
-
-                if (args.Command == "turret")
-                {
-                    Task.Run(async () =>
-                    {
-                        while (true)
-                        {
-                            await Task.Delay(30);
-                            this.Rhino!.TurretRotation = new Vector2(-MathF.Atan2(this.Rhino.Position.X - player.Position.X, this.Rhino.Position.Y - player.Position.Y) + MathF.PI, 0);
-                        }
-                    });
-                }
-
-                if (args.Command == "marker")
-                {
-                    var typeValues = Enum.GetValues(typeof(MarkerType));
-                    MarkerType? randomMarkerType = (MarkerType?)typeValues.GetValue(this.random.Next(typeValues.Length));
-                    var iconValues = Enum.GetValues(typeof(MarkerIcon));
-                    MarkerIcon? randomMarkerIcon = (MarkerIcon?)iconValues.GetValue(this.random.Next(iconValues.Length));
-
-                    this.Marker!.Color = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
-                    this.Marker!.Size = this.random.Next(1, 10) / 10.0f + 1.0f;
-                    if (randomMarkerType.HasValue)
-                        this.Marker!.MarkerType = randomMarkerType.Value;
-                    if (randomMarkerIcon.HasValue)
-                        this.Marker!.MarkerIcon = randomMarkerIcon.Value;
-
-                    this.Marker!.TargetPosition = new Vector3(this.random.Next(0, 20) - 5, this.random.Next(0, 20), this.random.Next(-50, 50));
-                    this.chatBox.OutputTo(player, "You have randomized marker!", Color.YellowGreen);
-                }
-              
-                if (args.Command == "camerainterior")
-                {
-                    if (args.Arguments.Length > 0)
-                    {
-                        if (byte.TryParse(args.Arguments[0], out byte interior))
-                        {
-                            player.Camera.Interior = interior;
-                            this.logger.LogInformation($"Camera interior changed to: {interior}");
-                        }
-                    }
-                }
-            };
-
-            player.AcInfoReceived += (o, args) =>
-            {
-                this.logger.LogInformation($"ACInfo for {player.Name} detectedACList:{string.Join(",", args.DetectedACList)} d3d9Size: {args.D3D9Size} d3d9SHA256: {args.D3D9SHA256}");
-            };
-
-            player.DiagnosticInfoReceived += (o, args) =>
-            {
-                this.logger.LogInformation($"DIAGNOSTIC: {player.Name} #{args.Level} {args.Message}");
-            };
-
-            player.ModInfoReceived += (o, args) =>
-            {
-                this.logger.LogInformation($"Player: {player.Name} ModInfo:");
-                foreach (var item in args.ModInfoItems)
-                {
-                    this.logger.LogInformation($"\t{item.Name} - md5: {item.LongMd5}");
-                }
-            };
-
-            player.NetworkStatusReceived += (o, args) =>
-            {
-                switch (args.PlayerNetworkStatus)
-                {
-                    case Packets.Enums.PlayerNetworkStatusType.InterruptionBegan:
-                        this.logger.LogInformation($"(packets from {o.Name}) interruption began {args.Ticks} ticks ago");
-                        break;
-                    case Packets.Enums.PlayerNetworkStatusType.InterruptionEnd:
-                        this.logger.LogInformation($"(packets from {o.Name}) interruption began {args.Ticks} ticks ago and has just ended");
                         break;
                 }
             };
