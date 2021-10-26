@@ -1,4 +1,7 @@
 ﻿using BepuPhysics;
+using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements.Events;
+using SlipeServer.Server.Extensions;
 using System.Numerics;
 
 namespace SlipeServer.Physics.Entities
@@ -13,11 +16,45 @@ namespace SlipeServer.Physics.Entities
         protected virtual Vector3 Position { get; set; }
         protected virtual Quaternion Rotation { get; set; }
 
+        public Element? CoupledElement { get; private set; }
+
         public PhysicsElement(THandle handle, TDescription description, Simulation simulation)
         {
             this.handle = handle;
             this.description = description;
             this.simulation = simulation;
+        }
+
+        public void CoupleWith(Element element)
+        {
+            if (this.CoupledElement != null)
+            {
+                Decouple();
+            }
+            this.CoupledElement = element;
+
+            element.PositionChanged += HandleCoupledElementPositionUpdate;
+            element.RotationChanged += HandleCoupledElementRotationUpdate;
+        }
+
+        public void Decouple()
+        {
+            if (this.CoupledElement != null)
+            {
+                this.CoupledElement.PositionChanged -= HandleCoupledElementPositionUpdate;
+                this.CoupledElement.RotationChanged -= HandleCoupledElementRotationUpdate;
+            }
+            this.CoupledElement = null;
+        }
+
+        protected virtual void HandleCoupledElementPositionUpdate(Element sender, ElementChangedEventArgs<Vector3> args)
+        {
+            this.Position = args.NewValue;
+        }
+
+        protected virtual void HandleCoupledElementRotationUpdate(Element sender, ElementChangedEventArgs<Vector3> args)
+        {
+            this.Rotation = args.NewValue.ToQuaternion();
         }
     }
 

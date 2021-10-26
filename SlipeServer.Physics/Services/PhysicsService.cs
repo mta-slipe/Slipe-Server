@@ -4,7 +4,6 @@ using BepuUtilities.Memory;
 using RenderWareIo;
 using SlipeServer.Physics.Callbacks;
 using SlipeServer.Physics.Entities;
-using System;
 using System.Linq;
 using System.Numerics;
 
@@ -25,13 +24,10 @@ namespace SlipeServer.Physics.Services
 
         public PhysicsElement<StaticDescription, StaticHandle> AddStatic(PhysicsMesh mesh, Vector3 position, Quaternion rotation)
         {
-            unsafe
-            {
-                var description = new StaticDescription(position, mesh.meshIndex, 0.1f);
-                description.Pose.Orientation = rotation;
-                var handle = this.simulation.Statics.Add(description);
-                return new StaticPhysicsElement(handle, description, this.simulation);
-            }
+            var description = new StaticDescription(position, mesh.meshIndex, 0.1f);
+            description.Pose.Orientation = rotation;
+            var handle = this.simulation.Statics.Add(description);
+            return new StaticPhysicsElement(handle, description, this.simulation);
         }
 
         public RayHit? RayCast(Vector3 from, Vector3 direction, float length)
@@ -52,12 +48,9 @@ namespace SlipeServer.Physics.Services
             var dffFile = new DffFile(img.DataEntries[dffName.ToLower()].Data);
             var dff = dffFile.Dff;
 
-            unsafe
-            {
-                var mesh = GetMeshFromModel(dff);
-                var shape = this.simulation.Shapes.Add(mesh);
-                return new PhysicsMesh(shape);
-            }
+            var mesh = GetMeshFromModel(dff);
+            var shape = this.simulation.Shapes.Add(mesh);
+            return new PhysicsMesh(shape);
         }
 
         private Mesh GetMeshFromModel(RenderWareIo.Structs.Dff.Dff dff)

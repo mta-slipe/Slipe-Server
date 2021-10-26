@@ -14,8 +14,6 @@ namespace SlipeServer.Console.Logic
 
         public PhysicsTestLogic(PhysicsService physicsService, CommandService commandService)
         {
-            var testCommand = commandService.AddCommand("ray");
-            testCommand.Triggered += HandleRayCommand;
             this.physicsService = physicsService;
 
             Init();
