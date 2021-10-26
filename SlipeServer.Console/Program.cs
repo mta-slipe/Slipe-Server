@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using SlipeServer.ConfigurationProviders;
 using SlipeServer.Console.Logic;
 using SlipeServer.Lua;
+using SlipeServer.Physics.Extensions;
 using SlipeServer.Server;
 using SlipeServer.Server.ServerOptions;
 using System;
@@ -67,9 +68,11 @@ namespace SlipeServer.Console
                         services.AddSingleton<ILogger>(this.Logger);
                     });
                     builder.AddLua();
+                    builder.AddPhysics();
 
                     builder.AddLogic<ServerTestLogic>();
                     builder.AddLogic<LuaTestLogic>();
+                    builder.AddLogic<PhysicsTestLogic>();
                 }
             )
             {
