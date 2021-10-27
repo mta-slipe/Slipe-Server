@@ -1,81 +1,77 @@
-﻿using BepuPhysics;
-using BepuPhysics.Collidables;
-using BepuUtilities.Memory;
+﻿using Microsoft.Extensions.Logging;
 using RenderWareIo;
-using SlipeServer.Physics.Callbacks;
-using SlipeServer.Physics.Entities;
-using System.Linq;
-using System.Numerics;
+using SlipeServer.Physics.Builders;
+using SlipeServer.Physics.Worlds;
+using System;
+using System.IO;
 
 namespace SlipeServer.Physics.Services
 {
-
     public partial class PhysicsService
     {
-        private readonly BufferPool pool;
-        private readonly Simulation simulation;
+        private readonly ILogger logger;
 
-
-        public PhysicsService()
+        public PhysicsService(ILogger logger)
         {
-            this.pool = new BufferPool();
-            this.simulation = Simulation.Create(this.pool, new NoCollisionCallbacks(), new DemoPoseIntegratorCallbacks(), new PositionFirstTimestepper());
+            this.logger = logger;
         }
 
-        public PhysicsElement<StaticDescription, StaticHandle> AddStatic(PhysicsMesh mesh, Vector3 position, Quaternion rotation)
+        public PhysicsWorld CreateEmptyPhysicsWorld()
         {
-            var description = new StaticDescription(position, mesh.meshIndex, 0.1f);
-            description.Pose.Orientation = rotation;
-            var handle = this.simulation.Statics.Add(description);
-            return new StaticPhysicsElement(handle, description, this.simulation);
+            return new PhysicsWorld();
         }
 
-        public RayHit? RayCast(Vector3 from, Vector3 direction, float length)
+        public PhysicsWorld CreatePhysicsWorldFromGtaDirectory(string directory, string datFile = "gta.dat")
         {
-            HitHandler handler = new();
-            this.simulation.RayCast(from, direction, length, ref handler);
-            return handler.Hit;
+            string datFilepath = Path.Join(directory, $"data/{datFile}");
+            string imgFilepath = Path.Join(directory, "models/gta3.img");
+
+            return CreatePhysicsWorldFromDat(directory, new DatFile(datFilepath), new ImgFile(imgFilepath));
         }
 
-        public PhysicsImg LoadImg(string path)
+        public PhysicsWorld CreatePhysicsWorldFromDat(string root, string datFilepath, string imgFilepath)
         {
-            return new PhysicsImg(path);
+            return CreatePhysicsWorldFromDat(root, new DatFile(datFilepath), new ImgFile(imgFilepath));
         }
 
-        public PhysicsMesh CreateMesh(PhysicsImg imgFile, string dffName)
+        public PhysicsWorld CreatePhysicsWorldFromDat(string root, DatFile datFile, ImgFile imgFile)
         {
-            var img = imgFile.imgFile.Img;
-            var dffFile = new DffFile(img.DataEntries[dffName.ToLower()].Data);
-            var dff = dffFile.Dff;
-
-            var mesh = GetMeshFromModel(dff);
-            var shape = this.simulation.Shapes.Add(mesh);
-            return new PhysicsMesh(shape);
-        }
-
-        private Mesh GetMeshFromModel(RenderWareIo.Structs.Dff.Dff dff)
-        {
-            unsafe
+            return CreateWorld(builder =>
             {
-                var dffTriangles = dff.Clump.GeometryList.Geometries.First().Triangles;
-                var dffVertices = dff.Clump.GeometryList.Geometries.First().MorphTargets.SelectMany(x => x.Vertices).ToArray();
+                builder.AddImg(imgFile.Img);
 
-                this.pool.Take(dffTriangles.Count * sizeof(Triangle), out var buffer);
-                var triangles = new Buffer<Triangle>(buffer.Memory, dffTriangles.Count);
-                int vertexIndex = 0;
-                foreach (var triangle in dffTriangles)
+                foreach (var ide in datFile.Dat.Ides)
                 {
-                    triangles[vertexIndex++] = new Triangle(
-                        dffVertices[triangle.VertexIndexOne],
-                        dffVertices[triangle.VertexIndexTwo],
-                        dffVertices[triangle.VertexIndexThree]);
+                    var path = Path.Join(root, ide).TrimEnd('\r');
+                    if (File.Exists(path))
+                        builder.AddIde(new IdeFile(path).Ide);
+                    else
+                        this.logger.LogWarning($"Unable to find .ide file {path}");
                 }
 
-                var meshScale = Vector3.One;
-                var mesh = new Mesh(triangles, meshScale, this.pool);
+                foreach (var ipl in datFile.Dat.Ipls)
+                {
+                    var path = Path.Join(root, ipl).TrimEnd('\r');
+                    if (File.Exists(path))
+                        builder.AddIpl(new IplFile(path).Ipl);
+                    else
+                        this.logger.LogWarning($"Unable to find .ipl file {path}");
+                }
 
-                return mesh;
-            }
+                foreach (var ipl in imgFile.Img.IplFiles)
+                {
+                    builder.AddIpl(new BinaryIplFile(imgFile.Img.DataEntries[ipl].Data).BinaryIpl);
+                }
+            });
+        }
+
+        public PhysicsWorld CreateWorld(Action<PhysicsWorldBuilder> builderAction)
+        {
+            var builder = new PhysicsWorldBuilder();
+
+            builderAction(builder);
+
+            return builder.Build();
         }
     }
 }

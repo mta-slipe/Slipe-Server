@@ -537,8 +537,8 @@ namespace SlipeServer.Console.Logic
             player.Weapons.First(weapon => weapon.Type == WeaponId.Ak47).Ammo = 750;
             player.Weapons.First(weapon => weapon.Type == WeaponId.Ak47).AmmoInClip = 25;
 
-            this.testResource?.StartFor(player);
-            this.secondTestResource?.StartFor(player);
+            //this.testResource?.StartFor(player);
+            //this.secondTestResource?.StartFor(player);
 
             this.HandlePlayerSubscriptions(player);
 
@@ -588,7 +588,7 @@ namespace SlipeServer.Console.Logic
                 }
             };
 
-            player.Team = this.slipeDevsTeam;
+            //player.Team = this.slipeDevsTeam;
         }
 
         private void HandlePlayerSubscriptions(Player player)

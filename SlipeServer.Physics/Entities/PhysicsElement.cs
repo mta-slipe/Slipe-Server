@@ -16,6 +16,9 @@ namespace SlipeServer.Physics.Entities
         protected virtual Vector3 Position { get; set; }
         protected virtual Quaternion Rotation { get; set; }
 
+        protected Vector3 positionOffset;
+        protected Vector3 rotationOffset;
+
         public Element? CoupledElement { get; private set; }
 
         public PhysicsElement(THandle handle, TDescription description, Simulation simulation)
@@ -25,7 +28,7 @@ namespace SlipeServer.Physics.Entities
             this.simulation = simulation;
         }
 
-        public void CoupleWith(Element element)
+        public void CoupleWith(Element element, Vector3? positionOffset = null, Vector3? rotationOffset = null)
         {
             if (this.CoupledElement != null)
             {
@@ -35,6 +38,12 @@ namespace SlipeServer.Physics.Entities
 
             element.PositionChanged += HandleCoupledElementPositionUpdate;
             element.RotationChanged += HandleCoupledElementRotationUpdate;
+
+            this.positionOffset = positionOffset ?? Vector3.Zero;
+            this.rotationOffset = rotationOffset ?? Vector3.Zero;
+
+            this.Position = element.Position + this.positionOffset;
+            this.Rotation = (element.Rotation + this.rotationOffset).ToQuaternion();
         }
 
         public void Decouple()
@@ -49,12 +58,12 @@ namespace SlipeServer.Physics.Entities
 
         protected virtual void HandleCoupledElementPositionUpdate(Element sender, ElementChangedEventArgs<Vector3> args)
         {
-            this.Position = args.NewValue;
+            this.Position = args.NewValue + this.positionOffset;
         }
 
         protected virtual void HandleCoupledElementRotationUpdate(Element sender, ElementChangedEventArgs<Vector3> args)
         {
-            this.Rotation = args.NewValue.ToQuaternion();
+            this.Rotation = (args.NewValue + this.rotationOffset).ToQuaternion();
         }
     }
 
