@@ -1,5 +1,6 @@
 ﻿using BepuPhysics;
 using BepuPhysics.Collidables;
+using BepuUtilities;
 using BepuUtilities.Memory;
 using RenderWareIo;
 using SlipeServer.Physics.Assets;
@@ -11,7 +12,7 @@ using System.Numerics;
 
 namespace SlipeServer.Physics.Worlds
 {
-    public class PhysicsWorld : IDisposable 
+    public class PhysicsWorld : IDisposable
     {
         private readonly BufferPool pool;
         private readonly Simulation simulation;
@@ -21,11 +22,15 @@ namespace SlipeServer.Physics.Worlds
         {
             this.pool = new BufferPool();
             this.simulation = Simulation.Create(this.pool, new NoCollisionCallbacks(), new DemoPoseIntegratorCallbacks(), new PositionFirstTimestepper());
-            
+
             this.assetCollection = assetCollection ?? new();
         }
 
-        public void Dispose() => this.simulation.Dispose();
+        public void Dispose()
+        {
+            this.simulation.Dispose();
+            GC.SuppressFinalize(this);
+        }
 
         public PhysicsElement<StaticDescription, StaticHandle> AddStatic(PhysicsMesh mesh, Vector3 position, Quaternion rotation)
         {
@@ -65,22 +70,37 @@ namespace SlipeServer.Physics.Worlds
             return CreateMesh(dff);
         }
 
+        public PhysicsMesh CreateMesh(PhysicsImg imgFile, string colFileName, string colName)
+        {
+            var img = imgFile.imgFile.Img;
+            var colFile = new ColFile(img.DataEntries[colFileName.ToLower()].Data);
+            var col = colFile.Col;
+            var combo = col.ColCombos.First(x =>
+            {
+                var fullString = string.Join("", x.Header.Name);
+                var name = fullString.Substring(0, fullString.IndexOf('\0'));
+                return name == colName;
+            });
+
+            return CreateMesh(combo);
+        }
+
         public PhysicsMesh CreateMesh(RenderWareIo.Structs.Dff.Dff dff)
         {
             return GetPhysicsMesh(GetMeshFromModel(dff));
         }
 
-        public PhysicsMesh CreateMesh(RenderWareIo.Structs.Col.Col col)
+        public PhysicsMesh CreateMesh(RenderWareIo.Structs.Col.ColCombo colCombo)
         {
-            return GetPhysicsMesh(GetMeshFromCollider(col));
+            return GetPhysicsMesh(GetMeshFromCollider(colCombo));
         }
 
-        public PhysicsMesh CreateMesh(RenderWareIo.Structs.Col.Col col, RenderWareIo.Structs.Col.FaceGroup group)
+        public PhysicsMesh CreateMesh(RenderWareIo.Structs.Col.ColCombo colCombo, RenderWareIo.Structs.Col.FaceGroup group)
         {
-            return GetPhysicsMesh(GetMeshFromCollider(col, group));
+            return GetPhysicsMesh(GetMeshFromCollider(colCombo, group));
         }
 
-        private PhysicsMesh GetPhysicsMesh(Mesh mesh)
+        private PhysicsMesh GetPhysicsMesh<T>(T mesh) where T: unmanaged, IShape
         {
             var shape = this.simulation.Shapes.Add(mesh);
             return new PhysicsMesh(shape);
@@ -111,38 +131,65 @@ namespace SlipeServer.Physics.Worlds
             }
         }
 
-        private Mesh GetMeshFromCollider(RenderWareIo.Structs.Col.Col col)
+        private Compound GetMeshFromCollider(RenderWareIo.Structs.Col.ColCombo colCombo)
         {
             unsafe
             {
-                var colTriangles = col.Body.Faces;
-                var colVertices = col.Body.Vertices;
+                var colTriangles = colCombo.Body.Faces;
+                var colVertices = colCombo.Body.Vertices;
 
-                this.pool.Take(colTriangles.Count * sizeof(Triangle), out var buffer);
-                var triangles = new Buffer<Triangle>(buffer.Memory, colTriangles.Count);
-                int vertexIndex = 0;
-                foreach (var triangle in colTriangles)
+                var shapeCount = colCombo.Body.Spheres.Count + colCombo.Body.Boxes.Count + 1;
+                var builder = new CompoundBuilder(this.pool, this.simulation.Shapes, shapeCount);
+
+                if (colTriangles.Any())
                 {
-                    triangles[vertexIndex++] = new Triangle(
-                        new Vector3(colVertices[triangle.A].FirstFloat, colVertices[triangle.A].SecondFloat, colVertices[triangle.A].ThirdFloat),
-                        new Vector3(colVertices[triangle.B].FirstFloat, colVertices[triangle.B].SecondFloat, colVertices[triangle.B].ThirdFloat),
-                        new Vector3(colVertices[triangle.C].FirstFloat, colVertices[triangle.C].SecondFloat, colVertices[triangle.C].ThirdFloat)
-                    );
+                    this.pool.Take(colTriangles.Count * sizeof(Triangle), out var buffer);
+                    var triangles = new Buffer<Triangle>(buffer.Memory, colTriangles.Count);
+                    int vertexIndex = 0;
+                    foreach (var triangle in colTriangles)
+                    {
+                        triangles[vertexIndex++] = new Triangle(
+                            new Vector3(colVertices[triangle.A].FirstFloat, colVertices[triangle.A].SecondFloat, colVertices[triangle.A].ThirdFloat),
+                            new Vector3(colVertices[triangle.B].FirstFloat, colVertices[triangle.B].SecondFloat, colVertices[triangle.B].ThirdFloat),
+                            new Vector3(colVertices[triangle.C].FirstFloat, colVertices[triangle.C].SecondFloat, colVertices[triangle.C].ThirdFloat)
+                        );
+                    }
+
+                    var meshScale = Vector3.One;
+                    var mesh = new Mesh(triangles, meshScale, this.pool);
+                    var meshShape = this.simulation.Shapes.Add(mesh);
+
+                    builder.Add(meshShape, new RigidPose(), new Symmetric3x3(), 0);
                 }
 
-                var meshScale = Vector3.One;
-                var mesh = new Mesh(triangles, meshScale, this.pool);
 
-                return mesh;
+                foreach (var sphere in colCombo.Body.Spheres)
+                {
+                    var shape = this.simulation.Shapes.Add(new Sphere(sphere.Radius));
+                    builder.Add(shape, new RigidPose(sphere.Center), new Symmetric3x3(), 0);
+                }
+
+                foreach (var box in colCombo.Body.Boxes)
+                {
+                    var size = box.Max - box.Min;
+                    var shape = this.simulation.Shapes.Add(new Box(size.X, size.Y, size.Z));
+                    builder.Add(shape, new RigidPose(box.Min + size * 0.5f), new Symmetric3x3(), 0);
+                }
+
+                builder.BuildKinematicCompound(out var children);
+
+                var compound = new Compound(children);
+
+                return compound;
             }
         }
 
-        private Mesh GetMeshFromCollider(RenderWareIo.Structs.Col.Col col, RenderWareIo.Structs.Col.FaceGroup group)
+        private Mesh GetMeshFromCollider(RenderWareIo.Structs.Col.ColCombo colCombo, RenderWareIo.Structs.Col.FaceGroup group)
         {
             unsafe
             {
-                var colTriangles = col.Body.Faces.Skip(group.StartFace).Take(group.EndFace - group.StartFace);
-                var colVertices = col.Body.Vertices;
+                var colTriangles = colCombo.Body.Faces.Skip(group.StartFace).Take(group.EndFace - group.StartFace);
+                var colVertices = colCombo.Body.Vertices;
 
                 this.pool.Take(colTriangles.Count() * sizeof(Triangle), out var buffer);
                 var triangles = new Buffer<Triangle>(buffer.Memory, colTriangles.Count());

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using RenderWareIo;
 using SlipeServer.Physics.Builders;
+using SlipeServer.Physics.Enum;
 using SlipeServer.Physics.Worlds;
 using System;
 using System.IO;
@@ -21,20 +22,20 @@ namespace SlipeServer.Physics.Services
             return new PhysicsWorld();
         }
 
-        public PhysicsWorld CreatePhysicsWorldFromGtaDirectory(string directory, string datFile = "gta.dat")
+        public PhysicsWorld CreatePhysicsWorldFromGtaDirectory(string directory, string datFile = "gta.dat", PhysicsModelLoadMode loadMode = PhysicsModelLoadMode.LowDetail)
         {
             string datFilepath = Path.Join(directory, $"data/{datFile}");
             string imgFilepath = Path.Join(directory, "models/gta3.img");
 
-            return CreatePhysicsWorldFromDat(directory, new DatFile(datFilepath), new ImgFile(imgFilepath));
+            return CreatePhysicsWorldFromDat(directory, new DatFile(datFilepath), new ImgFile(imgFilepath), loadMode);
         }
 
-        public PhysicsWorld CreatePhysicsWorldFromDat(string root, string datFilepath, string imgFilepath)
+        public PhysicsWorld CreatePhysicsWorldFromDat(string root, string datFilepath, string imgFilepath, PhysicsModelLoadMode loadMode = PhysicsModelLoadMode.LowDetail)
         {
-            return CreatePhysicsWorldFromDat(root, new DatFile(datFilepath), new ImgFile(imgFilepath));
+            return CreatePhysicsWorldFromDat(root, new DatFile(datFilepath), new ImgFile(imgFilepath), loadMode);
         }
 
-        public PhysicsWorld CreatePhysicsWorldFromDat(string root, DatFile datFile, ImgFile imgFile)
+        public PhysicsWorld CreatePhysicsWorldFromDat(string root, DatFile datFile, ImgFile imgFile, PhysicsModelLoadMode loadMode = PhysicsModelLoadMode.LowDetail)
         {
             return CreateWorld(builder =>
             {
@@ -44,7 +45,7 @@ namespace SlipeServer.Physics.Services
                 {
                     var path = Path.Join(root, ide).TrimEnd('\r');
                     if (File.Exists(path))
-                        builder.AddIde(new IdeFile(path).Ide);
+                        builder.AddIde(Path.GetFileNameWithoutExtension(path), new IdeFile(path).Ide, loadMode);
                     else
                         this.logger.LogWarning($"Unable to find .ide file {path}");
                 }
@@ -53,14 +54,14 @@ namespace SlipeServer.Physics.Services
                 {
                     var path = Path.Join(root, ipl).TrimEnd('\r');
                     if (File.Exists(path))
-                        builder.AddIpl(new IplFile(path).Ipl);
+                        builder.AddIpl(new IplFile(path).Ipl, loadMode);
                     else
                         this.logger.LogWarning($"Unable to find .ipl file {path}");
                 }
 
                 foreach (var ipl in imgFile.Img.IplFiles)
                 {
-                    builder.AddIpl(new BinaryIplFile(imgFile.Img.DataEntries[ipl].Data).BinaryIpl);
+                    builder.AddIpl(new BinaryIplFile(imgFile.Img.DataEntries[ipl].Data).BinaryIpl, loadMode);
                 }
             });
         }

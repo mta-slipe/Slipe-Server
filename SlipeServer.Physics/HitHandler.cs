@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 
 namespace SlipeServer.Physics
 {
-    unsafe struct HitHandler : IRayHitHandler
+    internal struct HitHandler : IRayHitHandler
     {
         public RayHit? Hit { get; private set; }
 

@@ -6,8 +6,8 @@ namespace SlipeServer.Physics.Assets
 {
     public class AssetCollection
     {
-        private Dictionary<int, Dff> dffs;
-        private Dictionary<int, Col> cols;
+        private readonly Dictionary<int, Dff> dffs;
+        private readonly Dictionary<int, ColCombo> cols;
 
         public AssetCollection()
         {
@@ -21,10 +21,10 @@ namespace SlipeServer.Physics.Assets
             return dff;
         }
 
-        public Col? GetCol(int model)
+        public ColCombo? GetCol(int model)
         {
-            this.cols.TryGetValue(model, out var col);
-            return col;
+            this.cols.TryGetValue(model, out var colCombo);
+            return colCombo;
         }
 
         public void RegisterDff(int model, Dff dff)
@@ -32,9 +32,9 @@ namespace SlipeServer.Physics.Assets
             this.dffs[model] = dff;
         }
 
-        public void RegisterCol(int model, Col col)
+        public void RegisterCol(int model, ColCombo colCombo)
         {
-            this.cols[model] = col;
+            this.cols[model] = colCombo;
         }
     }
 }

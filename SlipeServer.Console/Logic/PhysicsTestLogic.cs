@@ -9,6 +9,7 @@ using SlipeServer.Server.Extensions;
 using SlipeServer.Server.Services;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Numerics;
@@ -59,7 +60,8 @@ namespace SlipeServer.Console.Logic
         private void Init()
         {
             var img = this.physicsWorld.LoadImg(@"D:\SteamLibrary\steamapps\common\Grand Theft Auto San Andreas\models\gta3 - Copy.img");
-            var ufoInnMesh = this.physicsWorld.CreateMesh(img, "des_ufoinn.dff");
+            //var ufoInnMesh = this.physicsWorld.CreateMesh(img, "des_ufoinn.dff");
+            var ufoInnMesh = this.physicsWorld.CreateMesh(img, "countn2_20.col", "des_ufoinn");
             this.ufoInn = (StaticPhysicsElement)this.physicsWorld.AddStatic(ufoInnMesh, Vector3.Zero, Quaternion.Identity);
 
             var inn = new WorldObject(Server.Enums.ObjectModel.Desufoinn, new Vector3(50, 0, 4.5f))
@@ -110,6 +112,8 @@ namespace SlipeServer.Console.Logic
             var colors = GetColors().GetEnumerator();
             var colorPerCollidable = new Dictionary<CollidableReference, Color>();
 
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             Bitmap output = new Bitmap(width, height);
             for (int x = 0; x < width; x++)
             {
@@ -130,6 +134,9 @@ namespace SlipeServer.Console.Logic
                     }
                 }
             }
+            stopwatch.Stop();
+            var time = stopwatch.Elapsed;
+            System.Console.WriteLine(time.TotalMilliseconds);
 
             output.Save("rayresult.png", ImageFormat.Png);
         }

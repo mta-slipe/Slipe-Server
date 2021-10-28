@@ -588,7 +588,7 @@ namespace SlipeServer.Console.Logic
                 }
             };
 
-            //player.Team = this.slipeDevsTeam;
+            player.Team = this.slipeDevsTeam;
         }
 
         private void HandlePlayerSubscriptions(Player player)

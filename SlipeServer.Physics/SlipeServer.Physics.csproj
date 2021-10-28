@@ -22,9 +22,13 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="BepuPhysics" Version="2.4.0-beta7" />
-    <PackageReference Include="RenderWareIo" Version="0.1.0-CI-20211025-220622" />
+    <PackageReference Include="RenderWareIo" Version="0.1.0-CI-20211028-005932" />
   </ItemGroup>
 
   <ItemGroup>
