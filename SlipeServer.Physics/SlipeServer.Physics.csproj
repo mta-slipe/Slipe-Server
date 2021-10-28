@@ -14,8 +14,7 @@
     <RepositoryUrl>https://github.com/mta-slipe/Slipe-server</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <Description>C# Server for MTA San Andreas</Description>
-    <Description>Scripting layer C# Server for MTA San Andreas</Description>
+    <Description>Physics simulation for C# Server for MTA San Andreas</Description>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

@@ -39,7 +39,7 @@ steps:
   displayName: 'dotnet pack'
   inputs:
     command: 'pack'
-    packagesToPack: '**/SlipeServer.Packets.csproj;**/SlipeServer.Net.csproj;**/SlipeServer.Server.csproj;**/SlipeServer.Server.TestTools.csproj;**/SlipeServer.Scripting.csproj;**/SlipeServer.Lua.csproj'
+    packagesToPack: '**/SlipeServer.Packets.csproj;**/SlipeServer.Net.csproj;**/SlipeServer.Server.csproj;**/SlipeServer.Server.TestTools.csproj;**/SlipeServer.Scripting.csproj;**/SlipeServer.Lua.csproj;**/SlipeServer.Physics.csproj'
     versioningScheme: 'byPrereleaseNumber'
     majorVersion: '0'
     minorVersion: '1'
