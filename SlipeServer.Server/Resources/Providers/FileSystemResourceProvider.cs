@@ -88,7 +88,7 @@ namespace SlipeServer.Server.Resources.Providers
                     var hash = md5.ComputeHash(content);
                     var checksum = Crc32Algorithm.Compute(content);
 
-                    string fileName = Path.GetRelativePath(Path.Join(this.configuration.ResourceDirectory, path), file);
+                    string fileName = Path.Join("resources", Path.GetRelativePath(this.configuration.ResourceDirectory, file));
                     var fileType = fileName.EndsWith(".lua") ? ResourceFileType.ClientScript : ResourceFileType.ClientFile;
                     resourceFiles.Add(new ResourceFile()
                     {
