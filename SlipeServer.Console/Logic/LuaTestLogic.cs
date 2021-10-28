@@ -1,11 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
-using MoonSharp.Interpreter;
+﻿using MoonSharp.Interpreter;
 using SlipeServer.Console.LuaDefinitions;
 using SlipeServer.Lua;
 using SlipeServer.Scripting;
-using SlipeServer.Server.Services;
-using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace SlipeServer.Console.Logic
