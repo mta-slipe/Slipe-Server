@@ -96,7 +96,6 @@ namespace SlipeServer.Console.Logic
         private void HandleBallCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
         {
             var physicsBall = this.physicsWorld.AddBody(this.ball, e.Player.Position, Quaternion.Identity, 1);
-            //var physicsBall = this.physicsWorld.AddConvexBody(this.ball, e.Player.Position, Quaternion.Identity, 1);
             var ball = new WorldObject(2114, e.Player.Position + Vector3.UnitZ * 2).AssociateWith(this.server);
             physicsBall.CoupleWith(ball);
         }

@@ -170,7 +170,7 @@ namespace SlipeServer.Physics.Worlds
             {
                 try
                 {
-                    var deltaTime = stopwatch.ElapsedMilliseconds * .001f;
+                    var deltaTime = stopwatch.ElapsedMilliseconds * .0025f;
                     if (deltaTime > 0)
                     {
                         stopwatch.Reset();
