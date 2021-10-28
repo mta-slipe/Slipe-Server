@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SlipeServer.Console
 {
@@ -35,9 +37,24 @@ namespace SlipeServer.Console
 
         private string prefix;
 
+        private ConcurrentQueue<Action> logActions;
+
         public ConsoleLogger()
         {
+            this.logActions = new();
             this.prefix = "";
+
+            Task.Run(LogWorker);
+        }
+
+        private async Task LogWorker()
+        {
+            while (true)
+            {
+                while (this.logActions.TryDequeue(out var action))
+                    action();
+                await Task.Delay(10);
+            }
         }
 
         public IDisposable BeginScope<TState>(TState state)
@@ -52,23 +69,27 @@ namespace SlipeServer.Console
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            #if !DEBUG
+#if !DEBUG
             if (logLevel == LogLevel.Trace)
                 return;
-            #endif
+#endif
 
-            System.Console.Write($"[{DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}]");
-
-            System.Console.ForegroundColor = prefixes[logLevel].Item1;
-            System.Console.Write($"{prefixes[logLevel].Item2}");
-            System.Console.ResetColor();
-
-            System.Console.WriteLine($" {this.prefix}{formatter(state, exception)}");
-
-            if (exception != null)
+            var prefix = this.prefix;
+            this.logActions.Enqueue(() =>
             {
-                System.Console.WriteLine($" {this.prefix}{exception.StackTrace}");
-            }
+                System.Console.Write($"[{DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}]");
+
+                System.Console.ForegroundColor = prefixes[logLevel].Item1;
+                System.Console.Write($"{prefixes[logLevel].Item2}");
+                System.Console.ResetColor();
+
+                System.Console.WriteLine($" {prefix}{formatter(state, exception)}");
+
+                if (exception != null)
+                {
+                    System.Console.WriteLine($" {prefix}{exception.StackTrace}");
+                }
+            });
         }
     }
 }

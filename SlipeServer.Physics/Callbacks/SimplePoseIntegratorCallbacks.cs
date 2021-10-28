@@ -6,15 +6,15 @@ using System.Runtime.CompilerServices;
 
 namespace SlipeServer.Physics.Callbacks
 {
-    public struct DemoPoseIntegratorCallbacks : IPoseIntegratorCallbacks
+    public struct SimplePoseIntegratorCallbacks : IPoseIntegratorCallbacks
     {
         public Vector3 Gravity;
         public float LinearDamping;
         public float AngularDamping;
 
-        Vector3 gravityDt;
-        float linearDampingDt;
-        float angularDampingDt;
+        private Vector3 gravityDt;
+        private float linearDampingDt;
+        private float angularDampingDt;
 
         public readonly AngularIntegrationMode AngularIntegrationMode => AngularIntegrationMode.Nonconserving;
 
@@ -22,18 +22,18 @@ namespace SlipeServer.Physics.Callbacks
         {
         }
             
-        public DemoPoseIntegratorCallbacks(Vector3 gravity, float linearDamping = .03f, float angularDamping = .03f) : this()
+        public SimplePoseIntegratorCallbacks(Vector3 gravity, float linearDamping = .03f, float angularDamping = .03f) : this()
         {
-            Gravity = gravity;
-            LinearDamping = linearDamping;
-            AngularDamping = angularDamping;
+            this.Gravity = gravity;
+            this.LinearDamping = linearDamping;
+            this.AngularDamping = angularDamping;
         }
 
         public void PrepareForIntegration(float dt)
         {
-            gravityDt = Gravity * dt;
-            linearDampingDt = MathF.Pow(MathHelper.Clamp(1 - LinearDamping, 0, 1), dt);
-            angularDampingDt = MathF.Pow(MathHelper.Clamp(1 - AngularDamping, 0, 1), dt);
+            this.gravityDt = this.Gravity * dt;
+            this.linearDampingDt = MathF.Pow(MathHelper.Clamp(1 - this.LinearDamping, 0, 1), dt);
+            this.angularDampingDt = MathF.Pow(MathHelper.Clamp(1 - this.AngularDamping, 0, 1), dt);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -41,8 +41,8 @@ namespace SlipeServer.Physics.Callbacks
         {
             if (localInertia.InverseMass > 0)
             {
-                velocity.Linear = (velocity.Linear + gravityDt) * linearDampingDt;
-                velocity.Angular = velocity.Angular * angularDampingDt;
+                velocity.Linear = (velocity.Linear + this.gravityDt) * this.linearDampingDt;
+                velocity.Angular *= this.angularDampingDt;
             }
         }
 

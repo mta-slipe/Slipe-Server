@@ -1,4 +1,5 @@
 ﻿using BepuPhysics;
+using SlipeServer.Physics.Worlds;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Extensions;
@@ -18,6 +19,8 @@ namespace SlipeServer.Physics.Entities
 
         protected Vector3 positionOffset;
         protected Vector3 rotationOffset;
+
+        protected object positionUpdateLock = new();
 
         public Element? CoupledElement { get; private set; }
 
@@ -75,7 +78,8 @@ namespace SlipeServer.Physics.Entities
             set
             {
                 this.description.Pose.Position = value;
-                this.simulation.Statics.ApplyDescription(this.handle, this.description);
+                lock (this.positionUpdateLock)
+                    this.simulation.Statics.ApplyDescription(this.handle, this.description);
             }
         }
 
@@ -85,12 +89,51 @@ namespace SlipeServer.Physics.Entities
             set
             {
                 this.description.Pose.Orientation = value;
-                this.simulation.Statics.ApplyDescription(this.handle, this.description);
+                lock (this.positionUpdateLock)
+                    this.simulation.Statics.ApplyDescription(this.handle, this.description);
             }
         }
 
         public StaticPhysicsElement(StaticHandle handle, StaticDescription description, Simulation simulation) : base(handle, description, simulation)
         {
+        }
+    }
+
+    public class DynamicBodyPhysicsElement : PhysicsElement<BodyDescription, BodyHandle>
+    {
+        //protected override Vector3 Position
+        //{
+        //    get => this.description.Pose.Position;
+        //    set
+        //    {
+        //        this.description.Pose.Position = value;
+        //        this.simulation.Bodies.ApplyDescription(this.handle, this.description);
+        //    }
+        //}
+
+        //protected override Quaternion Rotation
+        //{
+        //    get => this.description.Pose.Orientation;
+        //    set
+        //    {
+        //        this.description.Pose.Orientation = value;
+        //        this.simulation.Bodies.ApplyDescription(this.handle, this.description);
+        //    }
+        //}
+
+        public DynamicBodyPhysicsElement(BodyHandle handle, BodyDescription description, Simulation simulation, PhysicsWorld world) : base(handle, description, simulation)
+        {
+            world.Stepped += HandlePhysicsWorldStep;
+        }
+
+        private void HandlePhysicsWorldStep()
+        {
+            if (this.CoupledElement != null)
+            {
+                var pose = this.simulation.Bodies.GetBodyReference(this.handle).Pose;
+                this.CoupledElement.Position = pose.Position;
+                this.CoupledElement.Rotation = pose.Orientation.ToEuler();
+            }
         }
     }
 }
