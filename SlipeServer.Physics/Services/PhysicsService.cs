@@ -68,7 +68,7 @@ namespace SlipeServer.Physics.Services
 
         public PhysicsWorld CreateWorld(Action<PhysicsWorldBuilder> builderAction)
         {
-            var builder = new PhysicsWorldBuilder();
+            var builder = new PhysicsWorldBuilder(this.logger);
 
             builderAction(builder);
 

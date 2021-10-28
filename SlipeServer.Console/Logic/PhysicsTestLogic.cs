@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Numerics;
 using System.Runtime.InteropServices;
 
@@ -30,16 +31,10 @@ namespace SlipeServer.Console.Logic
         {
             this.server = server;
 
-            string? gtaDirectory = Environment.GetEnvironmentVariable("Slipe.GtaSAPath");
+            string? gtaDirectory = GetGtasaDirectory();
 
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && gtaDirectory == null)
-            {
-                using var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Multi Theft Auto: San Andreas All\Common");
-                gtaDirectory = key?.GetValue("GTA:SA Path")?.ToString() ;
-            }
-
-            //this.physicsWorld = physicsService.CreateEmptyPhysicsWorld();
-            this.physicsWorld = physicsService.CreatePhysicsWorldFromGtaDirectory(gtaDirectory ?? "gtasa", "gta.dat");
+            this.physicsWorld = physicsService.CreateEmptyPhysicsWorld();
+            //this.physicsWorld = physicsService.CreatePhysicsWorldFromGtaDirectory(gtaDirectory ?? "gtasa", "gta.dat");
 
             server.PlayerJoined += HandlePlayerJoin;
             commandService.AddCommand("ray").Triggered += HandleRayCommand;
@@ -59,7 +54,7 @@ namespace SlipeServer.Console.Logic
 
         private void Init()
         {
-            var img = this.physicsWorld.LoadImg(@"D:\SteamLibrary\steamapps\common\Grand Theft Auto San Andreas\models\gta3 - Copy.img");
+            var img = this.physicsWorld.LoadImg(Path.Join(GetGtasaDirectory(), @"models\gta3.img"));
             //var ufoInnMesh = this.physicsWorld.CreateMesh(img, "des_ufoinn.dff");
             var ufoInnMesh = this.physicsWorld.CreateMesh(img, "countn2_20.col", "des_ufoinn");
             this.ufoInn = (StaticPhysicsElement)this.physicsWorld.AddStatic(ufoInnMesh, Vector3.Zero, Quaternion.Identity);
@@ -139,6 +134,19 @@ namespace SlipeServer.Console.Logic
             System.Console.WriteLine(time.TotalMilliseconds);
 
             output.Save("rayresult.png", ImageFormat.Png);
+        }
+
+        private string? GetGtasaDirectory()
+        {
+            string? gtaDirectory = Environment.GetEnvironmentVariable("Slipe.GtaSAPath");
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && gtaDirectory == null)
+            {
+                using var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Multi Theft Auto: San Andreas All\Common");
+                gtaDirectory = key?.GetValue("GTA:SA Path")?.ToString();
+            }
+
+            return gtaDirectory;
         }
     }
 }

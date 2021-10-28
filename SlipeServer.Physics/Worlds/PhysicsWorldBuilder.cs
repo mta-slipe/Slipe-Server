@@ -1,4 +1,5 @@
-﻿using RenderWareIo;
+﻿using Microsoft.Extensions.Logging;
+using RenderWareIo;
 using RenderWareIo.Structs.BinaryIpl;
 using RenderWareIo.Structs.Col;
 using RenderWareIo.Structs.Dff;
@@ -11,14 +12,13 @@ using SlipeServer.Physics.Enum;
 using SlipeServer.Physics.Worlds;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SlipeServer.Physics.Builders
 {
     public class PhysicsWorldBuilder
     {
+        private readonly ILogger logger;
+
         private readonly AssetCollection assetCollection;
         private readonly List<Action<PhysicsWorld>> actions;
         private readonly List<Img> imgs;
@@ -27,8 +27,10 @@ namespace SlipeServer.Physics.Builders
         private readonly Dictionary<string, ColCombo> namedColCombos;
         private PhysicsModelLoadMode loadMode;
 
-        public PhysicsWorldBuilder()
+        public PhysicsWorldBuilder(ILogger logger)
         {
+            this.logger = logger;
+
             this.assetCollection = new();
             this.actions = new();
             this.imgs = new();
@@ -65,9 +67,9 @@ namespace SlipeServer.Physics.Builders
                                 this.namedColCombos[name] = combo;
                             }
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
-                            System.Console.WriteLine($"Unable to locate col {entry.Value.Data}");
+                            this.logger.LogTrace($"Unable to locate col {entry.Value.Data}");
                         }
                     }
                 }
@@ -89,9 +91,9 @@ namespace SlipeServer.Physics.Builders
                             {
                                 this.dffMeshes[dff] = world.CreateMesh(dff);
                             }
-                            catch (Exception e)
+                            catch (Exception)
                             {
-                                System.Console.WriteLine($"Unable to locate dff {obj.ModelName}");
+                                this.logger.LogTrace($"Unable to locate dff {obj.ModelName}");
                             }
                         });
                     }
@@ -111,15 +113,15 @@ namespace SlipeServer.Physics.Builders
                                 {
                                     this.colMeshes[colCombo] = world.CreateMesh(colCombo);
                                 }
-                                catch (Exception e)
+                                catch (Exception)
                                 {
-                                    System.Console.WriteLine($"Unable to locate col {obj.ModelName.ToLower()} in {ideName}");
+                                    this.logger.LogTrace($"Unable to locate col {obj.ModelName.ToLower()} in {ideName}");
                                 }
                             });
                         }
                     } else
                     {
-                        Console.WriteLine($"Unable to find col {obj.ModelName.ToLower()} in {ideName}");
+                        this.logger.LogTrace($"Unable to find col {obj.ModelName.ToLower()} in {ideName}");
                     }
                 }
             }
