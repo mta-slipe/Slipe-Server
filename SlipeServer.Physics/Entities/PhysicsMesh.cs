@@ -2,13 +2,15 @@
 
 namespace SlipeServer.Physics.Entities
 {
-    public struct PhysicsMesh
+    public struct PhysicsMesh : IPhysicsMesh
     {
-        internal TypedIndex meshIndex;
+        public IShape Shape { get;  }
+        public TypedIndex MeshIndex { get; }
 
-        internal PhysicsMesh(TypedIndex meshIndex)
+        internal PhysicsMesh(IShape shape, TypedIndex meshIndex)
         {
-            this.meshIndex = meshIndex;
+            this.Shape = shape;
+            this.MeshIndex = meshIndex;
         }
     }
 }

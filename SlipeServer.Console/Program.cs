@@ -43,8 +43,6 @@ namespace SlipeServer.Console
 
         public Program(string[] args)
         {
-            this.Logger = new ConsoleLogger();
-
             var configurationProvider = args.Length > 0 ? ConfigurationLoader.GetConfigurationProvider(args[0]) : null;
 
             this.configuration = configurationProvider?.GetConfiguration() ?? new Configuration()
@@ -65,7 +63,7 @@ namespace SlipeServer.Console
 
                     builder.ConfigureServices(services =>
                     {
-                        services.AddSingleton<ILogger>(this.Logger);
+                        services.AddSingleton<ILogger, ConsoleLogger>();
                     });
                     builder.AddLua();
                     builder.AddPhysics();
@@ -79,6 +77,8 @@ namespace SlipeServer.Console
                 GameType = "Slipe Server",
                 MapName = "N/A"
             };
+
+            this.Logger = this.server.GetRequiredService<ILogger>();
 
             System.Console.CancelKeyPress += delegate {
                 this.server.Stop();

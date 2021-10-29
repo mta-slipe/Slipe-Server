@@ -12,6 +12,7 @@ using SlipeServer.Physics.Enum;
 using SlipeServer.Physics.Worlds;
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 
 namespace SlipeServer.Physics.Builders
 {
@@ -22,10 +23,11 @@ namespace SlipeServer.Physics.Builders
         private readonly AssetCollection assetCollection;
         private readonly List<Action<PhysicsWorld>> actions;
         private readonly List<Img> imgs;
-        private readonly Dictionary<Dff, PhysicsMesh> dffMeshes;
-        private readonly Dictionary<ColCombo, PhysicsMesh> colMeshes;
+        private readonly Dictionary<Dff, IPhysicsMesh> dffMeshes;
+        private readonly Dictionary<ColCombo, IPhysicsMesh[]> colMeshes;
         private readonly Dictionary<string, ColCombo> namedColCombos;
         private PhysicsModelLoadMode loadMode;
+        private Vector3 gravity;
 
         public PhysicsWorldBuilder(ILogger logger)
         {
@@ -44,6 +46,11 @@ namespace SlipeServer.Physics.Builders
         public void SetMode(PhysicsModelLoadMode loadMode)
         {
             this.loadMode = loadMode;
+        }
+
+        public void SetGravity(Vector3 gravity)
+        {
+            this.gravity = gravity;
         }
 
         public void AddImg(Img img)
@@ -111,7 +118,17 @@ namespace SlipeServer.Physics.Builders
                             this.actions.Add(world => {
                                 try
                                 {
-                                    this.colMeshes[colCombo] = world.CreateMesh(colCombo);
+                                    var meshes = world.CreateMesh(colCombo);
+                                    var resultMeshes = new List<IPhysicsMesh>();
+                                    if (meshes.Item1 != null)
+                                    {
+                                        resultMeshes.Add(meshes.Item1);
+                                    }
+                                    if (meshes.Item2 != null)
+                                    {
+                                        resultMeshes.Add(meshes.Item2);
+                                    }
+                                    this.colMeshes[colCombo] = resultMeshes.ToArray();
                                 }
                                 catch (Exception)
                                 {
@@ -146,9 +163,10 @@ namespace SlipeServer.Physics.Builders
                     this.actions.Add(world =>
                     {
                         var col = this.assetCollection.GetCol(inst.Id);
-                        if (col != null && this.colMeshes.TryGetValue(col, out var mesh))
+                        if (col != null && this.colMeshes.TryGetValue(col, out var meshes))
                         {
-                            world.AddStatic(mesh, inst.Position, inst.Rotation);
+                            foreach (var mesh in meshes)
+                                world.AddStatic(mesh, inst.Position, inst.Rotation);
                         }
                     });
                 }
@@ -174,9 +192,10 @@ namespace SlipeServer.Physics.Builders
                     this.actions.Add(world =>
                     {
                         var col = this.assetCollection.GetCol(inst.Id);
-                        if (col != null && this.colMeshes.TryGetValue(col, out var mesh))
+                        if (col != null && this.colMeshes.TryGetValue(col, out var meshes))
                         {
-                            world.AddStatic(mesh, inst.Position, inst.Rotation);
+                            foreach (var mesh in meshes)
+                                world.AddStatic(mesh, inst.Position, inst.Rotation);
                         }
                     });
                 }
@@ -185,7 +204,7 @@ namespace SlipeServer.Physics.Builders
 
         public PhysicsWorld Build()
         {
-            var world = new PhysicsWorld(this.assetCollection);
+            var world = new PhysicsWorld(this.logger, this.gravity, this.assetCollection);
 
             foreach (var action in this.actions)
                 action(world);

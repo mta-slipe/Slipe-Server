@@ -361,6 +361,9 @@ namespace SlipeServer.Console.Logic
             this.commandService.AddCommand("kickme").Triggered += (source, args)
                 => args.Player.Kick("You have been kicked by slipe");
 
+            this.commandService.AddCommand("a51").Triggered += (source, args)
+                => args.Player.Position = new Vector3(216.46f, 1895.05f, 17.28f);
+
             this.commandService.AddCommand("playerlist").Triggered += (source, args) =>
             {
                 var players = this.elementRepository.GetByType<Player>(ElementType.Player);

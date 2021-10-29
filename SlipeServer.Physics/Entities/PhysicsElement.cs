@@ -1,4 +1,5 @@
 ﻿using BepuPhysics;
+using SlipeServer.Physics.Worlds;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Extensions;
@@ -10,7 +11,7 @@ namespace SlipeServer.Physics.Entities
     {
         internal THandle handle;
         internal TDescription description;
-
+        protected readonly PhysicsWorld physicsWorld;
         protected readonly Simulation simulation;
 
         protected virtual Vector3 Position { get; set; }
@@ -19,12 +20,15 @@ namespace SlipeServer.Physics.Entities
         protected Vector3 positionOffset;
         protected Vector3 rotationOffset;
 
+        protected object positionUpdateLock = new();
+
         public Element? CoupledElement { get; private set; }
 
-        public PhysicsElement(THandle handle, TDescription description, Simulation simulation)
+        public PhysicsElement(THandle handle, TDescription description, PhysicsWorld physicsWorld, Simulation simulation)
         {
             this.handle = handle;
             this.description = description;
+            this.physicsWorld = physicsWorld;
             this.simulation = simulation;
         }
 
@@ -64,33 +68,6 @@ namespace SlipeServer.Physics.Entities
         protected virtual void HandleCoupledElementRotationUpdate(Element sender, ElementChangedEventArgs<Vector3> args)
         {
             this.Rotation = (args.NewValue + this.rotationOffset).ToQuaternion();
-        }
-    }
-
-    public class StaticPhysicsElement : PhysicsElement<StaticDescription, StaticHandle>
-    {
-        protected override Vector3 Position
-        {
-            get => this.description.Pose.Position;
-            set
-            {
-                this.description.Pose.Position = value;
-                this.simulation.Statics.ApplyDescription(this.handle, this.description);
-            }
-        }
-
-        protected override Quaternion Rotation
-        {
-            get => this.description.Pose.Orientation;
-            set
-            {
-                this.description.Pose.Orientation = value;
-                this.simulation.Statics.ApplyDescription(this.handle, this.description);
-            }
-        }
-
-        public StaticPhysicsElement(StaticHandle handle, StaticDescription description, Simulation simulation) : base(handle, description, simulation)
-        {
         }
     }
 }
