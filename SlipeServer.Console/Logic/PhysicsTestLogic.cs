@@ -38,11 +38,11 @@ namespace SlipeServer.Console.Logic
 
             string? gtaDirectory = GetGtasaDirectory();
 
-            //this.physicsWorld = physicsService.CreateEmptyPhysicsWorld();
-            this.physicsWorld = physicsService.CreatePhysicsWorldFromGtaDirectory(gtaDirectory ?? "gtasa", "gta.dat", builderAction: (builder) =>
-            {
-                builder.SetGravity(Vector3.UnitZ * -1.0f);
-            });
+            this.physicsWorld = physicsService.CreateEmptyPhysicsWorld(new Vector3(0, 0, -1f));
+            //this.physicsWorld = physicsService.CreatePhysicsWorldFromGtaDirectory(gtaDirectory ?? "gtasa", "gta.dat", builderAction: (builder) =>
+            //{
+            //    builder.SetGravity(Vector3.UnitZ * -1.0f);
+            //});
 
             server.PlayerJoined += HandlePlayerJoin;
             commandService.AddCommand("ray").Triggered += HandleRayCommand;
@@ -104,7 +104,7 @@ namespace SlipeServer.Console.Logic
 
         private void HandleStartSimCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
         {
-            this.physicsWorld.Start(1);
+            this.physicsWorld.Start(5);
         }
 
         private void HandleStopSimCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
