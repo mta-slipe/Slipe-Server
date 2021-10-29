@@ -121,6 +121,9 @@ namespace SlipeServer.Server.ServerOptions
                 services.AddSingleton<ISyncHandlerMiddleware<DestroySatchelsPacket>, RangeSyncHandlerMiddleware<DestroySatchelsPacket>>(
                     x => new RangeSyncHandlerMiddleware<DestroySatchelsPacket>(x.GetRequiredService<IElementRepository>(), builder.Configuration.ExplosionSyncDistance, false)
                 );
+                services.AddSingleton<ISyncHandlerMiddleware<ExplosionPacket>, RangeSyncHandlerMiddleware<ExplosionPacket>>(
+                    x => new RangeSyncHandlerMiddleware<ExplosionPacket>(x.GetRequiredService<IElementRepository>(), builder.Configuration.ExplosionSyncDistance, false)
+                );
 
                 services.AddSingleton<ISyncHandlerMiddleware<PlayerPureSyncPacket>, SubscriptionSyncHandlerMiddleware<PlayerPureSyncPacket>>();
                 services.AddSingleton<ISyncHandlerMiddleware<KeySyncPacket>, SubscriptionSyncHandlerMiddleware<KeySyncPacket>>();
