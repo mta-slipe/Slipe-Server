@@ -1,4 +1,5 @@
 ﻿using BepuPhysics.Collidables;
+using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using SlipeServer.Physics.Entities;
 using SlipeServer.Physics.Services;
@@ -21,6 +22,7 @@ namespace SlipeServer.Console.Logic
     public class PhysicsTestLogic
     {
         private readonly MtaServer server;
+        private readonly ILogger logger;
         private readonly PhysicsWorld physicsWorld;
 
         private StaticPhysicsElement? ufoInnMesh1;
@@ -29,9 +31,10 @@ namespace SlipeServer.Console.Logic
         private ConvexPhysicsMesh cylinder;
         private ConvexPhysicsMesh ball;
 
-        public PhysicsTestLogic(MtaServer server, PhysicsService physicsService, CommandService commandService)
+        public PhysicsTestLogic(MtaServer server, PhysicsService physicsService, CommandService commandService, ILogger logger)
         {
             this.server = server;
+            this.logger = logger;
 
             string? gtaDirectory = GetGtasaDirectory();
 
@@ -54,7 +57,7 @@ namespace SlipeServer.Console.Logic
 
         private void HandlePlayerJoin(Player player)
         {
-            var playerElement = this.physicsWorld.AddStatic(this.cylinder, player.Position, player.Rotation.ToQuaternion());
+            var playerElement = this.physicsWorld.AddKinematicBody(this.cylinder, player.Position, player.Rotation.ToQuaternion(), 10);
             playerElement.CoupleWith(player, Vector3.Zero, new Vector3(0, 90, 0));
 
             player.Disconnected += (_, _) => this.physicsWorld.Destroy(playerElement);
@@ -63,10 +66,9 @@ namespace SlipeServer.Console.Logic
         private void Init()
         {
             var img = this.physicsWorld.LoadImg(Path.Join(GetGtasaDirectory(), @"models\gta3.img"));
-            //var ufoInnMesh = this.physicsWorld.CreateMesh(img, "des_ufoinn.dff");
             var ufoInnMeshes = this.physicsWorld.CreateMesh(img, "countn2_20.col", "des_ufoinn");
-            this.ufoInnMesh1 = (StaticPhysicsElement)this.physicsWorld.AddStatic(ufoInnMeshes.Item1, Vector3.Zero, Quaternion.Identity);
-            this.ufoInnMesh2 = (StaticPhysicsElement)this.physicsWorld.AddStatic(ufoInnMeshes.Item2, Vector3.Zero, Quaternion.Identity);
+            this.ufoInnMesh1 = (StaticPhysicsElement)this.physicsWorld.AddStatic(ufoInnMeshes.Item1!, Vector3.Zero, Quaternion.Identity);
+            this.ufoInnMesh2 = (StaticPhysicsElement)this.physicsWorld.AddStatic(ufoInnMeshes.Item2!, Vector3.Zero, Quaternion.Identity);
 
             var inn = new WorldObject(Server.Enums.ObjectModel.Desufoinn, new Vector3(50, 0, 4.5f))
             {
@@ -95,7 +97,7 @@ namespace SlipeServer.Console.Logic
 
         private void HandleBallCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
         {
-            var physicsBall = this.physicsWorld.AddBody(this.ball, e.Player.Position, Quaternion.Identity, 1);
+            var physicsBall = this.physicsWorld.AddDynamicBody(this.ball, e.Player.Position, Quaternion.Identity, 1);
             var ball = new WorldObject(2114, e.Player.Position + Vector3.UnitZ * 2).AssociateWith(this.server);
             physicsBall.CoupleWith(ball);
         }
@@ -159,7 +161,7 @@ namespace SlipeServer.Console.Logic
             }
             stopwatch.Stop();
             var time = stopwatch.Elapsed;
-            System.Console.WriteLine(time.TotalMilliseconds);
+            this.logger.LogInformation($"Raycast image generated in {time.TotalMilliseconds}ms");
 
             output.Save("rayresult.png", ImageFormat.Png);
         }

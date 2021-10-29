@@ -45,6 +45,5 @@ namespace SlipeServer.Physics.Callbacks
                 velocity.Angular *= this.angularDampingDt;
             }
         }
-
     }
 }

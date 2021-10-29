@@ -23,6 +23,8 @@ namespace SlipeServer.Physics.Worlds
         private readonly AssetCollection assetCollection;
         private readonly IThreadDispatcher? threadDispatcher;
 
+        public readonly object stepLock = new();
+
         private bool running;
         private int sleepTime;
 
@@ -48,38 +50,67 @@ namespace SlipeServer.Physics.Worlds
         {
             var description = new StaticDescription(position, mesh.MeshIndex, 0.1f);
             description.Pose.Orientation = rotation;
-            var handle = this.simulation.Statics.Add(description);
-            return new StaticPhysicsElement(handle, description, this.simulation);
+            lock (this.stepLock)
+            {
+                var handle = this.simulation.Statics.Add(description);
+                return new StaticPhysicsElement(handle, description, this, this.simulation);
+            }
         }
 
-        public PhysicsElement<BodyDescription, BodyHandle> AddBody(ConvexPhysicsMesh mesh, Vector3 position, Quaternion rotation, float mass)
+        public PhysicsElement<BodyDescription, BodyHandle> AddDynamicBody(ConvexPhysicsMesh mesh, Vector3 position, Quaternion rotation, float mass)
+        {
+            mesh.ConvexShape.ComputeInertia(mass, out var inertia);
+            var collidable = new CollidableDescription(mesh.MeshIndex, 0.1f);
+            return AddDynamicBody(collidable, inertia, position, rotation, mass);
+        }
+
+        public PhysicsElement<BodyDescription, BodyHandle> AddDynamicBody(CompoundPhysicsMesh mesh, Vector3 position, Quaternion rotation, float mass)
         {
             var collidable = new CollidableDescription(mesh.MeshIndex, 0.1f);
-            return AddBody(collidable, position, rotation, mass);
+            return AddDynamicBody(collidable, mesh.Inertia, position, rotation, mass);
         }
 
-        public PhysicsElement<BodyDescription, BodyHandle> AddBody(CompoundPhysicsMesh mesh, Vector3 position, Quaternion rotation, float mass)
-        {
-            var collidable = new CollidableDescription(mesh.MeshIndex, 0.1f);
-            return AddBody(collidable, position, rotation, mass);
-        }
-
-        private PhysicsElement<BodyDescription, BodyHandle> AddBody(CollidableDescription collidable, Vector3 position, Quaternion rotation, float mass)
+        private PhysicsElement<BodyDescription, BodyHandle> AddDynamicBody(CollidableDescription collidable, BodyInertia inertia, Vector3 position, Quaternion rotation, float mass)
         {
             var pose = new RigidPose(position, rotation);
-            var shape = new Sphere(0.25f);
-            shape.ComputeInertia(1, out var sphereInertia);
-            var inertia = new BodyInertia()
-            {
-                InverseMass = mass,
-                InverseInertiaTensor = new Symmetric3x3()
-            };
             var activityDescription = new BodyActivityDescription(0.1f);
 
-            var description = BodyDescription.CreateDynamic(pose, sphereInertia, collidable, activityDescription);
+            var description = BodyDescription.CreateDynamic(pose, inertia, collidable, activityDescription);
             description.Pose.Orientation = rotation;
-            var handle = this.simulation.Bodies.Add(description);
-            return new DynamicBodyPhysicsElement(handle, description, this.simulation, this);
+
+            lock (this.stepLock)
+            {
+                var handle = this.simulation.Bodies.Add(description);
+                return new DynamicBodyPhysicsElement(handle, description, this, this.simulation);
+            }
+        }
+
+        public PhysicsElement<BodyDescription, BodyHandle> AddKinematicBody(ConvexPhysicsMesh mesh, Vector3 position, Quaternion rotation, float mass)
+        {
+            var collidable = new CollidableDescription(mesh.MeshIndex, 0.1f);
+            return AddKinematicBody(collidable, position, rotation, mass);
+        }
+
+        public PhysicsElement<BodyDescription, BodyHandle> AddKinematicBody(CompoundPhysicsMesh mesh, Vector3 position, Quaternion rotation, float mass)
+        {
+            var collidable = new CollidableDescription(mesh.MeshIndex, 0.1f);
+            return AddKinematicBody(collidable, position, rotation, mass);
+        }
+
+        private PhysicsElement<BodyDescription, BodyHandle> AddKinematicBody(CollidableDescription collidable, Vector3 position, Quaternion rotation, float mass)
+        {
+            var pose = new RigidPose(position, rotation);
+            var velocity = new BodyVelocity();
+            var activityDescription = new BodyActivityDescription(0.1f);
+
+            var description = BodyDescription.CreateKinematic(pose, velocity, collidable, activityDescription);
+            description.Pose.Orientation = rotation;
+
+            lock (this.stepLock)
+            {
+                var handle = this.simulation.Bodies.Add(description);
+                return new KinematicBodyPhysicsElement(handle, description, this, this.simulation);
+            }
         }
 
         public RayHit? RayCast(Vector3 from, Vector3 direction, float length)
@@ -95,19 +126,26 @@ namespace SlipeServer.Physics.Worlds
         }
 
         public void Destroy(PhysicsElement<StaticDescription, StaticHandle> element) => this.simulation.Statics.Remove(element.handle);
+        public void Destroy(PhysicsElement<BodyDescription, BodyHandle> element) => this.simulation.Bodies.Remove(element.handle);
 
         public ConvexPhysicsMesh CreateSphere(float radius)
         {
             var sphere = new Sphere(radius);
-            var shape = this.simulation.Shapes.Add(sphere);
-            return new ConvexPhysicsMesh(sphere, shape);
+            lock (this.stepLock)
+            {
+                var shape = this.simulation.Shapes.Add(sphere);
+                return new ConvexPhysicsMesh(sphere, shape);
+            }
         }
 
         public ConvexPhysicsMesh CreateCylinder(float radius, float length)
         {
             var cylinder = new Cylinder(radius, length);
-            var shape = this.simulation.Shapes.Add(cylinder);
-            return new ConvexPhysicsMesh(cylinder, shape);
+            lock (this.stepLock)
+            {
+                var shape = this.simulation.Shapes.Add(cylinder);
+                return new ConvexPhysicsMesh(cylinder, shape);
+            }
         }
 
         public PhysicsMesh CreateMesh(PhysicsImg imgFile, string dffName)
@@ -141,9 +179,9 @@ namespace SlipeServer.Physics.Worlds
 
         public (CompoundPhysicsMesh?, PhysicsMesh?) CreateMesh(RenderWareIo.Structs.Col.ColCombo colCombo)
         {
-            var (compound, mesh) = GetMeshFromCollider(colCombo);
+            var (compound, mesh, inertia) = GetMeshFromCollider(colCombo);
             return (
-                compound != null ? GetCompoundPhysicsMesh(compound.Value) : (CompoundPhysicsMesh?)null, 
+                compound != null && inertia != null ? GetCompoundPhysicsMesh(compound.Value, inertia.Value) : (CompoundPhysicsMesh?)null, 
                 mesh != null ? GetPhysicsMesh(mesh.Value) : (PhysicsMesh?)null);
         }
 
@@ -175,7 +213,10 @@ namespace SlipeServer.Physics.Worlds
                     {
                         stopwatch.Reset();
                         stopwatch.Start();
-                        this.simulation.Timestep(deltaTime, this.threadDispatcher);
+                        lock (this.stepLock)
+                        {
+                            this.simulation.Timestep(deltaTime, this.threadDispatcher);
+                        }
                         this.Stepped?.Invoke();
                     }
                     await Task.Delay(this.sleepTime);
@@ -186,22 +227,31 @@ namespace SlipeServer.Physics.Worlds
             }
         }
 
-        private CompoundPhysicsMesh GetCompoundPhysicsMesh<T>(T mesh) where T : unmanaged, ICompoundShape
+        private CompoundPhysicsMesh GetCompoundPhysicsMesh<T>(T mesh, BodyInertia inertia) where T : unmanaged, ICompoundShape
         {
-            var shape = this.simulation.Shapes.Add(mesh);
-            return new CompoundPhysicsMesh(mesh, shape);
+            lock (this.stepLock)
+            {
+                var shape = this.simulation.Shapes.Add(mesh);
+                return new CompoundPhysicsMesh(mesh, shape, inertia);
+            }
         }
 
         private ConvexPhysicsMesh GetConvexPhysicsMesh<T>(T mesh) where T : unmanaged, IConvexShape
         {
-            var shape = this.simulation.Shapes.Add(mesh);
-            return new ConvexPhysicsMesh(mesh, shape);
+            lock (this.stepLock)
+            {
+                var shape = this.simulation.Shapes.Add(mesh);
+                return new ConvexPhysicsMesh(mesh, shape);
+            }
         }
 
         private PhysicsMesh GetPhysicsMesh<T>(T mesh) where T : unmanaged, IShape
         {
-            var shape = this.simulation.Shapes.Add(mesh);
-            return new PhysicsMesh(mesh, shape);
+            lock (this.stepLock)
+            {
+                var shape = this.simulation.Shapes.Add(mesh);
+                return new PhysicsMesh(mesh, shape);
+            }
         }
 
         private Mesh GetMeshFromModel(RenderWareIo.Structs.Dff.Dff dff)
@@ -229,7 +279,7 @@ namespace SlipeServer.Physics.Worlds
             }
         }
 
-        private (Compound?, Mesh?) GetMeshFromCollider(RenderWareIo.Structs.Col.ColCombo colCombo)
+        private (Compound?, Mesh?, BodyInertia?) GetMeshFromCollider(RenderWareIo.Structs.Col.ColCombo colCombo)
         {
             unsafe
             {
@@ -259,28 +309,36 @@ namespace SlipeServer.Physics.Worlds
                 }
 
                 Compound? compound = null;
+                BodyInertia? inertia = null;
 
                 if (shapeCount > 0)
                 {
                     foreach (var sphere in colCombo.Body.Spheres)
                     {
-                        var shape = this.simulation.Shapes.Add(new Sphere(sphere.Radius));
-                        builder.Add(shape, new RigidPose(sphere.Center), new Symmetric3x3(), 0);
+                        lock (this.stepLock)
+                        {
+                            var shape = this.simulation.Shapes.Add(new Sphere(sphere.Radius));
+                            builder.Add(shape, new RigidPose(sphere.Center), new Symmetric3x3(), 0);
+                        }
                     }
 
                     foreach (var box in colCombo.Body.Boxes)
                     {
-                        var size = box.Max - box.Min;
-                        var shape = this.simulation.Shapes.Add(new Box(size.X, size.Y, size.Z));
-                        builder.Add(shape, new RigidPose(box.Min + size * 0.5f), new Symmetric3x3(), 0);
+                        lock (this.stepLock)
+                        {
+                            var size = box.Max - box.Min;
+                            var shape = this.simulation.Shapes.Add(new Box(size.X, size.Y, size.Z));
+                            builder.Add(shape, new RigidPose(box.Min + size * 0.5f), new Symmetric3x3(), 0);
+                        }
                     }
 
-                    builder.BuildKinematicCompound(out var children);
+                    builder.BuildDynamicCompound(out var children, out var bodyInertia);
+                    inertia = bodyInertia;
 
                     compound = new Compound(children);
                 }
 
-                return (compound, mesh);
+                return (compound, mesh, inertia);
             }
         }
 

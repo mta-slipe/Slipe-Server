@@ -1,4 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
+using SlipeServer.Server.Elements;
+using SlipeServer.Server.Enums;
+using SlipeServer.Server.Repositories;
+using SlipeServer.Server.Services;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -34,13 +38,17 @@ namespace SlipeServer.Console
             [LogLevel.Critical] = new Tuple<ConsoleColor, string>(ConsoleColor.DarkRed, " [critical]"),
             [LogLevel.None] = new Tuple<ConsoleColor, string>(ConsoleColor.White, "        "),
         };
-
+        private readonly IElementRepository elementRepository;
+        private readonly DebugLog debugLog;
         private string prefix;
 
         private ConcurrentQueue<Action> logActions;
 
-        public ConsoleLogger()
+        public ConsoleLogger(IElementRepository elementRepository, DebugLog debugLog)
         {
+            this.elementRepository = elementRepository;
+            this.debugLog = debugLog;
+
             this.logActions = new();
             this.prefix = "";
 
@@ -89,7 +97,30 @@ namespace SlipeServer.Console
                 {
                     System.Console.WriteLine($" {prefix}{exception.StackTrace}");
                 }
+
+                switch (logLevel)
+                {
+                    case LogLevel.Critical:
+                    case LogLevel.Error:
+                        OutputDebug($"{prefixes[logLevel].Item2} {prefix}{formatter(state, exception)}", DebugLevel.Error);
+                        break;
+                    case LogLevel.Warning:
+                        OutputDebug($"{prefixes[logLevel].Item2} {prefix}{formatter(state, exception)}", DebugLevel.Warning);
+                        break;
+                    case LogLevel.Information:
+                        OutputDebug($"{prefixes[logLevel].Item2} {prefix}{formatter(state, exception)}", DebugLevel.Information);
+                        break;
+                }
             });
+        }
+
+        private void OutputDebug(string message, DebugLevel level)
+        {
+            var players = this.elementRepository.GetByType<Player>(ElementType.Player);
+            foreach (var player in players)
+            {
+                this.debugLog.OutputTo(player, message, level);
+            }
         }
     }
 }

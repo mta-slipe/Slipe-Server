@@ -11,7 +11,7 @@ namespace SlipeServer.Physics.Entities
     {
         internal THandle handle;
         internal TDescription description;
-
+        protected readonly PhysicsWorld physicsWorld;
         protected readonly Simulation simulation;
 
         protected virtual Vector3 Position { get; set; }
@@ -24,10 +24,11 @@ namespace SlipeServer.Physics.Entities
 
         public Element? CoupledElement { get; private set; }
 
-        public PhysicsElement(THandle handle, TDescription description, Simulation simulation)
+        public PhysicsElement(THandle handle, TDescription description, PhysicsWorld physicsWorld, Simulation simulation)
         {
             this.handle = handle;
             this.description = description;
+            this.physicsWorld = physicsWorld;
             this.simulation = simulation;
         }
 
@@ -79,7 +80,8 @@ namespace SlipeServer.Physics.Entities
             {
                 this.description.Pose.Position = value;
                 lock (this.positionUpdateLock)
-                    this.simulation.Statics.ApplyDescription(this.handle, this.description);
+                    lock (this.physicsWorld.stepLock)
+                        this.simulation.Statics.ApplyDescription(this.handle, this.description);
             }
         }
 
@@ -90,40 +92,23 @@ namespace SlipeServer.Physics.Entities
             {
                 this.description.Pose.Orientation = value;
                 lock (this.positionUpdateLock)
-                    this.simulation.Statics.ApplyDescription(this.handle, this.description);
+                    lock (this.physicsWorld.stepLock)
+                        this.simulation.Statics.ApplyDescription(this.handle, this.description);
             }
         }
 
-        public StaticPhysicsElement(StaticHandle handle, StaticDescription description, Simulation simulation) : base(handle, description, simulation)
+        public StaticPhysicsElement(StaticHandle handle, StaticDescription description, PhysicsWorld physicsWorld, Simulation simulation) : 
+            base(handle, description, physicsWorld, simulation)
         {
         }
     }
 
     public class DynamicBodyPhysicsElement : PhysicsElement<BodyDescription, BodyHandle>
     {
-        //protected override Vector3 Position
-        //{
-        //    get => this.description.Pose.Position;
-        //    set
-        //    {
-        //        this.description.Pose.Position = value;
-        //        this.simulation.Bodies.ApplyDescription(this.handle, this.description);
-        //    }
-        //}
-
-        //protected override Quaternion Rotation
-        //{
-        //    get => this.description.Pose.Orientation;
-        //    set
-        //    {
-        //        this.description.Pose.Orientation = value;
-        //        this.simulation.Bodies.ApplyDescription(this.handle, this.description);
-        //    }
-        //}
-
-        public DynamicBodyPhysicsElement(BodyHandle handle, BodyDescription description, Simulation simulation, PhysicsWorld world) : base(handle, description, simulation)
+        public DynamicBodyPhysicsElement(BodyHandle handle, BodyDescription description, PhysicsWorld physicsWorld, Simulation simulation) :
+            base(handle, description, physicsWorld, simulation)
         {
-            world.Stepped += HandlePhysicsWorldStep;
+            physicsWorld.Stepped += HandlePhysicsWorldStep;
         }
 
         private void HandlePhysicsWorldStep()
@@ -134,6 +119,38 @@ namespace SlipeServer.Physics.Entities
                 this.CoupledElement.Position = pose.Position;
                 this.CoupledElement.Rotation = pose.Orientation.ToEuler();
             }
+        }
+    }
+
+    public class KinematicBodyPhysicsElement : PhysicsElement<BodyDescription, BodyHandle>
+    {
+        protected override Vector3 Position
+        {
+            get => this.description.Pose.Position;
+            set
+            {
+                this.description.Pose.Position = value;
+                lock (this.positionUpdateLock)
+                    lock (this.physicsWorld.stepLock)
+                        this.simulation.Bodies.ApplyDescription(this.handle, this.description);
+            }
+        }
+
+        protected override Quaternion Rotation
+        {
+            get => this.description.Pose.Orientation;
+            set
+            {
+                this.description.Pose.Orientation = value;
+                lock (this.positionUpdateLock)
+                    lock (this.physicsWorld.stepLock)
+                        this.simulation.Bodies.ApplyDescription(this.handle, this.description);
+            }
+        }
+
+        public KinematicBodyPhysicsElement(BodyHandle handle, BodyDescription description, PhysicsWorld physicsWorld, Simulation simulation) :
+            base(handle, description, physicsWorld, simulation)
+        {
         }
     }
 }
