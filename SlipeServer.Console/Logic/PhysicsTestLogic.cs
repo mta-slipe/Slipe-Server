@@ -104,7 +104,7 @@ namespace SlipeServer.Console.Logic
 
         private void HandleStartSimCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
         {
-            this.physicsWorld.Start(10);
+            this.physicsWorld.Start(1);
         }
 
         private void HandleStopSimCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
