@@ -42,7 +42,7 @@ namespace SlipeServer.Console
         private readonly DebugLog debugLog;
         private string prefix;
 
-        private ConcurrentQueue<Action> logActions;
+        private readonly ConcurrentQueue<Action> logActions;
 
         public ConsoleLogger(IElementRepository elementRepository, DebugLog debugLog)
         {

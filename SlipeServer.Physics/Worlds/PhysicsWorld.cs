@@ -61,16 +61,16 @@ namespace SlipeServer.Physics.Worlds
         {
             mesh.ConvexShape.ComputeInertia(mass, out var inertia);
             var collidable = new CollidableDescription(mesh.MeshIndex, 0.1f);
-            return AddDynamicBody(collidable, inertia, position, rotation, mass);
+            return AddDynamicBody(collidable, inertia, position, rotation);
         }
 
         public PhysicsElement<BodyDescription, BodyHandle> AddDynamicBody(CompoundPhysicsMesh mesh, Vector3 position, Quaternion rotation, float mass)
         {
             var collidable = new CollidableDescription(mesh.MeshIndex, 0.1f);
-            return AddDynamicBody(collidable, mesh.Inertia, position, rotation, mass);
+            return AddDynamicBody(collidable, mesh.Inertia, position, rotation);
         }
 
-        private PhysicsElement<BodyDescription, BodyHandle> AddDynamicBody(CollidableDescription collidable, BodyInertia inertia, Vector3 position, Quaternion rotation, float mass)
+        private PhysicsElement<BodyDescription, BodyHandle> AddDynamicBody(CollidableDescription collidable, BodyInertia inertia, Vector3 position, Quaternion rotation)
         {
             var pose = new RigidPose(position, rotation);
             var activityDescription = new BodyActivityDescription(0.1f);
@@ -85,19 +85,19 @@ namespace SlipeServer.Physics.Worlds
             }
         }
 
-        public PhysicsElement<BodyDescription, BodyHandle> AddKinematicBody(ConvexPhysicsMesh mesh, Vector3 position, Quaternion rotation, float mass)
+        public PhysicsElement<BodyDescription, BodyHandle> AddKinematicBody(ConvexPhysicsMesh mesh, Vector3 position, Quaternion rotation)
         {
             var collidable = new CollidableDescription(mesh.MeshIndex, 0.1f);
-            return AddKinematicBody(collidable, position, rotation, mass);
+            return AddKinematicBody(collidable, position, rotation);
         }
 
-        public PhysicsElement<BodyDescription, BodyHandle> AddKinematicBody(CompoundPhysicsMesh mesh, Vector3 position, Quaternion rotation, float mass)
+        public PhysicsElement<BodyDescription, BodyHandle> AddKinematicBody(CompoundPhysicsMesh mesh, Vector3 position, Quaternion rotation)
         {
             var collidable = new CollidableDescription(mesh.MeshIndex, 0.1f);
-            return AddKinematicBody(collidable, position, rotation, mass);
+            return AddKinematicBody(collidable, position, rotation);
         }
 
-        private PhysicsElement<BodyDescription, BodyHandle> AddKinematicBody(CollidableDescription collidable, Vector3 position, Quaternion rotation, float mass)
+        private PhysicsElement<BodyDescription, BodyHandle> AddKinematicBody(CollidableDescription collidable, Vector3 position, Quaternion rotation)
         {
             var pose = new RigidPose(position, rotation);
             var velocity = new BodyVelocity();

@@ -57,7 +57,7 @@ namespace SlipeServer.Console.Logic
 
         private void HandlePlayerJoin(Player player)
         {
-            var playerElement = this.physicsWorld.AddKinematicBody(this.cylinder, player.Position, player.Rotation.ToQuaternion(), 10);
+            var playerElement = this.physicsWorld.AddKinematicBody(this.cylinder, player.Position, player.Rotation.ToQuaternion());
             playerElement.CoupleWith(player, Vector3.Zero, new Vector3(0, 90, 0));
 
             player.Disconnected += (_, _) => this.physicsWorld.Destroy(playerElement);
