@@ -125,8 +125,10 @@ namespace SlipeServer.Server.ServerOptions
                     x => new RangeSyncHandlerMiddleware<ExplosionPacket>(x.GetRequiredService<IElementRepository>(), builder.Configuration.ExplosionSyncDistance, false)
                 );
 
-                services.AddSingleton<ISyncHandlerMiddleware<PlayerPureSyncPacket>, SubscriptionSyncHandlerMiddleware<PlayerPureSyncPacket>>();
-                services.AddSingleton<ISyncHandlerMiddleware<KeySyncPacket>, SubscriptionSyncHandlerMiddleware<KeySyncPacket>>();
+                services.AddSingleton<ISyncHandlerMiddleware<PlayerPureSyncPacket>, RangeSyncHandlerMiddleware<PlayerPureSyncPacket>>(
+                     x => new RangeSyncHandlerMiddleware<PlayerPureSyncPacket>(x.GetRequiredService<IElementRepository>(), builder.Configuration.LightSyncRange));
+                services.AddSingleton<ISyncHandlerMiddleware<KeySyncPacket>, RangeSyncHandlerMiddleware<KeySyncPacket>>(
+                    x => new RangeSyncHandlerMiddleware<KeySyncPacket>(x.GetRequiredService<IElementRepository>(), builder.Configuration.LightSyncRange));
 
                 services.AddSingleton<ISyncHandlerMiddleware<LightSyncBehaviour>, MaxRangeSyncHandlerMiddleware<LightSyncBehaviour>>(
                     x => new MaxRangeSyncHandlerMiddleware<LightSyncBehaviour>(x.GetRequiredService<IElementRepository>(), builder.Configuration.LightSyncRange)

@@ -3,8 +3,10 @@ using Microsoft.Extensions.Logging;
 using SlipeServer.ConfigurationProviders;
 using SlipeServer.Console.Logic;
 using SlipeServer.Lua;
+using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Physics.Extensions;
 using SlipeServer.Server;
+using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.ServerOptions;
 using System;
 using System.Threading;
@@ -57,13 +59,15 @@ namespace SlipeServer.Console
 
                     builder.AddDefaults();
 
-                    #if DEBUG
-                        builder.AddNetWrapper(dllPath: "net_d", port: (ushort)(this.configuration.Port + 1));
-                    #endif
+#if DEBUG
+                    builder.AddNetWrapper(dllPath: "net_d", port: (ushort)(this.configuration.Port + 1));
+#endif
 
                     builder.ConfigureServices(services =>
                     {
                         services.AddSingleton<ILogger, ConsoleLogger>();
+                        services.AddSingleton<ISyncHandlerMiddleware<PlayerPureSyncPacket>, SubscriptionSyncHandlerMiddleware<PlayerPureSyncPacket>>();
+                        services.AddSingleton<ISyncHandlerMiddleware<KeySyncPacket>, SubscriptionSyncHandlerMiddleware<KeySyncPacket>>();
                     });
                     builder.AddLua();
                     builder.AddPhysics();
