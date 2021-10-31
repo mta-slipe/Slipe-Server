@@ -86,7 +86,7 @@ namespace SlipeServer.Packets.Reader
                 }
             } else
             {
-                return new LuaValue(reader.GetCompressedUInt32());
+                return new LuaValue(reader.GetCompressedInt32());
             }
         }
 
