@@ -1,4 +1,6 @@
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using SlipeServer.Console.LuaEvents;
 using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Server;
@@ -8,6 +10,7 @@ using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Elements.Structs;
 using SlipeServer.Server.Enums;
+using SlipeServer.Server.Events;
 using SlipeServer.Server.Repositories;
 using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Providers;
@@ -95,6 +98,7 @@ namespace SlipeServer.Console.Logic
             SetupTestCommands();
 
             this.luaService.AddEventHandler("Slipe.Test.Event", (e) => this.TriggerTestEvent(e.Player));
+            this.luaService.AddEventHandler("Slipe.Test.SampleEvent", (e) => this.HandleSampleEvent(e));
 
             this.worldService.SetWeather(Weather.ExtraSunnyDesert);
             this.worldService.CloudsEnabled = false;
@@ -642,6 +646,14 @@ namespace SlipeServer.Console.Logic
             }
         }
 
+        private void HandleSampleEvent(LuaEvent luaEvent)
+        {
+            var sampleEvent = new SampleLuaEvent();
+            sampleEvent.Parse(luaEvent);
+
+            this.logger.LogInformation(JsonConvert.SerializeObject(sampleEvent));
+        }
+
         private void TriggerTestEvent(Player player)
         {
             var table = new LuaValue(new Dictionary<LuaValue, LuaValue>()
@@ -649,7 +661,8 @@ namespace SlipeServer.Console.Logic
                 ["x"] = 5.5f,
                 ["y"] = "string",
                 ["z"] = new LuaValue(new Dictionary<LuaValue, LuaValue>() { }),
-                ["w"] = false
+                ["w"] = false,
+                ["player"] = player.Id
             });
             table.TableValue?.Add("self", table);
 
