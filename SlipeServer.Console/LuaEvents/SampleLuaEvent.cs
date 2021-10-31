@@ -20,9 +20,6 @@ namespace SlipeServer.Console.LuaEvents
         [Required]
         public string Text { get; set; } = null!;
 
-        [Required]
-        public string Text2 { get; set; } = null!;
-
         public bool Boolean { get; set; }
         public bool? OptionalBoolean { get; set; }
 
