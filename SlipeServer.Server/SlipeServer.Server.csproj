@@ -36,6 +36,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SlipeServer.Net\SlipeServer.Net.csproj" />
+    <ProjectReference Include="..\SlipeServer.SourceGenerators\SlipeServer.SourceGenerators.csproj" />
   </ItemGroup>
 
   <ItemGroup>

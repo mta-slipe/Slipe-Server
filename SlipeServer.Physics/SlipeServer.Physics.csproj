@@ -8,7 +8,7 @@
     <Version>0.1.0</Version>
     <Authors>Slipe</Authors>
     <Company></Company>
-    <Product>Slipe Server</Product>
+    <Product>Slipe Server Physics</Product>
     <PackageProjectUrl>https://github.com/mta-slipe/Slipe-server</PackageProjectUrl>
     <PackageIcon>slipe-logo.png</PackageIcon>
     <RepositoryUrl>https://github.com/mta-slipe/Slipe-server</RepositoryUrl>
