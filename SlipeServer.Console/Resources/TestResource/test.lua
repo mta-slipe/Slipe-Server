@@ -21,7 +21,14 @@ addEventHandler("Slipe.Test.ClientEvent", root, function(...)
 		OptionalInteger = 0,
 		Text = "Bob",
 		Boolean = true,
-		Position = { X = 1.5, Y = 2.5, Z = 3.5 }
+		Position = { X = 1.5, Y = 2.5, Z = 3.5 },
+		SubValue = {
+			Header = "Header text",
+			Messages = {
+				"Message 1",
+				"Message 2"
+			}
+		}
 	})
 end)
 
