@@ -1,12 +1,13 @@
-﻿using SlipeServer.Server.Events;
+﻿using SlipeServer.Packets.Definitions.Lua;
+using SlipeServer.Server.Events;
 using SlipeServer.SourceGenerators;
 using System.ComponentModel.DataAnnotations;
 using System.Numerics;
 
-namespace SlipeServer.Console.LuaEvents
+namespace SlipeServer.Console.LuaValues
 {
-    [LuaEvent]
-    public partial class SampleLuaEvent
+    [LuaValue]
+    public partial class SampleLuaValue
     {
         public float Float { get; set; }
         public float? OptionalFloat { get; set; }
@@ -23,6 +24,8 @@ namespace SlipeServer.Console.LuaEvents
         public bool Boolean { get; set; }
         public bool? OptionalBoolean { get; set; }
 
-        public partial void Parse(LuaEvent luaEvent);
+        public SampleSubLuaValue SubValue { get; set; }
+
+        public partial void Parse(LuaValue luaEvent);
     }
 }

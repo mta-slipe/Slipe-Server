@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using SlipeServer.Console.LuaEvents;
+using SlipeServer.Console.LuaValues;
 using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Server;
@@ -633,7 +633,7 @@ namespace SlipeServer.Console.Logic
             };
         }
 
-        private void HandlePlayerScreenshot(object? o, Server.Elements.Events.ScreenshotEventArgs e)
+        private void HandlePlayerScreenshot(object? o, ScreenshotEventArgs e)
         {
             if (e.Stream != null)
             {
@@ -648,10 +648,10 @@ namespace SlipeServer.Console.Logic
 
         private void HandleSampleEvent(LuaEvent luaEvent)
         {
-            var sampleEvent = new SampleLuaEvent();
-            sampleEvent.Parse(luaEvent);
+            var sampleValue = new SampleLuaValue();
+            sampleValue.Parse(luaEvent.Parameters.First());
 
-            this.logger.LogInformation(JsonConvert.SerializeObject(sampleEvent));
+            this.logger.LogInformation(JsonConvert.SerializeObject(sampleValue));
         }
 
         private void TriggerTestEvent(Player player)
