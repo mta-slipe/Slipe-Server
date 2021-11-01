@@ -1,11 +1,5 @@
 ﻿using SlipeServer.Packets.Definitions.Lua;
-using SlipeServer.Server.Events;
 using SlipeServer.SourceGenerators;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Numerics;
 
 namespace SlipeServer.Console.LuaValues
 {
