@@ -60,7 +60,7 @@ namespace SlipeServer.Server
             this.clients = new();
             this.clientCreationMethod = clientCreationMethod;
             this.configuration = configuration ?? new();
-            this.Password = configuration.Password;
+            this.Password = configuration?.Password;
 
             this.root = new();
             this.serviceCollection = new();
