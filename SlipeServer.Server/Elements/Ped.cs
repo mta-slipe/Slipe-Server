@@ -131,9 +131,10 @@ namespace SlipeServer.Server.Elements
         public PedMoveAnimation MoveAnimation { get; set; } = 0;
         public PedClothing[] Clothes { get; set; }
         public WeaponCollection Weapons { get; set; }
-
         public bool IsAlive => this.health > 0;
-
+        public Player? Syncer { get; set; }
+        public bool IsOnFire { get; set; }
+        public bool IsInWater { get; set; }
 
         private Element? target = null;
         public Element? Target

@@ -30,6 +30,8 @@ using SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync;
 using SlipeServer.Server.PacketHandling.Handlers.Voice;
 using SlipeServer.Server.Repositories;
 using System.IO;
+using SlipeServer.Packets.Definitions.Ped;
+using SlipeServer.Server.PacketHandling.QueueHandlers;
 
 namespace SlipeServer.Server.ServerOptions
 {
@@ -76,6 +78,8 @@ namespace SlipeServer.Server.ServerOptions
             builder.AddPacketHandler<VoiceEndPacketHandler, VoiceEndPacket>();
 
             builder.AddPacketHandler<TransgressionPacketHandler, TransgressionPacket>();
+
+            builder.AddPacketHandler<PedSyncPacketHandler, PedSyncPacket>();
         }
 
         public static void AddDefaultBehaviours(this ServerBuilder builder)
@@ -106,6 +110,7 @@ namespace SlipeServer.Server.ServerOptions
             builder.AddBehaviour<VehicleBehaviour>();
             builder.AddBehaviour<PickupBehaviour>();
             builder.AddBehaviour<MarkerBehaviour>();
+            builder.AddBehaviour<PedSyncBehaviour>();
         }
 
         public static void AddDefaultServices(this ServerBuilder builder)

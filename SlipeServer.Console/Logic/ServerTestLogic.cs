@@ -55,6 +55,7 @@ namespace SlipeServer.Console.Logic
         private Vehicle? Taxi { get; set; }
         private Vehicle? Rhino { get; set; }
         private Ped? Ped { get; set; }
+        private Ped? Ped2 { get; set; }
         private readonly Team slipeDevsTeam;
 
         public ServerTestLogic(
@@ -147,6 +148,7 @@ namespace SlipeServer.Console.Logic
             var values = Enum.GetValues(typeof(PedModel));
             PedModel randomPedModel = (PedModel)values.GetValue(new Random().Next(values.Length))!;
             this.Ped = new Ped(randomPedModel, new Vector3(10, 0, 3)).AssociateWith(this.server);
+            this.Ped2 = new Ped(PedModel.Ballas3, new Vector3(10, 5, 3)).AssociateWith(this.server);
 
             this.WorldObject = new WorldObject(ObjectModel.Drugred, new Vector3(15, 0, 3)).AssociateWith(this.server);
 
@@ -156,7 +158,7 @@ namespace SlipeServer.Console.Logic
                 TargetPosition = new Vector3(10, 10, 5)
             }.AssociateWith(this.server);
             var vehicle = new Vehicle(602, new Vector3(-10, 5, 3)).AssociateWith(this.server);
-            this.Aircraft = new Vehicle(520, new Vector3(10, 5, 3)).AssociateWith(this.server);
+            this.Aircraft = new Vehicle(520, new Vector3(10, -10, 3)).AssociateWith(this.server);
             this.Vehicle = new Vehicle(530, new Vector3(20, 5, 3)).AssociateWith(this.server);
             this.Taxi = new Vehicle((ushort)VehicleModel.Taxi, new Vector3(20, -5, 3)).AssociateWith(this.server);
             this.Rhino = new Vehicle((ushort)VehicleModel.Rhino, new Vector3(20, -25, 3)).AssociateWith(this.server);

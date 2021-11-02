@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
+using SlipeServer.Server.Elements.ColShapes;
 
 namespace SlipeServer.Server.Elements
 {
@@ -172,7 +173,6 @@ namespace SlipeServer.Server.Elements
         private readonly HashSet<Player> subscribers;
         public IEnumerable<Player> Subscribers => this.subscribers;
 
-
         public Element()
         {
             this.children = new();
@@ -214,6 +214,11 @@ namespace SlipeServer.Server.Elements
                 }
                 return this.TimeContext;
             }
+        }
+
+        public bool CanUpdateSync(byte Remote)
+        {
+            return (this.TimeContext == Remote || Remote == 0 || this.TimeContext == 0);
         }
 
         public void Destroy()

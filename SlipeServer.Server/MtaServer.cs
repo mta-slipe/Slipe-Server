@@ -113,7 +113,7 @@ namespace SlipeServer.Server
             builderAction(builder);
 
             this.configuration = builder.Configuration;
-            this.Password = configuration.Password;
+            this.Password = this.configuration.Password;
             this.SetupDependencies(services => builder.LoadDependencies(services));
 
             this.serviceProvider = this.serviceCollection.BuildServiceProvider();

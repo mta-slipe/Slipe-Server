@@ -33,6 +33,8 @@ namespace SlipeServer.Server
 
         public float ExplosionSyncDistance { get; set; } = 400;
 
+        public int PedSyncerDistance { get; set; } = 250;
+
         public float LightSyncRange { get; set; } = 800;
 
         public ushort BitStreamVersion { get; set; } = 114;

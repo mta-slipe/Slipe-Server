@@ -42,21 +42,20 @@ namespace SlipeServer.Server.Elements
         public Vector3 CameraDirection { get; set; }
         public float CameraRotation { get; set; }
 
-        public bool IsInWater { get; set; }
         public bool IsOnGround { get; set; }
         public bool IsDucked { get; set; }
         public bool WearsGoggles { get; set; }
         public bool HasContact { get; set; }
         public bool IsChoking { get; set; }
         public bool AkimboTargetUp { get; set; }
-        public bool IsOnFire { get; set; }
         public bool IsSyncingVelocity { get; set; }
         public bool IsStealthAiming { get; set; }
         public bool IsVoiceMuted { get; set; }
         public bool IsChatMuted { get; set; }
+        private Team? team { get; set; }
+        public List<Ped> SyncingPeds { get; set; }
         public Controls Controls { get; private set; }
 
-        private Team? team;
         public Team? Team
         {
             get => this.team;
@@ -78,6 +77,7 @@ namespace SlipeServer.Server.Elements
             this.Client = client;
             this.Camera = new Camera(this);
             this.subscriptionElements = new();
+            this.SyncingPeds = new();
             this.Controls = new(this);
         }
 
