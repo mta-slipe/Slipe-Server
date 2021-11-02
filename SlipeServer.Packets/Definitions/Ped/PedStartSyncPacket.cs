@@ -18,16 +18,16 @@ namespace SlipeServer.Packets.Definitions.Ped
         public uint SourceElementId { get; set; }
         public Vector3 Position { get; set; }
         public float Rotation { get; set; }
-        public Vector3 VelocityVector { get; set; }
+        public Vector3 Velocity { get; set; }
         public float Health { get; set; }
         public float Armor { get; set; }
 
-        public PedStartSyncPacket(uint sourceElementId, Vector3 position, float rotation, Vector3 velocityVector, float health, float armor)
+        public PedStartSyncPacket(uint sourceElementId, Vector3 position, float rotation, Vector3 velocity, float health, float armor)
         {
             this.SourceElementId = sourceElementId;
             this.Position = position;
             this.Rotation = rotation;
-            this.VelocityVector = velocityVector;
+            this.Velocity = velocity;
             this.Health = health;
             this.Armor = armor;
         }
@@ -47,17 +47,9 @@ namespace SlipeServer.Packets.Definitions.Ped
             var builder = new PacketBuilder();
 
             builder.WriteElementId(this.SourceElementId);
-
-            builder.Write(this.Position.X);
-            builder.Write(this.Position.Y);
-            builder.Write(this.Position.Z);
-
+            builder.Write(this.Position);
             builder.Write(this.Rotation);
-
-            builder.Write(this.VelocityVector.X);
-            builder.Write(this.VelocityVector.Y);
-            builder.Write(this.VelocityVector.Z);
-
+            builder.Write(this.Velocity);
             builder.Write(this.Health);
             builder.Write(this.Armor);
 

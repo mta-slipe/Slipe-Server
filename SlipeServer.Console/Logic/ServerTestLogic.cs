@@ -1,4 +1,6 @@
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using SlipeServer.Console.LuaValues;
 using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Server;
@@ -8,6 +10,7 @@ using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Elements.Structs;
 using SlipeServer.Server.Enums;
+using SlipeServer.Server.Events;
 using SlipeServer.Server.Repositories;
 using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Providers;
@@ -52,6 +55,7 @@ namespace SlipeServer.Console.Logic
         private Vehicle? Taxi { get; set; }
         private Vehicle? Rhino { get; set; }
         private Ped? Ped { get; set; }
+        private Ped? Ped2 { get; set; }
         private readonly Team slipeDevsTeam;
 
         public ServerTestLogic(
@@ -95,6 +99,7 @@ namespace SlipeServer.Console.Logic
             SetupTestCommands();
 
             this.luaService.AddEventHandler("Slipe.Test.Event", (e) => this.TriggerTestEvent(e.Player));
+            this.luaService.AddEventHandler("Slipe.Test.SampleEvent", (e) => this.HandleSampleEvent(e));
 
             this.worldService.SetWeather(Weather.ExtraSunnyDesert);
             this.worldService.CloudsEnabled = false;
@@ -143,6 +148,7 @@ namespace SlipeServer.Console.Logic
             var values = Enum.GetValues(typeof(PedModel));
             PedModel randomPedModel = (PedModel)values.GetValue(new Random().Next(values.Length))!;
             this.Ped = new Ped(randomPedModel, new Vector3(10, 0, 3)).AssociateWith(this.server);
+            this.Ped2 = new Ped(PedModel.Ballas3, new Vector3(10, 5, 3)).AssociateWith(this.server);
 
             this.WorldObject = new WorldObject(ObjectModel.Drugred, new Vector3(15, 0, 3)).AssociateWith(this.server);
 
@@ -152,7 +158,7 @@ namespace SlipeServer.Console.Logic
                 TargetPosition = new Vector3(10, 10, 5)
             }.AssociateWith(this.server);
             var vehicle = new Vehicle(602, new Vector3(-10, 5, 3)).AssociateWith(this.server);
-            this.Aircraft = new Vehicle(520, new Vector3(10, 5, 3)).AssociateWith(this.server);
+            this.Aircraft = new Vehicle(520, new Vector3(10, -10, 3)).AssociateWith(this.server);
             this.Vehicle = new Vehicle(530, new Vector3(20, 5, 3)).AssociateWith(this.server);
             this.Taxi = new Vehicle((ushort)VehicleModel.Taxi, new Vector3(20, -5, 3)).AssociateWith(this.server);
             this.Rhino = new Vehicle((ushort)VehicleModel.Rhino, new Vector3(20, -25, 3)).AssociateWith(this.server);
@@ -360,6 +366,9 @@ namespace SlipeServer.Console.Logic
 
             this.commandService.AddCommand("kickme").Triggered += (source, args)
                 => args.Player.Kick("You have been kicked by slipe");
+
+            this.commandService.AddCommand("a51").Triggered += (source, args)
+                => args.Player.Position = new Vector3(216.46f, 1895.05f, 17.28f);
 
             this.commandService.AddCommand("playerlist").Triggered += (source, args) =>
             {
@@ -626,7 +635,7 @@ namespace SlipeServer.Console.Logic
             };
         }
 
-        private void HandlePlayerScreenshot(object? o, Server.Elements.Events.ScreenshotEventArgs e)
+        private void HandlePlayerScreenshot(object? o, ScreenshotEventArgs e)
         {
             if (e.Stream != null)
             {
@@ -639,6 +648,14 @@ namespace SlipeServer.Console.Logic
             }
         }
 
+        private void HandleSampleEvent(LuaEvent luaEvent)
+        {
+            var sampleValue = new SampleLuaValue();
+            sampleValue.Parse(luaEvent.Parameters.First());
+
+            this.logger.LogInformation(JsonConvert.SerializeObject(sampleValue));
+        }
+
         private void TriggerTestEvent(Player player)
         {
             var table = new LuaValue(new Dictionary<LuaValue, LuaValue>()
@@ -646,7 +663,8 @@ namespace SlipeServer.Console.Logic
                 ["x"] = 5.5f,
                 ["y"] = "string",
                 ["z"] = new LuaValue(new Dictionary<LuaValue, LuaValue>() { }),
-                ["w"] = false
+                ["w"] = false,
+                ["player"] = player.Id
             });
             table.TableValue?.Add("self", table);
 

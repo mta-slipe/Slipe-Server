@@ -59,6 +59,10 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Player.Sync
                 player.AimDirection = packet.AimDirection;
 
                 player.ContactElement = this.elementRepository.Get(packet.ContactElementId);
+                if (player.ContactElement != null)
+                {
+                    player.Position = player.ContactElement.Position + packet.Position;
+                }
 
                 player.CurrentWeaponSlot = (WeaponSlot)packet.WeaponSlot;
                 if (player.CurrentWeapon != null && player.CurrentWeapon.Type == (WeaponId)packet.WeaponType)

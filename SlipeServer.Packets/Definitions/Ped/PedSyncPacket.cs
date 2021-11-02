@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-using SlipeServer.Packets.Builder;
+﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
 using SlipeServer.Packets.Structs;
+using System.Collections.Generic;
 
 namespace SlipeServer.Packets.Definitions.Ped
 {
@@ -17,7 +12,7 @@ namespace SlipeServer.Packets.Definitions.Ped
         public override PacketReliability Reliability { get; } = PacketReliability.UnreliableSequenced;
         public override PacketPriority Priority { get; } = PacketPriority.Medium;
 
-        
+
 
         public List<PedSyncData> Syncs;
 
@@ -38,34 +33,33 @@ namespace SlipeServer.Packets.Definitions.Ped
 
                     builder.Write(data.TimeSyncContext);
 
-                    builder.Write(data.Flags);
+                    builder.Write((byte)data.Flags);
 
-                    if ((data.Flags & (int)PedSyncFlags.Position) != 0)
+                    if ((data.Flags & PedSyncFlags.Position) != 0)
                     {
-                        builder.Write(data.Position.X);
-                        builder.Write(data.Position.Y);
-                        builder.Write(data.Position.Z);
+                        builder.Write(data.Position?.X ?? 0);
+                        builder.Write(data.Position?.Y ?? 0);
+                        builder.Write(data.Position?.Z ?? 0);
                     }
 
-                    if ((data.Flags & (int)PedSyncFlags.Rotation) != 0)
-                        builder.Write(data.Rotation);
-                    
+                    if ((data.Flags & PedSyncFlags.Rotation) != 0)
+                        builder.Write(data.Rotation ?? 0);
 
-                    if ((data.Flags & (int)PedSyncFlags.Velocity) != 0)
+                    if ((data.Flags & PedSyncFlags.Velocity) != 0)
                     {
-                        builder.Write(data.Velocity.X);
-                        builder.Write(data.Velocity.Y);
-                        builder.Write(data.Velocity.Z);
+                        builder.Write(data.Velocity?.X ?? 0);
+                        builder.Write(data.Velocity?.Y ?? 0);
+                        builder.Write(data.Velocity?.Z ?? 0);
                     }
 
-                    if ((data.Flags & (int)PedSyncFlags.Health) != 0)
-                        builder.Write(data.Health);
-                    if ((data.Flags & (int)PedSyncFlags.Armor) != 0)
-                        builder.Write(data.Armor);
-                    if ((data.Flags & (int)PedSyncFlags.IsOnFire) != 0)
-                        builder.Write(data.IsOnFire);
-                    if ((data.Flags & (int)PedSyncFlags.IsInWater) != 0)
-                        builder.Write(data.IsInWater);
+                    if ((data.Flags & PedSyncFlags.Health) != 0)
+                        builder.Write(data.Health ?? 0);
+                    if ((data.Flags & PedSyncFlags.Armor) != 0)
+                        builder.Write(data.Armor ?? 0);
+                    if ((data.Flags & PedSyncFlags.IsOnFire) != 0)
+                        builder.Write(data.IsOnFire ?? false);
+                    if ((data.Flags & PedSyncFlags.IsInWater) != 0)
+                        builder.Write(data.IsInWater ?? false);
                 }
             }
 
@@ -75,56 +69,37 @@ namespace SlipeServer.Packets.Definitions.Ped
         public override void Read(byte[] bytes)
         {
             var reader = new PacketReader(bytes);
-            while ((reader.Size / 8) > 32)
+            while (reader.Size - reader.Counter > 32)
             {
-                PedSyncData data = new PedSyncData();
-                data.Send = false;
+                PedSyncData data = new()
+                {
+                    Send = false
+                };
 
                 data.SourceElementId = reader.GetElementId();
-
                 data.TimeSyncContext = reader.GetByte();
+                data.Flags = (PedSyncFlags)reader.GetByte();
 
-                byte flags = 0;
+                if ((data.Flags & PedSyncFlags.Position) != 0)
+                    data.Position = reader.GetVector3();
 
-                flags = reader.GetByte();
-
-                data.Flags = flags;
-
-                if ((flags & (int)PedSyncFlags.Position) != 0)
-                {
-                    Vector3 position = reader.GetVector3WithZAsFloat();
-                    data.Position = position;
-                }
-
-                if ((flags & (int)PedSyncFlags.Rotation) != 0)
-                {
+                if ((data.Flags & PedSyncFlags.Rotation) != 0)
                     data.Rotation = reader.GetFloat();
-                }
-                
-                if ((flags & (int)PedSyncFlags.Velocity) != 0)
-                {
-                    data.Velocity = reader.GetVector3WithZAsFloat();
-                }
 
-                if ((flags & (int)PedSyncFlags.Health) != 0)
-                {
+                if ((data.Flags & PedSyncFlags.Velocity) != 0)
+                    data.Velocity = reader.GetVector3();
+
+                if ((data.Flags & PedSyncFlags.Health) != 0)
                     data.Health = reader.GetFloat();
-                }
 
-                if ((flags & (int)PedSyncFlags.Armor) != 0)
-                {
+                if ((data.Flags & PedSyncFlags.Armor) != 0)
                     data.Armor = reader.GetFloat();
-                }
 
-                if ((flags & (int)PedSyncFlags.IsOnFire) != 0)
-                {
+                if ((data.Flags & PedSyncFlags.IsOnFire) != 0)
                     data.IsOnFire = reader.GetBit();
-                }
 
-                if ((flags & (int)PedSyncFlags.IsInWater) != 0)
-                {
+                if ((data.Flags & PedSyncFlags.IsInWater) != 0)
                     data.IsInWater = reader.GetBit();
-                }
 
                 this.Syncs.Add(data);
             }

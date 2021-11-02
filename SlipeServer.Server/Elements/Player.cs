@@ -117,6 +117,9 @@ namespace SlipeServer.Server.Elements
             this.dimension = dimension;
 
             this.Weapons.Clear(false);
+            this.Vehicle = null;
+            this.Seat = null;
+            this.VehicleAction = VehicleAction.None;
 
             this.Spawned?.Invoke(this, new PlayerSpawnedEventArgs(this));
         }
@@ -161,6 +164,9 @@ namespace SlipeServer.Server.Elements
             this.RunAsSync(() =>
             {
                 this.health = 0;
+                this.Vehicle = null;
+                this.Seat = null;
+                this.VehicleAction = VehicleAction.None;
                 this.Wasted?.Invoke(this, new PlayerWastedEventArgs(this, damager, damageType, bodyPart, animationGroup, animationId));
             });
         }

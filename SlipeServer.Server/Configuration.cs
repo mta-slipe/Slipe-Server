@@ -18,7 +18,7 @@ namespace SlipeServer.Server
         public ushort MaxPlayerCount { get; set; } = 64;
 
         [MaxLength(128)]
-        public string Password { get; set; } = "";
+        public string? Password { get; set; } = null;
 
 
         public string HttpHost { get; set; } = "*";
@@ -32,6 +32,8 @@ namespace SlipeServer.Server
         public string ResourceDirectory { get; set; } = "./Resources";
 
         public float ExplosionSyncDistance { get; set; } = 400;
+
+        public int PedSyncerDistance { get; set; } = 250;
 
         public float LightSyncRange { get; set; } = 800;
 
@@ -91,6 +93,5 @@ namespace SlipeServer.Server
         public int ObjectSync { get; set; } = 500;
         public int KeySyncRotation { get; set; } = 25;
         public int KeySyncAnalogMove { get; set; } = 25;
-        public int PedSyncerDistance { get; set; } = 100;
     }
 }
