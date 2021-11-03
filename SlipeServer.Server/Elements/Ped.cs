@@ -1,20 +1,16 @@
-﻿using System;
-using SlipeServer.Packets;
-using System.Net;
-using System.Numerics;
-using SlipeServer.Server.Elements.Events;
-using SlipeServer.Server.Enums;
-using SlipeServer.Server.Elements.Structs;
-using SlipeServer.Packets.Definitions.Entities.Structs;
-using System.Collections.Generic;
-using SlipeServer.Server.Constants;
-using System.Linq;
+﻿using SlipeServer.Packets.Definitions.Entities.Structs;
 using SlipeServer.Server.Collections;
 using SlipeServer.Server.Elements.Enums;
+using SlipeServer.Server.Elements.Events;
+using SlipeServer.Server.Elements.Structs;
+using SlipeServer.Server.Enums;
+using System;
+using System.Linq;
+using System.Numerics;
 
 namespace SlipeServer.Server.Elements
 {
-    public class Ped: Element
+    public class Ped : Element
     {
         public override ElementType ElementType => ElementType.Ped;
 
@@ -108,7 +104,7 @@ namespace SlipeServer.Server.Elements
         public float PedRotation
         {
             get => this.Rotation.Z;
-            set => this.Rotation = new Vector3(this.rotation.X, this.rotation.Y, value);
+            set => this.Rotation = new Vector3(this.rotation.X, this.rotation.Y, value * (180 / MathF.PI));
         }
 
         public Vehicle? Vehicle { get; set; }
@@ -151,9 +147,9 @@ namespace SlipeServer.Server.Elements
         public Vehicle? JackingVehicle { get; set; }
 
 
-        public Ped(PedModel model, Vector3 position): base()
+        public Ped(PedModel model, Vector3 position) : base()
         {
-            this.Model = (ushort) model;
+            this.Model = (ushort)model;
             this.Position = position;
 
             this.Clothes = Array.Empty<PedClothing>();
@@ -181,7 +177,7 @@ namespace SlipeServer.Server.Elements
             if (vehicle.Driver != null && vehicle.Driver.VehicleAction != VehicleAction.None)
                 return;
 
-            vehicle.AddPassenger(seat, this, true);    
+            vehicle.AddPassenger(seat, this, true);
         }
 
         public void AddWeapon(WeaponId weaponId, ushort ammoCount, bool setAsCurrent = false)
@@ -228,14 +224,34 @@ namespace SlipeServer.Server.Elements
                 SetAmmoCount(weapon.Type, count, inClip);
         }
 
+        protected void InvokeWasted(PedWastedEventArgs args) => this.Wasted?.Invoke(this, args);
+
+        public virtual void Kill(Element? damager, WeaponType damageType, BodyPart bodyPart, ulong animationGroup = 0, ulong animationId = 15)
+        {
+            this.RunAsSync(() =>
+            {
+                this.health = 0;
+                this.Vehicle = null;
+                this.Seat = null;
+                this.VehicleAction = VehicleAction.None;
+                InvokeWasted(new PedWastedEventArgs(this, damager, damageType, bodyPart, animationGroup, animationId));
+            });
+        }
+
+        public void Kill(WeaponType damageType = WeaponType.WEAPONTYPE_UNARMED, BodyPart bodyPart = BodyPart.Torso)
+        {
+            this.Kill(null, damageType, bodyPart);
+        }
+
+        public event ElementEventHandler<Ped, PedWastedEventArgs>? Wasted;
         public event ElementChangedEventHandler<Ped, ushort>? ModelChanged;
         public event ElementChangedEventHandler<Ped, float>? HealthChanged;
         public event ElementChangedEventHandler<Ped, float>? ArmourChanged;
         public event ElementChangedEventHandler<Ped, WeaponSlot>? WeaponSlotChanged;
         public event ElementChangedEventHandler<Ped, bool>? JetpackStateChanged;
         public event ElementChangedEventHandler<Ped, Element?>? TargetChanged;
-        public event ElementEventHandler<WeaponReceivedEventArgs>? WeaponReceived;
-        public event ElementEventHandler<WeaponRemovedEventArgs>? WeaponRemoved;
-        public event ElementEventHandler<AmmoUpdateEventArgs>? AmmoUpdated;
+        public event ElementEventHandler<Ped, WeaponReceivedEventArgs>? WeaponReceived;
+        public event ElementEventHandler<Ped, WeaponRemovedEventArgs>? WeaponRemoved;
+        public event ElementEventHandler<Ped, AmmoUpdateEventArgs>? AmmoUpdated;
     }
 }

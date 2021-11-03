@@ -1,13 +1,10 @@
-﻿using SlipeServer.Packets.Enums;
+﻿using SlipeServer.Packets.Builder;
+using SlipeServer.Packets.Constants;
+using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Reader;
 using SlipeServer.Packets.Structures;
 using System;
-using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
-using System.Linq;
-using SlipeServer.Packets.Builder;
-using SlipeServer.Packets.Reader;
-using SlipeServer.Packets.Constants;
 
 namespace SlipeServer.Packets.Definitions.Sync
 {
@@ -24,7 +21,6 @@ namespace SlipeServer.Packets.Definitions.Sync
 
 
         public bool HasWeapon { get; set; }
-        public ushort TotalAmmo { get; set; }
         public ushort AmmoInClip { get; set; }
         public byte WeaponType { get; set; }
         public byte WeaponSlot { get; set; }
@@ -68,17 +64,16 @@ namespace SlipeServer.Packets.Definitions.Sync
                 if (this.HasWeapon)
                 {
                     this.WeaponType = reader.GetByte();
-                    this.WeaponSlot = reader.GetByteCapped(4);
+                    this.WeaponSlot = reader.GetWeaponSlot();
 
                     if (WeaponConstants.WeaponsWithAmmo.Contains(this.WeaponSlot))
                     {
-                        this.TotalAmmo = reader.GetCompressedUint16();
-                        this.AmmoInClip = reader.GetCompressedUint16();
+                        this.AmmoInClip = reader.GetAmmo();
 
                         this.AimArm = ((reader.GetUint16()) * MathF.PI / 180) / 90.0f;
                         this.AimOrigin = reader.GetVector3();
                         this.AimDirection = reader.GetNormalizedVector();
-                        this.VehicleAimDirection = (VehicleAimDirection)reader.GetByte();
+                        this.VehicleAimDirection = (VehicleAimDirection)reader.GetByteCapped(2);
                     }
                 }
             }
@@ -103,7 +98,6 @@ namespace SlipeServer.Packets.Definitions.Sync
 
                 if (WeaponConstants.WeaponsWithAmmo.Contains(this.WeaponSlot))
                 {
-                    builder.WriteCompressed(this.TotalAmmo);
                     builder.WriteCompressed(this.AmmoInClip);
 
                     builder.Write((ushort)(this.AimArm * 90 * 180 * MathF.PI));
@@ -128,7 +122,6 @@ namespace SlipeServer.Packets.Definitions.Sync
             this.HasWeapon = false;
             this.WeaponType = 0;
             this.WeaponSlot = 0;
-            this.TotalAmmo = 0;
             this.AmmoInClip = 0;
 
             this.AimArm = 0;

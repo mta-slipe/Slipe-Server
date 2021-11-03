@@ -80,6 +80,8 @@ namespace SlipeServer.Server.ServerOptions
             builder.AddPacketHandler<TransgressionPacketHandler, TransgressionPacket>();
 
             builder.AddPacketHandler<PedSyncPacketHandler, PedSyncPacket>();
+            builder.AddPacketHandler<PedTaskPacketHandler, PedTaskPacket>();
+            builder.AddPacketHandler<PedWastedPacketHandler, PedWastedPacket>();
         }
 
         public static void AddDefaultBehaviours(this ServerBuilder builder)

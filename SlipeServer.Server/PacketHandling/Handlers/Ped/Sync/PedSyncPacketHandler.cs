@@ -55,11 +55,11 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                                 pedElement.IsInWater = syncData.IsInWater.Value;
                         });
                     }
-
-                    var players = this.middleware.GetPlayersToSyncTo(client.Player, packet);
-                    packet.SendTo(players);
                 }
             }
+
+            var players = this.middleware.GetPlayersToSyncTo(client.Player, packet);
+            packet.SendTo(players);
         }
     }
 }
