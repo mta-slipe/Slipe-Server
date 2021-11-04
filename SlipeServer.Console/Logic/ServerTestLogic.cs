@@ -496,6 +496,27 @@ namespace SlipeServer.Console.Logic
                     }
                 }
             };
+
+            this.commandService.AddCommand("pedsync").Triggered += (source, args) =>
+            {
+                this.Ped2?.RunAsSync(() =>
+                {
+                    var random = new Random();
+                    this.Ped2.Position += new Vector3(random.Next(0, 3) * .1f, random.Next(0, 3) * .1f, random.Next(0, 3) * .1f);
+
+                    var packet = new Packets.Definitions.Ped.PedSyncPacket(new List<Packets.Structs.PedSyncData>()
+                    {
+                        new()
+                        {
+                            SourceElementId = this.Ped2.Id,
+                            TimeSyncContext = this.Ped2.TimeContext,
+                            Flags = Packets.Enums.PedSyncFlags.Position,
+                            Position = this.Ped2.Position
+                        }
+                    });
+                    args.Player.Client.SendPacket(packet);
+                });
+            };
         }
 
         private void OnPlayerJoin(Player player)

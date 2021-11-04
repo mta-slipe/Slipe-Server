@@ -1,10 +1,12 @@
 ﻿using SlipeServer.Packets.Definitions.Ped;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Handlers;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.Repositories;
+using System.Collections.Generic;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers
 {
@@ -23,6 +25,8 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 
         public void HandlePacket(Client client, PedSyncPacket packet)
         {
+            List<PedSyncData> pedsToSync = new();
+
             foreach (var syncData in packet.Syncs)
             {
                 Ped pedElement = (Ped)this.elementRepository.Get(syncData.SourceElementId)!;
@@ -54,11 +58,14 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                             if (syncData.IsInWater != null)
                                 pedElement.IsInWater = syncData.IsInWater.Value;
                         });
+
+                        pedsToSync.Add(syncData);
                     }
                 }
             }
 
             var players = this.middleware.GetPlayersToSyncTo(client.Player, packet);
+            packet.Syncs = pedsToSync;
             packet.SendTo(players);
         }
     }

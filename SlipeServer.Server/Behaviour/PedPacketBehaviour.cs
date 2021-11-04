@@ -29,7 +29,6 @@ namespace SlipeServer.Server.Behaviour
         {
             if (obj is Ped ped)
             {
-                ped.Wasted += RelayPedWasted;
                 ped.ModelChanged += RelayModelChange;
                 ped.HealthChanged += RelayHealthChange;
                 ped.ArmourChanged += RelayArmourChange;
@@ -38,6 +37,11 @@ namespace SlipeServer.Server.Behaviour
                 ped.WeaponRemoved += RelayPedWeaponRemove;
                 ped.AmmoUpdated += RelayPedAmmoCountUpdate;
                 ped.JetpackStateChanged += RelayJetpackStateChanged;
+
+                if (ped is not Player)
+                {
+                    ped.Wasted += RelayPedWasted;
+                }
             }
         }
 
