@@ -9,14 +9,12 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
 {
     public class PedTaskPacketHandler : IPacketHandler<PedTaskPacket>
     {
-        private readonly IElementRepository elementRepository;
         private readonly ISyncHandlerMiddleware<PedTaskPacket?> middleware;
 
         public PacketId PacketId => PacketId.PACKET_ID_PED_TASK;
 
-        public PedTaskPacketHandler(IElementRepository elementRepository, ISyncHandlerMiddleware<PedTaskPacket?> middleware)
+        public PedTaskPacketHandler(ISyncHandlerMiddleware<PedTaskPacket?> middleware)
         {
-            this.elementRepository = elementRepository;
             this.middleware = middleware;
         }
 
