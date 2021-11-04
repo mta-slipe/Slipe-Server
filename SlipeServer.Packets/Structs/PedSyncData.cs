@@ -6,8 +6,6 @@ namespace SlipeServer.Packets.Structs
 {
     public struct PedSyncData
     {
-        public bool Send { get; set; }
-
         public uint SourceElementId { get; set; }
         public PedSyncFlags Flags { get; set; }
         public byte TimeSyncContext { get; set; }

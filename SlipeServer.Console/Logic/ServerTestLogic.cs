@@ -370,6 +370,15 @@ namespace SlipeServer.Console.Logic
             this.commandService.AddCommand("a51").Triggered += (source, args)
                 => args.Player.Position = new Vector3(216.46f, 1895.05f, 17.28f);
 
+            this.commandService.AddCommand("updildo").Triggered += (source, args)
+                => new WorldObject(321, args.Player.Position + args.Player.Up * 2).AssociateWith(this.server);
+
+            this.commandService.AddCommand("rightdildo").Triggered += (source, args)
+                => new WorldObject(321, args.Player.Position + args.Player.Right * 2).AssociateWith(this.server);
+
+            this.commandService.AddCommand("forwarddildo").Triggered += (source, args)
+                => new WorldObject(321, args.Player.Position + args.Player.Forward * 2).AssociateWith(this.server);
+
             this.commandService.AddCommand("playerlist").Triggered += (source, args) =>
             {
                 var players = this.elementRepository.GetByType<Player>(ElementType.Player);
@@ -486,6 +495,27 @@ namespace SlipeServer.Console.Logic
                         this.logger.LogInformation($"Camera interior changed to: {interior}");
                     }
                 }
+            };
+
+            this.commandService.AddCommand("pedsync").Triggered += (source, args) =>
+            {
+                this.Ped2?.RunAsSync(() =>
+                {
+                    var random = new Random();
+                    this.Ped2.Position += new Vector3(random.Next(0, 3) * .1f, random.Next(0, 3) * .1f, random.Next(0, 3) * .1f);
+
+                    var packet = new Packets.Definitions.Ped.PedSyncPacket(new List<Packets.Structs.PedSyncData>()
+                    {
+                        new()
+                        {
+                            SourceElementId = this.Ped2.Id,
+                            TimeSyncContext = this.Ped2.TimeContext,
+                            Flags = Packets.Enums.PedSyncFlags.Position,
+                            Position = this.Ped2.Position
+                        }
+                    });
+                    args.Player.Client.SendPacket(packet);
+                });
             };
         }
 

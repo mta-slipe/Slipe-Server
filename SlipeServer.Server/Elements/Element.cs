@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
-using SlipeServer.Server.Elements.ColShapes;
 
 namespace SlipeServer.Server.Elements
 {
@@ -61,6 +60,10 @@ namespace SlipeServer.Server.Elements
                 PositionChanged?.Invoke(this, args);
             }
         }
+
+        public Vector3 Right => Vector3.Transform(Vector3.UnitX, this.rotation.ToQuaternion());
+        public Vector3 Up => Vector3.Transform(Vector3.UnitZ, this.rotation.ToQuaternion());
+        public Vector3 Forward => Vector3.Transform(Vector3.UnitY, this.rotation.ToQuaternion());
 
         protected Vector3 rotation;
         public Vector3 Rotation

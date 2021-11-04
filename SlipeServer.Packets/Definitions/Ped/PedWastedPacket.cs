@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-using SlipeServer.Packets.Builder;
-using SlipeServer.Packets.Constants;
+﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
+using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Ped
 {
@@ -28,13 +22,12 @@ namespace SlipeServer.Packets.Definitions.Ped
         public ulong AnimGroup { get; set; }
         public ulong AnimId { get; set; }
 
-        public PedWastedPacket(uint sourceElementId, uint killerId, byte killerWeapon, byte bodyPart, Vector3 position, ushort ammo, bool stealth, byte timeContext, ulong animGroup, ulong animId)
+        public PedWastedPacket(uint sourceElementId, uint killerId, byte killerWeapon, byte bodyPart, ushort ammo, bool stealth, byte timeContext, ulong animGroup, ulong animId)
         {
             this.SourceElementId = sourceElementId;
             this.KillerId = killerId;
             this.KillerWeapon = killerWeapon;
             this.BodyPart = bodyPart;
-            this.Position = position;
             this.Ammo = ammo;
             this.Stealth = stealth;
             this.TimeContext = timeContext;
@@ -44,7 +37,7 @@ namespace SlipeServer.Packets.Definitions.Ped
 
         public PedWastedPacket()
         {
-            
+
         }
 
         public override byte[] Write()
@@ -54,12 +47,10 @@ namespace SlipeServer.Packets.Definitions.Ped
             builder.WriteElementId(this.SourceElementId);
             builder.WriteElementId(this.KillerId);
 
-            builder.Write(this.KillerWeapon);
-
-            builder.Write(this.BodyPart);
+            builder.WriteWeaponType(this.KillerWeapon);
+            builder.WriteBodyPart(this.BodyPart);
 
             builder.Write(this.Stealth);
-
             builder.Write(this.TimeContext);
 
             builder.WriteCompressed(this.AnimGroup);
@@ -72,15 +63,15 @@ namespace SlipeServer.Packets.Definitions.Ped
         {
             var data = new PacketReader(bytes);
 
-            this.AnimGroup = data.GetCompressedByte();
-            this.AnimId = data.GetCompressedByte();
+            this.AnimGroup = data.GetCompressedUInt32();
+            this.AnimId = data.GetCompressedUInt32();
             this.KillerId = data.GetElementId();
-            this.KillerWeapon = data.GetByte();
-            this.BodyPart = data.GetByte();
+            this.KillerWeapon = data.GetWeaponType();
+            this.BodyPart = data.GetBodyPart();
             this.Position = data.GetVector3WithZAsFloat();
             this.SourceElementId = data.GetElementId();
 
-            this.Ammo = data.GetByte();
+            this.Ammo = data.GetAmmo();
         }
     }
 }
