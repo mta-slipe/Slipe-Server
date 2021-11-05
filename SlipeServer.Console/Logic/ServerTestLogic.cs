@@ -517,6 +517,11 @@ namespace SlipeServer.Console.Logic
                     args.Player.Client.SendPacket(packet);
                 });
             };
+
+            this.commandService.AddCommand("rotateped").Triggered += (source, args) =>
+            {
+                this.Ped2!.PedRotation = args.Player.PedRotation;
+            };
         }
 
         private void OnPlayerJoin(Player player)

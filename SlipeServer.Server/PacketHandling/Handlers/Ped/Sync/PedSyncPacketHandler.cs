@@ -6,6 +6,7 @@ using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Handlers;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.Repositories;
+using System;
 using System.Collections.Generic;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers
@@ -41,7 +42,7 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers
                                 pedElement.Position = syncData.Position.Value;
 
                             if (syncData.Rotation != null)
-                                pedElement.PedRotation = syncData.Rotation.Value;
+                                pedElement.PedRotation = syncData.Rotation.Value * (180 / MathF.PI);
 
                             if (syncData.Velocity != null)
                                 pedElement.Velocity = syncData.Velocity.Value;

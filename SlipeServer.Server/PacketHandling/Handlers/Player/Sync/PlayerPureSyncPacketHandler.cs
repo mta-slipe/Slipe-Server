@@ -7,6 +7,7 @@ using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.Repositories;
+using System;
 using System.Linq;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Player.Sync
@@ -51,7 +52,7 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Player.Sync
             player.RunAsSync(() =>
             {
                 player.Position = packet.Position;
-                player.PedRotation = packet.Rotation;
+                player.PedRotation = packet.Rotation * (180 / MathF.PI);
                 player.Velocity = packet.Velocity;
                 player.Health = packet.Health;
                 player.Armor = packet.Armor;
