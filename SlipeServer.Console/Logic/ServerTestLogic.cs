@@ -485,6 +485,15 @@ namespace SlipeServer.Console.Logic
                 this.chatBox.OutputTo(args.Player, "You have randomized marker!", Color.YellowGreen);
             };
 
+            this.commandService.AddCommand("closevehicles").Triggered += (source, args) =>
+            {
+                var vehicles = this.elementRepository.GetWithinRange<Vehicle>(args.Player.Position, 25, ElementType.Vehicle);
+                this.chatBox.OutputTo(args.Player, $"There are {vehicles.Count()} vehicles near you.");
+                foreach (var vehicle in vehicles)
+                    this.chatBox.OutputTo(args.Player, $"- {(VehicleModel)vehicle.Model}.");
+
+            };
+
             this.commandService.AddCommand("camerainterior").Triggered += (source, args) =>
             {
                 if (args.Arguments.Length > 0)

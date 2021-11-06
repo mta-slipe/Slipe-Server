@@ -69,8 +69,10 @@ namespace SlipeServer.Server.Repositories
 
         private void ReInsertElement(Element sender, ElementChangedEventArgs<Vector3> args)
         {
-            var neighbour = this.elements.GetNearestNeighbours(new float[] { args.OldValue.X, args.OldValue.Y, args.OldValue.Z }, 1).SingleOrDefault();
-            if (neighbour != null && neighbour.Value == sender)
+            var neighbour = this.elements
+                .GetNearestNeighbours(new float[] { args.OldValue.X, args.OldValue.Y, args.OldValue.Z }, 8)
+                .SingleOrDefault(x => x.Value == sender);
+            if (neighbour != null)
                 this.elements.RemoveAt(neighbour.Point);
             this.elements.Add(new float[] { args.NewValue.X, args.NewValue.Y, args.NewValue.Z }, args.Source);
         }
