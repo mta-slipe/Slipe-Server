@@ -13,7 +13,7 @@ namespace SlipeServer.Server.Repositories
     {
         public int Count => throw new NotImplementedException();
         private readonly KdTree<float, Element> elements;
-        private object reinsertLock = new();
+        private readonly object reinsertLock = new();
 
         public KdTreeElementRepository()
         {
@@ -68,12 +68,19 @@ namespace SlipeServer.Server.Repositories
                 .Cast<TElement>();
         }
 
+        public IEnumerable<Element> GetNearest(Vector3 position, int count)
+        {
+            return this.elements
+                .GetNearestNeighbours(new float[] { position.X, position.Y, position.Z }, count)
+                .Select(kvPair => kvPair.Value);
+        }
+
         private void ReInsertElement(Element sender, ElementChangedEventArgs<Vector3> args)
         {
             lock (this.reinsertLock)
             {
                 var neighbour = this.elements
-                    .GetNearestNeighbours(new float[] { args.OldValue.X, args.OldValue.Y, args.OldValue.Z }, 8)
+                    .RadialSearch(new float[] { args.OldValue.X, args.OldValue.Y, args.OldValue.Z }, 0.25f)
                     .SingleOrDefault(x => x.Value == sender);
                 if (neighbour != null)
                     this.elements.RemoveAt(neighbour.Point);
