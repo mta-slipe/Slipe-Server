@@ -36,7 +36,6 @@ namespace SlipeServer.Server.Repositories
         public int Count => elements.Count;
         private readonly RBush<RTreeRef> elements;
         private readonly Dictionary<Element, RTreeRef> elementRefs;
-        private readonly object reinsertLock = new();
 
         public RTreeElementRepository()
         {
@@ -46,10 +45,13 @@ namespace SlipeServer.Server.Repositories
 
         public void Add(Element element)
         {
-            element.PositionChanged += ReInsertElement;
-            var elementRef = new RTreeRef(element);
-            this.elements.Insert(elementRef);
-            this.elementRefs[element] = elementRef;
+            lock (element.ElementLock)
+            {
+                element.PositionChanged += ReInsertElement;
+                var elementRef = new RTreeRef(element);
+                this.elements.Insert(elementRef);
+                this.elementRefs[element] = elementRef;
+            }
         }
 
         public Element? Get(uint id)
@@ -62,9 +64,12 @@ namespace SlipeServer.Server.Repositories
 
         public void Remove(Element element)
         {
-            element.PositionChanged -= ReInsertElement;
-            this.elements.Delete(new(element));
-            this.elementRefs.Remove(element);
+            lock (element.ElementLock)
+            {
+                element.PositionChanged -= ReInsertElement;
+                this.elements.Delete(new(element));
+                this.elementRefs.Remove(element);
+            }
         }
 
         public IEnumerable<Element> GetAll()
@@ -101,7 +106,7 @@ namespace SlipeServer.Server.Repositories
 
         private void ReInsertElement(Element element, ElementChangedEventArgs<Vector3> args)
         {
-            lock (this.elementRefs[element])
+            lock (element.ElementLock)
             {
                 this.elements.Delete(this.elementRefs[element]);
 

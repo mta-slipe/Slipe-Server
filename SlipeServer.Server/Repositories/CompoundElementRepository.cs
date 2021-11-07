@@ -1,9 +1,7 @@
 ﻿using SlipeServer.Server.Elements;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using System.Text;
 
 namespace SlipeServer.Server.Repositories
 {
@@ -68,7 +66,7 @@ namespace SlipeServer.Server.Repositories
 
         private KdTreeElementRepository GetKdTreeElementRepository(ElementType elementType)
         {
-            if (! this.spatialRepositories.ContainsKey(elementType))
+            if (!this.spatialRepositories.ContainsKey(elementType))
             {
                 this.spatialRepositories[elementType] = new KdTreeElementRepository();
             }

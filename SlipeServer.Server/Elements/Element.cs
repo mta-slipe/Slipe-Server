@@ -180,6 +180,7 @@ namespace SlipeServer.Server.Elements
         private readonly HashSet<Player> subscribers;
         public IEnumerable<Player> Subscribers => this.subscribers;
 
+        public object ElementLock { get; } = new();
         ref readonly Envelope ISpatialData.Envelope => ref this.envelope;
 
         public Element()

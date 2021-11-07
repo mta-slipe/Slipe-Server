@@ -494,6 +494,21 @@ namespace SlipeServer.Console.Logic
 
             };
 
+            this.commandService.AddCommand("vehicleUpdates").Triggered += (source, args) =>
+            {                
+                for (int i = 0; i < 8; i++)
+                {
+                    Task.Run(async () =>
+                    {
+                        for (int j = 0; j < 250; j++)
+                        {
+                            this.Aircraft!.Position += (j %2 == 0 ? -1 : 1) * Vector3.UnitZ;
+                            await Task.Delay(1);
+                        }
+                    });
+                }
+            };
+
             this.commandService.AddCommand("camerainterior").Triggered += (source, args) =>
             {
                 if (args.Arguments.Length > 0)
