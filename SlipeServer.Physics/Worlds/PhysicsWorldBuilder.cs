@@ -10,6 +10,7 @@ using SlipeServer.Physics.Assets;
 using SlipeServer.Physics.Entities;
 using SlipeServer.Physics.Enum;
 using SlipeServer.Physics.Worlds;
+using SlipeServer.Server.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
@@ -155,7 +156,9 @@ namespace SlipeServer.Physics.Builders
                         var dff = this.assetCollection.GetDff(inst.Id);
                         if (dff != null && this.dffMeshes.TryGetValue(dff, out var mesh))
                         {
-                            world.AddStatic(mesh, inst.Position, inst.Rotation);
+                            var euler = inst.Rotation.ToEuler();
+                            euler = new Vector3(euler.X, euler.Y, -euler.Z);
+                            world.AddStatic(mesh, inst.Position, euler.ToQuaternion());
                         }
                     });
                 } else
@@ -166,7 +169,11 @@ namespace SlipeServer.Physics.Builders
                         if (col != null && this.colMeshes.TryGetValue(col, out var meshes))
                         {
                             foreach (var mesh in meshes)
-                                world.AddStatic(mesh, inst.Position, inst.Rotation);
+                            {
+                                var euler = inst.Rotation.ToEuler();
+                                euler = new Vector3(euler.X, euler.Y, -euler.Z);
+                                world.AddStatic(mesh, inst.Position, euler.ToQuaternion());
+                            }
                         }
                     });
                 }
@@ -184,7 +191,9 @@ namespace SlipeServer.Physics.Builders
                         var dff = this.assetCollection.GetDff(inst.Id);
                         if (dff != null && this.dffMeshes.TryGetValue(dff, out var mesh))
                         {
-                            world.AddStatic(mesh, inst.Position, inst.Rotation);
+                            var euler = inst.Rotation.ToEuler();
+                            euler = new Vector3(euler.X, euler.Y, -euler.Z);
+                            world.AddStatic(mesh, inst.Position, euler.ToQuaternion());
                         }
                     });
                 } else
@@ -195,7 +204,11 @@ namespace SlipeServer.Physics.Builders
                         if (col != null && this.colMeshes.TryGetValue(col, out var meshes))
                         {
                             foreach (var mesh in meshes)
-                                world.AddStatic(mesh, inst.Position, inst.Rotation);
+                            {
+                                var euler = inst.Rotation.ToEuler();
+                                euler = new Vector3(euler.X, euler.Y, -euler.Z);
+                                world.AddStatic(mesh, inst.Position, euler.ToQuaternion());
+                            }
                         }
                     });
                 }
