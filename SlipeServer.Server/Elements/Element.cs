@@ -1,4 +1,6 @@
 ﻿using RBush;
+using SlipeServer.Packets.Definitions.Lua;
+using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Factories;
@@ -183,16 +185,63 @@ namespace SlipeServer.Server.Elements
         public object ElementLock { get; } = new();
         ref readonly Envelope ISpatialData.Envelope => ref this.envelope;
 
+        private Dictionary<string, LuaValue> SyncedData { get; set; }
+        private Dictionary<string, LuaValue> NonSyncedData { get; set; }
+
         public Element()
         {
             this.children = new();
             this.subscribers = new();
             this.TimeContext = 1;
+            this.SyncedData = new();
+            this.NonSyncedData = new();
         }
 
         public Element(Element parent) : this()
         {
             this.Parent = parent;
+        }
+
+        public void SetData(string dataName, LuaValue value, DataSyncType sync = DataSyncType.Local)
+        {
+            LuaValue? oldValue = this.GetData(dataName);
+            if (sync == DataSyncType.Broadcast)
+            {
+                if (this.SyncedData.ContainsKey(name))
+                    this.SyncedData[dataName] = value;
+                else
+                    this.SyncedData.Add(dataName, value);
+            } else if (sync == DataSyncType.Local)
+            {
+                if (this.NonSyncedData.ContainsKey(name))
+                    this.NonSyncedData[dataName] = value;
+                else
+                    this.NonSyncedData.Add(dataName, value);
+            }
+
+            this.DataChanged?.Invoke(this, new ElementDataChangedArgs(dataName, value, oldValue, sync));
+        }
+
+        public LuaValue? GetData(string dataName, bool inherit = false)
+        {
+            LuaValue? value = null;
+            if (this.SyncedData.ContainsKey(dataName))
+                value = this.SyncedData[dataName];
+            if (this.NonSyncedData.ContainsKey(dataName))
+                value = this.NonSyncedData[dataName];
+
+            if (inherit)
+            {
+                foreach (var childElement in this.Children)
+                {
+                    if (childElement.SyncedData.ContainsKey(dataName))
+                        value = childElement.SyncedData[dataName];
+                    if (childElement.NonSyncedData.ContainsKey(dataName))
+                        value = childElement.NonSyncedData[dataName];
+                }
+            }
+
+            return value;
         }
 
         public void AddSubscriber(Player player)
@@ -296,5 +345,6 @@ namespace SlipeServer.Server.Elements
         public event ElementChangedEventHandler<bool>? CallPropagationChanged;
         public event ElementChangedEventHandler<bool>? CollisionEnabledhanged;
         public event Action<Element>? Destroyed;
+        public event ElementEventHandler<Element, ElementDataChangedArgs> DataChanged;
     }
 }
