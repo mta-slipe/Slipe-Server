@@ -74,7 +74,7 @@ namespace SlipeServer.Console
 
                     builder.AddLogic<ServerTestLogic>();
                     builder.AddLogic<LuaTestLogic>();
-                    builder.AddLogic<PhysicsTestLogic>();
+                    //builder.AddLogic<PhysicsTestLogic>();
                 }
             )
             {

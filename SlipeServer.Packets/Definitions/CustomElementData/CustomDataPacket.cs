@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SlipeServer.Packets.Definitions.CustomData
+namespace SlipeServer.Packets.Definitions.CustomElementData
 {
     public class CustomDataPacket : Packet
     {

@@ -113,6 +113,7 @@ namespace SlipeServer.Server.ServerOptions
             builder.AddBehaviour<PickupBehaviour>();
             builder.AddBehaviour<MarkerBehaviour>();
             builder.AddBehaviour<PedSyncBehaviour>();
+            builder.AddBehaviour<CustomDataBehaviour>();
         }
 
         public static void AddDefaultServices(this ServerBuilder builder)

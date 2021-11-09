@@ -415,6 +415,32 @@ namespace SlipeServer.Console.Logic
                 }
             };
 
+            this.commandService.AddCommand("setmydata").Triggered += (sender, args) =>
+            {
+                Player player = args.Player;
+
+
+                string dataName = args.Arguments[0];
+                string value = args.Arguments[1];
+
+                this.chatBox.OutputTo(player, $"This Is setmydata command Handler, key value -> {dataName}, {value}");
+
+
+                player.SetData(dataName, value, DataSyncType.Broadcast);
+            };
+
+            this.commandService.AddCommand("getmydata").Triggered += (sender, args) =>
+            {
+                Player player = args.Player;
+
+                string dataName = args.Arguments[0];
+                //string value = args.Arguments[1];
+
+                var theValue = player.GetData(dataName);
+
+                this.chatBox.OutputTo(player, $"Your Key, Value => {dataName} , {player.GetData(dataName)?.StringValue}");
+            };
+
             this.commandService.AddCommand("vehicle").Triggered += (source, args) =>
             {
                 if (args.Arguments.Length > 0)
