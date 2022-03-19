@@ -2,8 +2,13 @@
 {
     public struct WaterLevels
     {
-        public float SeaLevel { get; init; }
-        public float? OutsideSeaLevel { get; init; }
-        public float? NonSeaLevel { get; init; }
+        public float SeaLevel { get; init; } = 0;
+        public float? OutsideSeaLevel { get; init; } = null;
+        public float? NonSeaLevel { get; init; } = null;
+
+        public WaterLevels()
+        {
+
+        }
     }
 }
