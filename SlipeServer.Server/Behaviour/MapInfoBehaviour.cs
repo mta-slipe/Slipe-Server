@@ -37,7 +37,7 @@ namespace SlipeServer.Server.Behaviour
                 HeatHaze = MapHeatHaze(this.gameWorld.HeatHaze),
                 Time = this.gameWorld.Time,
                 MinuteDuration = this.gameWorld.MinuteDuration,
-                Flags = (default, default, this.gameWorld.CloudsEnabled),
+                Flags = (true, true, this.gameWorld.CloudsEnabled),
                 Gravity = this.gameWorld.Gravity,
                 GameSpeed = this.gameWorld.GameSpeed,
                 WaveHeight = this.gameWorld.WaveHeight,
