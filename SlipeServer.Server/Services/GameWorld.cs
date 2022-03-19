@@ -2,6 +2,7 @@
 using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
+using SlipeServer.Server.Structs;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -10,16 +11,6 @@ using System.Timers;
 
 namespace SlipeServer.Server.Services
 {
-    public struct HeatHaze
-    {
-        public byte Intensity { get; init; }
-        public byte RandomShift { get; init; } = 0;
-        public ushort MinSpeed { get; init; } = 12;
-        public ushort MaxSpeed { get; init; } = 18;
-        public Vector2 ScanSize { get; init; } = new Vector2(75, 80);
-        public Vector2 RenderSize { get; init; } = new Vector2(80, 85);
-        public bool IsEnabledInsideBuildings { get; init; } = false;
-    }
 
     public class GameWorld
     {
@@ -253,6 +244,32 @@ namespace SlipeServer.Server.Services
                         (short)value.Value.RenderSize.Y,
                         value.Value.IsEnabledInsideBuildings
                     ));
+            }
+        }
+
+        private WaterLevels waterLevels;
+        public WaterLevels WaterLevels
+        {
+            get => this.waterLevels;
+            set
+            {
+                this.waterLevels = value;
+                this.server.BroadcastPacket(new SetWaterLevelPacket(value.SeaLevel, false, true, false));
+                if (value.OutsideSeaLevel.HasValue)
+                    this.server.BroadcastPacket(new SetWaterLevelPacket(value.OutsideSeaLevel.Value, false, false, true));
+                if (value.NonSeaLevel.HasValue)
+                    this.server.BroadcastPacket(new SetWaterLevelPacket(value.NonSeaLevel.Value, true, false, false));
+            }
+        }
+
+        private float waveHeight;
+        public float WaveHeight
+        {
+            get => this.waveHeight;
+            set
+            {
+                this.waveHeight = value;
+                this.server.BroadcastPacket(new SetWaveHeightPacket(value));
             }
         }
 

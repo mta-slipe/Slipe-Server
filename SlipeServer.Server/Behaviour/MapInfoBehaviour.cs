@@ -6,6 +6,7 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.Services;
+using SlipeServer.Server.Structs;
 using System;
 using System.Linq;
 using System.Numerics;
@@ -39,10 +40,10 @@ namespace SlipeServer.Server.Behaviour
                 Flags = (default, default, this.gameWorld.CloudsEnabled),
                 Gravity = this.gameWorld.Gravity,
                 GameSpeed = this.gameWorld.GameSpeed,
-                WaveHeight = default,
-                SeaLevel = default,
-                NonSeaLevel = default,
-                OutsideWorldSeaLevel = default,
+                WaveHeight = this.gameWorld.WaveHeight,
+                SeaLevel = this.gameWorld.WaterLevels.SeaLevel,
+                NonSeaLevel = this.gameWorld.WaterLevels.NonSeaLevel,
+                OutsideWorldSeaLevel = this.gameWorld.WaterLevels.OutsideSeaLevel,
                 FpsLimit = default,
                 GarageStates = Enum.GetValues<GarageLocation>().Select(x => this.gameWorld.IsGarageOpen(x)).ToArray(),
                 BugsEnabled = (
