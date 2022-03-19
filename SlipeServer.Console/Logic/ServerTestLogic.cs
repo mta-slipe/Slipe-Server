@@ -585,6 +585,11 @@ namespace SlipeServer.Console.Logic
             {
                 this.worldService.FpsLimit = args.Arguments.Length > 0 ? byte.Parse(args.Arguments[0]) : (byte)0;
             };
+
+            this.commandService.AddCommand("cameramatrix").Triggered += (source, args) =>
+            {
+                args.Player.Camera.SetMatrix(new Vector3(20, 20, 20), new Vector3(200, 200, 0));
+            };
         }
 
         private void OnPlayerJoin(Player player)

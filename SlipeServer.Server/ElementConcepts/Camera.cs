@@ -53,7 +53,7 @@ namespace SlipeServer.Server.Concepts
             this.player.Client.SendPacket(new FadeCameraPacket(fade, fadeTime, color));
         }
 
-        public void SetMatrix(Vector3 position, Vector3 lookAt, float roll = 0, float fov = 0)
+        public void SetMatrix(Vector3 position, Vector3 lookAt, float roll = 0, float fov = 70)
         {
             this.target = null;
             this.Position = position;
