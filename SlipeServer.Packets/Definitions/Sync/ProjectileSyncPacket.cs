@@ -82,31 +82,24 @@ namespace SlipeServer.Packets.Definitions.Sync
         public override byte[] Write()
         {
             var builder = new PacketBuilder();
+
+            builder.Write(this.SourceElement != 0);
             if (this.SourceElement != 0)
             {
-                builder.Write(true);
                 builder.WriteElementId(this.SourceElement);
-
                 builder.WriteCompressed(this.Latency ?? 0);
             }
-            else
-            {
-                builder.Write(false);
-            }
 
+            builder.Write(this.OriginId != 0);
             if (this.OriginId != 0)
             {
-                builder.Write(true);
                 builder.WriteElementId(this.OriginId);
-            }
-            else
-            {
-                builder.Write(false);
             }
 
             builder.WriteVector3WithZAsFloat(this.VecOrigin);
             builder.WriteWeaponType(this.WeaponType);
             builder.Write(this.Model);
+
             switch (this.WeaponType)
             {
                 case 16:            // WEAPONTYPE_GRENADE
@@ -118,15 +111,12 @@ namespace SlipeServer.Packets.Definitions.Sync
                     break;
                 case 19:            // WEAPONTYPE_ROCKET
                 case 20:            // WEAPONTYPE_ROCKET_HS
-                    if (this.TargetId != 0) // INVALID_ELEMENT_ID
+                    builder.Write(this.TargetId != 0);
+                    if (this.TargetId != 0)
                     {
-                        builder.Write(true);
                         builder.Write(this.TargetId);
                     }
-                    else
-                    {
-                        builder.Write(false);
-                    }
+
                     builder.WriteVelocityVector(this.MoveSpeed);
                     builder.Write(this.Rotation);
                     break;
