@@ -546,6 +546,14 @@ namespace SlipeServer.Console.Logic
             {
                 this.Ped2!.PedRotation = args.Player.PedRotation;
             };
+
+            this.commandService.AddCommand("heatmebro").Triggered += (source, args) =>
+            {
+                this.worldService.HeatHaze = new HeatHaze()
+                {
+                    Intensity = args.Arguments.Length > 0 ? byte.Parse(args.Arguments[0]) : (byte)0,
+                };
+            };
         }
 
         private void OnPlayerJoin(Player player)

@@ -33,7 +33,7 @@ namespace SlipeServer.Server.Behaviour
                 WeatherBlendingTo = this.gameWorld.Weather,
                 BlendedWeatherHour = this.gameWorld.WeatherBlendStopHour,
                 SkyGradient = this.gameWorld.GetSkyGradient(),
-                HeatHaze = default,
+                HeatHaze = MapHeatHaze(this.gameWorld.HeatHaze),
                 Time = this.gameWorld.Time,
                 MinuteDuration = this.gameWorld.MinuteDuration,
                 Flags = (default, default, this.gameWorld.CloudsEnabled),
@@ -80,6 +80,17 @@ namespace SlipeServer.Server.Behaviour
                 RemovedWorldModels = Array.Empty<(ushort model, float radius, Vector3 position, byte interior)>(),
                 OcclusionsEnabled = this.gameWorld.OcclusionsEnabled,
             }.SendTo(player);
+        }
+
+        private (byte intensity, byte randomShift, ushort speedMin, ushort speedMax, short scanSizeX, short scanSizeY, ushort renderSizeX, ushort renderSizeY, bool isInsideBuilder)? MapHeatHaze(HeatHaze? heatHaze)
+        {
+            if (heatHaze == null)
+                return null;
+
+            return (heatHaze.Value.Intensity, heatHaze.Value.RandomShift, heatHaze.Value.MinSpeed, heatHaze.Value.MaxSpeed,
+                (short)heatHaze.Value.ScanSize.X, (short)heatHaze.Value.ScanSize.Y,
+                (ushort)heatHaze.Value.RenderSize.X, (ushort)heatHaze.Value.RenderSize.Y,
+                heatHaze.Value.IsEnabledInsideBuildings);
         }
 
         private MapInfoWeaponConfiguration MapWeaponConfiguration(WeaponConfiguration weaponConfiguration)

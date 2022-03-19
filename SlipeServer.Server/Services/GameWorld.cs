@@ -6,11 +6,21 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
-using System.Text;
 using System.Timers;
 
 namespace SlipeServer.Server.Services
 {
+    public struct HeatHaze
+    {
+        public byte Intensity { get; init; }
+        public byte RandomShift { get; init; } = 0;
+        public ushort MinSpeed { get; init; } = 12;
+        public ushort MaxSpeed { get; init; } = 18;
+        public Vector2 ScanSize { get; init; } = new Vector2(75, 80);
+        public Vector2 RenderSize { get; init; } = new Vector2(80, 85);
+        public bool IsEnabledInsideBuildings { get; init; } = false;
+    }
+
     public class GameWorld
     {
         private readonly MtaServer server;
@@ -222,6 +232,30 @@ namespace SlipeServer.Server.Services
             }
         }
 
+        private HeatHaze? heatHaze = null;
+        public HeatHaze? HeatHaze
+        {
+            get => this.heatHaze;
+            set
+            {
+                this.heatHaze = value;
+                if (value == null)
+                    this.server.BroadcastPacket(new SetHeatHazePacket(0));
+                else
+                    this.server.BroadcastPacket(new SetHeatHazePacket(
+                        value.Value.Intensity,
+                        value.Value.RandomShift,
+                        value.Value.MinSpeed,
+                        value.Value.MaxSpeed,
+                        (short)value.Value.ScanSize.X,
+                        (short)value.Value.ScanSize.Y,
+                        (short)value.Value.RenderSize.X,
+                        (short)value.Value.RenderSize.Y,
+                        value.Value.IsEnabledInsideBuildings
+                    ));
+            }
+        }
+
         #endregion
 
         public GameWorld(MtaServer server)
@@ -278,7 +312,7 @@ namespace SlipeServer.Server.Services
             player.Client.SendPacket(new SetCloudsEnabledPacket(this.cloudsEnabled));
             player.Client.SendPacket(new SetGameSpeedPacket(this.gameSpeed));
 
-            foreach(var kvPair in this.garageStates)
+            foreach (var kvPair in this.garageStates)
             {
                 player.Client.SendPacket(new SetGarageOpenPacket((byte)kvPair.Key, kvPair.Value));
             }

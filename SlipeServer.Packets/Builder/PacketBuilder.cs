@@ -242,5 +242,17 @@ namespace SlipeServer.Packets.Builder
                 }
             }
         }
+
+        public void WriteRange(ushort value, int bits, ushort min, ushort max)
+        {
+            value = (ushort)(Math.Clamp(value, min, max) - min);
+            WriteCapped(value, bits);
+        }
+
+        public void WriteRange(short value, int bits, short min, short max)
+        {
+            value = (short)(Math.Clamp(value, min, max) - min);
+            WriteCapped(value, bits);
+        }
     }
 }

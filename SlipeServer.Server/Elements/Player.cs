@@ -169,11 +169,6 @@ namespace SlipeServer.Server.Elements
             });
         }
 
-        public void Kill(WeaponType damageType = WeaponType.WEAPONTYPE_UNARMED, BodyPart bodyPart = BodyPart.Torso)
-        {
-            this.Kill(null, damageType, bodyPart);
-        }
-
         public void VoiceDataStart(byte[] voiceData)
         {
             if (!this.IsVoiceMuted)
