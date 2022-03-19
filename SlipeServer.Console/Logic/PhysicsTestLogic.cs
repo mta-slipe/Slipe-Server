@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using SlipeServer.Physics.Entities;
+using SlipeServer.Physics.Enum;
 using SlipeServer.Physics.Services;
 using SlipeServer.Physics.Worlds;
 using SlipeServer.Server;
@@ -39,7 +40,7 @@ namespace SlipeServer.Console.Logic
             string? gtaDirectory = GetGtasaDirectory();
 
             this.physicsWorld = physicsService.CreateEmptyPhysicsWorld(new Vector3(0, 0, -1f));
-            //this.physicsWorld = physicsService.CreatePhysicsWorldFromGtaDirectory(gtaDirectory ?? "gtasa", "gta.dat", builderAction: (builder) =>
+            //this.physicsWorld = physicsService.CreatePhysicsWorldFromGtaDirectory(gtaDirectory ?? "gtasa", "gta.dat", PhysicsModelLoadMode.Col, builderAction: (builder) =>
             //{
             //    builder.SetGravity(Vector3.UnitZ * -1.0f);
             //});
@@ -50,6 +51,7 @@ namespace SlipeServer.Console.Logic
             commandService.AddCommand("ball").Triggered += HandleBallCommand;
             commandService.AddCommand("startsim").Triggered += HandleStartSimCommand;
             commandService.AddCommand("stopsim").Triggered += HandleStopSimCommand;
+            commandService.AddCommand("heightmap").Triggered += (s, a) => GenerateRaycastedHeightMap();
 
             Init();
             GenerateRaycastedImage(new Vector3(50, 0, 3));
@@ -164,6 +166,34 @@ namespace SlipeServer.Console.Logic
             this.logger.LogInformation($"Raycast image generated in {time.TotalMilliseconds}ms");
 
             output.Save("rayresult.png", ImageFormat.Png);
+        }
+
+        private void GenerateRaycastedHeightMap()
+        {
+            var width = 6000;
+            var height = 6000;
+            var depth = 900f;
+
+            var direction = new Vector3(0, 0, -1);
+
+            Bitmap output = new Bitmap(width, height);
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    var from = new Vector3(x - width / 2, y - height / 2, 800);
+                    var hit = this.physicsWorld.RayCast(from, direction, depth);
+                    if (hit.HasValue)
+                    {
+                        var intensity = 255 - (byte)(hit.Value.distance / depth * 255);
+                        var color = Color.FromArgb(255, intensity, intensity, intensity);
+                        output.SetPixel(x, height - y - 1, color);
+                    }
+                }
+            }
+            this.logger.LogInformation($"Heightmap generated");
+
+            output.Save("heightmap.png", ImageFormat.Png);
         }
 
         private string? GetGtasaDirectory()
