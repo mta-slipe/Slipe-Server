@@ -1,4 +1,5 @@
-﻿using SlipeServer.Packets.Definitions.Lua.Rpc.World;
+﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
+using SlipeServer.Packets.Definitions.Lua.Rpc.World;
 using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
@@ -295,6 +296,17 @@ namespace SlipeServer.Server.Services
             {
                 this.maxJetpackHeight = value;
                 this.server.BroadcastPacket(new SetJetpackMaxHeightPacket(value));
+            }
+        }
+
+        private byte fpsLimit = 60;
+        public byte FpsLimit
+        {
+            get => this.fpsLimit;
+            set
+            {
+                this.fpsLimit = value;
+                this.server.BroadcastPacket(new SetFPSLimitPacket(value));
             }
         }
 

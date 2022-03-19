@@ -580,6 +580,11 @@ namespace SlipeServer.Console.Logic
             {
                 this.worldService.MaxJetpackHeight = args.Arguments.Length > 0 ? float.Parse(args.Arguments[0]) : (float)0;
             };
+
+            this.commandService.AddCommand("fpslimit").Triggered += (source, args) =>
+            {
+                this.worldService.FpsLimit = args.Arguments.Length > 0 ? byte.Parse(args.Arguments[0]) : (byte)0;
+            };
         }
 
         private void OnPlayerJoin(Player player)

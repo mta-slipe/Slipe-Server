@@ -44,7 +44,7 @@ namespace SlipeServer.Server.Behaviour
                 SeaLevel = this.gameWorld.WaterLevels.SeaLevel,
                 NonSeaLevel = this.gameWorld.WaterLevels.NonSeaLevel,
                 OutsideWorldSeaLevel = this.gameWorld.WaterLevels.OutsideSeaLevel,
-                FpsLimit = default,
+                FpsLimit = this.gameWorld.FpsLimit,
                 GarageStates = Enum.GetValues<GarageLocation>().Select(x => this.gameWorld.IsGarageOpen(x)).ToArray(),
                 BugsEnabled = (
                     this.gameWorld.IsGlitchEnabled(GlitchType.GLITCH_CLOSEDAMAGE),
