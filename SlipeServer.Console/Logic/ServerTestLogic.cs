@@ -437,7 +437,10 @@ namespace SlipeServer.Console.Logic
             {
                 if (args.Arguments.Length > 0)
                 {
-                    if (ushort.TryParse(args.Arguments[0], out ushort model))
+                    if (Enum.TryParse<PedModel>(args.Arguments[0], true, out var pedModel))
+                    {
+                        args.Player.Model = (ushort)pedModel;
+                    } else if (ushort.TryParse(args.Arguments[0], out ushort model))
                     {
                         args.Player.Model = model;
                     }

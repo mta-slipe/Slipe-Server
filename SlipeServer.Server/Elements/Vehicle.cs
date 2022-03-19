@@ -36,7 +36,7 @@ namespace SlipeServer.Server.Elements
         public byte Variant2 { get; set; } = 0;
         public Vector3 RespawnPosition { get; set; }
         public Vector3 RespawnRotation { get; set; }
-        public float RespawnHealth { get; set; }
+        public float RespawnHealth { get; set; } = 1000;
 
         private Vector2? turretRotation;
         public Vector2? TurretRotation
