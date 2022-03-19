@@ -11,7 +11,7 @@ pr:
 - development
 
 pool:
-  vmImage: 'windows-latest'
+  vmImage: 'windows-2022'
 
 variables:
   solution: '**/*.sln'
@@ -23,7 +23,7 @@ steps:
   inputs:
     packageType: 'sdk'
     version: '6.x'
-    
+
 - task: DotNetCoreCLI@2
   displayName: 'dotnet restore'
   inputs:
