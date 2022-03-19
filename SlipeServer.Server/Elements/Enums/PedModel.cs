@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace SlipeServer.Server.Elements.Enums
 {
-    public enum PedModel
-    { 
+    public enum PedModel : ushort
+    {
         Cj = 0,
         Truth = 1,
         Maccer = 2,

@@ -75,11 +75,6 @@ namespace SlipeServer.Packets.Definitions.Vehicles
             this.RemoteModel = reader.GetInt32();
             this.Position = reader.GetVector3WithZAsFloat();
 
-            this.CameraOrientation = new CameraOrientationStructure(this.Position);
-            this.CameraOrientation.Read(reader);
-
-            this.Seat = reader.GetVehicleSeat();
-
             bool isTrain = false;
             if (isTrain)
             {
@@ -88,6 +83,11 @@ namespace SlipeServer.Packets.Definitions.Vehicles
                 this.TrainTrack = reader.GetByte();
                 this.TrainSpeed = reader.GetFloat();
             }
+
+            this.CameraOrientation = new CameraOrientationStructure(this.Position);
+            this.CameraOrientation.Read(reader);
+
+            this.Seat = reader.GetVehicleSeat();
 
             if (this.Seat == 0)
             {
@@ -129,7 +129,7 @@ namespace SlipeServer.Packets.Definitions.Vehicles
                     this.WeaponAmmo = reader.GetAmmo();
                     this.WeaponAmmoInClip = reader.GetAmmo();
 
-                    this.AimArm = ((reader.GetUint16()) * MathF.PI / 180) / 90.0f;
+                    this.AimArm = ((reader.GetInt16()) * MathF.PI / 180) / 90.0f;
                     this.AimOrigin = reader.GetVector3();
                     this.AimDirection = reader.GetNormalizedVector();
                     this.VehicleAimDirection = (VehicleAimDirection)reader.GetByteCapped(2);
@@ -151,7 +151,7 @@ namespace SlipeServer.Packets.Definitions.Vehicles
                 if (VehicleConstants.VehiclesWithDoors.Contains(this.RemoteModel))
                 {
                     this.DoorOpenRatios = new float[6];
-                    for (int i = 0; i < 6; i++)
+                    for (int i = 2; i < 6; i++)
                     {
                         bool isNotCompressed = reader.GetBit();
                         if (!isNotCompressed)
@@ -246,7 +246,7 @@ namespace SlipeServer.Packets.Definitions.Vehicles
 
                 if (VehicleConstants.VehiclesWithDoors.Contains(this.RemoteModel) && this.DoorOpenRatios != null)
                 {
-                    for (int i = 0; i < 6; i++)
+                    for (int i = 2; i < 6; i++)
                     {
                         var ratio = this.DoorOpenRatios[i];
                         if (ratio == 0 || ratio == 1)
@@ -255,7 +255,7 @@ namespace SlipeServer.Packets.Definitions.Vehicles
                             builder.Write(ratio == 1);
                         } else
                         {
-                            builder.Write(false);
+                            builder.Write(true);
                             builder.WriteFloatFromBits(ratio, 12, 0.0f, 1.0f, true);
                         }
                     }
