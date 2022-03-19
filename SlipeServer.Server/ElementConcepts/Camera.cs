@@ -7,7 +7,7 @@ using System.Drawing;
 using System.Numerics;
 using System.Text;
 
-namespace SlipeServer.Server.ElementConcepts
+namespace SlipeServer.Server.Concepts
 {
     public class Camera
     {

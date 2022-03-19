@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -8,7 +9,7 @@ using SlipeServer.Server.Elements.Events;
 
 namespace SlipeServer.Server.Elements
 {
-    public class Team : Element
+    public class Team : Element, IEnumerable
     {
         public override ElementType ElementType => ElementType.Team;
 
@@ -29,5 +30,7 @@ namespace SlipeServer.Server.Elements
         {
             return server.AssociateElement(this);
         }
+
+        public IEnumerator GetEnumerator() => Players.GetEnumerator();
     }
 }

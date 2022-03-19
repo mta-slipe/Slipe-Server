@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
+using SlipeServer.Packets.Definitions.Ped;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.PacketHandling.Factories;
@@ -36,7 +37,23 @@ namespace SlipeServer.Server.Behaviour
                 ped.WeaponRemoved += RelayPedWeaponRemove;
                 ped.AmmoUpdated += RelayPedAmmoCountUpdate;
                 ped.JetpackStateChanged += RelayJetpackStateChanged;
+
+                if (ped is not Player)
+                {
+                    ped.Wasted += RelayPedWasted;
+                }
             }
+        }
+
+        private void RelayPedWasted(Ped sender, PedWastedEventArgs e)
+        {
+            var packet = new PedWastedPacket(
+                e.Source.Id, e.Killer?.Id ?? 0, (byte)e.WeaponType, (byte)e.BodyPart, e.Ammo, false, sender.GetAndIncrementTimeContext(), e.AnimationGroup, e.AnimationId
+            )
+            {
+                Ammo = e.Ammo
+            };
+            this.server.BroadcastPacket(packet);
         }
 
         private void RelayJetpackStateChanged(Element sender, ElementChangedEventArgs<Ped, bool> args)

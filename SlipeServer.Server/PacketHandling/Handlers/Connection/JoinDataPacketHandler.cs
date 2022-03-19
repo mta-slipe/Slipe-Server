@@ -1,16 +1,38 @@
 ﻿using MTAServerWrapper.Packets.Outgoing.Connection;
 using SlipeServer.Packets.Definitions.Join;
+using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 using SlipeServer.Packets.Enums;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Connection
 {
     public class JoinDataPacketHandler : IPacketHandler<PlayerJoinDataPacket>
     {
+        private readonly Configuration configuration;
+
         public PacketId PacketId => PacketId.PACKET_ID_PLAYER_JOINDATA;
+
+        public JoinDataPacketHandler(Configuration configuration)
+        {
+            this.configuration = configuration;
+        }
 
         public void HandlePacket(Client client, PlayerJoinDataPacket packet)
         {
+            if (this.configuration.Password != null)
+            {
+                using var md5 = MD5.Create();
+                var hash = md5.ComputeHash(Encoding.ASCII.GetBytes(this.configuration.Password));
+                if (!hash.SequenceEqual(packet.Password))
+                {
+                    client.SendPacket(new PlayerDisconnectPacket(PlayerDisconnectType.INVALID_PASSWORD, "Incorrect password"));
+                    return;
+                }
+            }
+
             string osName =
                 RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "Windows" :
                 RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "Mac OS" :

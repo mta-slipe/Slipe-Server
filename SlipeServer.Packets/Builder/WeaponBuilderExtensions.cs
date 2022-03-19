@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Text;
+﻿using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Builder
 {
@@ -25,5 +22,23 @@ namespace SlipeServer.Packets.Builder
                 builder.WriteCompressed(inClip.Value);
         }
 
+        public static void Write(this PacketBuilder builder, MapInfoWeaponConfiguration weaponConfiguration)
+        {
+            builder.Write(weaponConfiguration.WeaponType);
+            builder.Write(weaponConfiguration.TargetRange);
+            builder.Write(weaponConfiguration.WeaponRange);
+            builder.Write(weaponConfiguration.Flags);
+            builder.Write(weaponConfiguration.MaximumClipAmmo);
+            builder.Write(weaponConfiguration.Damage);
+            builder.Write(weaponConfiguration.Accuracy);
+            builder.Write(weaponConfiguration.MoveSpeed);
+            builder.Write(weaponConfiguration.AnimationLoopStart);
+            builder.Write(weaponConfiguration.AnimationLoopStop);
+            builder.Write(weaponConfiguration.AnimationLoopBulletFire);
+            builder.Write(weaponConfiguration.Animation2LoopStart);
+            builder.Write(weaponConfiguration.Animation2LoopStop);
+            builder.Write(weaponConfiguration.Animation2LoopBulletFire);
+            builder.Write(weaponConfiguration.AnimationBreakoutTime);
+        }
     }
 }

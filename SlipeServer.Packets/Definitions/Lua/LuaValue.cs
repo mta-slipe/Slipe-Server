@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -7,6 +8,7 @@ using System.Text.Json.Serialization;
 
 namespace SlipeServer.Packets.Definitions.Lua
 {
+    [DebuggerDisplay("LuaValue")]
     public class LuaValue
     {
         public LuaType LuaType { get; set; }
@@ -63,7 +65,7 @@ namespace SlipeServer.Packets.Definitions.Lua
 
         public LuaValue(uint? value)
         {
-            this.LuaType = LuaType.LightUserdata;
+            this.LuaType = LuaType.Userdata;
             this.ElementId = value;
             this.IsNil = value == null;
         }
@@ -105,6 +107,7 @@ namespace SlipeServer.Packets.Definitions.Lua
                 "nil";
         }
 
+        public static implicit operator LuaValue(uint value) => new(value);
         public static implicit operator LuaValue(string value) => new(value);
         public static implicit operator LuaValue(bool value) => new(value);
         public static implicit operator LuaValue(int value) => new(value);

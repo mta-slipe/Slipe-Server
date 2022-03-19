@@ -11,7 +11,7 @@ pr:
 - development
 
 pool:
-  vmImage: 'windows-latest'
+  vmImage: 'windows-2022'
 
 variables:
   solution: '**/*.sln'
@@ -19,6 +19,11 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '6.x'
+
 - task: DotNetCoreCLI@2
   displayName: 'dotnet restore'
   inputs:
@@ -39,7 +44,7 @@ steps:
   displayName: 'dotnet pack'
   inputs:
     command: 'pack'
-    packagesToPack: '**/SlipeServer.Packets.csproj;**/SlipeServer.Net.csproj;**/SlipeServer.Server.csproj;**/SlipeServer.Server.TestTools.csproj;**/SlipeServer.Scripting.csproj;**/SlipeServer.Lua.csproj'
+    packagesToPack: '**/SlipeServer.Packets.csproj;**/SlipeServer.Net.csproj;**/SlipeServer.Server.csproj;**/SlipeServer.Server.TestTools.csproj;**/SlipeServer.Scripting.csproj;**/SlipeServer.Lua.csproj;**/SlipeServer.Physics.csproj;**/SlipeServer.SourceGenerators.csproj'
     versioningScheme: 'byPrereleaseNumber'
     majorVersion: '0'
     minorVersion: '1'

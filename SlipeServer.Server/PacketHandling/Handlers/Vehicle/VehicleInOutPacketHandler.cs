@@ -308,7 +308,7 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle
                 OutActionId = VehicleInOutActionReturns.RequestOutConfirmed,
                 Door = packet.Door
             };
-            replyPacket.SendTo(client);
+            this.server.BroadcastPacket(replyPacket);
         }
 
         private void HandleNotifyOut(Client client, Elements.Vehicle vehicle, VehicleInOutPacket packet)

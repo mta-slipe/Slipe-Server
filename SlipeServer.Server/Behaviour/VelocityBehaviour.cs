@@ -37,7 +37,7 @@ namespace SlipeServer.Server.Behaviour
 
         private void OnElementCreate(Element element)
         {
-            if (!(element is Player) && !(element is Vehicle))
+            if (!(element is Ped) && !(element is Vehicle))
             {
                 element.VelocityChanged += (sender, args) =>
                 {
