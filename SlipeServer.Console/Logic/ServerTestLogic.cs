@@ -575,6 +575,11 @@ namespace SlipeServer.Console.Logic
             {
                 this.worldService.WaveHeight = args.Arguments.Length > 0 ? float.Parse(args.Arguments[0]) : (float)0;
             };
+
+            this.commandService.AddCommand("maxjetpack").Triggered += (source, args) =>
+            {
+                this.worldService.MaxJetpackHeight = args.Arguments.Length > 0 ? float.Parse(args.Arguments[0]) : (float)0;
+            };
         }
 
         private void OnPlayerJoin(Player player)

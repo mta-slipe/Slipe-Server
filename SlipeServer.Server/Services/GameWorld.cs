@@ -273,7 +273,7 @@ namespace SlipeServer.Server.Services
             }
         }
 
-        public Color? waterColor;
+        private Color? waterColor;
         public Color? WaterColor
         {
             get => this.waterColor;
@@ -284,6 +284,17 @@ namespace SlipeServer.Server.Services
                     this.server.BroadcastPacket(new ResetWaterColorPacket());
                 else
                     this.server.BroadcastPacket(new SetWaterColorPacket(value.Value));
+            }
+        }
+
+        private float maxJetpackHeight = 100;
+        public float MaxJetpackHeight
+        {
+            get => this.maxJetpackHeight;
+            set
+            {
+                this.maxJetpackHeight = value;
+                this.server.BroadcastPacket(new SetJetpackMaxHeightPacket(value));
             }
         }
 

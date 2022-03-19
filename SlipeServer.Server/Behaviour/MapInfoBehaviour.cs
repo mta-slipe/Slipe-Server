@@ -57,8 +57,8 @@ namespace SlipeServer.Server.Behaviour
                     this.gameWorld.IsGlitchEnabled(GlitchType.GLITCH_BADDRIVEBYHITBOX),
                     this.gameWorld.IsGlitchEnabled(GlitchType.GLITCH_QUICKSTAND)
                 ),
-                MaximumJetpackHeight = default,
-                WaterColor = default,
+                MaximumJetpackHeight = this.gameWorld.MaxJetpackHeight,
+                WaterColor = this.gameWorld.WaterColor,
                 AreInteriorSoundsEnabled = this.gameWorld.AreInteriorSoundsEnabled,
                 RainLevel = this.gameWorld.RainLevel,
                 MoonSize = this.gameWorld.MoonSize,
