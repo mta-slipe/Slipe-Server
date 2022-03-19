@@ -243,6 +243,7 @@ namespace SlipeServer.Server
             this.serviceCollection.AddSingleton<ExplosionService>();
             this.serviceCollection.AddSingleton<FireService>();
             this.serviceCollection.AddSingleton<TextItemService>();
+            this.serviceCollection.AddSingleton<WeaponConfigurationService>();
             this.serviceCollection.AddSingleton<CommandService>();
 
             this.serviceCollection.AddSingleton<HttpClient>();

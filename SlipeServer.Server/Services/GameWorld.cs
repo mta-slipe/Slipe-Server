@@ -1,16 +1,18 @@
-﻿using SlipeServer.Packets.Definitions.Lua.Rpc.World;
+﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
+using SlipeServer.Packets.Definitions.Lua.Rpc.World;
 using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
+using SlipeServer.Server.Structs;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
-using System.Text;
 using System.Timers;
 
 namespace SlipeServer.Server.Services
 {
+
     public class GameWorld
     {
         private readonly MtaServer server;
@@ -33,7 +35,20 @@ namespace SlipeServer.Server.Services
 
         #region Properties
 
-        public byte Weather { get; set; }
+        public (byte hour, byte minute) Time => (this.hour, this.minute);
+
+        private byte weather;
+        public byte Weather
+        {
+            get => this.weather;
+            set
+            {
+                this.weather = value;
+                this.PreviousWeather = value;
+            }
+        }
+        public byte PreviousWeather { get; private set; }
+        public byte WeatherBlendStopHour { get; private set; }
 
         private float? fogDistance;
         public float? FogDistance
@@ -125,7 +140,7 @@ namespace SlipeServer.Server.Services
         }
 
         private bool interiorSoundsEnabled = true;
-        public bool InteriorSoundsEnabled
+        public bool AreInteriorSoundsEnabled
         {
 
             get => this.interiorSoundsEnabled;
@@ -209,6 +224,92 @@ namespace SlipeServer.Server.Services
             }
         }
 
+        private HeatHaze? heatHaze = null;
+        public HeatHaze? HeatHaze
+        {
+            get => this.heatHaze;
+            set
+            {
+                this.heatHaze = value;
+                if (value == null)
+                    this.server.BroadcastPacket(new SetHeatHazePacket(0));
+                else
+                    this.server.BroadcastPacket(new SetHeatHazePacket(
+                        value.Value.Intensity,
+                        value.Value.RandomShift,
+                        value.Value.MinSpeed,
+                        value.Value.MaxSpeed,
+                        (short)value.Value.ScanSize.X,
+                        (short)value.Value.ScanSize.Y,
+                        (short)value.Value.RenderSize.X,
+                        (short)value.Value.RenderSize.Y,
+                        value.Value.IsEnabledInsideBuildings
+                    ));
+            }
+        }
+
+        private WaterLevels waterLevels;
+        public WaterLevels WaterLevels
+        {
+            get => this.waterLevels;
+            set
+            {
+                this.waterLevels = value;
+                this.server.BroadcastPacket(new SetWaterLevelPacket(value.SeaLevel, false, true, false));
+                if (value.OutsideSeaLevel.HasValue)
+                    this.server.BroadcastPacket(new SetWaterLevelPacket(value.OutsideSeaLevel.Value, false, false, true));
+                if (value.NonSeaLevel.HasValue)
+                    this.server.BroadcastPacket(new SetWaterLevelPacket(value.NonSeaLevel.Value, true, false, false));
+            }
+        }
+
+        private float waveHeight;
+        public float WaveHeight
+        {
+            get => this.waveHeight;
+            set
+            {
+                this.waveHeight = value;
+                this.server.BroadcastPacket(new SetWaveHeightPacket(value));
+            }
+        }
+
+        private Color? waterColor;
+        public Color? WaterColor
+        {
+            get => this.waterColor;
+            set
+            {
+                this.waterColor = value;
+                if (value == null)
+                    this.server.BroadcastPacket(new ResetWaterColorPacket());
+                else
+                    this.server.BroadcastPacket(new SetWaterColorPacket(value.Value));
+            }
+        }
+
+        private float maxJetpackHeight = 100;
+        public float MaxJetpackHeight
+        {
+            get => this.maxJetpackHeight;
+            set
+            {
+                this.maxJetpackHeight = value;
+                this.server.BroadcastPacket(new SetJetpackMaxHeightPacket(value));
+            }
+        }
+
+        private byte fpsLimit = 60;
+        public byte FpsLimit
+        {
+            get => this.fpsLimit;
+            set
+            {
+                this.fpsLimit = value;
+                this.server.BroadcastPacket(new SetFPSLimitPacket(value));
+            }
+        }
+
         #endregion
 
         public GameWorld(MtaServer server)
@@ -265,7 +366,7 @@ namespace SlipeServer.Server.Services
             player.Client.SendPacket(new SetCloudsEnabledPacket(this.cloudsEnabled));
             player.Client.SendPacket(new SetGameSpeedPacket(this.gameSpeed));
 
-            foreach(var kvPair in this.garageStates)
+            foreach (var kvPair in this.garageStates)
             {
                 player.Client.SendPacket(new SetGarageOpenPacket((byte)kvPair.Key, kvPair.Value));
             }
@@ -294,7 +395,7 @@ namespace SlipeServer.Server.Services
             player.Client.SendPacket(new SetTrafficLightStatePacket((byte)this.trafficLightState, this.trafficLightStateForced));
             player.Client.SendPacket(new SetWeatherPacket(this.Weather));
             player.Client.SendPacket(new SetWindVelocityPacket(this.windVelocity));
-            foreach (var item in enabledGlitches)
+            foreach (var item in this.enabledGlitches)
                 player.Client.SendPacket(new SetGlitchEnabledPacket((byte)item.Key, item.Value));
         }
 
@@ -308,7 +409,9 @@ namespace SlipeServer.Server.Services
 
         public void SetWeatherBlended(byte weather, byte hours = 1)
         {
-            this.Weather = weather;
+            this.PreviousWeather = this.weather;
+            this.weather = weather;
+            this.WeatherBlendStopHour = (byte)(this.hour + hours);
             this.server.BroadcastPacket(new SetWeatherBlendedPacket(weather, (byte)((this.hour + hours) % 24)));
         }
 
@@ -346,10 +449,10 @@ namespace SlipeServer.Server.Services
             this.server.BroadcastPacket(new SetSkyGradientPacket(top, bottom));
         }
 
-        public Tuple<Color, Color>? GetSkyGradient()
+        public (Color, Color)? GetSkyGradient()
         {
             return (this.skyGradientTopColor != null && this.skyGradientBottomColor != null) ?
-                new Tuple<Color, Color>(this.skyGradientTopColor.Value, this.skyGradientBottomColor.Value) :
+                (this.skyGradientTopColor.Value, this.skyGradientBottomColor.Value) :
                 null;
         }
 
@@ -361,10 +464,10 @@ namespace SlipeServer.Server.Services
             this.server.BroadcastPacket(new SetSunColorPacket(core, corona));
         }
 
-        public Tuple<Color, Color>? GetSunColor()
+        public (Color, Color)? GetSunColor()
         {
             return (this.sunCoreColor != null && this.sunCoronaColor != null) ?
-                new Tuple<Color, Color>(this.sunCoreColor.Value, this.sunCoronaColor.Value) :
+                (this.sunCoreColor.Value, this.sunCoronaColor.Value) :
                 null;
         }
 

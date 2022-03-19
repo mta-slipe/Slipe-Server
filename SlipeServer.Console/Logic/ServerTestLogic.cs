@@ -15,6 +15,7 @@ using SlipeServer.Server.Repositories;
 using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.Services;
+using SlipeServer.Server.Structs;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -545,6 +546,44 @@ namespace SlipeServer.Console.Logic
             this.commandService.AddCommand("rotateped").Triggered += (source, args) =>
             {
                 this.Ped2!.PedRotation = args.Player.PedRotation;
+            };
+
+            this.commandService.AddCommand("heatmebro").Triggered += (source, args) =>
+            {
+                this.worldService.HeatHaze = new HeatHaze()
+                {
+                    Intensity = args.Arguments.Length > 0 ? byte.Parse(args.Arguments[0]) : (byte)0,
+                };
+            };
+
+            this.commandService.AddCommand("water").Triggered += (source, args) =>
+            {
+                this.worldService.WaterLevels = new WaterLevels()
+                {
+                    SeaLevel = args.Arguments.Length > 0 ? float.Parse(args.Arguments[0]) : (float)0,
+                };
+            };
+
+            this.commandService.AddCommand("watercolor").Triggered += (source, args) =>
+            {
+                this.worldService.WaterColor = args.Arguments.Length > 0 ? 
+                    Color.FromKnownColor(Enum.Parse<KnownColor>(args.Arguments[0], true)) : 
+                    null;
+            };
+
+            this.commandService.AddCommand("wave").Triggered += (source, args) =>
+            {
+                this.worldService.WaveHeight = args.Arguments.Length > 0 ? float.Parse(args.Arguments[0]) : (float)0;
+            };
+
+            this.commandService.AddCommand("maxjetpack").Triggered += (source, args) =>
+            {
+                this.worldService.MaxJetpackHeight = args.Arguments.Length > 0 ? float.Parse(args.Arguments[0]) : (float)0;
+            };
+
+            this.commandService.AddCommand("fpslimit").Triggered += (source, args) =>
+            {
+                this.worldService.FpsLimit = args.Arguments.Length > 0 ? byte.Parse(args.Arguments[0]) : (byte)0;
             };
         }
 
