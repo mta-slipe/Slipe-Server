@@ -30,6 +30,8 @@ using SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync;
 using SlipeServer.Server.PacketHandling.Handlers.Voice;
 using SlipeServer.Server.Repositories;
 using System.IO;
+using SlipeServer.Packets.Definitions.Ped;
+using SlipeServer.Server.PacketHandling.QueueHandlers;
 
 namespace SlipeServer.Server.ServerOptions
 {
@@ -76,6 +78,10 @@ namespace SlipeServer.Server.ServerOptions
             builder.AddPacketHandler<VoiceEndPacketHandler, VoiceEndPacket>();
 
             builder.AddPacketHandler<TransgressionPacketHandler, TransgressionPacket>();
+
+            builder.AddPacketHandler<PedSyncPacketHandler, PedSyncPacket>();
+            builder.AddPacketHandler<PedTaskPacketHandler, PedTaskPacket>();
+            builder.AddPacketHandler<PedWastedPacketHandler, PedWastedPacket>();
         }
 
         public static void AddDefaultBehaviours(this ServerBuilder builder)
@@ -107,6 +113,7 @@ namespace SlipeServer.Server.ServerOptions
             builder.AddBehaviour<PickupBehaviour>();
             builder.AddBehaviour<MarkerBehaviour>();
             builder.AddBehaviour<MapInfoBehaviour>();
+            builder.AddBehaviour<PedSyncBehaviour>();
         }
 
         public static void AddDefaultServices(this ServerBuilder builder)
@@ -122,9 +129,14 @@ namespace SlipeServer.Server.ServerOptions
                 services.AddSingleton<ISyncHandlerMiddleware<DestroySatchelsPacket>, RangeSyncHandlerMiddleware<DestroySatchelsPacket>>(
                     x => new RangeSyncHandlerMiddleware<DestroySatchelsPacket>(x.GetRequiredService<IElementRepository>(), builder.Configuration.ExplosionSyncDistance, false)
                 );
+                services.AddSingleton<ISyncHandlerMiddleware<ExplosionPacket>, RangeSyncHandlerMiddleware<ExplosionPacket>>(
+                    x => new RangeSyncHandlerMiddleware<ExplosionPacket>(x.GetRequiredService<IElementRepository>(), builder.Configuration.ExplosionSyncDistance, false)
+                );
 
-                services.AddSingleton<ISyncHandlerMiddleware<PlayerPureSyncPacket>, SubscriptionSyncHandlerMiddleware<PlayerPureSyncPacket>>();
-                services.AddSingleton<ISyncHandlerMiddleware<KeySyncPacket>, SubscriptionSyncHandlerMiddleware<KeySyncPacket>>();
+                services.AddSingleton<ISyncHandlerMiddleware<PlayerPureSyncPacket>, RangeSyncHandlerMiddleware<PlayerPureSyncPacket>>(
+                     x => new RangeSyncHandlerMiddleware<PlayerPureSyncPacket>(x.GetRequiredService<IElementRepository>(), builder.Configuration.LightSyncRange));
+                services.AddSingleton<ISyncHandlerMiddleware<KeySyncPacket>, RangeSyncHandlerMiddleware<KeySyncPacket>>(
+                    x => new RangeSyncHandlerMiddleware<KeySyncPacket>(x.GetRequiredService<IElementRepository>(), builder.Configuration.LightSyncRange));
 
                 services.AddSingleton<ISyncHandlerMiddleware<LightSyncBehaviour>, MaxRangeSyncHandlerMiddleware<LightSyncBehaviour>>(
                     x => new MaxRangeSyncHandlerMiddleware<LightSyncBehaviour>(x.GetRequiredService<IElementRepository>(), builder.Configuration.LightSyncRange)

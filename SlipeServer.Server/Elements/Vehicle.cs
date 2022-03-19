@@ -1,14 +1,13 @@
 ﻿using SlipeServer.Packets.Definitions.Entities.Structs;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Server.Concepts;
 using SlipeServer.Server.Constants;
-using SlipeServer.Server.ElementConcepts;
 using SlipeServer.Server.Elements.Events;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 
 namespace SlipeServer.Server.Elements
 {
@@ -179,6 +178,11 @@ namespace SlipeServer.Server.Elements
             this.Occupants = new Dictionary<byte, Ped>();
         }
 
+        public Vehicle(VehicleModel model, Vector3 position) : this((ushort)model, position)
+        {
+
+        }
+
         public new Vehicle AssociateWith(MtaServer server)
         {
             return server.AssociateElement(this);
@@ -248,7 +252,7 @@ namespace SlipeServer.Server.Elements
             this.DoorStates[(int)door] = (byte)state;
             this.DoorStateChanged?.Invoke(this, new VehicleDoorStateChangedArgs(this, door, state, spawnFlyingComponent));
         }
-        
+
         public void SetWheelState(VehicleWheel wheel, VehicleWheelState state)
         {
             this.WheelStates[(int)wheel] = (byte)state;
@@ -312,7 +316,7 @@ namespace SlipeServer.Server.Elements
         {
             RespawnAt(position, rotation);
         }
-        
+
         public void Respawn()
         {
             RespawnAt(this.RespawnPosition, this.RespawnRotation);
