@@ -273,6 +273,20 @@ namespace SlipeServer.Server.Services
             }
         }
 
+        public Color? waterColor;
+        public Color? WaterColor
+        {
+            get => this.waterColor;
+            set
+            {
+                this.waterColor = value;
+                if (value == null)
+                    this.server.BroadcastPacket(new ResetWaterColorPacket());
+                else
+                    this.server.BroadcastPacket(new SetWaterColorPacket(value.Value));
+            }
+        }
+
         #endregion
 
         public GameWorld(MtaServer server)

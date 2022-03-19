@@ -564,6 +564,13 @@ namespace SlipeServer.Console.Logic
                 };
             };
 
+            this.commandService.AddCommand("watercolor").Triggered += (source, args) =>
+            {
+                this.worldService.WaterColor = args.Arguments.Length > 0 ? 
+                    Color.FromKnownColor(Enum.Parse<KnownColor>(args.Arguments[0], true)) : 
+                    null;
+            };
+
             this.commandService.AddCommand("wave").Triggered += (source, args) =>
             {
                 this.worldService.WaveHeight = args.Arguments.Length > 0 ? float.Parse(args.Arguments[0]) : (float)0;
