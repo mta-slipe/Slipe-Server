@@ -71,6 +71,16 @@ namespace SlipeServer.Packets.Reader
             return bytes;
         }
 
+        private byte[] GetBytesFromData(uint count)
+        {
+            byte[] bytes = new byte[count];
+            for (int i = 0; i < count; i++)
+            {
+                bytes[i] = GetByteFromData();
+            }
+            return bytes;
+        }
+
         public bool GetBit() => GetBitFromData();
         public bool[] GetBits(int count)
         {
@@ -91,6 +101,7 @@ namespace SlipeServer.Packets.Reader
         public float GetFloat() => BitConverter.ToSingle(GetBytes(4), 0);
         public double GetDouble() => BitConverter.ToDouble(GetBytes(8), 0);
         public byte[] GetBytes(int count) => GetBytesFromData(count);
+        public byte[] GetBytes(uint count) => GetBytesFromData(count);
 
         public byte GetByteCapped(int bitCount, bool alignment = false)
         {
@@ -121,22 +132,12 @@ namespace SlipeServer.Packets.Reader
 
         public string GetStringCharacters(int length)
         {
-            string result = "";
-            for (int i = 0; i < length; i++)
-            {
-                result += (char)GetByteFromData();
-            }
-            return result;
+            return Encoding.UTF8.GetString(GetBytes(length));
         }
 
         public string GetStringCharacters(uint length)
         {
-            string result = "";
-            for (int i = 0; i < length; i++)
-            {
-                result += (char)GetByteFromData();
-            }
-            return result;
+            return Encoding.UTF8.GetString(GetBytes(length));
         }
 
         public string GetString()

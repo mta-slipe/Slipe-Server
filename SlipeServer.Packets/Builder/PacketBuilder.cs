@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Drawing;
 using System.Linq;
+using System.Text;
 
 namespace SlipeServer.Packets.Builder
 {
@@ -140,19 +141,21 @@ namespace SlipeServer.Packets.Builder
 
         public void Write(string value)
         {
-            Write((ushort)value.Length);
-            WriteBytes(value.Select(c => (byte)c).ToArray());
+            var bytes = Encoding.UTF8.GetBytes(value);
+            Write((ushort)bytes.Length);
+            WriteBytes(bytes);
         }
 
         public void WriteStringWithoutLength(string value)
         {
-            WriteBytes(value.Select(c => (byte)c).ToArray());
+            WriteBytes(Encoding.UTF8.GetBytes(value));
         }
 
         public void WriteStringWithByteAsLength(string value)
         {
-            Write((byte)value.Length);
-            WriteBytes(value.Select(c => (byte)c).ToArray());
+            var bytes = Encoding.UTF8.GetBytes(value);
+            Write((byte)bytes.Length);
+            WriteBytes(bytes);
         }
 
         public void Write(Color color, bool withAlpha = false, bool alphaFirst = false)
