@@ -1,7 +1,8 @@
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SlipeServer.Console.LuaValues;
 using SlipeServer.Packets.Definitions.Lua;
+using SlipeServer.Packets.Definitions.Resources;
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
@@ -20,8 +21,10 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Numerics;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SlipeServer.Console.Logic
@@ -659,6 +662,19 @@ namespace SlipeServer.Console.Logic
 
             this.testResource?.StartFor(player);
             this.secondTestResource?.StartFor(player);
+            var script = "outputChatBox(\"I AM A NOT CACHED MESSAGE\")";
+            using MemoryStream output = new MemoryStream();
+            using DeflateStream compressor = new DeflateStream(output, CompressionMode.Compress);
+            {
+                using StreamWriter writer = new StreamWriter(compressor, Encoding.UTF8);
+                writer.Write(script);
+            }
+
+            System.Console.WriteLine(Encoding.UTF8.GetString(output.ToArray()));
+            player.Client.SendPacket(new ResourceClientScriptsPacket(this.secondTestResource!.NetId, new Dictionary<string, byte[]>()
+            {
+                [$"{this.secondTestResource!.Name}/testfile.lua"] = output.ToArray()
+            }));
 
             this.HandlePlayerSubscriptions(player);
 
