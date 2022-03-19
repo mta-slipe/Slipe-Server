@@ -23,7 +23,7 @@ namespace SlipeServer.Server.PacketHandling.Factories
             return element switch
             {
                 Vehicle => new SetVehicleRotationRpcPacket(element.Id, element.GetAndIncrementTimeContext(), rotation),
-                Ped => new SetPedRotationRpcPacket(element.Id, element.GetAndIncrementTimeContext(), rotation.Z * (MathF.PI / 180), true),
+                Ped => new SetPedRotationRpcPacket(element.Id, element.GetAndIncrementTimeContext(), rotation.Z / (180 / MathF.PI), true),
                 WorldObject => new SetObjectRotationRpcPacket(element.Id, rotation),
                 _ => throw new NotImplementedException($"Can not create set rotation packet for {element.GetType()}"),
             };

@@ -8,6 +8,7 @@ using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.PacketHandling.Handlers.Player.Sync;
 using SlipeServer.Server.Repositories;
 using SlipeServer.Server.TestTools;
+using System;
 using System.Numerics;
 using Xunit;
 
@@ -84,7 +85,7 @@ namespace SlipeServer.Server.Tests.Unit.PacketHandlers
             handler.HandlePacket(sourcePlayer.Client, new PlayerPureSyncPacket()
             {
                 Position = new Vector3(10, 10, 10),
-                Rotation = 45,
+                Rotation = 0.25f * MathF.PI,
                 Health = 50,
                 Armor = 75,
                 WeaponSlot = 1

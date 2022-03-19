@@ -1,7 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
+using SlipeServer.Server.Elements;
+using SlipeServer.Server.Enums;
+using SlipeServer.Server.Repositories;
+using SlipeServer.Server.Services;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SlipeServer.Console
 {
@@ -32,12 +38,31 @@ namespace SlipeServer.Console
             [LogLevel.Critical] = new Tuple<ConsoleColor, string>(ConsoleColor.DarkRed, " [critical]"),
             [LogLevel.None] = new Tuple<ConsoleColor, string>(ConsoleColor.White, "        "),
         };
-
+        private readonly IElementRepository elementRepository;
+        private readonly DebugLog debugLog;
         private string prefix;
 
-        public ConsoleLogger()
+        private readonly ConcurrentQueue<Action> logActions;
+
+        public ConsoleLogger(IElementRepository elementRepository, DebugLog debugLog)
         {
+            this.elementRepository = elementRepository;
+            this.debugLog = debugLog;
+
+            this.logActions = new();
             this.prefix = "";
+
+            Task.Run(LogWorker);
+        }
+
+        private async Task LogWorker()
+        {
+            while (true)
+            {
+                while (this.logActions.TryDequeue(out var action))
+                    action();
+                await Task.Delay(10);
+            }
         }
 
         public IDisposable BeginScope<TState>(TState state)
@@ -52,22 +77,49 @@ namespace SlipeServer.Console
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            #if !DEBUG
+#if !DEBUG
             if (logLevel == LogLevel.Trace)
                 return;
-            #endif
+#endif
 
-            System.Console.Write($"[{DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}]");
-
-            System.Console.ForegroundColor = prefixes[logLevel].Item1;
-            System.Console.Write($"{prefixes[logLevel].Item2}");
-            System.Console.ResetColor();
-
-            System.Console.WriteLine($" {this.prefix}{formatter(state, exception)}");
-
-            if (exception != null)
+            var prefix = this.prefix;
+            this.logActions.Enqueue(() =>
             {
-                System.Console.WriteLine($" {this.prefix}{exception.StackTrace}");
+                System.Console.Write($"[{DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}]");
+
+                System.Console.ForegroundColor = prefixes[logLevel].Item1;
+                System.Console.Write($"{prefixes[logLevel].Item2}");
+                System.Console.ResetColor();
+
+                System.Console.WriteLine($" {prefix}{formatter(state, exception)}");
+
+                if (exception != null)
+                {
+                    System.Console.WriteLine($" {prefix}{exception.StackTrace}");
+                }
+
+                switch (logLevel)
+                {
+                    case LogLevel.Critical:
+                    case LogLevel.Error:
+                        OutputDebug($"{prefixes[logLevel].Item2} {prefix}{formatter(state, exception)}", DebugLevel.Error);
+                        break;
+                    case LogLevel.Warning:
+                        OutputDebug($"{prefixes[logLevel].Item2} {prefix}{formatter(state, exception)}", DebugLevel.Warning);
+                        break;
+                    case LogLevel.Information:
+                        OutputDebug($"{prefixes[logLevel].Item2} {prefix}{formatter(state, exception)}", DebugLevel.Information);
+                        break;
+                }
+            });
+        }
+
+        private void OutputDebug(string message, DebugLevel level)
+        {
+            var players = this.elementRepository.GetByType<Player>(ElementType.Player);
+            foreach (var player in players)
+            {
+                this.debugLog.OutputTo(player, message, level);
             }
         }
     }
