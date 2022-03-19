@@ -5,6 +5,7 @@ using System.Text;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 using SlipeServer.Packets.Definitions.Ped;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.PacketHandling.Factories;
 using SlipeServer.Server.Repositories;
@@ -33,6 +34,7 @@ namespace SlipeServer.Server.Behaviour
                 ped.HealthChanged += RelayHealthChange;
                 ped.ArmourChanged += RelayArmourChange;
                 ped.WeaponSlotChanged += RelayWeaponSlotChange;
+                ped.FightingStyleChanged += RelayFightingStyleChange;
                 ped.WeaponReceived += RelayPedWeaponReceive;
                 ped.WeaponRemoved += RelayPedWeaponRemove;
                 ped.AmmoUpdated += RelayPedAmmoCountUpdate;
@@ -87,6 +89,12 @@ namespace SlipeServer.Server.Behaviour
         {
             if (!args.IsSync)
                 this.server.BroadcastPacket(new SetWeaponSlotRpcPacket(args.Source.Id, (byte)args.NewValue));
+        }
+        
+        private void RelayFightingStyleChange(object sender, ElementChangedEventArgs<Ped, FightingStyle> args)
+        {
+            if (!args.IsSync)
+                this.server.BroadcastPacket(new SetPedFightingStyleRpcPacket(args.Source.Id, (byte)args.NewValue));
         }
 
         private void RelayPedWeaponReceive(object? sender, WeaponReceivedEventArgs e)

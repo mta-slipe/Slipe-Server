@@ -65,6 +65,17 @@ namespace SlipeServer.Server.Elements
             }
         }
 
+        private FightingStyle fightingStyle = FightingStyle.Standard;
+        public FightingStyle FightingStyle
+        {
+            get => this.fightingStyle;
+            set
+            {
+                var args = new ElementChangedEventArgs<Ped, FightingStyle>(this, this.fightingStyle, value, this.IsSync);
+                this.fightingStyle = value;
+                FightingStyleChanged?.Invoke(this, args);
+            }
+        }
 
         public object CurrentWeaponLock { get; } = new();
         public Weapon? CurrentWeapon
@@ -248,6 +259,7 @@ namespace SlipeServer.Server.Elements
         public event ElementChangedEventHandler<Ped, float>? HealthChanged;
         public event ElementChangedEventHandler<Ped, float>? ArmourChanged;
         public event ElementChangedEventHandler<Ped, WeaponSlot>? WeaponSlotChanged;
+        public event ElementChangedEventHandler<Ped, FightingStyle>? FightingStyleChanged;
         public event ElementChangedEventHandler<Ped, bool>? JetpackStateChanged;
         public event ElementChangedEventHandler<Ped, Element?>? TargetChanged;
         public event ElementEventHandler<Ped, WeaponReceivedEventArgs>? WeaponReceived;

@@ -590,6 +590,11 @@ namespace SlipeServer.Console.Logic
             {
                 args.Player.Camera.SetMatrix(new Vector3(20, 20, 20), new Vector3(200, 200, 0));
             };
+
+            this.commandService.AddCommand("kungfu").Triggered += (source, args) =>
+            {
+                args.Player.FightingStyle = FightingStyle.KungFu;
+            };
         }
 
         private void OnPlayerJoin(Player player)
