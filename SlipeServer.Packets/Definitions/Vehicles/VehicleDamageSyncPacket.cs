@@ -11,7 +11,7 @@ namespace SlipeServer.Packets.Definitions.Vehicles
 
         public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
 
-        public override PacketPriority Priority => PacketPriority.Medium;
+        public override PacketPriority Priority => PacketPriority.High;
 
         public uint VehicleId { get; set; }
         public byte?[] DoorStates { get; set; } = Array.Empty<byte?>();

@@ -74,6 +74,8 @@ namespace SlipeServer.Server.ServerOptions
             builder.AddPacketHandler<VehicleInOutPacketHandler, VehicleInOutPacket>();
             builder.AddPacketHandler<VehiclePureSyncPacketHandler, VehiclePureSyncPacket>();
             builder.AddPacketHandler<VehicleDamageSyncPacketHandler, VehicleDamageSyncPacket>();
+            builder.AddPacketHandler<UnoccupiedVehicleSyncPacketHandler, UnoccupiedVehicleSyncPacket>();
+            builder.AddPacketHandler<VehiclePushSyncPacketHandler, VehiclePushSyncPacket>();
 
             builder.AddPacketHandler<VoiceDataPacketHandler, VoiceDataPacket>();
             builder.AddPacketHandler<VoiceEndPacketHandler, VoiceEndPacket>();
@@ -116,6 +118,7 @@ namespace SlipeServer.Server.ServerOptions
             builder.AddBehaviour<MarkerBehaviour>();
             builder.AddBehaviour<MapInfoBehaviour>();
             builder.AddBehaviour<PedSyncBehaviour>();
+            builder.AddBehaviour<UnoccupiedVehicleSyncBehaviour>();
         }
 
         public static void AddDefaultServices(this ServerBuilder builder)

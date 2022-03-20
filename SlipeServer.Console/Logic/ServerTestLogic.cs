@@ -433,6 +433,17 @@ namespace SlipeServer.Console.Logic
                 }
             };
 
+            this.commandService.AddCommand("upvehicle").Triggered += (source, args) =>
+            {
+                if (args.Arguments.Length > 0)
+                {
+                    if (Enum.TryParse(args.Arguments[0], true, out VehicleModel model) && Enum.IsDefined(model))
+                    {
+                        var vehicle = (new Vehicle(model, args.Player.Position + args.Player.Up * 10)).AssociateWith(this.server);
+                    }
+                }
+            };
+
             this.commandService.AddCommand("changeskin").Triggered += (source, args) =>
             {
                 if (args.Arguments.Length > 0)
