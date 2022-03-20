@@ -77,6 +77,14 @@ namespace SlipeServer.Server.Elements
             this.subscriptionElements = new();
             this.SyncingPeds = new();
             this.Controls = new(this);
+
+            this.Disconnected += HandleDisconnect;
+        }
+
+        private void HandleDisconnect(Player sender, PlayerQuitEventArgs e)
+        {
+            if (this.Vehicle != null)
+                this.Vehicle.RunAsSync(() => this.Vehicle.RemovePassenger(this));
         }
 
         public new Player AssociateWith(MtaServer server)

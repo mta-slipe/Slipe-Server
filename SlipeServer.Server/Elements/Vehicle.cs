@@ -31,7 +31,23 @@ namespace SlipeServer.Server.Elements
         public Colors Colors { get; private set; }
 
         public byte PaintJob { get; set; } = 0;
-        public VehicleDamage Damage { get; set; }
+        public VehicleDamage Damage
+        {
+            get => new VehicleDamage()
+            {
+                Doors = this.DoorStates,
+                Wheels = this.WheelStates,
+                Panels = this.PanelStates,
+                Lights = this.LightStates
+            };
+            set
+            {
+                this.DoorStates = value.Doors;
+                this.WheelStates = value.Wheels;
+                this.PanelStates = value.Panels;
+                this.LightStates = value.Lights;
+            }
+        }
         public byte Variant1 { get; set; } = 0;
         public byte Variant2 { get; set; } = 0;
         public Vector3 RespawnPosition { get; set; }
