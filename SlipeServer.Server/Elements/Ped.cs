@@ -139,7 +139,19 @@ namespace SlipeServer.Server.Elements
         public PedClothing[] Clothes { get; set; }
         public WeaponCollection Weapons { get; set; }
         public bool IsAlive => this.health > 0;
-        public Player? Syncer { get; set; }
+
+        private Player? syncer = null;
+        public Player? Syncer
+        {
+            get => this.syncer;
+            set
+            {
+                var args = new ElementChangedEventArgs<Ped, Player?>(this, this.Syncer, value, this.IsSync);
+                this.syncer = value;
+                SyncerChanged?.Invoke(this, args);
+            }
+        }
+
         public bool IsOnFire { get; set; }
         public bool IsInWater { get; set; }
 
@@ -262,6 +274,7 @@ namespace SlipeServer.Server.Elements
         public event ElementChangedEventHandler<Ped, FightingStyle>? FightingStyleChanged;
         public event ElementChangedEventHandler<Ped, bool>? JetpackStateChanged;
         public event ElementChangedEventHandler<Ped, Element?>? TargetChanged;
+        public event ElementChangedEventHandler<Ped, Player?>? SyncerChanged;
         public event ElementEventHandler<Ped, WeaponReceivedEventArgs>? WeaponReceived;
         public event ElementEventHandler<Ped, WeaponRemovedEventArgs>? WeaponRemoved;
         public event ElementEventHandler<Ped, AmmoUpdateEventArgs>? AmmoUpdated;

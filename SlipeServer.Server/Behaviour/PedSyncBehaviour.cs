@@ -33,14 +33,14 @@ namespace SlipeServer.Server.Behaviour
 
         private void HandlePlayerJoin(Player player)
         {
-            foreach (var ped in player.SyncingPeds.ToArray())
-                StopSyncingPed(ped);
-
             player.Disconnected += HandlePlayerDisconnect;
         }
 
         private void HandlePlayerDisconnect(Player player, Elements.Events.PlayerQuitEventArgs e)
         {
+            foreach (var ped in player.SyncingPeds.ToArray())
+                StopSyncingPed(ped);
+
             player.Disconnected -= HandlePlayerDisconnect;
         }
 

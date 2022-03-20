@@ -51,6 +51,7 @@ namespace SlipeServer.Server.Elements
         public bool IsVoiceMuted { get; set; }
         public bool IsChatMuted { get; set; }
         public List<Ped> SyncingPeds { get; set; }
+        public List<Vehicle> SyncingVehicles { get; set; }
         public Controls Controls { get; private set; }
 
         private Team? team;
@@ -76,7 +77,16 @@ namespace SlipeServer.Server.Elements
             this.Camera = new Camera(this);
             this.subscriptionElements = new();
             this.SyncingPeds = new();
+            this.SyncingVehicles = new();
             this.Controls = new(this);
+
+            this.Disconnected += HandleDisconnect;
+        }
+
+        private void HandleDisconnect(Player sender, PlayerQuitEventArgs e)
+        {
+            if (this.Vehicle != null)
+                this.Vehicle.RunAsSync(() => this.Vehicle.RemovePassenger(this));
         }
 
         public new Player AssociateWith(MtaServer server)

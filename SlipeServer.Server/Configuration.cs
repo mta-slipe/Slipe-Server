@@ -35,6 +35,8 @@ namespace SlipeServer.Server
 
         public int PedSyncerDistance { get; set; } = 250;
 
+        public int UnoccupiedVehicleSyncerDistance { get; set; } = 250;
+
         public float LightSyncRange { get; set; } = 800;
 
         public ushort BitStreamVersion { get; set; } = 114;

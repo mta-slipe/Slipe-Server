@@ -31,7 +31,23 @@ namespace SlipeServer.Server.Elements
         public Colors Colors { get; private set; }
 
         public byte PaintJob { get; set; } = 0;
-        public VehicleDamage Damage { get; set; }
+        public VehicleDamage Damage
+        {
+            get => new VehicleDamage()
+            {
+                Doors = this.DoorStates,
+                Wheels = this.WheelStates,
+                Panels = this.PanelStates,
+                Lights = this.LightStates
+            };
+            set
+            {
+                this.DoorStates = value.Doors;
+                this.WheelStates = value.Wheels;
+                this.PanelStates = value.Panels;
+                this.LightStates = value.Lights;
+            }
+        }
         public byte Variant1 { get; set; } = 0;
         public byte Variant2 { get; set; } = 0;
         public Vector3 RespawnPosition { get; set; }
@@ -157,6 +173,20 @@ namespace SlipeServer.Server.Elements
                     this.AddPassenger(0, value, true);
             }
         }
+        public bool IsInWater { get; set; }
+
+        private Player? syncer = null;
+        public Player? Syncer
+        {
+            get => this.syncer;
+            set
+            {
+                var args = new ElementChangedEventArgs<Vehicle, Player?>(this, this.Syncer, value, this.IsSync);
+                this.syncer = value;
+                SyncerChanged?.Invoke(this, args);
+            }
+        }
+
         public Dictionary<byte, Ped> Occupants { get; set; }
 
         public Vehicle(ushort model, Vector3 position) : base()
@@ -277,6 +307,11 @@ namespace SlipeServer.Server.Elements
             this.DoorOpenRatioChanged?.Invoke(this, new VehicleDoorOpenRatioChangedArgs(this, door, ratio, time));
         }
 
+        public void TriggerPushed(Player player)
+        {
+            this.Pushed?.Invoke(this, new VehiclePushedEventArgs(player));
+        }
+
         public VehicleDoorState GetDoorState(VehicleDoor door) => (VehicleDoorState)this.DoorStates[(int)door];
         public VehicleWheelState GetWheelState(VehicleWheel wheel) => (VehicleWheelState)this.WheelStates[(int)wheel];
         public VehiclePanelState GetPanelState(VehiclePanel panel) => (VehiclePanelState)this.PanelStates[(int)panel];
@@ -336,11 +371,13 @@ namespace SlipeServer.Server.Elements
         public event ElementChangedEventHandler<Vehicle, string>? PlateTextChanged;
         public event ElementChangedEventHandler<Vehicle, bool>? LockedStateChanged;
         public event ElementChangedEventHandler<Vehicle, bool>? EngineStateChanged;
+        public event ElementChangedEventHandler<Vehicle, Player?>? SyncerChanged;
         public event ElementEventHandler<VehicleRespawnEventArgs>? Respawned;
         public event ElementEventHandler<VehicleDoorStateChangedArgs>? DoorStateChanged;
         public event ElementEventHandler<VehicleWheelStateChangedArgs>? WheelStateChanged;
         public event ElementEventHandler<VehiclePanelStateChangedArgs>? PanelStateChanged;
         public event ElementEventHandler<VehicleLightStateChangedArgs>? LightStateChanged;
         public event ElementEventHandler<VehicleDoorOpenRatioChangedArgs>? DoorOpenRatioChanged;
+        public event ElementEventHandler<Vehicle, VehiclePushedEventArgs>? Pushed;
     }
 }
