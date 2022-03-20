@@ -31,7 +31,7 @@ bool NetWrapper::packetHandler(unsigned char ucPacketID, const NetServerPlayerID
 {
     sockets[Socket.GetBinaryAddress()] = Socket;
 
-    if (registeredCallback != nullptr)
+    if (registeredCallback != nullptr && running)
     {
         uint bitCount = pBitStream->GetNumberOfBitsUsed();
         uint byteCount = pBitStream->GetNumberOfBytesUsed();
@@ -163,7 +163,17 @@ int NetWrapper::init(const char* netDllFilePath, const char* idFile, const char*
 
     testMethod();
 
+    binThread = std::thread(&NetWrapper::binPulseLoop, this);
     return 0;
+}
+
+void NetWrapper::binPulseLoop() {
+    while (!running)
+    {
+        network->DoPulse();
+        network->GetHTTPDownloadManager(EDownloadMode::ASE)->ProcessQueuedFiles();
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
 }
 
 void NetWrapper::runPulseLoop() {
@@ -188,6 +198,7 @@ void NetWrapper::runPulseLoop() {
 
 void NetWrapper::start() {
     running = true;
+    binThread.join();
     network->InitServerId("");
     runThread = std::thread(&NetWrapper::runPulseLoop, this);
 }
@@ -195,6 +206,7 @@ void NetWrapper::start() {
 void NetWrapper::stop() {
     running = false;
     runThread.join();
+    binThread = std::thread(&NetWrapper::binPulseLoop, this);
 }
 
 bool NetWrapper::isValidSocket(NetServerPlayerID id)
