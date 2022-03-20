@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using SlipeServer.Packets.Definitions.Vehicles;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Extensions;
@@ -13,19 +12,16 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync
     {
         private readonly ISyncHandlerMiddleware<VehicleDamageSyncPacket> middleware;
         private readonly IElementRepository elementRepository;
-        private readonly ILogger logger;
 
         public PacketId PacketId => PacketId.PACKET_ID_VEHICLE_DAMAGE_SYNC;
 
         public VehicleDamageSyncPacketHandler(
             ISyncHandlerMiddleware<VehicleDamageSyncPacket> middleware,
-            IElementRepository elementRepository,
-            ILogger logger
+            IElementRepository elementRepository
         )
         {
             this.middleware = middleware;
             this.elementRepository = elementRepository;
-            this.logger = logger;
         }
 
         public void HandlePacket(Client client, VehicleDamageSyncPacket packet)
@@ -57,7 +53,6 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync
                         if (packet.LightStates[(int)light] != null)
                             vehicle.SetLightState(light, (VehicleLightState)packet.LightStates[(int)light]!);
                 });
-                this.logger.LogInformation("Vehicle {id} was damaged, details: \"{damage}\"", vehicle.Id, JsonConvert.SerializeObject(vehicle.Damage));
             }
         }
     }
