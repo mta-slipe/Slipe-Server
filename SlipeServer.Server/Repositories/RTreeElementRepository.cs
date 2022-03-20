@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using SlipeServer.Server.Elements.Events;
 using RBush;
+using System.Collections.Concurrent;
 
 namespace SlipeServer.Server.Repositories
 {
@@ -33,9 +34,10 @@ namespace SlipeServer.Server.Repositories
 
     public class RTreeElementRepository : IElementRepository
     {
-        public int Count => elements.Count;
+        public int Count => this.elements.Count;
         private readonly RBush<RTreeRef> elements;
-        private readonly Dictionary<Element, RTreeRef> elementRefs;
+        private readonly ConcurrentDictionary<Element, RTreeRef> elementRefs;
+        private object generalLock = new object();
 
         public RTreeElementRepository()
         {
@@ -45,7 +47,7 @@ namespace SlipeServer.Server.Repositories
 
         public void Add(Element element)
         {
-            lock (element.ElementLock)
+            lock (this.generalLock)
             {
                 element.PositionChanged += ReInsertElement;
                 var elementRef = new RTreeRef(element);
@@ -56,57 +58,70 @@ namespace SlipeServer.Server.Repositories
 
         public Element? Get(uint id)
         {
-            return this.elements
-                .Search()
-                .Select(x => x.Element)
-                .FirstOrDefault(element => element.Id == id);
+            lock (this.generalLock)
+            {
+                return this.elements
+                    .Search()
+                    .Select(x => x.Element)
+                    .FirstOrDefault(element => element.Id == id);
+            }
         }
 
         public void Remove(Element element)
         {
-            lock (element.ElementLock)
+            lock (this.generalLock)
             {
                 element.PositionChanged -= ReInsertElement;
-                this.elements.Delete(new(element));
-                this.elementRefs.Remove(element);
+                if (this.elementRefs.Remove(element, out var value))
+                    this.elements.Delete(value);
             }
         }
 
         public IEnumerable<Element> GetAll()
         {
-            return this.elements
+            lock (this.generalLock)
+            {
+                return this.elements
                 .Search()
                 .Select(x => x.Element);
+            }
         }
 
         public IEnumerable<TElement> GetByType<TElement>(ElementType elementType) where TElement : Element
         {
-            return this.elements
+            lock (this.generalLock)
+            {
+                return this.elements
                 .Search()
                 .Select(x => x.Element)
                 .Where(element => element.ElementType == elementType)
                 .Cast<TElement>();
+            }
         }
 
         public IEnumerable<Element> GetWithinRange(Vector3 position, float range)
         {
-            return this.elements
-                .Search(new Envelope(position.X - range, position.Y - range, position.X + range, position.Y + range))
-                .Select(x => x.Element);
+            lock (this.generalLock)
+            {
+                return this.elements
+                    .Search(new Envelope(position.X - range, position.Y - range, position.X + range, position.Y + range))
+                    .Select(x => x.Element);
+            }
         }
 
         public IEnumerable<TElement> GetWithinRange<TElement>(Vector3 position, float range, ElementType elementType) where TElement : Element
         {
-            return this.elements
-                .Search(new Envelope(position.X - range, position.Y - range, position.X + range, position.Y + range))
-                .Select(x => x.Element)
-                .Where(element => element.ElementType == elementType)
-                .Cast<TElement>();
+            lock (this.generalLock)
+            {
+                return this.GetWithinRange(position, range)
+                    .Where(element => element.ElementType == elementType)
+                    .Cast<TElement>();
+            }
         }
 
         private void ReInsertElement(Element element, ElementChangedEventArgs<Vector3> args)
         {
-            lock (element.ElementLock)
+            lock (this.generalLock)
             {
                 this.elements.Delete(this.elementRefs[element]);
 

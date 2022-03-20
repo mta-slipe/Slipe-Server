@@ -227,7 +227,7 @@ namespace SlipeServer.Server
 
         private void SetupDependencies(Action<ServiceCollection>? dependencyCallback)
         {
-            this.serviceCollection.AddSingleton<IElementRepository, CompoundElementRepository>();
+            this.serviceCollection.AddSingleton<IElementRepository, RTreeCompoundElementRepository>();
             this.serviceCollection.AddSingleton<ILogger, DefaultLogger>();
             this.serviceCollection.AddSingleton<IResourceServer, BasicHttpServer>();
             this.serviceCollection.AddSingleton<IResourceProvider, FileSystemResourceProvider>();
