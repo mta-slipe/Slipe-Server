@@ -119,6 +119,8 @@ namespace SlipeServer.Console.Logic
         {
             this.testResource = this.resourceProvider.GetResource("TestResource");
             this.secondTestResource = this.resourceProvider.GetResource("SecondTestResource");
+            this.secondTestResource.NoClientScripts[$"{this.secondTestResource!.Name}/testfile.lua"] = 
+                Encoding.UTF8.GetBytes("outputChatBox(\"I AM A NOT CACHED MESSAGE\")");
 
             new WorldObject(321, new Vector3(5, 0, 3)).AssociateWith(this.server);
             new Water(new Vector3[]
@@ -668,19 +670,6 @@ namespace SlipeServer.Console.Logic
 
             this.testResource?.StartFor(player);
             this.secondTestResource?.StartFor(player);
-            var script = "outputChatBox(\"I AM A NOT CACHED MESSAGE\")";
-            using MemoryStream output = new MemoryStream();
-            using DeflateStream compressor = new DeflateStream(output, CompressionMode.Compress);
-            {
-                using StreamWriter writer = new StreamWriter(compressor, Encoding.UTF8);
-                writer.Write(script);
-            }
-
-            System.Console.WriteLine(Encoding.UTF8.GetString(output.ToArray()));
-            player.Client.SendPacket(new ResourceClientScriptsPacket(this.secondTestResource!.NetId, new Dictionary<string, byte[]>()
-            {
-                [$"{this.secondTestResource!.Name}/testfile.lua"] = output.ToArray()
-            }));
 
             this.HandlePlayerSubscriptions(player);
 

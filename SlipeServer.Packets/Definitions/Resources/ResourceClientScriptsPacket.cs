@@ -1,6 +1,5 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
-using SlipeServer.Packets.Structs;
 using System.Collections.Generic;
 
 namespace SlipeServer.Packets.Definitions.Resources
