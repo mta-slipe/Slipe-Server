@@ -1,7 +1,8 @@
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SlipeServer.Console.LuaValues;
 using SlipeServer.Packets.Definitions.Lua;
+using SlipeServer.Packets.Definitions.Resources;
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
@@ -20,8 +21,10 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Numerics;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SlipeServer.Console.Logic
@@ -116,6 +119,8 @@ namespace SlipeServer.Console.Logic
         {
             this.testResource = this.resourceProvider.GetResource("TestResource");
             this.secondTestResource = this.resourceProvider.GetResource("SecondTestResource");
+            this.secondTestResource.NoClientScripts[$"{this.secondTestResource!.Name}/testfile.lua"] = 
+                Encoding.UTF8.GetBytes("outputChatBox(\"I AM A NOT CACHED MESSAGE\")");
 
             new WorldObject(321, new Vector3(5, 0, 3)).AssociateWith(this.server);
             new Water(new Vector3[]
