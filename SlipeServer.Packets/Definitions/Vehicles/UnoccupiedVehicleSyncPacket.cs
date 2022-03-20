@@ -11,7 +11,7 @@ namespace SlipeServer.Packets.Definitions.Vehicles
     {
         public override PacketId PacketId => PacketId.PACKET_ID_UNOCCUPIED_VEHICLE_SYNC;
 
-        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+        public override PacketReliability Reliability => PacketReliability.UnreliableSequenced;
 
         public override PacketPriority Priority => PacketPriority.Medium;
 

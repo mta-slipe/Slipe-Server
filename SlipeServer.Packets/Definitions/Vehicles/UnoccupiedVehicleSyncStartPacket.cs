@@ -12,7 +12,7 @@ namespace SlipeServer.Packets.Definitions.Vehicles
 
         public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
 
-        public override PacketPriority Priority => PacketPriority.Medium;
+        public override PacketPriority Priority => PacketPriority.High;
 
         public uint ElementId { get; set; }
         public Vector3 Position { get; set; }
