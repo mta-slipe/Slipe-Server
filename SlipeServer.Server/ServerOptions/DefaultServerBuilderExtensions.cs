@@ -87,6 +87,7 @@ namespace SlipeServer.Server.ServerOptions
         public static void AddDefaultBehaviours(this ServerBuilder builder)
         {
             builder.AddBehaviour<AseBehaviour>();
+            builder.AddBehaviour<LocalServerAnnouncementBehaviour>();
             builder.AddBehaviour<MasterServerAnnouncementBehaviour>("http://master.mtasa.com/ase/add.php");
 
             builder.AddBehaviour<EventLoggingBehaviour>();
