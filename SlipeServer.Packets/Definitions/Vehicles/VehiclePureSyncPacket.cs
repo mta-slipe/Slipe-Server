@@ -75,7 +75,7 @@ namespace SlipeServer.Packets.Definitions.Vehicles
             this.RemoteModel = reader.GetInt32();
             this.Position = reader.GetVector3WithZAsFloat();
 
-            bool isTrain = false;
+            bool isTrain = VehicleConstants.Trains.Contains(this.RemoteModel);
             if (isTrain)
             {
                 this.TrainPosition = reader.GetFloat();
