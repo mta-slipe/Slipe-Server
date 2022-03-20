@@ -54,9 +54,11 @@ private:
 	bool running;
 	PacketCallback registeredCallback;
 	std::thread runThread;
+	std::thread binThread;
     std::queue<QueuedPacket> packetQueue;
     std::mutex mutex;
 
+    void binPulseLoop();
     void runPulseLoop();
     void testMethod();
 public:
