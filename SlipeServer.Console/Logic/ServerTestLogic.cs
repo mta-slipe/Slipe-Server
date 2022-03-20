@@ -420,11 +420,6 @@ namespace SlipeServer.Console.Logic
             {
                 if (args.Arguments.Length > 0)
                 {
-                    if (ushort.TryParse(args.Arguments[0], out ushort numericModel))
-                    {
-                        var vehicle = (new Vehicle(numericModel, args.Player.Position)).AssociateWith(this.server);
-                        args.Player.WarpIntoVehicle(vehicle);
-                    }
                     if (Enum.TryParse(args.Arguments[0], true, out VehicleModel model) && Enum.IsDefined(model))
                     {
                         var vehicle = (new Vehicle(model, args.Player.Position)).AssociateWith(this.server);
