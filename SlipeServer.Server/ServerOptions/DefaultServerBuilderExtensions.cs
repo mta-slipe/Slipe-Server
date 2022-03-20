@@ -73,6 +73,7 @@ namespace SlipeServer.Server.ServerOptions
 
             builder.AddPacketHandler<VehicleInOutPacketHandler, VehicleInOutPacket>();
             builder.AddPacketHandler<VehiclePureSyncPacketHandler, VehiclePureSyncPacket>();
+            builder.AddPacketHandler<VehicleDamageSyncPacketHandler, VehicleDamageSyncPacket>();
 
             builder.AddPacketHandler<VoiceDataPacketHandler, VoiceDataPacket>();
             builder.AddPacketHandler<VoiceEndPacketHandler, VoiceEndPacket>();
