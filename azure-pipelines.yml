@@ -23,14 +23,14 @@ jobs:
   steps:
   - task: VSBuild@1
     inputs:
-      solution: '**\*.sln'
-      msbuildArgs: '/target:NetModuleWrapper'
+      solution: '**\*.vcxproj'
+      msbuildArgs: ''
       platform: 'x86'
       configuration: 'release'
   - task: VSBuild@1
     inputs:
-      solution: '**\*.sln'
-      msbuildArgs: '/target:NetModuleWrapper'
+      solution: '**\*.vcxproj'
+      msbuildArgs: ''
       platform: 'x64'
       configuration: 'release'
 
