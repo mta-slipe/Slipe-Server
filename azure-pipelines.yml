@@ -63,6 +63,7 @@ jobs:
     - task: CmdLine@2
       inputs:
         script: |
+          sudo apt-get install g++-multilib gcc-multilib -y
           cd NetModuleWrapper
           gcc wrapperFunctions.cpp -shared -o $(Build.ArtifactStagingDirectory)\x64\NetModuleWrapper64.so -fPIC
           gcc wrapperFunctions.cpp -m32 -shared -o $(Build.ArtifactStagingDirectory)\x86\NetModuleWrapper86.so -fPIC
