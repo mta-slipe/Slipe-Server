@@ -72,15 +72,15 @@ jobs:
           
     - task: CopyFiles@2
       inputs:
-        SourceFolder: 'NetModuleWrapper/NetModuleWrapper86.so'
-        Contents: '**'
-        TargetFolder: '$(Build.ArtifactStagingDirectory)/x86/NetModuleWrapper.so'
+        SourceFolder: 'NetModuleWrapper'
+        Contents: 'NetModuleWrapper86.so'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/x86'
 
     - task: CopyFiles@2
       inputs:
-        SourceFolder: 'NetModuleWrapper/NetModuleWrapper64.so'
-        Contents: '**'
-        TargetFolder: '$(Build.ArtifactStagingDirectory)/x64/NetModuleWrapper.so'
+        SourceFolder: 'NetModuleWrapper'
+        Contents: 'NetModuleWrapper64.so'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/x64'
 
     - task: PublishBuildArtifacts@1
       displayName: 'publish artifacts to cpp_linux'
