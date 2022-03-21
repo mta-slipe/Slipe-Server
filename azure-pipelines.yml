@@ -31,10 +31,12 @@ jobs:
       configuration: 'release'
 
   - task: CopyFiles@2
+    displayName: 'Copy x86 NetModuleWrapper.dll'
     inputs:
       SourceFolder: 'NetModuleWrapper\release'
       Contents: '**'
       TargetFolder: '$(Build.ArtifactStagingDirectory)\x86'
+
   - task: VSBuild@1
     displayName: 'x64 build'
     inputs:
@@ -44,6 +46,7 @@ jobs:
       configuration: 'release'
 
   - task: CopyFiles@2
+    displayName: 'Copy x64 NetModuleWrapper.dll'
     inputs:
       SourceFolder: 'NetModuleWrapper\x64\release'
       Contents: '**'
@@ -73,12 +76,14 @@ jobs:
           ls
           
     - task: CopyFiles@2
+      displayName: 'Copy x86 NetModuleWrapper.so'
       inputs:
         SourceFolder: 'NetModuleWrapper/x86'
         Contents: 'NetModuleWrapper.so'
         TargetFolder: '$(Build.ArtifactStagingDirectory)/x86'
 
     - task: CopyFiles@2
+      displayName: 'Copy x64 NetModuleWrapper.so'
       inputs:
         SourceFolder: 'NetModuleWrapper/x64'
         Contents: 'NetModuleWrapper.so'
@@ -107,7 +112,6 @@ jobs:
       artifactName: 'cpp_linux'
       downloadPath: '$(System.ArtifactsDirectory)/netmodulewrapper/linux'
 
-
   - task: CopyFiles@2
     displayName: 'Copy x86 NetModuleWrapper.so'
     inputs:
@@ -133,7 +137,7 @@ jobs:
       downloadPath: '$(System.ArtifactsDirectory)/netmodulewrapper/windows'
 
   - task: CopyFiles@2
-    displayName: 'Copy x86 NetModuleWrapper.so'
+    displayName: 'Copy x86 NetModuleWrapper.dll'
     inputs:
       SourceFolder: '$(System.ArtifactsDirectory)/netmodulewrapper/windows/cpp_windows/x86'
       Contents: 'NetModuleWrapper.dll'
@@ -141,19 +145,12 @@ jobs:
       OverWrite: true
 
   - task: CopyFiles@2
-    displayName: 'Copy x64 NetModuleWrapper.so'
+    displayName: 'Copy x64 NetModuleWrapper.dll'
     inputs:
       SourceFolder: '$(System.ArtifactsDirectory)/netmodulewrapper/windows/cpp_windows/x64'
       Contents: 'NetModuleWrapper.dll'
       TargetFolder: 'SlipeServer.Net/Binaries/x64'
       OverWrite: true
-
-  - task: DownloadBuildArtifacts@1
-    inputs:
-      buildType: 'current'
-      downloadType: 'single'
-      artifactName: 'cpp_linux'
-      downloadPath: '$(System.ArtifactsDirectory)/netmodulewrapper/linux'
   
 
   - task: UseDotNet@2
