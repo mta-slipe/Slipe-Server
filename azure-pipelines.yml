@@ -107,10 +107,11 @@ jobs:
       artifactName: 'cpp_linux'
       downloadPath: '$(System.ArtifactsDirectory)/netmodulewrapper/linux'
 
+
   - task: CopyFiles@2
     displayName: 'Copy x86 NetModuleWrapper.so'
     inputs:
-      SourceFolder: '$(System.ArtifactsDirectory)/netmodulewrapper/linux/x86'
+      SourceFolder: '$(System.ArtifactsDirectory)/netmodulewrapper/linux/cpp_linux/x86'
       Contents: 'NetModuleWrapper.so'
       TargetFolder: 'SlipeServer.Net/Binaries/x86'
       OverWrite: true
@@ -118,7 +119,7 @@ jobs:
   - task: CopyFiles@2
     displayName: 'Copy x64 NetModuleWrapper.so'
     inputs:
-      SourceFolder: '$(System.ArtifactsDirectory)/netmodulewrapper/linux/x64'
+      SourceFolder: '$(System.ArtifactsDirectory)/netmodulewrapper/linux/cpp_linux/x64'
       Contents: 'NetModuleWrapper.so'
       TargetFolder: 'SlipeServer.Net/Binaries/x64'
       OverWrite: true
@@ -134,7 +135,7 @@ jobs:
   - task: CopyFiles@2
     displayName: 'Copy x86 NetModuleWrapper.so'
     inputs:
-      SourceFolder: '$(System.ArtifactsDirectory)/netmodulewrapper/windows/x86'
+      SourceFolder: '$(System.ArtifactsDirectory)/netmodulewrapper/windows/cpp_windows/x86'
       Contents: 'NetModuleWrapper.dll'
       TargetFolder: 'SlipeServer.Net/Binaries/x86'
       OverWrite: true
@@ -142,7 +143,7 @@ jobs:
   - task: CopyFiles@2
     displayName: 'Copy x64 NetModuleWrapper.so'
     inputs:
-      SourceFolder: '$(System.ArtifactsDirectory)/netmodulewrapper/windows/x64'
+      SourceFolder: '$(System.ArtifactsDirectory)/netmodulewrapper/windows/cpp_windows/x64'
       Contents: 'NetModuleWrapper.dll'
       TargetFolder: 'SlipeServer.Net/Binaries/x64'
       OverWrite: true
