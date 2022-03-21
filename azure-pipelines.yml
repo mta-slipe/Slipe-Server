@@ -69,7 +69,19 @@ jobs:
           gcc wrapperFunctions.cpp -shared -o NetModuleWrapper64.so -fPIC
           gcc wrapperFunctions.cpp -m32 -shared -o NetModuleWrapper86.so -fPIC
           ls
-        
+          
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: 'NetModuleWrapper/NetModuleWrapper86.so'
+        Contents: '**'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/x86/NetModuleWrapper.so'
+
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: 'NetModuleWrapper/NetModuleWrapper64.so'
+        Contents: '**'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/x64/NetModuleWrapper.so'
+
     - task: PublishBuildArtifacts@1
       displayName: 'publish artifacts to cpp_linux'
       inputs:
