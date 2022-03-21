@@ -21,18 +21,41 @@ jobs:
   pool:
     vmImage: 'windows-2022'
   steps:
+  
   - task: VSBuild@1
+    displayName: 'x86 build'
     inputs:
       solution: '**\*.vcxproj'
       msbuildArgs: '/p:PostBuildEventUseInBuild=false'
       platform: 'x86'
       configuration: 'release'
+
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: 'NetModuleWrapper\release'
+      Contents: '**'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\x86'
   - task: VSBuild@1
+    displayName: 'x64 build'
     inputs:
       solution: '**\*.vcxproj'
       msbuildArgs: '/p:PostBuildEventUseInBuild=false'
       platform: 'x64'
       configuration: 'release'
+
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: 'NetModuleWrapper\x64\release'
+      Contents: '**'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\x86'
+      
+  - task: PublishBuildArtifacts@1
+    displayName: 'publish artifacts to cpp_windows'
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'cpp_windows'
+      publishLocation: 'Container'
+      
   - task: CmdLine@2
     inputs:
       script: 'tree'
