@@ -17,7 +17,7 @@ variables:
   buildConfiguration: 'Release'
 
 jobs: 
-- job: 'windows-cpp-build'
+- job: 'windows_cpp_build'
   pool:
     vmImage: 'windows-2022'
   steps:
@@ -34,7 +34,7 @@ jobs:
       platform: 'x64'
       configuration: 'release'
 
-- job: 'linux-cpp-build'
+- job: 'linux_cpp_build'
   pool:
     vmImage: 'ubuntu-latest'
   steps:
@@ -50,8 +50,8 @@ jobs:
   pool:
     vmImage: 'windows-2022'
   dependsOn:
-  - 'windows-cpp-build'
-  - 'linux-cpp-build' 
+  - 'windows_cpp_build'
+  - 'linux_cpp_build' 
   steps:
   - task: UseDotNet@2
     inputs:
