@@ -46,7 +46,7 @@ jobs:
           gcc wrapperFunctions.cpp -m32 -shared -o NetModuleWrapper86.so -fPIC
     
   
-- job: 'dotnet-build'
+- job: 'dotnet_build'
   pool:
     vmImage: 'windows-2022'
   dependsOn:
