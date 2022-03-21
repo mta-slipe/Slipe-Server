@@ -47,7 +47,7 @@ jobs:
     inputs:
       SourceFolder: 'NetModuleWrapper\x64\release'
       Contents: '**'
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\x86'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\x64'
       
   - task: PublishBuildArtifacts@1
     displayName: 'publish artifacts to cpp_windows'
@@ -55,10 +55,6 @@ jobs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
       ArtifactName: 'cpp_windows'
       publishLocation: 'Container'
-      
-  - task: CmdLine@2
-    inputs:
-      script: 'tree'
 
 - job: 'linux_cpp_build'
   pool:
