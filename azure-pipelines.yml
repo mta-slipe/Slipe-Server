@@ -64,8 +64,15 @@ jobs:
       inputs:
         script: |
           cd NetModuleWrapper
-          gcc wrapperFunctions.cpp -m32 -shared -o NetModuleWrapper86.so -fPIC
-          gcc wrapperFunctions.cpp -shared -o NetModuleWrapper64.so -fPIC
+          gcc wrapperFunctions.cpp -shared -o $(Build.ArtifactStagingDirectory)\x64\NetModuleWrapper64.so -fPIC
+          gcc wrapperFunctions.cpp -m32 -shared -o $(Build.ArtifactStagingDirectory)\x86\NetModuleWrapper86.so -fPIC
+        
+    - task: PublishBuildArtifacts@1
+      displayName: 'publish artifacts to cpp_linux'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'cpp_linux'
+        publishLocation: 'Container'
     
   
 - job: 'dotnet_build'
