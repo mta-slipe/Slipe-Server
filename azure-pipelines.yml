@@ -64,8 +64,8 @@ jobs:
       inputs:
         script: |
           cd NetModuleWrapper
-          gcc wrapperFunctions.cpp -shared -o NetModuleWrapper64.so -fPIC
           gcc wrapperFunctions.cpp -m32 -shared -o NetModuleWrapper86.so -fPIC
+          gcc wrapperFunctions.cpp -shared -o NetModuleWrapper64.so -fPIC
     
   
 - job: 'dotnet_build'
