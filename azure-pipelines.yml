@@ -33,6 +33,9 @@ jobs:
       msbuildArgs: '/p:PostBuildEventUseInBuild=false'
       platform: 'x64'
       configuration: 'release'
+  - task: CmdLine@2
+    inputs:
+      script: 'tree'
 
 - job: 'linux_cpp_build'
   pool:
