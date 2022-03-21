@@ -66,20 +66,22 @@ jobs:
           sudo apt-get update
           sudo apt-get install g++-multilib gcc-multilib -y
           cd NetModuleWrapper
-          gcc wrapperFunctions.cpp -shared -o NetModuleWrapper64.so -fPIC
-          gcc wrapperFunctions.cpp -m32 -shared -o NetModuleWrapper86.so -fPIC
+          mkdir x64
+          mkdir x86
+          gcc wrapperFunctions.cpp -shared -o x64/NetModuleWrapper.so -fPIC
+          gcc wrapperFunctions.cpp -m32 -shared -o x86/NetModuleWrapper.so -fPIC
           ls
           
     - task: CopyFiles@2
       inputs:
-        SourceFolder: 'NetModuleWrapper'
-        Contents: 'NetModuleWrapper86.so'
+        SourceFolder: 'NetModuleWrapper/x86'
+        Contents: 'NetModuleWrapper.so'
         TargetFolder: '$(Build.ArtifactStagingDirectory)/x86'
 
     - task: CopyFiles@2
       inputs:
-        SourceFolder: 'NetModuleWrapper'
-        Contents: 'NetModuleWrapper64.so'
+        SourceFolder: 'NetModuleWrapper/x64'
+        Contents: 'NetModuleWrapper.so'
         TargetFolder: '$(Build.ArtifactStagingDirectory)/x64'
 
     - task: PublishBuildArtifacts@1
@@ -97,6 +99,62 @@ jobs:
   - 'windows_cpp_build'
   - 'linux_cpp_build' 
   steps:
+  - task: DownloadBuildArtifacts@1
+    displayName: 'Download linux cpp'
+    inputs:
+      buildType: 'current'
+      downloadType: 'single'
+      artifactName: 'cpp_linux'
+      downloadPath: '$(System.ArtifactsDirectory)/netmodulewrapper/linux'
+
+  - task: CopyFiles@2
+    displayName: 'Copy x86 NetModuleWrapper.so'
+    inputs:
+      SourceFolder: '$(System.ArtifactsDirectory)/netmodulewrapper/linux/x86'
+      Contents: 'NetModuleWrapper.so'
+      TargetFolder: 'SlipeServer.Net/Binaries/x86'
+      OverWrite: true
+
+  - task: CopyFiles@2
+    displayName: 'Copy x64 NetModuleWrapper.so'
+    inputs:
+      SourceFolder: '$(System.ArtifactsDirectory)/netmodulewrapper/linux/x64'
+      Contents: 'NetModuleWrapper.so'
+      TargetFolder: 'SlipeServer.Net/Binaries/x64'
+      OverWrite: true
+
+  - task: DownloadBuildArtifacts@1
+    displayName: 'Download windows cpp'
+    inputs:
+      buildType: 'current'
+      downloadType: 'single'
+      artifactName: 'cpp_windows'
+      downloadPath: '$(System.ArtifactsDirectory)/netmodulewrapper/windows'
+
+  - task: CopyFiles@2
+    displayName: 'Copy x86 NetModuleWrapper.so'
+    inputs:
+      SourceFolder: '$(System.ArtifactsDirectory)/netmodulewrapper/windows/x86'
+      Contents: 'NetModuleWrapper.dll'
+      TargetFolder: 'SlipeServer.Net/Binaries/x86'
+      OverWrite: true
+
+  - task: CopyFiles@2
+    displayName: 'Copy x64 NetModuleWrapper.so'
+    inputs:
+      SourceFolder: '$(System.ArtifactsDirectory)/netmodulewrapper/windows/x64'
+      Contents: 'NetModuleWrapper.dll'
+      TargetFolder: 'SlipeServer.Net/Binaries/x64'
+      OverWrite: true
+
+  - task: DownloadBuildArtifacts@1
+    inputs:
+      buildType: 'current'
+      downloadType: 'single'
+      artifactName: 'cpp_linux'
+      downloadPath: '$(System.ArtifactsDirectory)/netmodulewrapper/linux'
+  
+
   - task: UseDotNet@2
     inputs:
       packageType: 'sdk'
