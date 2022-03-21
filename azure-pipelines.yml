@@ -24,13 +24,13 @@ jobs:
   - task: VSBuild@1
     inputs:
       solution: '**\*.vcxproj'
-      msbuildArgs: ''
+      msbuildArgs: '/p:PostBuildEventUseInBuild=false'
       platform: 'x86'
       configuration: 'release'
   - task: VSBuild@1
     inputs:
       solution: '**\*.vcxproj'
-      msbuildArgs: ''
+      msbuildArgs: '/p:PostBuildEventUseInBuild=false'
       platform: 'x64'
       configuration: 'release'
 
