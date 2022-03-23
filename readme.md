@@ -1,4 +1,9 @@
 # Slipe Server
+[![Build](https://dev.azure.com/bobvanhooff/slipe/_apis/build/status/3?branchName=master)](https://dev.azure.com/BobvanHooff/Slipe/_build?definitionId=3)
+[![Version](https://img.shields.io/nuget/v/SlipeServer.Server)](https://www.nuget.org/packages/SlipeServer.Server)
+[![Downloads](https://img.shields.io/nuget/dt/SlipeServer.Server)](https://www.nuget.org/packages/SlipeServer.Server)
+[![Discord](https://img.shields.io/discord/555709976082120715?label=Discord)](https://discord.gg/cJTPXFTA)
+---
 
 Slipe Server is a C# implementation of an [MTA San Andreas](https://mtasa.com) Server.
 
