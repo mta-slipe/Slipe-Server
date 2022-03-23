@@ -173,6 +173,7 @@ jobs:
     displayName: 'dotnet test'
     inputs:
       command: 'test'
+      publishTestResults: true
 
   - task: DotNetCoreCLI@2
     displayName: 'dotnet pack'
