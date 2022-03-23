@@ -57,10 +57,11 @@ namespace SlipeServer.Console
                 {
                     builder.UseConfiguration(this.configuration);
 
-                    builder.AddDefaults();
-
 #if DEBUG
+                    builder.AddDefaults(exceptBehaviours: ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour);
                     builder.AddNetWrapper(dllPath: "net_d", port: (ushort)(this.configuration.Port + 1));
+#else
+                    builder.AddDefaults();
 #endif
 
                     builder.ConfigureServices(services =>
