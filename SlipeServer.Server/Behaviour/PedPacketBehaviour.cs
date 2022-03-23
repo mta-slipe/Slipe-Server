@@ -39,6 +39,7 @@ namespace SlipeServer.Server.Behaviour
                 ped.WeaponRemoved += RelayPedWeaponRemove;
                 ped.AmmoUpdated += RelayPedAmmoCountUpdate;
                 ped.JetpackStateChanged += RelayJetpackStateChanged;
+                ped.StatChanged += RelayStatChanged;
 
                 if (ped is not Player)
                 {
@@ -110,6 +111,12 @@ namespace SlipeServer.Server.Behaviour
         private void RelayPedAmmoCountUpdate(object? sender, AmmoUpdateEventArgs e)
         {
             this.server.BroadcastPacket(new SetAmmoCountRpcPacket(e.Ped.Id, (byte)e.WeaponId, e.AmmoCount, e.AmmoInClipCount));
+        }
+
+        private void RelayStatChanged(Ped sender, PedStatChangedEventArgs e)
+        {
+            var packet = PedPacketFactory.CreatePlayerStatsPacket(sender);
+            this.server.BroadcastPacket(packet);
         }
     }
 }

@@ -609,6 +609,39 @@ namespace SlipeServer.Console.Logic
             {
                 args.Player.FightingStyle = FightingStyle.KungFu;
             };
+
+            this.commandService.AddCommand("alpha").Triggered += (source, args) =>
+            {
+                if (args.Arguments.Length > 0 && byte.TryParse(args.Arguments[0], out var alpha))
+                    args.Player.Alpha = alpha;
+                else
+                    args.Player.Alpha = 255;
+            };
+
+            this.commandService.AddCommand("cj").Triggered += (source, args) =>
+            {
+                args.Player.Model = 0;
+            };
+
+            this.commandService.AddCommand("mcdonalds").Triggered += (source, args) =>
+            {
+                args.Player.SetStat(Packets.Enums.PedStat.FAT, 1000);
+            };
+
+            this.commandService.AddCommand("salad").Triggered += (source, args) =>
+            {
+                args.Player.SetStat(Packets.Enums.PedStat.FAT, 0);
+            };
+
+            this.commandService.AddCommand("gym").Triggered += (source, args) =>
+            {
+                args.Player.SetStat(Packets.Enums.PedStat.BODY_MUSCLE, 1000);
+            };
+
+            this.commandService.AddCommand("lazy").Triggered += (source, args) =>
+            {
+                args.Player.SetStat(Packets.Enums.PedStat.BODY_MUSCLE, 0);
+            };
         }
 
         private void OnPlayerJoin(Player player)
