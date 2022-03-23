@@ -1,10 +1,12 @@
 ﻿using SlipeServer.Packets.Definitions.Entities.Structs;
+using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Collections;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Elements.Structs;
 using SlipeServer.Server.Enums;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
@@ -168,6 +170,7 @@ namespace SlipeServer.Server.Elements
         }
         public VehicleAction VehicleAction { get; set; } = VehicleAction.None;
         public Vehicle? JackingVehicle { get; set; }
+        private Dictionary<PedStat, float> stats;
 
 
         public Ped(PedModel model, Vector3 position) : base()
@@ -176,7 +179,9 @@ namespace SlipeServer.Server.Elements
             this.Position = position;
 
             this.Clothes = Array.Empty<PedClothing>();
-            this.Weapons = new WeaponCollection();
+            this.Weapons = new();
+            this.stats = new();
+
             this.Weapons.WeaponAdded += (sender, args) => this.WeaponReceived?.Invoke(this, new WeaponReceivedEventArgs(this, args.Type, args.Ammo, false));
             this.Weapons.WeaponRemoved += (sender, args) => this.WeaponRemoved?.Invoke(this, new WeaponRemovedEventArgs(this, args.Type, args.Ammo));
             this.Weapons.WeaponAmmoUpdated += (sender, args) => this.AmmoUpdated?.Invoke(this, new AmmoUpdateEventArgs(this, args.Type, args.Ammo, args.AmmoInClip));
@@ -266,6 +271,31 @@ namespace SlipeServer.Server.Elements
             this.Kill(null, damageType, bodyPart);
         }
 
+        public void SetStat(PedStat stat, float? value)
+        {
+            var arguments = new PedStatChangedEventArgs(
+                stat,
+                this.stats.ContainsKey(stat) ? this.stats[stat] : null,
+                value);
+
+            if (value == null)
+                this.stats.Remove(stat);
+            else
+                this.stats[stat] = value.Value;
+
+            this.StatChanged?.Invoke(this, arguments);
+        }
+
+        public float GetStat(PedStat stat)
+        {
+            return this.stats[stat];
+        }
+
+        public Dictionary<PedStat, float> GetAllStats()
+        {
+            return this.stats.ToDictionary(x => x.Key, x => x.Value);
+        }
+
         public event ElementEventHandler<Ped, PedWastedEventArgs>? Wasted;
         public event ElementChangedEventHandler<Ped, ushort>? ModelChanged;
         public event ElementChangedEventHandler<Ped, float>? HealthChanged;
@@ -275,6 +305,7 @@ namespace SlipeServer.Server.Elements
         public event ElementChangedEventHandler<Ped, bool>? JetpackStateChanged;
         public event ElementChangedEventHandler<Ped, Element?>? TargetChanged;
         public event ElementChangedEventHandler<Ped, Player?>? SyncerChanged;
+        public event ElementEventHandler<Ped, PedStatChangedEventArgs>? StatChanged;
         public event ElementEventHandler<Ped, WeaponReceivedEventArgs>? WeaponReceived;
         public event ElementEventHandler<Ped, WeaponRemovedEventArgs>? WeaponRemoved;
         public event ElementEventHandler<Ped, AmmoUpdateEventArgs>? AmmoUpdated;
