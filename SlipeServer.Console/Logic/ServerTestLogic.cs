@@ -642,6 +642,12 @@ namespace SlipeServer.Console.Logic
             {
                 args.Player.SetStat(Packets.Enums.PedStat.BODY_MUSCLE, 0);
             };
+
+            this.commandService.AddCommand("pro").Triggered += (source, args) =>
+            {
+                foreach (var stat in Server.Constants.WeaponConstants.WeaponStatsPerWeapon)
+                    args.Player.SetWeaponStat(stat.Key, 1000);
+            };
         }
 
         private void OnPlayerJoin(Player player)

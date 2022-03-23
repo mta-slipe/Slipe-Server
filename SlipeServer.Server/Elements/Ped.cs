@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets.Definitions.Entities.Structs;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Collections;
+using SlipeServer.Server.Constants;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Elements.Structs;
@@ -288,12 +289,26 @@ namespace SlipeServer.Server.Elements
 
         public float GetStat(PedStat stat)
         {
-            return this.stats[stat];
+            this.stats.TryGetValue(stat, out var value);
+            return value;
         }
 
         public Dictionary<PedStat, float> GetAllStats()
         {
             return this.stats.ToDictionary(x => x.Key, x => x.Value);
+        }
+
+        public void SetWeaponStat(WeaponId weapon, float value)
+        {
+            if (WeaponConstants.WeaponStatsPerWeapon.TryGetValue(weapon, out var stat))
+                SetStat(stat, value);
+        }
+
+        public float GetWeaponStat(WeaponId weapon)
+        {
+            if (WeaponConstants.WeaponStatsPerWeapon.TryGetValue(weapon, out var stat))
+                return GetStat(stat);
+            return 0;
         }
 
         public event ElementEventHandler<Ped, PedWastedEventArgs>? Wasted;
