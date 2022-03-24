@@ -8,107 +8,108 @@ namespace SlipeServer.Physics.Worlds
 {
     public class SimpleThreadDispatcher : IThreadDispatcher, IDisposable
     {
-        int threadCount;
-        public int ThreadCount => threadCount;
-        struct Worker
+        private readonly int threadCount;
+        public int ThreadCount => this.threadCount;
+        private struct Worker
         {
             public Thread Thread;
             public AutoResetEvent Signal;
         }
 
-        Worker[] workers;
-        AutoResetEvent finished;
+        private readonly Worker[] workers;
+        private readonly AutoResetEvent finished;
 
-        BufferPool[] bufferPools;
+        private readonly BufferPool[] bufferPools;
 
         public SimpleThreadDispatcher(int threadCount)
         {
             this.threadCount = threadCount;
-            workers = new Worker[threadCount - 1];
-            for (int i = 0; i < workers.Length; ++i)
+            this.workers = new Worker[threadCount - 1];
+            for (int i = 0; i < this.workers.Length; ++i)
             {
-                workers[i] = new Worker { Thread = new Thread(WorkerLoop), Signal = new AutoResetEvent(false) };
-                workers[i].Thread.IsBackground = true;
-                workers[i].Thread.Start(workers[i].Signal);
+                this.workers[i] = new Worker { Thread = new Thread(WorkerLoop), Signal = new AutoResetEvent(false) };
+                this.workers[i].Thread.IsBackground = true;
+                this.workers[i].Thread.Start(this.workers[i].Signal);
             }
-            finished = new AutoResetEvent(false);
-            bufferPools = new BufferPool[threadCount];
-            for (int i = 0; i < bufferPools.Length; ++i)
+            this.finished = new AutoResetEvent(false);
+            this.bufferPools = new BufferPool[threadCount];
+            for (int i = 0; i < this.bufferPools.Length; ++i)
             {
-                bufferPools[i] = new BufferPool();
-            }
-        }
-
-        void DispatchThread(int workerIndex)
-        {
-            Debug.Assert(workerBody != null);
-            workerBody(workerIndex);
-
-            if (Interlocked.Increment(ref completedWorkerCounter) == threadCount)
-            {
-                finished.Set();
+                this.bufferPools[i] = new BufferPool();
             }
         }
 
-        volatile Action<int> workerBody;
-        int workerIndex;
-        int completedWorkerCounter;
-
-        void WorkerLoop(object untypedSignal)
+        private void DispatchThread(int workerIndex)
         {
-            var signal = (AutoResetEvent)untypedSignal;
+            Debug.Assert(this.workerBody != null);
+            this.workerBody(workerIndex);
+
+            if (Interlocked.Increment(ref this.completedWorkerCounter) == this.threadCount)
+            {
+                this.finished.Set();
+            }
+        }
+
+        private volatile Action<int>? workerBody;
+        private int workerIndex;
+        private int completedWorkerCounter;
+
+        private void WorkerLoop(object? untypedSignal)
+        {
+            var signal = untypedSignal as AutoResetEvent;
             while (true)
             {
-                signal.WaitOne();
-                if (disposed)
+                signal?.WaitOne();
+                if (this.disposed)
                     return;
-                DispatchThread(Interlocked.Increment(ref workerIndex) - 1);
+                DispatchThread(Interlocked.Increment(ref this.workerIndex) - 1);
             }
         }
 
-        void SignalThreads()
+        private void SignalThreads()
         {
-            for (int i = 0; i < workers.Length; ++i)
+            for (int i = 0; i < this.workers.Length; ++i)
             {
-                workers[i].Signal.Set();
+                this.workers[i].Signal.Set();
             }
         }
 
         public void DispatchWorkers(Action<int> workerBody)
         {
             Debug.Assert(this.workerBody == null);
-            workerIndex = 1; //Just make the inline thread worker 0. While the other threads might start executing first, the user should never rely on the dispatch order.
-            completedWorkerCounter = 0;
+            this.workerIndex = 1; //Just make the inline thread worker 0. While the other threads might start executing first, the user should never rely on the dispatch order.
+            this.completedWorkerCounter = 0;
             this.workerBody = workerBody;
             SignalThreads();
             //Calling thread does work. No reason to spin up another worker and block this one!
             DispatchThread(0);
-            finished.WaitOne();
+            this.finished.WaitOne();
             this.workerBody = null;
         }
 
-        volatile bool disposed;
+        private volatile bool disposed;
         public void Dispose()
         {
-            if (!disposed)
+            if (!this.disposed)
             {
-                disposed = true;
+                this.disposed = true;
                 SignalThreads();
-                for (int i = 0; i < bufferPools.Length; ++i)
+                for (int i = 0; i < this.bufferPools.Length; ++i)
                 {
-                    bufferPools[i].Clear();
+                    this.bufferPools[i].Clear();
                 }
-                foreach (var worker in workers)
+                foreach (var worker in this.workers)
                 {
                     worker.Thread.Join();
                     worker.Signal.Dispose();
                 }
             }
+            GC.SuppressFinalize(this);
         }
 
         public BufferPool GetThreadMemoryPool(int workerIndex)
         {
-            return bufferPools[workerIndex];
+            return this.bufferPools[workerIndex];
         }
     }
 }

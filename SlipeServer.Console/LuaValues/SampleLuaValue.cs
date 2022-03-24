@@ -24,7 +24,7 @@ namespace SlipeServer.Console.LuaValues
         public bool Boolean { get; set; }
         public bool? OptionalBoolean { get; set; }
 
-        public SampleSubLuaValue SubValue { get; set; }
+        public SampleSubLuaValue SubValue { get; set; } = null!;
 
         public partial void Parse(LuaValue luaEvent);
     }

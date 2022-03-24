@@ -171,7 +171,7 @@ namespace SlipeServer.Server.Elements
         }
         public VehicleAction VehicleAction { get; set; } = VehicleAction.None;
         public Vehicle? JackingVehicle { get; set; }
-        private Dictionary<PedStat, float> stats;
+        private readonly Dictionary<PedStat, float> stats;
 
 
         public Ped(PedModel model, Vector3 position) : base()

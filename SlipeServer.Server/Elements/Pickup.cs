@@ -129,7 +129,7 @@ namespace SlipeServer.Server.Elements
             this.Used?.Invoke(this, new(player, this.IsVisible));
         }
 
-        private void ResetPickup(object sender, System.Timers.ElapsedEventArgs e)
+        private void ResetPickup(object? sender, System.Timers.ElapsedEventArgs e)
         {
             this.IsVisible = true;
             this.Reset?.Invoke(this, EventArgs.Empty);

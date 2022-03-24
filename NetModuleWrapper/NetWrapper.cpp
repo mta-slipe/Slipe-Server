@@ -157,7 +157,7 @@ int NetWrapper::init(const char* netDllFilePath, const char* idFile, const char*
 
     network = pfnInitNetServerInterface();
 
-    network->InitServerId("");
+    network->InitServerId("server-id.keys");
     network->RegisterPacketHandler(staticPacketHandler);
     network->StartNetwork(ip, port, playerCount, serverName);
 
@@ -199,7 +199,6 @@ void NetWrapper::runPulseLoop() {
 void NetWrapper::start() {
     running = true;
     binThread.join();
-    network->InitServerId("");
     runThread = std::thread(&NetWrapper::runPulseLoop, this);
 }
 
