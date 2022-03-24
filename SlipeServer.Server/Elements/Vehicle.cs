@@ -33,7 +33,7 @@ namespace SlipeServer.Server.Elements
         public byte PaintJob { get; set; } = 0;
         public VehicleDamage Damage
         {
-            get => new VehicleDamage()
+            get => new()
             {
                 Doors = this.DoorStates,
                 Wheels = this.WheelStates,

@@ -37,7 +37,7 @@ namespace SlipeServer.Server.Behaviour
             _ = this.AnnounceToMasterServer();
         }
 
-        private async void OnTimerElapsed(object sender, ElapsedEventArgs e)
+        private async void OnTimerElapsed(object? sender, ElapsedEventArgs e)
         {
             await AnnounceToMasterServer();
         }
@@ -59,10 +59,10 @@ namespace SlipeServer.Server.Behaviour
                     this.timer.Interval = interval * 1000;
                 }
 
-                this.logger.LogInformation($"Master server list announcement result: {keyValuePairCollection["ok_message"]}");
+                this.logger.LogInformation("Master server list announcement result: {result}", keyValuePairCollection["ok_message"]);
             } catch (HttpRequestException e)
             {
-                this.logger.LogError($"Failed to announce to master server list: {e.Message}");
+                this.logger.LogError("Failed to announce to master server list: {message}", e.Message);
             }
         }
     }

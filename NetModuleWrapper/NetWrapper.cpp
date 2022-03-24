@@ -57,10 +57,7 @@ void NetWrapper::sendPacket(unsigned long address, unsigned char packetId, unsig
     NetBitStreamInterface* bitStream = network->AllocateNetServerBitStream(0);
     if (bitStream)
     {
-        for (int i = 0; i < payloadSize; i++)
-        {
-            bitStream->Write((char)payload[i]);
-        }
+        bitStream->Write(reinterpret_cast<const char*>(payload), payloadSize);
         NetServerPlayerID& socket = sockets[address];
         mutex.lock();
         packetQueue.push(QueuedPacket(socket, packetId, bitStream, priority, reliability));
@@ -157,7 +154,7 @@ int NetWrapper::init(const char* netDllFilePath, const char* idFile, const char*
 
     network = pfnInitNetServerInterface();
 
-    network->InitServerId("");
+    network->InitServerId("server-id.keys");
     network->RegisterPacketHandler(staticPacketHandler);
     network->StartNetwork(ip, port, playerCount, serverName);
 
@@ -199,7 +196,6 @@ void NetWrapper::runPulseLoop() {
 void NetWrapper::start() {
     running = true;
     binThread.join();
-    network->InitServerId("");
     runThread = std::thread(&NetWrapper::runPulseLoop, this);
 }
 

@@ -341,7 +341,7 @@ namespace SlipeServer.Server.Services
             server.PlayerJoined += HandlePlayerJoin;
         }
 
-        private void IncrementTime(object sender, ElapsedEventArgs e)
+        private void IncrementTime(object? sender, ElapsedEventArgs e)
         {
             this.minute++;
             if (this.minute >= 60)

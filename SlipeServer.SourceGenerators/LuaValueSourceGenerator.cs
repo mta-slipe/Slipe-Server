@@ -16,7 +16,7 @@ namespace SlipeServer.SourceGenerators
 
         public void Execute(GeneratorExecutionContext context)
         {
-            LuaEventAttributeSyntaxReceiver syntaxReceiver = (LuaEventAttributeSyntaxReceiver)context.SyntaxReceiver;
+            LuaEventAttributeSyntaxReceiver syntaxReceiver = (LuaEventAttributeSyntaxReceiver)context.SyntaxReceiver!;
 
             foreach (var eventClass in syntaxReceiver.EventClasses)
             {
@@ -36,15 +36,15 @@ using SlipeServer.Server.Events;
 using SlipeServer.Packets.Definitions.Lua;
 using System.ComponentModel.DataAnnotations;
 
-namespace {(eventClass.Parent as NamespaceDeclarationSyntax).Name.ToFullString()}
+namespace {(eventClass.Parent as NamespaceDeclarationSyntax)!.Name.ToFullString()}
 {{
     public partial class {eventClass.Identifier.ValueText}
     {{
         public partial void Parse(LuaValue luaValue)
         {{
             var dictionary = new Dictionary<string, LuaValue>(
-                luaValue.TableValue.Select(x => 
-                    new KeyValuePair<string, LuaValue>(x.Key.StringValue, x.Value)
+                luaValue.TableValue!.Select(x => 
+                    new KeyValuePair<string, LuaValue>(x.Key.StringValue!, x.Value)
                 )
             );
 {GenerateParseMethodBody(eventClass)}
@@ -60,7 +60,7 @@ namespace {(eventClass.Parent as NamespaceDeclarationSyntax).Name.ToFullString()
 
             var properties = eventClass.ChildNodes()
                 .Where(x => x is PropertyDeclarationSyntax)
-                .Select(x => x as PropertyDeclarationSyntax);
+                .Select(x => (x as PropertyDeclarationSyntax)!);
 
             foreach (var property in properties)
             {

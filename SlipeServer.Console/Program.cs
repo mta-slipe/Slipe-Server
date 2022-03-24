@@ -27,7 +27,7 @@ namespace SlipeServer.Console
             {
                 if (program != null)
                 {
-                    program.Logger.LogCritical(exception, exception.Message);
+                    program.Logger.LogCritical(exception, "{message}", exception.Message);
                 } else
                 {
                     System.Console.WriteLine($"Error in startup {exception.Message}");
