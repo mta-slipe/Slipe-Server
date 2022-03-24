@@ -21,6 +21,7 @@ namespace SlipeServer.Server.Behaviour
         {
             player.Spawned += RelayPlayerSpawn;
             player.WantedLevelChanged += WantedLevelChanged;
+            player.MoneyChanged += RelayMoneyChanged;
             player.Wasted += RelayPlayerWasted;
             player.NameChanged += RelayedNameChanged;
         }
@@ -34,6 +35,12 @@ namespace SlipeServer.Server.Behaviour
         private void WantedLevelChanged(object sender, ElementChangedEventArgs<Player, byte> args)
         {
             var packet = PlayerPacketFactory.CreateSetWantedLevelPacket(args.NewValue);
+            args.Source.Client.SendPacket(packet);
+        }
+
+        private void RelayMoneyChanged(object sender, PlayerMoneyChangedEventArgs args)
+        {
+            var packet = PlayerPacketFactory.CreateSetMoneyPacket(args.Money, args.Instant);
             args.Source.Client.SendPacket(packet);
         }
 

@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using SlipeServer.Console.LuaValues;
 using SlipeServer.Packets.Definitions.Lua;
-using SlipeServer.Packets.Definitions.Resources;
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
@@ -647,6 +646,18 @@ namespace SlipeServer.Console.Logic
             {
                 foreach (var stat in Server.Constants.WeaponConstants.WeaponStatsPerWeapon)
                     args.Player.SetWeaponStat(stat.Key, 1000);
+            };
+            
+            this.commandService.AddCommand("money").Triggered += (source, args) =>
+            {
+                args.Player.ShowHudComponent(HudComponent.Money, true);
+                args.Player.SetMoney(this.random.Next(0, 1000), false);
+            };
+
+            this.commandService.AddCommand("moneyinstant").Triggered += (source, args) =>
+            {
+                args.Player.ShowHudComponent(HudComponent.Money, true);
+                args.Player.Money = this.random.Next(0, 1000);
             };
         }
 
