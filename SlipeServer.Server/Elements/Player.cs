@@ -70,7 +70,19 @@ namespace SlipeServer.Server.Elements
         public Dictionary<int, PlayerPendingScreenshot> PendingScreenshots { get; } = new();
 
         private readonly HashSet<Element> subscriptionElements;
-        public int Money { get; private set; }
+
+        private int money;
+        public int Money
+        {
+            get => this.money;
+            set
+            {
+                int clampedMoney = Math.Clamp(value, -99999999, 99999999);
+                var previousTeam = this.money;
+                this.money = clampedMoney;
+                this.MoneyChanged?.Invoke(this, new PlayerMoneyChangedEventArgs(this, clampedMoney, true));
+            }
+        }
 
         protected internal Player(Client client) : base(0, Vector3.Zero)
         {
@@ -247,7 +259,7 @@ namespace SlipeServer.Server.Elements
         {
             int clampedMoney = Math.Clamp(money, -99999999, 99999999);
             var args = new PlayerMoneyChangedEventArgs(this, clampedMoney, instant);
-            this.Money = clampedMoney;
+            this.money = clampedMoney;
             MoneyChanged?.Invoke(this, args);
         }
 
