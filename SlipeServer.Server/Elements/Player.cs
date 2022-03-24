@@ -71,6 +71,19 @@ namespace SlipeServer.Server.Elements
 
         private readonly HashSet<Element> subscriptionElements;
 
+        private int money;
+        public int Money
+        {
+            get => this.money;
+            set
+            {
+                int clampedMoney = Math.Clamp(value, -99999999, 99999999);
+                var previousTeam = this.money;
+                this.money = clampedMoney;
+                this.MoneyChanged?.Invoke(this, new PlayerMoneyChangedEventArgs(this, clampedMoney, true));
+            }
+        }
+
         protected internal Player(Client client) : base(0, Vector3.Zero)
         {
             this.Client = client;
@@ -242,6 +255,14 @@ namespace SlipeServer.Server.Elements
             this.Client.ResendPlayerACInfo();
         }
 
+        public void SetMoney(int money, bool instant = false)
+        {
+            int clampedMoney = Math.Clamp(money, -99999999, 99999999);
+            var args = new PlayerMoneyChangedEventArgs(this, clampedMoney, instant);
+            this.money = clampedMoney;
+            MoneyChanged?.Invoke(this, args);
+        }
+
         internal void TriggerPlayerACInfo(IEnumerable<byte> detectedACList, uint d3d9Size, string d3d9MD5, string D3d9SHA256)
         {
             this.AcInfoReceived?.Invoke(this, new PlayerACInfoArgs(detectedACList, d3d9Size, d3d9MD5, D3d9SHA256));
@@ -279,5 +300,6 @@ namespace SlipeServer.Server.Elements
         public event ElementEventHandler<Player, PlayerModInfoArgs>? ModInfoReceived;
         public event ElementEventHandler<Player, PlayerNetworkStatusArgs>? NetworkStatusReceived;
         public event ElementEventHandler<Player, PlayerTeamChangedArgs>? TeamChanged;
+        public event ElementEventHandler<Player, PlayerMoneyChangedEventArgs>? MoneyChanged;
     }
 }
