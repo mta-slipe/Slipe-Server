@@ -7,6 +7,9 @@ using System.Net.Sockets;
 
 namespace SlipeServer.Server.AllSeeingEye
 {
+    /// <summary>
+    /// Behaviour responsible for replying to ASE queries
+    /// </summary>
     public class AseBehaviour
     {
         private const int cacheTime = 10 * 1000;

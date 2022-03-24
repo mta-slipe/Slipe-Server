@@ -21,8 +21,11 @@ namespace SlipeServer.Server.Repositories
 
         public void Add(Element element)
         {
-            element.PositionChanged += ReInsertElement;
-            this.elements.Add(new float[] { element.Position.X, element.Position.Y, element.Position.Z }, element);
+            lock (element.ElementLock)
+            {
+                element.PositionChanged += ReInsertElement;
+                this.elements.Add(new float[] { element.Position.X, element.Position.Y, element.Position.Z }, element);
+            }
         }
 
         public Element? Get(uint id)
@@ -34,8 +37,11 @@ namespace SlipeServer.Server.Repositories
 
         public void Remove(Element element)
         {
-            element.PositionChanged -= ReInsertElement;
-            this.elements.RemoveAt(new float[] { element.Position.X, element.Position.Y, element.Position.Z });
+            lock (element.ElementLock)
+            {
+                element.PositionChanged -= ReInsertElement;
+                this.elements.RemoveAt(new float[] { element.Position.X, element.Position.Y, element.Position.Z });
+            }
         }
 
         public IEnumerable<Element> GetAll()
@@ -67,12 +73,24 @@ namespace SlipeServer.Server.Repositories
                 .Cast<TElement>();
         }
 
-        private void ReInsertElement(Element sender, ElementChangedEventArgs<Vector3> args)
+        public IEnumerable<Element> GetNearest(Vector3 position, int count)
         {
-            var neighbour = this.elements.GetNearestNeighbours(new float[] { args.OldValue.X, args.OldValue.Y, args.OldValue.Z }, 1).SingleOrDefault();
-            if (neighbour != null && neighbour.Value == sender)
-                this.elements.RemoveAt(neighbour.Point);
-            this.elements.Add(new float[] { args.NewValue.X, args.NewValue.Y, args.NewValue.Z }, args.Source);
+            return this.elements
+                .GetNearestNeighbours(new float[] { position.X, position.Y, position.Z }, count)
+                .Select(kvPair => kvPair.Value);
+        }
+
+        private void ReInsertElement(Element element, ElementChangedEventArgs<Vector3> args)
+        {
+            lock (element.ElementLock)
+            {
+                var neighbour = this.elements
+                    .RadialSearch(new float[] { args.OldValue.X, args.OldValue.Y, args.OldValue.Z }, 0.25f)
+                    .SingleOrDefault(x => x.Value == element);
+                if (neighbour != null)
+                    this.elements.RemoveAt(neighbour.Point);
+                this.elements.Add(new float[] { args.NewValue.X, args.NewValue.Y, args.NewValue.Z }, args.Source);
+            }
         }
     }
 }

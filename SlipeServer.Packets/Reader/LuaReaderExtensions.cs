@@ -39,6 +39,7 @@ namespace SlipeServer.Packets.Reader
                 LuaType.String => GetLuaString(reader),
                 LuaType.LongString => GetLuaLongString(reader),
                 LuaType.Userdata => GetLuaUserdata(reader),
+                LuaType.LightUserdata => GetLuaUserdata(reader),
                 _ => new LuaValue(),
             };
         }
@@ -86,7 +87,7 @@ namespace SlipeServer.Packets.Reader
                 }
             } else
             {
-                return new LuaValue(reader.GetCompressedUInt32());
+                return new LuaValue(reader.GetCompressedInt32());
             }
         }
 

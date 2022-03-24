@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlipeServer.Packets.Constants;
 using SlipeServer.Packets.Definitions.Join;
+using SlipeServer.Packets.Definitions.Player;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
 using SlipeServer.Packets.Rpc;
@@ -106,6 +107,12 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Rpc
 
             SyncPacketFactory.CreateSyncSettingsPacket(this.configuration).SendTo(client.Player);
             SyncPacketFactory.CreateSyncIntervalPacket(this.configuration).SendTo(client.Player);
+
+            foreach (var player in otherPlayers)
+            {
+                if (player.GetAllStats().Count > 0)
+                    PedPacketFactory.CreatePlayerStatsPacket(player).SendTo(client.Player);
+            }
 
             this.server.HandlePlayerJoin(client.Player);
         }

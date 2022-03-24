@@ -1,14 +1,13 @@
 ﻿using SlipeServer.Packets.Definitions.Entities.Structs;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Server.Concepts;
 using SlipeServer.Server.Constants;
-using SlipeServer.Server.ElementConcepts;
 using SlipeServer.Server.Elements.Events;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 
 namespace SlipeServer.Server.Elements
 {
@@ -32,12 +31,28 @@ namespace SlipeServer.Server.Elements
         public Colors Colors { get; private set; }
 
         public byte PaintJob { get; set; } = 0;
-        public VehicleDamage Damage { get; set; }
+        public VehicleDamage Damage
+        {
+            get => new VehicleDamage()
+            {
+                Doors = this.DoorStates,
+                Wheels = this.WheelStates,
+                Panels = this.PanelStates,
+                Lights = this.LightStates
+            };
+            set
+            {
+                this.DoorStates = value.Doors;
+                this.WheelStates = value.Wheels;
+                this.PanelStates = value.Panels;
+                this.LightStates = value.Lights;
+            }
+        }
         public byte Variant1 { get; set; } = 0;
         public byte Variant2 { get; set; } = 0;
         public Vector3 RespawnPosition { get; set; }
         public Vector3 RespawnRotation { get; set; }
-        public float RespawnHealth { get; set; }
+        public float RespawnHealth { get; set; } = 1000;
 
         private Vector2? turretRotation;
         public Vector2? TurretRotation
@@ -158,6 +173,20 @@ namespace SlipeServer.Server.Elements
                     this.AddPassenger(0, value, true);
             }
         }
+        public bool IsInWater { get; set; }
+
+        private Player? syncer = null;
+        public Player? Syncer
+        {
+            get => this.syncer;
+            set
+            {
+                var args = new ElementChangedEventArgs<Vehicle, Player?>(this, this.Syncer, value, this.IsSync);
+                this.syncer = value;
+                SyncerChanged?.Invoke(this, args);
+            }
+        }
+
         public Dictionary<byte, Ped> Occupants { get; set; }
 
         public Vehicle(ushort model, Vector3 position) : base()
@@ -177,6 +206,11 @@ namespace SlipeServer.Server.Elements
 
             this.Name = $"vehicle{this.Id}";
             this.Occupants = new Dictionary<byte, Ped>();
+        }
+
+        public Vehicle(VehicleModel model, Vector3 position) : this((ushort)model, position)
+        {
+
         }
 
         public new Vehicle AssociateWith(MtaServer server)
@@ -248,7 +282,7 @@ namespace SlipeServer.Server.Elements
             this.DoorStates[(int)door] = (byte)state;
             this.DoorStateChanged?.Invoke(this, new VehicleDoorStateChangedArgs(this, door, state, spawnFlyingComponent));
         }
-        
+
         public void SetWheelState(VehicleWheel wheel, VehicleWheelState state)
         {
             this.WheelStates[(int)wheel] = (byte)state;
@@ -271,6 +305,11 @@ namespace SlipeServer.Server.Elements
         {
             this.DoorRatios[(int)door] = ratio;
             this.DoorOpenRatioChanged?.Invoke(this, new VehicleDoorOpenRatioChangedArgs(this, door, ratio, time));
+        }
+
+        public void TriggerPushed(Player player)
+        {
+            this.Pushed?.Invoke(this, new VehiclePushedEventArgs(player));
         }
 
         public VehicleDoorState GetDoorState(VehicleDoor door) => (VehicleDoorState)this.DoorStates[(int)door];
@@ -312,7 +351,7 @@ namespace SlipeServer.Server.Elements
         {
             RespawnAt(position, rotation);
         }
-        
+
         public void Respawn()
         {
             RespawnAt(this.RespawnPosition, this.RespawnRotation);
@@ -332,11 +371,13 @@ namespace SlipeServer.Server.Elements
         public event ElementChangedEventHandler<Vehicle, string>? PlateTextChanged;
         public event ElementChangedEventHandler<Vehicle, bool>? LockedStateChanged;
         public event ElementChangedEventHandler<Vehicle, bool>? EngineStateChanged;
+        public event ElementChangedEventHandler<Vehicle, Player?>? SyncerChanged;
         public event ElementEventHandler<VehicleRespawnEventArgs>? Respawned;
         public event ElementEventHandler<VehicleDoorStateChangedArgs>? DoorStateChanged;
         public event ElementEventHandler<VehicleWheelStateChangedArgs>? WheelStateChanged;
         public event ElementEventHandler<VehiclePanelStateChangedArgs>? PanelStateChanged;
         public event ElementEventHandler<VehicleLightStateChangedArgs>? LightStateChanged;
         public event ElementEventHandler<VehicleDoorOpenRatioChangedArgs>? DoorOpenRatioChanged;
+        public event ElementEventHandler<Vehicle, VehiclePushedEventArgs>? Pushed;
     }
 }

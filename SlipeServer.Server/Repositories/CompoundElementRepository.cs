@@ -1,9 +1,7 @@
 ﻿using SlipeServer.Server.Elements;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using System.Text;
 
 namespace SlipeServer.Server.Repositories
 {
@@ -14,14 +12,14 @@ namespace SlipeServer.Server.Repositories
         private readonly FlatElementRepository flatElementRepository;
         private readonly ElementByIdRepository elementByIdRepository;
         private readonly ElementByTypeRepository elementByTypeRepository;
-        private readonly Dictionary<ElementType, KdTreeElementRepository> kdTreeElementRepositories;
+        private readonly Dictionary<ElementType, KdTreeElementRepository> spatialRepositories;
 
         public CompoundElementRepository()
         {
             this.flatElementRepository = new FlatElementRepository();
             this.elementByIdRepository = new ElementByIdRepository();
             this.elementByTypeRepository = new ElementByTypeRepository();
-            this.kdTreeElementRepositories = new Dictionary<ElementType, KdTreeElementRepository>();
+            this.spatialRepositories = new Dictionary<ElementType, KdTreeElementRepository>();
         }
 
         public void Add(Element element)
@@ -57,7 +55,7 @@ namespace SlipeServer.Server.Repositories
 
         public IEnumerable<Element> GetWithinRange(Vector3 position, float range)
         {
-            return this.kdTreeElementRepositories
+            return this.spatialRepositories
                 .SelectMany(kvPair => kvPair.Value.GetWithinRange(position, range));
         }
 
@@ -68,11 +66,11 @@ namespace SlipeServer.Server.Repositories
 
         private KdTreeElementRepository GetKdTreeElementRepository(ElementType elementType)
         {
-            if (! this.kdTreeElementRepositories.ContainsKey(elementType))
+            if (!this.spatialRepositories.ContainsKey(elementType))
             {
-                this.kdTreeElementRepositories[elementType] = new KdTreeElementRepository();
+                this.spatialRepositories[elementType] = new KdTreeElementRepository();
             }
-            return this.kdTreeElementRepositories[elementType];
+            return this.spatialRepositories[elementType];
         }
     }
 }

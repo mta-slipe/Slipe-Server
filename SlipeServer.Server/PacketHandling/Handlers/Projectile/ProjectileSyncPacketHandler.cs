@@ -21,6 +21,7 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Projectile
         public void HandlePacket(Client client, ProjectileSyncPacket packet)
         {
             var otherPlayers = this.middleware.GetPlayersToSyncTo(client.Player, packet);
+            packet.SourceElement = client.Player.Id;
             packet.SendTo(otherPlayers);
         }
     }

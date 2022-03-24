@@ -43,8 +43,8 @@ namespace SlipeServer.Server
 
         public string GameType { get; set; } = "unknown";
         public string MapName { get; set; } = "unknown";
-        public string Password { get; set; } = "";
-        public bool HasPassword => this.Password != "";
+        public string? Password { get; set; }
+        public bool HasPassword => this.Password != null;
 
         public bool IsRunning { get; private set; }
         public DateTime StartDatetime { get; private set; }
@@ -60,6 +60,7 @@ namespace SlipeServer.Server
             this.clients = new();
             this.clientCreationMethod = clientCreationMethod;
             this.configuration = configuration ?? new();
+            this.Password = configuration?.Password;
 
             this.root = new();
             this.serviceCollection = new();
@@ -112,6 +113,7 @@ namespace SlipeServer.Server
             builderAction(builder);
 
             this.configuration = builder.Configuration;
+            this.Password = this.configuration.Password;
             this.SetupDependencies(services => builder.LoadDependencies(services));
 
             this.serviceProvider = this.serviceCollection.BuildServiceProvider();
@@ -225,7 +227,7 @@ namespace SlipeServer.Server
 
         private void SetupDependencies(Action<ServiceCollection>? dependencyCallback)
         {
-            this.serviceCollection.AddSingleton<IElementRepository, CompoundElementRepository>();
+            this.serviceCollection.AddSingleton<IElementRepository, RTreeCompoundElementRepository>();
             this.serviceCollection.AddSingleton<ILogger, DefaultLogger>();
             this.serviceCollection.AddSingleton<IResourceServer, BasicHttpServer>();
             this.serviceCollection.AddSingleton<IResourceProvider, FileSystemResourceProvider>();
@@ -241,6 +243,8 @@ namespace SlipeServer.Server
             this.serviceCollection.AddSingleton<ExplosionService>();
             this.serviceCollection.AddSingleton<FireService>();
             this.serviceCollection.AddSingleton<TextItemService>();
+            this.serviceCollection.AddSingleton<WeaponConfigurationService>();
+            this.serviceCollection.AddSingleton<CommandService>();
 
             this.serviceCollection.AddSingleton<HttpClient>();
             this.serviceCollection.AddSingleton<Configuration>(this.configuration);
