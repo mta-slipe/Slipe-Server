@@ -86,7 +86,7 @@ namespace SlipeServer.Server.AllSeeingEye
                 bw.Write((byte)1); // team, skip
                 bw.Write((byte)1); // skin, skip
                 bw.WriteWithLength(1); // score
-                bw.WriteWithLength(1); // ping, skip right now
+                bw.WriteWithLength((int)player.Client.Ping);
                 bw.Write((byte)1); // time, skip
             }
 
@@ -136,7 +136,7 @@ namespace SlipeServer.Server.AllSeeingEye
             string buildNumber = $"{(byte)this.buildType}";
             string pingStatus = new('P', 32);
             string strNetRoute = new('N', 32);
-            string strUpTime = $"{(int)this.mtaServer.Uptime.Ticks / 10000}";
+            string strUpTime = $"{(int)this.mtaServer.Uptime.Ticks / TimeSpan.TicksPerSecond}";
             string strHttpPort = this.configuration.HttpPort.ToString();
             uint extraDataLength = (uint)(strPlayerCount.Length + buildType.Length + buildNumber.Length + pingStatus.Length + strNetRoute.Length + strUpTime.Length + strHttpPort.Length) + 7;
 
@@ -165,7 +165,7 @@ namespace SlipeServer.Server.AllSeeingEye
             bw.Write(strHttpPort.AsSpan());
             bw.WriteWithLength(aseVersion);
             bw.Write((byte)(this.mtaServer.HasPassword ? 1 : 0));
-            bw.Write((byte)1); // serial verification
+            bw.Write((byte)0); // serial verification
             bw.Write((byte)Math.Min(playerCount, 255));
             bw.Write((byte)Math.Min(this.configuration.MaxPlayerCount, (ushort)255));
 

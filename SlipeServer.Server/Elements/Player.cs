@@ -1,20 +1,18 @@
 ﻿using SlipeServer.Packets.Definitions.Lua;
-using SlipeServer.Server.ElementConcepts;
+using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
+using SlipeServer.Packets.Enums;
+using SlipeServer.Server.Concepts;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.PacketHandling.Factories;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
-using SlipeServer.Packets.Enums;
-using SlipeServer.Server.Elements.Structs;
 
 namespace SlipeServer.Server.Elements
 {
-    public class Player: Ped
+    public class Player : Ped
     {
         public override ElementType ElementType => ElementType.Player;
 
@@ -42,18 +40,18 @@ namespace SlipeServer.Server.Elements
         public Vector3 CameraDirection { get; set; }
         public float CameraRotation { get; set; }
 
-        public bool IsInWater { get; set; }
         public bool IsOnGround { get; set; }
         public bool IsDucked { get; set; }
         public bool WearsGoggles { get; set; }
         public bool HasContact { get; set; }
         public bool IsChoking { get; set; }
         public bool AkimboTargetUp { get; set; }
-        public bool IsOnFire { get; set; }
         public bool IsSyncingVelocity { get; set; }
         public bool IsStealthAiming { get; set; }
         public bool IsVoiceMuted { get; set; }
         public bool IsChatMuted { get; set; }
+        public List<Ped> SyncingPeds { get; set; }
+        public List<Vehicle> SyncingVehicles { get; set; }
         public Controls Controls { get; private set; }
 
         private Team? team;
@@ -79,7 +77,17 @@ namespace SlipeServer.Server.Elements
             this.Client = client;
             this.Camera = new Camera(this);
             this.subscriptionElements = new();
+            this.SyncingPeds = new();
+            this.SyncingVehicles = new();
             this.Controls = new(this);
+
+            this.Disconnected += HandleDisconnect;
+        }
+
+        private void HandleDisconnect(Player sender, PlayerQuitEventArgs e)
+        {
+            if (this.Vehicle != null)
+                this.Vehicle.RunAsSync(() => this.Vehicle.RemovePassenger(this));
         }
 
         public new Player AssociateWith(MtaServer server)
@@ -118,6 +126,9 @@ namespace SlipeServer.Server.Elements
             this.dimension = dimension;
 
             this.Weapons.Clear(false);
+            this.Vehicle = null;
+            this.Seat = null;
+            this.VehicleAction = VehicleAction.None;
 
             this.Spawned?.Invoke(this, new PlayerSpawnedEventArgs(this));
         }
@@ -157,18 +168,16 @@ namespace SlipeServer.Server.Elements
             this.Damaged?.Invoke(this, new PlayerDamagedEventArgs(this, damager, damageType, bodyPart));
         }
 
-        public void Kill(Element? damager, WeaponType damageType, BodyPart bodyPart, ulong animationGroup = 0, ulong animationId = 15)
+        public override void Kill(Element? damager, WeaponType damageType, BodyPart bodyPart, ulong animationGroup = 0, ulong animationId = 15)
         {
             this.RunAsSync(() =>
             {
                 this.health = 0;
-                this.Wasted?.Invoke(this, new PlayerWastedEventArgs(this, damager, damageType, bodyPart, animationGroup, animationId));
+                this.Vehicle = null;
+                this.Seat = null;
+                this.VehicleAction = VehicleAction.None;
+                InvokeWasted(new PedWastedEventArgs(this, damager, damageType, bodyPart, animationGroup, animationId));
             });
-        }
-
-        public void Kill(WeaponType damageType = WeaponType.WEAPONTYPE_UNARMED, BodyPart bodyPart = BodyPart.Torso)
-        {
-            this.Kill(null, damageType, bodyPart);
         }
 
         public void VoiceDataStart(byte[] voiceData)
@@ -264,7 +273,6 @@ namespace SlipeServer.Server.Elements
 
         public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
         public event ElementEventHandler<Player, PlayerDamagedEventArgs>? Damaged;
-        public event ElementEventHandler<Player, PlayerWastedEventArgs>? Wasted;
         public event ElementEventHandler<Player, PlayerSpawnedEventArgs>? Spawned;
         public event ElementEventHandler<Player, PlayerCommandEventArgs>? CommandEntered;
         public event ElementEventHandler<Player, PlayerVoiceStartArgs>? VoiceDataReceived;

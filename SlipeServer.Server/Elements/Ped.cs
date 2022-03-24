@@ -1,20 +1,19 @@
-﻿using System;
-using SlipeServer.Packets;
-using System.Net;
-using System.Numerics;
-using SlipeServer.Server.Elements.Events;
-using SlipeServer.Server.Enums;
-using SlipeServer.Server.Elements.Structs;
-using SlipeServer.Packets.Definitions.Entities.Structs;
-using System.Collections.Generic;
-using SlipeServer.Server.Constants;
-using System.Linq;
+﻿using SlipeServer.Packets.Definitions.Entities.Structs;
+using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Collections;
+using SlipeServer.Server.Constants;
 using SlipeServer.Server.Elements.Enums;
+using SlipeServer.Server.Elements.Events;
+using SlipeServer.Server.Elements.Structs;
+using SlipeServer.Server.Enums;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
 
 namespace SlipeServer.Server.Elements
 {
-    public class Ped: Element
+    public class Ped : Element
     {
         public override ElementType ElementType => ElementType.Ped;
 
@@ -69,6 +68,17 @@ namespace SlipeServer.Server.Elements
             }
         }
 
+        private FightingStyle fightingStyle = FightingStyle.Standard;
+        public FightingStyle FightingStyle
+        {
+            get => this.fightingStyle;
+            set
+            {
+                var args = new ElementChangedEventArgs<Ped, FightingStyle>(this, this.fightingStyle, value, this.IsSync);
+                this.fightingStyle = value;
+                FightingStyleChanged?.Invoke(this, args);
+            }
+        }
 
         public object CurrentWeaponLock { get; } = new();
         public Weapon? CurrentWeapon
@@ -131,9 +141,22 @@ namespace SlipeServer.Server.Elements
         public PedMoveAnimation MoveAnimation { get; set; } = 0;
         public PedClothing[] Clothes { get; set; }
         public WeaponCollection Weapons { get; set; }
-
         public bool IsAlive => this.health > 0;
 
+        private Player? syncer = null;
+        public Player? Syncer
+        {
+            get => this.syncer;
+            set
+            {
+                var args = new ElementChangedEventArgs<Ped, Player?>(this, this.Syncer, value, this.IsSync);
+                this.syncer = value;
+                SyncerChanged?.Invoke(this, args);
+            }
+        }
+
+        public bool IsOnFire { get; set; }
+        public bool IsInWater { get; set; }
 
         private Element? target = null;
         public Element? Target
@@ -148,15 +171,18 @@ namespace SlipeServer.Server.Elements
         }
         public VehicleAction VehicleAction { get; set; } = VehicleAction.None;
         public Vehicle? JackingVehicle { get; set; }
+        private Dictionary<PedStat, float> stats;
 
 
-        public Ped(PedModel model, Vector3 position): base()
+        public Ped(PedModel model, Vector3 position) : base()
         {
-            this.Model = (ushort) model;
+            this.Model = (ushort)model;
             this.Position = position;
 
             this.Clothes = Array.Empty<PedClothing>();
-            this.Weapons = new WeaponCollection();
+            this.Weapons = new();
+            this.stats = new();
+
             this.Weapons.WeaponAdded += (sender, args) => this.WeaponReceived?.Invoke(this, new WeaponReceivedEventArgs(this, args.Type, args.Ammo, false));
             this.Weapons.WeaponRemoved += (sender, args) => this.WeaponRemoved?.Invoke(this, new WeaponRemovedEventArgs(this, args.Type, args.Ammo));
             this.Weapons.WeaponAmmoUpdated += (sender, args) => this.AmmoUpdated?.Invoke(this, new AmmoUpdateEventArgs(this, args.Type, args.Ammo, args.AmmoInClip));
@@ -180,7 +206,7 @@ namespace SlipeServer.Server.Elements
             if (vehicle.Driver != null && vehicle.Driver.VehicleAction != VehicleAction.None)
                 return;
 
-            vehicle.AddPassenger(seat, this, true);    
+            vehicle.AddPassenger(seat, this, true);
         }
 
         public void AddWeapon(WeaponId weaponId, ushort ammoCount, bool setAsCurrent = false)
@@ -227,14 +253,76 @@ namespace SlipeServer.Server.Elements
                 SetAmmoCount(weapon.Type, count, inClip);
         }
 
+        protected void InvokeWasted(PedWastedEventArgs args) => this.Wasted?.Invoke(this, args);
+
+        public virtual void Kill(Element? damager, WeaponType damageType, BodyPart bodyPart, ulong animationGroup = 0, ulong animationId = 15)
+        {
+            this.RunAsSync(() =>
+            {
+                this.health = 0;
+                this.Vehicle = null;
+                this.Seat = null;
+                this.VehicleAction = VehicleAction.None;
+                InvokeWasted(new PedWastedEventArgs(this, damager, damageType, bodyPart, animationGroup, animationId));
+            });
+        }
+
+        public void Kill(WeaponType damageType = WeaponType.WEAPONTYPE_UNARMED, BodyPart bodyPart = BodyPart.Torso)
+        {
+            this.Kill(null, damageType, bodyPart);
+        }
+
+        public void SetStat(PedStat stat, float? value)
+        {
+            var arguments = new PedStatChangedEventArgs(
+                stat,
+                this.stats.ContainsKey(stat) ? this.stats[stat] : null,
+                value);
+
+            if (value == null)
+                this.stats.Remove(stat);
+            else
+                this.stats[stat] = value.Value;
+
+            this.StatChanged?.Invoke(this, arguments);
+        }
+
+        public float GetStat(PedStat stat)
+        {
+            this.stats.TryGetValue(stat, out var value);
+            return value;
+        }
+
+        public Dictionary<PedStat, float> GetAllStats()
+        {
+            return this.stats.ToDictionary(x => x.Key, x => x.Value);
+        }
+
+        public void SetWeaponStat(WeaponId weapon, float value)
+        {
+            if (WeaponConstants.WeaponStatsPerWeapon.TryGetValue(weapon, out var stat))
+                SetStat(stat, value);
+        }
+
+        public float GetWeaponStat(WeaponId weapon)
+        {
+            if (WeaponConstants.WeaponStatsPerWeapon.TryGetValue(weapon, out var stat))
+                return GetStat(stat);
+            return 0;
+        }
+
+        public event ElementEventHandler<Ped, PedWastedEventArgs>? Wasted;
         public event ElementChangedEventHandler<Ped, ushort>? ModelChanged;
         public event ElementChangedEventHandler<Ped, float>? HealthChanged;
         public event ElementChangedEventHandler<Ped, float>? ArmourChanged;
         public event ElementChangedEventHandler<Ped, WeaponSlot>? WeaponSlotChanged;
+        public event ElementChangedEventHandler<Ped, FightingStyle>? FightingStyleChanged;
         public event ElementChangedEventHandler<Ped, bool>? JetpackStateChanged;
         public event ElementChangedEventHandler<Ped, Element?>? TargetChanged;
-        public event ElementEventHandler<WeaponReceivedEventArgs>? WeaponReceived;
-        public event ElementEventHandler<WeaponRemovedEventArgs>? WeaponRemoved;
-        public event ElementEventHandler<AmmoUpdateEventArgs>? AmmoUpdated;
+        public event ElementChangedEventHandler<Ped, Player?>? SyncerChanged;
+        public event ElementEventHandler<Ped, PedStatChangedEventArgs>? StatChanged;
+        public event ElementEventHandler<Ped, WeaponReceivedEventArgs>? WeaponReceived;
+        public event ElementEventHandler<Ped, WeaponRemovedEventArgs>? WeaponRemoved;
+        public event ElementEventHandler<Ped, AmmoUpdateEventArgs>? AmmoUpdated;
     }
 }

@@ -1,4 +1,5 @@
-﻿using SlipeServer.Server.Elements.Events;
+﻿using RBush;
+using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Factories;
 using System;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SlipeServer.Server.Elements
 {
-    public class Element
+    public class Element : ISpatialData
     {
         public virtual ElementType ElementType => ElementType.Unknown;
 
@@ -49,6 +50,8 @@ namespace SlipeServer.Server.Elements
             }
         }
 
+
+        private Envelope envelope;
         protected Vector3 position;
         public Vector3 Position
         {
@@ -58,8 +61,13 @@ namespace SlipeServer.Server.Elements
                 var args = new ElementChangedEventArgs<Vector3>(this, this.Position, value, this.IsSync);
                 this.position = value;
                 PositionChanged?.Invoke(this, args);
+                this.envelope = new Envelope(value.X -.01f, value.Y -.01f, value.X + .01f, value.Y + .01f);
             }
         }
+
+        public Vector3 Right => Vector3.Transform(Vector3.UnitX, this.rotation.ToQuaternion());
+        public Vector3 Up => Vector3.Transform(Vector3.UnitZ, this.rotation.ToQuaternion());
+        public Vector3 Forward => Vector3.Transform(Vector3.UnitY, this.rotation.ToQuaternion());
 
         protected Vector3 rotation;
         public Vector3 Rotation
@@ -172,6 +180,8 @@ namespace SlipeServer.Server.Elements
         private readonly HashSet<Player> subscribers;
         public IEnumerable<Player> Subscribers => this.subscribers;
 
+        public object ElementLock { get; } = new();
+        ref readonly Envelope ISpatialData.Envelope => ref this.envelope;
 
         public Element()
         {
@@ -214,6 +224,11 @@ namespace SlipeServer.Server.Elements
                 }
                 return this.TimeContext;
             }
+        }
+
+        public bool CanUpdateSync(byte Remote)
+        {
+            return (this.TimeContext == Remote || Remote == 0 || this.TimeContext == 0);
         }
 
         public void Destroy()

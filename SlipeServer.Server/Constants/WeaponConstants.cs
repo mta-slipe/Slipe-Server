@@ -1,4 +1,5 @@
-﻿using SlipeServer.Server.Elements;
+﻿using SlipeServer.Packets.Enums;
+using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using System;
 using System.Collections.Generic;
@@ -155,6 +156,23 @@ namespace SlipeServer.Server.Constants
             [WeaponId.Nightvision] = 368,
             [WeaponId.Infrared] = 369,
             [WeaponId.Parachute] = 371,
+        };
+
+        public static Dictionary<WeaponId, PedStat> WeaponStatsPerWeapon { get; } = new()
+        {
+            [WeaponId.Colt] = PedStat.WEAPONTYPE_PISTOL_SKILL,
+            [WeaponId.Silenced] = PedStat.WEAPONTYPE_PISTOL_SILENCED_SKILL,
+            [WeaponId.Deagle] = PedStat.WEAPONTYPE_DESERT_EAGLE_SKILL,
+            [WeaponId.Shotgun] = PedStat.WEAPONTYPE_SHOTGUN_SKILL,
+            [WeaponId.Sawnoff] = PedStat.WEAPONTYPE_SAWNOFF_SHOTGUN_SKILL,
+            [WeaponId.CombatShotgun] = PedStat.WEAPONTYPE_SPAS12_SHOTGUN_SKILL,
+            [WeaponId.Uzi] = PedStat.WEAPONTYPE_MICRO_UZI_SKILL,
+            [WeaponId.Mp5] = PedStat.WEAPONTYPE_MP5_SKILL,
+            [WeaponId.Ak47] = PedStat.WEAPONTYPE_AK47_SKILL,
+            [WeaponId.M4] = PedStat.WEAPONTYPE_M4_SKILL,
+            [WeaponId.Tec9] = PedStat.WEAPONTYPE_MICRO_UZI_SKILL,
+            [WeaponId.Rifle] = PedStat.WEAPONTYPE_SNIPERRIFLE_SKILL,
+            [WeaponId.Sniper] = PedStat.WEAPONTYPE_SNIPERRIFLE_SKILL,
         };
     }
 }

@@ -8,7 +8,7 @@ using System.Web;
 namespace SlipeServer.Server.Behaviour
 {
     /// <summary>
-    /// Behaviour responsible for announcing the server to the master server list and responding to ASE queries
+    /// Behaviour responsible for announcing the server to the master server list
     /// </summary>
     public class MasterServerAnnouncementBehaviour
     {

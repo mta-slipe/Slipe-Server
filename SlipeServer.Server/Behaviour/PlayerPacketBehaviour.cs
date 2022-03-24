@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
-using SlipeServer.Server.Elements;
+﻿using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.PacketHandling.Factories;
-using SlipeServer.Server.Repositories;
 
 namespace SlipeServer.Server.Behaviour
 {
@@ -49,10 +44,10 @@ namespace SlipeServer.Server.Behaviour
             args.Source.Client.SendPacket(packet);
         }
 
-        private void RelayPlayerWasted(object? sender, PlayerWastedEventArgs e)
+        private void RelayPlayerWasted(object? sender, PedWastedEventArgs e)
         {
             var packet = PlayerPacketFactory.CreateWastedPacket(
-                e.Source, e.Killer, e.WeaponType, e.BodyPart, false, e.AnimationGroup, e.AnimationId
+                (e.Source as Player)!, e.Killer, e.WeaponType, e.BodyPart, false, e.AnimationGroup, e.AnimationId
             );
             this.server.BroadcastPacket(packet);
         }

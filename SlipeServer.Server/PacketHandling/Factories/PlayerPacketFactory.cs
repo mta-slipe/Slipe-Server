@@ -142,7 +142,7 @@ namespace SlipeServer.Server.PacketHandling.Factories
 
         public static UpdateInfoPacket CreateUpdateInfoPacket(Version version, bool mandatory = true)
         {
-            if(mandatory)
+            if (mandatory)
                 return new UpdateInfoPacket("Mandatory", version.ToString());
             return new UpdateInfoPacket("Optional", version.ToString());
         }
