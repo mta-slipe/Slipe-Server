@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using SlipeServer.Console.LuaValues;
 using SlipeServer.Packets.Definitions.Lua;
-using SlipeServer.Packets.Definitions.Resources;
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
