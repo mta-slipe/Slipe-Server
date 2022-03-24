@@ -46,9 +46,9 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element
             builder.Write(this.Model);
 
             if (this.Variant1.HasValue)
-                builder.Write(this.Variant1);
+                builder.Write(this.Variant1.Value);
             if (this.Variant2.HasValue)
-                builder.Write(this.Variant2);
+                builder.Write(this.Variant2.Value);
 
             return builder.Build();
         }

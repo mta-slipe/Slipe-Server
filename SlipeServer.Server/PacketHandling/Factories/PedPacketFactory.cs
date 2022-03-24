@@ -14,6 +14,7 @@ using SlipeServer.Packets.Definitions.Player;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 using SlipeServer.Packets.Definitions.Entities.Structs;
 using SlipeServer.Server.Constants;
+using System.Linq;
 
 namespace SlipeServer.Server.PacketHandling.Factories
 {
@@ -42,6 +43,15 @@ namespace SlipeServer.Server.PacketHandling.Factories
         public static RemovePedJetpackRpcPacket CreateRemoveJetpack(Ped ped)
         {
             return new RemovePedJetpackRpcPacket(ped.Id);
+        }
+
+        public static PlayerStatsPacket CreatePlayerStatsPacket(Ped ped)
+        {
+            return new PlayerStatsPacket()
+            {
+                ElementId = ped.Id,
+                Stats = ped.GetAllStats().ToDictionary(x => (ushort)x.Key, x => x.Value)
+            };
         }
 
         public static AddPedClothingRpcPacket CreateAddPedClothingPacket(Ped ped, Clothes cloth, byte index)

@@ -73,6 +73,8 @@ namespace SlipeServer.Server.Behaviour
         }
         private void HandleDoorStateChanged(object? sender, VehicleDoorStateChangedArgs args)
         {
+            if (args.Vehicle.IsSync)
+                return;
             this.server.BroadcastPacket(new SetVehicleDamageState(args.Vehicle.Id, (byte)VehicleDamagePart.Door, (byte)args.Door, (byte)args.State, args.SpawnFlyingComponent));
         }
 
@@ -88,21 +90,29 @@ namespace SlipeServer.Server.Behaviour
       
         private void HandleWheelStateChanged(object? sender, VehicleWheelStateChangedArgs args)
         {
+            if (args.Vehicle.IsSync)
+                return;
             this.server.BroadcastPacket(new SetVehicleDamageState(args.Vehicle.Id, (byte)VehicleDamagePart.Wheel, (byte)args.Wheel, (byte)args.State));
         }
 
         private void HandlePanelStateChanged(object? sender, VehiclePanelStateChangedArgs args)
         {
+            if (args.Vehicle.IsSync)
+                return;
             this.server.BroadcastPacket(new SetVehicleDamageState(args.Vehicle.Id, (byte)VehicleDamagePart.Panel, (byte)args.Panel, (byte)args.State));
         }
 
         private void HandleLightStateChanged(object? sender, VehicleLightStateChangedArgs args)
         {
+            if (args.Vehicle.IsSync)
+                return;
             this.server.BroadcastPacket(new SetVehicleDamageState(args.Vehicle.Id, (byte)VehicleDamagePart.Light, (byte)args.Light, (byte)args.State));
         }
 
         private void HandleDoorOpenRatioChanged(object? sender, VehicleDoorOpenRatioChangedArgs args)
         {
+            if (args.Vehicle.IsSync)
+                return;
             this.server.BroadcastPacket(new SetVehicleDoorOpenRatio(args.Vehicle.Id, (byte)args.Door, args.Ratio, args.Time));
         }
     }

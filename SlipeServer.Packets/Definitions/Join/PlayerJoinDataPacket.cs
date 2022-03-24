@@ -18,7 +18,7 @@ namespace SlipeServer.Packets.Definitions.Join
         public bool OptionalUpdateInfoRequired { get; private set; }
         public byte GameVersion { get; private set; } // unssigned
         public string Nickname { get; private set; } = string.Empty;
-        public string Password { get; private set; } = string.Empty; // MD5 type??
+        public byte[] Password { get; private set; } = Array.Empty<byte>();
         public string Serial { get; private set; } = string.Empty;
         public string DiscordSecret { get; private set; } = string.Empty;
 
@@ -37,7 +37,7 @@ namespace SlipeServer.Packets.Definitions.Join
             this.OptionalUpdateInfoRequired = reader.GetBit();
             this.GameVersion = reader.GetByte();
             this.Nickname = reader.GetStringCharacters(PacketConstants.MaxPlayerNickLength).TrimEnd('\0');
-            this.Password = reader.GetStringCharacters(16).TrimEnd('\0');
+            this.Password = reader.GetBytes(16);
             this.Serial = reader.GetStringCharacters(PacketConstants.MaxSerialLength);
             //this.DiscordSecret = reader.GetString();
         }
@@ -53,7 +53,7 @@ namespace SlipeServer.Packets.Definitions.Join
             builder.Write(this.OptionalUpdateInfoRequired);
             builder.Write(this.GameVersion);
             builder.WriteStringWithoutLength((this.Nickname).PadRight(PacketConstants.MaxPlayerNickLength));
-            builder.WriteStringWithoutLength((this.Password).PadRight(16));
+            builder.Write(this.Password);
             builder.WriteStringWithoutLength((this.Serial).PadRight(PacketConstants.MaxSerialLength));
 
             return builder.Build();

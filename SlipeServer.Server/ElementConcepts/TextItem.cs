@@ -1,4 +1,4 @@
-﻿namespace SlipeServer.Server.ElementConcepts
+﻿namespace SlipeServer.Server.Concepts
 {
     public struct TextItem
     {

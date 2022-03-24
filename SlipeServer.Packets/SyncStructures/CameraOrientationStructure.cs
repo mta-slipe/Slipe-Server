@@ -51,7 +51,7 @@ namespace SlipeServer.Packets.Structures
 
             byte lookupEntry = reader.GetByteCapped(2, false);
             uint bitCount = bitCountLookup[lookupEntry];
-            float range = MathF.Pow(2, bitCount) / 2.0f;
+            float range = MathF.Pow(2, bitCount - 1);
 
             Vector3 cameraPosition = new Vector3(
                 reader.GetFloatFromBits(bitCount, -range, range),

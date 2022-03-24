@@ -31,6 +31,7 @@ namespace SlipeServer.Packets.Builder
                     WriteLuaString(builder, luaValue);
                     break;
                 case LuaType.Userdata:
+                case LuaType.LightUserdata:
                     WriteLuaUserdata(builder, luaValue);
                     break;
                 default:

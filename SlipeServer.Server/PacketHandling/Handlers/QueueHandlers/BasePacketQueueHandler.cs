@@ -1,4 +1,5 @@
 ﻿using SlipeServer.Packets;
+using System;
 using System.Collections.Concurrent;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.QueueHandlers
@@ -12,6 +13,7 @@ namespace SlipeServer.Server.PacketHandling.Handlers.QueueHandlers
     public abstract class BasePacketQueueHandler<T> : IPacketQueueHandler<T> where T : Packet
     {
         protected readonly ConcurrentQueue<PacketQueueEntry<T>> packetQueue;
+
         public virtual int QueuedPacketCount => this.packetQueue.Count;
 
         public BasePacketQueueHandler()
@@ -27,5 +29,9 @@ namespace SlipeServer.Server.PacketHandling.Handlers.QueueHandlers
                 Packet = packet
             });
         }
+
+        protected void TriggerPacketHandled(T packet) => this.PacketHandled?.Invoke(packet);
+
+        public event Action<T>? PacketHandled;
     }
 }

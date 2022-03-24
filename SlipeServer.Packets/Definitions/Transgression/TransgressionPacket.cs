@@ -1,5 +1,4 @@
-﻿using SlipeServer.Packets.Definitions.Lua;
-using SlipeServer.Packets.Enums;
+﻿using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
 using System;
 
