@@ -1,9 +1,7 @@
 ﻿using SlipeServer.Server.Elements;
-using SlipeServer.Server.Resources.ResourceServing;
-using System;
+using SlipeServer.Server.Resources.Providers;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace SlipeServer.Server.Resources
 {
@@ -11,17 +9,17 @@ namespace SlipeServer.Server.Resources
     {
         private readonly MtaServer server;
         private readonly RootElement root;
-        private readonly IResourceServer resourceServer;
+        private readonly IResourceProvider resourceProvider;
 
         private readonly List<Resource> startedResources;
 
         public IReadOnlyCollection<Resource> StartedResources => this.startedResources.AsReadOnly();
 
-        public ResourceService(MtaServer server, RootElement root, IResourceServer resourceServer)
+        public ResourceService(MtaServer server, RootElement root, IResourceProvider resourceProvider)
         {
             this.server = server;
             this.root = root;
-            this.resourceServer = resourceServer;
+            this.resourceProvider = resourceProvider;
 
             this.startedResources = new List<Resource>();
 
@@ -36,19 +34,28 @@ namespace SlipeServer.Server.Resources
             }
         }
 
-        public void StartResource(string name)
+        public Resource? StartResource(string name)
         {
             if (!this.startedResources.Any(r => r.Name == name))
             {
-                var resource = new Resource(this.server, this.root, this.resourceServer, name);
+                var resource = this.resourceProvider.GetResource(name);
                 resource.Start();
                 this.startedResources.Add(resource);
+
+                return resource;
             }
+            return null;
         }
 
         public void StopResource(string name)
         {
             var resource = this.startedResources.Single(r => r.Name == name);
+            this.startedResources.Remove(resource);
+            resource.Stop();
+        }
+
+        public void StopResource(Resource resource)
+        {
             this.startedResources.Remove(resource);
             resource.Stop();
         }

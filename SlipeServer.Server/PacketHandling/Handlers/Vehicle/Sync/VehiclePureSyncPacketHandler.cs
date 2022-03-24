@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using SlipeServer.Packets.Definitions.Sync;
+﻿using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Packets.Definitions.Vehicles;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
@@ -78,6 +77,8 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync
                     vehicle.TurnVelocity = packet.TurnVelocity;
                     vehicle.TurretRotation = packet.TurretRotation;
                     vehicle.AdjustableProperty = packet.AdjustableProperty;
+
+                    vehicle.DoorRatios = packet.DoorOpenRatios;
                 });
             }
         }

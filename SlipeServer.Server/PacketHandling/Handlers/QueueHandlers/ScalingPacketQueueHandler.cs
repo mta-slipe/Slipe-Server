@@ -90,6 +90,7 @@ namespace SlipeServer.Server.PacketHandling.Handlers.QueueHandlers
                     try
                     {
                         this.packetHandler.HandlePacket(queueEntry.Client, queueEntry.Packet);
+                        TriggerPacketHandled(queueEntry.Packet);
                     }
                     catch (Exception e)
                     {

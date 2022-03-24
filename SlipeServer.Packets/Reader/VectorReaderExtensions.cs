@@ -1,32 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using System.Text;
 
 namespace SlipeServer.Packets.Reader
 {
     public static class VectorReaderExtensions
     {
-        public static Vector3 GetVector3(this PacketReader reader) 
-            => new Vector3(reader.GetFloat(), reader.GetFloat(), reader.GetFloat());
+        public static Vector3 GetVector3(this PacketReader reader)
+            => new(reader.GetFloat(), reader.GetFloat(), reader.GetFloat());
 
-        public static Vector2 GetVector2(this PacketReader reader) 
-            => new Vector2(reader.GetFloat(), reader.GetFloat());
+        public static Vector2 GetVector2(this PacketReader reader)
+            => new(reader.GetFloat(), reader.GetFloat());
 
         public static Vector3 GetVector3(this PacketReader reader, int integerBits, int fractionalBits)
-            => new Vector3(
-                reader.GetFloat(integerBits, fractionalBits), 
-                reader.GetFloat(integerBits, fractionalBits), 
+            => new(
+                reader.GetFloat(integerBits, fractionalBits),
+                reader.GetFloat(integerBits, fractionalBits),
                 reader.GetFloat(integerBits, fractionalBits));
 
         public static Vector2 GetVector2(this PacketReader reader, int integerBits, int fractionalBits)
-            => new Vector2(reader.GetFloat(integerBits, fractionalBits), reader.GetFloat(integerBits, fractionalBits));
+            => new(reader.GetFloat(integerBits, fractionalBits), reader.GetFloat(integerBits, fractionalBits));
 
         public static Vector3 GetVector3WithZAsFloat(this PacketReader reader, int integerBits = 14, int fractionalBits = 10)
-            => new Vector3(
-                reader.GetFloat(integerBits, fractionalBits), 
-                reader.GetFloat(integerBits, fractionalBits), 
+            => new(
+                reader.GetFloat(integerBits, fractionalBits),
+                reader.GetFloat(integerBits, fractionalBits),
                 reader.GetFloat());
 
         public static Vector3 GetNormalizedVector(this PacketReader reader)
@@ -43,8 +40,7 @@ namespace SlipeServer.Packets.Reader
             if (yZero)
             {
                 y = 0;
-            }
-            else
+            } else
             {
                 y = reader.GetCompressedFloat();
             }
@@ -53,8 +49,7 @@ namespace SlipeServer.Packets.Reader
             if (zZero)
             {
                 z = 0;
-            }
-            else
+            } else
             {
                 z = reader.GetCompressedFloat();
             }
@@ -63,8 +58,7 @@ namespace SlipeServer.Packets.Reader
             if (x < 0)
             {
                 x = 0;
-            }
-            else
+            } else
             {
                 x = MathF.Sqrt(x);
             }
@@ -74,7 +68,7 @@ namespace SlipeServer.Packets.Reader
                 x = -x;
             }
 
-            return new Vector3(x, y, z);
+            return new(x, y, z);
         }
 
         public static Vector3 GetVelocityVector(this PacketReader reader)

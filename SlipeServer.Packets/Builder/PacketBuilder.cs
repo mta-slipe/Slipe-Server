@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Numerics;
 using System.Text;
 
 namespace SlipeServer.Packets.Builder
@@ -143,19 +141,21 @@ namespace SlipeServer.Packets.Builder
 
         public void Write(string value)
         {
-            Write((ushort)value.Length);
-            WriteBytes(value.Select(c => (byte)c).ToArray());
+            var bytes = Encoding.UTF8.GetBytes(value);
+            Write((ushort)bytes.Length);
+            WriteBytes(bytes);
         }
 
         public void WriteStringWithoutLength(string value)
         {
-            WriteBytes(value.Select(c => (byte)c).ToArray());
+            WriteBytes(Encoding.UTF8.GetBytes(value));
         }
 
         public void WriteStringWithByteAsLength(string value)
         {
-            Write((byte)value.Length);
-            WriteBytes(value.Select(c => (byte)c).ToArray());
+            var bytes = Encoding.UTF8.GetBytes(value);
+            Write((byte)bytes.Length);
+            WriteBytes(bytes);
         }
 
         public void Write(Color color, bool withAlpha = false, bool alphaFirst = false)
@@ -244,6 +244,18 @@ namespace SlipeServer.Packets.Builder
                     WriteBit(false);
                 }
             }
+        }
+
+        public void WriteRange(ushort value, int bits, ushort min, ushort max)
+        {
+            value = (ushort)(Math.Clamp(value, min, max) - min);
+            WriteCapped(value, bits);
+        }
+
+        public void WriteRange(short value, int bits, short min, short max)
+        {
+            value = (short)(Math.Clamp(value, min, max) - min);
+            WriteCapped(value, bits);
         }
     }
 }

@@ -3,7 +3,7 @@ using Moq;
 using SlipeServer.Net.Wrappers;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
-using SlipeServer.Server.Resources.ResourceServing;
+using SlipeServer.Server.Resources.Serving;
 using System;
 
 namespace SlipeServer.Server.TestTools

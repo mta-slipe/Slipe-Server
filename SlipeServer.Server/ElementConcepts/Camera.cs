@@ -7,7 +7,7 @@ using System.Drawing;
 using System.Numerics;
 using System.Text;
 
-namespace SlipeServer.Server.ElementConcepts
+namespace SlipeServer.Server.Concepts
 {
     public class Camera
     {
@@ -53,7 +53,7 @@ namespace SlipeServer.Server.ElementConcepts
             this.player.Client.SendPacket(new FadeCameraPacket(fade, fadeTime, color));
         }
 
-        public void SetMatrix(Vector3 position, Vector3 lookAt, float roll = 0, float fov = 0)
+        public void SetMatrix(Vector3 position, Vector3 lookAt, float roll = 0, float fov = 70)
         {
             this.target = null;
             this.Position = position;

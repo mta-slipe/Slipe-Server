@@ -1,20 +1,13 @@
-﻿using Force.Crc32;
-using Microsoft.Extensions.Logging;
-using SlipeServer.Packets.Structs;
-using SlipeServer.Server.Elements.Enums;
+﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace SlipeServer.Server.Resources.ResourceServing
+namespace SlipeServer.Server.Resources.Serving
 {
-    public class BasicHttpServer: IResourceServer
+    public class BasicHttpServer : IResourceServer
     {
         private readonly HttpListener httpListener;
         private readonly string rootDirectory;
@@ -22,7 +15,6 @@ namespace SlipeServer.Server.Resources.ResourceServing
         private readonly ILogger logger;
         private readonly string httpAddress;
         private bool isRunning;
-        private HashSet<ushort> usedNetIds;
 
         public BasicHttpServer(Configuration configuration, ILogger logger)
         {
@@ -34,7 +26,6 @@ namespace SlipeServer.Server.Resources.ResourceServing
             this.rootDirectory = configuration.ResourceDirectory;
             this.configuration = configuration;
             this.logger = logger;
-            this.usedNetIds = new();
         }
 
         public void Start()
@@ -49,7 +40,7 @@ namespace SlipeServer.Server.Resources.ResourceServing
             {
                 this.httpListener.Start();
             }
-            catch(HttpListenerException exception)
+            catch (HttpListenerException exception)
             {
                 if (exception.Message == "Access is denied." && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
@@ -94,60 +85,6 @@ namespace SlipeServer.Server.Resources.ResourceServing
         public void Stop()
         {
             this.isRunning = false;
-        }
-
-        public ushort AllocateNetId()
-        {
-            ushort id = 0;
-            while (this.usedNetIds.Contains(id))
-                id++;
-            this.usedNetIds.Add(id);
-            return id;
-        }
-
-        public void ReleaseNetId(ushort id)
-        {
-            this.usedNetIds.Remove(id);
-        }
-
-        public IEnumerable<ResourceFile> GetResourceFiles(string resource)
-        {
-            List<ResourceFile> resourceFiles = new List<ResourceFile>();
-
-            using (var md5 = MD5.Create())
-            {
-                foreach (var file in Directory.GetFiles(Path.Join(this.rootDirectory, resource)))
-                {
-                    byte[] content = File.ReadAllBytes(file);
-                    var hash = md5.ComputeHash(content);
-                    var checksum = Crc32Algorithm.Compute(content);
-
-                    string fileName = Path.GetRelativePath(Path.Join(this.rootDirectory, resource), file);
-                    var fileType = fileName.EndsWith(".lua") ? ResourceFileType.ClientScript : ResourceFileType.ClientFile;
-                    resourceFiles.Add(new ResourceFile()
-                    {
-                        Name = fileName,
-                        AproximateSize = content.Length,
-                        IsAutoDownload = fileType == ResourceFileType.ClientFile ? true : null,
-                        CheckSum = checksum,
-                        FileType = (byte)fileType,
-                        Md5 = hash
-                    });
-                }
-            }
-
-            return resourceFiles.ToArray();
-        }
-
-        public IEnumerable<ResourceFile> GetResourceFiles()
-        {
-            IEnumerable<ResourceFile> resourceFiles = Array.Empty<ResourceFile>();
-            foreach (var directory in Directory.GetDirectories(this.rootDirectory))
-            {
-                resourceFiles = resourceFiles.Concat(GetResourceFiles(directory));
-            }
-
-            return resourceFiles;
         }
     }
 }

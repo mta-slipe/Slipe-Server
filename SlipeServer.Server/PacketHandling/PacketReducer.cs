@@ -55,7 +55,7 @@ namespace SlipeServer.Server.PacketHandling
                     }
                     catch (Exception e)
                     {
-                        this.logger.LogError($"Enqueueing packet ({packetId}) failed.\n{e.Message}");
+                        this.logger.LogError($"Enqueueing packet ({packetId}) failed.\n{e.Message}\n{e.StackTrace}");
                     }
             } else
             {
@@ -85,8 +85,8 @@ namespace SlipeServer.Server.PacketHandling
                 var packet = pool.GetPacket();
                 packet.Read(data);
                 handler.EnqueuePacket(client, packet);
-                pool.ReturnPacket(packet);
             });
+            handler.PacketHandled += (packet) => pool.ReturnPacket(packet);
         }
     }
 }
