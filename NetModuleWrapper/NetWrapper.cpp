@@ -57,10 +57,7 @@ void NetWrapper::sendPacket(unsigned long address, unsigned char packetId, unsig
     NetBitStreamInterface* bitStream = network->AllocateNetServerBitStream(0);
     if (bitStream)
     {
-        for (int i = 0; i < payloadSize; i++)
-        {
-            bitStream->Write((char)payload[i]);
-        }
+        bitStream->Write(reinterpret_cast<const char*>(payload), payloadSize);
         NetServerPlayerID& socket = sockets[address];
         mutex.lock();
         packetQueue.push(QueuedPacket(socket, packetId, bitStream, priority, reliability));

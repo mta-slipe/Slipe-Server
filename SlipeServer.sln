@@ -207,6 +207,7 @@ Global
 		{BA0A2656-204A-4663-BB1F-8361B0EDD7D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BA0A2656-204A-4663-BB1F-8361B0EDD7D1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BA0A2656-204A-4663-BB1F-8361B0EDD7D1}.Release|x64.ActiveCfg = Release|x64
+		{BA0A2656-204A-4663-BB1F-8361B0EDD7D1}.Release|x64.Build.0 = Release|x64
 		{BA0A2656-204A-4663-BB1F-8361B0EDD7D1}.Release|x86.ActiveCfg = Release|x86
 		{BA0A2656-204A-4663-BB1F-8361B0EDD7D1}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
