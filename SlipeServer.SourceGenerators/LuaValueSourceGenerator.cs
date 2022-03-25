@@ -36,6 +36,12 @@ using SlipeServer.Server.Events;
 using SlipeServer.Packets.Definitions.Lua;
 using System.ComponentModel.DataAnnotations;
 
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS8601 // Possible null reference asignment.
+#pragma warning disable CS8620 // Argument of type cannot be used for parameter of type in due to differences in the nullability of reference types.
+#pragma warning disable CS8629 // Nullable value type may be null.
+#pragma warning disable CS8604 // Possible null reference argument.
+
 namespace {(eventClass.Parent as NamespaceDeclarationSyntax)!.Name.ToFullString()}
 {{
     public partial class {eventClass.Identifier.ValueText}
@@ -51,7 +57,13 @@ namespace {(eventClass.Parent as NamespaceDeclarationSyntax)!.Name.ToFullString(
             Validator.ValidateObject(this, new ValidationContext(this), true);
         }}
     }}
-}}";
+}}
+
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning restore CS8601 // Possible null reference asignment.
+#pragma warning restore CS8620 // Argument of type cannot be used for parameter of type in due to differences in the nullability of reference types.
+#pragma warning restore CS8629 // Nullable value type may be null.
+#pragma warning restore CS8604 // Possible null reference argument.";
         }
 
         private string GenerateParseMethodBody(ClassDeclarationSyntax eventClass)
