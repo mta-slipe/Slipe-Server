@@ -24,6 +24,7 @@ namespace SlipeServer.Server.Tests.Integration.Miscellaneous
             server.NetWrapperMock.Verify(x => x.SendPacket(
                 player.Address,
                 PacketId.PACKET_ID_LUA_ELEMENT_RPC,
+                It.IsAny<ushort>(),
                 It.IsAny<byte[]>(),
                 It.IsAny<PacketPriority>(),
                 It.IsAny<PacketReliability>()
@@ -31,6 +32,7 @@ namespace SlipeServer.Server.Tests.Integration.Miscellaneous
             server.NetWrapperMock.Verify(x => x.SendPacket(
                 player2.Address,
                 PacketId.PACKET_ID_LUA_ELEMENT_RPC,
+                It.IsAny<ushort>(),
                 It.IsAny<byte[]>(),
                 It.IsAny<PacketPriority>(),
                 It.IsAny<PacketReliability>()
