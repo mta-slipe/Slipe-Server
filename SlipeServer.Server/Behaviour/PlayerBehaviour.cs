@@ -37,6 +37,10 @@ namespace SlipeServer.Server.Behaviour
 
         private void RelayKeyBound(Player sender, PlayerBindKeyArgs e)
         {
+            if(e.KeyState == KeyState.None)
+            {
+
+            }
             if (e.KeyState == KeyState.Down || e.KeyState == KeyState.Both)
             {
                 var packet = new BindKeyPacket(e.Player.Id, e.Key, true);

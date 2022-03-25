@@ -248,17 +248,19 @@ namespace SlipeServer.Server.Elements
             this.Client.ResendPlayerACInfo();
         }
 
-        public void SetBindEnabled(string key, KeyState keyState, bool enabled)
-        {
-            if(!KeyConstants.Controls.Contains(key) && !KeyConstants.Keys.Contains(key))
-                throw new ArgumentException($"Key '{key}' is not valid key.", key);
+        public void SetBind(KeyConstants.Controls control, KeyState keyState) => SetBind(KeyConstants.ControlToString(control), keyState);
+        public void SetBind(KeyConstants.Keys key, KeyState keyState) => SetBind(KeyConstants.KeyToString(key), keyState);
 
-            if(this.BoundKeys.TryGetValue(key, out KeyState value))
-            {
-                if (value == KeyState.Both)
-                    return;
-            }
-            this.BoundKeys[key] = value;
+        public void SetBind(string key, KeyState keyState)
+        {
+            if(!KeyConstants.IsValid(key))
+                throw new ArgumentException($"Key '{key}' is not valid.", key);
+
+            if (keyState == KeyState.None)
+                this.BoundKeys.Remove(key);
+            else
+                this.BoundKeys[key] = keyState;
+
             this.KeyBound?.Invoke(this, new PlayerBindKeyArgs(this, key, keyState));
         }
 
