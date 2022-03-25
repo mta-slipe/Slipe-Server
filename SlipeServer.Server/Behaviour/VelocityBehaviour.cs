@@ -27,7 +27,7 @@ namespace SlipeServer.Server.Behaviour
             server.ElementCreated += OnElementCreate;
         }
 
-        private void OnTimerElapsed(object sender, ElapsedEventArgs e)
+        private void OnTimerElapsed(object? sender, ElapsedEventArgs e)
         {
             foreach (var element in this.velocityElements)
             {
@@ -37,7 +37,7 @@ namespace SlipeServer.Server.Behaviour
 
         private void OnElementCreate(Element element)
         {
-            if (!(element is Ped) && !(element is Vehicle))
+            if (element is not Ped && element is not Vehicle)
             {
                 element.VelocityChanged += (sender, args) =>
                 {

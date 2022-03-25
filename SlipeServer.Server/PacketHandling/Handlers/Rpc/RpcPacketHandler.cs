@@ -57,7 +57,7 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Rpc
                     break;
 
                 default:
-                    this.logger.LogWarning($"Received RPC of type {packet.FunctionId}");
+                    this.logger.LogWarning("Received RPC of type {type}", packet.FunctionId);
                     break;
             }
         }

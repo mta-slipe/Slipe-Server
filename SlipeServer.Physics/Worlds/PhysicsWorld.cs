@@ -21,7 +21,6 @@ namespace SlipeServer.Physics.Worlds
         private readonly Simulation simulation;
         private readonly ILogger logger;
         private readonly AssetCollection assetCollection;
-        private readonly IThreadDispatcher? threadDispatcher;
 
         public readonly object stepLock = new();
 
@@ -33,9 +32,6 @@ namespace SlipeServer.Physics.Worlds
             this.logger = logger;
             this.pool = new BufferPool();
             this.simulation = Simulation.Create(this.pool, new NarrowPhaseCallbacks(), new SimplePoseIntegratorCallbacks(gravity), new PositionFirstTimestepper());
-
-            //var targetThreadCount = Math.Max(1, Environment.ProcessorCount > 4 ? Environment.ProcessorCount - 2 : Environment.ProcessorCount - 1);
-            //this.threadDispatcher = new SimpleThreadDispatcher(targetThreadCount);
 
             this.assetCollection = assetCollection ?? new();
         }
@@ -215,14 +211,14 @@ namespace SlipeServer.Physics.Worlds
                         stopwatch.Start();
                         lock (this.stepLock)
                         {
-                            this.simulation.Timestep(deltaTime, this.threadDispatcher);
+                            this.simulation.Timestep(deltaTime, null);
                         }
                         this.Stepped?.Invoke();
                     }
                     await Task.Delay(this.sleepTime);
                 } catch (Exception e)
                 {
-                    this.logger.LogError(e, $"Physics error: {e.Message}");
+                    this.logger.LogError(e, "Physics error: {message}", e.Message);
                 }
             }
         }

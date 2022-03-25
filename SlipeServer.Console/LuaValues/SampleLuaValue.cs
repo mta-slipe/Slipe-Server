@@ -1,5 +1,4 @@
 ﻿using SlipeServer.Packets.Definitions.Lua;
-using SlipeServer.Server.Events;
 using SlipeServer.SourceGenerators;
 using System.ComponentModel.DataAnnotations;
 using System.Numerics;
@@ -24,8 +23,8 @@ namespace SlipeServer.Console.LuaValues
         public bool Boolean { get; set; }
         public bool? OptionalBoolean { get; set; }
 
-        public SampleSubLuaValue SubValue { get; set; }
+        public SampleSubLuaValue SubValue { get; set; } = null!;
 
-        public partial void Parse(LuaValue luaEvent);
+        public partial void Parse(LuaValue luaValue);
     }
 }
