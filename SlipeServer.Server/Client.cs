@@ -15,6 +15,7 @@ namespace SlipeServer.Server
     {
         private readonly INetWrapper netWrapper;
         private readonly uint binaryAddress;
+        private ushort bitStreamVersion;
 
         public Player Player { get; protected set; }
 
@@ -47,7 +48,7 @@ namespace SlipeServer.Server
 
             if (this.IsConnected && (ClientPacketScope.Current == null || ClientPacketScope.Current.ContainsClient(this)))
             {
-                this.netWrapper.SendPacket(this.binaryAddress, packet);
+                this.netWrapper.SendPacket(this.binaryAddress, this.bitStreamVersion, packet);
             }
         }
 
@@ -62,13 +63,14 @@ namespace SlipeServer.Server
 
             if (this.IsConnected && (ClientPacketScope.Current == null || ClientPacketScope.Current.ContainsClient(this)))
             {
-                this.netWrapper.SendPacket(this.binaryAddress, packetId, data, priority, reliability);
+                this.netWrapper.SendPacket(this.binaryAddress, packetId, this.bitStreamVersion, data, priority, reliability);
             }
         }
 
         public void SetVersion(ushort version)
         {
-            if(this.IsConnected)
+            this.bitStreamVersion = version;
+            if (this.IsConnected)
             {
                 this.netWrapper.SetVersion(this.binaryAddress, version);
             }

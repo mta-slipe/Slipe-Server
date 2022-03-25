@@ -22,6 +22,7 @@ namespace SlipeServer.Server.Tests.Integration.Miscellaneous
 
             server.NetWrapperMock.Verify(x => x.SendPacket(
                 player.Address,
+                It.IsAny<ushort>(),
                 It.IsAny<SetElementModelRpcPacket>()
             ), Times.Once);
         }
@@ -38,6 +39,7 @@ namespace SlipeServer.Server.Tests.Integration.Miscellaneous
 
             server.NetWrapperMock.Verify(x => x.SendPacket(
                 player.Address,
+                It.IsAny<ushort>(),
                 It.IsAny<SetElementModelRpcPacket>()
             ), Times.Never);
         }
@@ -68,11 +70,13 @@ namespace SlipeServer.Server.Tests.Integration.Miscellaneous
 
             server.NetWrapperMock.Verify(x => x.SendPacket(
                 player.Address,
+                It.IsAny<ushort>(),
                 It.Is<SetElementModelRpcPacket>(x => x.Model == 1)
             ), Times.Once);
 
             server.NetWrapperMock.Verify(x => x.SendPacket(
                 player.Address,
+                It.IsAny<ushort>(),
                 It.Is<SetElementModelRpcPacket>(x => x.Model == 2)
             ), Times.Never);
         }

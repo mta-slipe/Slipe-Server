@@ -33,7 +33,7 @@ namespace SlipeServer.Net.Wrappers
         private static extern void StopNetWrapper(ushort id);
 
         [DllImport(wrapperDllpath, EntryPoint = "sendPacket")]
-        private static extern bool SendPacket(ushort id, uint binaryAddress, byte packetId, IntPtr payload, uint payloadSize, byte priority, byte ordering);
+        private static extern bool SendPacket(ushort id, uint binaryAddress, byte packetId, ushort bitStreamVersion, IntPtr payload, uint payloadSize, byte priority, byte ordering);
 
         [DllImport(wrapperDllpath, EntryPoint = "setSocketVersion")]
         private static extern bool SetSocketVersion(ushort id, uint binaryAddress, ushort version);
@@ -81,14 +81,14 @@ namespace SlipeServer.Net.Wrappers
 
         public void Stop() => StopNetWrapper(this.id);
 
-        private void SendPacket(uint binaryAddress, byte packetId, byte[] payload, PacketPriority priority, PacketReliability reliability)
+        private void SendPacket(uint binaryAddress, byte packetId, ushort bitStreamVersion, byte[] payload, PacketPriority priority, PacketReliability reliability)
         {
             int size = Marshal.SizeOf((byte)0) * payload.Length;
             IntPtr pointer = Marshal.AllocHGlobal(size);
             try
             {
                 Marshal.Copy(payload, 0, pointer, payload.Length);
-                SendPacket(this.id, binaryAddress, packetId, pointer, (uint)payload.Length, (byte)priority, (byte)reliability);
+                SendPacket(this.id, binaryAddress, packetId, bitStreamVersion, pointer, (uint)payload.Length, (byte)priority, (byte)reliability);
             }
             finally
             {
@@ -96,14 +96,14 @@ namespace SlipeServer.Net.Wrappers
             }
         }
 
-        public void SendPacket(uint binaryAddress, Packet packet)
+        public void SendPacket(uint binaryAddress, ushort bitStreamVersion, Packet packet)
         {
-            SendPacket(binaryAddress, (byte)packet.PacketId, packet.Write(), packet.Priority, packet.Reliability);
+            SendPacket(binaryAddress, (byte)packet.PacketId, bitStreamVersion, packet.Write(), packet.Priority, packet.Reliability);
         }
 
-        public void SendPacket(uint binaryAddress, PacketId packetId, byte[] data, PacketPriority priority = PacketPriority.High, PacketReliability reliability = PacketReliability.ReliableSequenced)
+        public void SendPacket(uint binaryAddress, PacketId packetId, ushort bitStreamVersion, byte[] data, PacketPriority priority = PacketPriority.High, PacketReliability reliability = PacketReliability.ReliableSequenced)
         {
-            SendPacket(binaryAddress, (byte)packetId, data, priority, reliability);
+            SendPacket(binaryAddress, (byte)packetId, bitStreamVersion, data, priority, reliability);
         }
 
         public Tuple<string, string, string> GetClientSerialExtraAndVersion(uint binaryAddress)
