@@ -7,5 +7,7 @@
         IncompatibilityCheckUnavailable = -1002,
         IsIncompatible = -1003,
         InterfaceUnavailable = -1004,
+        UnableToInit = -1005,
+        UnableToStart = -1006
     }
 }
