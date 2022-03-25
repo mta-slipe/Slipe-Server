@@ -32,10 +32,10 @@ namespace SlipeServer.Server.Behaviour
 
         private void OnPlayerJoin(Player player)
         {
-            player.KeyBound += RelayKeyBinded;
+            player.KeyBound += RelayKeyBound;
         }
 
-        private void RelayKeyBinded(Player sender, PlayerBindKeyArgs e)
+        private void RelayKeyBound(Player sender, PlayerBindKeyArgs e)
         {
             if (e.KeyState == KeyState.Down || e.KeyState == KeyState.Both)
             {

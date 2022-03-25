@@ -250,18 +250,16 @@ namespace SlipeServer.Server.Elements
 
         public void SetBindEnabled(string key, KeyState keyState, bool enabled)
         {
-            if(KeyConstants.Controls.Contains(key) || KeyConstants.Keys.Contains(key))
+            if(!KeyConstants.Controls.Contains(key) && !KeyConstants.Keys.Contains(key))
+                throw new ArgumentException($"Key '{key}' is not valid key.", key);
+
+            if(this.BoundKeys.TryGetValue(key, out KeyState value))
             {
-                if(BoundKeys.TryGetValue(key, out KeyState value))
-                {
-                    if (value == KeyState.Both)
-                        return;
-                }
-                BoundKeys[key] = value;
-                this.KeyBound?.Invoke(this, new PlayerBindKeyArgs(this, key, keyState));
-                return;
+                if (value == KeyState.Both)
+                    return;
             }
-            throw new ArgumentException($"Key '{key}' is not valid key.", key);
+            this.BoundKeys[key] = value;
+            this.KeyBound?.Invoke(this, new PlayerBindKeyArgs(this, key, keyState));
         }
 
         internal void TriggerPlayerACInfo(IEnumerable<byte> detectedACList, uint d3d9Size, string d3d9MD5, string D3d9SHA256)
@@ -284,7 +282,7 @@ namespace SlipeServer.Server.Elements
             this.NetworkStatusReceived?.Invoke(this, new PlayerNetworkStatusArgs(networkStatusType, ticks));
         }
 
-        internal void TriggerBindKey(BindType bindType, KeyState keyState, string key)
+        internal void TriggerBoundKey(BindType bindType, KeyState keyState, string key)
         {
             this.BindExecuted?.Invoke(this, new PlayerBindCallbackArgs(this, bindType, keyState, key));
         }

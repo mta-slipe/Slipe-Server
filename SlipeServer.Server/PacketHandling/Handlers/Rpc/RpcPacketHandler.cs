@@ -157,7 +157,7 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Rpc
             var state = packet.Reader.GetBit() ? KeyState.Down : KeyState.Up;
             var size = (packet.Reader.Size - packet.Reader.Counter) >> 3;
             var key = packet.Reader.GetStringCharacters(size);
-            client.Player.TriggerBindKey(type, state, key);
+            client.Player.TriggerBoundKey(type, state, key);
         }
     }
 }
