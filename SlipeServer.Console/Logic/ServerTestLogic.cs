@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using SlipeServer.Console.LuaValues;
 using SlipeServer.Packets.Definitions.Lua;
-using SlipeServer.Packets.Definitions.Resources;
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
@@ -416,7 +415,7 @@ namespace SlipeServer.Console.Logic
                     if (ushort.TryParse(args.Arguments[0], out ushort slots))
                     {
                         this.server.SetMaxPlayers(slots);
-                        this.logger.LogInformation($"Slots has been changed to: {slots}");
+                        this.logger.LogInformation("Slots has been changed to: {slots}", slots);
                     }
                 }
             };
@@ -531,7 +530,7 @@ namespace SlipeServer.Console.Logic
                     if (byte.TryParse(args.Arguments[0], out byte interior))
                     {
                         args.Player.Camera.Interior = interior;
-                        this.logger.LogInformation($"Camera interior changed to: {interior}");
+                        this.logger.LogInformation("Camera interior changed to: {interior}", interior);
                     }
                 }
             };
@@ -648,6 +647,18 @@ namespace SlipeServer.Console.Logic
                 foreach (var stat in Server.Constants.WeaponConstants.WeaponStatsPerWeapon)
                     args.Player.SetWeaponStat(stat.Key, 1000);
             };
+            
+            this.commandService.AddCommand("money").Triggered += (source, args) =>
+            {
+                args.Player.ShowHudComponent(HudComponent.Money, true);
+                args.Player.SetMoney(this.random.Next(0, 1000), false);
+            };
+
+            this.commandService.AddCommand("moneyinstant").Triggered += (source, args) =>
+            {
+                args.Player.ShowHudComponent(HudComponent.Money, true);
+                args.Player.Money = this.random.Next(0, 1000);
+            };
         }
 
         private void OnPlayerJoin(Player player)
@@ -681,7 +692,7 @@ namespace SlipeServer.Console.Logic
 
             player.Kicked += (player, args) =>
             {
-                this.logger.LogWarning($"{player.Name} has been kicked, reason: {args.Reason}");
+                this.logger.LogWarning("{playerName} has been kicked, reason: {reason}", player.Name, args.Reason);
             };
 
             player.Wasted += async (o, args) =>
@@ -714,20 +725,20 @@ namespace SlipeServer.Console.Logic
 
             player.AcInfoReceived += (o, args) =>
             {
-                this.logger.LogInformation($"ACInfo for {player.Name} detectedACList:{string.Join(",", args.DetectedACList)} d3d9Size: {args.D3D9Size} d3d9SHA256: {args.D3D9SHA256}");
+                this.logger.LogInformation("ACInfo for {playerName} detectedACList:{acList} d3d9Size: {D3D9Size} d3d9SHA256: {D3D9SHA256}", player.Name, string.Join(",", args.DetectedACList), args.D3D9Size, args.D3D9SHA256);
             };
 
             player.DiagnosticInfoReceived += (o, args) =>
             {
-                this.logger.LogInformation($"DIAGNOSTIC: {player.Name} #{args.Level} {args.Message}");
+                this.logger.LogInformation("DIAGNOSTIC: {playerName} #{level} {message}", player.Name, args.Level, args.Message);
             };
 
             player.ModInfoReceived += (o, args) =>
             {
-                this.logger.LogInformation($"Player: {player.Name} ModInfo:");
+                this.logger.LogInformation("Player: {playerName} ModInfo:", player.Name);
                 foreach (var item in args.ModInfoItems)
                 {
-                    this.logger.LogInformation($"\t{item.Name} - md5: {item.LongMd5}");
+                    this.logger.LogInformation("\t{name} - md5: {md5}", item.Name, item.LongMd5);
                 }
             };
 
@@ -736,17 +747,17 @@ namespace SlipeServer.Console.Logic
                 switch (args.PlayerNetworkStatus)
                 {
                     case Packets.Enums.PlayerNetworkStatusType.InterruptionBegan:
-                        this.logger.LogInformation($"(packets from {o.Name}) interruption began {args.Ticks} ticks ago");
+                        this.logger.LogInformation("(packets from {name}) interruption began {ticks} ticks ago", o.Name, args.Ticks);
                         break;
                     case Packets.Enums.PlayerNetworkStatusType.InterruptionEnd:
-                        this.logger.LogInformation($"(packets from {o.Name}) interruption began {args.Ticks} ticks ago and has just ended");
+                        this.logger.LogInformation("(packets from {name}) interruption began {ticks} ticks ago and has just ended", o.Name, args.Ticks);
                         break;
                 }
             };
 
             player.TeamChanged += (thePlayer, args) =>
             {
-                this.logger.LogDebug($"{thePlayer.Name} Joined {thePlayer.Team?.TeamName} team!");
+                this.logger.LogDebug("{playerName} Joined {teamName} team!", thePlayer.Name, thePlayer.Team?.TeamName);
             };
 
             player.TargetChanged += (thePlayer, args) =>
@@ -754,7 +765,7 @@ namespace SlipeServer.Console.Logic
                 if(args.NewValue != null && args.NewValue is Vehicle vehicle)
                 {
                     if(vehicle.Model == (ushort)VehicleModel.Rhino)
-                        this.logger.LogDebug($"{thePlayer.Name} Changed target rhino");
+                        this.logger.LogDebug("{playerName} Changed target rhino", thePlayer.Name);
                 }
             };
 
@@ -805,7 +816,7 @@ namespace SlipeServer.Console.Logic
             } else
             {
                 Player? player = (Player?)o;
-                this.logger.LogWarning($"Failed to take a screenshot ({e.Tag}) of player: {player?.Name}, reason: {e.ErrorMessage}");
+                this.logger.LogWarning("Failed to take a screenshot ({tag}) of player: {playerName}, reason: {errorMessage}", e.Tag, player?.Name, e.ErrorMessage);
             }
         }
 
@@ -814,7 +825,7 @@ namespace SlipeServer.Console.Logic
             var sampleValue = new SampleLuaValue();
             sampleValue.Parse(luaEvent.Parameters.First());
 
-            this.logger.LogInformation(JsonConvert.SerializeObject(sampleValue));
+            this.logger.LogInformation("{event}", JsonConvert.SerializeObject(sampleValue));
         }
 
         private void TriggerTestEvent(Player player)

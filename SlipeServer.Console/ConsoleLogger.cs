@@ -6,7 +6,6 @@ using SlipeServer.Server.Services;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SlipeServer.Console
@@ -75,7 +74,7 @@ namespace SlipeServer.Console
 
         public bool IsEnabled(LogLevel logLevel) => true;
 
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception?, string> formatter)
         {
 #if !DEBUG
             if (logLevel == LogLevel.Trace)

@@ -16,7 +16,7 @@ namespace SlipeServer.SourceGenerators
 
         public void Execute(GeneratorExecutionContext context)
         {
-            LuaEventAttributeSyntaxReceiver syntaxReceiver = (LuaEventAttributeSyntaxReceiver)context.SyntaxReceiver;
+            LuaEventAttributeSyntaxReceiver syntaxReceiver = (LuaEventAttributeSyntaxReceiver)context.SyntaxReceiver!;
 
             foreach (var eventClass in syntaxReceiver.EventClasses)
             {
@@ -36,22 +36,34 @@ using SlipeServer.Server.Events;
 using SlipeServer.Packets.Definitions.Lua;
 using System.ComponentModel.DataAnnotations;
 
-namespace {(eventClass.Parent as NamespaceDeclarationSyntax).Name.ToFullString()}
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS8601 // Possible null reference asignment.
+#pragma warning disable CS8620 // Argument of type cannot be used for parameter of type in due to differences in the nullability of reference types.
+#pragma warning disable CS8629 // Nullable value type may be null.
+#pragma warning disable CS8604 // Possible null reference argument.
+
+namespace {(eventClass.Parent as NamespaceDeclarationSyntax)!.Name.ToFullString()}
 {{
     public partial class {eventClass.Identifier.ValueText}
     {{
         public partial void Parse(LuaValue luaValue)
         {{
             var dictionary = new Dictionary<string, LuaValue>(
-                luaValue.TableValue.Select(x => 
-                    new KeyValuePair<string, LuaValue>(x.Key.StringValue, x.Value)
+                luaValue.TableValue!.Select(x => 
+                    new KeyValuePair<string, LuaValue>(x.Key.StringValue!, x.Value)
                 )
             );
 {GenerateParseMethodBody(eventClass)}
             Validator.ValidateObject(this, new ValidationContext(this), true);
         }}
     }}
-}}";
+}}
+
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning restore CS8601 // Possible null reference asignment.
+#pragma warning restore CS8620 // Argument of type cannot be used for parameter of type in due to differences in the nullability of reference types.
+#pragma warning restore CS8629 // Nullable value type may be null.
+#pragma warning restore CS8604 // Possible null reference argument.";
         }
 
         private string GenerateParseMethodBody(ClassDeclarationSyntax eventClass)
@@ -60,7 +72,7 @@ namespace {(eventClass.Parent as NamespaceDeclarationSyntax).Name.ToFullString()
 
             var properties = eventClass.ChildNodes()
                 .Where(x => x is PropertyDeclarationSyntax)
-                .Select(x => x as PropertyDeclarationSyntax);
+                .Select(x => (x as PropertyDeclarationSyntax)!);
 
             foreach (var property in properties)
             {
