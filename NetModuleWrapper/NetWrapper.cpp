@@ -52,9 +52,9 @@ bool NetWrapper::packetHandler(unsigned char ucPacketID, const NetServerPlayerID
     return true;
 }
 
-void NetWrapper::sendPacket(unsigned long address, unsigned char packetId, unsigned char* payload, unsigned long payloadSize, unsigned char priority, unsigned char reliability)
+void NetWrapper::sendPacket(unsigned long address, unsigned char packetId, unsigned short bitStreamVersion, unsigned char* payload, unsigned long payloadSize, unsigned char priority, unsigned char reliability)
 {
-    NetBitStreamInterface* bitStream = network->AllocateNetServerBitStream(0);
+    NetBitStreamInterface* bitStream = network->AllocateNetServerBitStream(bitStreamVersion);
     if (bitStream)
     {
         bitStream->Write(reinterpret_cast<const char*>(payload), payloadSize);
@@ -154,9 +154,13 @@ int NetWrapper::init(const char* netDllFilePath, const char* idFile, const char*
 
     network = pfnInitNetServerInterface();
 
-    network->InitServerId("server-id.keys");
+    if (!network->InitServerId("server-id.keys")) {
+        return -1005;
+    }
     network->RegisterPacketHandler(staticPacketHandler);
-    network->StartNetwork(ip, port, playerCount, serverName);
+    if (!network->StartNetwork(ip, port, playerCount, serverName)) {
+        return -1006;
+    }
 
     testMethod();
 
