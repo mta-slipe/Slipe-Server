@@ -40,6 +40,7 @@ namespace SlipeServer.Server.Behaviour
                 ped.AmmoUpdated += RelayPedAmmoCountUpdate;
                 ped.JetpackStateChanged += RelayJetpackStateChanged;
                 ped.StatChanged += RelayStatChanged;
+                ped.Clothing.Changed += RelayClothesChanged;
 
                 if (ped is not Player)
                 {
@@ -57,6 +58,11 @@ namespace SlipeServer.Server.Behaviour
                 Ammo = e.Ammo
             };
             this.server.BroadcastPacket(packet);
+        }
+
+        private void RelayClothesChanged(Ped sender, ClothingChangedEventArgs args)
+        {
+            this.server.BroadcastPacket(PedPacketFactory.CreateAddPedClothingPacket(args.Ped, args.ClothingType, args.Current));
         }
 
         private void RelayJetpackStateChanged(Element sender, ElementChangedEventArgs<Ped, bool> args)
