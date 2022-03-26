@@ -144,7 +144,7 @@ namespace SlipeServer.Server.Elements
         public PedMoveAnimation MoveAnimation { get; set; } = 0;
         public WeaponCollection Weapons { get; set; }
         public bool IsAlive => this.health > 0;
-        public Clothing Clothes { get; init; }
+        public Clothing Clothing { get; init; }
 
         private Player? syncer = null;
         public Player? Syncer
@@ -182,7 +182,7 @@ namespace SlipeServer.Server.Elements
             this.Model = (ushort)model;
             this.Position = position;
 
-            this.Clothes = new Clothing(this);
+            this.Clothing = new Clothing(this);
             this.Weapons = new();
             this.stats = new();
 

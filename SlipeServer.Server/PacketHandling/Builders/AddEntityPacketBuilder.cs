@@ -110,7 +110,7 @@ namespace SlipeServer.Server.PacketHandling.Builders
                 null, element.AreCollisionsEnabled, element.IsCallPropagationEnabled, new CustomData(), element.Name, element.TimeContext,
                 element.Position, element.Model, element.PedRotation, element.Health, element.Armor, element.Vehicle?.Id, element.Seat,
                 element.HasJetpack, element.IsSyncable, element.IsHeadless, element.IsFrozen, element.Alpha, (byte)element.MoveAnimation,
-                element.Clothes.GetClothing().ToArray(), element.Weapons.Cast<PedWeapon>().ToArray(), (byte)(element.CurrentWeapon?.Slot ?? 0)
+                element.Clothing.GetClothing().ToArray(), element.Weapons.Cast<PedWeapon>().ToArray(), (byte)(element.CurrentWeapon?.Slot ?? 0)
             );
         }
 

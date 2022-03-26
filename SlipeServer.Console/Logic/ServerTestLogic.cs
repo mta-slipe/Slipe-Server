@@ -157,11 +157,11 @@ namespace SlipeServer.Console.Logic
             this.Ped = new Ped(randomPedModel, new Vector3(10, 0, 3)).AssociateWith(this.server);
             this.Ped2 = new Ped(PedModel.Ballas3, new Vector3(10, 5, 3)).AssociateWith(this.server);
             this.CJ = new Ped(0, new Vector3(-2, -12, 3)).AssociateWith(this.server);
-            this.CJ.Clothes.Shirt = 0; // no shirt
-            this.CJ.Clothes.Head = 5; // pink hair
-            this.CJ.Clothes.Trousers = 9; // heart-shaped panties
-            this.CJ.Clothes.Shoes = 8; // sandal + sock
-            this.CJ.Clothes.Glasses = 1; // zorro
+            this.CJ.Clothing.Shirt = 0; // no shirt
+            this.CJ.Clothing.Head = 5; // pink hair
+            this.CJ.Clothing.Trousers = 9; // heart-shaped panties
+            this.CJ.Clothing.Shoes = 8; // sandal + sock
+            this.CJ.Clothing.Glasses = 1; // zorro
 
 
             this.WorldObject = new WorldObject(ObjectModel.Drugred, new Vector3(15, 0, 3)).AssociateWith(this.server);
@@ -695,24 +695,24 @@ namespace SlipeServer.Console.Logic
                     while (true)
                     {
                         await Task.Delay(1000);
-                        CJ0.Clothes.Shirt = (byte)(i % ClothesConstants.ShirtsCount);
-                        CJ1.Clothes.Head = (byte)(i % ClothesConstants.HeadsCount);
-                        CJ2.Clothes.Trousers = (byte)(i % ClothesConstants.TrousersCount);
-                        CJ3.Clothes.Shoes = (byte)(i % ClothesConstants.ShoesCount);
-                        CJ4.Clothes.TattoosLeftUpperArm = (byte)(i % ClothesConstants.TattoosLeftUpperArmCount);
-                        CJ5.Clothes.TattoosLeftLowerArm = (byte)(i % ClothesConstants.TattoosLeftLowerArmCount);
-                        CJ6.Clothes.TattoosRightUpperArm = (byte)(i % ClothesConstants.TattoosRightUpperArmCount);
-                        CJ7.Clothes.TattoosRightLowerArm = (byte)(i % ClothesConstants.TattoosRightLowerArmCount);
-                        CJ8.Clothes.TattoosBack = (byte)(i % ClothesConstants.TattoosBackCount);
-                        CJ9.Clothes.TattoosLeftChest = (byte)(i % ClothesConstants.TattoosLeftChestCount);
-                        CJ10.Clothes.TattoosRightChest = (byte)(i % ClothesConstants.TattoosRightChestCount);
-                        CJ11.Clothes.TattoosStomach = (byte)(i % ClothesConstants.TattoosStomachCount);
-                        CJ12.Clothes.TattoosLowerBack = (byte)(i % ClothesConstants.TattoosLowerBackCount);
-                        CJ13.Clothes.Necklace = (byte)(i % ClothesConstants.NecklaceCount);
-                        CJ14.Clothes.Watch = (byte)(i % ClothesConstants.WatchesCount);
-                        CJ15.Clothes.Glasses = (byte)(i % ClothesConstants.GlassesCount);
-                        CJ16.Clothes.Hat = (byte)(i % ClothesConstants.HatsCount);
-                        CJ17.Clothes.Extra = (byte)(i % ClothesConstants.ExtraCount);
+                        CJ0.Clothing.Shirt = (byte)(i % ClothesConstants.ShirtsCount);
+                        CJ1.Clothing.Head = (byte)(i % ClothesConstants.HeadsCount);
+                        CJ2.Clothing.Trousers = (byte)(i % ClothesConstants.TrousersCount);
+                        CJ3.Clothing.Shoes = (byte)(i % ClothesConstants.ShoesCount);
+                        CJ4.Clothing.TattoosLeftUpperArm = (byte)(i % ClothesConstants.TattoosLeftUpperArmCount);
+                        CJ5.Clothing.TattoosLeftLowerArm = (byte)(i % ClothesConstants.TattoosLeftLowerArmCount);
+                        CJ6.Clothing.TattoosRightUpperArm = (byte)(i % ClothesConstants.TattoosRightUpperArmCount);
+                        CJ7.Clothing.TattoosRightLowerArm = (byte)(i % ClothesConstants.TattoosRightLowerArmCount);
+                        CJ8.Clothing.TattoosBack = (byte)(i % ClothesConstants.TattoosBackCount);
+                        CJ9.Clothing.TattoosLeftChest = (byte)(i % ClothesConstants.TattoosLeftChestCount);
+                        CJ10.Clothing.TattoosRightChest = (byte)(i % ClothesConstants.TattoosRightChestCount);
+                        CJ11.Clothing.TattoosStomach = (byte)(i % ClothesConstants.TattoosStomachCount);
+                        CJ12.Clothing.TattoosLowerBack = (byte)(i % ClothesConstants.TattoosLowerBackCount);
+                        CJ13.Clothing.Necklace = (byte)(i % ClothesConstants.NecklaceCount);
+                        CJ14.Clothing.Watch = (byte)(i % ClothesConstants.WatchesCount);
+                        CJ15.Clothing.Glasses = (byte)(i % ClothesConstants.GlassesCount);
+                        CJ16.Clothing.Hat = (byte)(i % ClothesConstants.HatsCount);
+                        CJ17.Clothing.Extra = (byte)(i % ClothesConstants.ExtraCount);
                         i++;
                     }
                 });
