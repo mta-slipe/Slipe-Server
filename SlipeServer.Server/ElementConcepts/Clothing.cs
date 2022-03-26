@@ -22,41 +22,41 @@ namespace SlipeServer.Server.ElementConcepts
         public IEnumerable<PedClothing> GetClothing()
         {
             if(this.Shirt != 255)
-                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Shirt][this.Shirt];
+                yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.Shirt][this.Shirt];
             if(this.Head != 255)
-                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Head][this.Head];
+                yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.Head][this.Head];
             if(this.Trousers != 255)
-                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Trousers][this.Trousers];
+                yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.Trousers][this.Trousers];
             if(this.Shoes != 255)
-                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Shoes][this.Shoes];
+                yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.Shoes][this.Shoes];
             if(this.TattoosLeftUpperArm != 255)
-                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosLeftUpperArm][this.TattoosLeftUpperArm];
+                yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.TattoosLeftUpperArm][this.TattoosLeftUpperArm];
             if(this.TattoosLeftLowerArm != 255)
-                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosLeftLowerArm][this.TattoosLeftLowerArm];
+                yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.TattoosLeftLowerArm][this.TattoosLeftLowerArm];
             if(this.TattoosRightUpperArm != 255)
-                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosRightUpperArm][this.TattoosRightUpperArm];
+                yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.TattoosRightUpperArm][this.TattoosRightUpperArm];
             if(this.TattoosRightLowerArm != 255)
-                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosRightLowerArm][this.TattoosRightLowerArm];
+                yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.TattoosRightLowerArm][this.TattoosRightLowerArm];
             if(this.TattoosBack != 255)
-                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosBack][this.TattoosBack];
+                yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.TattoosBack][this.TattoosBack];
             if(this.TattoosLeftChest != 255)
-                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosLeftChest][this.TattoosLeftChest];
+                yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.TattoosLeftChest][this.TattoosLeftChest];
             if(this.TattoosRightChest != 255)
-                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosRightChest][this.TattoosRightChest];
+                yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.TattoosRightChest][this.TattoosRightChest];
             if(this.TattoosStomach != 255)
-                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosStomach][this.TattoosStomach];
+                yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.TattoosStomach][this.TattoosStomach];
             if(this.TattoosLowerBack != 255)
-                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.TattoosLowerBack][this.TattoosLowerBack];
+                yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.TattoosLowerBack][this.TattoosLowerBack];
             if(this.Necklace != 255)
-                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Necklace][this.Necklace];
+                yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.Necklace][this.Necklace];
             if(this.Watch != 255)
-                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Watches][this.Watch];
+                yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.Watches][this.Watch];
             if(this.Glasses != 255)
-                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Glasses][this.Glasses];
+                yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.Glasses][this.Glasses];
             if(this.Hat != 255)
-                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Hats][this.Hat];
+                yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.Hats][this.Hat];
             if(this.Extra != 255)
-                yield return ClothesConstants.ClothesTextureModel[Enums.Clothes.Extra][this.Extra];
+                yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.Extra][this.Extra];
         }
 
         private byte shirt = 255;
@@ -69,11 +69,11 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.ShirtsCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.Shirt, this.Shirt, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.Shirt, this.Shirt, value));
                         this.shirt = value;
                     } else
                     {
-                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.Clothes.Shirt}.");
+                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.Shirt}.");
                     }
                 }
             }
@@ -89,11 +89,11 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.HeadsCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.Head, this.Head, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.Head, this.Head, value));
                         this.head = value;
                     } else
                     {
-                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.Clothes.Head}.");
+                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.Head}.");
                     }
                 }
             }
@@ -109,11 +109,11 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.TrousersCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.Trousers, this.Trousers, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.Trousers, this.Trousers, value));
                         this.trousers = value;
                     } else
                     {
-                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.Clothes.Trousers}.");
+                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.Trousers}.");
                     }
                 }
             }
@@ -129,11 +129,11 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.ShoesCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.Shoes, this.Shoes, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.Shoes, this.Shoes, value));
                         this.shoes = value;
                     } else
                     {
-                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.Clothes.Shoes}.");
+                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.Shoes}.");
                     }
                 }
             }
@@ -149,11 +149,11 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.TattoosLeftUpperArmCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.TattoosLeftUpperArm, this.TattoosLeftUpperArm, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.TattoosLeftUpperArm, this.TattoosLeftUpperArm, value));
                         this.tattoosLeftUpperArm = value;
                     } else
                     {
-                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.Clothes.TattoosLeftUpperArm}.");
+                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.TattoosLeftUpperArm}.");
                     }
                 }
             }
@@ -169,11 +169,11 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.TattoosLeftLowerArmCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.TattoosLeftLowerArm, this.TattoosLeftLowerArm, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.TattoosLeftLowerArm, this.TattoosLeftLowerArm, value));
                         this.tattoosLeftLowerArm = value;
                     } else
                     {
-                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.Clothes.TattoosLeftLowerArm}.");
+                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.TattoosLeftLowerArm}.");
                     }
                 }
             }
@@ -189,11 +189,11 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.TattoosRightUpperArmCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.TattoosRightUpperArm, this.TattoosRightUpperArm, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.TattoosRightUpperArm, this.TattoosRightUpperArm, value));
                         this.tattoosRightUpperArm = value;
                     } else
                     {
-                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.Clothes.TattoosRightUpperArm}.");
+                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.TattoosRightUpperArm}.");
                     }
                 }
             }
@@ -209,11 +209,11 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.TattoosRightLowerArmCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.TattoosRightLowerArm, this.TattoosRightLowerArm, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.TattoosRightLowerArm, this.TattoosRightLowerArm, value));
                         this.tattoosRightLowerArm = value;
                     } else
                     {
-                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.Clothes.TattoosRightLowerArm}.");
+                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.TattoosRightLowerArm}.");
                     }
                 }
             }
@@ -229,11 +229,11 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.TattoosBackCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.TattoosBack, this.TattoosBack, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.TattoosBack, this.TattoosBack, value));
                         this.tattoosBack = value;
                     } else
                     {
-                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.Clothes.TattoosBack}.");
+                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.TattoosBack}.");
                     }
                 }
             }
@@ -249,11 +249,11 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.TattoosLeftChestCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.TattoosLeftChest, this.TattoosLeftChest, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.TattoosLeftChest, this.TattoosLeftChest, value));
                         this.tattoosLeftChest = value;
                     } else
                     {
-                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.Clothes.TattoosLeftChest}.");
+                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.TattoosLeftChest}.");
                     }
                 }
             }
@@ -269,11 +269,11 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.TattoosRightChestCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.TattoosRightChest, this.TattoosRightChest, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.TattoosRightChest, this.TattoosRightChest, value));
                         this.tattoosRightChest = value;
                     } else
                     {
-                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.Clothes.TattoosRightChest}.");
+                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.TattoosRightChest}.");
                     }
                 }
             }
@@ -289,11 +289,11 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.TattoosStomachCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.TattoosStomach, this.TattoosStomach, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.TattoosStomach, this.TattoosStomach, value));
                         this.tattoosStomach = value;
                     } else
                     {
-                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.Clothes.TattoosStomach}.");
+                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.TattoosStomach}.");
                     }
                 }
             }
@@ -309,11 +309,11 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.TattoosLowerBackCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.TattoosLowerBack, this.TattoosLowerBack, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.TattoosLowerBack, this.TattoosLowerBack, value));
                         this.tattoosLowerBack = value;
                     } else
                     {
-                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.Clothes.TattoosLowerBack}.");
+                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.TattoosLowerBack}.");
                     }
                 }
             }
@@ -329,11 +329,11 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.NecklaceCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.Necklace, this.Necklace, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.Necklace, this.Necklace, value));
                         this.necklace = value;
                     } else
                     {
-                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.Clothes.Necklace}.");
+                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.Necklace}.");
                     }
                 }
             }
@@ -349,11 +349,11 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.WatchesCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.Watches, this.Watch, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.Watches, this.Watch, value));
                         this.watch = value;
                     } else
                     {
-                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.Clothes.Watches}.");
+                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.Watches}.");
                     }
                 }
             }
@@ -369,11 +369,11 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.GlassesCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.Glasses, this.glasses, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.Glasses, this.glasses, value));
                         this.glasses = value;
                     } else
                     {
-                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.Clothes.Glasses}.");
+                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.Glasses}.");
                     }
                 }
             }
@@ -389,11 +389,11 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.HatsCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.Hats, this.hat, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.Hats, this.hat, value));
                         this.hat = value;
                     } else
                     {
-                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.Clothes.Hats}.");
+                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.Hats}.");
                     }
                 }
             }
@@ -409,11 +409,11 @@ namespace SlipeServer.Server.ElementConcepts
                 {
                     if (value >= 0 && value <= ClothesConstants.ExtraCount)
                     {
-                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.Clothes.Extra, this.extra, value));
+                        ClothChanged?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.Extra, this.extra, value));
                         this.extra = value;
                     } else
                     {
-                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.Clothes.Extra}.");
+                        throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.Extra}.");
                     }
                 }
             }

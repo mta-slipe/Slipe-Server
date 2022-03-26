@@ -18,10 +18,10 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped
         public uint ElementId { get; set; }
         public PedClothing[] Clothings { get; set; }
 
-        public AddPedClothingRpcPacket(uint elementId, PedClothing[] clothings)
+        public AddPedClothingRpcPacket(uint elementId, PedClothing[] clothing)
         {
             this.ElementId = elementId;
-            this.Clothings = clothings;
+            this.Clothings = clothing;
         }
 
         public override void Read(byte[] bytes)

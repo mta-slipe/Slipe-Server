@@ -54,7 +54,7 @@ namespace SlipeServer.Server.PacketHandling.Factories
             };
         }
 
-        public static AddPedClothingRpcPacket CreateAddPedClothingPacket(Ped ped, Clothes cloth, byte index)
+        public static AddPedClothingRpcPacket CreateAddPedClothingPacket(Ped ped, ClothingType cloth, byte index)
         {
             return new AddPedClothingRpcPacket(ped.Id, new PedClothing[] { ClothesConstants.ClothesTextureModel[cloth][index] });
         }
