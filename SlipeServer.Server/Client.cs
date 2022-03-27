@@ -1,13 +1,10 @@
 ﻿using SlipeServer.Net.Wrappers;
 using SlipeServer.Packets;
-using SlipeServer.Packets.Definitions.Player;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.PacketHandling;
 using System;
-using System.Collections.Generic;
 using System.Net;
-using System.Text;
 
 namespace SlipeServer.Server
 {
@@ -75,18 +72,18 @@ namespace SlipeServer.Server
                 this.netWrapper.SetVersion(this.binaryAddress, version);
             }
         }
-        
+
         public void ResendModPackets()
         {
-            if(this.IsConnected)
+            if (this.IsConnected)
             {
                 this.netWrapper.ResendModPackets(this.binaryAddress);
             }
         }
-        
+
         public void ResendPlayerACInfo()
         {
-            if(this.IsConnected)
+            if (this.IsConnected)
             {
                 this.netWrapper.ResendPlayerACInfo(this.binaryAddress);
             }

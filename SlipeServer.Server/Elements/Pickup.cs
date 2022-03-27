@@ -4,9 +4,7 @@ using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Enums;
 using System;
-using System.Drawing;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 
 namespace SlipeServer.Server.Elements
 {
@@ -20,7 +18,7 @@ namespace SlipeServer.Server.Elements
         public float? Armor { get; set; }
         public float? Health { get; set; }
         public WeaponType? WeaponType { get; set; }
-        public ushort? Ammo{ get; set; }
+        public ushort? Ammo { get; set; }
         public CollisionShape CollisionShape { get; init; }
         public bool OnFootOnly { get; set; } = true;
         public uint RespawnTime { get; set; }
@@ -37,13 +35,11 @@ namespace SlipeServer.Server.Elements
             {
                 this.Health = amount;
                 this.Model = (ushort)ObjectModel.Health;
-            }
-            else if (type == PickupType.Armor)
+            } else if (type == PickupType.Armor)
             {
                 this.Armor = amount;
                 this.Model = (ushort)ObjectModel.Bodyarmour;
-            }
-            else
+            } else
                 throw new Exception($"Can not use health / armor pickup constructor for {type}");
 
             this.CollisionShape = new CollisionSphere(position, 2);

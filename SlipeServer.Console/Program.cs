@@ -85,7 +85,8 @@ namespace SlipeServer.Console
 
             this.Logger = this.server.GetRequiredService<ILogger>();
 
-            System.Console.CancelKeyPress += delegate {
+            System.Console.CancelKeyPress += (sender, args) =>
+            {
                 this.server.Stop();
                 this.waitHandle.Set();
             };
