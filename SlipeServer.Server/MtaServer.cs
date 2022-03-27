@@ -307,6 +307,11 @@ public class MtaServer
         }
     }
 
+    public void EnqueuePacketToClient(Client client, PacketId packetId, byte[] data)
+    {
+        this.packetReducer.EnqueuePacket(client, packetId, data);
+    }
+
     public void HandlePlayerJoin(Player player) => PlayerJoined?.Invoke(player);
     public void HandleLuaEvent(LuaEvent luaEvent) => LuaEventTriggered?.Invoke(luaEvent);
 

@@ -1,12 +1,9 @@
-﻿using SlipeServer.Packets;
-using SlipeServer.Packets.Builder;
+﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace SlipeServer.Packets.Lua.Event;
 

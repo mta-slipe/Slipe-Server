@@ -120,6 +120,8 @@ public static class DefaultServerBuilderExtensions
             builder.AddPacketHandler<PedTaskPacketHandler, PedTaskPacket>();
         if ((except & ServerBuilderDefaultPacketHandlers.PedWastedPacketHandler) == 0)
             builder.AddPacketHandler<PedWastedPacketHandler, PedWastedPacket>();
+        if ((except & ServerBuilderDefaultPacketHandlers.LatentLuaEventPacketHandler) == 0)
+            builder.AddPacketHandler<LatentLuaEventPacketHandler, LatentLuaEventPacket>();
     }
 
     public static void AddDefaultBehaviours(
