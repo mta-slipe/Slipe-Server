@@ -27,7 +27,13 @@ public class LuaValueSourceGenerator : ISourceGenerator
 
     private string GenerateParsePartialClass(ClassDeclarationSyntax eventClass)
     {
-        ;
+        string namespaceName = "";
+        if (eventClass.Parent is NamespaceDeclarationSyntax namespaceDeclaration)
+            namespaceName = namespaceDeclaration.Name.ToFullString();
+        if (eventClass.Parent is FileScopedNamespaceDeclarationSyntax fileScopedNamespaceDeclaration)
+            namespaceName = fileScopedNamespaceDeclaration.Name.ToFullString();
+
+
         return $@"using System;
 using System.Linq;
 using System.Numerics;
@@ -42,22 +48,22 @@ using System.ComponentModel.DataAnnotations;
 #pragma warning disable CS8629 // Nullable value type may be null.
 #pragma warning disable CS8604 // Possible null reference argument.
 
-namespace {(eventClass.Parent as NamespaceDeclarationSyntax)!.Name.ToFullString()}
+namespace {namespaceName};
+
+public partial class {eventClass.Identifier.ValueText}
 {{
-    public partial class {eventClass.Identifier.ValueText}
+    public partial void Parse(LuaValue luaValue)
     {{
-        public partial void Parse(LuaValue luaValue)
-        {{
-            var dictionary = new Dictionary<string, LuaValue>(
-                luaValue.TableValue!.Select(x => 
-                    new KeyValuePair<string, LuaValue>(x.Key.StringValue!, x.Value)
-                )
-            );
+        var dictionary = new Dictionary<string, LuaValue>(
+            luaValue.TableValue!.Select(x => 
+                new KeyValuePair<string, LuaValue>(x.Key.StringValue!, x.Value)
+            )
+        );
 {GenerateParseMethodBody(eventClass)}
-            Validator.ValidateObject(this, new ValidationContext(this), true);
-        }}
+        Validator.ValidateObject(this, new ValidationContext(this), true);
     }}
 }}
+
 
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning restore CS8601 // Possible null reference asignment.
@@ -82,7 +88,6 @@ namespace {(eventClass.Parent as NamespaceDeclarationSyntax)!.Name.ToFullString(
             builder.Append($"            {GetPropertyParser(type, name)}\n");
         }
 
-        //System.Diagnostics.Debugger.Launch();
         var code = builder.ToString();
         return builder.ToString();
     }
