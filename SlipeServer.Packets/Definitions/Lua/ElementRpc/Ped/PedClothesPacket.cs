@@ -1,13 +1,11 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Definitions.Entities.Structs;
 using SlipeServer.Packets.Enums;
-using SlipeServer.Packets.Reader;
 using System;
-using System.Numerics;
 
-namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped
+namespace SlipeServer.Packets.Definitions.Ped
 {
-    public class AddPedClothingRpcPacket : Packet
+    public class PedClothesPacket : Packet
     {
         public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_CLOTHES;
 
@@ -16,12 +14,12 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped
         public override PacketPriority Priority => PacketPriority.High;
 
         public uint ElementId { get; set; }
-        public PedClothing[] Clothings { get; set; }
+        public PedClothing[] Clothing { get; set; }
 
-        public AddPedClothingRpcPacket(uint elementId, PedClothing[] clothing)
+        public PedClothesPacket(uint elementId, PedClothing[] clothing)
         {
             this.ElementId = elementId;
-            this.Clothings = clothing;
+            this.Clothing = clothing;
         }
 
         public override void Read(byte[] bytes)
@@ -33,8 +31,8 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped
         {
             var builder = new PacketBuilder();
             builder.WriteElementId(this.ElementId);
-            builder.Write((ushort)this.Clothings.Length);
-            foreach (var item in this.Clothings)
+            builder.Write((ushort)this.Clothing.Length);
+            foreach (var item in this.Clothing)
             {
                 builder.WriteStringWithByteAsLength(item.Texture);
                 builder.WriteStringWithByteAsLength(item.Model);

@@ -62,7 +62,7 @@ namespace SlipeServer.Server.Behaviour
 
         private void RelayClothesChanged(Ped sender, ClothingChangedEventArgs args)
         {
-            this.server.BroadcastPacket(PedPacketFactory.CreateAddPedClothingPacket(args.Ped, args.ClothingType, args.Current));
+            this.server.BroadcastPacket(PedPacketFactory.CreateClothesPacket(args.Ped, args.ClothingType, args.Current));
         }
 
         private void RelayJetpackStateChanged(Element sender, ElementChangedEventArgs<Ped, bool> args)

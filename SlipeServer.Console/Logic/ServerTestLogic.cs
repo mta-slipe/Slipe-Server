@@ -735,6 +735,28 @@ namespace SlipeServer.Console.Logic
                     }
                 });
             };
+
+            this.commandService.AddCommand("personalFashion").Triggered += (source, args) =>
+            {
+                long i = (new Random()).NextInt64();
+                args.Player.Clothing.Shirt = (byte)(i % ClothesConstants.ShirtsCount);
+                args.Player.Clothing.Head = (byte)(i % ClothesConstants.HeadsCount);
+                args.Player.Clothing.Trousers = (byte)(i % ClothesConstants.TrousersCount);
+                args.Player.Clothing.Shoes = (byte)(i % ClothesConstants.ShoesCount);
+                args.Player.Clothing.TattoosLeftUpperArm = (byte)(i % ClothesConstants.TattoosLeftUpperArmCount);
+                args.Player.Clothing.TattoosLeftLowerArm = (byte)(i % ClothesConstants.TattoosLeftLowerArmCount);
+                args.Player.Clothing.TattoosRightUpperArm = (byte)(i % ClothesConstants.TattoosRightUpperArmCount);
+                args.Player.Clothing.TattoosRightLowerArm = (byte)(i % ClothesConstants.TattoosRightLowerArmCount);
+                args.Player.Clothing.TattoosBack = (byte)(i % ClothesConstants.TattoosBackCount);
+                args.Player.Clothing.TattoosLeftChest = (byte)(i % ClothesConstants.TattoosLeftChestCount);
+                args.Player.Clothing.TattoosRightChest = (byte)(i % ClothesConstants.TattoosRightChestCount);
+                args.Player.Clothing.TattoosStomach = (byte)(i % ClothesConstants.TattoosStomachCount);
+                args.Player.Clothing.TattoosLowerBack = (byte)(i % ClothesConstants.TattoosLowerBackCount);
+                args.Player.Clothing.Necklace = (byte)(i % ClothesConstants.NecklaceCount);
+                args.Player.Clothing.Watch = (byte)(i % ClothesConstants.WatchesCount);
+                args.Player.Clothing.Glasses = (byte)(i % ClothesConstants.GlassesCount);
+                args.Player.Clothing.Hat = (byte)(i % ClothesConstants.HatsCount);
+            };
         }
 
         private void OnPlayerJoin(Player player)
