@@ -51,8 +51,15 @@ namespace SlipeServer.Console.Logic
             commandService.AddCommand("startsim").Triggered += HandleStartSimCommand;
             commandService.AddCommand("stopsim").Triggered += HandleStopSimCommand;
 
-            Init();
-            GenerateRaycastedImage(new Vector3(50, 0, 3));
+            try
+            {
+                Init();
+                GenerateRaycastedImage(new Vector3(50, 0, 3));
+            }
+            catch(IOException ioException)
+            {
+                this.logger.LogWarning("Failed to initialize physics test, reason: {0} Either stop mta or copy gta3.img to different location.", ioException.Message);
+            }
         }
 
         private void HandlePlayerJoin(Player player)
