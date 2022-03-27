@@ -166,6 +166,18 @@ namespace SlipeServer.Server.Elements
             }
         }
 
+        protected bool isFrozen = false;
+        public bool IsFrozen
+        {
+            get => this.isFrozen;
+            set
+            {
+                var args = new ElementChangedEventArgs<bool>(this, this.isFrozen, value, this.IsSync);
+                this.isFrozen = value;
+                FrozenChanged?.Invoke(this, args);
+            }
+        }
+
         private AsyncLocal<bool> isSync = new();
         public bool IsSync
         {
@@ -295,6 +307,7 @@ namespace SlipeServer.Server.Elements
         public event ElementChangedEventHandler<string>? NameChanged;
         public event ElementChangedEventHandler<bool>? CallPropagationChanged;
         public event ElementChangedEventHandler<bool>? CollisionEnabledhanged;
+        public event ElementChangedEventHandler<bool>? FrozenChanged;
         public event Action<Element>? Destroyed;
     }
 }
