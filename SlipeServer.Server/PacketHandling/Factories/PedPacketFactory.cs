@@ -11,10 +11,10 @@ using System.Drawing;
 using System.Numerics;
 using System.Text;
 using SlipeServer.Packets.Definitions.Player;
-using SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 using SlipeServer.Packets.Definitions.Entities.Structs;
 using SlipeServer.Server.Constants;
 using System.Linq;
+using SlipeServer.Packets.Definitions.Ped;
 
 namespace SlipeServer.Server.PacketHandling.Factories
 {
@@ -54,9 +54,14 @@ namespace SlipeServer.Server.PacketHandling.Factories
             };
         }
 
-        public static AddPedClothingRpcPacket CreateAddPedClothingPacket(Ped ped, ClothingType cloth, byte index)
+        public static PedClothesPacket CreateClothesPacket(Ped ped, ClothingType cloth, byte index)
         {
-            return new AddPedClothingRpcPacket(ped.Id, new PedClothing[] { ClothesConstants.ClothesTextureModel[cloth][index] });
+            return new PedClothesPacket(ped.Id, new PedClothing[] { ClothesConstants.ClothesTextureModel[cloth][index] });
+        }
+
+        public static PedClothesPacket CreateFullClothesPacket(Ped ped)
+        {
+            return new PedClothesPacket(ped.Id, ped.Clothing.GetClothing().ToArray());
         }
     }
 }

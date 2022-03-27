@@ -109,6 +109,9 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Rpc
             {
                 if (player.GetAllStats().Count > 0)
                     PedPacketFactory.CreatePlayerStatsPacket(player).SendTo(client.Player);
+
+                if (player.GetAllStats().Count > 0)
+                    PedPacketFactory.CreateFullClothesPacket(player).SendTo(client.Player);
             }
 
             this.server.HandlePlayerJoin(client.Player);
