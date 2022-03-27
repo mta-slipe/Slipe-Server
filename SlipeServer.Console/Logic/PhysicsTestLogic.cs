@@ -203,7 +203,7 @@ namespace SlipeServer.Console.Logic
             }
             stopwatch.Stop();
             var time = stopwatch.Elapsed;
-            this.logger.LogInformation($"Raycast image generated in {time.TotalMilliseconds}ms");
+            this.logger.LogInformation("Raycast image generated in {time}ms", time.TotalMilliseconds);
 
             output.Save("rayresult.png", ImageFormat.Png);
         }
