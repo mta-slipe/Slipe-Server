@@ -1,16 +1,5 @@
-﻿using SlipeServer.Packets.Definitions.Join;
-using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
-using SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
+﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 using SlipeServer.Server.Elements;
-using SlipeServer.Server.Elements.Enums;
-using SlipeServer.Server.Enums;
-using MTAServerWrapper.Packets.Outgoing.Connection;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Numerics;
-using System.Text;
-using SlipeServer.Packets.Definitions.Player;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
 
 namespace SlipeServer.Server.PacketHandling.Factories
@@ -27,7 +16,7 @@ namespace SlipeServer.Server.PacketHandling.Factories
             return new SetVehicleLandingGearDownRpcPacket(vehicle.Id, vehicle.IsLandingGearDown);
         }
 
-        public static SetVehicleTaxiLightOnRpcPacket CreateSetVehicleTaxiLightOnPacket(Vehicle vehicle)
+        public static SetVehicleTaxiLightOnRpcPacket CreateSetTaxiLightOnPacket(Vehicle vehicle)
         {
             return new SetVehicleTaxiLightOnRpcPacket(vehicle.Id, vehicle.IsTaxiLightOn);
         }
@@ -46,15 +35,20 @@ namespace SlipeServer.Server.PacketHandling.Factories
         {
             return new SetVehicleColorRpcPacket(vehicle.Id, vehicle.Colors.AsArray());
         }
+        
+        public static SetVehicleHeadlightColorRpcPacket CreateSetHeadlightColorPacket(Vehicle vehicle)
+        {
+            return new SetVehicleHeadlightColorRpcPacket(vehicle.Id, vehicle.HeadlightColor);
+        }
 
         public static SetVehicleLockedRpcPacket CreateSetLockedPacket(Vehicle vehicle)
         {
             return new SetVehicleLockedRpcPacket(vehicle.Id, vehicle.IsLocked);
         }
 
-        public static SetVehicleLockedRpcPacket CreateSetEngineOnPacket(Vehicle vehicle)
+        public static SetVehicleEngineStateRpcPacket CreateSetEngineOnPacket(Vehicle vehicle)
         {
-            return new SetVehicleLockedRpcPacket(vehicle.Id, vehicle.IsEngineOn);
+            return new SetVehicleEngineStateRpcPacket(vehicle.Id, vehicle.IsEngineOn);
         }
     }
 }

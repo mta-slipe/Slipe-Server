@@ -150,7 +150,18 @@ namespace SlipeServer.Server.Elements
             }
         }
 
-        public Color HeadlightColor { get; set; } = Color.White;
+        private Color headlightColor = Color.White;
+        public Color HeadlightColor
+        {
+            get => this.headlightColor;
+            set
+            {
+                var args = new ElementChangedEventArgs<Vehicle, Color>(this, this.headlightColor, value, this.IsSync);
+                this.headlightColor = value;
+                HeadlightColorChanged?.Invoke(this, args);
+            }
+        }
+
         public VehicleHandling? Handling { get; set; }
         public VehicleSirenSet? Sirens { get; set; }
 
@@ -372,6 +383,7 @@ namespace SlipeServer.Server.Elements
         public event ElementChangedEventHandler<Vehicle, bool>? LockedStateChanged;
         public event ElementChangedEventHandler<Vehicle, bool>? EngineStateChanged;
         public event ElementChangedEventHandler<Vehicle, Player?>? SyncerChanged;
+        public event ElementChangedEventHandler<Vehicle, Color>? HeadlightColorChanged;
         public event ElementEventHandler<VehicleRespawnEventArgs>? Respawned;
         public event ElementEventHandler<VehicleDoorStateChangedArgs>? DoorStateChanged;
         public event ElementEventHandler<VehicleWheelStateChangedArgs>? WheelStateChanged;
