@@ -744,6 +744,7 @@ namespace SlipeServer.Console.Logic
             player.ShowHudComponent(HudComponent.Money, false);
             player.SetFpsLimit(60);
             player.PlaySound(1);
+            player.SetTransferBoxVisible(false);
             player.WantedLevel = 4;
             //player.ForceMapVisible(true);
             //player.ToggleAllControls(false, true, true);

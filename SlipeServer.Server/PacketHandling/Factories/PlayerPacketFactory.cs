@@ -111,6 +111,11 @@ namespace SlipeServer.Server.PacketHandling.Factories
             return new ForcePlayerMapPacket(visible);
         }
         
+        public static SetTransferBoxVisiblePacket CreateTransferBoxVisiblePacket(bool visible)
+        {
+            return new SetTransferBoxVisiblePacket(visible);
+        }
+        
         public static ToggleAllControlsPacket CreateToggleAllControlsPacket(bool enabled, bool gtaControls = true, bool mtaControls = true)
         {
             return new ToggleAllControlsPacket(enabled, gtaControls, mtaControls);
