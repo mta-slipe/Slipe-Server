@@ -171,6 +171,10 @@ namespace SlipeServer.Console.Logic
                 TargetType = WeaponTargetType.Fixed,
                 TargetPosition = new Vector3(10, 10, 5)
             }.AssociateWith(this.server);
+
+            var frozenVehicle = new Vehicle(602, new Vector3(0, 0, 10)).AssociateWith(this.server);
+            frozenVehicle.IsFrozen = true;
+
             var vehicle = new Vehicle(602, new Vector3(-10, 5, 3)).AssociateWith(this.server);
             this.Aircraft = new Vehicle(520, new Vector3(10, -10, 3)).AssociateWith(this.server);
             this.Vehicle = new Vehicle(530, new Vector3(20, 5, 3)).AssociateWith(this.server);

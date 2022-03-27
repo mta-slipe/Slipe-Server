@@ -50,6 +50,7 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc
         SET_PED_ANIMATION_PROGRESS,
         SET_PED_ON_FIRE,
         SET_PED_HEADLESS,
+        [Obsolete("Use SET_ELEMENT_FROZEN instead")]
         SET_PED_FROZEN,
         RELOAD_PED_WEAPON,
 
@@ -75,6 +76,7 @@ namespace SlipeServer.Packets.Definitions.Lua.ElementRpc
         SET_VEHICLE_PAINTJOB,
         SET_VEHICLE_FUEL_TANK_EXPLODABLE,
         SET_VEHICLE_WHEEL_STATES,
+        [Obsolete("Use SET_ELEMENT_FROZEN instead")]
         SET_VEHICLE_FROZEN,
         SET_TRAIN_DERAILED,
         SET_TRAIN_DERAILABLE,

@@ -63,5 +63,10 @@ namespace SlipeServer.Server.PacketHandling.Factories
         {
             return new SetElementCollisionsEnabledRpcPacket(element.Id, enabled);
         }
+
+        public static SetElementFrozenRpcPacket CreateSetElementFrozen(Element element, bool isFrozen)
+        {
+            return new SetElementFrozenRpcPacket(element.Id, isFrozen);
+        }
     }
 }
