@@ -4,14 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SlipeServer.Packets.Enums
+namespace SlipeServer.Packets.Enums;
+
+public enum ScreenshotStatus : byte
 {
-    public enum ScreenshotStatus : byte
-    {
-        Unknown,
-        Success,
-        Minimalized,
-        Disabled,
-        Error,
-    }
+    Unknown,
+    Success,
+    Minimalized,
+    Disabled,
+    Error,
 }

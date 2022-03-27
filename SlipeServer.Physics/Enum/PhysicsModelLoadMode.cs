@@ -1,11 +1,10 @@
-﻿namespace SlipeServer.Physics.Enum
-{
-    public enum PhysicsModelLoadMode : byte
-    {
-        Dff,
-        Col,
+﻿namespace SlipeServer.Physics.Enum;
 
-        HighDetail = Dff,
-        LowDetail = Col
-    }
+public enum PhysicsModelLoadMode : byte
+{
+    Dff,
+    Col,
+
+    HighDetail = Dff,
+    LowDetail = Col
 }

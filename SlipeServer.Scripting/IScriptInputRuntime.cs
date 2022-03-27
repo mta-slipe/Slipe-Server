@@ -5,11 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SlipeServer.Scripting
+namespace SlipeServer.Scripting;
+
+public interface IScriptInputRuntime
 {
-    public interface IScriptInputRuntime
-    {
-        void AddCommandHandler(string eventName, ScriptCallbackDelegateWrapper callbackDelegate);
-        void RemoveCommandHandler(string eventName, ScriptCallbackDelegateWrapper? callbackDelegate = null);
-    }
+    void AddCommandHandler(string eventName, ScriptCallbackDelegateWrapper callbackDelegate);
+    void RemoveCommandHandler(string eventName, ScriptCallbackDelegateWrapper? callbackDelegate = null);
 }

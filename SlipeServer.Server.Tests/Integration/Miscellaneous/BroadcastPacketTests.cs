@@ -4,36 +4,35 @@ using SlipeServer.Packets.Enums;
 using SlipeServer.Server.TestTools;
 using Xunit;
 
-namespace SlipeServer.Server.Tests.Integration.Miscellaneous
+namespace SlipeServer.Server.Tests.Integration.Miscellaneous;
+
+public class BroadcastPacketTests
 {
-    public class BroadcastPacketTests
+    [Fact]
+    public void BroadcastPacket_SendsPacketToAllPlayers()
     {
-        [Fact]
-        public void BroadcastPacket_SendsPacketToAllPlayers()
-        {
-            var server = new TestingServer();
+        var server = new TestingServer();
 
-            var player = server.AddFakePlayer();
-            var player2 = server.AddFakePlayer();
+        var player = server.AddFakePlayer();
+        var player2 = server.AddFakePlayer();
 
-            server.BroadcastPacket(new SetElementModelRpcPacket(player.Id, 0));
+        server.BroadcastPacket(new SetElementModelRpcPacket(player.Id, 0));
 
-            server.NetWrapperMock.Verify(x => x.SendPacket(
-                player.Address,
-                PacketId.PACKET_ID_LUA_ELEMENT_RPC,
-                It.IsAny<ushort>(),
-                It.IsAny<byte[]>(),
-                It.IsAny<PacketPriority>(),
-                It.IsAny<PacketReliability>()
-            ), Times.Once);
-            server.NetWrapperMock.Verify(x => x.SendPacket(
-                player2.Address,
-                PacketId.PACKET_ID_LUA_ELEMENT_RPC,
-                It.IsAny<ushort>(),
-                It.IsAny<byte[]>(),
-                It.IsAny<PacketPriority>(),
-                It.IsAny<PacketReliability>()
-            ), Times.Once);
-        }
+        server.NetWrapperMock.Verify(x => x.SendPacket(
+            player.Address,
+            PacketId.PACKET_ID_LUA_ELEMENT_RPC,
+            It.IsAny<ushort>(),
+            It.IsAny<byte[]>(),
+            It.IsAny<PacketPriority>(),
+            It.IsAny<PacketReliability>()
+        ), Times.Once);
+        server.NetWrapperMock.Verify(x => x.SendPacket(
+            player2.Address,
+            PacketId.PACKET_ID_LUA_ELEMENT_RPC,
+            It.IsAny<ushort>(),
+            It.IsAny<byte[]>(),
+            It.IsAny<PacketPriority>(),
+            It.IsAny<PacketReliability>()
+        ), Times.Once);
     }
 }

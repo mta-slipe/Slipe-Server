@@ -5,32 +5,31 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 
-namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player
+namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
+
+public class PlaySoundPacket : Packet
 {
-    public class PlaySoundPacket : Packet
+    public override PacketId PacketId => PacketId.PACKET_ID_LUA;
+    public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+    public override PacketPriority Priority => PacketPriority.High;
+
+    public ushort Sound { get; set; }
+
+    public PlaySoundPacket(byte sound)
     {
-        public override PacketId PacketId => PacketId.PACKET_ID_LUA;
-        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
-        public override PacketPriority Priority => PacketPriority.High;
+        this.Sound = sound;
+    }
 
-        public ushort Sound { get; set; }
+    public override void Read(byte[] bytes)
+    {
+        throw new NotSupportedException();
+    }
 
-        public PlaySoundPacket(byte sound)
-        {
-            this.Sound = sound;
-        }
-
-        public override void Read(byte[] bytes)
-        {
-            throw new NotSupportedException();
-        }
-
-        public override byte[] Write()
-        {
-            var builder = new PacketBuilder();
-            builder.Write((byte)ElementRpcFunction.PLAY_SOUND);
-            builder.Write(this.Sound);
-            return builder.Build();
-        }
+    public override byte[] Write()
+    {
+        var builder = new PacketBuilder();
+        builder.Write((byte)ElementRpcFunction.PLAY_SOUND);
+        builder.Write(this.Sound);
+        return builder.Build();
     }
 }

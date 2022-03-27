@@ -1,30 +1,29 @@
 ﻿using System;
 
-namespace SlipeServer.Server.Elements
+namespace SlipeServer.Server.Elements;
+
+public enum ElementType
 {
-    public enum ElementType
-    {
-        Dummy,
-        Player,
-        Vehicle,
-        Object,
-        Marker,
-        Blip,
-        Pickup,
-        RadarArea,
-        SpawnpointDeprecated,
-        RemoteClientDeprecated,
-        Console,
-        PathNodeUnused,
-        WorldMeshUnused,
-        Team,
-        Ped,
-        Colshape,
-        ScriptFile,
-        Water,
-        Weapon,
-        DatabaseConnection,
-        Root,
-        Unknown
-    }
+    Dummy,
+    Player,
+    Vehicle,
+    Object,
+    Marker,
+    Blip,
+    Pickup,
+    RadarArea,
+    SpawnpointDeprecated,
+    RemoteClientDeprecated,
+    Console,
+    PathNodeUnused,
+    WorldMeshUnused,
+    Team,
+    Ped,
+    Colshape,
+    ScriptFile,
+    Water,
+    Weapon,
+    DatabaseConnection,
+    Root,
+    Unknown
 }

@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SlipeServer.Scripting.EventDefinitions
+namespace SlipeServer.Scripting.EventDefinitions;
+
+public interface IEventDefinitions
 {
-    public interface IEventDefinitions
-    {
-        public void LoadInto(IScriptEventRuntime eventRuntime);
-    }
+    public void LoadInto(IScriptEventRuntime eventRuntime);
 }

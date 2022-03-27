@@ -6,67 +6,66 @@ using SlipeServer.Server.Repositories;
 using System;
 using System.Collections.Generic;
 
-namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync
+namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync;
+
+public class UnoccupiedVehicleSyncPacketHandler : IPacketHandler<UnoccupiedVehicleSyncPacket>
 {
-    public class UnoccupiedVehicleSyncPacketHandler : IPacketHandler<UnoccupiedVehicleSyncPacket>
+    private readonly ISyncHandlerMiddleware<UnoccupiedVehicleSyncPacket> middleware;
+    private readonly IElementRepository elementRepository;
+
+    public PacketId PacketId => PacketId.PACKET_ID_UNOCCUPIED_VEHICLE_SYNC;
+
+    public UnoccupiedVehicleSyncPacketHandler(
+        ISyncHandlerMiddleware<UnoccupiedVehicleSyncPacket> middleware,
+        IElementRepository elementRepository
+    )
     {
-        private readonly ISyncHandlerMiddleware<UnoccupiedVehicleSyncPacket> middleware;
-        private readonly IElementRepository elementRepository;
+        this.middleware = middleware;
+        this.elementRepository = elementRepository;
+    }
 
-        public PacketId PacketId => PacketId.PACKET_ID_UNOCCUPIED_VEHICLE_SYNC;
+    public void HandlePacket(Client client, UnoccupiedVehicleSyncPacket packet)
+    {
+        List<UnoccupiedVehicleSync> vehiclesToSync = new();
 
-        public UnoccupiedVehicleSyncPacketHandler(
-            ISyncHandlerMiddleware<UnoccupiedVehicleSyncPacket> middleware,
-            IElementRepository elementRepository
-        )
+        foreach (var vehicle in packet.Vehicles)
         {
-            this.middleware = middleware;
-            this.elementRepository = elementRepository;
-        }
+            Elements.Vehicle vehicleElement = (Elements.Vehicle)this.elementRepository.Get(vehicle.Id)!;
 
-        public void HandlePacket(Client client, UnoccupiedVehicleSyncPacket packet)
-        {
-            List<UnoccupiedVehicleSync> vehiclesToSync = new();
-
-            foreach (var vehicle in packet.Vehicles)
+            if (vehicleElement != null)
             {
-                Elements.Vehicle vehicleElement = (Elements.Vehicle)this.elementRepository.Get(vehicle.Id)!;
-
-                if (vehicleElement != null)
+                if (vehicleElement.Syncer?.Client == client && vehicleElement.CanUpdateSync(vehicle.TimeContext))
                 {
-                    if (vehicleElement.Syncer?.Client == client && vehicleElement.CanUpdateSync(vehicle.TimeContext))
+                    vehicleElement.RunAsSync(() =>
                     {
-                        vehicleElement.RunAsSync(() =>
-                        {
-                            if (vehicle.Position != null)
-                                vehicleElement.Position = vehicle.Position.Value;
+                        if (vehicle.Position != null)
+                            vehicleElement.Position = vehicle.Position.Value;
 
-                            if (vehicle.Rotation != null)
-                                vehicleElement.Rotation = vehicle.Rotation.Value;
+                        if (vehicle.Rotation != null)
+                            vehicleElement.Rotation = vehicle.Rotation.Value;
 
-                            if (vehicle.Velocity != null)
-                                vehicleElement.Velocity = vehicle.Velocity.Value;
+                        if (vehicle.Velocity != null)
+                            vehicleElement.Velocity = vehicle.Velocity.Value;
 
-                            if (vehicle.TurnVelocity != null)
-                                vehicleElement.TurnVelocity = vehicle.TurnVelocity.Value;
+                        if (vehicle.TurnVelocity != null)
+                            vehicleElement.TurnVelocity = vehicle.TurnVelocity.Value;
 
-                            if (vehicle.Health != null)
-                                vehicleElement.Health = vehicle.Health.Value;
+                        if (vehicle.Health != null)
+                            vehicleElement.Health = vehicle.Health.Value;
 
-                            vehicleElement.IsInWater = (vehicle.Flags & UnoccupiedVehicleSyncFlags.IsInWater) > 0;
-                            vehicleElement.IsDerailed = (vehicle.Flags & UnoccupiedVehicleSyncFlags.Derailed) > 0;
-                            vehicleElement.IsEngineOn = (vehicle.Flags & UnoccupiedVehicleSyncFlags.Engine) > 0;
+                        vehicleElement.IsInWater = (vehicle.Flags & UnoccupiedVehicleSyncFlags.IsInWater) > 0;
+                        vehicleElement.IsDerailed = (vehicle.Flags & UnoccupiedVehicleSyncFlags.Derailed) > 0;
+                        vehicleElement.IsEngineOn = (vehicle.Flags & UnoccupiedVehicleSyncFlags.Engine) > 0;
 
-                        });
+                    });
 
-                        vehiclesToSync.Add(vehicle);
-                    }
+                    vehiclesToSync.Add(vehicle);
                 }
             }
-
-            var players = this.middleware.GetPlayersToSyncTo(client.Player, packet);
-            packet.Vehicles = vehiclesToSync;
-            packet.SendTo(players);
         }
+
+        var players = this.middleware.GetPlayersToSyncTo(client.Player, packet);
+        packet.Vehicles = vehiclesToSync;
+        packet.SendTo(players);
     }
 }

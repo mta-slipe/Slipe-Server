@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SlipeServer.Packets.Enums
+namespace SlipeServer.Packets.Enums;
+
+public enum PlayerNetworkStatusType
 {
-    public enum PlayerNetworkStatusType
-    {
-        InterruptionBegan,
-        InterruptionEnd,
-    }
+    InterruptionBegan,
+    InterruptionEnd,
 }

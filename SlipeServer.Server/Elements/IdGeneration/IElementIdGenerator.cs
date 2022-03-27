@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SlipeServer.Server.Elements.IdGeneration
+namespace SlipeServer.Server.Elements.IdGeneration;
+
+public interface IElementIdGenerator
 {
-    public interface IElementIdGenerator
-    {
-        public uint GetId();
-    }
+    public uint GetId();
 }

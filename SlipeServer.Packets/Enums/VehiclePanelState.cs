@@ -1,10 +1,9 @@
-﻿namespace SlipeServer.Packets.Enums
+﻿namespace SlipeServer.Packets.Enums;
+
+public enum VehiclePanelState
 {
-    public enum VehiclePanelState
-    {
-        Undamaged,
-        Damaged1,
-        Damaged2,
-        Damaged3,
-    }
+    Undamaged,
+    Damaged1,
+    Damaged2,
+    Damaged3,
 }

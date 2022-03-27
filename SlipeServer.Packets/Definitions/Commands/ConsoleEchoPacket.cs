@@ -5,38 +5,37 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 
-namespace SlipeServer.Packets.Definitions.Commands
+namespace SlipeServer.Packets.Definitions.Commands;
+
+public class ConsoleEchoPacket : Packet
 {
-    public class ConsoleEchoPacket : Packet
+    public override PacketId PacketId => PacketId.PACKET_ID_CONSOLE_ECHO;
+    public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+    public override PacketPriority Priority => PacketPriority.Low;
+
+    public string Message { get; set; } = string.Empty;
+
+    public ConsoleEchoPacket()
     {
-        public override PacketId PacketId => PacketId.PACKET_ID_CONSOLE_ECHO;
-        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
-        public override PacketPriority Priority => PacketPriority.Low;
 
-        public string Message { get; set; } = string.Empty;
+    }
 
-        public ConsoleEchoPacket()
-        {
+    public ConsoleEchoPacket(string message)
+    {
+        this.Message = message;
+    }
 
-        }
+    public override void Read(byte[] bytes)
+    {
+        throw new NotSupportedException();
+    }
 
-        public ConsoleEchoPacket(string message)
-        {
-            this.Message = message;
-        }
+    public override byte[] Write()
+    {
+        var builder = new PacketBuilder();
 
-        public override void Read(byte[] bytes)
-        {
-            throw new NotSupportedException();
-        }
+        builder.WriteStringWithByteAsLength(this.Message);
 
-        public override byte[] Write()
-        {
-            var builder = new PacketBuilder();
-
-            builder.WriteStringWithByteAsLength(this.Message);
-
-            return builder.Build();
-        }
+        return builder.Build();
     }
 }

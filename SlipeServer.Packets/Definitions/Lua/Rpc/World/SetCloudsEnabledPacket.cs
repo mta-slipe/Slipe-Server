@@ -5,34 +5,33 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
+namespace SlipeServer.Packets.Definitions.Lua.Rpc.World;
+
+public class SetCloudsEnabledPacket : Packet
+
 {
-    public class SetCloudsEnabledPacket : Packet
+    public override PacketId PacketId => PacketId.PACKET_ID_LUA;
+    public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+    public override PacketPriority Priority => PacketPriority.High;
 
+    public bool CloudsEnabled { get; set; }
+
+    public SetCloudsEnabledPacket(bool cloudsEnabled)
     {
-        public override PacketId PacketId => PacketId.PACKET_ID_LUA;
-        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
-        public override PacketPriority Priority => PacketPriority.High;
+        this.CloudsEnabled = cloudsEnabled;
+    }
 
-        public bool CloudsEnabled { get; set; }
+    public override void Read(byte[] bytes)
+    {
+        throw new NotImplementedException();
+    }
 
-        public SetCloudsEnabledPacket(bool cloudsEnabled)
-        {
-            this.CloudsEnabled = cloudsEnabled;
-        }
+    public override byte[] Write()
+    {
+        PacketBuilder builder = new PacketBuilder();
+        builder.Write((byte)ElementRpcFunction.SET_CLOUDS_ENABLED);
+        builder.Write(this.CloudsEnabled);
 
-        public override void Read(byte[] bytes)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override byte[] Write()
-        {
-            PacketBuilder builder = new PacketBuilder();
-            builder.Write((byte)ElementRpcFunction.SET_CLOUDS_ENABLED);
-            builder.Write(this.CloudsEnabled);
-
-            return builder.Build();
-        }
+        return builder.Build();
     }
 }
