@@ -3,19 +3,18 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 
-namespace SlipeServer.Packets.Definitions.Entities.Structs
-{
-    public struct PedClothing
-    {
-        public string Texture { get; set; }
-        public string Model { get; set; }
-        public byte Type { get; set; }
+namespace SlipeServer.Packets.Definitions.Entities.Structs;
 
-        public PedClothing(string texture, string model, byte type)
-        {
-            this.Texture = texture;
-            this.Model = model;
-            this.Type = type;
-        }
+public struct PedClothing
+{
+    public string Texture { get; set; }
+    public string Model { get; set; }
+    public byte Type { get; set; }
+
+    public PedClothing(string texture, string model, byte type)
+    {
+        this.Texture = texture;
+        this.Model = model;
+        this.Type = type;
     }
 }

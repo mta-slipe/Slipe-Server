@@ -1,10 +1,9 @@
-﻿namespace SlipeServer.Packets.Enums
+﻿namespace SlipeServer.Packets.Enums;
+
+public enum VehicleWheelState
 {
-    public enum VehicleWheelState
-    {
-        Inflated,
-        Flat,
-        FallenOff,
-        Collisionless,
-    }
+    Inflated,
+    Flat,
+    FallenOff,
+    Collisionless,
 }

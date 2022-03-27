@@ -1,7 +1,6 @@
-﻿namespace SlipeServer.Server.Constants
+﻿namespace SlipeServer.Server.Constants;
+
+public class NetworkConstants
 {
-    public class NetworkConstants
-    {
-        public const ushort LanPort = 34219;
-    }
+    public const ushort LanPort = 34219;
 }

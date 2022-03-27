@@ -5,33 +5,32 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
+namespace SlipeServer.Packets.Definitions.Lua.Rpc.World;
+
+public class SetAircraftMaxHeightPacket : Packet
 {
-    public class SetAircraftMaxHeightPacket : Packet
+    public override PacketId PacketId => PacketId.PACKET_ID_LUA;
+    public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+    public override PacketPriority Priority => PacketPriority.High;
+
+    public float MaxHeight { get; set; }
+
+    public SetAircraftMaxHeightPacket(float maxHeight)
     {
-        public override PacketId PacketId => PacketId.PACKET_ID_LUA;
-        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
-        public override PacketPriority Priority => PacketPriority.High;
+        this.MaxHeight = maxHeight;
+    }
 
-        public float MaxHeight { get; set; }
+    public override void Read(byte[] bytes)
+    {
 
-        public SetAircraftMaxHeightPacket(float maxHeight)
-        {
-            this.MaxHeight = maxHeight;
-        }
+    }
 
-        public override void Read(byte[] bytes)
-        {
-           
-        }
+    public override byte[] Write()
+    {
+        PacketBuilder builder = new PacketBuilder();
+        builder.Write((byte)ElementRpcFunction.SET_AIRCRAFT_MAXHEIGHT);
+        builder.Write(this.MaxHeight);
 
-        public override byte[] Write()
-        {
-            PacketBuilder builder = new PacketBuilder();
-            builder.Write((byte)ElementRpcFunction.SET_AIRCRAFT_MAXHEIGHT);
-            builder.Write(this.MaxHeight);
-
-            return builder.Build();
-        }
+        return builder.Build();
     }
 }

@@ -5,33 +5,32 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
+namespace SlipeServer.Packets.Definitions.Lua.Rpc.World;
+
+public class SetGravityPacket : Packet
 {
-    public class SetGravityPacket : Packet
+    public override PacketId PacketId => PacketId.PACKET_ID_LUA;
+    public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+    public override PacketPriority Priority => PacketPriority.High;
+
+    public float Gravity { get; set; }
+
+    public SetGravityPacket(float gravity)
     {
-        public override PacketId PacketId => PacketId.PACKET_ID_LUA;
-        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
-        public override PacketPriority Priority => PacketPriority.High;
+        this.Gravity = gravity;
+    }
 
-        public float Gravity { get; set; }
+    public override void Read(byte[] bytes)
+    {
+        throw new NotImplementedException();
+    }
 
-        public SetGravityPacket(float gravity)
-        {
-            this.Gravity = gravity;
-        }
+    public override byte[] Write()
+    {
+        PacketBuilder builder = new PacketBuilder();
+        builder.Write((byte)ElementRpcFunction.SET_GRAVITY);
+        builder.Write(this.Gravity);
 
-        public override void Read(byte[] bytes)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override byte[] Write()
-        {
-            PacketBuilder builder = new PacketBuilder();
-            builder.Write((byte)ElementRpcFunction.SET_GRAVITY);
-            builder.Write(this.Gravity);
-
-            return builder.Build();
-        }
+        return builder.Build();
     }
 }

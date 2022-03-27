@@ -6,66 +6,65 @@ using SlipeServer.Server.Extensions;
 using System;
 using System.Collections.Generic;
 
-namespace SlipeServer.Server.Services
+namespace SlipeServer.Server.Services;
+
+public class LuaEventService
 {
-    public class LuaEventService
+    private readonly MtaServer server;
+    private readonly RootElement root;
+
+    private readonly Dictionary<string, List<Action<LuaEvent>>> eventHandlers;
+
+    public LuaEventService(MtaServer server, RootElement root)
     {
-        private readonly MtaServer server;
-        private readonly RootElement root;
+        this.server = server;
+        this.root = root;
 
-        private readonly Dictionary<string, List<Action<LuaEvent>>> eventHandlers;
+        this.eventHandlers = new Dictionary<string, List<Action<LuaEvent>>>();
 
-        public LuaEventService(MtaServer server, RootElement root)
+        server.LuaEventTriggered += HandleLuaEvent;
+    }
+
+    public void TriggerEvent(string eventName, Element? source = null, params LuaValue[] parameters)
+    {
+        this.server.BroadcastPacket(new LuaEventPacket(eventName, (source ?? this.root).Id, parameters));
+    }
+
+    public void TriggerEvent(Player player, string eventName, Element? source = null, params LuaValue[] parameters)
+    {
+        new LuaEventPacket(eventName, (source ?? this.root).Id, parameters).SendTo(player);
+    }
+
+    public void TriggerEvent(Player[] players, string eventName, Element? source = null, params LuaValue[] parameters)
+    {
+        new LuaEventPacket(eventName, (source ?? this.root).Id, parameters).SendTo(players);
+    }
+
+    public void AddEventHandler(string eventName, Action<LuaEvent> handler)
+    {
+        if (!this.eventHandlers.ContainsKey(eventName))
         {
-            this.server = server;
-            this.root = root;
-
-            this.eventHandlers = new Dictionary<string, List<Action<LuaEvent>>>();
-
-            server.LuaEventTriggered += HandleLuaEvent;
+            this.eventHandlers[eventName] = new List<Action<LuaEvent>>();
         }
+        this.eventHandlers[eventName].Add(handler);
+    }
 
-        public void TriggerEvent(string eventName, Element? source = null, params LuaValue[] parameters)
+    public void RemoveEventHandler(string eventName, Action<LuaEvent> handler)
+    {
+        if (this.eventHandlers.ContainsKey(eventName))
         {
-            this.server.BroadcastPacket(new LuaEventPacket(eventName, (source ?? this.root).Id, parameters));
+            this.eventHandlers[eventName].Remove(handler);
         }
+    }
 
-        public void TriggerEvent(Player player, string eventName, Element? source = null, params LuaValue[] parameters)
+    private void HandleLuaEvent(LuaEvent luaEvent)
+    {
+        if (this.eventHandlers.ContainsKey(luaEvent.Name))
         {
-            new LuaEventPacket(eventName, (source ?? this.root).Id, parameters).SendTo(player);
-        }
-
-        public void TriggerEvent(Player[] players, string eventName, Element? source = null, params LuaValue[] parameters)
-        {
-            new LuaEventPacket(eventName, (source ?? this.root).Id, parameters).SendTo(players);
-        }
-
-        public void AddEventHandler(string eventName, Action<LuaEvent> handler)
-        {
-            if (!this.eventHandlers.ContainsKey(eventName))
+            var handlers = this.eventHandlers[luaEvent.Name];
+            foreach (var handler in handlers)
             {
-                this.eventHandlers[eventName] = new List<Action<LuaEvent>>();
-            }
-            this.eventHandlers[eventName].Add(handler);
-        }
-
-        public void RemoveEventHandler(string eventName, Action<LuaEvent> handler)
-        {
-            if (this.eventHandlers.ContainsKey(eventName))
-            {
-                this.eventHandlers[eventName].Remove(handler);
-            }
-        }
-
-        private void HandleLuaEvent(LuaEvent luaEvent)
-        {
-            if (this.eventHandlers.ContainsKey(luaEvent.Name))
-            {
-                var handlers = this.eventHandlers[luaEvent.Name];
-                foreach (var handler in handlers)
-                {
-                    handler.Invoke(luaEvent);
-                }
+                handler.Invoke(luaEvent);
             }
         }
     }

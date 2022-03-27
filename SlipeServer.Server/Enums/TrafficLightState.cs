@@ -1,16 +1,15 @@
-﻿namespace SlipeServer.Server.Enums
+﻿namespace SlipeServer.Server.Enums;
+
+public enum TrafficLightState
 {
-    public enum TrafficLightState
-    {
-        GreenRed,
-        YellowRed,
-        AllRed,
-        RedGreen,
-        RedYellow,
-        AllGreen,
-        AllYellow,
-        YellowGreen,
-        GreenYellow,
-        AllOff
-    }
+    GreenRed,
+    YellowRed,
+    AllRed,
+    RedGreen,
+    RedYellow,
+    AllGreen,
+    AllYellow,
+    YellowGreen,
+    GreenYellow,
+    AllOff
 }

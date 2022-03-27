@@ -6,42 +6,41 @@ using System.Drawing;
 using System.Numerics;
 using System.Text;
 
-namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element
+namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
+
+public class SetBlipOrderingRpcPacket : Packet
 {
-    public class SetBlipOrderingRpcPacket : Packet
+    public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
+    public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+    public override PacketPriority Priority => PacketPriority.High;
+
+    public uint ElementId { get; set; }
+    public short Ordering { get; set; }
+
+    public SetBlipOrderingRpcPacket()
     {
-        public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
-        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
-        public override PacketPriority Priority => PacketPriority.High;
 
-        public uint ElementId { get; set; }
-        public short Ordering { get; set; }
+    }
 
-        public SetBlipOrderingRpcPacket()
-        {
+    public SetBlipOrderingRpcPacket(uint elementId, short ordering)
+    {
+        this.ElementId = elementId;
+        this.Ordering = ordering;
+    }
 
-        }
+    public override void Read(byte[] bytes)
+    {
+        throw new NotSupportedException();
+    }
 
-        public SetBlipOrderingRpcPacket(uint elementId, short ordering)
-        {
-            this.ElementId = elementId;
-            this.Ordering = ordering;
-        }
+    public override byte[] Write()
+    {
+        var builder = new PacketBuilder();
 
-        public override void Read(byte[] bytes)
-        {
-            throw new NotSupportedException();
-        }
+        builder.Write((byte)ElementRpcFunction.SET_BLIP_ORDERING);
+        builder.WriteElementId(this.ElementId);
+        builder.WriteCompressed(this.Ordering);
 
-        public override byte[] Write()
-        {
-            var builder = new PacketBuilder();
-
-            builder.Write((byte)ElementRpcFunction.SET_BLIP_ORDERING);
-            builder.WriteElementId(this.ElementId);
-            builder.WriteCompressed(this.Ordering);
-
-            return builder.Build();
-        }
+        return builder.Build();
     }
 }

@@ -5,50 +5,49 @@ using SlipeServer.Server.PacketHandling.Factories;
 using System.Collections.Generic;
 using System.Timers;
 
-namespace SlipeServer.Server.Behaviour
+namespace SlipeServer.Server.Behaviour;
+
+public class VehicleWarpBehaviour
 {
-    public class VehicleWarpBehaviour
+    private readonly MtaServer server;
+
+    public VehicleWarpBehaviour(MtaServer server)
     {
-        private readonly MtaServer server;
+        this.server = server;
 
-        public VehicleWarpBehaviour(MtaServer server)
+        server.ElementCreated += OnElementCreate;
+    }
+
+    private void OnElementCreate(Element element)
+    {
+        if (element is Vehicle vehicle)
         {
-            this.server = server;
-
-            server.ElementCreated += OnElementCreate;
+            vehicle.PedEntered += HandleEnter;
+            vehicle.PedLeft += HandleLeft;
         }
+    }
 
-        private void OnElementCreate(Element element)
+    private void HandleEnter(object? sender, VehicleEnteredEventsArgs eventArgs)
+    {
+        if (eventArgs.WarpsIn)
         {
-            if (element is Vehicle vehicle)
-            {
-                vehicle.PedEntered += HandleEnter;
-                vehicle.PedLeft += HandleLeft;
-            }
+            this.server.BroadcastPacket(new WarpIntoVehicleRpcPacket(
+                eventArgs.Ped.Id,
+                eventArgs.Vehicle.Id,
+                eventArgs.Seat,
+                eventArgs.Ped.GetAndIncrementTimeContext()
+            ));
         }
+    }
 
-        private void HandleEnter(object? sender, VehicleEnteredEventsArgs eventArgs)
+    private void HandleLeft(object? sender, VehicleLeftEventArgs eventArgs)
+    {
+        if (eventArgs.WarpsOut)
         {
-            if (eventArgs.WarpsIn)
-            {
-                this.server.BroadcastPacket(new WarpIntoVehicleRpcPacket(
-                    eventArgs.Ped.Id, 
-                    eventArgs.Vehicle.Id, 
-                    eventArgs.Seat, 
-                    eventArgs.Ped.GetAndIncrementTimeContext()
-                ));
-            }
-        }
-
-        private void HandleLeft(object? sender, VehicleLeftEventArgs eventArgs)
-        {
-            if (eventArgs.WarpsOut)
-            {
-                this.server.BroadcastPacket(new RemoveFromVehiclePacket(
-                    eventArgs.Ped.Id,
-                    eventArgs.Ped.GetAndIncrementTimeContext()
-                ));
-            }
+            this.server.BroadcastPacket(new RemoveFromVehiclePacket(
+                eventArgs.Ped.Id,
+                eventArgs.Ped.GetAndIncrementTimeContext()
+            ));
         }
     }
 }

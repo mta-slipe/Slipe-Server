@@ -6,13 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SlipeServer.Server.Constants
+namespace SlipeServer.Server.Constants;
+
+public class ClothesConstants
 {
-    public class ClothesConstants
+    public static Dictionary<ClothingType, PedClothing[]> ClothesTextureModel = new Dictionary<ClothingType, PedClothing[]>
     {
-        public static Dictionary<ClothingType, PedClothing[]> ClothesTextureModel = new Dictionary<ClothingType, PedClothing[]>
-        {
-            [ClothingType.Shirt] = new PedClothing[] {
+        [ClothingType.Shirt] = new PedClothing[] {
                 new PedClothing("player_torso", "torso", (byte)ClothingType.Shirt),
                 new PedClothing("vestblack", "vest", (byte)ClothingType.Shirt),
                 new PedClothing("vest", "vest", (byte)ClothingType.Shirt),
@@ -83,7 +83,7 @@ namespace SlipeServer.Server.Constants
                 new PedClothing("letter", "sleevt", (byte)ClothingType.Shirt),
             },
 
-            [ClothingType.Head] = new PedClothing[] {
+        [ClothingType.Head] = new PedClothing[] {
                 new PedClothing("player_face", "head", (byte)ClothingType.Head),
                 new PedClothing("hairblond", "head", (byte)ClothingType.Head),
                 new PedClothing("hairred", "head", (byte)ClothingType.Head),
@@ -118,7 +118,7 @@ namespace SlipeServer.Server.Constants
                 new PedClothing("goatee", "head", (byte)ClothingType.Head),
                 new PedClothing("afrogoatee", "afro", (byte)ClothingType.Head),
             },
-            [ClothingType.Trousers] = new PedClothing[] {
+        [ClothingType.Trousers] = new PedClothing[] {
                 new PedClothing("player_legs", "legs", (byte)ClothingType.Trousers),
                 new PedClothing("worktrcamogrn", "worktr", (byte)ClothingType.Trousers),
                 new PedClothing("worktrcamogry", "worktr", (byte)ClothingType.Trousers),
@@ -165,7 +165,7 @@ namespace SlipeServer.Server.Constants
                 new PedClothing("suit1trblk2", "suit1tr", (byte)ClothingType.Trousers),
                 new PedClothing("suit1trgang", "suit1tr", (byte)ClothingType.Trousers),
             },
-            [ClothingType.Shoes] = new PedClothing[] {
+        [ClothingType.Shoes] = new PedClothing[] {
                 new PedClothing("foot", "feet", (byte)ClothingType.Shoes),
                 new PedClothing("cowboyboot2", "biker", (byte)ClothingType.Shoes),
                 new PedClothing("bask2semi", "bask1", (byte)ClothingType.Shoes),
@@ -205,30 +205,30 @@ namespace SlipeServer.Server.Constants
                 new PedClothing("shoedressbrn", "shoe", (byte)ClothingType.Shoes),
                 new PedClothing("shoespatz", "shoe", (byte)ClothingType.Shoes),
             },
-            [ClothingType.TattoosLeftUpperArm] = new PedClothing[] {
+        [ClothingType.TattoosLeftUpperArm] = new PedClothing[] {
                 new PedClothing("4WEED", "4weed", (byte)ClothingType.TattoosLeftUpperArm),
                 new PedClothing("4RIP", "4rip", (byte)ClothingType.TattoosLeftUpperArm),
                 new PedClothing("4SPIDER", "4spider", (byte)ClothingType.TattoosLeftUpperArm),
             },
-            [ClothingType.TattoosLeftLowerArm] = new PedClothing[] {
+        [ClothingType.TattoosLeftLowerArm] = new PedClothing[] {
                 new PedClothing("5GUN", "5gun", (byte)ClothingType.TattoosLeftLowerArm),
                 new PedClothing("5CROSS", "5cross", (byte)ClothingType.TattoosLeftLowerArm),
                 new PedClothing("5CROSS2", "5cross2", (byte)ClothingType.TattoosLeftLowerArm),
                 new PedClothing("5CROSS3", "5cross3", (byte)ClothingType.TattoosLeftLowerArm),
             },
-            [ClothingType.TattoosRightUpperArm] = new PedClothing[] {
+        [ClothingType.TattoosRightUpperArm] = new PedClothing[] {
                 new PedClothing("6AZTEC", "6aztec", (byte)ClothingType.TattoosRightUpperArm),
                 new PedClothing("6CROWN", "6crown", (byte)ClothingType.TattoosRightUpperArm),
                 new PedClothing("6CLOWN", "6clown", (byte)ClothingType.TattoosRightUpperArm),
                 new PedClothing("6AFRICA", "6africa", (byte)ClothingType.TattoosRightUpperArm),
             },
-            [ClothingType.TattoosRightLowerArm] = new PedClothing[] {
+        [ClothingType.TattoosRightLowerArm] = new PedClothing[] {
                 new PedClothing("7CROSS", "7cross", (byte)ClothingType.TattoosRightLowerArm),
                 new PedClothing("7CROSS2", "7cross2", (byte)ClothingType.TattoosRightLowerArm),
                 new PedClothing("7CROSS3", "7cross3", (byte)ClothingType.TattoosRightLowerArm),
                 new PedClothing("7MARY", "7mary", (byte)ClothingType.TattoosRightLowerArm),
             },
-            [ClothingType.TattoosBack] = new PedClothing[] {
+        [ClothingType.TattoosBack] = new PedClothing[] {
                 new PedClothing("8SA", "8sa", (byte)ClothingType.TattoosBack),
                 new PedClothing("8SA2", "8sa2", (byte)ClothingType.TattoosBack),
                 new PedClothing("8SA3", "8sa3", (byte)ClothingType.TattoosBack),
@@ -237,7 +237,7 @@ namespace SlipeServer.Server.Constants
                 new PedClothing("8POKER", "8poker", (byte)ClothingType.TattoosBack),
                 new PedClothing("8GUN", "8gun", (byte)ClothingType.TattoosBack),
             },
-            [ClothingType.TattoosLeftChest] = new PedClothing[] {
+        [ClothingType.TattoosLeftChest] = new PedClothing[] {
                 new PedClothing("9CROWN", "9crown", (byte)ClothingType.TattoosLeftChest),
                 new PedClothing("9GUN", "9gun", (byte)ClothingType.TattoosLeftChest),
                 new PedClothing("9GUN2", "9gun2", (byte)ClothingType.TattoosLeftChest),
@@ -245,7 +245,7 @@ namespace SlipeServer.Server.Constants
                 new PedClothing("9BULLT", "9bullet", (byte)ClothingType.TattoosLeftChest),
                 new PedClothing("9RASTA", "9rasta", (byte)ClothingType.TattoosLeftChest),
             },
-            [ClothingType.TattoosRightChest] = new PedClothing[] {
+        [ClothingType.TattoosRightChest] = new PedClothing[] {
                 new PedClothing("10LS", "10ls", (byte)ClothingType.TattoosRightChest),
                 new PedClothing("10LS2", "10ls2", (byte)ClothingType.TattoosRightChest),
                 new PedClothing("10LS3", "10ls3", (byte)ClothingType.TattoosRightChest),
@@ -254,7 +254,7 @@ namespace SlipeServer.Server.Constants
                 new PedClothing("10OG", "10og", (byte)ClothingType.TattoosRightChest),
                 new PedClothing("10WEED", "10weed", (byte)ClothingType.TattoosRightChest),
             },
-            [ClothingType.TattoosStomach] = new PedClothing[] {
+        [ClothingType.TattoosStomach] = new PedClothing[] {
                 new PedClothing("11GROVE", "11grove", (byte)ClothingType.TattoosStomach),
                 new PedClothing("11GROV2", "11grove2", (byte)ClothingType.TattoosStomach),
                 new PedClothing("11GROV3", "11grove3", (byte)ClothingType.TattoosStomach),
@@ -263,7 +263,7 @@ namespace SlipeServer.Server.Constants
                 new PedClothing("11JAIL", "11jail", (byte)ClothingType.TattoosStomach),
                 new PedClothing("11GGIFT", "11godsgift", (byte)ClothingType.TattoosStomach),
             },
-            [ClothingType.TattoosLowerBack] = new PedClothing[] {
+        [ClothingType.TattoosLowerBack] = new PedClothing[] {
                 new PedClothing("12ANGEL", "12angels", (byte)ClothingType.TattoosLowerBack),
                 new PedClothing("12MAYBR", "12mayabird", (byte)ClothingType.TattoosLowerBack),
                 new PedClothing("12DAGER", "12dagger", (byte)ClothingType.TattoosLowerBack),
@@ -271,7 +271,7 @@ namespace SlipeServer.Server.Constants
                 new PedClothing("12CROSS", "12cross7", (byte)ClothingType.TattoosLowerBack),
                 new PedClothing("12MYFAC", "12mayafce", (byte)ClothingType.TattoosLowerBack),
             },
-            [ClothingType.Necklace] = new PedClothing[] {
+        [ClothingType.Necklace] = new PedClothing[] {
                 new PedClothing("dogtag", "neck", (byte)ClothingType.Necklace),
                 new PedClothing("neckafrica", "neck", (byte)ClothingType.Necklace),
                 new PedClothing("stopwatch", "neck", (byte)ClothingType.Necklace),
@@ -285,7 +285,7 @@ namespace SlipeServer.Server.Constants
                 new PedClothing("neckdollar", "neck2", (byte)ClothingType.Necklace),
                 new PedClothing("neckcross", "neck2", (byte)ClothingType.Necklace),
             },
-            [ClothingType.Watches] = new PedClothing[] {
+        [ClothingType.Watches] = new PedClothing[] {
                 new PedClothing("watchpink", "watch", (byte)ClothingType.Watches),
                 new PedClothing("watchyellow", "watch", (byte)ClothingType.Watches),
                 new PedClothing("watchpro", "watch", (byte)ClothingType.Watches),
@@ -299,7 +299,7 @@ namespace SlipeServer.Server.Constants
                 new PedClothing("watchcro", "watch", (byte)ClothingType.Watches),
                 new PedClothing("watchcro2", "watch", (byte)ClothingType.Watches),
             },
-            [ClothingType.Glasses] = new PedClothing[] {
+        [ClothingType.Glasses] = new PedClothing[] {
                 new PedClothing("groucho", "grouchos", (byte)ClothingType.Glasses),
                 new PedClothing("zorro", "zorromask", (byte)ClothingType.Glasses),
                 new PedClothing("eyepatch", "eyepatch", (byte)ClothingType.Glasses),
@@ -318,7 +318,7 @@ namespace SlipeServer.Server.Constants
                 new PedClothing("glasses05dark", "glasses03", (byte)ClothingType.Glasses),
                 new PedClothing("glasses05", "glasses03", (byte)ClothingType.Glasses),
             },
-            [ClothingType.Hats] = new PedClothing[] {
+        [ClothingType.Hats] = new PedClothing[] {
                 new PedClothing("bandred", "bandana", (byte)ClothingType.Hats),
                 new PedClothing("bandblue", "bandana", (byte)ClothingType.Hats),
                 new PedClothing("bandgang", "bandana", (byte)ClothingType.Hats),
@@ -377,7 +377,7 @@ namespace SlipeServer.Server.Constants
                 new PedClothing("bowlergang", "bowler", (byte)ClothingType.Hats),
                 new PedClothing("boaterblk", "boater", (byte)ClothingType.Hats),
             },
-            [ClothingType.Extra] = new PedClothing[] {
+        [ClothingType.Extra] = new PedClothing[] {
                 new PedClothing("gimpleg", "gimpleg", (byte)ClothingType.Extra),
                 new PedClothing("valet", "valet", (byte)ClothingType.Extra),
                 new PedClothing("countrytr", "countrytr", (byte)ClothingType.Extra),
@@ -388,25 +388,24 @@ namespace SlipeServer.Server.Constants
                 new PedClothing("garageleg", "garagetr", (byte)ClothingType.Extra),
                 new PedClothing("medictr", "medictr", (byte)ClothingType.Extra),
             },
-        };
+    };
 
-        public static int ShirtsCount => ClothesTextureModel[ClothingType.Shirt].Length;
-        public static int HeadsCount => ClothesTextureModel[ClothingType.Head].Length;
-        public static int TrousersCount => ClothesTextureModel[ClothingType.Trousers].Length;
-        public static int ShoesCount => ClothesTextureModel[ClothingType.Shoes].Length;
-        public static int TattoosLeftUpperArmCount => ClothesTextureModel[ClothingType.TattoosLeftUpperArm].Length;
-        public static int TattoosLeftLowerArmCount => ClothesTextureModel[ClothingType.TattoosLeftLowerArm].Length;
-        public static int TattoosRightUpperArmCount => ClothesTextureModel[ClothingType.TattoosRightUpperArm].Length;
-        public static int TattoosRightLowerArmCount => ClothesTextureModel[ClothingType.TattoosRightLowerArm].Length;
-        public static int TattoosBackCount => ClothesTextureModel[ClothingType.TattoosBack].Length;
-        public static int TattoosLeftChestCount => ClothesTextureModel[ClothingType.TattoosLeftChest].Length;
-        public static int TattoosRightChestCount => ClothesTextureModel[ClothingType.TattoosRightChest].Length;
-        public static int TattoosStomachCount => ClothesTextureModel[ClothingType.TattoosStomach].Length;
-        public static int TattoosLowerBackCount => ClothesTextureModel[ClothingType.TattoosLowerBack].Length;
-        public static int NecklaceCount => ClothesTextureModel[ClothingType.Necklace].Length;
-        public static int WatchesCount => ClothesTextureModel[ClothingType.Watches].Length;
-        public static int GlassesCount => ClothesTextureModel[ClothingType.Glasses].Length;
-        public static int HatsCount => ClothesTextureModel[ClothingType.Hats].Length;
-        public static int ExtraCount => ClothesTextureModel[ClothingType.Extra].Length;
-    }
+    public static int ShirtsCount => ClothesTextureModel[ClothingType.Shirt].Length;
+    public static int HeadsCount => ClothesTextureModel[ClothingType.Head].Length;
+    public static int TrousersCount => ClothesTextureModel[ClothingType.Trousers].Length;
+    public static int ShoesCount => ClothesTextureModel[ClothingType.Shoes].Length;
+    public static int TattoosLeftUpperArmCount => ClothesTextureModel[ClothingType.TattoosLeftUpperArm].Length;
+    public static int TattoosLeftLowerArmCount => ClothesTextureModel[ClothingType.TattoosLeftLowerArm].Length;
+    public static int TattoosRightUpperArmCount => ClothesTextureModel[ClothingType.TattoosRightUpperArm].Length;
+    public static int TattoosRightLowerArmCount => ClothesTextureModel[ClothingType.TattoosRightLowerArm].Length;
+    public static int TattoosBackCount => ClothesTextureModel[ClothingType.TattoosBack].Length;
+    public static int TattoosLeftChestCount => ClothesTextureModel[ClothingType.TattoosLeftChest].Length;
+    public static int TattoosRightChestCount => ClothesTextureModel[ClothingType.TattoosRightChest].Length;
+    public static int TattoosStomachCount => ClothesTextureModel[ClothingType.TattoosStomach].Length;
+    public static int TattoosLowerBackCount => ClothesTextureModel[ClothingType.TattoosLowerBack].Length;
+    public static int NecklaceCount => ClothesTextureModel[ClothingType.Necklace].Length;
+    public static int WatchesCount => ClothesTextureModel[ClothingType.Watches].Length;
+    public static int GlassesCount => ClothesTextureModel[ClothingType.Glasses].Length;
+    public static int HatsCount => ClothesTextureModel[ClothingType.Hats].Length;
+    public static int ExtraCount => ClothesTextureModel[ClothingType.Extra].Length;
 }

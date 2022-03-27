@@ -4,26 +4,25 @@ using SlipeServer.Server.Services;
 using System;
 using System.Numerics;
 
-namespace SlipeServer.Scripting.Definitions
+namespace SlipeServer.Scripting.Definitions;
+
+public class ExplosionScriptDefinitions
 {
-    public class ExplosionScriptDefinitions
+    private readonly ExplosionService explosionService;
+
+    public ExplosionScriptDefinitions(ExplosionService explosionService)
     {
-        private readonly ExplosionService explosionService;
+        this.explosionService = explosionService;
+    }
 
-        public ExplosionScriptDefinitions(ExplosionService explosionService)
+    [ScriptFunctionDefinition("createExplosion")]
+    public bool CreateExplosion(Vector3 position, int type, Player? creator = null)
+    {
+        if (Enum.IsDefined(typeof(ExplosionType), type))
         {
-            this.explosionService = explosionService;
+            this.explosionService.CreateExplosion(position, (ExplosionType)type, creator);
+            return true;
         }
-
-        [ScriptFunctionDefinition("createExplosion")]
-        public bool CreateExplosion(Vector3 position, int type, Player? creator = null)
-        {
-            if (Enum.IsDefined(typeof(ExplosionType), type))
-            {
-                this.explosionService.CreateExplosion(position, (ExplosionType)type, creator);
-                return true;
-            }
-            return false;
-        }
+        return false;
     }
 }

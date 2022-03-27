@@ -1,10 +1,9 @@
-﻿namespace SlipeServer.Packets.Enums
+﻿namespace SlipeServer.Packets.Enums;
+
+public enum PacketPriority
 {
-    public enum PacketPriority
-    {
-        High = 0,
-        Medium,
-        Low,
-        Count
-    };
-}
+    High = 0,
+    Medium,
+    Low,
+    Count
+};

@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SlipeServer.Packets.Enums
+namespace SlipeServer.Packets.Enums;
+
+public enum VehicleInOutAction
 {
-    public enum VehicleInOutAction
-    {
-        RequestIn,
-        NotifyIn,
-        NotifyAbortIn,
-        RequestOut,
-        NotifyOut,
-        NotifyOutAbort,
-        NotifyJack,
-        NotifyJackAbort,
-        NotifyFellOff,
-    }
+    RequestIn,
+    NotifyIn,
+    NotifyAbortIn,
+    RequestOut,
+    NotifyOut,
+    NotifyOutAbort,
+    NotifyJack,
+    NotifyJackAbort,
+    NotifyFellOff,
 }

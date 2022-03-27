@@ -2,42 +2,41 @@
 using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
 
-namespace MTAServerWrapper.Packets.Outgoing.Connection
+namespace MTAServerWrapper.Packets.Outgoing.Connection;
+
+public class PlayerQuitPacket : Packet
 {
-    public class PlayerQuitPacket : Packet
+    public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_QUIT;
+    public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+    public override PacketPriority Priority => PacketPriority.High;
+
+    public uint PlayerId { get; }
+    public byte QuitReason { get; }
+
+    public PlayerQuitPacket()
     {
-        public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_QUIT;
-        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
-        public override PacketPriority Priority => PacketPriority.High;
 
-        public uint PlayerId { get; }
-        public byte QuitReason { get; }
+    }
 
-        public PlayerQuitPacket()
-        {
+    public PlayerQuitPacket(uint playerId, byte quitReason)
+    {
+        this.PlayerId = playerId;
+        this.QuitReason = quitReason;
+    }
 
-        }
+    public override byte[] Write()
+    {
+        var builder = new PacketBuilder();
 
-        public PlayerQuitPacket(uint playerId, byte quitReason)
-        {
-            this.PlayerId = playerId;
-            this.QuitReason = quitReason;
-        }
+        builder.Write(new byte[] { 0, 0 }); // 2 bytes of padding is required for some reason
+        builder.WriteElementId(this.PlayerId);
+        builder.WriteCapped(this.QuitReason, 3);
 
-        public override byte[] Write()
-        {
-            var builder = new PacketBuilder();
+        return builder.Build();
+    }
 
-            builder.Write(new byte[] { 0, 0 }); // 2 bytes of padding is required for some reason
-            builder.WriteElementId(this.PlayerId);
-            builder.WriteCapped(this.QuitReason, 3);
+    public override void Read(byte[] bytes)
+    {
 
-            return builder.Build();
-        }
-
-        public override void Read(byte[] bytes)
-        {
-
-        }
     }
 }

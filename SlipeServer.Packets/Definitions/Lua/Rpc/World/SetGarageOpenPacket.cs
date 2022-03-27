@@ -5,36 +5,35 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
+namespace SlipeServer.Packets.Definitions.Lua.Rpc.World;
+
+public class SetGarageOpenPacket : Packet
 {
-    public class SetGarageOpenPacket : Packet
+    public override PacketId PacketId => PacketId.PACKET_ID_LUA;
+    public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+    public override PacketPriority Priority => PacketPriority.High;
+
+    public byte GarageID { get; set; }
+    public bool IsOpen { get; set; }
+
+    public SetGarageOpenPacket(byte garageID, bool isOpen)
     {
-        public override PacketId PacketId => PacketId.PACKET_ID_LUA;
-        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
-        public override PacketPriority Priority => PacketPriority.High;
+        this.GarageID = garageID;
+        this.IsOpen = isOpen;
+    }
 
-        public byte GarageID { get; set; }
-        public bool IsOpen { get; set; }
+    public override void Read(byte[] bytes)
+    {
+        throw new NotImplementedException();
+    }
 
-        public SetGarageOpenPacket(byte garageID,bool isOpen)
-        {
-            this.GarageID = garageID;
-            this.IsOpen = isOpen;
-        }
+    public override byte[] Write()
+    {
+        PacketBuilder builder = new PacketBuilder();
+        builder.Write((byte)ElementRpcFunction.SET_GARAGE_OPEN);
+        builder.Write(this.GarageID);
+        builder.Write(this.IsOpen);
 
-        public override void Read(byte[] bytes)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override byte[] Write()
-        {
-            PacketBuilder builder = new PacketBuilder();
-            builder.Write((byte)ElementRpcFunction.SET_GARAGE_OPEN);
-            builder.Write(this.GarageID);
-            builder.Write(this.IsOpen);
-
-            return builder.Build();
-        }
+        return builder.Build();
     }
 }

@@ -16,52 +16,51 @@ using SlipeServer.Server.Constants;
 using System.Linq;
 using SlipeServer.Packets.Definitions.Ped;
 
-namespace SlipeServer.Server.PacketHandling.Factories
+namespace SlipeServer.Server.PacketHandling.Factories;
+
+public static class PedPacketFactory
 {
-    public static class PedPacketFactory
+    public static SetElementModelRpcPacket CreateSetModelPacket(Ped ped)
     {
-        public static SetElementModelRpcPacket CreateSetModelPacket(Ped ped)
-        {
-            return new SetElementModelRpcPacket(ped.Id, ped.Model);
-        }
+        return new SetElementModelRpcPacket(ped.Id, ped.Model);
+    }
 
-        public static SetElementHealthRpcPacket CreateSetHealthPacket(Ped ped)
-        {
-            return new SetElementHealthRpcPacket(ped.Id, ped.GetAndIncrementTimeContext(), ped.Health);
-        }
+    public static SetElementHealthRpcPacket CreateSetHealthPacket(Ped ped)
+    {
+        return new SetElementHealthRpcPacket(ped.Id, ped.GetAndIncrementTimeContext(), ped.Health);
+    }
 
-        public static SetPedArmourRpcPacket CreateSetArmourPacket(Ped ped)
-        {
-            return new SetPedArmourRpcPacket(ped.Id, ped.GetAndIncrementTimeContext(), ped.Armor);
-        }
+    public static SetPedArmourRpcPacket CreateSetArmourPacket(Ped ped)
+    {
+        return new SetPedArmourRpcPacket(ped.Id, ped.GetAndIncrementTimeContext(), ped.Armor);
+    }
 
-        public static GivePedJetpackRpcPacket CreateGiveJetpack(Ped ped)
-        {
-            return new GivePedJetpackRpcPacket(ped.Id);
-        }
+    public static GivePedJetpackRpcPacket CreateGiveJetpack(Ped ped)
+    {
+        return new GivePedJetpackRpcPacket(ped.Id);
+    }
 
-        public static RemovePedJetpackRpcPacket CreateRemoveJetpack(Ped ped)
-        {
-            return new RemovePedJetpackRpcPacket(ped.Id);
-        }
+    public static RemovePedJetpackRpcPacket CreateRemoveJetpack(Ped ped)
+    {
+        return new RemovePedJetpackRpcPacket(ped.Id);
+    }
 
-        public static PlayerStatsPacket CreatePlayerStatsPacket(Ped ped)
+    public static PlayerStatsPacket CreatePlayerStatsPacket(Ped ped)
+    {
+        return new PlayerStatsPacket()
         {
-            return new PlayerStatsPacket()
-            {
-                ElementId = ped.Id,
-                Stats = ped.GetAllStats().ToDictionary(x => (ushort)x.Key, x => x.Value)
-            };
-        }
+            ElementId = ped.Id,
+            Stats = ped.GetAllStats().ToDictionary(x => (ushort)x.Key, x => x.Value)
+        };
+    }
 
-        public static PedClothesPacket CreateClothesPacket(Ped ped, ClothingType cloth, byte index)
-        {
-            return new PedClothesPacket(ped.Id, new PedClothing[] { ClothesConstants.ClothesTextureModel[cloth][index] });
-        }
+    public static PedClothesPacket CreateClothesPacket(Ped ped, ClothingType cloth, byte index)
+    {
+        return new PedClothesPacket(ped.Id, new PedClothing[] { ClothesConstants.ClothesTextureModel[cloth][index] });
+    }
 
-        public static PedClothesPacket CreateFullClothesPacket(Ped ped)
-        {
-            return new PedClothesPacket(ped.Id, ped.Clothing.GetClothing().ToArray());
-        }
+    public static PedClothesPacket CreateFullClothesPacket(Ped ped)
+    {
+        return new PedClothesPacket(ped.Id, ped.Clothing.GetClothing().ToArray());
     }
 }

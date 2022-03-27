@@ -5,33 +5,32 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
+namespace SlipeServer.Packets.Definitions.Lua.Rpc.World;
+
+public class SetFarClipDistancePacket : Packet
 {
-    public class SetFarClipDistancePacket : Packet
+    public override PacketId PacketId => PacketId.PACKET_ID_LUA;
+    public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+    public override PacketPriority Priority => PacketPriority.High;
+
+    public float Distance { get; set; }
+
+    public SetFarClipDistancePacket(float farClipDistance)
     {
-        public override PacketId PacketId => PacketId.PACKET_ID_LUA;
-        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
-        public override PacketPriority Priority => PacketPriority.High;
+        this.Distance = farClipDistance;
+    }
 
-        public float Distance { get; set; }
+    public override void Read(byte[] bytes)
+    {
+        throw new NotImplementedException();
+    }
 
-        public SetFarClipDistancePacket(float farClipDistance)
-        {
-            this.Distance = farClipDistance;
-        }
+    public override byte[] Write()
+    {
+        PacketBuilder builder = new PacketBuilder();
+        builder.Write((byte)ElementRpcFunction.SET_FAR_CLIP_DISTANCE);
+        builder.Write(this.Distance);
 
-        public override void Read(byte[] bytes)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override byte[] Write()
-        {
-            PacketBuilder builder = new PacketBuilder();
-            builder.Write((byte)ElementRpcFunction.SET_FAR_CLIP_DISTANCE);
-            builder.Write(this.Distance);
-
-            return builder.Build();
-        }
+        return builder.Build();
     }
 }
