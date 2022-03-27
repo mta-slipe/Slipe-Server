@@ -56,7 +56,7 @@ namespace SlipeServer.Server.Behaviour
 
         private void RelayTaxiLightStateChanged(Element sender, ElementChangedEventArgs<Vehicle, bool> args)
         {
-            this.server.BroadcastPacket(VehiclePacketFactory.CreateSetVehicleTaxiLightOnPacket(args.Source));
+            this.server.BroadcastPacket(VehiclePacketFactory.CreateSetTaxiLightOnPacket(args.Source));
         }
 
         private void RelayLandingGearChanged(Element sender, ElementChangedEventArgs<Vehicle, bool> args)
@@ -92,7 +92,7 @@ namespace SlipeServer.Server.Behaviour
 
         private void RelayEngineStateChanged(Element sender, ElementChangedEventArgs<Vehicle, bool> args)
         {
-            this.server.BroadcastPacket(VehiclePacketFactory.CreateSetLockedPacket(args.Source));
+            this.server.BroadcastPacket(VehiclePacketFactory.CreateSetEngineOnPacket(args.Source));
         }
       
         private void HandleWheelStateChanged(object? sender, VehicleWheelStateChangedArgs args)
