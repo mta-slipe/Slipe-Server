@@ -6,6 +6,7 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.PacketHandling.Factories;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Timers;
 
 namespace SlipeServer.Server.Behaviour
@@ -38,6 +39,7 @@ namespace SlipeServer.Server.Behaviour
                 vehicle.TaxiLightStateChanged += RelayTaxiLightStateChanged;
                 vehicle.TurretRotationChanged += RelayTurretRotationChanged;
                 vehicle.PlateTextChanged += RelayPlateTextChanged;
+                vehicle.HeadlightColorChanged += RelayHeadlightColorChanged;
             }
         }
 
@@ -65,6 +67,11 @@ namespace SlipeServer.Server.Behaviour
         private void RelayColorChanged(Vehicle sender, VehicleColorChangedEventsArgs args)
         {
             this.server.BroadcastPacket(VehiclePacketFactory.CreateSetColorPacket(args.Vehicle));
+        }
+        
+        private void RelayHeadlightColorChanged(Vehicle sender, ElementChangedEventArgs<Vehicle, Color> args)
+        {
+            this.server.BroadcastPacket(VehiclePacketFactory.CreateSetHeadlightColorPacket(args.Source));
         }
 
         private void RelayModelChange(object sender, ElementChangedEventArgs<Vehicle, ushort> args)
