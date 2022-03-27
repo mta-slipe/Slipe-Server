@@ -48,7 +48,6 @@ namespace SlipeServer.Console.Logic
             this.commandService = commandService;
             this.logger = logger;
 
-
             this.commandService.AddCommand("physics").Triggered += (source, args) => InitEmpty();
             this.commandService.AddCommand("physicsfull").Triggered += (source, args) => InitFull();
         }

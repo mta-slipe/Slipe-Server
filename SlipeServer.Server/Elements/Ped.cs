@@ -10,6 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using SlipeServer.Server.Collections;
+using SlipeServer.Server.Elements.Enums;
+using SlipeServer.Server.ElementConcepts;
 
 namespace SlipeServer.Server.Elements
 {
@@ -139,9 +142,9 @@ namespace SlipeServer.Server.Elements
         public bool IsHeadless { get; set; } = false;
         public bool IsFrozen { get; set; } = false;
         public PedMoveAnimation MoveAnimation { get; set; } = 0;
-        public PedClothing[] Clothes { get; set; }
         public WeaponCollection Weapons { get; set; }
         public bool IsAlive => this.health > 0;
+        public Clothing Clothing { get; init; }
 
         private Player? syncer = null;
         public Player? Syncer
@@ -179,7 +182,7 @@ namespace SlipeServer.Server.Elements
             this.Model = (ushort)model;
             this.Position = position;
 
-            this.Clothes = Array.Empty<PedClothing>();
+            this.Clothing = new Clothing(this);
             this.Weapons = new();
             this.stats = new();
 
