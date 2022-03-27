@@ -1,5 +1,4 @@
 ﻿using SlipeServer.Server.Elements;
-using SlipeServer.Server.PacketHandling.Factories;
 using System.Collections.Generic;
 using System.Timers;
 
@@ -45,8 +44,7 @@ namespace SlipeServer.Server.Behaviour
                     {
                         if (!this.velocityElements.Contains(args.Source))
                             this.velocityElements.Add(args.Source);
-                    }
-                    else
+                    } else
                     {
                         if (this.velocityElements.Contains(args.Source))
                             this.velocityElements.Remove(args.Source);

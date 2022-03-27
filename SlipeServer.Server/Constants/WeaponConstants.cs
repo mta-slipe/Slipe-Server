@@ -1,14 +1,13 @@
 ﻿using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
-using System;
 using System.Collections.Generic;
 
 namespace SlipeServer.Server.Constants
 {
     public class WeaponConstants
     {
-        public static Dictionary<WeaponId, WeaponSlot> SlotPerWeapon { get; } = new ()
+        public static Dictionary<WeaponId, WeaponSlot> SlotPerWeapon { get; } = new()
         {
             [WeaponId.Fist] = WeaponSlot.Hand,
             [WeaponId.BrassKnuckle] = WeaponSlot.Melee,

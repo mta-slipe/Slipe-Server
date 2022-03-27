@@ -1,8 +1,5 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SlipeServer.Packets.Definitions.Join
 {

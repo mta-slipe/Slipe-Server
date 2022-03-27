@@ -7,6 +7,7 @@ using SlipeServer.Physics.Worlds;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Extensions;
+using SlipeServer.Server.Repositories;
 using SlipeServer.Server.Services;
 using System;
 using System.Collections.Generic;
@@ -22,67 +23,102 @@ namespace SlipeServer.Console.Logic
     public class PhysicsTestLogic
     {
         private readonly MtaServer server;
+        private readonly IElementRepository elementRepository;
+        private readonly PhysicsService physicsService;
+        private readonly CommandService commandService;
         private readonly ILogger logger;
-        private readonly PhysicsWorld physicsWorld;
 
+        private PhysicsWorld? physicsWorld;
         private StaticPhysicsElement? ufoInnMesh1;
         private StaticPhysicsElement? ufoInnMesh2;
         private StaticPhysicsElement? army;
         private ConvexPhysicsMesh cylinder;
         private ConvexPhysicsMesh ball;
 
-        public PhysicsTestLogic(MtaServer server, PhysicsService physicsService, CommandService commandService, ILogger logger)
+        public PhysicsTestLogic(
+            MtaServer server,
+            IElementRepository elementRepository,
+            PhysicsService physicsService, 
+            CommandService commandService, 
+            ILogger logger)
         {
             this.server = server;
+            this.elementRepository = elementRepository;
+            this.physicsService = physicsService;
+            this.commandService = commandService;
             this.logger = logger;
 
-            string? gtaDirectory = GetGtasaDirectory();
-
-            this.physicsWorld = physicsService.CreateEmptyPhysicsWorld(new Vector3(0, 0, -1f));
-            //this.physicsWorld = physicsService.CreatePhysicsWorldFromGtaDirectory(gtaDirectory ?? "gtasa", "gta.dat", builderAction: (builder) =>
-            //{
-            //    builder.SetGravity(Vector3.UnitZ * -1.0f);
-            //});
-
-            server.PlayerJoined += HandlePlayerJoin;
-            commandService.AddCommand("ray").Triggered += HandleRayCommand;
-            commandService.AddCommand("rayme").Triggered += HandleRayMeCommand;
-            commandService.AddCommand("ball").Triggered += HandleBallCommand;
-            commandService.AddCommand("startsim").Triggered += HandleStartSimCommand;
-            commandService.AddCommand("stopsim").Triggered += HandleStopSimCommand;
-
-            //Init();
-            //GenerateRaycastedImage(new Vector3(50, 0, 3));
+            this.commandService.AddCommand("physics").Triggered += (source, args) => InitEmpty();
+            this.commandService.AddCommand("physicsfull").Triggered += (source, args) => InitFull();
         }
 
-        private void HandlePlayerJoin(Player player)
+        private void InitEmpty()
         {
-            var playerElement = this.physicsWorld.AddKinematicBody(this.cylinder, player.Position, player.Rotation.ToQuaternion());
-            playerElement.CoupleWith(player, Vector3.Zero, new Vector3(0, 90, 0));
+            this.physicsWorld = this.physicsService.CreateEmptyPhysicsWorld(new Vector3(0, 0, -1f));
+            this.Init();
+        }
 
-            player.Disconnected += (_, _) => this.physicsWorld.Destroy(playerElement);
+        private void InitFull()
+        {
+            string? gtaDirectory = GetGtasaDirectory();
+            this.physicsWorld = this.physicsService.CreatePhysicsWorldFromGtaDirectory(gtaDirectory ?? "gtasa", "gta.dat", builderAction: (builder) =>
+            {
+                builder.SetGravity(Vector3.UnitZ* -1.0f);
+            });
+            this.Init();
         }
 
         private void Init()
         {
-            var img = this.physicsWorld.LoadImg(Path.Join(GetGtasaDirectory(), @"models\gta3.img"));
-            var ufoInnMeshes = this.physicsWorld.CreateMesh(img, "countn2_20.col", "des_ufoinn");
-            this.ufoInnMesh1 = (StaticPhysicsElement)this.physicsWorld.AddStatic(ufoInnMeshes.Item1!, Vector3.Zero, Quaternion.Identity);
-            this.ufoInnMesh2 = (StaticPhysicsElement)this.physicsWorld.AddStatic(ufoInnMeshes.Item2!, Vector3.Zero, Quaternion.Identity);
+            if (this.physicsWorld == null)
+                return;
 
-            var inn = new WorldObject(Server.Enums.ObjectModel.Desufoinn, new Vector3(50, 0, 4.5f))
+            try
             {
-                Rotation = new Vector3(0, 0, 90)
-            }.AssociateWith(this.server);
-            this.ufoInnMesh1.CoupleWith(inn);
-            this.ufoInnMesh2.CoupleWith(inn);
+                var img = this.physicsWorld.LoadImg(Path.Join(GetGtasaDirectory(), @"models\gta3.img"));
+                var ufoInnMeshes = this.physicsWorld.CreateMesh(img, "countn2_20.col", "des_ufoinn");
+                this.ufoInnMesh1 = (StaticPhysicsElement)this.physicsWorld.AddStatic(ufoInnMeshes.Item1!, Vector3.Zero, Quaternion.Identity);
+                this.ufoInnMesh2 = (StaticPhysicsElement)this.physicsWorld.AddStatic(ufoInnMeshes.Item2!, Vector3.Zero, Quaternion.Identity);
 
-            var armyMesh = this.physicsWorld.CreateMesh(img, "army.dff");
-            var armyRotation = Quaternion.CreateFromAxisAngle(new Vector3(0, 1, 0), -0.5f * MathF.PI);
-            this.army = (StaticPhysicsElement)this.physicsWorld.AddStatic(armyMesh, new Vector3(54, -22.5f, 1), armyRotation);
+                var inn = new WorldObject(Server.Enums.ObjectModel.Desufoinn, new Vector3(50, 0, 4.5f))
+                {
+                    Rotation = new Vector3(0, 0, 90)
+                }.AssociateWith(this.server);
+                this.ufoInnMesh1.CoupleWith(inn);
+                this.ufoInnMesh2.CoupleWith(inn);
 
-            this.cylinder = this.physicsWorld.CreateCylinder(0.35f, 1.8f);
-            this.ball = this.physicsWorld.CreateSphere(0.25f);
+                var armyMesh = this.physicsWorld.CreateMesh(img, "army.dff");
+                var armyRotation = Quaternion.CreateFromAxisAngle(new Vector3(0, 1, 0), -0.5f * MathF.PI);
+                this.army = (StaticPhysicsElement)this.physicsWorld.AddStatic(armyMesh, new Vector3(54, -22.5f, 1), armyRotation);
+
+                this.cylinder = this.physicsWorld.CreateCylinder(0.35f, 1.8f);
+                this.ball = this.physicsWorld.CreateSphere(0.25f);
+
+                this.commandService.AddCommand("ray").Triggered += HandleRayCommand;
+                this.commandService.AddCommand("rayme").Triggered += HandleRayMeCommand;
+                this.commandService.AddCommand("ball").Triggered += HandleBallCommand;
+                this.commandService.AddCommand("startsim").Triggered += HandleStartSimCommand;
+                this.commandService.AddCommand("stopsim").Triggered += HandleStopSimCommand;
+
+                this.server.PlayerJoined += HandlePlayerJoin;
+                foreach (var player in this.elementRepository.GetByType<Player>(ElementType.Player))
+                    HandlePlayerJoin(player);
+            }
+            catch (IOException)
+            {
+                this.logger.LogWarning("Failed to open gta3.img\nIf you're running MTA consider creating a copy of your GTA:SA directory and creating an environment variable named \"Slipe.GtaSAPath\" pointing to the path");
+            }
+        }
+
+        private void HandlePlayerJoin(Player player)
+        {
+            if (this.physicsWorld == null)
+                return;
+
+            var playerElement = this.physicsWorld.AddKinematicBody(this.cylinder, player.Position, player.Rotation.ToQuaternion());
+            playerElement.CoupleWith(player, Vector3.Zero, new Vector3(0, 90, 0));
+
+            player.Disconnected += (_, _) => this.physicsWorld.Destroy(playerElement);
         }
 
         private void HandleRayCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
@@ -97,6 +133,9 @@ namespace SlipeServer.Console.Logic
 
         private void HandleBallCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
         {
+            if (this.physicsWorld == null)
+                return;
+
             var physicsBall = this.physicsWorld.AddDynamicBody(this.ball, e.Player.Position, Quaternion.Identity, 1);
             var ball = new WorldObject(2114, e.Player.Position + Vector3.UnitZ * 2).AssociateWith(this.server);
             physicsBall.CoupleWith(ball);
@@ -104,16 +143,19 @@ namespace SlipeServer.Console.Logic
 
         private void HandleStartSimCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
         {
-            this.physicsWorld.Start(5);
+            this.physicsWorld?.Start(5);
         }
 
         private void HandleStopSimCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
         {
-            this.physicsWorld.Stop();
+            this.physicsWorld?.Stop();
         }
 
         private void GenerateRaycastedImage(Vector3 position)
         {
+            if (this.physicsWorld == null)
+                return;
+
             static IEnumerable<Color> GetColors()
             {
                 yield return Color.Red;
@@ -161,7 +203,7 @@ namespace SlipeServer.Console.Logic
             }
             stopwatch.Stop();
             var time = stopwatch.Elapsed;
-            this.logger.LogInformation($"Raycast image generated in {time.TotalMilliseconds}ms");
+            this.logger.LogInformation("Raycast image generated in {time}ms", time.TotalMilliseconds);
 
             output.Save("rayresult.png", ImageFormat.Png);
         }

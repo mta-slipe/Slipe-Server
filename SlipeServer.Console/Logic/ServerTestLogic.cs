@@ -21,7 +21,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -121,7 +120,7 @@ namespace SlipeServer.Console.Logic
         {
             this.testResource = this.resourceProvider.GetResource("TestResource");
             this.secondTestResource = this.resourceProvider.GetResource("SecondTestResource");
-            this.secondTestResource.NoClientScripts[$"{this.secondTestResource!.Name}/testfile.lua"] = 
+            this.secondTestResource.NoClientScripts[$"{this.secondTestResource!.Name}/testfile.lua"] =
                 Encoding.UTF8.GetBytes("outputChatBox(\"I AM A NOT CACHED MESSAGE\")");
 
             new WorldObject(321, new Vector3(5, 0, 3)).AssociateWith(this.server);
@@ -319,7 +318,8 @@ namespace SlipeServer.Console.Logic
 
         private void SetupTestCommands()
         {
-            this.commandService.AddCommand("radararea").Triggered += (source, args) => {
+            this.commandService.AddCommand("radararea").Triggered += (source, args) =>
+            {
                 this.RadarArea!.Color = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
                 this.RadarArea.Size = new Vector2(this.random.Next(100, 200), this.random.Next(100, 200));
                 this.RadarArea.IsFlashing = this.random.Next(2) == 1;
@@ -353,7 +353,7 @@ namespace SlipeServer.Console.Logic
                 }
             };
 
-            this.commandService.AddCommand("boom").Triggered += (source, args) 
+            this.commandService.AddCommand("boom").Triggered += (source, args)
                 => this.explosionService.CreateExplosion(args.Player.Position, ExplosionType.Tiny);
 
             this.commandService.AddCommand("m4").Triggered += (source, args)
@@ -523,14 +523,14 @@ namespace SlipeServer.Console.Logic
             };
 
             this.commandService.AddCommand("vehicleUpdates").Triggered += (source, args) =>
-            {                
+            {
                 for (int i = 0; i < 8; i++)
                 {
                     Task.Run(async () =>
                     {
                         for (int j = 0; j < 250; j++)
                         {
-                            this.Aircraft!.Position += (j %2 == 0 ? -1 : 1) * Vector3.UnitZ;
+                            this.Aircraft!.Position += (j % 2 == 0 ? -1 : 1) * Vector3.UnitZ;
                             await Task.Delay(1);
                         }
                     });
@@ -593,8 +593,8 @@ namespace SlipeServer.Console.Logic
 
             this.commandService.AddCommand("watercolor").Triggered += (source, args) =>
             {
-                this.worldService.WaterColor = args.Arguments.Length > 0 ? 
-                    Color.FromKnownColor(Enum.Parse<KnownColor>(args.Arguments[0], true)) : 
+                this.worldService.WaterColor = args.Arguments.Length > 0 ?
+                    Color.FromKnownColor(Enum.Parse<KnownColor>(args.Arguments[0], true)) :
                     null;
             };
 
@@ -661,7 +661,7 @@ namespace SlipeServer.Console.Logic
                 foreach (var stat in Server.Constants.WeaponConstants.WeaponStatsPerWeapon)
                     args.Player.SetWeaponStat(stat.Key, 1000);
             };
-            
+
             this.commandService.AddCommand("money").Triggered += (source, args) =>
             {
                 args.Player.ShowHudComponent(HudComponent.Money, true);
@@ -837,9 +837,9 @@ namespace SlipeServer.Console.Logic
 
             player.TargetChanged += (thePlayer, args) =>
             {
-                if(args.NewValue != null && args.NewValue is Vehicle vehicle)
+                if (args.NewValue != null && args.NewValue is Vehicle vehicle)
                 {
-                    if(vehicle.Model == (ushort)VehicleModel.Rhino)
+                    if (vehicle.Model == (ushort)VehicleModel.Rhino)
                         this.logger.LogDebug("{playerName} Changed target rhino", thePlayer.Name);
                 }
             };
