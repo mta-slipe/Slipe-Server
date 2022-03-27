@@ -177,6 +177,8 @@ namespace SlipeServer.Console.Logic
             this.FrozenVehicle.IsFrozen = true;
 
             var vehicle = new Vehicle(602, new Vector3(-10, 5, 3)).AssociateWith(this.server);
+            vehicle.HeadlightColor = Color.Red;
+
             this.Aircraft = new Vehicle(520, new Vector3(10, -10, 3)).AssociateWith(this.server);
             this.Vehicle = new Vehicle(530, new Vector3(20, 5, 3)).AssociateWith(this.server);
             this.Taxi = new Vehicle((ushort)VehicleModel.Taxi, new Vector3(20, -5, 3)).AssociateWith(this.server);
