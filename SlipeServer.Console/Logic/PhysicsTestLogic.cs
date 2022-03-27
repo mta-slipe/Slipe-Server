@@ -51,8 +51,8 @@ namespace SlipeServer.Console.Logic
             commandService.AddCommand("startsim").Triggered += HandleStartSimCommand;
             commandService.AddCommand("stopsim").Triggered += HandleStopSimCommand;
 
-            Init();
-            GenerateRaycastedImage(new Vector3(50, 0, 3));
+            //Init();
+            //GenerateRaycastedImage(new Vector3(50, 0, 3));
         }
 
         private void HandlePlayerJoin(Player player)

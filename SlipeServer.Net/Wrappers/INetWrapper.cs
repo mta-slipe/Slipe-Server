@@ -11,8 +11,8 @@ namespace SlipeServer.Net.Wrappers
         event Action<INetWrapper, uint, PacketId, byte[], uint?>? PacketReceived;
 
         Tuple<string, string, string> GetClientSerialExtraAndVersion(uint binaryAddress);
-        void SendPacket(uint binaryAddress, Packet packet);
-        void SendPacket(uint binaryAddress, PacketId packetId, byte[] data, PacketPriority priority = PacketPriority.High, PacketReliability reliability = PacketReliability.ReliableSequenced);
+        void SendPacket(uint binaryAddress, ushort bitStreamVersion, Packet packet);
+        void SendPacket(uint binaryAddress, PacketId packetId, ushort bitStreamVersion, byte[] data, PacketPriority priority = PacketPriority.High, PacketReliability reliability = PacketReliability.ReliableSequenced);
         void SetVersion(uint binaryAddress, ushort version);
         void ResendModPackets(uint binaryAddress);
         void ResendPlayerACInfo(uint binaryAddress);

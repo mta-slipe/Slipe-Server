@@ -41,6 +41,7 @@ namespace SlipeServer.Server.Tests.Unit.PacketHandlers
                 server.NetWrapperMock.Verify(x => x.SendPacket(
                     player.Address,
                     PacketId.PACKET_ID_PLAYER_PURESYNC,
+                    It.IsAny<ushort>(),
                     It.IsAny<byte[]>(),
                     It.IsAny<PacketPriority>(),
                     It.IsAny<PacketReliability>()));
@@ -67,7 +68,7 @@ namespace SlipeServer.Server.Tests.Unit.PacketHandlers
 
             });
 
-            server.NetWrapperMock.Verify(x => x.SendPacket(sourcePlayer.Address, It.IsAny<ReturnSyncPacket>()));
+            server.NetWrapperMock.Verify(x => x.SendPacket(sourcePlayer.Address, It.IsAny<ushort>(), It.IsAny<ReturnSyncPacket>()));
         }
 
         [Fact]

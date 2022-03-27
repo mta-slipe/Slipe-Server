@@ -2,6 +2,18 @@
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 using SlipeServer.Packets.Definitions.Player;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements.Enums;
+using SlipeServer.Server.Enums;
+using MTAServerWrapper.Packets.Outgoing.Connection;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Numerics;
+using System.Text;
+using SlipeServer.Packets.Definitions.Player;
+using SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
+using SlipeServer.Packets.Definitions.Entities.Structs;
+using SlipeServer.Server.Constants;
 using System.Linq;
 
 namespace SlipeServer.Server.PacketHandling.Factories
@@ -40,6 +52,11 @@ namespace SlipeServer.Server.PacketHandling.Factories
                 ElementId = ped.Id,
                 Stats = ped.GetAllStats().ToDictionary(x => (ushort)x.Key, x => x.Value)
             };
+        }
+
+        public static AddPedClothingRpcPacket CreateAddPedClothingPacket(Ped ped, ClothingType cloth, byte index)
+        {
+            return new AddPedClothingRpcPacket(ped.Id, new PedClothing[] { ClothesConstants.ClothesTextureModel[cloth][index] });
         }
     }
 }
