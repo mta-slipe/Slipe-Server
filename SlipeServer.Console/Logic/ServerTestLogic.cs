@@ -58,6 +58,7 @@ namespace SlipeServer.Console.Logic
         private Vehicle? Aircraft { get; set; }
         private Vehicle? Taxi { get; set; }
         private Vehicle? Rhino { get; set; }
+        private Vehicle? FrozenVehicle { get; set; }
         private Ped? Ped { get; set; }
         private Ped? Ped2 { get; set; }
         private Ped? CJ { get; set; }
@@ -172,8 +173,8 @@ namespace SlipeServer.Console.Logic
                 TargetPosition = new Vector3(10, 10, 5)
             }.AssociateWith(this.server);
 
-            var frozenVehicle = new Vehicle(602, new Vector3(0, 0, 10)).AssociateWith(this.server);
-            frozenVehicle.IsFrozen = true;
+            this.FrozenVehicle = new Vehicle(602, new Vector3(0, 0, 10)).AssociateWith(this.server);
+            this.FrozenVehicle.IsFrozen = true;
 
             var vehicle = new Vehicle(602, new Vector3(-10, 5, 3)).AssociateWith(this.server);
             this.Aircraft = new Vehicle(520, new Vector3(10, -10, 3)).AssociateWith(this.server);
@@ -671,6 +672,17 @@ namespace SlipeServer.Console.Logic
             {
                 args.Player.ShowHudComponent(HudComponent.Money, true);
                 args.Player.Money = this.random.Next(0, 1000);
+            };
+            
+            this.commandService.AddCommand("movefrozenvehicle").Triggered += (source, args) =>
+            {
+                if(this.FrozenVehicle != null)
+                {
+                    if (args.Arguments.Length > 0)
+                        this.FrozenVehicle.Position = args.Player.Position;
+                    else
+                        this.FrozenVehicle.Position = args.Player.Position + new Vector3(0, 0, 3);
+                }
             };
 
             this.commandService.AddCommand("clothes").Triggered += (source, args) =>
