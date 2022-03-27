@@ -164,6 +164,11 @@ namespace SlipeServer.Server.Elements
         {
             this.Client.SendPacket(PlayerPacketFactory.CreateForcePlayerMapPacket(isVisible));
         }
+        
+        public void SetTransferBoxVisible(bool isVisible)
+        {
+            this.Client.SendPacket(PlayerPacketFactory.CreateTransferBoxVisiblePacket(isVisible));
+        }
 
         public void ToggleAllControls(bool isEnabled, bool gtaControls = true, bool mtaControls = true)
         {
