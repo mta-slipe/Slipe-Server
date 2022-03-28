@@ -1,4 +1,5 @@
 ﻿using RBush;
+using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Factories;
@@ -309,4 +310,7 @@ public class Element : ISpatialData
     public event ElementChangedEventHandler<bool>? CollisionEnabledhanged;
     public event ElementChangedEventHandler<bool>? FrozenChanged;
     public event Action<Element>? Destroyed;
+
+
+    public static implicit operator LuaValue(Element value) => new(value.Id);
 }

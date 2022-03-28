@@ -70,6 +70,12 @@ public class Configuration
     public bool AllowDriveByAnimationFix { get; set; } = true;
     public bool AllowShotgunDamageFix { get; set; } = true;
 
+    /// <summary>
+    /// Amount of bytes worth of latent packets to send per second 
+    /// </summary>
+    public uint LatentBandwidthLimit { get; set; } = 50 * 1000 * 1000;
+    public ushort LatentSendInterval { get; set; } = 100;
+
 
     public AntiCheatConfiguration AntiCheat { get; set; } = new();
     public SyncIntervals SyncIntervals { get; set; } = new();

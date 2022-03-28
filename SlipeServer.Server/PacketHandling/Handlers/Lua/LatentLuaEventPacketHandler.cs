@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Lua.Event;
-using SlipeServer.Server.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,23 +24,19 @@ struct LatentTransfer
 
 public class LatentLuaEventPacketHandler : IPacketHandler<LatentLuaEventPacket>
 {
-    private readonly IElementRepository elementRepository;
     private readonly ILogger logger;
     private readonly MtaServer server;
+    private readonly Dictionary<Client, LatentTransfer> transfers;
 
     public PacketId PacketId => PacketId.PACKET_ID_LATENT_TRANSFER;
-    private Dictionary<ushort, LatentTransfer> transfers;
 
     public LatentLuaEventPacketHandler(
-        IElementRepository elementRepository,
         ILogger logger,
         MtaServer server
     )
     {
-        this.elementRepository = elementRepository;
         this.logger = logger;
         this.server = server;
-
         this.transfers = new();
     }
 
@@ -55,16 +50,18 @@ public class LatentLuaEventPacketHandler : IPacketHandler<LatentLuaEventPacket>
                     throw new Exception("Latent transfer Head flag encountered without corresponding header");
 
                 transfer = new LatentTransfer(packet.Id, client, packet.Header.Value.Category);
-                this.transfers[transfer.Id] = transfer;
+                this.transfers[client] = transfer;
                 break;
             case LatentEventFlag.Cancel:
-                this.transfers.Remove(packet.Id);
+                this.transfers.Remove(client);
                 return;
             default:
-                transfer = this.transfers[packet.Id];
+                transfer = this.transfers[client];
                 break;
-
         }
+
+        if (transfer.Id != packet.Id)
+            throw new Exception("Latent transfer mismatch");
 
         foreach (var b in packet.Data)
             transfer.Data.Add(b);
@@ -76,7 +73,7 @@ public class LatentLuaEventPacketHandler : IPacketHandler<LatentLuaEventPacket>
                 var data = transfer.Data.ToArray();
                 PacketId packetId = (PacketId)data[0];
                 var length = BitConverter.ToUInt32(data, 1);
-                this.transfers.Remove(packet.Id);
+                this.transfers.Remove(client);
 
                 this.server.EnqueuePacketToClient(client, packetId, data.Skip(5).ToArray());
             }

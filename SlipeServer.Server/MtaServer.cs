@@ -240,6 +240,7 @@ public class MtaServer
         this.serviceCollection.AddSingleton<ClientConsole>();
         this.serviceCollection.AddSingleton<DebugLog>();
         this.serviceCollection.AddSingleton<LuaEventService>();
+        this.serviceCollection.AddSingleton<LatentPacketService>();
         this.serviceCollection.AddSingleton<ExplosionService>();
         this.serviceCollection.AddSingleton<FireService>();
         this.serviceCollection.AddSingleton<TextItemService>();

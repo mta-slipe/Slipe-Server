@@ -94,8 +94,8 @@ public class ServerTestLogic
         this.textItemService = textItemService;
         this.resourceProvider = resourceProvider;
         this.commandService = commandService;
-        this.SetupTestLogic();
         this.slipeDevsTeam = new Team("Slipe devs", Color.FromArgb(255, 255, 81, 81));
+        this.SetupTestLogic();
     }
 
     private void SetupTestLogic()
@@ -685,6 +685,16 @@ public class ServerTestLogic
                 else
                     this.FrozenVehicle.Position = args.Player.Position + new Vector3(0, 0, 3);
             }
+        };
+
+        this.commandService.AddCommand("latent").Triggered += (source, args) =>
+        {
+            this.luaService.TriggerLatentEvent("Slipe.Test.ClientEvent", this.testResource!, this.root, 1, this.root, 50, "STRING");
+        };
+
+        this.commandService.AddCommand("hot").Triggered += (source, args) =>
+        {
+            // command for testing, use hot reload to write code and apply during a running debug session
         };
 
         this.commandService.AddCommand("clothes").Triggered += (source, args) =>
