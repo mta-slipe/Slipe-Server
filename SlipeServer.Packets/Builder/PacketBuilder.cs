@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -48,7 +49,7 @@ public class PacketBuilder
         this.bits[this.bits.Length++] = bit;
     }
 
-    private void WriteBytes(byte[] bytes)
+    private void WriteBytes(IEnumerable<byte> bytes)
     {
         foreach (byte b in bytes)
         {
@@ -127,7 +128,7 @@ public class PacketBuilder
     public void Write(ushort integer) => WriteBytes(BitConverter.GetBytes(integer));
     public void Write(ulong integer) => WriteBytes(BitConverter.GetBytes(integer));
     public void Write(byte integer) => WriteBytes(new byte[] { integer });
-    public void Write(byte[] bytes) => WriteBytes(bytes);
+    public void Write(IEnumerable<byte> bytes) => WriteBytes(bytes);
 
     public void Write(bool boolean) => WriteBit(boolean);
 

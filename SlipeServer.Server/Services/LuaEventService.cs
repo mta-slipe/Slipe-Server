@@ -3,6 +3,8 @@ using SlipeServer.Packets.Lua.Event;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Events;
 using SlipeServer.Server.Extensions;
+using SlipeServer.Server.Repositories;
+using SlipeServer.Server.Resources;
 using System;
 using System.Collections.Generic;
 
@@ -12,14 +14,19 @@ public class LuaEventService
 {
     private readonly MtaServer server;
     private readonly RootElement root;
-
+    private readonly LatentPacketService latentPacketService;
+    private readonly IElementRepository elementRepository;
     private readonly Dictionary<string, List<Action<LuaEvent>>> eventHandlers;
 
-    public LuaEventService(MtaServer server, RootElement root)
+    public LuaEventService(MtaServer server,
+        RootElement root,
+        LatentPacketService latentPacketService,
+        IElementRepository elementRepository)
     {
         this.server = server;
         this.root = root;
-
+        this.latentPacketService = latentPacketService;
+        this.elementRepository = elementRepository;
         this.eventHandlers = new Dictionary<string, List<Action<LuaEvent>>>();
 
         server.LuaEventTriggered += HandleLuaEvent;
@@ -33,6 +40,23 @@ public class LuaEventService
     public void TriggerEvent(Player player, string eventName, Element? source = null, params LuaValue[] parameters)
     {
         new LuaEventPacket(eventName, (source ?? this.root).Id, parameters).SendTo(player);
+    }
+
+    public void TriggerLatentEvent(IEnumerable<Player> players, string eventName, Resource sourceResource, Element? source = null, int rate = 50000, params LuaValue[] parameters)
+    {
+        var packet = new LuaEventPacket(eventName, (source ?? this.root).Id, parameters);
+        this.latentPacketService.EnqueueLatentPacket(players, packet, sourceResource.NetId, rate);
+    }
+
+    public void TriggerLatentEvent(string eventName, Resource sourceResource, Element? source = null, int rate = 50000, params LuaValue[] parameters)
+    {
+        TriggerLatentEvent(this.elementRepository.GetByType<Player>(ElementType.Player), eventName, sourceResource, source, rate, parameters);
+    }
+
+    public void TriggerLatentEvent(Player player, string eventName, Resource sourceResource, Element? source = null, int rate = 50000, params LuaValue[] parameters)
+    {
+        var packet = new LuaEventPacket(eventName, (source ?? this.root).Id, parameters);
+        this.latentPacketService.EnqueueLatentPacket(new Player[] { player }, packet, sourceResource.NetId, rate);
     }
 
     public void TriggerEvent(Player[] players, string eventName, Element? source = null, params LuaValue[] parameters)

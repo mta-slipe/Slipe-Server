@@ -1,10 +1,5 @@
-﻿using System;
-using System.Drawing;
+﻿using Microsoft.Extensions.Logging;
 using System.Linq;
-using Microsoft.Extensions.Logging;
-using SlipeServer.Packets.Definitions.Commands;
-using SlipeServer.Server.Elements;
-using Newtonsoft.Json;
 
 namespace SlipeServer.Server.Behaviour;
 
