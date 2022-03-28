@@ -15,12 +15,17 @@ class LatentTransfer
     public ushort Id { get; set; }
     public int Index { get; set; }
     public int Rate { get; set; } = 50000;
-    public IEnumerable<Player> Players { get; set; } = Array.Empty<Player>();
+    public Player Player { get; set; }
     public byte[] Data { get; set; } = Array.Empty<byte>();
     public PacketId PacketId { get; set; }
     public PacketPriority Priority { get; set; }
     public PacketReliability Reliability { get; set; }
     public ushort ResourceNetId { get; set; }
+
+    public LatentTransfer(Player player)
+    {
+        this.Player = player;
+    }
 
 }
 
@@ -40,6 +45,7 @@ public class LatentPacketService
         this.server = server;
         this.root = root;
         this.transfers = new();
+        this.activeTransferPlayers = new();
 
         this.bytesPerSend = configuration.LatentBandwidthLimit / 1000 * configuration.LatentSendInterval;
 
@@ -58,42 +64,57 @@ public class LatentPacketService
 
         while (bytesToSend > 0 && transfers.TryDequeue(out var transfer))
         {
-            bytesToSend -= transfer.Rate;
-
-            var finalPosition = Math.Min(transfer.Index + transfer.Rate, transfer.Data.Length);
-            var section = transfer.Data[transfer.Index..finalPosition];
-                        
-            var packet = new LatentLuaEventPacket()
-            {
-                Id = transfer.Id,
-                Data = section,
-            };
-            if (transfer.Index == 0)
-            {
-                packet.Flag = LatentEventFlag.Head;
-                packet.Header = new LatentEventHeader()
-                {
-                    FinalSize = (uint)transfer.Data.Length + sizeof(byte) + sizeof(uint),
-                    Category = LatentEventCategory.Packet,
-                    Rate = (uint)transfer.Rate,
-                    ResourceNetId = transfer.ResourceNetId
-                };
-                packet.Data = Array.Empty<byte>()
-                    .Concat(new byte[] { (byte)transfer.PacketId })
-                    .Concat(BitConverter.GetBytes((uint)transfer.Data.Length * 8))
-                    .Concat(packet.Data)
-                    .ToArray();
-
-            } else if (finalPosition == transfer.Data.Length)
-            {
-                packet.Flag = LatentEventFlag.Tail;
-                this.transfers.Remove(transfer);
-            }
-
-            transfer.Index = finalPosition;
-            packet.SendTo(transfer.Players);
+            bytesToSend -= TrySendLatentPacket(transfer);
         }
         this.sendTimer.Start();
+    }
+
+    private int TrySendLatentPacket(LatentTransfer transfer)
+    {
+        if (this.activeTransferPlayers.Contains(transfer.Player) && transfer.Index == 0)
+            return 0;
+
+        var finalPosition = Math.Min(transfer.Index + transfer.Rate, transfer.Data.Length);
+        var section = transfer.Data[transfer.Index..finalPosition];
+
+        var packet = new LatentLuaEventPacket()
+        {
+            Id = transfer.Id,
+            Data = section,
+        };
+        if (transfer.Index == 0)
+        {
+            EnrichPacketWithHeader(packet, transfer);
+            this.activeTransferPlayers.Add(transfer.Player);
+
+        } else if (finalPosition == transfer.Data.Length)
+        {
+            packet.Flag = LatentEventFlag.Tail;
+            this.transfers.Remove(transfer);
+            this.activeTransferPlayers.Remove(transfer.Player);
+        }
+
+        transfer.Index = finalPosition;
+        packet.SendTo(transfer.Player);
+
+        return transfer.Rate;
+    }
+
+    private void EnrichPacketWithHeader(LatentLuaEventPacket packet, LatentTransfer transfer)
+    {
+        packet.Flag = LatentEventFlag.Head;
+        packet.Header = new LatentEventHeader()
+        {
+            FinalSize = (uint)transfer.Data.Length + sizeof(byte) + sizeof(uint),
+            Category = LatentEventCategory.Packet,
+            Rate = (uint)transfer.Rate,
+            ResourceNetId = transfer.ResourceNetId
+        };
+        packet.Data = Array.Empty<byte>()
+            .Concat(new byte[] { (byte)transfer.PacketId })
+            .Concat(BitConverter.GetBytes((uint)transfer.Data.Length * 8))
+            .Concat(packet.Data)
+            .ToArray();
     }
 
     public void EnqueueLatentPacket(IEnumerable<Player> players, Packet packet, ushort resourceNetId, int rate = 50000)
@@ -103,19 +124,20 @@ public class LatentPacketService
 
     public void EnqueueLatentPacket(IEnumerable<Player> players, PacketId packetId, byte[] data, ushort resourceNetId, int rate = 50000, PacketPriority priority = PacketPriority.Medium, PacketReliability reliability = PacketReliability.Unreliable)
     {
-        var transfer = new LatentTransfer()
+        foreach (var player in players)
         {
-            Id = this.index,
-            Players = players,
-            Data = data,
-            PacketId = packetId,
-            Priority = priority,
-            Reliability = reliability,
-            Rate = rate,
-            ResourceNetId = resourceNetId
-        };
-        this.transfers.Add(transfer);
-
+            var transfer = new LatentTransfer(player)
+            {
+                Id = this.index,
+                Data = data,
+                PacketId = packetId,
+                Priority = priority,
+                Reliability = reliability,
+                Rate = rate,
+                ResourceNetId = resourceNetId
+            };
+            this.transfers.Add(transfer);
+        }
         this.index = (ushort)((this.index + 1) % (1 << 15));
     }
 }
