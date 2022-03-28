@@ -551,6 +551,45 @@ public class ServerTestLogic
             }
         };
 
+        this.commandService.AddCommand("setmydata").Triggered += (sender, args) =>
+        {
+            string key = args.Arguments[0];
+            string value = args.Arguments[1];
+            this.chatBox.OutputTo(args.Player, $"This Is setmydata command Handler, key value -> {key}, {value}");
+            args.Player.SetData(key, value, DataSyncType.Broadcast);
+        };
+
+        this.commandService.AddCommand("setmysubbeddata").Triggered += (sender, args) =>
+        {
+            string key = args.Arguments[0];
+            string value = args.Arguments[1];
+            this.chatBox.OutputTo(args.Player, $"This Is setmydata command Handler, key value -> {key}, {value}");
+            args.Player.SetData(key, value, DataSyncType.Subscribe);
+        };
+
+        this.commandService.AddCommand("subtodata").Triggered += (sender, args) =>
+        {
+            string key = args.Arguments[0];
+            args.Player.SubscribeToData(args.Player, key);
+        };
+
+        this.commandService.AddCommand("unsubfromdata").Triggered += (sender, args) =>
+        {
+            string key = args.Arguments[0];
+            args.Player.UnsubscribeFromData(args.Player, key);
+        };
+
+        this.commandService.AddCommand("unsubfromalldata").Triggered += (sender, args) =>
+        {
+            args.Player.UnsubscribeFromAllData(args.Player);
+        };
+
+        this.commandService.AddCommand("getmydata").Triggered += (sender, args) =>
+        {
+            string key = args.Arguments[0];
+            this.chatBox.OutputTo(args.Player, $"Your Key, Value => {key} , {args.Player.GetData(key)?.StringValue}");
+        };
+
         this.commandService.AddCommand("pedsync").Triggered += (source, args) =>
         {
             this.Ped2?.RunAsSync(() =>

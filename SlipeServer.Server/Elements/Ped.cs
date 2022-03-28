@@ -1,7 +1,7 @@
-﻿using SlipeServer.Packets.Definitions.Entities.Structs;
-using SlipeServer.Packets.Enums;
+﻿using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Collections;
 using SlipeServer.Server.Constants;
+using SlipeServer.Server.ElementConcepts;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Elements.Structs;
@@ -10,9 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using SlipeServer.Server.Collections;
-using SlipeServer.Server.Elements.Enums;
-using SlipeServer.Server.ElementConcepts;
 
 namespace SlipeServer.Server.Elements;
 
@@ -140,7 +137,6 @@ public class Ped : Element
     }
     public bool IsSyncable { get; set; } = true;
     public bool IsHeadless { get; set; } = false;
-    public bool IsFrozen { get; set; } = false;
     public PedMoveAnimation MoveAnimation { get; set; } = 0;
     public WeaponCollection Weapons { get; set; }
     public bool IsAlive => this.health > 0;

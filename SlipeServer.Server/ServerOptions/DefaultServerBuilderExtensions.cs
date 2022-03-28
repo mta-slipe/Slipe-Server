@@ -32,6 +32,8 @@ using SlipeServer.Server.Repositories;
 using System.IO;
 using SlipeServer.Packets.Definitions.Ped;
 using SlipeServer.Server.PacketHandling.QueueHandlers;
+using SlipeServer.Server.PacketHandling.Handlers.CustomData;
+using SlipeServer.Packets.Definitions.CustomElementData;
 
 namespace SlipeServer.Server.ServerOptions;
 
@@ -122,6 +124,8 @@ public static class DefaultServerBuilderExtensions
             builder.AddPacketHandler<PedWastedPacketHandler, PedWastedPacket>();
         if ((except & ServerBuilderDefaultPacketHandlers.LatentLuaEventPacketHandler) == 0)
             builder.AddPacketHandler<LatentLuaEventPacketHandler, LatentLuaEventPacket>();
+        if ((except & ServerBuilderDefaultPacketHandlers.CustomDataPacketHandler) == 0)
+            builder.AddPacketHandler<CustomDataPacketHandler, CustomDataPacket>();
     }
 
     public static void AddDefaultBehaviours(
@@ -183,6 +187,8 @@ public static class DefaultServerBuilderExtensions
             builder.AddBehaviour<PedSyncBehaviour>();
         if ((except & ServerBuilderDefaultBehaviours.UnoccupiedVehicleSyncBehaviour) == 0)
             builder.AddBehaviour<UnoccupiedVehicleSyncBehaviour>();
+        if ((except & ServerBuilderDefaultBehaviours.CustomDataBehaviour) == 0)
+            builder.AddBehaviour<CustomDataBehaviour>();
     }
 
     public static void AddDefaultServices(

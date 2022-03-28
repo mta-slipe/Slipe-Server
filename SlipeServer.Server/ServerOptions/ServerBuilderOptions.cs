@@ -52,6 +52,7 @@ public enum ServerBuilderDefaultPacketHandlers : long
     PedTaskPacketHandler = 0x80000000,
     PedWastedPacketHandler = 0x100000000,
     LatentLuaEventPacketHandler = 0x200000000,
+    CustomDataPacketHandler = 0x400000000,
 }
 
 [Flags]
@@ -88,6 +89,7 @@ public enum ServerBuilderDefaultBehaviours : long
     MapInfoBehaviour = 0x800000,
     PedSyncBehaviour = 0x1000000,
     UnoccupiedVehicleSyncBehaviour = 0x2000000,
+    CustomDataBehaviour = 0x4000000,
 }
 
 [Flags]

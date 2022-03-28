@@ -40,7 +40,6 @@ public class WorldObject : Element
         }
     }
 
-    public bool IsFrozen { get; set; } = false;
     public float Health { get; set; } = 1000;
 
     public WorldObject(ObjectModel model, Vector3 position)
