@@ -52,6 +52,7 @@ public enum ServerBuilderDefaultPacketHandlers : long
     PedTaskPacketHandler = 0x80000000,
     PedWastedPacketHandler = 0x100000000,
     LatentLuaEventPacketHandler = 0x200000000,
+    CustomDataPacketHandler = 0x400000000,
 }
 
 [Flags]

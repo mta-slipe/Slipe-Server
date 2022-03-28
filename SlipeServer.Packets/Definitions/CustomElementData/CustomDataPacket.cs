@@ -13,20 +13,20 @@ public class CustomDataPacket : Packet
 
     public uint ElementId { get; set; }
     public LuaValue Value { get; set; }
-    public string Name { get; set; }
+    public string Key { get; set; }
 
     private const ushort maxDataNameLength = 128;
 
     public CustomDataPacket()
     {
         this.Value = new LuaValue();
-        this.Name = "";
+        this.Key = "";
     }
 
     public CustomDataPacket(uint elementId, string name, LuaValue value)
     {
         this.ElementId = elementId;
-        this.Name = name;
+        this.Key = name;
         this.Value = value;
     }
 
@@ -41,7 +41,7 @@ public class CustomDataPacket : Packet
 
         if (nameLength > 0 && nameLength <= maxDataNameLength)
         {
-            this.Name = reader.GetStringCharacters(nameLength);
+            this.Key = reader.GetStringCharacters(nameLength);
             this.Value = reader.GetLuaValue();
         }
     }
