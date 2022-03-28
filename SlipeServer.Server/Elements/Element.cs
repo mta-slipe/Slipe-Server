@@ -6,7 +6,9 @@ using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Factories;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -197,7 +199,8 @@ public class Element : ISpatialData
     public object ElementLock { get; } = new();
     ref readonly Envelope ISpatialData.Envelope => ref this.envelope;
 
-    private Dictionary<string, ElementData> CustomData { get; set; }
+    private Dictionary<string, ElementData> ElementData { get; set; }
+    public ConcurrentDictionary<Player, ConcurrentDictionary<string, bool>> ElementDataSubscriptions { get; set; }
 
     public Element()
     {
@@ -205,7 +208,8 @@ public class Element : ISpatialData
         this.subscribers = new();
         this.TimeContext = 1;
 
-        this.CustomData = new();
+        this.ElementData = new();
+        this.ElementDataSubscriptions = new();
     }
 
     public Element(Element parent) : this()
@@ -296,22 +300,69 @@ public class Element : ISpatialData
         LuaValue? oldValue = this.GetData(key);
 
         if (value.IsNil)
-            this.CustomData.Remove(key);
+            this.ElementData.Remove(key);
         else
-            this.CustomData[key] = new ElementData(key, value, syncType);
+            this.ElementData[key] = new ElementData(key, value, syncType);
 
         this.DataChanged?.Invoke(this, new ElementDataChangedArgs(key, value, oldValue, syncType));
     }
 
     public LuaValue? GetData(string dataName, bool inherit = false)
     {
-        if (this.CustomData.TryGetValue(dataName, out var value))
+        if (this.ElementData.TryGetValue(dataName, out var value))
             return value.Value;
 
         if (inherit)
             return this.parent?.GetData(dataName, inherit);
 
         return null;
+    }
+
+    public void SubscribeToData(Player player, string key)
+    {
+        if (!this.ElementDataSubscriptions.ContainsKey(player))
+        {
+            this.ElementDataSubscriptions[player] = new();
+            player.Destroyed += HandleElementDataSubscriberDestruction;
+        }
+        this.ElementDataSubscriptions[player].TryAdd(key, true);
+
+    }
+
+    private void HandleElementDataSubscriberDestruction(Element element)
+    {
+        if (element is Player player)
+            UnsubscribeFromAllData(player);
+    }
+
+    public void UnsubscribeFromData(Player player, string key)
+    {
+        if (this.ElementDataSubscriptions.TryGetValue(player, out var keys))
+        {
+            keys.Remove(key, out var value);
+            if (keys.IsEmpty)
+                UnsubscribeFromAllData(player);
+        }
+    }
+
+    public void UnsubscribeFromAllData(Player player)
+    {
+        player.Destroyed -= HandleElementDataSubscriberDestruction;
+        this.ElementDataSubscriptions.Remove(player, out var keys);
+    }
+
+    public bool IsPlayerSubscribedToData(Player player, string key)
+    {
+        if (this.ElementDataSubscriptions.TryGetValue(player, out var keys))
+            return keys.ContainsKey(key);
+
+        return false;
+    }
+
+    public IEnumerable<Player> GetPlayersSubcribedToData(string key)
+    {
+        return this.ElementDataSubscriptions.Keys
+            .Where(x => this.ElementDataSubscriptions[x].ContainsKey(key));
     }
 
     public void CreateFor(IEnumerable<Player> players)

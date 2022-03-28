@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets.Definitions.CustomElementData;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 using SlipeServer.Server.Elements.Enums;
+using SlipeServer.Server.Extensions;
 using SlipeServer.Server.Repositories;
 
 namespace SlipeServer.Server.Behaviour;
@@ -22,14 +23,12 @@ public class CustomDataBehaviour
             switch (args.SyncType)
             {
                 case DataSyncType.Broadcast:
-                    if (args.SyncType == DataSyncType.Broadcast)
-                    {
-                        var packet = new SetElementDataRpcPacket(sender.Id, args.Key, args.NewValue);
-                        this.server.BroadcastPacket(packet);
-                    }
+                    var packet = new SetElementDataRpcPacket(sender.Id, args.Key, args.NewValue);
+                    this.server.BroadcastPacket(packet);
                     break;
                 case DataSyncType.Subscribe:
-
+                    new SetElementDataRpcPacket(sender.Id, args.Key, args.NewValue)
+                        .SendTo(element.GetPlayersSubcribedToData(args.Key));
                     break;
             }
         };

@@ -553,26 +553,41 @@ public class ServerTestLogic
 
         this.commandService.AddCommand("setmydata").Triggered += (sender, args) =>
         {
-            Player player = args.Player;
-
             string key = args.Arguments[0];
             string value = args.Arguments[1];
+            this.chatBox.OutputTo(args.Player, $"This Is setmydata command Handler, key value -> {key}, {value}");
+            args.Player.SetData(key, value, DataSyncType.Broadcast);
+        };
 
-            this.chatBox.OutputTo(player, $"This Is setmydata command Handler, key value -> {key}, {value}");
+        this.commandService.AddCommand("setmysubbeddata").Triggered += (sender, args) =>
+        {
+            string key = args.Arguments[0];
+            string value = args.Arguments[1];
+            this.chatBox.OutputTo(args.Player, $"This Is setmydata command Handler, key value -> {key}, {value}");
+            args.Player.SetData(key, value, DataSyncType.Subscribe);
+        };
 
+        this.commandService.AddCommand("subtodata").Triggered += (sender, args) =>
+        {
+            string key = args.Arguments[0];
+            args.Player.SubscribeToData(args.Player, key);
+        };
 
-            player.SetData(key, value, DataSyncType.Broadcast);
+        this.commandService.AddCommand("unsubfromdata").Triggered += (sender, args) =>
+        {
+            string key = args.Arguments[0];
+            args.Player.UnsubscribeFromData(args.Player, key);
+        };
+
+        this.commandService.AddCommand("unsubfromalldata").Triggered += (sender, args) =>
+        {
+            args.Player.UnsubscribeFromAllData(args.Player);
         };
 
         this.commandService.AddCommand("getmydata").Triggered += (sender, args) =>
         {
-            Player player = args.Player;
-
             string key = args.Arguments[0];
-
-            var theValue = player.GetData(key);
-
-            this.chatBox.OutputTo(player, $"Your Key, Value => {key} , {player.GetData(key)?.StringValue}");
+            this.chatBox.OutputTo(args.Player, $"Your Key, Value => {key} , {args.Player.GetData(key)?.StringValue}");
         };
 
         this.commandService.AddCommand("pedsync").Triggered += (source, args) =>

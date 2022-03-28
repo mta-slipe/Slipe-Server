@@ -133,7 +133,6 @@ public class Vehicle : Element
     }
     public bool AreDoorsUndamageable { get; set; } = false;
     public bool IsDamageProof { get; set; } = false;
-    public bool IsFrozen { get; set; } = false;
     public bool IsDerailed { get; set; } = false;
     public bool IsDerailable { get; set; } = true;
     public bool TrainDirection { get; set; } = true;
