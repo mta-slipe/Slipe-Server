@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 
-namespace SlipeServer.Packets.Definitions.Entities.Structs
+namespace SlipeServer.Packets.Definitions.Entities.Structs;
+
+public struct ElementAttachment
 {
-    public struct ElementAttachment
-    {
-        public uint ElementId { get; set; }
-        public Vector3 AttachmentPosition { get; set; }
-        public Vector3 AttachmentRotation { get; set; }
-    }
+    public uint ElementId { get; set; }
+    public Vector3 AttachmentPosition { get; set; }
+    public Vector3 AttachmentRotation { get; set; }
 }

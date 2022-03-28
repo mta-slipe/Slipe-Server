@@ -2,16 +2,15 @@
 using SlipeServer.Physics.Services;
 using SlipeServer.Server.ServerOptions;
 
-namespace SlipeServer.Physics.Extensions
+namespace SlipeServer.Physics.Extensions;
+
+public static class PhysicsServerBuilderExtensions
 {
-    public static class PhysicsServerBuilderExtensions
+    public static void AddPhysics(this ServerBuilder builder)
     {
-        public static void AddPhysics(this ServerBuilder builder)
+        builder.ConfigureServices(services =>
         {
-            builder.ConfigureServices(services =>
-            {
-                services.AddSingleton<PhysicsService>();
-            });
-        }
+            services.AddSingleton<PhysicsService>();
+        });
     }
 }

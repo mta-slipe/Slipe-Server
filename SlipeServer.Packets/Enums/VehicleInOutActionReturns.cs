@@ -2,19 +2,18 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SlipeServer.Packets.Enums
+namespace SlipeServer.Packets.Enums;
+
+public enum VehicleInOutActionReturns
 {
-    public enum VehicleInOutActionReturns
-    {
-        RequestInConfirmed,
-        NotifyInReturn,
-        NotifyInAbortReturn,
-        RequestOutConfirmed,
-        NotifyOutReturn,
-        NotifyOutAbortReturn,
-        NotifyFellOffReturn,
-        RequestJackConfirmed,
-        NotifyJackReturn,
-        VehicleAttemptFailed,
-    }
+    RequestInConfirmed,
+    NotifyInReturn,
+    NotifyInAbortReturn,
+    RequestOutConfirmed,
+    NotifyOutReturn,
+    NotifyOutAbortReturn,
+    NotifyFellOffReturn,
+    RequestJackConfirmed,
+    NotifyJackReturn,
+    VehicleAttemptFailed,
 }

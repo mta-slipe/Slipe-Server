@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using SlipeServer.Packets.Definitions.Sync;
+﻿using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Packets.Definitions.Vehicles;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
@@ -8,78 +7,79 @@ using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.Repositories;
 
-namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync
+namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync;
+
+public class VehiclePureSyncPacketHandler : IPacketHandler<VehiclePureSyncPacket>
 {
-    public class VehiclePureSyncPacketHandler : IPacketHandler<VehiclePureSyncPacket>
+    private readonly ISyncHandlerMiddleware<VehiclePureSyncPacket> middleware;
+    private readonly IElementRepository elementRepository;
+
+    public PacketId PacketId => PacketId.PACKET_ID_PLAYER_VEHICLE_PURESYNC;
+
+    public VehiclePureSyncPacketHandler(
+        ISyncHandlerMiddleware<VehiclePureSyncPacket> middleware,
+        IElementRepository elementRepository
+    )
     {
-        private readonly ISyncHandlerMiddleware<VehiclePureSyncPacket> middleware;
-        private readonly IElementRepository elementRepository;
+        this.middleware = middleware;
+        this.elementRepository = elementRepository;
+    }
 
-        public PacketId PacketId => PacketId.PACKET_ID_PLAYER_VEHICLE_PURESYNC;
+    public void HandlePacket(Client client, VehiclePureSyncPacket packet)
+    {
+        client.SendPacket(new ReturnSyncPacket(packet.Position));
 
-        public VehiclePureSyncPacketHandler(
-            ISyncHandlerMiddleware<VehiclePureSyncPacket> middleware,
-            IElementRepository elementRepository
-        )
+        packet.PlayerId = client.Player.Id;
+        packet.Latency = (ushort)client.Ping;
+
+        var otherPlayers = this.middleware.GetPlayersToSyncTo(client.Player, packet);
+        packet.SendTo(otherPlayers);
+
+        var player = client.Player;
+        player.RunAsSync(() =>
         {
-            this.middleware = middleware;
-            this.elementRepository = elementRepository;
-        }
+            player.Position = packet.Position;
+            player.Velocity = packet.Velocity;
+            player.Health = packet.PlayerHealth;
+            player.Armor = packet.PlayerArmor;
 
-        public void HandlePacket(Client client, VehiclePureSyncPacket packet)
-        {
-            client.SendPacket(new ReturnSyncPacket(packet.Position));
+            player.AimOrigin = packet.AimOrigin;
+            player.AimDirection = packet.AimDirection;
 
-            packet.PlayerId = client.Player.Id;
-            packet.Latency = (ushort)client.Ping;
+            if (packet.WeaponSlot != null)
+                player.CurrentWeaponSlot = (WeaponSlot)packet.WeaponSlot;
 
-            var otherPlayers = this.middleware.GetPlayersToSyncTo(client.Player, packet);
-            packet.SendTo(otherPlayers);
-
-            var player = client.Player;
-            player.RunAsSync(() =>
+            if (player.CurrentWeapon != null && packet.WeaponAmmo != null && packet.WeaponAmmoInClip != null)
             {
-                player.Position = packet.Position;
-                player.Velocity = packet.Velocity;
-                player.Health = packet.PlayerHealth;
-                player.Armor = packet.PlayerArmor;
-
-                player.AimOrigin = packet.AimOrigin;
-                player.AimDirection = packet.AimDirection;
-
-                if (packet.WeaponSlot != null)
-                    player.CurrentWeaponSlot = (WeaponSlot)packet.WeaponSlot;
-
-                if (player.CurrentWeapon != null && packet.WeaponAmmo != null && packet.WeaponAmmoInClip != null)
-                {
-                    player.CurrentWeapon.UpdateAmmoCountWithoutTriggerEvent(packet.WeaponAmmo.Value, packet.WeaponAmmoInClip.Value);
-                }
-
-                player.IsInWater = packet.VehiclePureSyncFlags.IsInWater;
-                player.WearsGoggles = packet.VehiclePureSyncFlags.IsWearingGoggles;
-
-                if (packet.DamagerId != null)
-                {
-                    var damager = this.elementRepository.Get(packet.DamagerId.Value);
-                    player.TriggerDamaged(damager, (WeaponType)(packet.DamageWeaponType ?? (byte?)WeaponType.WEAPONTYPE_UNIDENTIFIED), (BodyPart)(packet.DamageBodyPart ?? (byte?)BodyPart.Torso));
-                }
-            });
-
-            var vehicle = player?.Vehicle;
-
-            if (vehicle != null)
-            {
-                vehicle.RunAsSync(() =>
-                {
-                    vehicle.Position = packet.Position;
-                    vehicle.Rotation = packet.Rotation;
-                    vehicle.Health = packet.Health;
-                    vehicle.Velocity = packet.Velocity;
-                    vehicle.TurnVelocity = packet.TurnVelocity;
-                    vehicle.TurretRotation = packet.TurretRotation;
-                    vehicle.AdjustableProperty = packet.AdjustableProperty;
-                });
+                player.CurrentWeapon.UpdateAmmoCountWithoutTriggerEvent(packet.WeaponAmmo.Value, packet.WeaponAmmoInClip.Value);
             }
+
+            player.IsInWater = packet.VehiclePureSyncFlags.IsInWater;
+            player.WearsGoggles = packet.VehiclePureSyncFlags.IsWearingGoggles;
+
+            if (packet.DamagerId != null)
+            {
+                var damager = this.elementRepository.Get(packet.DamagerId.Value);
+                player.TriggerDamaged(damager, (WeaponType)(packet.DamageWeaponType ?? (byte?)WeaponType.WEAPONTYPE_UNIDENTIFIED), (BodyPart)(packet.DamageBodyPart ?? (byte?)BodyPart.Torso));
+            }
+        });
+
+        var vehicle = player?.Vehicle;
+
+        if (vehicle != null)
+        {
+            vehicle.RunAsSync(() =>
+            {
+                vehicle.Position = packet.Position;
+                vehicle.Rotation = packet.Rotation;
+                vehicle.Health = packet.Health;
+                vehicle.Velocity = packet.Velocity;
+                vehicle.TurnVelocity = packet.TurnVelocity;
+                vehicle.TurretRotation = packet.TurretRotation;
+                vehicle.AdjustableProperty = packet.AdjustableProperty;
+
+                vehicle.DoorRatios = packet.DoorOpenRatios;
+            });
         }
     }
 }

@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SlipeServer.Server.Elements
+namespace SlipeServer.Server.Elements;
+
+public enum MarkerType
 {
-    public enum MarkerType
-    {
-        Checkpoint,
-        Ring,
-        Cylinder,
-        Arrow,
-        Corona
-    }
+    Checkpoint,
+    Ring,
+    Cylinder,
+    Arrow,
+    Corona
 }

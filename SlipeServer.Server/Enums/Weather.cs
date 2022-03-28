@@ -2,32 +2,31 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SlipeServer.Server.Enums
+namespace SlipeServer.Server.Enums;
+
+public enum Weather
 {
-    public enum Weather
-    {
-        ExtraSunnyLa,
-        SunnyLa,
-        ExtraSunnySmogLa,
-        SunnySmogLa,
-        CloudyLa,
-        SunnySf,
-        ExtraSunnySf,
-        CloudySf,
-        RainySf,
-        FoggySf,
-        SunnyVegas,
-        ExtraSunnyVegas,
-        CloudyVegas,
-        ExtraSunnyCountryside,
-        SunnyCountryside,
-        CloudyCountryside,
-        RainyCountryside,
-        ExtraSunnyDesert,
-        SunnyDesert,
-        SandstormDesert,
-        Underwater,
-        ExtraColours1,
-        ExtraColours2
-    }
+    ExtraSunnyLa,
+    SunnyLa,
+    ExtraSunnySmogLa,
+    SunnySmogLa,
+    CloudyLa,
+    SunnySf,
+    ExtraSunnySf,
+    CloudySf,
+    RainySf,
+    FoggySf,
+    SunnyVegas,
+    ExtraSunnyVegas,
+    CloudyVegas,
+    ExtraSunnyCountryside,
+    SunnyCountryside,
+    CloudyCountryside,
+    RainyCountryside,
+    ExtraSunnyDesert,
+    SunnyDesert,
+    SandstormDesert,
+    Underwater,
+    ExtraColours1,
+    ExtraColours2
 }

@@ -4,103 +4,103 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SlipeServer.Server.Tests.Unit.Elements
+namespace SlipeServer.Server.Tests.Unit.Elements;
+
+public class ElementTests
 {
-    public class ElementTests
+    [Fact]
+    public void GetAndIncrementTimeContext_ReturnsNewTimeContext()
     {
-        [Fact]
-        public void GetAndIncrementTimeContext_ReturnsNewTimeContext()
+        var element = new Element();
+
+        var context = element.TimeContext;
+        var incrementContext = element.GetAndIncrementTimeContext();
+
+        context.Should().NotBe(incrementContext);
+    }
+
+    [Fact]
+    public void GetAndIncrementTimeContext_WrapsAroundSkippingZero()
+    {
+        var element = new Element();
+
+        for (int i = 0; i < 255; i++)
         {
-            var element = new Element();
-
-            var context = element.TimeContext;
-            var incrementContext = element.GetAndIncrementTimeContext();
-
-            context.Should().NotBe(incrementContext);
+            element.GetAndIncrementTimeContext();
         }
+        var context = element.TimeContext;
 
-        [Fact]
-        public void GetAndIncrementTimeContext_WrapsAroundSkippingZero()
+        context.Should().Be(1);
+    }
+
+    [Fact]
+    public void RunAsSync_TriggersChangeEventsWithSyncTrue()
+    {
+        var element = new Element();
+
+        bool isEventCalled = false;
+        bool eventSyncValue = false;
+
+        element.DimensionChanged += (source, args) =>
         {
-            var element = new Element();
+            isEventCalled = true;
+            eventSyncValue = args.IsSync;
+        };
 
-            for (int i = 0; i < 255; i++)
-            {
-                element.GetAndIncrementTimeContext();
-            }
-            var context = element.TimeContext;
-
-            context.Should().Be(1);
-        }
-
-        [Fact]
-        public void RunAsSync_TriggersChangeEventsWithSyncTrue()
+        element.RunAsSync(() =>
         {
-            var element = new Element();
-
-            bool isEventCalled = false;
-            bool eventSyncValue = false;
-
-            element.DimensionChanged += (source, args) =>
-            {
-                isEventCalled = true;
-                eventSyncValue = args.IsSync;
-            };
-
-            element.RunAsSync(() =>
-            {
-                element.Dimension = 1;
-            });
-
-            isEventCalled.Should().BeTrue();
-            eventSyncValue.Should().BeTrue();
-        }
-
-        [Fact]
-        public void RunNormally_TriggersChangeEventsWithSyncFalse()
-        {
-            var element = new Element();
-
-            bool isEventCalled = false;
-            bool eventSyncValue = false;
-
-            element.DimensionChanged += (source, args) =>
-            {
-                isEventCalled = true;
-                eventSyncValue = args.IsSync;
-            };
-
             element.Dimension = 1;
+        });
 
-            isEventCalled.Should().BeTrue();
-            eventSyncValue.Should().BeFalse();
-        }
+        isEventCalled.Should().BeTrue();
+        eventSyncValue.Should().BeTrue();
+    }
 
-        [Fact]
-        public async Task RunAsync_TriggersChangeEventsWithProperSync()
+    [Fact]
+    public void RunNormally_TriggersChangeEventsWithSyncFalse()
+    {
+        var element = new Element();
+
+        bool isEventCalled = false;
+        bool eventSyncValue = false;
+
+        element.DimensionChanged += (source, args) =>
         {
-            var element = new Element();
+            isEventCalled = true;
+            eventSyncValue = args.IsSync;
+        };
 
-            bool isDimensionEventCalled = false;
-            bool dimensionEventSyncValue = false;
-            bool isInteriorEventCalled = false;
-            bool interiorEventSyncValue = false;
+        element.Dimension = 1;
 
-            element.DimensionChanged += (source, args) =>
-            {
-                isDimensionEventCalled = true;
-                dimensionEventSyncValue = args.IsSync;
-            };
+        isEventCalled.Should().BeTrue();
+        eventSyncValue.Should().BeFalse();
+    }
 
-            element.InteriorChanged += (source, args) =>
-            {
-                isInteriorEventCalled = true;
-                interiorEventSyncValue = args.IsSync;
-            };
+    [Fact]
+    public async Task RunAsync_TriggersChangeEventsWithProperSync()
+    {
+        var element = new Element();
+
+        bool isDimensionEventCalled = false;
+        bool dimensionEventSyncValue = false;
+        bool isInteriorEventCalled = false;
+        bool interiorEventSyncValue = false;
+
+        element.DimensionChanged += (source, args) =>
+        {
+            isDimensionEventCalled = true;
+            dimensionEventSyncValue = args.IsSync;
+        };
+
+        element.InteriorChanged += (source, args) =>
+        {
+            isInteriorEventCalled = true;
+            interiorEventSyncValue = args.IsSync;
+        };
 
 
-            await Task.WhenAll(new Task[]
-            {
+        await Task.WhenAll(new Task[]
+        {
                 Task.Run(async () =>
                 {
                     await Task.Delay(10);
@@ -114,14 +114,13 @@ namespace SlipeServer.Server.Tests.Unit.Elements
                         element.Interior = 1;
                     });
                 })
-            });
+        });
 
 
-            isDimensionEventCalled.Should().BeTrue();
-            dimensionEventSyncValue.Should().BeFalse();
+        isDimensionEventCalled.Should().BeTrue();
+        dimensionEventSyncValue.Should().BeFalse();
 
-            isInteriorEventCalled.Should().BeTrue();
-            interiorEventSyncValue.Should().BeTrue();
-        }
+        isInteriorEventCalled.Should().BeTrue();
+        interiorEventSyncValue.Should().BeTrue();
     }
 }

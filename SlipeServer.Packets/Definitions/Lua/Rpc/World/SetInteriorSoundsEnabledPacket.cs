@@ -4,33 +4,32 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
+namespace SlipeServer.Packets.Definitions.Lua.Rpc.World;
+
+public class SetInteriorSoundsEnabledPacket : Packet
 {
-    public class SetInteriorSoundsEnabledPacket : Packet
+    public override PacketId PacketId => PacketId.PACKET_ID_LUA;
+    public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+    public override PacketPriority Priority => PacketPriority.High;
+
+    public bool Enabled { get; set; }
+
+    public SetInteriorSoundsEnabledPacket(bool enabled)
     {
-        public override PacketId PacketId => PacketId.PACKET_ID_LUA;
-        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
-        public override PacketPriority Priority => PacketPriority.High;
+        this.Enabled = enabled;
+    }
 
-        public bool Enabled { get; set; }
+    public override void Read(byte[] bytes)
+    {
+        throw new NotImplementedException();
+    }
 
-        public SetInteriorSoundsEnabledPacket(bool enabled)
-        {
-            this.Enabled = enabled;
-        }
+    public override byte[] Write()
+    {
+        PacketBuilder builder = new PacketBuilder();
+        builder.Write((byte)ElementRPCFunction.SET_INTERIOR_SOUNDS_ENABLED);
+        builder.Write(this.Enabled);
 
-        public override void Read(byte[] bytes)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override byte[] Write()
-        {
-            PacketBuilder builder = new PacketBuilder();
-            builder.Write((byte)ElementRPCFunction.SET_INTERIOR_SOUNDS_ENABLED);
-            builder.Write(this.Enabled);
-
-            return builder.Build();
-        }
+        return builder.Build();
     }
 }

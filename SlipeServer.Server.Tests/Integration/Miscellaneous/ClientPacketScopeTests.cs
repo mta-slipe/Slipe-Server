@@ -6,51 +6,53 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SlipeServer.Server.Tests.Integration.Miscellaneous
+namespace SlipeServer.Server.Tests.Integration.Miscellaneous;
+
+public class ClientPacketScopeTests
 {
-    public class ClientPacketScopeTests
+    [Fact]
+    public void ClientInScope_SendsPacket()
     {
-        [Fact]
-        public void ClientInScope_SendsPacket()
+        var server = new TestingServer();
+
+        var player = server.AddFakePlayer();
+
+        using var scope = new ClientPacketScope(new Client[] { player.Client });
+        player.Client.SendPacket(new SetElementModelRpcPacket(player.Id, 0));
+
+        server.NetWrapperMock.Verify(x => x.SendPacket(
+            player.Address,
+            It.IsAny<ushort>(),
+            It.IsAny<SetElementModelRpcPacket>()
+        ), Times.Once);
+    }
+
+    [Fact]
+    public void ClientOutOfScope_DoesNotSendPacket()
+    {
+        var server = new TestingServer();
+
+        var player = server.AddFakePlayer();
+
+        using var scope = new ClientPacketScope(Array.Empty<Client>());
+        player.Client.SendPacket(new SetElementModelRpcPacket(player.Id, 0));
+
+        server.NetWrapperMock.Verify(x => x.SendPacket(
+            player.Address,
+            It.IsAny<ushort>(),
+            It.IsAny<SetElementModelRpcPacket>()
+        ), Times.Never);
+    }
+
+    [Fact]
+    public async Task AsyncScopes_DoNotInterfere()
+    {
+        var server = new TestingServer();
+
+        var player = server.AddFakePlayer();
+
+        await Task.WhenAll(new Task[]
         {
-            var server = new TestingServer();
-
-            var player = server.AddFakePlayer();
-
-            using var scope = new ClientPacketScope(new Client[] { player.Client });
-            player.Client.SendPacket(new SetElementModelRpcPacket(player.Id, 0));
-
-            server.NetWrapperMock.Verify(x => x.SendPacket(
-                player.Address,
-                It.IsAny<SetElementModelRpcPacket>()
-            ), Times.Once);
-        }
-
-        [Fact]
-        public void ClientOutOfScope_DoesNotSendPacket()
-        {
-            var server = new TestingServer();
-
-            var player = server.AddFakePlayer();
-
-            using var scope = new ClientPacketScope(Array.Empty<Client>());
-            player.Client.SendPacket(new SetElementModelRpcPacket(player.Id, 0));
-
-            server.NetWrapperMock.Verify(x => x.SendPacket(
-                player.Address,
-                It.IsAny<SetElementModelRpcPacket>()
-            ), Times.Never);
-        }
-
-        [Fact]
-        public async Task AsyncScopes_DoNotInterfere()
-        {
-            var server = new TestingServer();
-
-            var player = server.AddFakePlayer();
-
-            await Task.WhenAll(new Task[]
-            {
                 Task.Run(async() =>
                 {
                     await Task.Delay(10);
@@ -64,17 +66,18 @@ namespace SlipeServer.Server.Tests.Integration.Miscellaneous
                     await Task.Delay(25);
                     player.Client.SendPacket(new SetElementModelRpcPacket(player.Id, 2));
                 })
-            });
+        });
 
-            server.NetWrapperMock.Verify(x => x.SendPacket(
-                player.Address,
-                It.Is<SetElementModelRpcPacket>(x => x.Model == 1)
-            ), Times.Once);
+        server.NetWrapperMock.Verify(x => x.SendPacket(
+            player.Address,
+            It.IsAny<ushort>(),
+            It.Is<SetElementModelRpcPacket>(x => x.Model == 1)
+        ), Times.Once);
 
-            server.NetWrapperMock.Verify(x => x.SendPacket(
-                player.Address,
-                It.Is<SetElementModelRpcPacket>(x => x.Model == 2)
-            ), Times.Never);
-        }
+        server.NetWrapperMock.Verify(x => x.SendPacket(
+            player.Address,
+            It.IsAny<ushort>(),
+            It.Is<SetElementModelRpcPacket>(x => x.Model == 2)
+        ), Times.Never);
     }
 }

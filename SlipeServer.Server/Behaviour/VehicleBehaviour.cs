@@ -6,104 +6,120 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.PacketHandling.Factories;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Timers;
 
-namespace SlipeServer.Server.Behaviour
+namespace SlipeServer.Server.Behaviour;
+
+public class VehicleBehaviour
 {
-    public class VehicleBehaviour
+    private readonly MtaServer server;
+
+    public VehicleBehaviour(MtaServer server)
     {
-        private readonly MtaServer server;
+        this.server = server;
 
-        public VehicleBehaviour(MtaServer server)
-        {
-            this.server = server;
+        server.ElementCreated += OnElementCreate;
+    }
 
-            server.ElementCreated += OnElementCreate;
+    private void OnElementCreate(Element element)
+    {
+        if (element is Vehicle vehicle)
+        {
+            vehicle.ModelChanged += RelayModelChange;
+            vehicle.Colors.ColorChanged += RelayColorChanged;
+            vehicle.LockedStateChanged += RelayLockedStateChanged;
+            vehicle.EngineStateChanged += RelayEngineStateChanged;
+            vehicle.DoorStateChanged += HandleDoorStateChanged;
+            vehicle.WheelStateChanged += HandleWheelStateChanged;
+            vehicle.PanelStateChanged += HandlePanelStateChanged;
+            vehicle.LightStateChanged += HandleLightStateChanged;
+            vehicle.DoorOpenRatioChanged += HandleDoorOpenRatioChanged;
+            vehicle.LandingGearChanged += RelayLandingGearChanged;
+            vehicle.TaxiLightStateChanged += RelayTaxiLightStateChanged;
+            vehicle.TurretRotationChanged += RelayTurretRotationChanged;
+            vehicle.PlateTextChanged += RelayPlateTextChanged;
+            vehicle.HeadlightColorChanged += RelayHeadlightColorChanged;
         }
+    }
 
-        private void OnElementCreate(Element element)
-        {
-            if (element is Vehicle vehicle)
-            {
-                vehicle.ModelChanged += RelayModelChange;
-                vehicle.Colors.ColorChanged += RelayColorChanged;
-                vehicle.LockedStateChanged += RelayLockedStateChanged;
-                vehicle.EngineStateChanged += RelayEngineStateChanged;
-                vehicle.DoorStateChanged += HandleDoorStateChanged;
-                vehicle.WheelStateChanged += HandleWheelStateChanged;
-                vehicle.PanelStateChanged += HandlePanelStateChanged;
-                vehicle.LightStateChanged += HandleLightStateChanged;
-                vehicle.DoorOpenRatioChanged += HandleDoorOpenRatioChanged;
-                vehicle.LandingGearChanged += RelayLandingGearChanged;
-                vehicle.TaxiLightStateChanged += RelayTaxiLightStateChanged;
-                vehicle.TurretRotationChanged += RelayTurretRotationChanged;
-                vehicle.PlateTextChanged += RelayPlateTextChanged;
-            }
-        }
+    private void RelayPlateTextChanged(Element sender, ElementChangedEventArgs<Vehicle, string> args)
+    {
+        this.server.BroadcastPacket(VehiclePacketFactory.CreateSetPlateTextPacket(args.Source));
+    }
 
-        private void RelayPlateTextChanged(Element sender, ElementChangedEventArgs<Vehicle, string> args)
-        {
-            this.server.BroadcastPacket(VehiclePacketFactory.CreateSetPlateTextPacket(args.Source));
-        }
+    private void RelayTurretRotationChanged(Element sender, ElementChangedEventArgs<Vehicle, System.Numerics.Vector2?> args)
+    {
+        if (args.NewValue.HasValue && !args.IsSync)
+            this.server.BroadcastPacket(VehiclePacketFactory.CreateSetTurretRotationPacket(args.Source));
+    }
 
-        private void RelayTurretRotationChanged(Element sender, ElementChangedEventArgs<Vehicle, System.Numerics.Vector2?> args)
-        {
-            if(args.NewValue.HasValue && !args.IsSync)
-                this.server.BroadcastPacket(VehiclePacketFactory.CreateSetTurretRotationPacket(args.Source));
-        }
+    private void RelayTaxiLightStateChanged(Element sender, ElementChangedEventArgs<Vehicle, bool> args)
+    {
+        this.server.BroadcastPacket(VehiclePacketFactory.CreateSetTaxiLightOnPacket(args.Source));
+    }
 
-        private void RelayTaxiLightStateChanged(Element sender, ElementChangedEventArgs<Vehicle, bool> args)
-        {
-            this.server.BroadcastPacket(VehiclePacketFactory.CreateSetVehicleTaxiLightOnPacket(args.Source));
-        }
+    private void RelayLandingGearChanged(Element sender, ElementChangedEventArgs<Vehicle, bool> args)
+    {
+        this.server.BroadcastPacket(VehiclePacketFactory.CreateSetLandingGearDownPacket(args.Source));
+    }
 
-        private void RelayLandingGearChanged(Element sender, ElementChangedEventArgs<Vehicle, bool> args)
-        {
-            this.server.BroadcastPacket(VehiclePacketFactory.CreateSetLandingGearDownPacket(args.Source));
-        }
+    private void RelayColorChanged(Vehicle sender, VehicleColorChangedEventsArgs args)
+    {
+        this.server.BroadcastPacket(VehiclePacketFactory.CreateSetColorPacket(args.Vehicle));
+    }
 
-        private void RelayColorChanged(Vehicle sender, VehicleColorChangedEventsArgs args)
-        {
-            this.server.BroadcastPacket(VehiclePacketFactory.CreateSetColorPacket(args.Vehicle));
-        }
+    private void RelayHeadlightColorChanged(Vehicle sender, ElementChangedEventArgs<Vehicle, Color> args)
+    {
+        this.server.BroadcastPacket(VehiclePacketFactory.CreateSetHeadlightColorPacket(args.Source));
+    }
 
-        private void RelayModelChange(object sender, ElementChangedEventArgs<Vehicle, ushort> args)
-        {
-            this.server.BroadcastPacket(VehiclePacketFactory.CreateSetModelPacket(args.Source));
-        }
-        private void HandleDoorStateChanged(object? sender, VehicleDoorStateChangedArgs args)
-        {
-            this.server.BroadcastPacket(new SetVehicleDamageState(args.Vehicle.Id, (byte)VehicleDamagePart.Door, (byte)args.Door, (byte)args.State, args.SpawnFlyingComponent));
-        }
+    private void RelayModelChange(object sender, ElementChangedEventArgs<Vehicle, ushort> args)
+    {
+        this.server.BroadcastPacket(VehiclePacketFactory.CreateSetModelPacket(args.Source));
+    }
+    private void HandleDoorStateChanged(object? sender, VehicleDoorStateChangedArgs args)
+    {
+        if (args.Vehicle.IsSync)
+            return;
+        this.server.BroadcastPacket(new SetVehicleDamageState(args.Vehicle.Id, (byte)VehicleDamagePart.Door, (byte)args.Door, (byte)args.State, args.SpawnFlyingComponent));
+    }
 
-        private void RelayLockedStateChanged(Element sender, ElementChangedEventArgs<Vehicle, bool> args)
-        {
-            this.server.BroadcastPacket(VehiclePacketFactory.CreateSetLockedPacket(args.Source));
-        }
+    private void RelayLockedStateChanged(Element sender, ElementChangedEventArgs<Vehicle, bool> args)
+    {
+        this.server.BroadcastPacket(VehiclePacketFactory.CreateSetLockedPacket(args.Source));
+    }
 
-        private void RelayEngineStateChanged(Element sender, ElementChangedEventArgs<Vehicle, bool> args)
-        {
-            this.server.BroadcastPacket(VehiclePacketFactory.CreateSetLockedPacket(args.Source));
-        }
-      
-        private void HandleWheelStateChanged(object? sender, VehicleWheelStateChangedArgs args)
-        {
-            this.server.BroadcastPacket(new SetVehicleDamageState(args.Vehicle.Id, (byte)VehicleDamagePart.Wheel, (byte)args.Wheel, (byte)args.State));
-        }
+    private void RelayEngineStateChanged(Element sender, ElementChangedEventArgs<Vehicle, bool> args)
+    {
+        this.server.BroadcastPacket(VehiclePacketFactory.CreateSetEngineOnPacket(args.Source));
+    }
 
-        private void HandlePanelStateChanged(object? sender, VehiclePanelStateChangedArgs args)
-        {
-            this.server.BroadcastPacket(new SetVehicleDamageState(args.Vehicle.Id, (byte)VehicleDamagePart.Panel, (byte)args.Panel, (byte)args.State));
-        }
+    private void HandleWheelStateChanged(object? sender, VehicleWheelStateChangedArgs args)
+    {
+        if (args.Vehicle.IsSync)
+            return;
+        this.server.BroadcastPacket(new SetVehicleDamageState(args.Vehicle.Id, (byte)VehicleDamagePart.Wheel, (byte)args.Wheel, (byte)args.State));
+    }
 
-        private void HandleLightStateChanged(object? sender, VehicleLightStateChangedArgs args)
-        {
-            this.server.BroadcastPacket(new SetVehicleDamageState(args.Vehicle.Id, (byte)VehicleDamagePart.Light, (byte)args.Light, (byte)args.State));
-        }
+    private void HandlePanelStateChanged(object? sender, VehiclePanelStateChangedArgs args)
+    {
+        if (args.Vehicle.IsSync)
+            return;
+        this.server.BroadcastPacket(new SetVehicleDamageState(args.Vehicle.Id, (byte)VehicleDamagePart.Panel, (byte)args.Panel, (byte)args.State));
+    }
 
-        private void HandleDoorOpenRatioChanged(object? sender, VehicleDoorOpenRatioChangedArgs args)
-        {
-            this.server.BroadcastPacket(new SetVehicleDoorOpenRatio(args.Vehicle.Id, (byte)args.Door, args.Ratio, args.Time));
-        }
+    private void HandleLightStateChanged(object? sender, VehicleLightStateChangedArgs args)
+    {
+        if (args.Vehicle.IsSync)
+            return;
+        this.server.BroadcastPacket(new SetVehicleDamageState(args.Vehicle.Id, (byte)VehicleDamagePart.Light, (byte)args.Light, (byte)args.State));
+    }
+
+    private void HandleDoorOpenRatioChanged(object? sender, VehicleDoorOpenRatioChangedArgs args)
+    {
+        if (args.Vehicle.IsSync)
+            return;
+        this.server.BroadcastPacket(new SetVehicleDoorOpenRatio(args.Vehicle.Id, (byte)args.Door, args.Ratio, args.Time));
     }
 }

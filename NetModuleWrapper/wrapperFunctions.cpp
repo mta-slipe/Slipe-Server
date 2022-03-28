@@ -12,9 +12,9 @@
 #define EXPORT extern "C" 
 #endif
 
-EXPORT void __cdecl sendPacket(ushort id, unsigned long address, unsigned char packetId, unsigned char* payload, unsigned long payloadSize, unsigned char priority, unsigned char reliability)
+EXPORT void __cdecl sendPacket(ushort id, unsigned long address, unsigned char packetId, unsigned short bitStreamVersion, unsigned char* payload, unsigned long payloadSize, unsigned char priority, unsigned char reliability)
 {
-    NetWrapper::getNetWrapper(id)->sendPacket(address, packetId, payload, payloadSize, priority, reliability);
+    NetWrapper::getNetWrapper(id)->sendPacket(address, packetId, bitStreamVersion, payload, payloadSize, priority, reliability);
 }
 
 EXPORT void __cdecl setSocketVersion(ushort id, unsigned long address, unsigned short version)

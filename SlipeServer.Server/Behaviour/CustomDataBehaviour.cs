@@ -1,36 +1,37 @@
 ﻿using SlipeServer.Packets.Definitions.CustomElementData;
-using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace SlipeServer.Server.Behaviour
+namespace SlipeServer.Server.Behaviour;
+
+public class CustomDataBehaviour
 {
-    public class CustomDataBehaviour
+    private readonly MtaServer server;
+
+    public CustomDataBehaviour(MtaServer server, IElementRepository elementRepository)
     {
-        public CustomDataBehaviour(MtaServer server, IElementRepository elementRepository)
+        server.PlayerJoined += HandlePlayerJoin;
+        this.server = server;
+    }
+
+    private void HandlePlayerJoin(Elements.Player player)
+    {
+        player.DataChanged += (sender, args) =>
         {
-            server.PlayerJoined += (player) =>
+            switch (args.SyncType)
             {
-                player.DataChanged += (sender, args) =>
-                {
-                    LuaValue newValue = args.NewValue;
-                    LuaValue? oldValue = args.OldValue;
-                    DataSyncType syncType = args.SyncType;
-                    string dataName = args.DataName;
-
-                    if (syncType == DataSyncType.Broadcast && !(oldValue is null))
+                case DataSyncType.Broadcast:
+                    if (args.SyncType == DataSyncType.Broadcast)
                     {
-                        var packet = new CustomDataPacket(sender.Id, dataName, newValue);
-                        server.BroadcastPacket(packet);
+                        var packet = new CustomDataPacket(sender.Id, args.Key, args.NewValue);
+                        this.server.BroadcastPacket(packet);
                     }
-                };
-            };
+                    break;
+                case DataSyncType.Subscribe:
 
-        }
+                    break;
+            }
+        };
     }
 }
+

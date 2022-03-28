@@ -1,8 +1,7 @@
-﻿namespace SlipeServer.Server.Resources.Serving
+﻿namespace SlipeServer.Server.Resources.Serving;
+
+public interface IResourceServer
 {
-    public interface IResourceServer
-    {
-        void Start();
-        void Stop();
-    }
+    void Start();
+    void Stop();
 }

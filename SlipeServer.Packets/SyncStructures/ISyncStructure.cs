@@ -4,11 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SlipeServer.Packets.Structures
+namespace SlipeServer.Packets.Structures;
+
+public interface ISyncStructure
 {
-    public interface ISyncStructure
-    {
-        void Read(PacketReader reader);
-        void Write(PacketBuilder builder);
-    }
+    void Read(PacketReader reader);
+    void Write(PacketBuilder builder);
 }

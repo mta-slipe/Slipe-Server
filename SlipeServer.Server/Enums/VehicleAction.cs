@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SlipeServer.Server.Enums
+namespace SlipeServer.Server.Enums;
+
+public enum VehicleAction
 {
-    public enum VehicleAction
-    {
-        None,
-        Entering,
-        Exiting,
-        Jacking,
-        Jacked
-    }
+    None,
+    Entering,
+    Exiting,
+    Jacking,
+    Jacked
 }

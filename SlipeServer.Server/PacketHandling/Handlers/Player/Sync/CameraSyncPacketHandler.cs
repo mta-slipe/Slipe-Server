@@ -2,35 +2,34 @@
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Repositories;
 
-namespace SlipeServer.Server.PacketHandling.Handlers.Player.Sync
+namespace SlipeServer.Server.PacketHandling.Handlers.Player.Sync;
+
+public class CameraSyncPacketHandler : IPacketHandler<CameraSyncPacket>
 {
-    public class CameraSyncPacketHandler : IPacketHandler<CameraSyncPacket>
+    public PacketId PacketId => PacketId.PACKET_ID_CAMERA_SYNC;
+
+    private readonly IElementRepository elementRepository;
+
+    public CameraSyncPacketHandler(
+        IElementRepository elementRepository
+    )
     {
-        public PacketId PacketId => PacketId.PACKET_ID_CAMERA_SYNC;
+        this.elementRepository = elementRepository;
+    }
 
-        private readonly IElementRepository elementRepository;
-
-        public CameraSyncPacketHandler(
-            IElementRepository elementRepository
-        )
+    public void HandlePacket(Client client, CameraSyncPacket packet)
+    {
+        var player = client.Player;
+        player.RunAsSync(() =>
         {
-            this.elementRepository = elementRepository;
-        }
-
-        public void HandlePacket(Client client, CameraSyncPacket packet)
-        {
-            var player = client.Player;
-            player.RunAsSync(() =>
+            if (packet.IsFixed)
             {
-                if (packet.IsFixed)
-                {
-                    player.Camera.Position = packet.Position;
-                    player.Camera.LookAt = packet.LookAt;
-                } else
-                {
-                    player.Camera.Target = this.elementRepository.Get(packet.TargetId);
-                }
-            });
-        }
+                player.Camera.Position = packet.Position;
+                player.Camera.LookAt = packet.LookAt;
+            } else
+            {
+                player.Camera.Target = this.elementRepository.Get(packet.TargetId);
+            }
+        });
     }
 }
