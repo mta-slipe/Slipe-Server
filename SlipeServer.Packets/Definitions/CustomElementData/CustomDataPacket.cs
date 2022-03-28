@@ -10,14 +10,17 @@ public class CustomDataPacket : Packet
     public override PacketId PacketId => PacketId.PACKET_ID_CUSTOM_DATA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
+
     public uint ElementId { get; set; }
     public LuaValue Value { get; set; }
     public string Name { get; set; }
-    public ushort MaxDataNameLength { get; set; } = 128;
+
+    private const ushort maxDataNameLength = 128;
 
     public CustomDataPacket()
     {
-
+        this.Value = new LuaValue();
+        this.Name = "";
     }
 
     public CustomDataPacket(uint elementId, string name, LuaValue value)
@@ -34,13 +37,11 @@ public class CustomDataPacket : Packet
         var reader = new PacketReader(bytes);
 
         this.ElementId = reader.GetElementId();
-
         ushort nameLength = reader.GetCompressedUint16();
 
-        if (nameLength > 0 && nameLength <= MaxDataNameLength)
+        if (nameLength > 0 && nameLength <= maxDataNameLength)
         {
             this.Name = reader.GetStringCharacters(nameLength);
-
             this.Value = reader.GetLuaValue();
         }
     }
