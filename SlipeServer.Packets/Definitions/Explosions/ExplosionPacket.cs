@@ -1,10 +1,7 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
-using System;
-using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
 
 namespace SlipeServer.Packets.Definitions.Explosions;
 
@@ -19,6 +16,8 @@ public class ExplosionPacket : Packet
     public uint? PlayerSource { get; set; }
     public uint? OriginId { get; set; }
     public Vector3 Position { get; set; }
+    public bool IsVehicleResponsible { get; set; }
+    public bool BlowVehicleWithoutExplosion { get; set; }
     public byte ExplosionType { get; set; }
     public ushort? Latency { get; set; }
 
@@ -44,6 +43,11 @@ public class ExplosionPacket : Packet
         {
             this.OriginId = reader.GetElementId();
         }
+
+        this.IsVehicleResponsible = reader.GetBit();
+        if (this.IsVehicleResponsible)
+            this.BlowVehicleWithoutExplosion = reader.GetBit();
+
         this.Position = reader.GetVector3WithZAsFloat();
         this.ExplosionType = reader.GetByteCapped(4);
     }
@@ -63,6 +67,9 @@ public class ExplosionPacket : Packet
         if (this.OriginId.HasValue)
         {
             builder.WriteElementId(this.OriginId.Value);
+            builder.Write(this.IsVehicleResponsible);
+            if (this.IsVehicleResponsible)
+                builder.Write(this.BlowVehicleWithoutExplosion);
         }
 
         builder.WriteVector3WithZAsFloat(this.Position);
