@@ -731,6 +731,25 @@ public class ServerTestLogic
             this.luaService.TriggerLatentEvent("Slipe.Test.ClientEvent", this.testResource!, this.root, 1, this.root, 50, "STRING");
         };
 
+        this.commandService.AddCommand("dim").Triggered += (source, args) =>
+        {
+            if (args.Arguments.Length > 0)
+                args.Player.Dimension = ushort.Parse(args.Arguments[0]);
+            else
+                args.Player.Dimension = 0;
+        };
+
+        this.commandService.AddCommand("taxidim").Triggered += (source, args) =>
+        {
+            if (this.Taxi == null)
+                return;
+
+            if (args.Arguments.Length > 0)
+                this.Taxi.Dimension = ushort.Parse(args.Arguments[0]);
+            else
+                this.Taxi.Dimension = 0;
+        };
+
         this.commandService.AddCommand("hot").Triggered += (source, args) =>
         {
             // command for testing, use hot reload to write code and apply during a running debug session
