@@ -5,12 +5,14 @@ using SlipeServer.Server.Constants;
 using SlipeServer.Server.Elements.Events;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
 
 namespace SlipeServer.Server.Elements;
 
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
 public class Vehicle : Element
 {
     public override ElementType ElementType => ElementType.Vehicle;
@@ -199,6 +201,18 @@ public class Vehicle : Element
 
     public Dictionary<byte, Ped> Occupants { get; set; }
 
+    /// <summary>
+    /// Vehicle that is towing this vehicle
+    /// </summary>
+    public Vehicle? TowingVehicle { get; private set; }
+
+    /// <summary>
+    /// Vehicle that is being towed by this vehicle
+    /// </summary>
+    public Vehicle? TowedVehicle { get; private set; }
+
+    private string DebuggerDisplay => $"{(VehicleModel)this.model} ({this.Id})";
+
     public Vehicle(ushort model, Vector3 position) : base()
     {
         this.Model = model;
@@ -367,6 +381,45 @@ public class Vehicle : Element
         RespawnAt(this.RespawnPosition, this.RespawnRotation);
     }
 
+    public void AttachTrailer(Vehicle? trailer, bool updateCounterpart = true)
+    {
+        if (this.TowedVehicle == trailer)
+            return;
+
+        if (updateCounterpart)
+        {
+            if (trailer != null)
+                trailer.AttachToTower(this, false);
+            else
+                this.TowedVehicle?.AttachToTower(null, false);
+        }
+
+        var arguments = new ElementChangedEventArgs<Vehicle, Vehicle?>(this, this.TowedVehicle, trailer, this.IsSync);
+        this.TowedVehicle = trailer;
+        this.TowedVehicleChanged?.Invoke(this, arguments);
+    }
+
+    public void DetachTrailer(bool updateCounterpart = true) => AttachTrailer(null, updateCounterpart);
+
+    public void AttachToTower(Vehicle? tower, bool updateCounterpart = true)
+    {
+        if (this.TowingVehicle == tower)
+            return;
+
+        if (updateCounterpart)
+        {
+            if (tower != null)
+                tower.AttachTrailer(this, false);
+            else
+                this.TowingVehicle?.AttachTrailer(null, false);
+        }
+        var arguments = new ElementChangedEventArgs<Vehicle, Vehicle?>(this, this.TowingVehicle, tower, this.IsSync);
+        this.TowingVehicle = tower;
+        this.TowingVehicleChanged?.Invoke(this, arguments);
+    }
+
+    public void DetachFromTower(bool updateCounterpart = true) => AttachToTower(null, updateCounterpart);
+
 
     public virtual bool CanEnter(Ped ped) => true;
     public virtual bool CanExit(Ped ped) => true;
@@ -383,6 +436,8 @@ public class Vehicle : Element
     public event ElementChangedEventHandler<Vehicle, bool>? EngineStateChanged;
     public event ElementChangedEventHandler<Vehicle, Player?>? SyncerChanged;
     public event ElementChangedEventHandler<Vehicle, Color>? HeadlightColorChanged;
+    public event ElementChangedEventHandler<Vehicle, Vehicle?>? TowedVehicleChanged;
+    public event ElementChangedEventHandler<Vehicle, Vehicle?>? TowingVehicleChanged;
     public event ElementEventHandler<VehicleRespawnEventArgs>? Respawned;
     public event ElementEventHandler<VehicleDoorStateChangedArgs>? DoorStateChanged;
     public event ElementEventHandler<VehicleWheelStateChangedArgs>? WheelStateChanged;

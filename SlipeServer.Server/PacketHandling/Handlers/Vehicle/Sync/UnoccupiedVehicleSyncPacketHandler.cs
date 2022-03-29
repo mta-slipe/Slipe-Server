@@ -53,6 +53,18 @@ public class UnoccupiedVehicleSyncPacketHandler : IPacketHandler<UnoccupiedVehic
                         if (vehicle.Health != null)
                             vehicleElement.Health = vehicle.Health.Value;
 
+                        if (vehicle.Trailer != null)
+                        {
+                            var trailer = this.elementRepository.Get(vehicle.Trailer.Value) as Elements.Vehicle;
+                            if (trailer != null)
+                            {
+                                vehicleElement.AttachTrailer(trailer, true);
+                            }
+                        } else if (vehicleElement.TowedVehicle != null)
+                        {
+                            vehicleElement.AttachTrailer(null, true);
+                        }
+
                         vehicleElement.IsInWater = (vehicle.Flags & UnoccupiedVehicleSyncFlags.IsInWater) > 0;
                         vehicleElement.IsDerailed = (vehicle.Flags & UnoccupiedVehicleSyncFlags.Derailed) > 0;
                         vehicleElement.IsEngineOn = (vehicle.Flags & UnoccupiedVehicleSyncFlags.Engine) > 0;

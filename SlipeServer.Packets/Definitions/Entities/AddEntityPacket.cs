@@ -2,10 +2,8 @@
 using SlipeServer.Packets.Definitions.Entities.Structs;
 using SlipeServer.Packets.Enums;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
-using System.Text;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 
@@ -363,15 +361,11 @@ public class AddEntityPacket : Packet
 
         this.builder.Write(headlightColor != Color.White);
         if (headlightColor != Color.White)
-        {
             this.builder.Write(headlightColor);
-        }
 
         this.builder.Write(handling != null);
         if (handling != null)
-        {
             WriteVehicleHandling(handling.Value);
-        }
 
         WriteSirens(sirens);
     }

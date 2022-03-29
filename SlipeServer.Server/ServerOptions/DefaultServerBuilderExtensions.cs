@@ -126,6 +126,8 @@ public static class DefaultServerBuilderExtensions
             builder.AddPacketHandler<LatentLuaEventPacketHandler, LatentLuaEventPacket>();
         if ((except & ServerBuilderDefaultPacketHandlers.CustomDataPacketHandler) == 0)
             builder.AddPacketHandler<CustomDataPacketHandler, CustomDataPacket>();
+        if ((except & ServerBuilderDefaultPacketHandlers.VehicleTrailerSyncPacketHandler) == 0)
+            builder.AddPacketHandler<VehicleTrailerSyncPacketHandler, VehicleTrailerSyncPacket>();
     }
 
     public static void AddDefaultBehaviours(
