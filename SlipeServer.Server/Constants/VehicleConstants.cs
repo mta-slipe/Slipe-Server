@@ -234,11 +234,11 @@ public class VehicleConstants
         [VehicleModel.Phoenix] = 2,
         [VehicleModel.GlendaleDamaged] = 4,
         [VehicleModel.SadlerDamaged] = 2,
-        [VehicleModel.BaggageTrailerCovered] = 0,
-        [VehicleModel.BaggageTrailerUncovered] = 0,
-        [VehicleModel.TrailerStairs] = 0,
-        [VehicleModel.FarmTrailer] = 0,
-        [VehicleModel.FarmTrailerTwo] = 0
+        [VehicleModel.BaggageTrailerCovered] = 2,
+        [VehicleModel.BaggageTrailerUncovered] = 2,
+        [VehicleModel.TrailerStairs] = 2,
+        [VehicleModel.FarmTrailer] = 2,
+        [VehicleModel.FarmTrailerTwo] = 2
     };
 
     public static Dictionary<VehicleModel, byte> SeatsPerVehicle { get; } = new()
