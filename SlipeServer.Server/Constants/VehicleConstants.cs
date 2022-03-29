@@ -1,7 +1,5 @@
 ﻿using SlipeServer.Server.Elements;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SlipeServer.Server.Constants;
 
@@ -168,7 +166,7 @@ public class VehicleConstants
         [VehicleModel.Slamvan] = 2,
         [VehicleModel.Blade] = 2,
         [VehicleModel.Freight] = 2,
-        [VehicleModel.Streak] = 2,
+        [VehicleModel.Streak] = 0,
         [VehicleModel.Vortex] = 0,
         [VehicleModel.Vincent] = 4,
         [VehicleModel.Bullet] = 2,
@@ -214,7 +212,7 @@ public class VehicleConstants
         [VehicleModel.BF400] = 0,
         [VehicleModel.Newsvan] = 4,
         [VehicleModel.Tug] = 1,
-        [VehicleModel.TrailerTankerCommando] = 0,
+        [VehicleModel.TrailerTankerCommando] = 2,
         [VehicleModel.Emperor] = 4,
         [VehicleModel.Wayfarer] = 0,
         [VehicleModel.Euros] = 4,
@@ -414,8 +412,8 @@ public class VehicleConstants
         [VehicleModel.Tahoma] = 4,
         [VehicleModel.Savanna] = 2,
         [VehicleModel.Bandito] = 1,
-        [VehicleModel.FreightTrainFlatbed] = 0,
-        [VehicleModel.StreakTrainTrailer] = 0,
+        [VehicleModel.FreightTrainFlatbed] = 2,
+        [VehicleModel.StreakTrainTrailer] = 2,
         [VehicleModel.Kart] = 1,
         [VehicleModel.Mower] = 1,
         [VehicleModel.Dune] = 2,
@@ -435,7 +433,7 @@ public class VehicleConstants
         [VehicleModel.Euros] = 4,
         [VehicleModel.Hotdog] = 2,
         [VehicleModel.Club] = 2,
-        [VehicleModel.BoxFreight] = 0,
+        [VehicleModel.BoxFreight] = 2,
         [VehicleModel.Trailer3] = 0,
         [VehicleModel.Andromada] = 1,
         [VehicleModel.Dodo] = 2,

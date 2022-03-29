@@ -361,15 +361,11 @@ public class AddEntityPacket : Packet
 
         this.builder.Write(headlightColor != Color.White);
         if (headlightColor != Color.White)
-        {
             this.builder.Write(headlightColor);
-        }
 
         this.builder.Write(handling != null);
         if (handling != null)
-        {
             WriteVehicleHandling(handling.Value);
-        }
 
         WriteSirens(sirens);
     }
