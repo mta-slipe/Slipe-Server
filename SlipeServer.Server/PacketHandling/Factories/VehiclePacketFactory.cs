@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 using SlipeServer.Server.Elements;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
+using SlipeServer.Packets.Definitions.Vehicles;
 
 namespace SlipeServer.Server.PacketHandling.Factories;
 
@@ -49,5 +50,22 @@ public static class VehiclePacketFactory
     public static SetVehicleEngineStateRpcPacket CreateSetEngineOnPacket(Vehicle vehicle)
     {
         return new SetVehicleEngineStateRpcPacket(vehicle.Id, vehicle.IsEngineOn);
+    }
+
+    public static VehicleResyncPacket CreateVehicleResyncPacket(Vehicle vehicle)
+    {
+        return new VehicleResyncPacket()
+        {
+            ElementId = vehicle.Id,
+            Position = vehicle.Position,
+            Rotation = vehicle.Rotation,
+            Velocity = vehicle.Velocity,
+            TurnVelocity = vehicle.TurnVelocity,
+            Health = vehicle.Health,
+            DoorStates = vehicle.Damage.Doors,
+            WheelStates = vehicle.Damage.Wheels,
+            PanelStates = vehicle.Damage.Panels,
+            LightStates = vehicle.Damage.Lights,
+        };
     }
 }

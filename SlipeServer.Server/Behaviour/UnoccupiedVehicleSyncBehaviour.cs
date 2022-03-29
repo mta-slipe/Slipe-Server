@@ -1,5 +1,7 @@
 ﻿using SlipeServer.Packets.Definitions.Vehicles;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Extensions;
+using SlipeServer.Server.PacketHandling.Factories;
 using SlipeServer.Server.Repositories;
 using System.Linq;
 using System.Numerics;
@@ -35,6 +37,7 @@ public class UnoccupiedVehicleSyncBehaviour
     private void HandlePlayerJoin(Player player)
     {
         player.Disconnected += HandlePlayerDisconnect;
+        player.DimensionChanged += HandlePlayerDimensionChange;
     }
 
     private void HandleElementCreation(Element element)
@@ -43,6 +46,7 @@ public class UnoccupiedVehicleSyncBehaviour
         {
             vehicle.Pushed += HandleVehiclePush;
             vehicle.Destroyed += (e) => vehicle.Pushed -= HandleVehiclePush;
+            vehicle.DimensionChanged += HandleVehicleDimensionChange;
         }
     }
 
@@ -58,6 +62,28 @@ public class UnoccupiedVehicleSyncBehaviour
             StopSyncingVehicle(vehicle);
 
         player.Disconnected -= HandlePlayerDisconnect;
+        player.DimensionChanged -= HandlePlayerDimensionChange;
+    }
+
+    private void HandlePlayerDimensionChange(Element sender, Elements.Events.ElementChangedEventArgs<ushort> args)
+    {
+        if (sender is not Player player)
+            return;
+
+        var vehicles = this.elementRepository.GetByType<Vehicle>(ElementType.Vehicle)
+            .Where(x => x.Dimension == player.Dimension);
+        foreach (var vehicle in vehicles)
+            VehiclePacketFactory.CreateVehicleResyncPacket(vehicle).SendTo(player);
+    }
+
+    private void HandleVehicleDimensionChange(Element sender, Elements.Events.ElementChangedEventArgs<ushort> args)
+    {
+        if (sender is not Vehicle vehicle)
+            return;
+
+        var players = this.elementRepository.GetByType<Player>(ElementType.Player)
+            .Where(x => x.Dimension == vehicle.Dimension);
+        VehiclePacketFactory.CreateVehicleResyncPacket(vehicle).SendTo(players);
     }
 
     private void HandleVehicleSyncers()
