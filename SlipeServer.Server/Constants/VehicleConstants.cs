@@ -221,7 +221,7 @@ public class VehicleConstants
         [VehicleModel.Hotdog] = 2,
         [VehicleModel.Club] = 2,
         [VehicleModel.BoxFreight] = 0,
-        [VehicleModel.Trailer3] = 0,
+        [VehicleModel.Trailer3] = 2,
         [VehicleModel.Andromada] = 1,
         [VehicleModel.Dodo] = 2,
         [VehicleModel.RCCam] = 1,
