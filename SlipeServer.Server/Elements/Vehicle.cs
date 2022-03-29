@@ -399,6 +399,8 @@ public class Vehicle : Element
         this.TowedVehicleChanged?.Invoke(this, arguments);
     }
 
+    public void DetachTrailer(bool updateCounterpart = true) => AttachTrailer(null, updateCounterpart);
+
     public void AttachToTower(Vehicle? tower, bool updateCounterpart = true)
     {
         if (this.TowingVehicle == tower)
@@ -415,6 +417,8 @@ public class Vehicle : Element
         this.TowingVehicle = tower;
         this.TowingVehicleChanged?.Invoke(this, arguments);
     }
+
+    public void DetachFromTower(bool updateCounterpart = true) => AttachToTower(null, updateCounterpart);
 
 
     public virtual bool CanEnter(Ped ped) => true;
