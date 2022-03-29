@@ -79,6 +79,30 @@ public class VehiclePureSyncPacketHandler : IPacketHandler<VehiclePureSyncPacket
                 vehicle.AdjustableProperty = packet.AdjustableProperty;
 
                 vehicle.DoorRatios = packet.DoorOpenRatios;
+
+                if (packet.HasTrailer)
+                {
+                    var previous = vehicle;
+                    foreach (var trailer in packet.Trailers)
+                    {
+                        var trailerElement = this.elementRepository.Get(trailer.Id) as Elements.Vehicle;
+                        if (trailerElement == null)
+                            break;
+
+                        trailerElement.RunAsSync(() =>
+                        {
+                            trailerElement.TowingVehicle = previous;
+                            trailerElement.Position = trailer.Position;
+                            trailerElement.Rotation = trailer.Rotation;
+                        });
+                        previous.TowedVehicle = trailerElement;
+                        previous = trailerElement;
+                    }
+                } else if (vehicle.TowedVehicle != null)
+                {
+                    vehicle.TowedVehicle.TowingVehicle = null;
+                    vehicle.TowedVehicle = null;
+                }
             });
         }
     }

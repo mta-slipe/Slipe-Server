@@ -5,12 +5,14 @@ using SlipeServer.Server.Constants;
 using SlipeServer.Server.Elements.Events;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
 
 namespace SlipeServer.Server.Elements;
 
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
 public class Vehicle : Element
 {
     public override ElementType ElementType => ElementType.Vehicle;
@@ -198,6 +200,18 @@ public class Vehicle : Element
     }
 
     public Dictionary<byte, Ped> Occupants { get; set; }
+
+    /// <summary>
+    /// Vehicle that is towing this vehicle
+    /// </summary>
+    public Vehicle? TowingVehicle { get; set; }
+
+    /// <summary>
+    /// Vehicle that is being towed by this vehicle
+    /// </summary>
+    public Vehicle? TowedVehicle { get; set; }
+
+    private string DebuggerDisplay => $"{(VehicleModel)this.model} ({this.Id})";
 
     public Vehicle(ushort model, Vector3 position) : base()
     {

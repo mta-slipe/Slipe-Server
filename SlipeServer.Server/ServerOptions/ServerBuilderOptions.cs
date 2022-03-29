@@ -3,7 +3,7 @@
 namespace SlipeServer.Server.ServerOptions;
 
 [Flags]
-public enum ServerBuilderDefaultPacketHandlers : long
+public enum ServerBuilderDefaultPacketHandlers : ulong
 {
     None = 0x00,
 
@@ -53,10 +53,11 @@ public enum ServerBuilderDefaultPacketHandlers : long
     PedWastedPacketHandler = 0x100000000,
     LatentLuaEventPacketHandler = 0x200000000,
     CustomDataPacketHandler = 0x400000000,
+    VehicleTrailerSyncPacketHandler = 0x800000000,
 }
 
 [Flags]
-public enum ServerBuilderDefaultBehaviours : long
+public enum ServerBuilderDefaultBehaviours : ulong
 {
     None = 0x00,
 
@@ -93,7 +94,7 @@ public enum ServerBuilderDefaultBehaviours : long
 }
 
 [Flags]
-public enum ServerBuilderDefaultMiddleware : long
+public enum ServerBuilderDefaultMiddleware : ulong
 {
     None = 0x00,
 
@@ -107,7 +108,7 @@ public enum ServerBuilderDefaultMiddleware : long
 }
 
 [Flags]
-public enum ServerBuilderDefaultServices : long
+public enum ServerBuilderDefaultServices : ulong
 {
     None = 0x00,
 }

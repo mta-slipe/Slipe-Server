@@ -98,6 +98,7 @@ public class VehiclePureSyncPacket : Packet
 
             while (reader.GetBit())
             {
+                this.HasTrailer = true;
                 this.Trailers.Add(new TrailerSync()
                 {
                     Id = reader.GetElementId(),

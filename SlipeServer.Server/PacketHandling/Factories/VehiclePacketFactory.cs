@@ -68,4 +68,14 @@ public static class VehiclePacketFactory
             LightStates = vehicle.Damage.Lights,
         };
     }
+
+    public static VehicleTrailerSyncPacket CreateTrailerDetachPacket(Vehicle vehicle, Vehicle attachedVehicle)
+    {
+        return new VehicleTrailerSyncPacket()
+        {
+            VehicleId = vehicle.Id,
+            AttachedVehicleId = vehicle.Id,
+            IsAttached = false
+        };
+    }
 }

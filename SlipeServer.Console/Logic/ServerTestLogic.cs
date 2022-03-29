@@ -58,6 +58,9 @@ public class ServerTestLogic
     private Vehicle? Taxi { get; set; }
     private Vehicle? Rhino { get; set; }
     private Vehicle? FrozenVehicle { get; set; }
+    private Vehicle? Roadtrain { get; set; }
+    private Vehicle? Trailer1 { get; set; }
+    private Vehicle? Trailer2 { get; set; }
     private Ped? Ped { get; set; }
     private Ped? Ped2 { get; set; }
     private Ped? CJ { get; set; }
@@ -174,6 +177,10 @@ public class ServerTestLogic
 
         this.FrozenVehicle = new Vehicle(602, new Vector3(0, 0, 10)).AssociateWith(this.server);
         this.FrozenVehicle.IsFrozen = true;
+
+        this.Roadtrain = new Vehicle(VehicleModel.Roadtrain, new Vector3(10, 30, 5)).AssociateWith(this.server);
+        this.Trailer1 = new Vehicle(VehicleModel.Trailer1, new Vector3(15, 30, 3)).AssociateWith(this.server);
+        this.Trailer2 = new Vehicle(VehicleModel.Trailer2, new Vector3(20, 30, 3)).AssociateWith(this.server);
 
         var vehicle = new Vehicle(602, new Vector3(-10, 5, 3)).AssociateWith(this.server);
         vehicle.HeadlightColor = Color.Red;

@@ -8,10 +8,12 @@ using SlipeServer.Server.Enums;
 using SlipeServer.Server.PacketHandling.Factories;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Numerics;
 
 namespace SlipeServer.Server.Elements;
 
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
 public class Player : Ped
 {
     public override ElementType ElementType => ElementType.Player;
@@ -83,6 +85,8 @@ public class Player : Ped
             this.MoneyChanged?.Invoke(this, new PlayerMoneyChangedEventArgs(this, clampedMoney, true));
         }
     }
+
+    private string DebuggerDisplay => $"{this.Name} ({this.Id})";
 
     protected internal Player(Client client) : base(0, Vector3.Zero)
     {
