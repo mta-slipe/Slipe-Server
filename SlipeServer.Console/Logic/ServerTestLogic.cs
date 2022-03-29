@@ -757,9 +757,28 @@ public class ServerTestLogic
                 this.Taxi.Dimension = 0;
         };
 
+        this.commandService.AddCommand("trailerpls").Triggered += (source, args) =>
+        {
+            var vehicle = args.Player.Vehicle;
+            if (vehicle == null)
+                return;
+
+            var newTrailer = new Vehicle(VehicleModel.Trailer3, vehicle.Position + (vehicle.Forward * -15))
+            {
+                Rotation = vehicle.Rotation
+            }.AssociateWith(this.server);
+            newTrailer.AttachToTower(vehicle);
+        };
+
+        this.commandService.AddCommand("notrailerpls").Triggered += (source, args) =>
+        {
+            args.Player.Vehicle?.AttachTrailer(null);
+        };
+
         this.commandService.AddCommand("hot").Triggered += (source, args) =>
         {
             // command for testing, use hot reload to write code and apply during a running debug session
+            var x = this;
         };
 
         this.commandService.AddCommand("clothes").Triggered += (source, args) =>

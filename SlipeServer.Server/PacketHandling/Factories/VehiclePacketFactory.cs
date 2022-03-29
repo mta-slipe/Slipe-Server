@@ -74,7 +74,7 @@ public static class VehiclePacketFactory
         return new VehicleTrailerSyncPacket()
         {
             VehicleId = vehicle.Id,
-            AttachedVehicleId = vehicle.Id,
+            AttachedVehicleId = attachedVehicle.Id,
             IsAttached = false
         };
     }

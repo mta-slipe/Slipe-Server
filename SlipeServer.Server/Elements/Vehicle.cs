@@ -204,12 +204,12 @@ public class Vehicle : Element
     /// <summary>
     /// Vehicle that is towing this vehicle
     /// </summary>
-    public Vehicle? TowingVehicle { get; set; }
+    public Vehicle? TowingVehicle { get; private set; }
 
     /// <summary>
     /// Vehicle that is being towed by this vehicle
     /// </summary>
-    public Vehicle? TowedVehicle { get; set; }
+    public Vehicle? TowedVehicle { get; private set; }
 
     private string DebuggerDisplay => $"{(VehicleModel)this.model} ({this.Id})";
 
@@ -381,6 +381,41 @@ public class Vehicle : Element
         RespawnAt(this.RespawnPosition, this.RespawnRotation);
     }
 
+    public void AttachTrailer(Vehicle? trailer, bool updateCounterpart = true)
+    {
+        if (this.TowedVehicle == trailer)
+            return;
+
+        if (updateCounterpart)
+        {
+            if (trailer != null)
+                trailer.AttachToTower(this, false);
+            else
+                this.TowedVehicle?.AttachToTower(null, false);
+        }
+
+        var arguments = new ElementChangedEventArgs<Vehicle, Vehicle?>(this, this.TowedVehicle, trailer, this.IsSync);
+        this.TowedVehicle = trailer;
+        this.TowedVehicleChanged?.Invoke(this, arguments);
+    }
+
+    public void AttachToTower(Vehicle? tower, bool updateCounterpart = true)
+    {
+        if (this.TowingVehicle == tower)
+            return;
+
+        if (updateCounterpart)
+        {
+            if (tower != null)
+                tower.AttachTrailer(this, false);
+            else
+                this.TowingVehicle?.AttachTrailer(null, false);
+        }
+        var arguments = new ElementChangedEventArgs<Vehicle, Vehicle?>(this, this.TowingVehicle, tower, this.IsSync);
+        this.TowingVehicle = tower;
+        this.TowingVehicleChanged?.Invoke(this, arguments);
+    }
+
 
     public virtual bool CanEnter(Ped ped) => true;
     public virtual bool CanExit(Ped ped) => true;
@@ -397,6 +432,8 @@ public class Vehicle : Element
     public event ElementChangedEventHandler<Vehicle, bool>? EngineStateChanged;
     public event ElementChangedEventHandler<Vehicle, Player?>? SyncerChanged;
     public event ElementChangedEventHandler<Vehicle, Color>? HeadlightColorChanged;
+    public event ElementChangedEventHandler<Vehicle, Vehicle?>? TowedVehicleChanged;
+    public event ElementChangedEventHandler<Vehicle, Vehicle?>? TowingVehicleChanged;
     public event ElementEventHandler<VehicleRespawnEventArgs>? Respawned;
     public event ElementEventHandler<VehicleDoorStateChangedArgs>? DoorStateChanged;
     public event ElementEventHandler<VehicleWheelStateChangedArgs>? WheelStateChanged;

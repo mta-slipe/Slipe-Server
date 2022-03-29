@@ -91,17 +91,15 @@ public class VehiclePureSyncPacketHandler : IPacketHandler<VehiclePureSyncPacket
 
                         trailerElement.RunAsSync(() =>
                         {
-                            trailerElement.TowingVehicle = previous;
+                            trailerElement.AttachToTower(previous, true);
                             trailerElement.Position = trailer.Position;
                             trailerElement.Rotation = trailer.Rotation;
                         });
-                        previous.TowedVehicle = trailerElement;
                         previous = trailerElement;
                     }
                 } else if (vehicle.TowedVehicle != null)
                 {
-                    vehicle.TowedVehicle.TowingVehicle = null;
-                    vehicle.TowedVehicle = null;
+                    vehicle.TowedVehicle.AttachToTower(null, true);
                 }
             });
         }

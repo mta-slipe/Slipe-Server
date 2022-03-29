@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
+using SlipeServer.Packets.Definitions.Vehicles;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
@@ -40,6 +41,7 @@ public class VehicleBehaviour
             vehicle.TurretRotationChanged += RelayTurretRotationChanged;
             vehicle.PlateTextChanged += RelayPlateTextChanged;
             vehicle.HeadlightColorChanged += RelayHeadlightColorChanged;
+            vehicle.TowedVehicleChanged += RelayTowedVehicleChanged;
         }
     }
 
@@ -121,5 +123,28 @@ public class VehicleBehaviour
         if (args.Vehicle.IsSync)
             return;
         this.server.BroadcastPacket(new SetVehicleDoorOpenRatio(args.Vehicle.Id, (byte)args.Door, args.Ratio, args.Time));
+    }
+
+    private void RelayTowedVehicleChanged(Vehicle sender, ElementChangedEventArgs<Vehicle, Vehicle?> args)
+    {
+        if (args.Source.IsSync)
+            return;
+
+        if (args.NewValue == null)
+        {
+            if (args.OldValue != null)
+                this.server.BroadcastPacket(VehiclePacketFactory.CreateTrailerDetachPacket(sender, args.OldValue));
+            return;
+        }
+
+        this.server.BroadcastPacket(new VehicleTrailerSyncPacket()
+        {
+            VehicleId = sender.Id,
+            AttachedVehicleId = args.NewValue.Id,
+            IsAttached = true,
+            Position = args.NewValue.Position,
+            Rotation = args.NewValue.Rotation,
+            TurnVelocity = args.NewValue.TurnVelocity,
+        });
     }
 }

@@ -46,12 +46,10 @@ public class VehicleTrailerSyncPacketHandler : IPacketHandler<VehicleTrailerSync
                         VehiclePacketFactory.CreateTrailerDetachPacket(attachedVehicle.TowingVehicle, attachedVehicle)
                             .SendTo(otherPlayers);
 
-                    vehicle.TowedVehicle = attachedVehicle;
-                    attachedVehicle.TowingVehicle = vehicle;
+                    attachedVehicle.RunAsSync(() => attachedVehicle.AttachToTower(vehicle, true));
                 } else
                 {
-                    vehicle.TowedVehicle = null;
-                    attachedVehicle.TowingVehicle = null;
+                    attachedVehicle.RunAsSync(() => attachedVehicle.AttachToTower(null, true));
                 }
 
                 packet.SendTo(otherPlayers);
