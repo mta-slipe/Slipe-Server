@@ -43,7 +43,7 @@ public class ChatEchoPacket : Packet
         builder.Write(this.Color);
         builder.Write(this.IsColorCoded);
         builder.WriteElementId(this.SourceId);
-        //builder.Write(this.MessageType); // to be added when upping bitstream version to 116
+        builder.Write(this.MessageType);
         builder.WriteStringWithoutLength(this.Message);
 
         return builder.Build();

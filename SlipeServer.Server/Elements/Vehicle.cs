@@ -3,6 +3,7 @@ using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Concepts;
 using SlipeServer.Server.Constants;
 using SlipeServer.Server.Elements.Events;
+using SlipeServer.Server.Enums;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -211,6 +212,8 @@ public class Vehicle : Element
     /// </summary>
     public Vehicle? TowedVehicle { get; private set; }
 
+    public VehicleBlownState BlownState { get; set; }
+
     private string DebuggerDisplay => $"{(VehicleModel)this.model} ({this.Id})";
 
     public Vehicle(ushort model, Vector3 position) : base()
@@ -298,6 +301,7 @@ public class Vehicle : Element
     {
         this.Health = 0;
         this.IsEngineOn = false;
+        this.BlownState = VehicleBlownState.BlownUp;
         this.Blown?.Invoke(this);
     }
 
@@ -367,6 +371,7 @@ public class Vehicle : Element
         this.Position = position;
         this.Rotation = rotation;
         this.Health = this.RespawnHealth;
+        this.BlownState = VehicleBlownState.Intact;
 
         this.Respawned?.Invoke(this, new VehicleRespawnEventArgs(this, position, rotation));
     }
