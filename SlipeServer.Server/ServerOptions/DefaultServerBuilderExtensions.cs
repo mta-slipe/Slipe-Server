@@ -34,6 +34,7 @@ using SlipeServer.Packets.Definitions.Ped;
 using SlipeServer.Server.PacketHandling.QueueHandlers;
 using SlipeServer.Server.PacketHandling.Handlers.CustomData;
 using SlipeServer.Packets.Definitions.CustomElementData;
+using SlipeServer.Packets.Definitions.Resources;
 
 namespace SlipeServer.Server.ServerOptions;
 
@@ -128,6 +129,8 @@ public static class DefaultServerBuilderExtensions
             builder.AddPacketHandler<CustomDataPacketHandler, CustomDataPacket>();
         if ((except & ServerBuilderDefaultPacketHandlers.VehicleTrailerSyncPacketHandler) == 0)
             builder.AddPacketHandler<VehicleTrailerSyncPacketHandler, VehicleTrailerSyncPacket>();
+        if ((except & ServerBuilderDefaultPacketHandlers.PlayerResourceStartedPacketHandler) == 0)
+            builder.AddPacketHandler<PlayerResourceStartedPacketHandler, PlayerResourceStartedPacket>();
     }
 
     public static void AddDefaultBehaviours(

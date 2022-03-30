@@ -272,24 +272,29 @@ public class Player : Ped
         MoneyChanged?.Invoke(this, args);
     }
 
-    internal void TriggerPlayerACInfo(IEnumerable<byte> detectedACList, uint d3d9Size, string d3d9MD5, string D3d9SHA256)
+    public void TriggerPlayerACInfo(IEnumerable<byte> detectedACList, uint d3d9Size, string d3d9MD5, string D3d9SHA256)
     {
         this.AcInfoReceived?.Invoke(this, new PlayerACInfoArgs(detectedACList, d3d9Size, d3d9MD5, D3d9SHA256));
     }
 
-    internal void TriggerPlayerDiagnosticInfo(uint level, string message)
+    public void TriggerPlayerDiagnosticInfo(uint level, string message)
     {
         this.DiagnosticInfoReceived?.Invoke(this, new PlayerDiagnosticInfo(level, message));
     }
 
-    internal void TriggerPlayerModInfo(string infoType, IEnumerable<ModInfoItem> modInfoItems)
+    public void TriggerPlayerModInfo(string infoType, IEnumerable<ModInfoItem> modInfoItems)
     {
         this.ModInfoReceived?.Invoke(this, new PlayerModInfoArgs(infoType, modInfoItems));
     }
 
-    internal void TriggerNetworkStatus(PlayerNetworkStatusType networkStatusType, uint ticks)
+    public void TriggerNetworkStatus(PlayerNetworkStatusType networkStatusType, uint ticks)
     {
         this.NetworkStatusReceived?.Invoke(this, new PlayerNetworkStatusArgs(networkStatusType, ticks));
+    }
+
+    public void TriggerResourceStarted(ushort netId)
+    {
+        this.ResourceStarted?.Invoke(this, new PlayerResourceStartedEventArgs(this, netId));
     }
 
     public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
@@ -310,4 +315,5 @@ public class Player : Ped
     public event ElementEventHandler<Player, PlayerNetworkStatusArgs>? NetworkStatusReceived;
     public event ElementEventHandler<Player, PlayerTeamChangedArgs>? TeamChanged;
     public event ElementEventHandler<Player, PlayerMoneyChangedEventArgs>? MoneyChanged;
+    public event ElementEventHandler<Player, PlayerResourceStartedEventArgs>? ResourceStarted;
 }

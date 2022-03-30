@@ -54,6 +54,7 @@ public enum ServerBuilderDefaultPacketHandlers : ulong
     LatentLuaEventPacketHandler = 0x200000000,
     CustomDataPacketHandler = 0x400000000,
     VehicleTrailerSyncPacketHandler = 0x800000000,
+    PlayerResourceStartedPacketHandler = 0x1000000000,
 }
 
 [Flags]
