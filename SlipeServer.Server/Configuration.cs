@@ -39,7 +39,7 @@ public class Configuration
 
     public float LightSyncRange { get; set; } = 800;
 
-    public ushort BitStreamVersion { get; set; } = 116;
+    public ushort BitStreamVersion { get; set; } = 117;
 
     public bool IsVoiceEnabled { get; set; }
 
