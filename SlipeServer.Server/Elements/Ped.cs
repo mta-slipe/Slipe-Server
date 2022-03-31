@@ -206,6 +206,7 @@ public class Ped : Element
             return;
 
         vehicle.AddPassenger(seat, this, true);
+        this.HasJetpack = false;
     }
 
     public void AddWeapon(WeaponId weaponId, ushort ammoCount, bool setAsCurrent = false)
@@ -262,6 +263,7 @@ public class Ped : Element
             this.Vehicle = null;
             this.Seat = null;
             this.VehicleAction = VehicleAction.None;
+            this.HasJetpack = false;
             InvokeWasted(new PedWastedEventArgs(this, damager, damageType, bodyPart, animationGroup, animationId));
         });
     }
