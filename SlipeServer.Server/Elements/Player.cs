@@ -145,6 +145,7 @@ public class Player : Ped
         this.Vehicle = null;
         this.Seat = null;
         this.VehicleAction = VehicleAction.None;
+        this.HasJetpack = false;
 
         this.Spawned?.Invoke(this, new PlayerSpawnedEventArgs(this));
     }
