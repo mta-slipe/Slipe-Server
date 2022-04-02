@@ -5,6 +5,7 @@ using System.Numerics;
 using Xunit;
 
 namespace SlipeServer.Server.Tests.Integration.Services;
+
 public class ExplosionServiceTests
 {
     [Fact]
