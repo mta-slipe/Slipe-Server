@@ -38,13 +38,7 @@ public class PureSyncPacketHandlerTests
         });
 
         foreach (var player in otherPlayers)
-            server.NetWrapperMock.Verify(x => x.SendPacket(
-                player.Address,
-                PacketId.PACKET_ID_PLAYER_PURESYNC,
-                It.IsAny<ushort>(),
-                It.IsAny<byte[]>(),
-                It.IsAny<PacketPriority>(),
-                It.IsAny<PacketReliability>()));
+            server.VerifyPacketSent(PacketId.PACKET_ID_PLAYER_PURESYNC, player);
     }
 
     [Fact]
@@ -68,7 +62,7 @@ public class PureSyncPacketHandlerTests
 
         });
 
-        server.NetWrapperMock.Verify(x => x.SendPacket(sourcePlayer.Address, It.IsAny<ushort>(), It.IsAny<ReturnSyncPacket>()));
+        server.VerifyPacketSent(PacketId.PACKET_ID_RETURN_SYNC, sourcePlayer);
     }
 
     [Fact]

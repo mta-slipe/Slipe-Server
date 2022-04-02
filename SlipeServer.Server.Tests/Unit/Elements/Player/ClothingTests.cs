@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
+﻿using FluentAssertions;
 using SlipeServer.Server.Constants;
-using FluentAssertions;
+using Xunit;
 
-namespace SlipeServer.Server.Tests.Unit.Player;
+namespace SlipeServer.Server.Tests.Unit.Elements.Player;
 
 public class ClothingTests
 {

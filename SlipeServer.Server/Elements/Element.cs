@@ -248,9 +248,9 @@ public class Element : ISpatialData
         }
     }
 
-    public bool CanUpdateSync(byte Remote)
+    public bool CanUpdateSync(byte remoteContext)
     {
-        return (this.TimeContext == Remote || Remote == 0 || this.TimeContext == 0);
+        return (this.TimeContext == remoteContext || remoteContext == 0 || this.TimeContext == 0);
     }
 
     public void Destroy()
