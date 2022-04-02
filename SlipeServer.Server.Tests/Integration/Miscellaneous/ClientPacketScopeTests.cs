@@ -20,11 +20,7 @@ public class ClientPacketScopeTests
         using var scope = new ClientPacketScope(new Client[] { player.Client });
         player.Client.SendPacket(new SetElementModelRpcPacket(player.Id, 0));
 
-        server.NetWrapperMock.Verify(x => x.SendPacket(
-            player.Address,
-            It.IsAny<ushort>(),
-            It.IsAny<SetElementModelRpcPacket>()
-        ), Times.Once);
+        server.VerifyPacketSent(Packets.Enums.PacketId.PACKET_ID_LUA_ELEMENT_RPC, player);
     }
 
     [Fact]
@@ -37,11 +33,7 @@ public class ClientPacketScopeTests
         using var scope = new ClientPacketScope(Array.Empty<Client>());
         player.Client.SendPacket(new SetElementModelRpcPacket(player.Id, 0));
 
-        server.NetWrapperMock.Verify(x => x.SendPacket(
-            player.Address,
-            It.IsAny<ushort>(),
-            It.IsAny<SetElementModelRpcPacket>()
-        ), Times.Never);
+        server.VerifyPacketSent(Packets.Enums.PacketId.PACKET_ID_LUA_ELEMENT_RPC, player, count: 0);
     }
 
     [Fact]
@@ -50,6 +42,8 @@ public class ClientPacketScopeTests
         var server = new TestingServer();
 
         var player = server.AddFakePlayer();
+        var expectedPacket = new SetElementModelRpcPacket(player.Id, 1);
+        var notExpectedPacket = new SetElementModelRpcPacket(player.Id, 2);
 
         await Task.WhenAll(new Task[]
         {
@@ -57,27 +51,18 @@ public class ClientPacketScopeTests
                 {
                     await Task.Delay(10);
                     using var scope = new ClientPacketScope(new Client[] { player.Client });
-                    player.Client.SendPacket(new SetElementModelRpcPacket(player.Id, 1));
+                    player.Client.SendPacket(expectedPacket);
                     await Task.Delay(25);
                 }),
                 Task.Run(async() =>
                 {
                     using var scope = new ClientPacketScope(Array.Empty<Client>());
                     await Task.Delay(25);
-                    player.Client.SendPacket(new SetElementModelRpcPacket(player.Id, 2));
+                    player.Client.SendPacket(notExpectedPacket);
                 })
         });
 
-        server.NetWrapperMock.Verify(x => x.SendPacket(
-            player.Address,
-            It.IsAny<ushort>(),
-            It.Is<SetElementModelRpcPacket>(x => x.Model == 1)
-        ), Times.Once);
-
-        server.NetWrapperMock.Verify(x => x.SendPacket(
-            player.Address,
-            It.IsAny<ushort>(),
-            It.Is<SetElementModelRpcPacket>(x => x.Model == 2)
-        ), Times.Never);
+        server.VerifyPacketSent(Packets.Enums.PacketId.PACKET_ID_LUA_ELEMENT_RPC, player, expectedPacket.Write(), count: 1);
+        server.VerifyPacketSent(Packets.Enums.PacketId.PACKET_ID_LUA_ELEMENT_RPC, player, notExpectedPacket.Write(), count: 0);
     }
 }

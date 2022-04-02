@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SlipeServer.Server\SlipeServer.Server.csproj" />
+	<PackageReference Include="FluentAssertions" Version="5.10.3" />
   </ItemGroup>
 
   <ItemGroup>
