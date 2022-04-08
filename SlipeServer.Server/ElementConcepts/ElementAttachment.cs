@@ -46,12 +46,15 @@ public class ElementAttachment
 
     public void UpdateAttachedElement()
     {
-        this.Source.Position = this.Target.Position +
-            this.Target.Right * this.PositionOffset.X +
-            this.Target.Forward * this.positionOffset.Y +
-            this.Target.Up * this.positionOffset.Z;
+        this.Source.RunAsSync(() =>
+        {
+            this.Source.Position = this.Target.Position +
+                this.Target.Right * this.PositionOffset.X +
+                this.Target.Forward * this.positionOffset.Y +
+                this.Target.Up * this.positionOffset.Z;
 
-        this.Source.Rotation = this.Target.Rotation + this.rotationOffset;
+            this.Source.Rotation = this.Target.Rotation + this.rotationOffset;
+        }, this.Target.IsSync);
     }
 
     public event Action<Vector3>? PositionOffsetChanged;
