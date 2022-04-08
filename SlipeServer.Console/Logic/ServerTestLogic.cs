@@ -787,6 +787,14 @@ public class ServerTestLogic
             this.Bin?.DetachFrom(args.Player);
         };
 
+        this.commandService.AddCommand("moveattach").Triggered += (source, args) =>
+        {
+            if (this.Bin?.Attachment == null)
+                return;
+
+            this.Bin.Attachment.PositionOffset += new Vector3(1, 0, 0);
+        };
+
         this.commandService.AddCommand("hot").Triggered += (source, args) =>
         {
             // command for testing, use hot reload to write code and apply during a running debug session

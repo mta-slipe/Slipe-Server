@@ -394,7 +394,7 @@ public class Element : ISpatialData
 
         attachment.PositionOffsetChanged += (newPosition) 
             => this.AttachedOffsetChanged?.Invoke(this, new ElementAttachOffsetsChangedArgs(this, element, newPosition, attachment.RotationOffset));
-        attachment.PositionOffsetChanged += (newRotation) 
+        attachment.RotationOffsetChanged += (newRotation) 
             => this.AttachedOffsetChanged?.Invoke(this, new ElementAttachOffsetsChangedArgs(this, element, attachment.PositionOffset, newRotation));
 
         this.Attached?.Invoke(this, new ElementAttachedEventArgs(this, element, position, rotation));
