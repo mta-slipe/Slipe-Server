@@ -44,6 +44,16 @@ public class ElementAttachment
         this.rotationOffset = rotationOffset ?? Vector3.Zero;
     }
 
+    public void UpdateAttachedElement()
+    {
+        this.Source.Position = this.Target.Position +
+            this.Target.Right * this.PositionOffset.X +
+            this.Target.Forward * this.positionOffset.Y +
+            this.Target.Up * this.positionOffset.Z;
+
+        this.Source.Rotation = this.Target.Rotation + this.rotationOffset;
+    }
+
     public event Action<Vector3>? PositionOffsetChanged;
     public event Action<Vector3>? RotationOffsetChanged;
 }

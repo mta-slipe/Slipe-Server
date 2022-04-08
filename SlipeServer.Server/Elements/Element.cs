@@ -67,6 +67,9 @@ public class Element : ISpatialData
             this.position = value;
             PositionChanged?.Invoke(this, args);
             this.envelope = new Envelope(value.X - .01f, value.Y - .01f, value.X + .01f, value.Y + .01f);
+
+            foreach (var attachment in this.attachedElements)
+                attachment.UpdateAttachedElement();
         }
     }
 
@@ -83,6 +86,9 @@ public class Element : ISpatialData
             var args = new ElementChangedEventArgs<Vector3>(this, this.Rotation, value, this.IsSync);
             this.rotation = value;
             RotationChanged?.Invoke(this, args);
+
+            foreach (var attachment in this.attachedElements)
+                attachment.UpdateAttachedElement();
         }
     }
 
