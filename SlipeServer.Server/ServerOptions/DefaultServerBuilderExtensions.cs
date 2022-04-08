@@ -194,6 +194,8 @@ public static class DefaultServerBuilderExtensions
             builder.AddBehaviour<UnoccupiedVehicleSyncBehaviour>();
         if ((except & ServerBuilderDefaultBehaviours.CustomDataBehaviour) == 0)
             builder.AddBehaviour<CustomDataBehaviour>();
+        if ((except & ServerBuilderDefaultBehaviours.PlayerBehaviour) == 0)
+            builder.AddBehaviour<PlayerBehaviour>();
     }
 
     public static void AddDefaultServices(

@@ -963,6 +963,30 @@ public class ServerTestLogic
         };
 
         player.Team = this.slipeDevsTeam;
+
+        bool jetpackBindEnabled = true;
+        player.SetBind("j", KeyState.Down);
+        player.SetBind("h", KeyState.Down);
+        player.BindExecuted += (Player sender, PlayerBindExecutedEventArgs e) =>
+        {
+            if(e.Key == "j")
+            {
+                player.HasJetpack = !player.HasJetpack;
+                if(player.HasJetpack)
+                    this.logger.LogInformation($"{sender.Name} put on a jetpack!");
+                else
+                    this.logger.LogInformation($"{sender.Name} pulled off his jetpack!");
+            }
+            else if(e.Key == "h")
+            {
+                jetpackBindEnabled = !jetpackBindEnabled;
+                player.SetBind("j", jetpackBindEnabled ? KeyState.Down : KeyState.None);
+                if (jetpackBindEnabled)
+                    this.logger.LogInformation("Bind enabled");
+                else
+                    this.logger.LogInformation("Bind disabled");
+            }
+        };
     }
 
     private void HandlePlayerSubscriptions(Player player)

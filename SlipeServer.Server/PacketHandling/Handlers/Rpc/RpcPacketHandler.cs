@@ -6,6 +6,7 @@ using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
 using SlipeServer.Packets.Rpc;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Factories;
 using SlipeServer.Server.Repositories;
@@ -54,6 +55,9 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
 
             case RpcFunctions.PLAYER_TARGET:
                 HandlePlayerTarget(client, packet);
+                break;
+            case RpcFunctions.KEY_BIND:
+                HandlePlayerBindKey(client, packet);
                 break;
 
             default:
@@ -149,5 +153,14 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
         uint id = packet.Reader.GetElementId();
         Element? element = this.elementRepository.Get(id);
         client.Player.Target = element;
+    }
+
+    private void HandlePlayerBindKey(Client client, RpcPacket packet)
+    {
+        var type = packet.Reader.GetBit() ? BindType.ControlFunction : BindType.Function;
+        var state = packet.Reader.GetBit() ? KeyState.Down : KeyState.Up;
+        var size = (packet.Reader.Size - packet.Reader.Counter) >> 3;
+        var key = packet.Reader.GetStringCharacters(size);
+        client.Player.TriggerBoundKey(type, state, key);
     }
 }

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
+using SlipeServer.Packets.Constants;
 
 namespace SlipeServer.Server.Elements;
 
@@ -72,6 +73,7 @@ public class Player : Ped
     public Dictionary<int, PlayerPendingScreenshot> PendingScreenshots { get; } = new();
 
     private readonly HashSet<Element> subscriptionElements;
+    private Dictionary<string, KeyState> BoundKeys { get; }
 
     private int money;
     public int Money
@@ -95,6 +97,7 @@ public class Player : Ped
         this.subscriptionElements = new();
         this.SyncingPeds = new();
         this.SyncingVehicles = new();
+        this.BoundKeys = new();
         this.Controls = new(this);
 
         this.Disconnected += HandleDisconnect;
@@ -275,6 +278,34 @@ public class Player : Ped
         MoneyChanged?.Invoke(this, args);
     }
 
+    public void SetBind(KeyConstants.Controls control, KeyState keyState) => SetBind(KeyConstants.ControlToString(control), keyState);
+    public void SetBind(KeyConstants.Keys key, KeyState keyState) => SetBind(KeyConstants.KeyToString(key), keyState);
+
+    public void SetBind(string key, KeyState keyState = KeyState.Down)
+    {
+        if(!KeyConstants.IsValid(key))
+            throw new ArgumentException($"Key '{key}' is not valid.", key);
+
+        if (keyState == KeyState.None)
+        {
+            this.RemoveBind(key);
+            return;
+        }
+
+        this.BoundKeys[key] = keyState;
+        this.KeyBound?.Invoke(this, new PlayerBindKeyArgs(this, key, keyState));
+    }
+
+    public void RemoveBind(string key, KeyState keyState = KeyState.Down)
+    {
+        if (!KeyConstants.IsValid(key))
+            throw new ArgumentException($"Key '{key}' is not valid.", key);
+
+        this.BoundKeys.Remove(key);
+        this.KeyUnbound?.Invoke(this, new PlayerBindKeyArgs(this, key, keyState));
+    }
+
+
     public void TriggerPlayerACInfo(IEnumerable<byte> detectedACList, uint d3d9Size, string d3d9MD5, string D3d9SHA256)
     {
         this.AcInfoReceived?.Invoke(this, new PlayerACInfoArgs(detectedACList, d3d9Size, d3d9MD5, D3d9SHA256));
@@ -300,6 +331,11 @@ public class Player : Ped
         this.ResourceStarted?.Invoke(this, new PlayerResourceStartedEventArgs(this, netId));
     }
 
+    public void TriggerBoundKey(BindType bindType, KeyState keyState, string key)
+    {
+        this.BindExecuted?.Invoke(this, new PlayerBindExecutedEventArgs(this, bindType, keyState, key));
+    }
+
     public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
     public event ElementEventHandler<Player, PlayerDamagedEventArgs>? Damaged;
     public event ElementEventHandler<Player, PlayerSpawnedEventArgs>? Spawned;
@@ -318,5 +354,8 @@ public class Player : Ped
     public event ElementEventHandler<Player, PlayerNetworkStatusArgs>? NetworkStatusReceived;
     public event ElementEventHandler<Player, PlayerTeamChangedArgs>? TeamChanged;
     public event ElementEventHandler<Player, PlayerMoneyChangedEventArgs>? MoneyChanged;
+    public event ElementEventHandler<Player, PlayerBindKeyArgs>? KeyBound;
+    public event ElementEventHandler<Player, PlayerBindKeyArgs>? KeyUnbound;
     public event ElementEventHandler<Player, PlayerResourceStartedEventArgs>? ResourceStarted;
+    public event ElementEventHandler<Player, PlayerBindExecutedEventArgs>? BindExecuted;
 }
