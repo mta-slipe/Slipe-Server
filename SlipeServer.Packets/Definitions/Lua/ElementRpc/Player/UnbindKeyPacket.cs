@@ -1,49 +1,45 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
 using System;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Text;
 
-namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player
+namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
+
+public class UnbindKeyPacket : Packet
 {
-    public class UnbindKeyPacket : Packet
+    public override PacketId PacketId => PacketId.PACKET_ID_LUA;
+    public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+    public override PacketPriority Priority => PacketPriority.High;
+
+    public uint ElementId { get; set; }
+    public string Key { get; set; }
+    public bool HitState { get; set; }
+
+    public UnbindKeyPacket(uint elementId, string key, bool hitState)
     {
-        public override PacketId PacketId => PacketId.PACKET_ID_LUA;
-        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
-        public override PacketPriority Priority => PacketPriority.High;
+        this.ElementId = elementId;
+        this.Key = key;
+        this.HitState = hitState;
+    }
 
-        public uint ElementId { get; set; }
-        public string Key { get; set; }
-        public bool HitState { get; set; }
+    public override void Read(byte[] bytes)
+    {
+        throw new NotSupportedException();
+    }
 
-        public UnbindKeyPacket(uint elementId,string key, bool hitState)
-        {
-            this.ElementId = elementId;
-            this.Key = key;
-            this.HitState = hitState;
-        }
+    public override byte[] Write()
+    {
+        var builder = new PacketBuilder();
 
-        public override void Read(byte[] bytes)
-        {
-            throw new NotSupportedException();
-        }
+        builder.Write((byte)ElementRpcFunction.UNBIND_KEY);
 
-        public override byte[] Write()
-        {
-            var builder = new PacketBuilder();
+        builder.WriteStringWithByteAsLength(this.Key);
+        builder.Write((byte)(this.HitState ? 1 : 0));
 
-            builder.Write((byte)ElementRpcFunction.UNBIND_KEY);
+        return builder.Build();
+    }
 
-            builder.WriteStringWithByteAsLength(this.Key);
-            builder.Write((byte)(this.HitState ? 1 : 0));
+    public override void Reset()
+    {
 
-            return builder.Build();
-        }
-
-        public override void Reset()
-        {
-
-        }
     }
 }

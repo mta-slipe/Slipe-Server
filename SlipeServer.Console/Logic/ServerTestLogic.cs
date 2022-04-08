@@ -967,7 +967,7 @@ public class ServerTestLogic
         bool jetpackBindEnabled = true;
         player.SetBind("j", KeyState.Down);
         player.SetBind("h", KeyState.Down);
-        player.BindExecuted += (Player sender, PlayerBindCallbackArgs e) =>
+        player.BindExecuted += (Player sender, PlayerBindExecutedEventArgs e) =>
         {
             if(e.Key == "j")
             {

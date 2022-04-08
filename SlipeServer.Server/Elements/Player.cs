@@ -281,18 +281,30 @@ public class Player : Ped
     public void SetBind(KeyConstants.Controls control, KeyState keyState) => SetBind(KeyConstants.ControlToString(control), keyState);
     public void SetBind(KeyConstants.Keys key, KeyState keyState) => SetBind(KeyConstants.KeyToString(key), keyState);
 
-    public void SetBind(string key, KeyState keyState)
+    public void SetBind(string key, KeyState keyState = KeyState.Down)
     {
         if(!KeyConstants.IsValid(key))
             throw new ArgumentException($"Key '{key}' is not valid.", key);
 
         if (keyState == KeyState.None)
-            this.BoundKeys.Remove(key);
-        else
-            this.BoundKeys[key] = keyState;
+        {
+            this.RemoveBind(key);
+            return;
+        }
 
+        this.BoundKeys[key] = keyState;
         this.KeyBound?.Invoke(this, new PlayerBindKeyArgs(this, key, keyState));
     }
+
+    public void RemoveBind(string key, KeyState keyState = KeyState.Down)
+    {
+        if (!KeyConstants.IsValid(key))
+            throw new ArgumentException($"Key '{key}' is not valid.", key);
+
+        this.BoundKeys.Remove(key);
+        this.KeyUnbound?.Invoke(this, new PlayerBindKeyArgs(this, key, keyState));
+    }
+
 
     public void TriggerPlayerACInfo(IEnumerable<byte> detectedACList, uint d3d9Size, string d3d9MD5, string D3d9SHA256)
     {
@@ -321,9 +333,8 @@ public class Player : Ped
 
     public void TriggerBoundKey(BindType bindType, KeyState keyState, string key)
     {
-        this.BindExecuted?.Invoke(this, new PlayerBindCallbackArgs(this, bindType, keyState, key));
+        this.BindExecuted?.Invoke(this, new PlayerBindExecutedEventArgs(this, bindType, keyState, key));
     }
-    public event ElementEventHandler<Player, PlayerBindCallbackArgs>? BindExecuted;
 
     public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
     public event ElementEventHandler<Player, PlayerDamagedEventArgs>? Damaged;
@@ -344,5 +355,7 @@ public class Player : Ped
     public event ElementEventHandler<Player, PlayerTeamChangedArgs>? TeamChanged;
     public event ElementEventHandler<Player, PlayerMoneyChangedEventArgs>? MoneyChanged;
     public event ElementEventHandler<Player, PlayerBindKeyArgs>? KeyBound;
+    public event ElementEventHandler<Player, PlayerBindKeyArgs>? KeyUnbound;
     public event ElementEventHandler<Player, PlayerResourceStartedEventArgs>? ResourceStarted;
+    public event ElementEventHandler<Player, PlayerBindExecutedEventArgs>? BindExecuted;
 }

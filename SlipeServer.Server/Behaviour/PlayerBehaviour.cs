@@ -1,56 +1,54 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using Microsoft.Extensions.Logging;
-using MTAServerWrapper.Packets.Outgoing.Connection;
-using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
+﻿using Microsoft.Extensions.Logging;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Extensions;
-using SlipeServer.Server.PacketHandling.Factories;
 using SlipeServer.Server.Repositories;
 
-namespace SlipeServer.Server.Behaviour
+namespace SlipeServer.Server.Behaviour;
+
+public class PlayerBehaviour
 {
-    public class PlayerBehaviour
+    private readonly IElementRepository elementRepository;
+    private readonly MtaServer server;
+    private readonly ILogger logger;
+
+    public PlayerBehaviour(IElementRepository elementRepository, MtaServer server, ILogger logger)
     {
-        private readonly IElementRepository elementRepository;
-        private readonly MtaServer server;
-        private readonly ILogger logger;
+        this.elementRepository = elementRepository;
+        this.server = server;
+        this.logger = logger;
+        server.PlayerJoined += OnPlayerJoin;
+    }
 
-        public PlayerBehaviour(IElementRepository elementRepository, MtaServer server, ILogger logger)
+    private void OnPlayerJoin(Player player)
+    {
+        player.KeyBound += RelayKeyBound;
+        player.KeyUnbound += RelayKeyUnbound;
+    }
+
+    private void RelayKeyBound(Player player, PlayerBindKeyArgs e)
+    {
+        if (e.KeyState == KeyState.Down || e.KeyState == KeyState.Both)
         {
-            this.elementRepository = elementRepository;
-            this.server = server;
-            this.logger = logger;
-            server.PlayerJoined += OnPlayerJoin;
+            new BindKeyPacket(e.Player.Id, e.Key, true).SendTo(player);
         }
-
-        private void OnPlayerJoin(Player player)
+        if (e.KeyState == KeyState.Up || e.KeyState == KeyState.Both)
         {
-            player.KeyBound += RelayKeyBound;
+            new BindKeyPacket(e.Player.Id, e.Key, false).SendTo(player);
         }
+    }
 
-        private void RelayKeyBound(Player sender, PlayerBindKeyArgs e)
+    private void RelayKeyUnbound(Player player, PlayerBindKeyArgs e)
+    {
+        if (e.KeyState == KeyState.Down || e.KeyState == KeyState.Both)
         {
-            if(e.KeyState == KeyState.None)
-            {
-
-            }
-            if (e.KeyState == KeyState.Down || e.KeyState == KeyState.Both)
-            {
-                var packet = new BindKeyPacket(e.Player.Id, e.Key, true);
-                this.server.BroadcastPacket(packet);
-            }
-            if (e.KeyState == KeyState.Up || e.KeyState == KeyState.Both)
-            {
-                var packet = new BindKeyPacket(e.Player.Id, e.Key, false);
-                this.server.BroadcastPacket(packet);
-            }
+            new UnbindKeyPacket(e.Player.Id, e.Key, true).SendTo(player);
+        }
+        if (e.KeyState == KeyState.Up || e.KeyState == KeyState.Both)
+        {
+            new UnbindKeyPacket(e.Player.Id, e.Key, false).SendTo(player);
         }
     }
 }
