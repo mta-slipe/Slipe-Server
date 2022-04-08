@@ -7,89 +7,93 @@ using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.Repositories;
+using System;
 using System.Linq;
 
-namespace SlipeServer.Server.PacketHandling.Handlers.Player.Sync
+namespace SlipeServer.Server.PacketHandling.Handlers.Player.Sync;
+
+public class PlayerPureSyncPacketHandler : IPacketHandler<PlayerPureSyncPacket>
 {
-    public class PlayerPureSyncPacketHandler : IPacketHandler<PlayerPureSyncPacket>
+    private readonly ILogger logger;
+    private readonly ISyncHandlerMiddleware<PlayerPureSyncPacket> pureSyncMiddleware;
+    private readonly IElementRepository elementRepository;
+
+    public PacketId PacketId => PacketId.PACKET_ID_PLAYER_PURESYNC;
+
+    public PlayerPureSyncPacketHandler(
+        ILogger logger,
+        ISyncHandlerMiddleware<PlayerPureSyncPacket> pureSyncMiddleware,
+        IElementRepository elementRepository
+    )
     {
-        private readonly ILogger logger;
-        private readonly ISyncHandlerMiddleware<PlayerPureSyncPacket> pureSyncMiddleware;
-        private readonly IElementRepository elementRepository;
+        this.logger = logger;
+        this.pureSyncMiddleware = pureSyncMiddleware;
+        this.elementRepository = elementRepository;
+    }
 
-        public PacketId PacketId => PacketId.PACKET_ID_PLAYER_PURESYNC;
+    public void HandlePacket(Client client, PlayerPureSyncPacket packet)
+    {
 
-        public PlayerPureSyncPacketHandler(
-            ILogger logger,
-            ISyncHandlerMiddleware<PlayerPureSyncPacket> pureSyncMiddleware,
-            IElementRepository elementRepository
-        )
+        if (packet.TimeContext != client.Player.TimeContext && packet.TimeContext > 0 && client.Player.TimeContext > 0)
         {
-            this.logger = logger;
-            this.pureSyncMiddleware = pureSyncMiddleware;
-            this.elementRepository = elementRepository;
+            this.logger.LogWarning($"Received outdated Pure sync packet from {client.Player.Name}");
+            return;
         }
 
-        public void HandlePacket(Client client, PlayerPureSyncPacket packet)
-        {
+        client.SendPacket(new ReturnSyncPacket(packet.Position));
+        packet.PlayerId = client.Player.Id;
+        packet.Latency = (ushort)client.Ping;
 
-            if (packet.TimeContext != client.Player.TimeContext && packet.TimeContext > 0 && client.Player.TimeContext > 0)
+        var otherPlayers = this.pureSyncMiddleware.GetPlayersToSyncTo(client.Player, packet);
+        if (otherPlayers.Any())
+            packet.SendTo(otherPlayers);
+
+        var player = client.Player;
+        player.RunAsSync(() =>
+        {
+            player.Position = packet.Position;
+            player.PedRotation = packet.Rotation * (180 / MathF.PI);
+            player.Velocity = packet.Velocity;
+            player.Health = packet.Health;
+            player.Armor = packet.Armor;
+            player.AimOrigin = packet.AimOrigin;
+            player.AimDirection = packet.AimDirection;
+
+            player.ContactElement = this.elementRepository.Get(packet.ContactElementId);
+            if (player.ContactElement != null)
             {
-                this.logger.LogWarning($"Received outdated Pure sync packet from {client.Player.Name}");
-                return;
+                player.Position = player.ContactElement.Position + packet.Position;
             }
 
-            client.SendPacket(new ReturnSyncPacket(packet.Position));
-            packet.PlayerId = client.Player.Id;
-            packet.Latency = (ushort)client.Ping;
-
-            var otherPlayers = this.pureSyncMiddleware.GetPlayersToSyncTo(client.Player, packet);
-            if (otherPlayers.Any())
-                packet.SendTo(otherPlayers);
-
-            var player = client.Player;
-            player.RunAsSync(() =>
+            player.CurrentWeaponSlot = (WeaponSlot)packet.WeaponSlot;
+            if (player.CurrentWeapon != null && player.CurrentWeapon.Type == (WeaponId)packet.WeaponType)
             {
-                player.Position = packet.Position;
-                player.PedRotation = packet.Rotation;
-                player.Velocity = packet.Velocity;
-                player.Health = packet.Health;
-                player.Armor = packet.Armor;
-                player.AimOrigin = packet.AimOrigin;
-                player.AimDirection = packet.AimDirection;
+                player.CurrentWeapon.UpdateAmmoCountWithoutTriggerEvent(packet.TotalAmmo, packet.AmmoInClip);
+            }
 
-                player.ContactElement = this.elementRepository.Get(packet.ContactElementId);
+            player.IsInWater = packet.SyncFlags.IsInWater;
+            player.IsOnGround = packet.SyncFlags.IsOnGround;
+            player.HasJetpack = packet.SyncFlags.HasJetpack;
+            player.IsDucked = packet.SyncFlags.IsDucked;
+            player.WearsGoggles = packet.SyncFlags.WearsGoggles;
+            player.HasContact = packet.SyncFlags.HasContact;
+            player.IsChoking = packet.SyncFlags.IsChoking;
+            player.AkimboTargetUp = packet.SyncFlags.AkimboTargetUp;
+            player.IsOnFire = packet.SyncFlags.IsOnFire;
+            player.IsSyncingVelocity = packet.SyncFlags.IsSyncingVelocity;
+            player.IsStealthAiming = packet.SyncFlags.IsStealthAiming;
 
-                player.CurrentWeaponSlot = (WeaponSlot)packet.WeaponSlot;
-                if (player.CurrentWeapon != null && player.CurrentWeapon.Type == (WeaponId)packet.WeaponType)
-                {
-                    player.CurrentWeapon.UpdateAmmoCountWithoutTriggerEvent(packet.TotalAmmo, packet.AmmoInClip);
-                }
+            player.CameraPosition = packet.CameraOrientation.CameraPosition;
+            player.CameraDirection = packet.CameraOrientation.CameraForward;
+            player.CameraRotation = packet.CameraRotation;
 
-                player.IsInWater = packet.SyncFlags.IsInWater;
-                player.IsOnGround = packet.SyncFlags.IsOnGround;
-                player.HasJetpack = packet.SyncFlags.HasJetpack;
-                player.IsDucked = packet.SyncFlags.IsDucked;
-                player.WearsGoggles = packet.SyncFlags.WearsGoggles;
-                player.HasContact = packet.SyncFlags.HasContact;
-                player.IsChoking = packet.SyncFlags.IsChoking;
-                player.AkimboTargetUp = packet.SyncFlags.AkimboTargetUp;
-                player.IsOnFire = packet.SyncFlags.IsOnFire;
-                player.IsSyncingVelocity = packet.SyncFlags.IsSyncingVelocity;
-                player.IsStealthAiming = packet.SyncFlags.IsStealthAiming;
+            if (packet.IsDamageChanged)
+            {
+                var damager = this.elementRepository.Get(packet.DamagerId);
+                player.TriggerDamaged(damager, (WeaponType)packet.DamageType, (BodyPart)packet.DamageBodypart);
+            }
+        });
 
-                player.CameraPosition = packet.CameraOrientation.CameraPosition;
-                player.CameraDirection = packet.CameraOrientation.CameraForward;
-                player.CameraRotation = packet.CameraRotation;
-
-                if (packet.IsDamageChanged)
-                {
-                    var damager = this.elementRepository.Get(packet.DamagerId);
-                    player.TriggerDamaged(damager, (WeaponType)packet.DamageType, (BodyPart)packet.DamageBodypart);
-                }
-            });
-
-            player.TriggerSync();
-        }
+        player.TriggerSync();
     }
 }

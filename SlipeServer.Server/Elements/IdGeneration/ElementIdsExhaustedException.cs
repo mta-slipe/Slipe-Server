@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
 
-namespace SlipeServer.Server.Elements.IdGeneration
+namespace SlipeServer.Server.Elements.IdGeneration;
+
+public class ElementIdsExhaustedException : Exception
 {
-    public class ElementIdsExhaustedException : Exception
+    public ElementIdsExhaustedException() : base("Element Ids exhausted")
     {
-        public ElementIdsExhaustedException() : base("Element Ids exhausted")
-        {
-        }
     }
 }

@@ -1,15 +1,14 @@
 using SlipeServer.Server;
 using Nett;
 
-namespace SlipeServer.ConfigurationProviders.Configurations
+namespace SlipeServer.ConfigurationProviders.Configurations;
+
+public class TomlConfigurationProvider : IConfigurationProvider
 {
-    public class TomlConfigurationProvider : IConfigurationProvider
+    public Configuration configuration { private set; get; }
+    public Configuration GetConfiguration() => configuration;
+    public TomlConfigurationProvider(string fileName)
     {
-        public Configuration configuration { private set; get; }
-        public Configuration GetConfiguration() => configuration;
-        public TomlConfigurationProvider(string fileName)
-        {
-            this.configuration = Toml.ReadFile<Configuration>(fileName);
-        }
+        this.configuration = Toml.ReadFile<Configuration>(fileName);
     }
 }

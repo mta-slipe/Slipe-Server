@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Platforms>AnyCPU;x64;x86</Platforms>
     <Nullable>enable</Nullable>
     <LangVersion>preview</LangVersion>
@@ -18,7 +18,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Factories\**" />
+    <EmbeddedResource Remove="Factories\**" />
+    <None Remove="Factories\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Crc32.NET" Version="1.2.0" />
+    <PackageReference Include="DotNetZip" Version="1.16.0" />
     <PackageReference Include="KdTree" Version="1.4.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0-preview.6.20305.6" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0-preview.6.20305.6" />
@@ -26,14 +33,12 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="RBush" Version="2.0.46" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SlipeServer.Net\SlipeServer.Net.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Factories\" />
+    <ProjectReference Include="..\SlipeServer.SourceGenerators\SlipeServer.SourceGenerators.csproj" />
   </ItemGroup>
 
   <ItemGroup>

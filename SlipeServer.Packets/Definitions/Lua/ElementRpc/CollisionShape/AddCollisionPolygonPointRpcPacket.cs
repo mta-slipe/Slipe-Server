@@ -5,46 +5,45 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 
-namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.CollisionShape
+namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.CollisionShape;
+
+public class AddCollisionPolygonPointRpcPacket : Packet
 {
-    public class AddCollisionPolygonPointRpcPacket : Packet
+    public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
+    public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+    public override PacketPriority Priority => PacketPriority.High;
+
+    public uint ElementId { get; set; }
+    public Vector2 Position { get; set; }
+    public uint? Index { get; set; }
+
+    public AddCollisionPolygonPointRpcPacket(uint elementId, Vector2 position)
     {
-        public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
-        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
-        public override PacketPriority Priority => PacketPriority.High;
+        this.ElementId = elementId;
+        this.Position = position;
+    }
+    public AddCollisionPolygonPointRpcPacket(uint elementId, Vector2 position, uint index)
+    {
+        this.ElementId = elementId;
+        this.Position = position;
+        this.Index = index;
+    }
 
-        public uint ElementId { get; set; }
-        public Vector2 Position { get; set; }
-        public uint? Index { get; set; }
+    public override void Read(byte[] bytes)
+    {
+        throw new NotSupportedException();
+    }
 
-        public AddCollisionPolygonPointRpcPacket(uint elementId, Vector2 position)
-        {
-            this.ElementId = elementId;
-            this.Position = position;
-        }
-        public AddCollisionPolygonPointRpcPacket(uint elementId, Vector2 position, uint index)
-        {
-            this.ElementId = elementId;
-            this.Position = position;
-            this.Index = index;
-        }
+    public override byte[] Write()
+    {
+        var builder = new PacketBuilder();
 
-        public override void Read(byte[] bytes)
-        {
-            throw new NotSupportedException();
-        }
+        builder.Write((byte)ElementRpcFunction.ADD_COLPOLYGON_POINT);
+        builder.WriteElementId(this.ElementId);
+        builder.WriteVector2(this.Position);
+        if (this.Index.HasValue)
+            builder.Write(this.Index);
 
-        public override byte[] Write()
-        {
-            var builder = new PacketBuilder();
-
-            builder.Write((byte)ElementRpcFunction.ADD_COLPOLYGON_POINT);
-            builder.WriteElementId(this.ElementId);
-            builder.WriteVector2(this.Position);
-            if(this.Index.HasValue)
-                builder.Write(this.Index);
-
-            return builder.Build();
-        }
+        return builder.Build();
     }
 }

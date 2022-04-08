@@ -5,41 +5,40 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 
-namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
+namespace SlipeServer.Packets.Definitions.Lua.Rpc.World;
+
+public class RestoreWorldModelPacket : Packet
 {
-    public class RestoreWorldModelPacket : Packet
+    public override PacketId PacketId => PacketId.PACKET_ID_LUA;
+    public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+    public override PacketPriority Priority => PacketPriority.High;
+
+    public ushort ModelID { get; set; }
+    public float Radius { get; set; }
+    public Vector3 Position { get; set; }
+    public byte Interior { get; set; }
+    public RestoreWorldModelPacket(ushort model, float radius, Vector3 position, byte interior)
     {
-        public override PacketId PacketId => PacketId.PACKET_ID_LUA;
-        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
-        public override PacketPriority Priority => PacketPriority.High;
+        this.ModelID = model;
+        this.Radius = radius;
+        this.Position = position;
+        this.Interior = interior;
+    }
 
-        public ushort ModelID { get; set; }
-        public float Radius { get; set; }
-        public Vector3 Position { get; set; }
-        public byte Interior { get; set; }
-        public RestoreWorldModelPacket(ushort model, float radius, Vector3 position, byte interior) 
-        {
-            this.ModelID = model;
-            this.Radius = radius;
-            this.Position = position;
-            this.Interior = interior;
-        }
+    public override void Read(byte[] bytes)
+    {
+        throw new NotImplementedException();
+    }
 
-        public override void Read(byte[] bytes)
-        {
-            throw new NotImplementedException();
-        }
+    public override byte[] Write()
+    {
+        PacketBuilder builder = new PacketBuilder();
+        builder.Write((byte)ElementRPCFunction.RESTORE_WORLD_MODEL);
+        builder.Write(this.ModelID);
+        builder.Write(this.Radius);
+        builder.Write(this.Position);
+        builder.Write(this.Interior);
 
-        public override byte[] Write()
-        {
-            PacketBuilder builder = new PacketBuilder();
-            builder.Write((byte)ElementRPCFunction.RESTORE_WORLD_MODEL);
-            builder.Write(this.ModelID);
-            builder.Write(this.Radius);
-            builder.Write(this.Position);
-            builder.Write(this.Interior);
-            
-            return builder.Build();
-        }
+        return builder.Build();
     }
 }

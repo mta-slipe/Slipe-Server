@@ -6,34 +6,33 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace SlipeServer.Packets.Definitions.Resources
+namespace SlipeServer.Packets.Definitions.Resources;
+
+public class ResourceStopPacket : Packet
 {
-    public class ResourceStopPacket : Packet
+    public override PacketId PacketId => PacketId.PACKET_ID_RESOURCE_STOP;
+    public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+    public override PacketPriority Priority => PacketPriority.High;
+
+    public ushort NetId { get; }
+
+    public ResourceStopPacket(
+        ushort netId
+    )
     {
-        public override PacketId PacketId => PacketId.PACKET_ID_RESOURCE_STOP;
-        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
-        public override PacketPriority Priority => PacketPriority.High;
+        this.NetId = netId;
+    }
 
-        public ushort NetId { get; }
+    public override void Read(byte[] bytes)
+    {
+    }
 
-        public ResourceStopPacket(
-            ushort netId
-        )
-        {
-            this.NetId = netId;
-        }
+    public override byte[] Write()
+    {
+        var builder = new PacketBuilder();
 
-        public override void Read(byte[] bytes)
-        {
-        }
+        builder.Write(this.NetId);
 
-        public override byte[] Write()
-        {
-            var builder = new PacketBuilder();
-
-            builder.Write(this.NetId);
-
-            return builder.Build();
-        }
+        return builder.Build();
     }
 }

@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SlipeServer.Server.Enums
+namespace SlipeServer.Server.Enums;
+
+public enum DebugLevel
 {
-    public enum DebugLevel
-    {
-        Custom,
-        Error,
-        Warning,
-        Information
-    }
+    Custom,
+    Error,
+    Warning,
+    Information
 }

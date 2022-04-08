@@ -5,33 +5,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace SlipeServer.Packets.Rpc
+namespace SlipeServer.Packets.Rpc;
+
+public class RpcPacket : Packet
 {
-    public class RpcPacket : Packet
+    public override PacketId PacketId => PacketId.PACKET_ID_RPC;
+    public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+    public override PacketPriority Priority => PacketPriority.High;
+
+    public RpcFunctions FunctionId { get; private set; }
+
+    public PacketReader Reader { get; private set; }
+
+    public RpcPacket()
     {
-        public override PacketId PacketId => PacketId.PACKET_ID_RPC;
-        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
-        public override PacketPriority Priority => PacketPriority.High;
+        this.Reader = new PacketReader(Array.Empty<byte>());
+    }
 
-        public RpcFunctions FunctionId { get; private set; }
+    public override void Read(byte[] bytes)
+    {
+        this.Reader = new PacketReader(bytes);
 
-        public PacketReader Reader { get; private set; }
+        this.FunctionId = (RpcFunctions)this.Reader.GetByte();
+    }
 
-        public RpcPacket()
-        {
-            this.Reader = new PacketReader(Array.Empty<byte>());    
-        }
-
-        public override void Read(byte[] bytes)
-        {
-            this.Reader = new PacketReader(bytes);
-
-            this.FunctionId = (RpcFunctions)this.Reader.GetByte();
-        }
-
-        public override byte[] Write()
-        {
-            throw new NotSupportedException();
-        }
+    public override byte[] Write()
+    {
+        throw new NotSupportedException();
     }
 }

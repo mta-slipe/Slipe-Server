@@ -6,32 +6,31 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 
-namespace SlipeServer.Server.Services
+namespace SlipeServer.Server.Services;
+
+public class ExplosionService
 {
-    public class ExplosionService
+    private readonly MtaServer server;
+
+    public ExplosionService(MtaServer server)
     {
-        private readonly MtaServer server;
+        this.server = server;
+    }
 
-        public ExplosionService(MtaServer server)
-        {
-            this.server = server;
-        }
+    public void CreateExplosion(Vector3 position, ExplosionType type, Player? responsiblePlayer = null)
+    {
+        var packet = new ExplosionPacket(responsiblePlayer?.Id, null, position, (byte)type, (ushort)(responsiblePlayer?.Client.Ping ?? 0));
+        this.server.BroadcastPacket(packet);
+    }
 
-        public void CreateExplosion(Vector3 position, ExplosionType type, Player? responsiblePlayer = null)
-        {
-            var packet = new ExplosionPacket(responsiblePlayer?.Id, null, position, (byte)type, (ushort)(responsiblePlayer?.Client.Ping ?? 0));
-            this.server.BroadcastPacket(packet);
-        }
-
-        public void CreateExplosionFor(
-            IEnumerable<Player> players, 
-            Vector3 position, 
-            ExplosionType type, 
-            Player? responsiblePlayer = null
-        )
-        {
-            var packet = new ExplosionPacket(responsiblePlayer?.Id, null, position, (byte)type, (ushort)(responsiblePlayer?.Client.Ping ?? 0));
-            packet.SendTo(players);
-        }
+    public void CreateExplosionFor(
+        IEnumerable<Player> players,
+        Vector3 position,
+        ExplosionType type,
+        Player? responsiblePlayer = null
+    )
+    {
+        var packet = new ExplosionPacket(responsiblePlayer?.Id, null, position, (byte)type, (ushort)(responsiblePlayer?.Client.Ping ?? 0));
+        packet.SendTo(players);
     }
 }

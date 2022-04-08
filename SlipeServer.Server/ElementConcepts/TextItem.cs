@@ -1,12 +1,11 @@
-﻿namespace SlipeServer.Server.ElementConcepts
-{
-    public struct TextItem
-    {
-        public ulong Id { get; init; }
+﻿namespace SlipeServer.Server.Concepts;
 
-        public TextItem(ulong id)
-        {
-            this.Id = id;
-        }
+public struct TextItem
+{
+    public ulong Id { get; init; }
+
+    public TextItem(ulong id)
+    {
+        this.Id = id;
     }
 }

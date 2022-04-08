@@ -7,114 +7,113 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Timers;
 
-namespace SlipeServer.Server.PacketHandling.Handlers.QueueHandlers
+namespace SlipeServer.Server.PacketHandling.Handlers.QueueHandlers;
+
+public class ScalingPacketQueueHandler<T> : BasePacketQueueHandler<T> where T : Packet
 {
-    public class ScalingPacketQueueHandler<T> : BasePacketQueueHandler<T> where T : Packet
+    private readonly QueueHandlerScalingConfig config;
+    private readonly int sleepTime;
+    private readonly ILogger logger;
+    private readonly IPacketHandler<T> packetHandler;
+    private readonly Timer timer;
+    private readonly Stack<Worker> workers;
+    protected TaskCompletionSource<int>? pulseTaskCompletionSource;
+
+    protected struct Worker
     {
-        private readonly QueueHandlerScalingConfig config;
-        private readonly int sleepTime;
-        private readonly ILogger logger;
-        private readonly IPacketHandler<T> packetHandler;
-        private readonly Timer timer;
-        private readonly Stack<Worker> workers;
-        protected TaskCompletionSource<int>? pulseTaskCompletionSource;
+        public bool Active { get; set; }
+    }
 
-        protected struct Worker
+    public ScalingPacketQueueHandler(ILogger logger, IPacketHandler<T> packetHandler, QueueHandlerScalingConfig? config = null, int sleepTime = 10)
+    {
+        this.logger = logger;
+        this.packetHandler = packetHandler;
+        this.config = config ?? new();
+        this.sleepTime = sleepTime;
+        this.workers = new();
+
+        for (int i = 0; i < this.config.MinWorkerCount; i++)
         {
-            public bool Active { get; set; }
+            AddWorker();
         }
 
-        public ScalingPacketQueueHandler(ILogger logger, IPacketHandler<T> packetHandler, QueueHandlerScalingConfig? config = null, int sleepTime = 10)
+        this.timer = new Timer(this.config.NewWorkerTimeout)
         {
-            this.logger = logger;
-            this.packetHandler = packetHandler;
-            this.config = config ?? new();
-            this.sleepTime = sleepTime;
-            this.workers = new();
+            AutoReset = true,
+        };
+        this.timer.Start();
+        this.timer.Elapsed += (sender, args) => CheckWorkerCount();
 
-            for (int i = 0; i < this.config.MinWorkerCount; i++)
-            {
+        this.pulseTaskCompletionSource = new();
+    }
+
+    public ScalingPacketQueueHandler(ILogger logger, IPacketHandler<T> packetHandler)
+        : this(logger, packetHandler, null)
+    {
+    }
+
+    public void CheckWorkerCount()
+    {
+        if (this.packetQueue.Count < this.config.QueueLowThreshold)
+        {
+            if (this.workers.Count > this.config.MinWorkerCount)
+                RemoveWorker();
+        } else if (this.packetQueue.Count > this.config.QueueHighThreshold)
+        {
+            if (this.workers.Count < this.config.MaxWorkerCount)
                 AddWorker();
-            }
-
-            this.timer = new Timer(this.config.NewWorkerTimeout)
-            {
-                AutoReset = true,
-            };
-            this.timer.Start();
-            this.timer.Elapsed += (sender, args) => CheckWorkerCount();
-
-            this.pulseTaskCompletionSource = new();
         }
+    }
 
-        public ScalingPacketQueueHandler(ILogger logger, IPacketHandler<T> packetHandler)
-            : this(logger, packetHandler, null)
+    private void AddWorker()
+    {
+        var worker = new Worker()
         {
-        }
+            Active = true
+        };
+        this.workers.Push(worker);
+        Task.Run(() => PulsePacketTask(worker));
+    }
 
-        public void CheckWorkerCount()
+    private void RemoveWorker()
+    {
+        var worker = this.workers.Pop();
+        worker.Active = false;
+    }
+
+    private async void PulsePacketTask(Worker worker)
+    {
+        while (worker.Active)
         {
-            if (this.packetQueue.Count < this.config.QueueLowThreshold)
+            while (this.packetQueue.TryDequeue(out var queueEntry))
             {
-                if (this.workers.Count > this.config.MinWorkerCount)
-                    RemoveWorker();
-            } else if (this.packetQueue.Count > this.config.QueueHighThreshold)
-            {
-                if (this.workers.Count < this.config.MaxWorkerCount)
-                    AddWorker();
-            }
-        }
-
-        private void AddWorker()
-        {
-            var worker = new Worker()
-            {
-                Active = true
-            };
-            this.workers.Push(worker);
-            Task.Run(() => PulsePacketTask(worker));
-        }
-
-        private void RemoveWorker()
-        {
-            var worker = this.workers.Pop();
-            worker.Active = false;
-        }
-
-        private async void PulsePacketTask(Worker worker)
-        {
-            while (worker.Active)
-            {
-                while (this.packetQueue.TryDequeue(out var queueEntry))
+                try
                 {
-                    try
-                    {
-                        this.packetHandler.HandlePacket(queueEntry.Client, queueEntry.Packet);
-                        TriggerPacketHandled(queueEntry.Packet);
-                    }
-                    catch (Exception e)
-                    {
-                        if(queueEntry.Packet is RpcPacket rpcPacket)
-                            this.logger.LogError($"Handling rpcPacket ({rpcPacket.FunctionId}) failed.\n{e.Message}\n{e.StackTrace}");
-                        else
-                            this.logger.LogError($"Handling packet ({queueEntry.Packet}) failed.\n{e.Message}\n{e.StackTrace}");
-                    }
+                    this.packetHandler.HandlePacket(queueEntry.Client, queueEntry.Packet);
+                    TriggerPacketHandled(queueEntry.Packet);
                 }
-
-                if (this.pulseTaskCompletionSource != null)
+                catch (Exception e)
                 {
-                    this.pulseTaskCompletionSource.SetResult(0);
-                    this.pulseTaskCompletionSource = null;
+                    if (queueEntry.Packet is RpcPacket rpcPacket)
+                        this.logger.LogError($"Handling rpcPacket ({rpcPacket.FunctionId}) failed.\n{e.Message}\n{e.StackTrace}");
+                    else
+                        this.logger.LogError($"Handling packet ({queueEntry.Packet}) failed.\n{e.Message}\n{e.StackTrace}");
                 }
-
-                await Task.Delay(this.sleepTime);
             }
-        }
 
-        public Task GetPulseTask()
-        {
-            this.pulseTaskCompletionSource = new TaskCompletionSource<int>();
-            return this.pulseTaskCompletionSource.Task;
+            if (this.pulseTaskCompletionSource != null)
+            {
+                this.pulseTaskCompletionSource.SetResult(0);
+                this.pulseTaskCompletionSource = null;
+            }
+
+            await Task.Delay(this.sleepTime);
         }
+    }
+
+    public Task GetPulseTask()
+    {
+        this.pulseTaskCompletionSource = new TaskCompletionSource<int>();
+        return this.pulseTaskCompletionSource.Task;
     }
 }

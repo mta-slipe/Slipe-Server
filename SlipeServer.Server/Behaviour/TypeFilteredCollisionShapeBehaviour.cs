@@ -6,53 +6,52 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 
-namespace SlipeServer.Server.Behaviour
+namespace SlipeServer.Server.Behaviour;
+
+/// <summary>
+/// Behaviour responsible for triggering collision shape enter and exit events when an element's position changes.
+/// This allows for only handling position changes for specific types of elements.
+/// </summary>
+public class TypeFilteredCollisionShapeBehaviour
 {
-    /// <summary>
-    /// Behaviour responsible for triggering collision shape enter and exit events when an element's position changes.
-    /// This allows for only handling position changes for specific types of elements.
-    /// </summary>
-    public class TypeFilteredCollisionShapeBehaviour
+    private readonly HashSet<CollisionShape> collisionShapes;
+    private readonly HashSet<Type> types;
+
+    public TypeFilteredCollisionShapeBehaviour(MtaServer server, IElementRepository elementRepository, IEnumerable<Type> types)
     {
-        private readonly HashSet<CollisionShape> collisionShapes;
-        private readonly HashSet<Type> types;
+        this.types = new HashSet<Type>(types);
 
-        public TypeFilteredCollisionShapeBehaviour(MtaServer server, IElementRepository elementRepository, IEnumerable<Type> types)
+        this.collisionShapes = new HashSet<CollisionShape>();
+        foreach (var collisionShape in elementRepository.GetByType<CollisionShape>(ElementType.Colshape))
         {
-            this.types = new HashSet<Type>(types);
-
-            this.collisionShapes = new HashSet<CollisionShape>();
-            foreach (var collisionShape in elementRepository.GetByType<CollisionShape>(ElementType.Colshape))
-            {
-                this.AddCollisionShape(collisionShape);
-            }
-
-            server.ElementCreated += OnElementCreate;
+            this.AddCollisionShape(collisionShape);
         }
 
-        private void OnElementCreate(Element element)
-        {
-            if (element is CollisionShape collisionShape)
-            {
-                AddCollisionShape(collisionShape);
-            } else if (this.types.Contains(element.GetType()))
-            {
-                element.PositionChanged += OnElementPositionChange;
-            }
-        }
+        server.ElementCreated += OnElementCreate;
+    }
 
-        private void AddCollisionShape(CollisionShape collisionShape)
+    private void OnElementCreate(Element element)
+    {
+        if (element is CollisionShape collisionShape)
         {
-            this.collisionShapes.Add(collisionShape);
-            collisionShape.Destroyed += (source) => this.collisionShapes.Remove(collisionShape);
+            AddCollisionShape(collisionShape);
+        } else if (this.types.Contains(element.GetType()))
+        {
+            element.PositionChanged += OnElementPositionChange;
         }
+    }
 
-        private void OnElementPositionChange(object sender, ElementChangedEventArgs<Vector3> eventArgs)
+    private void AddCollisionShape(CollisionShape collisionShape)
+    {
+        this.collisionShapes.Add(collisionShape);
+        collisionShape.Destroyed += (source) => this.collisionShapes.Remove(collisionShape);
+    }
+
+    private void OnElementPositionChange(object sender, ElementChangedEventArgs<Vector3> eventArgs)
+    {
+        foreach (var shape in this.collisionShapes)
         {
-            foreach (var shape in this.collisionShapes)
-            {
-                shape.CheckElementWithin(eventArgs.Source);
-            }
+            shape.CheckElementWithin(eventArgs.Source);
         }
     }
 }

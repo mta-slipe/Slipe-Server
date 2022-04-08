@@ -8,94 +8,89 @@ using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.PacketHandling.Handlers.Player.Sync;
 using SlipeServer.Server.Repositories;
 using SlipeServer.Server.TestTools;
+using System;
 using System.Numerics;
 using Xunit;
 
-namespace SlipeServer.Server.Tests.Unit.PacketHandlers
+namespace SlipeServer.Server.Tests.Unit.PacketHandlers;
+
+public class PureSyncPacketHandlerTests
 {
-    public class PureSyncPacketHandlerTests
+    [Fact]
+    public void HandlePacketRelaysPureSyncPacket()
     {
-        [Fact]
-        public void HandlePacketRelaysPureSyncPacket()
+        var server = new TestingServer();
+        var sourcePlayer = server.AddFakePlayer();
+        var otherPlayers = new TestingPlayer[] { server.AddFakePlayer(), server.AddFakePlayer(), server.AddFakePlayer() };
+
+        Mock<ILogger> loggerMock = new();
+
+        Mock<ISyncHandlerMiddleware<PlayerPureSyncPacket>> middlewareMock = new();
+        middlewareMock.Setup(x => x.GetPlayersToSyncTo(sourcePlayer, It.IsAny<PlayerPureSyncPacket>())).Returns(otherPlayers);
+
+        Mock<IElementRepository> elementRepositoryMock = new();
+
+        var handler = new PlayerPureSyncPacketHandler(loggerMock.Object, middlewareMock.Object, elementRepositoryMock.Object);
+
+        handler.HandlePacket(sourcePlayer.Client, new PlayerPureSyncPacket()
         {
-            var server = new TestingServer();
-            var sourcePlayer = server.AddFakePlayer();
-            var otherPlayers = new TestingPlayer[] { server.AddFakePlayer(), server.AddFakePlayer(), server.AddFakePlayer() };
 
-            Mock<ILogger> loggerMock = new();
+        });
 
-            Mock<ISyncHandlerMiddleware<PlayerPureSyncPacket>> middlewareMock = new();
-            middlewareMock.Setup(x => x.GetPlayersToSyncTo(sourcePlayer, It.IsAny<PlayerPureSyncPacket>())).Returns(otherPlayers);
+        foreach (var player in otherPlayers)
+            server.VerifyPacketSent(PacketId.PACKET_ID_PLAYER_PURESYNC, player);
+    }
 
-            Mock<IElementRepository> elementRepositoryMock = new();
+    [Fact]
+    public void HandlePacketSendReturnSyncPacket()
+    {
+        var server = new TestingServer();
+        var sourcePlayer = server.AddFakePlayer();
+        var otherPlayers = new TestingPlayer[] { server.AddFakePlayer(), server.AddFakePlayer(), server.AddFakePlayer() };
 
-            var handler = new PlayerPureSyncPacketHandler(loggerMock.Object, middlewareMock.Object, elementRepositoryMock.Object);
+        Mock<ILogger> loggerMock = new();
 
-            handler.HandlePacket(sourcePlayer.Client, new PlayerPureSyncPacket()
-            {
+        Mock<ISyncHandlerMiddleware<PlayerPureSyncPacket>> middlewareMock = new();
+        middlewareMock.Setup(x => x.GetPlayersToSyncTo(sourcePlayer, It.IsAny<PlayerPureSyncPacket>())).Returns(otherPlayers);
 
-            });
+        Mock<IElementRepository> elementRepositoryMock = new();
 
-            foreach (var player in otherPlayers)
-                server.NetWrapperMock.Verify(x => x.SendPacket(
-                    player.Address,
-                    PacketId.PACKET_ID_PLAYER_PURESYNC,
-                    It.IsAny<byte[]>(),
-                    It.IsAny<PacketPriority>(),
-                    It.IsAny<PacketReliability>()));
-        }
+        var handler = new PlayerPureSyncPacketHandler(loggerMock.Object, middlewareMock.Object, elementRepositoryMock.Object);
 
-        [Fact]
-        public void HandlePacketSendReturnSyncPacket()
+        handler.HandlePacket(sourcePlayer.Client, new PlayerPureSyncPacket()
         {
-            var server = new TestingServer();
-            var sourcePlayer = server.AddFakePlayer();
-            var otherPlayers = new TestingPlayer[] { server.AddFakePlayer(), server.AddFakePlayer(), server.AddFakePlayer() };
 
-            Mock<ILogger> loggerMock = new();
+        });
 
-            Mock<ISyncHandlerMiddleware<PlayerPureSyncPacket>> middlewareMock = new();
-            middlewareMock.Setup(x => x.GetPlayersToSyncTo(sourcePlayer, It.IsAny<PlayerPureSyncPacket>())).Returns(otherPlayers);
+        server.VerifyPacketSent(PacketId.PACKET_ID_RETURN_SYNC, sourcePlayer);
+    }
 
-            Mock<IElementRepository> elementRepositoryMock = new();
+    [Fact]
+    public void HandlePacketAppliesSyncData()
+    {
+        var server = new TestingServer();
+        var sourcePlayer = server.AddFakePlayer();
 
-            var handler = new PlayerPureSyncPacketHandler(loggerMock.Object, middlewareMock.Object, elementRepositoryMock.Object);
+        Mock<ILogger> loggerMock = new();
+        Mock<ISyncHandlerMiddleware<PlayerPureSyncPacket>> middlewareMock = new();
+        Mock<IElementRepository> elementRepositoryMock = new();
 
-            handler.HandlePacket(sourcePlayer.Client, new PlayerPureSyncPacket()
-            {
+        var handler = new PlayerPureSyncPacketHandler(loggerMock.Object, middlewareMock.Object, elementRepositoryMock.Object);
 
-            });
-
-            server.NetWrapperMock.Verify(x => x.SendPacket(sourcePlayer.Address, It.IsAny<ReturnSyncPacket>()));
-        }
-
-        [Fact]
-        public void HandlePacketAppliesSyncData()
+        handler.HandlePacket(sourcePlayer.Client, new PlayerPureSyncPacket()
         {
-            var server = new TestingServer();
-            var sourcePlayer = server.AddFakePlayer();
+            Position = new Vector3(10, 10, 10),
+            Rotation = 0.25f * MathF.PI,
+            Health = 50,
+            Armor = 75,
+            WeaponSlot = 1
+        });
 
-            Mock<ILogger> loggerMock = new();
-            Mock<ISyncHandlerMiddleware<PlayerPureSyncPacket>> middlewareMock = new();
-            Mock<IElementRepository> elementRepositoryMock = new();
-
-            var handler = new PlayerPureSyncPacketHandler(loggerMock.Object, middlewareMock.Object, elementRepositoryMock.Object);
-
-            handler.HandlePacket(sourcePlayer.Client, new PlayerPureSyncPacket()
-            {
-                Position = new Vector3(10, 10, 10),
-                Rotation = 45,
-                Health = 50,
-                Armor = 75,
-                WeaponSlot = 1
-            });
-
-            sourcePlayer.Position.Should().Be(new Vector3(10, 10, 10));
-            sourcePlayer.PedRotation.Should().Be(45);
-            sourcePlayer.Rotation.Should().Be(new Vector3(0, 0, 45));
-            sourcePlayer.Health.Should().Be(50);
-            sourcePlayer.Armor.Should().Be(75);
-            sourcePlayer.CurrentWeaponSlot = WeaponSlot.Melee;
-        }
+        sourcePlayer.Position.Should().Be(new Vector3(10, 10, 10));
+        sourcePlayer.PedRotation.Should().Be(45);
+        sourcePlayer.Rotation.Should().Be(new Vector3(0, 0, 45));
+        sourcePlayer.Health.Should().Be(50);
+        sourcePlayer.Armor.Should().Be(75);
+        sourcePlayer.CurrentWeaponSlot = WeaponSlot.Melee;
     }
 }
