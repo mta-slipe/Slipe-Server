@@ -67,6 +67,9 @@ public class Element : ISpatialData
             this.position = value;
             PositionChanged?.Invoke(this, args);
             this.envelope = new Envelope(value.X - .01f, value.Y - .01f, value.X + .01f, value.Y + .01f);
+
+            foreach (var attachment in this.attachedElements)
+                attachment.UpdateAttachedElement();
         }
     }
 
@@ -83,6 +86,9 @@ public class Element : ISpatialData
             var args = new ElementChangedEventArgs<Vector3>(this, this.Rotation, value, this.IsSync);
             this.rotation = value;
             RotationChanged?.Invoke(this, args);
+
+            foreach (var attachment in this.attachedElements)
+                attachment.UpdateAttachedElement();
         }
     }
 
@@ -202,10 +208,16 @@ public class Element : ISpatialData
     private Dictionary<string, ElementData> ElementData { get; set; }
     public ConcurrentDictionary<Player, ConcurrentDictionary<string, bool>> ElementDataSubscriptions { get; set; }
 
+    public ElementAttachment? Attachment { get; private set; }
+
+    private List<ElementAttachment> attachedElements;
+    public IReadOnlyCollection<ElementAttachment> AttachedElements => this.attachedElements.AsReadOnly();
+
     public Element()
     {
         this.children = new();
         this.subscribers = new();
+        this.attachedElements = new();
         this.TimeContext = 1;
 
         this.ElementData = new();
@@ -365,6 +377,39 @@ public class Element : ISpatialData
             .Where(x => this.ElementDataSubscriptions[x].ContainsKey(key));
     }
 
+    internal void AddElementAttachment(ElementAttachment attachment) => this.attachedElements.Add(attachment);
+    internal void RemoveElementAttachment(ElementAttachment attachment) => this.attachedElements.Remove(attachment);
+
+    public void AttachTo(Element element, Vector3? positionOffset = null, Vector3? rotationOffset = null)
+    {
+        var position = positionOffset ?? Vector3.Zero;
+        var rotation = rotationOffset?? Vector3.Zero;
+
+        if (this.Attachment != null)
+            DetachFrom(this.Attachment.Target);
+
+        var attachment = new ElementAttachment(this, element, position, rotation);
+        this.Attachment = attachment;
+        element.AddElementAttachment(attachment);
+
+        attachment.PositionOffsetChanged += (newPosition) 
+            => this.AttachedOffsetChanged?.Invoke(this, new ElementAttachOffsetsChangedArgs(this, element, newPosition, attachment.RotationOffset));
+        attachment.RotationOffsetChanged += (newRotation) 
+            => this.AttachedOffsetChanged?.Invoke(this, new ElementAttachOffsetsChangedArgs(this, element, attachment.PositionOffset, newRotation));
+
+        this.Attached?.Invoke(this, new ElementAttachedEventArgs(this, element, position, rotation));
+    }
+
+    public virtual void DetachFrom(Element? element = null)
+    {
+        if (this.Attachment != null && (element == null || this.Attachment.Target == element))
+        {
+            this.Detached?.Invoke(this, new ElementDetachedEventArgs(this, this.Attachment.Target));
+            (element ?? this.Attachment.Target).RemoveElementAttachment(this.Attachment);
+            this.Attachment = null;
+        }
+    }
+
     public void CreateFor(IEnumerable<Player> players)
         => AddEntityPacketFactory.CreateAddEntityPacket(new Element[] { this }).SendTo(players);
 
@@ -389,6 +434,9 @@ public class Element : ISpatialData
     public event ElementChangedEventHandler<bool>? CollisionEnabledhanged;
     public event ElementChangedEventHandler<bool>? FrozenChanged;
     public event ElementEventHandler<Element, ElementDataChangedArgs>? DataChanged;
+    public event ElementEventHandler<Element, ElementAttachedEventArgs>? Attached;
+    public event ElementEventHandler<Element, ElementDetachedEventArgs>? Detached;
+    public event ElementEventHandler<Element, ElementAttachOffsetsChangedArgs>? AttachedOffsetChanged;
     public event Action<Element>? Destroyed;
 
 

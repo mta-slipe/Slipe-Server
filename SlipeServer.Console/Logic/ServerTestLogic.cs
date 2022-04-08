@@ -53,6 +53,7 @@ public class ServerTestLogic
     private Blip? BlipA { get; set; }
     private Blip? BlipB { get; set; }
     private WorldObject? WorldObject { get; set; }
+    private WorldObject? Bin { get; set; }
     private Vehicle? Vehicle { get; set; }
     private Vehicle? Aircraft { get; set; }
     private Vehicle? Taxi { get; set; }
@@ -168,6 +169,7 @@ public class ServerTestLogic
 
 
         this.WorldObject = new WorldObject(ObjectModel.Drugred, new Vector3(15, 0, 3)).AssociateWith(this.server);
+        this.Bin = new WorldObject(ObjectModel.BinNt07LA, new Vector3(-15, 0, 3)).AssociateWith(this.server);
 
         new WeaponObject(355, new Vector3(10, 10, 5))
         {
@@ -773,6 +775,24 @@ public class ServerTestLogic
         this.commandService.AddCommand("notrailerpls").Triggered += (source, args) =>
         {
             args.Player.Vehicle?.AttachTrailer(null);
+        };
+
+        this.commandService.AddCommand("attach").Triggered += (source, args) =>
+        {
+            this.Bin?.AttachTo(args.Player, new Vector3(1, 0, 0));
+        };
+
+        this.commandService.AddCommand("detach").Triggered += (source, args) =>
+        {
+            this.Bin?.DetachFrom(args.Player);
+        };
+
+        this.commandService.AddCommand("moveattach").Triggered += (source, args) =>
+        {
+            if (this.Bin?.Attachment == null)
+                return;
+
+            this.Bin.Attachment.PositionOffset += new Vector3(1, 0, 0);
         };
 
         this.commandService.AddCommand("hot").Triggered += (source, args) =>
