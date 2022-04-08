@@ -5,38 +5,37 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 
-namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.CollisionShape
+namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.CollisionShape;
+
+public class SetCollisionPolygonHeightRpcPacket : Packet
 {
-    public class SetCollisionPolygonHeightRpcPacket : Packet
+    public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
+    public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+    public override PacketPriority Priority => PacketPriority.High;
+
+    public uint ElementId { get; set; }
+    public Vector2 Height { get; set; }
+
+    public SetCollisionPolygonHeightRpcPacket(uint elementId, Vector2 height)
     {
-        public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
-        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
-        public override PacketPriority Priority => PacketPriority.High;
+        this.ElementId = elementId;
+        this.Height = height;
+    }
 
-        public uint ElementId { get; set; }
-        public Vector2 Height { get; set; }
+    public override void Read(byte[] bytes)
+    {
+        throw new NotImplementedException();
+    }
 
-        public SetCollisionPolygonHeightRpcPacket(uint elementId, Vector2 height)
-        {
-            this.ElementId = elementId;
-            this.Height = height;
-        }
+    public override byte[] Write()
+    {
+        var builder = new PacketBuilder();
 
-        public override void Read(byte[] bytes)
-        {
-            throw new NotImplementedException();
-        }
+        builder.Write((byte)ElementRpcFunction.SET_COLPOLYGON_HEIGHT);
+        builder.WriteElementId(this.ElementId);
 
-        public override byte[] Write()
-        {
-            var builder = new PacketBuilder();
+        builder.Write(this.Height);
 
-            builder.Write((byte)ElementRpcFunction.SET_COLPOLYGON_HEIGHT);
-            builder.WriteElementId(this.ElementId);
-
-            builder.Write(this.Height);
-
-            return builder.Build();
-        }
+        return builder.Build();
     }
 }

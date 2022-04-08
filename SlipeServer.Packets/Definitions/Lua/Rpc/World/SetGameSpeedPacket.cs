@@ -5,33 +5,32 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SlipeServer.Packets.Definitions.Lua.Rpc.World
+namespace SlipeServer.Packets.Definitions.Lua.Rpc.World;
+
+public class SetGameSpeedPacket : Packet
 {
-    public class SetGameSpeedPacket : Packet
+    public override PacketId PacketId => PacketId.PACKET_ID_LUA;
+    public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+    public override PacketPriority Priority => PacketPriority.High;
+
+    public float GameSpeed { get; set; }
+
+    public SetGameSpeedPacket(float gameSpeed)
     {
-        public override PacketId PacketId => PacketId.PACKET_ID_LUA;
-        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
-        public override PacketPriority Priority => PacketPriority.High;
+        this.GameSpeed = gameSpeed;
+    }
 
-        public float GameSpeed { get; set; }
+    public override void Read(byte[] bytes)
+    {
+        throw new NotImplementedException();
+    }
 
-        public SetGameSpeedPacket(float gameSpeed)
-        {
-            this.GameSpeed = gameSpeed;
-        }
+    public override byte[] Write()
+    {
+        PacketBuilder builder = new PacketBuilder();
+        builder.Write((byte)ElementRpcFunction.SET_GAME_SPEED);
+        builder.Write(this.GameSpeed);
 
-        public override void Read(byte[] bytes)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override byte[] Write()
-        {
-            PacketBuilder builder = new PacketBuilder();
-            builder.Write((byte)ElementRpcFunction.SET_GAME_SPEED);
-            builder.Write(this.GameSpeed);
-
-            return builder.Build();
-        }
+        return builder.Build();
     }
 }

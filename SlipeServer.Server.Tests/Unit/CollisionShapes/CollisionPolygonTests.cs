@@ -6,11 +6,11 @@ using System.Numerics;
 using System.Text;
 using Xunit;
 
-namespace SlipeServer.Server.Tests.Unit.CollisionShapes
+namespace SlipeServer.Server.Tests.Unit.CollisionShapes;
+
+public class CollisionPolygonTests
 {
-    public class CollisionPolygonTests
-    {
-        private readonly CollisionPolygon shape = new CollisionPolygon(Vector3.Zero, new Vector2[] {
+    private readonly CollisionPolygon shape = new CollisionPolygon(Vector3.Zero, new Vector2[] {
             new Vector2(1, 2),
             new Vector2(1, 4),
             new Vector2(2, 3),
@@ -22,26 +22,25 @@ namespace SlipeServer.Server.Tests.Unit.CollisionShapes
         });
 
 
-        [Theory]
-        [InlineData(1.25f, 3.5f)]
-        [InlineData(3f, 3.5f)]
-        [InlineData(5f, 3.5f)]
-        public void PointWithinReturnsTrueTest(float x, float y)
-        {
-            var result = shape.IsWithin(new Vector3(x, y, 0));
+    [Theory]
+    [InlineData(1.25f, 3.5f)]
+    [InlineData(3f, 3.5f)]
+    [InlineData(5f, 3.5f)]
+    public void PointWithinReturnsTrueTest(float x, float y)
+    {
+        var result = shape.IsWithin(new Vector3(x, y, 0));
 
-            result.Should().BeTrue();
-        }
+        result.Should().BeTrue();
+    }
 
-        [Theory]
-        [InlineData(0.75f, 3.5f)]
-        [InlineData(2, 3.5f)]
-        [InlineData(4, 3.5f)]
-        public void PointOutsideReturnsFalseTest(float x, float y)
-        {
-            var result = shape.IsWithin(new Vector3(x, y, 0));
+    [Theory]
+    [InlineData(0.75f, 3.5f)]
+    [InlineData(2, 3.5f)]
+    [InlineData(4, 3.5f)]
+    public void PointOutsideReturnsFalseTest(float x, float y)
+    {
+        var result = shape.IsWithin(new Vector3(x, y, 0));
 
-            result.Should().BeFalse();
-        }
+        result.Should().BeFalse();
     }
 }

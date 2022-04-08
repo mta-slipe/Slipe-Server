@@ -1,7 +1,6 @@
-﻿namespace SlipeServer.Server.Constants
+﻿namespace SlipeServer.Server.Constants;
+
+public class ElementConstants
 {
-    public class ElementConstants
-    {
-        public const uint MaxElementId = 131071;
-    }
+    public const uint MaxElementId = 131071;
 }

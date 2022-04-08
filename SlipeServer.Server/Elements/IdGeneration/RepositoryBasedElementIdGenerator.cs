@@ -4,32 +4,31 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SlipeServer.Server.Elements.IdGeneration
+namespace SlipeServer.Server.Elements.IdGeneration;
+
+public class RepositoryBasedElementIdGenerator : IElementIdGenerator
 {
-    public class RepositoryBasedElementIdGenerator: IElementIdGenerator
+    private readonly IElementRepository elementRepository;
+    private uint idCounter;
+
+    public RepositoryBasedElementIdGenerator(IElementRepository elementRepository)
     {
-        private readonly IElementRepository elementRepository;
-        private uint idCounter;
+        this.idCounter = 1;
+        this.elementRepository = elementRepository;
+    }
 
-        public RepositoryBasedElementIdGenerator(IElementRepository elementRepository)
+    public uint GetId()
+    {
+        var start = this.idCounter;
+        while (this.elementRepository.Get(this.idCounter) != null)
         {
-            this.idCounter = 1;
-            this.elementRepository = elementRepository;
+            this.idCounter = (this.idCounter + 1) % ElementConstants.MaxElementId;
+            if (this.idCounter == 0)
+                this.idCounter++;
+            if (this.idCounter == start)
+                throw new ElementIdsExhaustedException();
         }
 
-        public uint GetId()
-        {
-            var start = this.idCounter;
-            while (this.elementRepository.Get(this.idCounter) != null)
-            {
-                this.idCounter = (this.idCounter + 1) % ElementConstants.MaxElementId;
-                if (this.idCounter == 0)
-                    this.idCounter++;
-                if (this.idCounter == start)
-                    throw new ElementIdsExhaustedException();
-            }
-
-            return this.idCounter;
-        }
+        return this.idCounter;
     }
 }

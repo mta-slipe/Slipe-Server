@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SlipeServer.Server.AllSeeingEye
+namespace SlipeServer.Server.AllSeeingEye;
+
+public enum AseQueryType
 {
-    public enum AseQueryType
-    {
-        Full = 's',
-        Light = 'b',
-        LightRelease = 'r',
-        XFire = 'x',
-        Version = 'v'
-    }
+    Full = 's',
+    Light = 'b',
+    LightRelease = 'r',
+    XFire = 'x',
+    Version = 'v'
 }

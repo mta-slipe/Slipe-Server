@@ -5,37 +5,36 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 
-namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.CollisionShape
+namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.CollisionShape;
+
+public class RemoveCollisionPolygonPointRpcPacket : Packet
 {
-    public class RemoveCollisionPolygonPointRpcPacket : Packet
+    public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
+    public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+    public override PacketPriority Priority => PacketPriority.High;
+
+    public uint ElementId { get; set; }
+    public uint Index { get; set; }
+
+    public RemoveCollisionPolygonPointRpcPacket(uint elementId, uint index)
     {
-        public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
-        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
-        public override PacketPriority Priority => PacketPriority.High;
+        this.ElementId = elementId;
+        this.Index = index;
+    }
 
-        public uint ElementId { get; set; }
-        public uint Index { get; set; }
+    public override void Read(byte[] bytes)
+    {
+        throw new NotSupportedException();
+    }
 
-        public RemoveCollisionPolygonPointRpcPacket(uint elementId, uint index)
-        {
-            this.ElementId = elementId;
-            this.Index = index;
-        }
+    public override byte[] Write()
+    {
+        var builder = new PacketBuilder();
 
-        public override void Read(byte[] bytes)
-        {
-            throw new NotSupportedException();
-        }
+        builder.Write((byte)ElementRpcFunction.REMOVE_COLPOLYGON_POINT);
+        builder.WriteElementId(this.ElementId);
+        builder.Write(this.Index);
 
-        public override byte[] Write()
-        {
-            var builder = new PacketBuilder();
-
-            builder.Write((byte)ElementRpcFunction.REMOVE_COLPOLYGON_POINT);
-            builder.WriteElementId(this.ElementId);
-            builder.Write(this.Index);
-
-            return builder.Build();
-        }
+        return builder.Build();
     }
 }

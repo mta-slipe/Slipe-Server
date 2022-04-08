@@ -68,7 +68,7 @@ public:
     void destroy();
 
     bool packetHandler(unsigned char ucPacketID, const NetServerPlayerID& Socket, NetBitStreamInterface* pBitStream, SNetExtraInfo* pNetExtraInfo);
-    void sendPacket(unsigned long address, unsigned char packetId, unsigned char* payload, unsigned long payloadSize, unsigned char priority, unsigned char reliability);
+    void sendPacket(unsigned long address, unsigned char packetId, unsigned short bitStreamVersion, unsigned char* payload, unsigned long payloadSize, unsigned char priority, unsigned char reliability);
     void setSocketVersion(unsigned long address, unsigned short version);
     void resendModPackets(unsigned long address);
     void resendACPackets(unsigned long address);

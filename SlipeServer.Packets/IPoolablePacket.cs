@@ -1,7 +1,6 @@
-﻿namespace SlipeServer.Packets
+﻿namespace SlipeServer.Packets;
+
+public interface IPoolablePacket
 {
-    public interface IPoolablePacket
-    {
-        void Reset();
-    }
+    void Reset();
 }

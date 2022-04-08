@@ -5,41 +5,40 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 
-namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.CollisionShape
+namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.CollisionShape;
+
+public class SetCollisionPolygonPointPosition : Packet
 {
-    public class SetCollisionPolygonPointPosition : Packet
+    public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
+    public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+    public override PacketPriority Priority => PacketPriority.High;
+
+    public uint ElementId { get; set; }
+    public uint Index { get; set; }
+    public Vector2 Position { get; set; }
+
+    public SetCollisionPolygonPointPosition(uint elementId, uint index, Vector2 position)
     {
-        public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
-        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
-        public override PacketPriority Priority => PacketPriority.High;
+        this.ElementId = elementId;
+        this.Index = index;
+        this.Position = position;
+    }
 
-        public uint ElementId { get; set; }
-        public uint Index { get; set; }
-        public Vector2 Position { get; set; }
+    public override void Read(byte[] bytes)
+    {
+        throw new NotSupportedException();
+    }
 
-        public SetCollisionPolygonPointPosition(uint elementId, uint index, Vector2 position)
-        {
-            this.ElementId = elementId;
-            this.Index = index;
-            this.Position = position;
-        }
+    public override byte[] Write()
+    {
+        var builder = new PacketBuilder();
 
-        public override void Read(byte[] bytes)
-        {
-            throw new NotSupportedException();
-        }
+        builder.Write((byte)ElementRpcFunction.UPDATE_COLPOLYGON_POINT);
+        builder.WriteElementId(this.ElementId);
 
-        public override byte[] Write()
-        {
-            var builder = new PacketBuilder();
+        builder.WriteVector2(this.Position);
+        builder.Write(this.Index);
 
-            builder.Write((byte)ElementRpcFunction.UPDATE_COLPOLYGON_POINT);
-            builder.WriteElementId(this.ElementId);
-
-            builder.WriteVector2(this.Position);
-            builder.Write(this.Index);
-
-            return builder.Build();
-        }
+        return builder.Build();
     }
 }

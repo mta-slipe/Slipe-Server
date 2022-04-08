@@ -1,21 +1,20 @@
 ﻿using RenderWareIo;
 using System;
 
-namespace SlipeServer.Physics.Entities
+namespace SlipeServer.Physics.Entities;
+
+public class PhysicsImg : IDisposable
 {
-    public class PhysicsImg : IDisposable
+    internal ImgFile imgFile;
+
+    public PhysicsImg(string path)
     {
-        internal ImgFile imgFile;
+        this.imgFile = new ImgFile(path);
+    }
 
-        public PhysicsImg(string path)
-        {
-            this.imgFile = new ImgFile(path);
-        }
-
-        public void Dispose()
-        {
-            this.imgFile.Dispose();
-            GC.SuppressFinalize(this);
-        }
+    public void Dispose()
+    {
+        this.imgFile.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

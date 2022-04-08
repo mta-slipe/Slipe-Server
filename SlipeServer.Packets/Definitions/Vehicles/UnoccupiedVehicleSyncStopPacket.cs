@@ -2,41 +2,39 @@
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
 
-namespace SlipeServer.Packets.Definitions.Vehicles
+namespace SlipeServer.Packets.Definitions.Vehicles;
+
+public class UnoccupiedVehicleSyncStopPacket : Packet
 {
+    public override PacketId PacketId => PacketId.PACKET_ID_UNOCCUPIED_VEHICLE_STOPSYNC;
 
-    public class UnoccupiedVehicleSyncStopPacket : Packet
+    public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+
+    public override PacketPriority Priority => PacketPriority.High;
+
+    public uint Id { get; set; }
+
+    public UnoccupiedVehicleSyncStopPacket(uint id)
     {
-        public override PacketId PacketId => PacketId.PACKET_ID_UNOCCUPIED_VEHICLE_STOPSYNC;
+        this.Id = id;
+    }
 
-        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+    public override void Read(byte[] bytes)
+    {
+        var reader = new PacketReader(bytes);
+    }
 
-        public override PacketPriority Priority => PacketPriority.High;
+    public override byte[] Write()
+    {
+        var builder = new PacketBuilder();
 
-        public uint Id { get; set; }
+        builder.WriteElementId(this.Id);
 
-        public UnoccupiedVehicleSyncStopPacket(uint id)
-        {
-            this.Id = id;
-        }
+        return builder.Build();
+    }
 
-        public override void Read(byte[] bytes)
-        {
-            var reader = new PacketReader(bytes);
-        }
+    public override void Reset()
+    {
 
-        public override byte[] Write()
-        {
-            var builder = new PacketBuilder();
-
-            builder.WriteElementId(this.Id);
-
-            return builder.Build();
-        }
-
-        public override void Reset()
-        {
-
-        }
     }
 }

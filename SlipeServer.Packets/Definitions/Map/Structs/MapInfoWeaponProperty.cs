@@ -1,11 +1,10 @@
 ﻿using SlipeServer.Packets.Structs;
 
-namespace SlipeServer.Packets.Definitions.Map.Structs
+namespace SlipeServer.Packets.Definitions.Map.Structs;
+
+public struct MapInfoWeaponProperty
 {
-    public struct MapInfoWeaponProperty
-    {
-        public byte WeaponType { get; set; }
-        public bool EnabledWhenUsingJetpack { get; set; }
-        public MapInfoWeaponConfiguration[] WeaponConfigurations { get; set; }
-    }
+    public byte WeaponType { get; set; }
+    public bool EnabledWhenUsingJetpack { get; set; }
+    public MapInfoWeaponConfiguration[] WeaponConfigurations { get; set; }
 }

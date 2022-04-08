@@ -1,13 +1,12 @@
-﻿namespace SlipeServer.Packets.Enums
+﻿namespace SlipeServer.Packets.Enums;
+
+public enum VehiclePanel
 {
-    public enum VehiclePanel
-    {
-        FrontLeft,
-        FrontRight,
-        RearLeft,
-        RearRight,
-        Winscreen,
-        FrontBumper,
-        RearBumper,
-    }
+    FrontLeft,
+    FrontRight,
+    RearLeft,
+    RearRight,
+    Winscreen,
+    FrontBumper,
+    RearBumper,
 }

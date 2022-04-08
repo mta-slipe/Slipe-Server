@@ -1,9 +1,8 @@
-namespace SlipeServer.Server.Enums
+namespace SlipeServer.Server.Enums;
+
+public enum WeaponSkillLevel
 {
-    public enum WeaponSkillLevel
-    {
-        Poor,
-        Std,
-        Pro
-    }
+    Poor,
+    Std,
+    Pro
 }

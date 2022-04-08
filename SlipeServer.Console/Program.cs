@@ -11,90 +11,90 @@ using SlipeServer.Server.ServerOptions;
 using System;
 using System.Threading;
 
-namespace SlipeServer.Console
+namespace SlipeServer.Console;
+
+public partial class Program
 {
-    public partial class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
+        Program? program = null;
+        try
         {
-            Program? program = null;
-            try
-            {
-                program = new Program(args);
-                program.Start();
-            }
-            catch (Exception exception)
-            {
-                if (program != null)
-                {
-                    program.Logger.LogCritical(exception, exception.Message);
-                } else
-                {
-                    System.Console.WriteLine($"Error in startup {exception.Message}");
-                }
-                System.Console.WriteLine("Press any key to exit...");
-                System.Console.ReadKey();
-            }
+            program = new Program(args);
+            program.Start();
         }
-
-        private readonly EventWaitHandle waitHandle = new(false, EventResetMode.AutoReset);
-        private readonly MtaServer server;
-        private readonly Configuration configuration;
-
-        public ILogger Logger { get; }
-
-        public Program(string[] args)
+        catch (Exception exception)
         {
-            var configurationProvider = args.Length > 0 ? ConfigurationLoader.GetConfigurationProvider(args[0]) : null;
-
-            this.configuration = configurationProvider?.GetConfiguration() ?? new Configuration()
+            if (program != null)
             {
-                IsVoiceEnabled = true
-            };
+                program.Logger.LogCritical(exception, "{message}", exception.Message);
+            } else
+            {
+                System.Console.WriteLine($"Error in startup {exception.Message}");
+            }
+            System.Console.WriteLine("Press any key to exit...");
+            System.Console.ReadKey();
+        }
+    }
 
-            this.server = new MtaServer(
-                (builder) =>
-                {
-                    builder.UseConfiguration(this.configuration);
+    private readonly EventWaitHandle waitHandle = new(false, EventResetMode.AutoReset);
+    private readonly MtaServer server;
+    private readonly Configuration configuration;
+
+    public ILogger Logger { get; }
+
+    public Program(string[] args)
+    {
+        var configurationProvider = args.Length > 0 ? ConfigurationLoader.GetConfigurationProvider(args[0]) : null;
+
+        this.configuration = configurationProvider?.GetConfiguration() ?? new Configuration()
+        {
+            IsVoiceEnabled = true
+        };
+
+        this.server = new MtaServer(
+            (builder) =>
+            {
+                builder.UseConfiguration(this.configuration);
 
 #if DEBUG
-                    builder.AddDefaults(exceptBehaviours: ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour);
-                    builder.AddNetWrapper(dllPath: "net_d", port: (ushort)(this.configuration.Port + 1));
+                builder.AddDefaults(exceptBehaviours: ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour);
+                builder.AddNetWrapper(dllPath: "net_d", port: (ushort)(this.configuration.Port + 1));
 #else
                     builder.AddDefaults();
 #endif
 
-                    builder.ConfigureServices(services =>
-                    {
-                        services.AddSingleton<ILogger, ConsoleLogger>();
-                        services.AddSingleton<ISyncHandlerMiddleware<PlayerPureSyncPacket>, SubscriptionSyncHandlerMiddleware<PlayerPureSyncPacket>>();
-                        services.AddSingleton<ISyncHandlerMiddleware<KeySyncPacket>, SubscriptionSyncHandlerMiddleware<KeySyncPacket>>();
-                    });
-                    builder.AddLua();
-                    builder.AddPhysics();
+                builder.ConfigureServices(services =>
+                {
+                    services.AddSingleton<ILogger, ConsoleLogger>();
+                    services.AddSingleton<ISyncHandlerMiddleware<PlayerPureSyncPacket>, SubscriptionSyncHandlerMiddleware<PlayerPureSyncPacket>>();
+                    services.AddSingleton<ISyncHandlerMiddleware<KeySyncPacket>, SubscriptionSyncHandlerMiddleware<KeySyncPacket>>();
+                });
+                builder.AddLua();
+                builder.AddPhysics();
 
-                    builder.AddLogic<ServerTestLogic>();
-                    builder.AddLogic<LuaTestLogic>();
-                    builder.AddLogic<PhysicsTestLogic>();
-                }
-            )
-            {
-                GameType = "Slipe Server",
-                MapName = "N/A"
-            };
-
-            this.Logger = this.server.GetRequiredService<ILogger>();
-
-            System.Console.CancelKeyPress += delegate {
-                this.server.Stop();
-                this.waitHandle.Set();
-            };
-        }
-
-        public void Start()
+                builder.AddLogic<ServerTestLogic>();
+                builder.AddLogic<LuaTestLogic>();
+                builder.AddLogic<PhysicsTestLogic>();
+            }
+        )
         {
-            this.server.Start();
-            this.waitHandle.WaitOne();
-        }
+            GameType = "Slipe Server",
+            MapName = "N/A"
+        };
+
+        this.Logger = this.server.GetRequiredService<ILogger>();
+
+        System.Console.CancelKeyPress += (sender, args) =>
+        {
+            this.server.Stop();
+            this.waitHandle.Set();
+        };
+    }
+
+    public void Start()
+    {
+        this.server.Start();
+        this.waitHandle.WaitOne();
     }
 }

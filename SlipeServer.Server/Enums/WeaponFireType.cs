@@ -1,12 +1,11 @@
-namespace SlipeServer.Server.Enums
+namespace SlipeServer.Server.Enums;
+
+public enum WeaponFireType
 {
-    public enum WeaponFireType
-    {
-        Melee,
-        InstantHit,
-        Projectile,
-        AreaEffect,
-        Camera,
-        Use,
-    }
+    Melee,
+    InstantHit,
+    Projectile,
+    AreaEffect,
+    Camera,
+    Use,
 }
