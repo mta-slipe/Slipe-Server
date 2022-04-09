@@ -1,8 +1,7 @@
 ﻿using SlipeServer.Packets.Definitions.Entities.Structs;
-using System;
-using System.Numerics;
-using SlipeServer.Server.Enums;
 using SlipeServer.Server.Elements.Events;
+using SlipeServer.Server.Enums;
+using System.Numerics;
 
 namespace SlipeServer.Server.Elements;
 
@@ -25,7 +24,6 @@ public class WorldObject : Element
     public bool IsLowLod { get; set; } = false;
     public WorldObject? LowLodElement { get; set; }
     public bool DoubleSided { get; set; } = false;
-    public bool IsVisibleInAllDimensions { get; set; } = true;
     public PositionRotationAnimation? Movement { get; set; }
 
     protected Vector3 scale = Vector3.One;
@@ -41,6 +39,18 @@ public class WorldObject : Element
     }
 
     public float Health { get; set; } = 1000;
+
+    private bool isVisibleInAllDimensions;
+    public bool IsVisibleInAllDimensions
+    {
+        get => this.isVisibleInAllDimensions;
+        set
+        {
+            var args = new ElementChangedEventArgs<WorldObject, bool>(this, this.isVisibleInAllDimensions, value, this.IsSync);
+            this.isVisibleInAllDimensions = value;
+            IsVisibleInAllDimensionsChanged?.Invoke(this, args);
+        }
+    }
 
     public WorldObject(ObjectModel model, Vector3 position)
     {
@@ -61,4 +71,5 @@ public class WorldObject : Element
 
     public event ElementChangedEventHandler<WorldObject, ushort>? ModelChanged;
     public event ElementChangedEventHandler<WorldObject, Vector3>? ScaleChanged;
+    public event ElementChangedEventHandler<WorldObject, bool>? IsVisibleInAllDimensionsChanged;
 }

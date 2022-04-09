@@ -21,4 +21,9 @@ public static class WorldObjectPacketFactory
     {
         return new DestroyAllWorldObjectsRpcPacket();
     }
+
+    public static SetWorldObjectVisibileInAllDimensionsPacket CreateSetVisibleInAllDimensionsPacket(WorldObject worldObject)
+    {
+        return new SetWorldObjectVisibileInAllDimensionsPacket(worldObject.Id, worldObject.IsVisibleInAllDimensions);
+    }
 }

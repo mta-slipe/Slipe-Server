@@ -28,16 +28,22 @@ public class ObjectPacketBehaviour
         {
             worldObject.ModelChanged += RelayModelChange;
             worldObject.ScaleChanged += RelayScaleChange;
+            worldObject.IsVisibleInAllDimensionsChanged += RelayIsVisibleInAllDimensionsChange;
         }
     }
 
-    private void RelayModelChange(object sender, ElementChangedEventArgs<WorldObject, ushort> args)
+    private void RelayModelChange(WorldObject sender, ElementChangedEventArgs<WorldObject, ushort> args)
     {
         this.server.BroadcastPacket(WorldObjectPacketFactory.CreateSetModelPacket(args.Source));
     }
 
-    private void RelayScaleChange(object sender, ElementChangedEventArgs<WorldObject, Vector3> args)
+    private void RelayScaleChange(WorldObject sender, ElementChangedEventArgs<WorldObject, Vector3> args)
     {
         this.server.BroadcastPacket(WorldObjectPacketFactory.CreateSetScalePacket(args.Source));
+    }
+
+    private void RelayIsVisibleInAllDimensionsChange(WorldObject sender, ElementChangedEventArgs<WorldObject, bool> args)
+    {
+        this.server.BroadcastPacket(WorldObjectPacketFactory.CreateSetVisibleInAllDimensionsPacket(args.Source));
     }
 }
