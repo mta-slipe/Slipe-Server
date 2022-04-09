@@ -42,6 +42,7 @@ public class VehicleBehaviour
             vehicle.PlateTextChanged += RelayPlateTextChanged;
             vehicle.HeadlightColorChanged += RelayHeadlightColorChanged;
             vehicle.TowedVehicleChanged += RelayTowedVehicleChanged;
+            vehicle.FuelTankExplodableChanged += RelayFuelTankExplodable;
         }
     }
 
@@ -146,5 +147,10 @@ public class VehicleBehaviour
             Rotation = args.NewValue.Rotation,
             TurnVelocity = args.NewValue.TurnVelocity,
         });
+    }
+
+    private void RelayFuelTankExplodable(Vehicle sender, ElementChangedEventArgs<Vehicle, bool> args)
+    {
+        this.server.BroadcastPacket(VehiclePacketFactory.CreateSetFuelTankExplodablePacket(args.Source));
     }
 }

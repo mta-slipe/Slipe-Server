@@ -795,6 +795,14 @@ public class ServerTestLogic
             this.Bin.Attachment.PositionOffset += new Vector3(1, 0, 0);
         };
 
+        this.commandService.AddCommand("fueltank").Triggered += (source, args) =>
+        {
+            if (args.Player.Vehicle == null)
+                return;
+
+            args.Player.Vehicle.IsFuelTankExplodable = !args.Player.Vehicle.IsFuelTankExplodable;
+        };
+
         this.commandService.AddCommand("hot").Triggered += (source, args) =>
         {
             // command for testing, use hot reload to write code and apply during a running debug session

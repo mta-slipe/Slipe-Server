@@ -110,7 +110,6 @@ public class Vehicle : Element
     }
 
     public bool IsSirenActive { get; set; } = false;
-    public bool IsFuelTankExplodable { get; set; } = false;
     private bool isEngineOn = false;
     public bool IsEngineOn
     {
@@ -213,6 +212,18 @@ public class Vehicle : Element
     public Vehicle? TowedVehicle { get; private set; }
 
     public VehicleBlownState BlownState { get; set; }
+
+    private bool isFuelTankExplodable;
+    public bool IsFuelTankExplodable
+    {
+        get => this.isFuelTankExplodable;
+        set
+        {
+            var args = new ElementChangedEventArgs<Vehicle, bool>(this, this.isFuelTankExplodable, value, this.IsSync);
+            this.isFuelTankExplodable = value;
+            FuelTankExplodableChanged?.Invoke(this, args);
+        }
+    }
 
     private string DebuggerDisplay => $"{(VehicleModel)this.model} ({this.Id})";
 
@@ -443,6 +454,7 @@ public class Vehicle : Element
     public event ElementChangedEventHandler<Vehicle, Color>? HeadlightColorChanged;
     public event ElementChangedEventHandler<Vehicle, Vehicle?>? TowedVehicleChanged;
     public event ElementChangedEventHandler<Vehicle, Vehicle?>? TowingVehicleChanged;
+    public event ElementChangedEventHandler<Vehicle, bool>? FuelTankExplodableChanged;
     public event ElementEventHandler<VehicleRespawnEventArgs>? Respawned;
     public event ElementEventHandler<VehicleDoorStateChangedArgs>? DoorStateChanged;
     public event ElementEventHandler<VehicleWheelStateChangedArgs>? WheelStateChanged;
