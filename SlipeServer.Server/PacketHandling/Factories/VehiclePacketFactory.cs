@@ -2,6 +2,7 @@
 using SlipeServer.Server.Elements;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
 using SlipeServer.Packets.Definitions.Vehicles;
+using SlipeServer.Packets.Definitions.Lua.Rpc.Destroys;
 
 namespace SlipeServer.Server.PacketHandling.Factories;
 
@@ -82,5 +83,10 @@ public static class VehiclePacketFactory
             AttachedVehicleId = attachedVehicle.Id,
             IsAttached = false
         };
+    }
+
+    public static DestroyAllVehiclesRpcPacket CreateDestroyAllPacket()
+    {
+        return new DestroyAllVehiclesRpcPacket();
     }
 }

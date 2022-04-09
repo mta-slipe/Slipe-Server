@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.WorldObject;
+using SlipeServer.Packets.Definitions.Lua.Rpc.Destroys;
 using SlipeServer.Server.Elements;
 
 namespace SlipeServer.Server.PacketHandling.Factories;
@@ -14,5 +15,10 @@ public static class WorldObjectPacketFactory
     public static SetWorldObjectScaleRpcPacket CreateSetScalePacket(WorldObject worldObject)
     {
         return new SetWorldObjectScaleRpcPacket(worldObject.Id, worldObject.Scale);
+    }
+
+    public static DestroyAllWorldObjectsRpcPacket CreateDestroyAllPacket()
+    {
+        return new DestroyAllWorldObjectsRpcPacket();
     }
 }

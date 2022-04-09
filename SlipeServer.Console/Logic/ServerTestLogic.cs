@@ -12,6 +12,7 @@ using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Elements.Structs;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Events;
+using SlipeServer.Server.PacketHandling.Factories;
 using SlipeServer.Server.Repositories;
 using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Providers;
@@ -801,6 +802,16 @@ public class ServerTestLogic
                 return;
 
             args.Player.Vehicle.IsFuelTankExplodable = !args.Player.Vehicle.IsFuelTankExplodable;
+        };
+
+        this.commandService.AddCommand("deleteeverything").Triggered += (source, args) =>
+        {
+            this.server.BroadcastPacket(VehiclePacketFactory.CreateDestroyAllPacket());
+            this.server.BroadcastPacket(BlipPacketFactory.CreateDestroyAllPacket());
+            this.server.BroadcastPacket(WorldObjectPacketFactory.CreateDestroyAllPacket());
+            this.server.BroadcastPacket(RadarAreaPacketFactory.CreateDestroyAllPacket());
+            this.server.BroadcastPacket(MarkerPacketFactory.CreateDestroyAllPacket());
+            this.server.BroadcastPacket(PickupPacketFactory.CreateDestroyAllPacket());
         };
 
         this.commandService.AddCommand("hot").Triggered += (source, args) =>
