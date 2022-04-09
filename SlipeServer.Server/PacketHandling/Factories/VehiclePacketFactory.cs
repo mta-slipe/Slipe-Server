@@ -83,4 +83,9 @@ public static class VehiclePacketFactory
             IsAttached = false
         };
     }
+
+    public static DestroyAllVehiclesRpcPacket CreateDestroyAllPacket()
+    {
+        return new DestroyAllVehiclesRpcPacket();
+    }
 }

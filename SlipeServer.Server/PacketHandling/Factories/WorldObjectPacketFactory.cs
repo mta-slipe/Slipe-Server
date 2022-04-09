@@ -15,4 +15,9 @@ public static class WorldObjectPacketFactory
     {
         return new SetWorldObjectScaleRpcPacket(worldObject.Id, worldObject.Scale);
     }
+
+    public static DestroyAllWorldObjectsRpcPacket CreateDestroyAllPacket()
+    {
+        return new DestroyAllWorldObjectsRpcPacket();
+    }
 }
