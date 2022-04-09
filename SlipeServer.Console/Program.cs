@@ -95,6 +95,7 @@ public partial class Program
     public void Start()
     {
         this.server.Start();
+        this.Logger.LogInformation("Server started.");
         this.waitHandle.WaitOne();
     }
 }
