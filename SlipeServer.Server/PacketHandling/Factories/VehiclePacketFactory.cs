@@ -52,6 +52,11 @@ public static class VehiclePacketFactory
         return new SetVehicleEngineStateRpcPacket(vehicle.Id, vehicle.IsEngineOn);
     }
 
+    public static SetVehicleFuelTankExplodable CreateSetFuelTankExplodablePacket(Vehicle vehicle)
+    {
+        return new SetVehicleFuelTankExplodable(vehicle.Id, vehicle.IsFuelTankExplodable);
+    }
+
     public static VehicleResyncPacket CreateVehicleResyncPacket(Vehicle vehicle)
     {
         return new VehicleResyncPacket()
