@@ -13,7 +13,6 @@ public class TestingClient : Client
 
     public TestingClient(uint address, INetWrapper netWrapper) : base(address, netWrapper)
     {
-        this.hasReceivedModNamePacket = true;
         this.ConnectionState = Enums.ClientConnectionState.Joined;
     }
 }

@@ -26,8 +26,6 @@ public class Client
     public ClientConnectionState ConnectionState { get; protected set; }
     public uint Ping { get; set; }
 
-    protected bool hasReceivedModNamePacket;
-
     public Client(uint binaryAddress, INetWrapper netWrapper)
     {
         this.binaryAddress = binaryAddress;
@@ -38,14 +36,6 @@ public class Client
 
     public void SendPacket(Packet packet)
     {
-        if (!this.hasReceivedModNamePacket)
-        {
-            if (packet.PacketId != PacketId.PACKET_ID_MOD_NAME)
-                return;
-            this.hasReceivedModNamePacket = true;
-        }
-
-
         if (CanSendPacket(packet.PacketId))
         {
             this.netWrapper.SendPacket(this.binaryAddress, this.bitStreamVersion, packet);
@@ -55,13 +45,6 @@ public class Client
 
     public void SendPacket(PacketId packetId, byte[] data, PacketPriority priority = PacketPriority.Medium, PacketReliability reliability = PacketReliability.Unreliable)
     {
-        if (!this.hasReceivedModNamePacket)
-        {
-            if (packetId != PacketId.PACKET_ID_MOD_NAME)
-                return;
-            this.hasReceivedModNamePacket = true;
-        }
-
         if (CanSendPacket(packetId))
         {
             this.netWrapper.SendPacket(this.binaryAddress, packetId, this.bitStreamVersion, data, priority, reliability);
