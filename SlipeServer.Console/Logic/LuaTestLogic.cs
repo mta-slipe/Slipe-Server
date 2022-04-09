@@ -2,26 +2,41 @@
 using SlipeServer.Console.LuaDefinitions;
 using SlipeServer.Lua;
 using SlipeServer.Scripting;
+using SlipeServer.Server.Services;
 using System.IO;
 
 namespace SlipeServer.Console.Logic;
 
 public class LuaTestLogic
 {
-    public LuaTestLogic(IScriptEventRuntime eventRuntime, LuaService luaService)
+    private readonly IScriptEventRuntime eventRuntime;
+    private readonly LuaService luaService;
+
+    public LuaTestLogic(
+        IScriptEventRuntime eventRuntime, 
+        LuaService luaService,
+        CommandService commandService)
     {
-        eventRuntime.LoadDefaultEvents();
+        this.eventRuntime = eventRuntime;
+        this.luaService = luaService;
 
-        luaService.LoadDefaultDefinitions();
+        commandService.AddCommand("physics").Triggered += (source, args) => Init();
+    }
 
-        luaService.LoadDefinitions<CustomMathDefinition>();
-        luaService.LoadDefinitions<TestDefinition>();
+    private void Init()
+    {
+        this.eventRuntime.LoadDefaultEvents();
+
+        this.luaService.LoadDefaultDefinitions();
+
+        this.luaService.LoadDefinitions<CustomMathDefinition>();
+        this.luaService.LoadDefinitions<TestDefinition>();
 
         using FileStream testLua = File.OpenRead("test.lua");
         using StreamReader reader = new StreamReader(testLua);
         try
         {
-            luaService.LoadScript("test.lua", reader.ReadToEnd());
+            this.luaService.LoadScript("test.lua", reader.ReadToEnd());
         }
         catch (InterpreterException ex)
         {
