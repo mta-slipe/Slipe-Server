@@ -23,7 +23,7 @@ public class Client
     public string? Version { get; private set; }
     public IPAddress? IPAddress { get; set; }
     public bool IsConnected { get; internal set; }
-    public ClientConnectionState ConnectionState { get; internal set; }
+    public ClientConnectionState ConnectionState { get; protected set; }
     public uint Ping { get; set; }
 
     protected bool hasReceivedModNamePacket;
