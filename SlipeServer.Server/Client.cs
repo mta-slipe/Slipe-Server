@@ -1,7 +1,9 @@
 ﻿using SlipeServer.Net.Wrappers;
 using SlipeServer.Packets;
+using SlipeServer.Packets.Constants;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Enums;
 using SlipeServer.Server.PacketHandling;
 using System;
 using System.Net;
@@ -21,6 +23,7 @@ public class Client
     public string? Version { get; private set; }
     public IPAddress? IPAddress { get; set; }
     public bool IsConnected { get; internal set; }
+    public ClientConnectionState ConnectionState { get; internal set; }
     public uint Ping { get; set; }
 
     protected bool hasReceivedModNamePacket;
@@ -43,9 +46,10 @@ public class Client
         }
 
 
-        if (this.IsConnected && (ClientPacketScope.Current == null || ClientPacketScope.Current.ContainsClient(this)))
+        if (CanSendPacket(packet.PacketId))
         {
             this.netWrapper.SendPacket(this.binaryAddress, this.bitStreamVersion, packet);
+            HandleSentPacket(packet.PacketId);
         }
     }
 
@@ -58,10 +62,31 @@ public class Client
             this.hasReceivedModNamePacket = true;
         }
 
-        if (this.IsConnected && (ClientPacketScope.Current == null || ClientPacketScope.Current.ContainsClient(this)))
+        if (CanSendPacket(packetId))
         {
             this.netWrapper.SendPacket(this.binaryAddress, packetId, this.bitStreamVersion, data, priority, reliability);
+            HandleSentPacket(packetId);
         }
+    }
+
+    private bool CanSendPacket(PacketId packet)
+    {
+        return 
+            this.IsConnected && 
+            (
+                ClientPacketScope.Current == null || 
+                ClientPacketScope.Current.ContainsClient(this)
+            ) &&
+            (
+                this.ConnectionState == ClientConnectionState.Joined || 
+                PacketSendingConstants.AlwaysAllowedPackets.Contains(packet)
+            );
+    }
+
+    private void HandleSentPacket(PacketId packet)
+    {
+        if (Enum.IsDefined((ClientConnectionState)packet))
+            this.ConnectionState = (ClientConnectionState)packet;
     }
 
     public void SetVersion(ushort version)

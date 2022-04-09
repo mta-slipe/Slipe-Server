@@ -130,6 +130,9 @@ public class Ped : Element
         get => this.hasJetpack;
         set
         {
+            if (this.Vehicle != null)
+                return;
+
             var args = new ElementChangedEventArgs<Ped, bool>(this, this.hasJetpack, value, this.IsSync);
             this.hasJetpack = value;
             JetpackStateChanged?.Invoke(this, args);
