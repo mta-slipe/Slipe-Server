@@ -1,4 +1,4 @@
-﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Blips;
+﻿using SlipeServer.Packets.Definitions.Lua.Rpc.Destroys;
 
 namespace SlipeServer.Server.PacketHandling.Factories;
 
