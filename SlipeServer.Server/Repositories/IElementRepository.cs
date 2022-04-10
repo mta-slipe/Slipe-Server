@@ -17,4 +17,5 @@ public interface IElementRepository
     IEnumerable<Element> GetWithinRange(Vector3 position, float range);
     IEnumerable<TElement> GetWithinRange<TElement>(Vector3 position, float range, ElementType elementType) where TElement : Element;
     IEnumerable<TElement> GetByType<TElement>(ElementType elementType) where TElement : Element;
+    IEnumerable<TElement> GetByType<TElement>() where TElement : Element;
 }

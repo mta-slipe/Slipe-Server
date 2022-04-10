@@ -101,7 +101,7 @@ public class PhysicsTestLogic
             this.commandService.AddCommand("stopsim").Triggered += HandleStopSimCommand;
 
             this.server.PlayerJoined += HandlePlayerJoin;
-            foreach (var player in this.elementRepository.GetByType<Player>(ElementType.Player))
+            foreach (var player in this.elementRepository.GetByType<Player>())
                 HandlePlayerJoin(player);
         }
         catch (IOException)

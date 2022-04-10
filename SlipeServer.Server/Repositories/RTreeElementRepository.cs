@@ -6,6 +6,7 @@ using System.Numerics;
 using SlipeServer.Server.Elements.Events;
 using RBush;
 using System.Collections.Concurrent;
+using SlipeServer.Server.Helpers;
 
 namespace SlipeServer.Server.Repositories;
 
@@ -97,6 +98,11 @@ public class RTreeElementRepository : IElementRepository
             .Where(element => element.ElementType == elementType)
             .Cast<TElement>();
         }
+    }
+
+    public IEnumerable<TElement> GetByType<TElement>() where TElement : Element
+    {
+        return this.GetByType<TElement>(ElementTypeHelpers.GetElementType<TElement>());
     }
 
     public IEnumerable<Element> GetWithinRange(Vector3 position, float range)

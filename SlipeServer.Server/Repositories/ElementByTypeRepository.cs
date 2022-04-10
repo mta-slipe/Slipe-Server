@@ -3,6 +3,7 @@ using SlipeServer.Server.Elements;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using SlipeServer.Server.Helpers;
 
 namespace SlipeServer.Server.Repositories;
 
@@ -53,6 +54,11 @@ public class ElementByTypeRepository : IElementRepository
     public IEnumerable<TElement> GetByType<TElement>(ElementType elementType) where TElement : Element
     {
         return this.elements.ContainsKey(elementType) ? this.elements[elementType].ToArray().Cast<TElement>() : Array.Empty<TElement>();
+    }
+
+    public IEnumerable<TElement> GetByType<TElement>() where TElement : Element
+    {
+        return this.GetByType<TElement>(ElementTypeHelpers.GetElementType<TElement>());
     }
 
     public IEnumerable<Element> GetWithinRange(Vector3 position, float range)
