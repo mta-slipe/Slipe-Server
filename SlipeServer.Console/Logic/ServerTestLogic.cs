@@ -412,7 +412,7 @@ public class ServerTestLogic
 
         this.commandService.AddCommand("playerlist").Triggered += (source, args) =>
         {
-            var players = this.elementRepository.GetByType<Player>(ElementType.Player);
+            var players = this.elementRepository.GetByType<Player>();
             foreach (var remotePlayer in players)
                 this.chatBox.OutputTo(args.Player, remotePlayer.Name);
 
@@ -1030,7 +1030,7 @@ public class ServerTestLogic
 
     private void HandlePlayerSubscriptions(Player player)
     {
-        var otherPlayers = this.elementRepository.GetByType<Player>(ElementType.Player).Where(x => x != player);
+        var otherPlayers = this.elementRepository.GetByType<Player>().Where(x => x != player);
         foreach (var otherPlayer in otherPlayers)
         {
             otherPlayer.SubscribeTo(player);
@@ -1045,7 +1045,7 @@ public class ServerTestLogic
             {
                 case "sub":
                     otherPlayer = this.elementRepository
-                        .GetByType<Player>(ElementType.Player)
+                        .GetByType<Player>()
                         .SingleOrDefault(x => x.Name == args.Arguments[0]);
 
                     if (otherPlayer != null)
@@ -1053,7 +1053,7 @@ public class ServerTestLogic
                     break;
                 case "unsub":
                     otherPlayer = this.elementRepository
-                        .GetByType<Player>(ElementType.Player)
+                        .GetByType<Player>()
                         .SingleOrDefault(x => x.Name == args.Arguments[0]);
 
                     if (otherPlayer != null)

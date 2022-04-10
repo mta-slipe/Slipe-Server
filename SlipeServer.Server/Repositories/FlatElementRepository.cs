@@ -1,4 +1,5 @@
 ﻿using SlipeServer.Server.Elements;
+using SlipeServer.Server.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -39,6 +40,11 @@ public class FlatElementRepository : IElementRepository
     public IEnumerable<TElement> GetByType<TElement>(ElementType elementType) where TElement : Element
     {
         return this.elements.Where(element => element.ElementType == elementType).Cast<TElement>();
+    }
+
+    public IEnumerable<TElement> GetByType<TElement>() where TElement : Element
+    {
+        return this.GetByType<TElement>(ElementTypeHelpers.GetElementType<TElement>());
     }
 
     public IEnumerable<Element> GetWithinRange(Vector3 position, float range)
