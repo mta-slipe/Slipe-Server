@@ -76,6 +76,7 @@ public partial class Program
                 builder.AddLogic<ServerTestLogic>();
                 builder.AddLogic<LuaTestLogic>();
                 builder.AddLogic<PhysicsTestLogic>();
+                builder.AddLogic<ElementPoolingTestLogic>();
             }
         )
         {
