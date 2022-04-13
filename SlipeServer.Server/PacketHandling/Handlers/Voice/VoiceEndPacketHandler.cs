@@ -7,7 +7,7 @@ public class VoiceEndPacketHandler : IPacketHandler<VoiceEndPacket>
 {
     public PacketId PacketId => PacketId.PACKET_ID_VOICE_END;
 
-    public void HandlePacket(Client client, VoiceEndPacket packet)
+    public void HandlePacket(IClient client, VoiceEndPacket packet)
     {
         client.Player.VoiceDataEnd();
     }

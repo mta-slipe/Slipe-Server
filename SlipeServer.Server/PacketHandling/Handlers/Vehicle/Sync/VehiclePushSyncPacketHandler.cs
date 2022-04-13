@@ -17,7 +17,7 @@ public class VehiclePushSyncPacketHandler : IPacketHandler<VehiclePushSyncPacket
         this.elementRepository = elementRepository;
     }
 
-    public void HandlePacket(Client client, VehiclePushSyncPacket packet)
+    public void HandlePacket(IClient client, VehiclePushSyncPacket packet)
     {
         if (this.elementRepository.Get(packet.ElementId) is Elements.Vehicle vehicle)
         {

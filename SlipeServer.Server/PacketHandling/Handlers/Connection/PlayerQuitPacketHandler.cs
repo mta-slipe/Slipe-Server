@@ -20,7 +20,7 @@ public class PlayerQuitPacketHandler : IPacketHandler<PlayerQuitPacket>
         this.elementRepository = elementRepository;
     }
 
-    public void HandlePacket(Client client, PlayerQuitPacket packet)
+    public void HandlePacket(IClient client, PlayerQuitPacket packet)
     {
         var returnPacket = PlayerPacketFactory.CreateQuitPacket(client.Player, QuitReason.Quit);
         returnPacket.SendTo(this.elementRepository.GetByType<Elements.Player>(ElementType.Player).Except(new Elements.Player[] { client.Player }));

@@ -22,7 +22,7 @@ public class ExplosionPacketHandler : IPacketHandler<ExplosionPacket>
         this.elementRepository = elementRepository;
     }
 
-    public void HandlePacket(Client client, ExplosionPacket packet)
+    public void HandlePacket(IClient client, ExplosionPacket packet)
     {
         var player = client.Player;
         packet.PlayerSource = player.Id;

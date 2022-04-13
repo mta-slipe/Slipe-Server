@@ -6,11 +6,11 @@ namespace SlipeServer.Server.TestTools;
 
 public class TestingPlayer : Player
 {
-    public uint Address { get; }
+    public uint Address => ((TestingClient)this.Client).Address;
 
-    public TestingPlayer(Client client, uint address) : base(client)
+    public TestingPlayer() : base()
     {
-        this.Address = address;
+
     }
 
     public new TestingPlayer AssociateWith(MtaServer server)
@@ -21,6 +21,8 @@ public class TestingPlayer : Player
     public static TestingPlayer CreateStandalone()
     {
         var netWrapper = new Mock<INetWrapper>();
-        return new TestingPlayer(new TestingClient(0, netWrapper.Object), 0);
+        var player = new TestingPlayer();
+        player.Client = new TestingClient(0, netWrapper.Object, player);
+        return player;
     }
 }

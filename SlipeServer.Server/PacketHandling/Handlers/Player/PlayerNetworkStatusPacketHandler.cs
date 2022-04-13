@@ -7,7 +7,7 @@ public class PlayerNetworkStatusPacketHandler : IPacketHandler<PlayerNetworkStat
 {
     public PacketId PacketId => PacketId.PACKET_ID_PLAYER_NETWORK_STATUS;
 
-    public void HandlePacket(Client client, PlayerNetworkStatusPacket packet)
+    public void HandlePacket(IClient client, PlayerNetworkStatusPacket packet)
     {
         client.Player.TriggerNetworkStatus(packet.Type, packet.Ticks);
     }

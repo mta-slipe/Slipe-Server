@@ -10,9 +10,18 @@ public static class ElementCollectionExtensions
     {
         AddEntityPacketFactory.CreateAddEntityPacket(elements).SendTo(players);
     }
+    public static void CreateFor(this IEnumerable<Element> elements, Player player)
+    {
+        CreateFor(elements, new Player[] { player });
+    }
 
     public static void DestroyFor(this IEnumerable<Element> elements, IEnumerable<Player> players)
     {
         RemoveEntityPacketFactory.CreateRemoveEntityPacket(elements).SendTo(players);
+    }
+
+    public static void DestroyFor(this IEnumerable<Element> elements, Player player)
+    {
+        DestroyFor(elements, new Player[] { player });
     }
 }

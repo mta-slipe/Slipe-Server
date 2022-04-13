@@ -18,7 +18,7 @@ public class DestroySatchelsPacketHandler : IPacketHandler<DestroySatchelsPacket
         this.middleware = middleware;
     }
 
-    public void HandlePacket(Client client, DestroySatchelsPacket packet)
+    public void HandlePacket(IClient client, DestroySatchelsPacket packet)
     {
         packet.ElementId = client.Player.Id;
 

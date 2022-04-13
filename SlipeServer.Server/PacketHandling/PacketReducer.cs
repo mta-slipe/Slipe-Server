@@ -11,7 +11,7 @@ public class PacketReducer
 {
     private readonly List<IQueueHandler> queueHandlers;
     private readonly Dictionary<PacketId, List<IQueueHandler>> registeredQueueHandlers;
-    private readonly Dictionary<PacketId, List<Action<Client, byte[]>>> registeredPacketHandlerActions;
+    private readonly Dictionary<PacketId, List<Action<IClient, byte[]>>> registeredPacketHandlerActions;
     private readonly ILogger logger;
 
     public IEnumerable<IQueueHandler> RegisteredQueueHandlers => this.queueHandlers;
@@ -44,7 +44,7 @@ public class PacketReducer
         this.queueHandlers.Add(queueHandler);
     }
 
-    public void EnqueuePacket(Client client, PacketId packetId, byte[] data)
+    public void EnqueuePacket(IClient client, PacketId packetId, byte[] data)
     {
         if (this.registeredPacketHandlerActions.TryGetValue(packetId, out var handlers))
         {

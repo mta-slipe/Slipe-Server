@@ -17,7 +17,7 @@ public class JoinedGamePacketHandler : IPacketHandler<JoinedGamePacket>
         this.bitStreamVersion = configuration.BitStreamVersion;
     }
 
-    public void HandlePacket(Client client, JoinedGamePacket packet)
+    public void HandlePacket(IClient client, JoinedGamePacket packet)
     {
         client.SendPacket(new ModNamePacket(this.bitStreamVersion, "deathmatch"));
     }

@@ -24,7 +24,7 @@ public class PedSyncPacketHandler : IPacketHandler<PedSyncPacket>
         this.middleware = middleware;
     }
 
-    public void HandlePacket(Client client, PedSyncPacket packet)
+    public void HandlePacket(IClient client, PedSyncPacket packet)
     {
         List<PedSyncData> pedsToSync = new();
 

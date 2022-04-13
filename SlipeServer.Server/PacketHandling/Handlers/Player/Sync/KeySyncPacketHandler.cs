@@ -18,7 +18,7 @@ public class KeySyncPacketHandler : IPacketHandler<KeySyncPacket>
         this.middleware = middleware;
     }
 
-    public void HandlePacket(Client client, KeySyncPacket packet)
+    public void HandlePacket(IClient client, KeySyncPacket packet)
     {
         packet.PlayerId = client.Player.Id;
         var otherPlayers = this.middleware.GetPlayersToSyncTo(client.Player, packet);

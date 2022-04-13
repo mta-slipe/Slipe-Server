@@ -17,7 +17,7 @@ public class ClientPacketScopeTests
 
         var player = server.AddFakePlayer();
 
-        using var scope = new ClientPacketScope(new Client[] { player.Client });
+        using var scope = new ClientPacketScope(new IClient[] { player.Client });
         player.Client.SendPacket(new SetElementModelRpcPacket(player.Id, 0));
 
         server.VerifyPacketSent(Packets.Enums.PacketId.PACKET_ID_LUA_ELEMENT_RPC, player);
@@ -30,7 +30,7 @@ public class ClientPacketScopeTests
 
         var player = server.AddFakePlayer();
 
-        using var scope = new ClientPacketScope(Array.Empty<Client>());
+        using var scope = new ClientPacketScope(Array.Empty<IClient>());
         player.Client.SendPacket(new SetElementModelRpcPacket(player.Id, 0));
 
         server.VerifyPacketSent(Packets.Enums.PacketId.PACKET_ID_LUA_ELEMENT_RPC, player, count: 0);
@@ -50,13 +50,13 @@ public class ClientPacketScopeTests
                 Task.Run(async() =>
                 {
                     await Task.Delay(10);
-                    using var scope = new ClientPacketScope(new Client[] { player.Client });
+                    using var scope = new ClientPacketScope(new IClient[] { player.Client });
                     player.Client.SendPacket(expectedPacket);
                     await Task.Delay(25);
                 }),
                 Task.Run(async() =>
                 {
-                    using var scope = new ClientPacketScope(Array.Empty<Client>());
+                    using var scope = new ClientPacketScope(Array.Empty<IClient>());
                     await Task.Delay(25);
                     player.Client.SendPacket(notExpectedPacket);
                 })

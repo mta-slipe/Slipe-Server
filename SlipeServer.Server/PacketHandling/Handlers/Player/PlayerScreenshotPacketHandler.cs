@@ -9,7 +9,7 @@ public class PlayerScreenshotPacketHandler : IPacketHandler<PlayerScreenshotPack
 {
     public PacketId PacketId => PacketId.PACKET_ID_PLAYER_SCREENSHOT;
 
-    public void HandlePacket(Client client, PlayerScreenshotPacket packet)
+    public void HandlePacket(IClient client, PlayerScreenshotPacket packet)
     {
         if (packet.PartNumber == 0)
         {

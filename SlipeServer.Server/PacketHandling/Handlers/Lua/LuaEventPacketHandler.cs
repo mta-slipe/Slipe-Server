@@ -25,7 +25,7 @@ public class LuaEventPacketHandler : IPacketHandler<LuaEventPacket>
         this.server = server;
     }
 
-    public void HandlePacket(Client client, LuaEventPacket packet)
+    public void HandlePacket(IClient client, LuaEventPacket packet)
     {
         var element = this.elementRepository.Get(packet.ElementId);
         if (element == null)

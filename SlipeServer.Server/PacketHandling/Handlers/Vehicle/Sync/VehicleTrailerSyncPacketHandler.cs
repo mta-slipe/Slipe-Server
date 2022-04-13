@@ -24,7 +24,7 @@ public class VehicleTrailerSyncPacketHandler : IPacketHandler<VehicleTrailerSync
         this.elementRepository = elementRepository;
     }
 
-    public void HandlePacket(Client client, VehicleTrailerSyncPacket packet)
+    public void HandlePacket(IClient client, VehicleTrailerSyncPacket packet)
     {
         var otherPlayers = this.middleware.GetPlayersToSyncTo(client.Player, packet);
 

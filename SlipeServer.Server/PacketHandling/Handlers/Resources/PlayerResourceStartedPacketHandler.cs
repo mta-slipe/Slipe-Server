@@ -11,7 +11,7 @@ public class PlayerResourceStartedPacketHandler : IPacketHandler<PlayerResourceS
     {
     }
 
-    public void HandlePacket(Client client, PlayerResourceStartedPacket packet)
+    public void HandlePacket(IClient client, PlayerResourceStartedPacket packet)
     {
         client.Player.TriggerResourceStarted(packet.NetId);
     }

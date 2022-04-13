@@ -19,7 +19,7 @@ public class PlayerWastedPacketHandler : IPacketHandler<PlayerWastedPacket>
         this.elementRepository = elementRepository;
     }
 
-    public void HandlePacket(Client client, PlayerWastedPacket packet)
+    public void HandlePacket(IClient client, PlayerWastedPacket packet)
     {
         var damager = this.elementRepository.Get(packet.KillerId);
         client.Player.Kill(

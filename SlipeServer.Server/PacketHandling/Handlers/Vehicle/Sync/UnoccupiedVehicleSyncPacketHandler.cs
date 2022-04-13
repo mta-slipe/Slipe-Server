@@ -24,7 +24,7 @@ public class UnoccupiedVehicleSyncPacketHandler : IPacketHandler<UnoccupiedVehic
         this.elementRepository = elementRepository;
     }
 
-    public void HandlePacket(Client client, UnoccupiedVehicleSyncPacket packet)
+    public void HandlePacket(IClient client, UnoccupiedVehicleSyncPacket packet)
     {
         List<UnoccupiedVehicleSync> vehiclesToSync = new();
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using SlipeServer.Console.Elements;
 using SlipeServer.Console.LuaValues;
 using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Packets.Lua.Camera;
@@ -31,7 +32,7 @@ namespace SlipeServer.Console.Logic;
 
 public class ServerTestLogic
 {
-    private readonly MtaServer server;
+    private readonly MtaServer<CustomPlayer> server;
     private readonly IElementRepository elementRepository;
     private readonly RootElement root;
     private readonly GameWorld worldService;
@@ -69,7 +70,7 @@ public class ServerTestLogic
     private readonly Team slipeDevsTeam;
 
     public ServerTestLogic(
-        MtaServer server,
+        MtaServer<CustomPlayer> server,
         IElementRepository elementRepository,
         RootElement root,
         GameWorld world,
@@ -892,7 +893,7 @@ public class ServerTestLogic
         };
     }
 
-    private void OnPlayerJoin(Player player)
+    private void OnPlayerJoin(CustomPlayer player)
     {
         var client = player.Client;
 
@@ -925,15 +926,6 @@ public class ServerTestLogic
         player.Kicked += (player, args) =>
         {
             this.logger.LogWarning("{playerName} has been kicked, reason: {reason}", player.Name, args.Reason);
-        };
-
-        player.Wasted += async (o, args) =>
-        {
-            await Task.Delay(500);
-            player.Camera.Fade(CameraFade.Out, 1.75f);
-            await Task.Delay(2000);
-            player.Camera.Fade(CameraFade.In, 0);
-            player.Spawn(new Vector3(0, 0, 3), 0, 7, 0, 0);
         };
 
         player.ScreenshotTaken += HandlePlayerScreenshot;
