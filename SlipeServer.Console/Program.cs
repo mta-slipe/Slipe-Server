@@ -7,8 +7,9 @@ using SlipeServer.Lua;
 using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Physics.Extensions;
 using SlipeServer.Server;
+using SlipeServer.Server.Loggers;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
-using SlipeServer.Server.ServerOptions;
+using SlipeServer.Server.ServerBuilders;
 using System;
 using System.Threading;
 
@@ -78,6 +79,7 @@ public partial class Program
                 builder.AddLogic<LuaTestLogic>();
                 builder.AddLogic<PhysicsTestLogic>();
                 builder.AddLogic<ElementPoolingTestLogic>();
+                builder.AddLogic<WarpIntoVehicleLogic>();
             }
         )
         {

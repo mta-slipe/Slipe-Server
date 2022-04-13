@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SlipeServer.Physics.Services;
-using SlipeServer.Server.ServerOptions;
+using SlipeServer.Server.ServerBuilders;
 
 namespace SlipeServer.Physics.Extensions;
 

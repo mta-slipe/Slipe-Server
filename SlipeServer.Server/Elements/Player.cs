@@ -11,6 +11,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
 using SlipeServer.Packets.Constants;
+using System.Drawing;
+using SlipeServer.Packets.Lua.Event;
+using SlipeServer.Server.Extensions;
 
 namespace SlipeServer.Server.Elements;
 
@@ -311,6 +314,10 @@ public class Player : Ped
         this.KeyUnbound?.Invoke(this, new PlayerBindKeyArgs(this, key, keyState));
     }
 
+    public void TriggerLuaEvent(string name, Element? source = null, params LuaValue[] parameters)
+    {
+        new LuaEventPacket(name, (source ?? this).Id, parameters).SendTo(this);
+    }
 
     public void TriggerPlayerACInfo(IEnumerable<byte> detectedACList, uint d3d9Size, string d3d9MD5, string D3d9SHA256)
     {
@@ -342,6 +349,14 @@ public class Player : Ped
         this.BindExecuted?.Invoke(this, new PlayerBindExecutedEventArgs(this, bindType, keyState, key));
     }
 
+    public void TriggerCursorClicked(byte button,
+        Point position,
+        Vector3 worldPosition,
+        Element? element)
+    {
+        this.CursorClicked?.Invoke(this, new PlayerCursorClickedEventArgs(button, position, worldPosition, element));
+    }
+
     public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
     public event ElementEventHandler<Player, PlayerDamagedEventArgs>? Damaged;
     public event ElementEventHandler<Player, PlayerSpawnedEventArgs>? Spawned;
@@ -364,4 +379,5 @@ public class Player : Ped
     public event ElementEventHandler<Player, PlayerBindKeyArgs>? KeyUnbound;
     public event ElementEventHandler<Player, PlayerResourceStartedEventArgs>? ResourceStarted;
     public event ElementEventHandler<Player, PlayerBindExecutedEventArgs>? BindExecuted;
+    public event ElementEventHandler<Player, PlayerCursorClickedEventArgs>? CursorClicked;
 }

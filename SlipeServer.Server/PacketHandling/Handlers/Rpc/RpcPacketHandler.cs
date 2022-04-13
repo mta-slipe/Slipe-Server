@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlipeServer.Packets.Constants;
 using SlipeServer.Packets.Definitions.Join;
-using SlipeServer.Packets.Definitions.Player;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
 using SlipeServer.Packets.Rpc;
@@ -56,8 +55,13 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
             case RpcFunctions.PLAYER_TARGET:
                 HandlePlayerTarget(client, packet);
                 break;
+
             case RpcFunctions.KEY_BIND:
                 HandlePlayerBindKey(client, packet);
+                break;
+
+            case RpcFunctions.CURSOR_EVENT:
+                HandlePlayerCursorEvent(client, packet);
                 break;
 
             default:
@@ -162,5 +166,18 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
         var size = (packet.Reader.Size - packet.Reader.Counter) >> 3;
         var key = packet.Reader.GetStringCharacters(size);
         client.Player.TriggerBoundKey(type, state, key);
+    }
+
+    private void HandlePlayerCursorEvent(IClient client, RpcPacket packet)
+    {
+        var button = packet.Reader.GetByteCapped(3);
+        var x = packet.Reader.GetCompressedUint16();
+        var y = packet.Reader.GetCompressedUint16();
+        var worldPosition = packet.Reader.GetVector3WithZAsFloat();
+        Element? element = null;
+        if (packet.Reader.GetBit())
+            element = this.elementRepository.Get(packet.Reader.GetElementId());
+
+        client.Player.TriggerCursorClicked(button, new(x, y), worldPosition, element);
     }
 }

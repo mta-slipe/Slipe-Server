@@ -9,7 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-namespace SlipeServer.Server.ServerOptions;
+namespace SlipeServer.Server.ServerBuilders;
 
 public class ServerBuilder
 {
