@@ -8,7 +8,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SlipeServer.Console;
+namespace SlipeServer.Server.Loggers;
 
 public class ConsoleLogger : ILogger
 {

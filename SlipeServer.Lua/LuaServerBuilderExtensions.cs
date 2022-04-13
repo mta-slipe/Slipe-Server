@@ -1,5 +1,5 @@
 ﻿using SlipeServer.Scripting;
-using SlipeServer.Server.ServerOptions;
+using SlipeServer.Server.ServerBuilders;
 
 namespace SlipeServer.Lua;
 

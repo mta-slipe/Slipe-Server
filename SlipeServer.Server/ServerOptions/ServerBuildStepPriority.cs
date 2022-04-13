@@ -1,4 +1,4 @@
-﻿namespace SlipeServer.Server.ServerOptions;
+﻿namespace SlipeServer.Server.ServerBuilders;
 
 public enum ServerBuildStepPriority : int
 {

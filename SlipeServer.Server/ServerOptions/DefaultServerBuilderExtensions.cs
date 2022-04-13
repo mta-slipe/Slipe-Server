@@ -36,7 +36,7 @@ using SlipeServer.Server.PacketHandling.Handlers.CustomData;
 using SlipeServer.Packets.Definitions.CustomElementData;
 using SlipeServer.Packets.Definitions.Resources;
 
-namespace SlipeServer.Server.ServerOptions;
+namespace SlipeServer.Server.ServerBuilders;
 
 public static class DefaultServerBuilderExtensions
 {
@@ -144,8 +144,6 @@ public static class DefaultServerBuilderExtensions
         if ((except & ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour) == 0)
             builder.AddBehaviour<MasterServerAnnouncementBehaviour>("http://master.mtasa.com/ase/add.php");
 
-        if ((except & ServerBuilderDefaultBehaviours.EventLoggingBehaviour) == 0)
-            builder.AddBehaviour<EventLoggingBehaviour>();
         if ((except & ServerBuilderDefaultBehaviours.VelocityBehaviour) == 0)
             builder.AddBehaviour<VelocityBehaviour>();
         if ((except & ServerBuilderDefaultBehaviours.DefaultChatBehaviour) == 0)

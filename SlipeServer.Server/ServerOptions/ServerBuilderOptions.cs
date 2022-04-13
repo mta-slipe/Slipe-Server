@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SlipeServer.Server.ServerOptions;
+namespace SlipeServer.Server.ServerBuilders;
 
 [Flags]
 public enum ServerBuilderDefaultPacketHandlers : ulong
