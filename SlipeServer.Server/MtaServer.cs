@@ -31,15 +31,15 @@ public class MtaServer
     private readonly List<INetWrapper> netWrappers;
     private readonly IResourceServer resourceServer;
     protected readonly PacketReducer packetReducer;
-    protected readonly Dictionary<INetWrapper, Dictionary<uint, Client>> clients;
-    private readonly ServiceCollection serviceCollection;
-    private readonly ServiceProvider serviceProvider;
+    protected readonly Dictionary<INetWrapper, Dictionary<uint, IClient>> clients;
+    protected readonly ServiceCollection serviceCollection;
+    protected readonly ServiceProvider serviceProvider;
     private readonly IElementRepository elementRepository;
     private readonly IElementIdGenerator? elementIdGenerator;
     private readonly RootElement root;
     private readonly Configuration configuration;
 
-    private readonly Func<uint, INetWrapper, Client>? clientCreationMethod;
+    private readonly Func<uint, INetWrapper, IClient>? clientCreationMethod;
 
     public string GameType { get; set; } = "unknown";
     public string MapName { get; set; } = "unknown";
@@ -53,7 +53,7 @@ public class MtaServer
     public MtaServer(
         Configuration? configuration = null,
         Action<ServiceCollection>? dependencyCallback = null,
-        Func<uint, INetWrapper, Client>? clientCreationMethod = null
+        Func<uint, INetWrapper, IClient>? clientCreationMethod = null
     )
     {
         this.netWrappers = new();
@@ -91,7 +91,7 @@ public class MtaServer
         string netDllPath,
         Configuration? configuration = null,
         Action<ServiceCollection>? dependencyCallback = null,
-        Func<uint, INetWrapper, Client>? clientCreationMethod = null
+        Func<uint, INetWrapper, IClient>? clientCreationMethod = null
     ) : this(configuration, dependencyCallback, clientCreationMethod)
     {
         this.AddNetWrapper(directory, netDllPath, this.configuration.Host, this.configuration.Port, this.configuration.AntiCheat);
@@ -99,7 +99,7 @@ public class MtaServer
 
     public MtaServer(
         Action<ServerBuilder> builderAction,
-        Func<uint, INetWrapper, Client>? clientCreationMethod = null
+        Func<uint, INetWrapper, IClient>? clientCreationMethod = null
     )
     {
         this.netWrappers = new();
@@ -210,14 +210,15 @@ public class MtaServer
 
     public T AssociateElement<T>(T element) where T : Element
     {
+        this.ElementCreated?.Invoke(element);
+
         if (this.elementIdGenerator != null)
         {
             element.Id = this.elementIdGenerator.GetId();
         }
+
         this.elementRepository.Add(element);
         element.Destroyed += (element) => this.elementRepository.Remove(element);
-
-        this.ElementCreated?.Invoke(element);
 
         if (element != this.root)
             element.Parent = this.root;
@@ -225,7 +226,7 @@ public class MtaServer
         return element;
     }
 
-    private void SetupDependencies(Action<ServiceCollection>? dependencyCallback)
+    protected virtual void SetupDependencies(Action<ServiceCollection>? dependencyCallback)
     {
         this.serviceCollection.AddSingleton<IElementRepository, RTreeCompoundElementRepository>();
         this.serviceCollection.AddSingleton<ILogger, DefaultLogger>();
@@ -265,15 +266,14 @@ public class MtaServer
     protected void RegisterNetWrapper(INetWrapper netWrapper)
     {
         netWrapper.PacketReceived += EnqueueIncomingPacket;
-        this.clients[netWrapper] = new Dictionary<uint, Client>();
+        this.clients[netWrapper] = new Dictionary<uint, IClient>();
     }
 
     private void EnqueueIncomingPacket(INetWrapper netWrapper, uint binaryAddress, PacketId packetId, byte[] data, uint? ping)
     {
         if (!this.clients[netWrapper].ContainsKey(binaryAddress))
         {
-            var client = this.clientCreationMethod?.Invoke(binaryAddress, netWrapper) ??
-                new Client(binaryAddress, netWrapper);
+            var client = CreateClient(binaryAddress, netWrapper);
             AssociateElement(client.Player);
 
             this.clients[netWrapper][binaryAddress] = client;
@@ -308,12 +308,22 @@ public class MtaServer
         }
     }
 
-    public void EnqueuePacketToClient(Client client, PacketId packetId, byte[] data)
+    protected virtual IClient CreateClient(uint binaryAddress, INetWrapper netWrapper)
+    {
+        if (this.clientCreationMethod != null)
+            return this.clientCreationMethod(binaryAddress, netWrapper);
+
+        var player = new Player();
+        player.Client = new Client(binaryAddress, netWrapper, player);
+        return player.Client;
+    }
+
+    public void EnqueuePacketToClient(IClient client, PacketId packetId, byte[] data)
     {
         this.packetReducer.EnqueuePacket(client, packetId, data);
     }
 
-    public void HandlePlayerJoin(Player player) => PlayerJoined?.Invoke(player);
+    public virtual void HandlePlayerJoin(Player player) => PlayerJoined?.Invoke(player);
     public void HandleLuaEvent(LuaEvent luaEvent) => LuaEventTriggered?.Invoke(luaEvent);
 
     public void SetMaxPlayers(ushort slots)
@@ -324,7 +334,39 @@ public class MtaServer
 
     public event Action<Element>? ElementCreated;
     public event Action<Player>? PlayerJoined;
-    public event Action<Client>? ClientConnected;
+    public event Action<IClient>? ClientConnected;
     public event Action<LuaEvent>? LuaEventTriggered;
 
+}
+
+public class MtaServer<TPlayer> : MtaServer
+    where TPlayer : Player, new()
+{
+    public MtaServer(Action<ServerBuilder> builderAction)
+        : base(builderAction)
+    {
+
+    }
+
+    protected override void SetupDependencies(Action<ServiceCollection>? dependencyCallback)
+    {
+        base.SetupDependencies(dependencyCallback);
+        this.serviceCollection.AddSingleton<MtaServer<TPlayer>>(this);
+    }
+
+    protected override IClient CreateClient(uint binaryAddress, INetWrapper netWrapper)
+    {
+        var player = new TPlayer();
+        player.Client = new Client<TPlayer>(binaryAddress, netWrapper, player);
+        return player.Client;
+    }
+
+    public override void HandlePlayerJoin(Player player)
+    {
+        base.HandlePlayerJoin(player);
+        this.PlayerJoined?.Invoke((TPlayer)player);
+    }
+
+
+    public new event Action<TPlayer>? PlayerJoined;
 }

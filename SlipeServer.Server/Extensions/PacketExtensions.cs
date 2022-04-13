@@ -6,10 +6,10 @@ namespace SlipeServer.Server.Extensions;
 
 public static class PacketExtensions
 {
-    public static void SendTo(this Packet packet, Client client) => client.SendPacket(packet);
+    public static void SendTo(this Packet packet, IClient client) => client.SendPacket(packet);
     public static void SendTo(this Packet packet, Player player) => player.Client.SendPacket(packet);
 
-    public static void SendTo(this Packet packet, IEnumerable<Client> clients)
+    public static void SendTo(this Packet packet, IEnumerable<IClient> clients)
     {
         byte[] data = packet.Write();
         foreach (var client in clients)

@@ -18,7 +18,7 @@ public class TransgressionPacketHandler : IPacketHandler<TransgressionPacket>
         this.logger = logger;
     }
 
-    public void HandlePacket(Client client, TransgressionPacket packet)
+    public void HandlePacket(IClient client, TransgressionPacket packet)
     {
         var acRule = (Net.Wrappers.Enums.AntiCheat)packet.Level;
         if (!this.configuration.AntiCheat.DisabledAntiCheat.Contains(acRule))

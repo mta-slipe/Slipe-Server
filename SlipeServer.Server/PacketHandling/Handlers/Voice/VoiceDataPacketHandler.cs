@@ -7,7 +7,7 @@ public class VoiceDataPacketHandler : IPacketHandler<VoiceDataPacket>
 {
     public PacketId PacketId => PacketId.PACKET_ID_VOICE_DATA;
 
-    public void HandlePacket(Client client, VoiceDataPacket packet)
+    public void HandlePacket(IClient client, VoiceDataPacket packet)
     {
         client.Player.VoiceDataStart(packet.Buffer);
     }

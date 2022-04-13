@@ -7,7 +7,7 @@ public class CommandPacketHandler : IPacketHandler<CommandPacket>
 {
     public PacketId PacketId => PacketId.PACKET_ID_COMMAND;
 
-    public void HandlePacket(Client client, CommandPacket packet)
+    public void HandlePacket(IClient client, CommandPacket packet)
     {
         client.Player.TriggerCommand(packet.Command, packet.Arguments);
     }

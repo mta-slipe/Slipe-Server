@@ -7,16 +7,16 @@ public class ClientPacketScope : IDisposable
 {
     public static ClientPacketScope? Current => AsyncLocalScopeStack.Instance.Peek();
 
-    private readonly HashSet<Client> clients;
+    private readonly HashSet<IClient> clients;
 
-    public ClientPacketScope(HashSet<Client> clients)
+    public ClientPacketScope(HashSet<IClient> clients)
     {
         this.clients = clients;
 
         AsyncLocalScopeStack.Instance.Push(this);
     }
 
-    public ClientPacketScope(IEnumerable<Client> clients) : this(new HashSet<Client>(clients))
+    public ClientPacketScope(IEnumerable<IClient> clients) : this(new HashSet<IClient>(clients))
     {
     }
 
@@ -26,5 +26,5 @@ public class ClientPacketScope : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    public bool ContainsClient(Client client) => this.clients.Contains(client);
+    public bool ContainsClient(IClient client) => this.clients.Contains(client);
 }

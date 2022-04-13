@@ -7,7 +7,7 @@ public class PlayerDiagnosticPacketHandler : IPacketHandler<PlayerDiagnosticPack
 {
     public PacketId PacketId => PacketId.PACKET_ID_PLAYER_DIAGNOSTIC;
 
-    public void HandlePacket(Client client, PlayerDiagnosticPacket packet)
+    public void HandlePacket(IClient client, PlayerDiagnosticPacket packet)
     {
         if (packet.Level == PlayerDiagnosticPacket.levelSpecialInfo)
         {

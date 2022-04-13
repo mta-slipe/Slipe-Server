@@ -31,7 +31,7 @@ public class PlayerPureSyncPacketHandler : IPacketHandler<PlayerPureSyncPacket>
         this.elementRepository = elementRepository;
     }
 
-    public void HandlePacket(Client client, PlayerPureSyncPacket packet)
+    public void HandlePacket(IClient client, PlayerPureSyncPacket packet)
     {
 
         if (packet.TimeContext != client.Player.TimeContext && packet.TimeContext > 0 && client.Player.TimeContext > 0)

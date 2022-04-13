@@ -17,7 +17,7 @@ public class CustomDataPacketHandler : IPacketHandler<CustomDataPacket>
         this.elementRepository = elementRepository;
     }
 
-    public void HandlePacket(Client client, CustomDataPacket packet)
+    public void HandlePacket(IClient client, CustomDataPacket packet)
     {
         var player = client.Player;
         var element = this.elementRepository.Get(packet.ElementId);

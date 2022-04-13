@@ -18,7 +18,7 @@ public class PedWastedPacketHandler : IPacketHandler<PedWastedPacket>
         this.elementRepository = elementRepository;
     }
 
-    public void HandlePacket(Client client, PedWastedPacket packet)
+    public void HandlePacket(IClient client, PedWastedPacket packet)
     {
         if (this.elementRepository.Get(packet.SourceElementId) is not Ped ped)
             return;

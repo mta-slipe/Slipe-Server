@@ -19,7 +19,13 @@ public class Player : Ped
 {
     public override ElementType ElementType => ElementType.Player;
 
-    public Client Client { get; }
+    private IClient? client;
+    public IClient Client
+    {
+        get => this.client ?? new NullClient();
+        set => this.client = value;
+    }
+
     public Camera Camera { get; }
 
     private byte wantedLevel = 0;
@@ -90,9 +96,8 @@ public class Player : Ped
 
     private string DebuggerDisplay => $"{this.Name} ({this.Id})";
 
-    protected internal Player(Client client) : base(0, Vector3.Zero)
+    public Player() : base(0, Vector3.Zero)
     {
-        this.Client = client;
         this.Camera = new Camera(this);
         this.subscriptionElements = new();
         this.SyncingPeds = new();
@@ -157,6 +162,7 @@ public class Player : Ped
 
     public void ShowHudComponent(HudComponent hudComponent, bool isVisible)
     {
+
         this.Client.SendPacket(PlayerPacketFactory.CreateShowHudComponentPacket(hudComponent, isVisible));
     }
 

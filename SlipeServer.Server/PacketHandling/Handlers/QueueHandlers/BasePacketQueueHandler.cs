@@ -6,7 +6,7 @@ namespace SlipeServer.Server.PacketHandling.Handlers.QueueHandlers;
 
 public struct PacketQueueEntry<T>
 {
-    public Client Client { get; set; }
+    public IClient Client { get; set; }
     public T Packet { get; set; }
 }
 
@@ -21,7 +21,7 @@ public abstract class BasePacketQueueHandler<T> : IPacketQueueHandler<T> where T
         this.packetQueue = new();
     }
 
-    public virtual void EnqueuePacket(Client client, T packet)
+    public virtual void EnqueuePacket(IClient client, T packet)
     {
         this.packetQueue.Enqueue(new PacketQueueEntry<T>()
         {

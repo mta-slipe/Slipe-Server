@@ -18,7 +18,7 @@ public class PedTaskPacketHandler : IPacketHandler<PedTaskPacket>
         this.middleware = middleware;
     }
 
-    public void HandlePacket(Client client, PedTaskPacket packet)
+    public void HandlePacket(IClient client, PedTaskPacket packet)
     {
         var players = this.middleware.GetPlayersToSyncTo(client.Player, packet);
         packet.SendTo(players);

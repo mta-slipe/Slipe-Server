@@ -18,7 +18,7 @@ public class PlayerBulletSyncPacketHandler : IPacketHandler<PlayerBulletSyncPack
         this.middleware = middleware;
     }
 
-    public void HandlePacket(Client client, PlayerBulletSyncPacket packet)
+    public void HandlePacket(IClient client, PlayerBulletSyncPacket packet)
     {
         packet.SourceElementId = client.Player.Id;
         var otherPlayers = this.middleware.GetPlayersToSyncTo(client.Player, packet);

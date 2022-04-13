@@ -31,9 +31,7 @@
     <ProjectReference Include="..\SlipeServer.Lua\SlipeServer.Lua.csproj" />
     <ProjectReference Include="..\SlipeServer.Physics\SlipeServer.Physics.csproj" />
     <ProjectReference Include="..\SlipeServer.Server\SlipeServer.Server.csproj" />
-    <ProjectReference Include="..\SlipeServer.SourceGenerators\SlipeServer.SourceGenerators.csproj" 
-                      OutputItemType="Analyzer"
-                      ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\SlipeServer.SourceGenerators\SlipeServer.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
   <ItemGroup>

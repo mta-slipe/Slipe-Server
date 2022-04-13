@@ -10,11 +10,11 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Lua;
 struct LatentTransfer
 {
     public ushort Id { get; set; }
-    public Client Source { get; set; }
+    public IClient Source { get; set; }
     public LatentEventCategory Category { get; set; }
     public List<byte> Data { get; set; } = new();
 
-    public LatentTransfer(ushort id, Client source, LatentEventCategory category)
+    public LatentTransfer(ushort id, IClient source, LatentEventCategory category)
     {
         this.Id = id;
         this.Source = source;
@@ -26,7 +26,7 @@ public class LatentLuaEventPacketHandler : IPacketHandler<LatentLuaEventPacket>
 {
     private readonly ILogger logger;
     private readonly MtaServer server;
-    private readonly Dictionary<Client, LatentTransfer> transfers;
+    private readonly Dictionary<IClient, LatentTransfer> transfers;
 
     public PacketId PacketId => PacketId.PACKET_ID_LATENT_TRANSFER;
 
@@ -40,7 +40,7 @@ public class LatentLuaEventPacketHandler : IPacketHandler<LatentLuaEventPacket>
         this.transfers = new();
     }
 
-    public void HandlePacket(Client client, LatentLuaEventPacket packet)
+    public void HandlePacket(IClient client, LatentLuaEventPacket packet)
     {
         LatentTransfer transfer;
         switch (packet.Flag)

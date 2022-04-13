@@ -23,7 +23,7 @@ public class VehicleDamageSyncPacketHandler : IPacketHandler<VehicleDamageSyncPa
         this.elementRepository = elementRepository;
     }
 
-    public void HandlePacket(Client client, VehicleDamageSyncPacket packet)
+    public void HandlePacket(IClient client, VehicleDamageSyncPacket packet)
     {
         var otherPlayers = this.middleware.GetPlayersToSyncTo(client.Player, packet);
         packet.SendTo(otherPlayers);

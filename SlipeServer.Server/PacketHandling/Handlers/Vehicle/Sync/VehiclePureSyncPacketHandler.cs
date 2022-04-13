@@ -25,7 +25,7 @@ public class VehiclePureSyncPacketHandler : IPacketHandler<VehiclePureSyncPacket
         this.elementRepository = elementRepository;
     }
 
-    public void HandlePacket(Client client, VehiclePureSyncPacket packet)
+    public void HandlePacket(IClient client, VehiclePureSyncPacket packet)
     {
         client.SendPacket(new ReturnSyncPacket(packet.Position));
 

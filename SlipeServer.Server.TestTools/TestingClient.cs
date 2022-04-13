@@ -1,18 +1,15 @@
 ﻿using SlipeServer.Net.Wrappers;
-using SlipeServer.Server.Elements;
 
 namespace SlipeServer.Server.TestTools;
 
-public class TestingClient : Client
+public class TestingClient : Client<TestingPlayer>
 {
-    public Player TestingPlayer
-    {
-        get => this.Player as TestingPlayer;
-        set => this.Player = value;
-    }
+    public uint Address { get; private set; }
 
-    public TestingClient(uint address, INetWrapper netWrapper) : base(address, netWrapper)
+    public TestingClient(uint address, INetWrapper netWrapper, TestingPlayer player)
+        : base(address, netWrapper, player)
     {
+        this.Address = address;
         this.ConnectionState = Enums.ClientConnectionState.Joined;
     }
 }

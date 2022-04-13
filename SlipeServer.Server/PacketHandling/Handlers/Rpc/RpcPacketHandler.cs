@@ -41,7 +41,7 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
         this.configuration = configuration;
     }
 
-    public void HandlePacket(Client client, RpcPacket packet)
+    public void HandlePacket(IClient client, RpcPacket packet)
     {
         switch (packet.FunctionId)
         {
@@ -66,7 +66,7 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
         }
     }
 
-    private void HandleIngameNotice(Client client)
+    private void HandleIngameNotice(IClient client)
     {
         var players = this.elementRepository.GetByType<Elements.Player>(ElementType.Player);
 
@@ -121,7 +121,7 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
         this.server.HandlePlayerJoin(client.Player);
     }
 
-    private void HandlePlayerWeapon(Client client, RpcPacket packet)
+    private void HandlePlayerWeapon(IClient client, RpcPacket packet)
     {
         lock (client.Player.CurrentWeaponLock)
         {
@@ -148,14 +148,14 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
         }
     }
 
-    private void HandlePlayerTarget(Client client, RpcPacket packet)
+    private void HandlePlayerTarget(IClient client, RpcPacket packet)
     {
         uint id = packet.Reader.GetElementId();
         Element? element = this.elementRepository.Get(id);
         client.Player.Target = element;
     }
 
-    private void HandlePlayerBindKey(Client client, RpcPacket packet)
+    private void HandlePlayerBindKey(IClient client, RpcPacket packet)
     {
         var type = packet.Reader.GetBit() ? BindType.ControlFunction : BindType.Function;
         var state = packet.Reader.GetBit() ? KeyState.Down : KeyState.Up;

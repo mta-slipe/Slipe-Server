@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SlipeServer.ConfigurationProviders;
+using SlipeServer.Console.Elements;
 using SlipeServer.Console.Logic;
 using SlipeServer.Lua;
 using SlipeServer.Packets.Definitions.Sync;
@@ -52,7 +53,7 @@ public partial class Program
             IsVoiceEnabled = true
         };
 
-        this.server = new MtaServer(
+        this.server = new MtaServer<CustomPlayer>(
             (builder) =>
             {
                 builder.UseConfiguration(this.configuration);

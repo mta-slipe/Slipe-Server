@@ -17,7 +17,7 @@ public class CameraSyncPacketHandler : IPacketHandler<CameraSyncPacket>
         this.elementRepository = elementRepository;
     }
 
-    public void HandlePacket(Client client, CameraSyncPacket packet)
+    public void HandlePacket(IClient client, CameraSyncPacket packet)
     {
         var player = client.Player;
         player.RunAsSync(() =>

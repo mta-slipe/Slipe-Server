@@ -20,7 +20,7 @@ public class JoinDataPacketHandler : IPacketHandler<PlayerJoinDataPacket>
         this.configuration = configuration;
     }
 
-    public void HandlePacket(Client client, PlayerJoinDataPacket packet)
+    public void HandlePacket(IClient client, PlayerJoinDataPacket packet)
     {
         if (this.configuration.Password != null)
         {

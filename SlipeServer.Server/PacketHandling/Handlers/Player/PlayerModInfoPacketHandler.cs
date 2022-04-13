@@ -7,7 +7,7 @@ public class PlayerModInfoPacketHandler : IPacketHandler<PlayerModInfoPacket>
 {
     public PacketId PacketId => PacketId.PACKET_ID_PLAYER_MODINFO;
 
-    public void HandlePacket(Client client, PlayerModInfoPacket packet)
+    public void HandlePacket(IClient client, PlayerModInfoPacket packet)
     {
         client.Player.TriggerPlayerModInfo(packet.InfoType, packet.ModInfoItems);
     }

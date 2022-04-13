@@ -11,17 +11,20 @@ using System.Linq;
 
 namespace SlipeServer.Server.TestTools;
 
-public class TestingServer<TPlayer> : MtaServer where TPlayer : TestingPlayer
+public class TestingServer<TPlayer> : MtaServer<TPlayer> 
+    where TPlayer : TestingPlayer, new()
 {
     public Mock<INetWrapper> NetWrapperMock { get; }
     private uint binaryAddressCounter;
-    private readonly Func<Client, uint, TPlayer> playerCreationMethod;
 
     private readonly List<SendPacketCall> sendPacketCalls;
 
-    public TestingServer(Func<Client, uint, TPlayer> playerCreationMethod, Configuration configuration = null) : base(configuration, ConfigureOverrides)
+    public TestingServer(Configuration configuration = null) : base(x =>
     {
-        this.playerCreationMethod = playerCreationMethod;
+        x.UseConfiguration(configuration ?? new());
+        x.ConfigureServices(ConfigureOverrides);
+    })
+    {
         this.NetWrapperMock = new Mock<INetWrapper>();
         this.clients[this.NetWrapperMock.Object] = new();
         this.sendPacketCalls = new();
@@ -75,12 +78,11 @@ public class TestingServer<TPlayer> : MtaServer where TPlayer : TestingPlayer
     public TPlayer AddFakePlayer()
     {
         var address = ++this.binaryAddressCounter;
-        var client = new TestingClient(address, this.NetWrapperMock.Object);
-        var player = this.playerCreationMethod(client, address);
+        var client = CreateClient(address, this.NetWrapperMock.Object);
+        var player = client.Player as TPlayer;
 
         this.clients[this.NetWrapperMock.Object].Add(address, client);
 
-        client.TestingPlayer = player;
         player.AssociateWith(this);
         return player;
     }
@@ -92,7 +94,15 @@ public class TestingServer<TPlayer> : MtaServer where TPlayer : TestingPlayer
 
     public void HandlePacket(uint address, PacketId packetId, byte[] data)
     {
-        this.packetReducer.EnqueuePacket(new Client(address, this.NetWrapperMock.Object), packetId, data);
+        var sourceClient = CreateClient(0, this.NetWrapperMock.Object);
+        this.packetReducer.EnqueuePacket(sourceClient, packetId, data);
+    }
+
+    protected override IClient CreateClient(uint binaryAddress, INetWrapper netWrapper)
+    {
+        var player = new TestingPlayer();
+        player.Client = new TestingClient(binaryAddress, netWrapper, player);
+        return player.Client;
     }
 
     public void VerifyPacketSent(PacketId packetId, TPlayer to, byte[] data = null, int count = 1)
@@ -107,7 +117,7 @@ public class TestingServer<TPlayer> : MtaServer where TPlayer : TestingPlayer
 
 public class TestingServer : TestingServer<TestingPlayer>
 {
-    public TestingServer(Configuration configuration = null) : base((client, address) => new TestingPlayer(client, address), configuration)
+    public TestingServer(Configuration configuration = null) : base(configuration)
     {
 
     }

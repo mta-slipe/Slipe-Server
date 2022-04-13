@@ -18,7 +18,7 @@ public class DetonateSatchelsPacketHandler : IPacketHandler<DetonateSatchelsPack
         this.middleware = middleware;
     }
 
-    public void HandlePacket(Client client, DetonateSatchelsPacket packet)
+    public void HandlePacket(IClient client, DetonateSatchelsPacket packet)
     {
         packet.ElementId = client.Player.Id;
         packet.Latency = (ushort)client.Ping;

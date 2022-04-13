@@ -29,7 +29,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
         this.logger = logger;
     }
 
-    public void HandlePacket(Client client, VehicleInOutPacket packet)
+    public void HandlePacket(IClient client, VehicleInOutPacket packet)
     {
         var element = this.elementRepository.Get(packet.VehicleId);
         if (element == null)
@@ -73,7 +73,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
         }
     }
 
-    private void HandleRequestIn(Client client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
+    private void HandleRequestIn(IClient client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
     {
         VehicleEnterFailReason failReason = VehicleEnterFailReason.Invalid;
         if (vehicle.IsTrailer)
@@ -217,7 +217,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
         }
     }
 
-    private void SendInRequestFailResponse(Client client, Elements.Vehicle vehicle, VehicleEnterFailReason failReason)
+    private void SendInRequestFailResponse(IClient client, Elements.Vehicle vehicle, VehicleEnterFailReason failReason)
     {
         var replyPacket = new VehicleInOutPacket()
         {
@@ -230,7 +230,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
         replyPacket.SendTo(client);
     }
 
-    private void HandleNotifyIn(Client client, Elements.Vehicle vehicle)
+    private void HandleNotifyIn(IClient client, Elements.Vehicle vehicle)
     {
         if (client.Player.VehicleAction == VehicleAction.Entering)
         {
@@ -252,7 +252,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
         }
     }
 
-    private void HandleNotifyInAbort(Client client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
+    private void HandleNotifyInAbort(IClient client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
     {
         if (client.Player.VehicleAction == VehicleAction.Entering)
         {
@@ -273,7 +273,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
         }
     }
 
-    private void HandleRequestOut(Client client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
+    private void HandleRequestOut(IClient client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
     {
         if (client.Player.VehicleAction != VehicleAction.None)
         {
@@ -311,7 +311,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
         this.server.BroadcastPacket(replyPacket);
     }
 
-    private void HandleNotifyOut(Client client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
+    private void HandleNotifyOut(IClient client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
     {
         if (client.Player.VehicleAction != VehicleAction.Exiting)
             return;
@@ -334,7 +334,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
         this.server.BroadcastPacket(replyPacket);
     }
 
-    private void HandleNotifyOutAbort(Client client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
+    private void HandleNotifyOutAbort(IClient client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
     {
         if (client.Player.VehicleAction != VehicleAction.Exiting)
             return;
@@ -355,7 +355,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
         this.server.BroadcastPacket(replyPacket);
     }
 
-    private void HandleNotifyFellOff(Client client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
+    private void HandleNotifyFellOff(IClient client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
     {
 
         if (!vehicle.Occupants.ContainsValue(client.Player))
@@ -376,7 +376,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
         this.server.BroadcastPacket(replyPacket);
     }
 
-    private void HandleNotifyJack(Client client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
+    private void HandleNotifyJack(IClient client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
     {
         if (client.Player.VehicleAction != VehicleAction.Jacking)
             return;
@@ -408,7 +408,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
         }
     }
 
-    private void HandleNotifyJackAbort(Client client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
+    private void HandleNotifyJackAbort(IClient client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
     {
         if (client.Player.VehicleAction != VehicleAction.Jacking)
             return;

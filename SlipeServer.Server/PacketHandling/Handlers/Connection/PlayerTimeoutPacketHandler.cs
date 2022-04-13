@@ -20,7 +20,7 @@ public class PlayerTimeoutPacketHandler : IPacketHandler<PlayerTimeoutPacket>
         this.elementRepository = elementRepository;
     }
 
-    public void HandlePacket(Client client, PlayerTimeoutPacket packet)
+    public void HandlePacket(IClient client, PlayerTimeoutPacket packet)
     {
         var returnPacket = PlayerPacketFactory.CreateQuitPacket(client.Player, QuitReason.Timeout);
         returnPacket.SendTo(this.elementRepository.GetByType<Elements.Player>(ElementType.Player).Except(new Elements.Player[] { client.Player }));
