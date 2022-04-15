@@ -21,6 +21,7 @@ using SlipeServer.Server.Services;
 using SlipeServer.Server.Structs;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -815,6 +816,21 @@ public class ServerTestLogic
                 return;
 
             args.Player.Vehicle.IsFuelTankExplodable = !args.Player.Vehicle.IsFuelTankExplodable;
+        };
+
+        this.commandService.AddCommand("moveit").Triggered += async (source, args) =>
+        {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            var element = new WorldObject(321, new Vector3(0, 0, 3))
+            {
+                Velocity = new Vector3(0, 1, 0)
+            }.AssociateWith(this.server);
+            await Task.Delay(1000);
+            stopwatch.Stop();
+            var distance = Vector3.Distance(element.Position, new Vector3(0, 0, 3));
+            this.logger.LogInformation("Element travelled {distance} units in {ms} ms", distance, stopwatch.ElapsedMilliseconds);
+            element.Destroy();
         };
 
         this.commandService.AddCommand("deleteeverything").Triggered += (source, args) =>
