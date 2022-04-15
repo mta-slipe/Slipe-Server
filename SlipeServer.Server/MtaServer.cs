@@ -213,6 +213,19 @@ public class MtaServer
             .Single();
     }
 
+    public void ForAny<TElement>(Action<TElement> action)
+        where TElement: Element
+    {
+        foreach (var element in this.elementRepository.GetByType<TElement>())
+            action(element);
+
+        this.ElementCreated += (element) =>
+        {
+            if (element is TElement tElement)
+                action(tElement);
+        };
+    }
+
     protected virtual void SetupDependencies(Action<ServiceCollection>? dependencyCallback)
     {
         this.serviceCollection.AddSingleton<IElementRepository, RTreeCompoundElementRepository>();
