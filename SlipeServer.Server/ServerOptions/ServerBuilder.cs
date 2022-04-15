@@ -2,6 +2,7 @@
 using SlipeServer.Packets;
 using SlipeServer.Server.PacketHandling.Handlers;
 using SlipeServer.Server.PacketHandling.Handlers.QueueHandlers;
+using SlipeServer.Server.Resources.Serving;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -53,6 +54,12 @@ public class ServerBuilder
         where TPacket : Packet, new()
     {
         AddBuildStep(server => server.RegisterPacketHandler<TPacket, ScalingPacketQueueHandler<TPacket>, TPacketHandler>(parameters));
+    }
+
+    public void AddResourceServer<TResourceServer>(params object[] parameters)
+        where TResourceServer : IResourceServer
+    {
+        AddBuildStep(server => server.AddResourceServer(server.Instantiate<TResourceServer>()));
     }
 
     public void Instantiate<T>(params object[] parameters)

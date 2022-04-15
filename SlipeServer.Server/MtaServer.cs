@@ -15,13 +15,13 @@ using SlipeServer.Server.PacketHandling;
 using SlipeServer.Server.PacketHandling.Handlers;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.Repositories;
+using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.Resources.Serving;
 using SlipeServer.Server.ServerBuilders;
 using SlipeServer.Server.Services;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net.Http;
 
@@ -30,13 +30,15 @@ namespace SlipeServer.Server;
 public class MtaServer
 {
     private readonly List<INetWrapper> netWrappers;
-    private readonly IResourceServer resourceServer;
+    private readonly List<IResourceServer> resourceServers;
+    private readonly List<Resource> additionalResources;
     protected readonly PacketReducer packetReducer;
     protected readonly Dictionary<INetWrapper, Dictionary<uint, IClient>> clients;
     protected readonly ServiceCollection serviceCollection;
     protected readonly ServiceProvider serviceProvider;
     private readonly IElementRepository elementRepository;
     private readonly IElementIdGenerator? elementIdGenerator;
+    private readonly IResourceProvider resourceProvider;
     private readonly RootElement root;
     private readonly Configuration configuration;
 
@@ -52,53 +54,6 @@ public class MtaServer
     public TimeSpan Uptime => DateTime.Now - this.StartDatetime;
 
     public MtaServer(
-        Configuration? configuration = null,
-        Action<ServiceCollection>? dependencyCallback = null,
-        Func<uint, INetWrapper, IClient>? clientCreationMethod = null
-    )
-    {
-        this.netWrappers = new();
-        this.clients = new();
-        this.clientCreationMethod = clientCreationMethod;
-        this.configuration = configuration ?? new();
-        this.Password = configuration?.Password;
-
-        this.root = new();
-        this.serviceCollection = new();
-
-        var validationResults = new List<ValidationResult>();
-        if (!Validator.TryValidateObject(this.configuration, new ValidationContext(this.configuration), validationResults, true))
-        {
-            string invalidProperties = string.Join("\r\n\t", validationResults.Select(r => r.ErrorMessage));
-            throw new Exception($"An error has occurred while parsing configuration parameters:\r\n {invalidProperties}");
-        }
-
-        this.SetupDependencies(dependencyCallback);
-        this.serviceProvider = this.serviceCollection.BuildServiceProvider();
-
-        this.resourceServer = this.serviceProvider.GetRequiredService<IResourceServer>();
-        this.resourceServer.Start();
-
-        this.elementRepository = this.serviceProvider.GetRequiredService<IElementRepository>();
-        this.elementIdGenerator = this.serviceProvider.GetService<IElementIdGenerator>();
-
-        this.root.AssociateWith(this);
-
-        this.packetReducer = new(this.serviceProvider.GetRequiredService<ILogger>());
-    }
-
-    public MtaServer(
-        string directory,
-        string netDllPath,
-        Configuration? configuration = null,
-        Action<ServiceCollection>? dependencyCallback = null,
-        Func<uint, INetWrapper, IClient>? clientCreationMethod = null
-    ) : this(configuration, dependencyCallback, clientCreationMethod)
-    {
-        this.AddNetWrapper(directory, netDllPath, this.configuration.Host, this.configuration.Port, this.configuration.AntiCheat);
-    }
-
-    public MtaServer(
         Action<ServerBuilder> builderAction,
         Func<uint, INetWrapper, IClient>? clientCreationMethod = null
     )
@@ -106,6 +61,8 @@ public class MtaServer
         this.netWrappers = new();
         this.clients = new();
         this.clientCreationMethod = clientCreationMethod;
+        this.resourceServers = new();
+        this.additionalResources = new();
 
         this.root = new();
         this.serviceCollection = new();
@@ -120,11 +77,12 @@ public class MtaServer
         this.serviceProvider = this.serviceCollection.BuildServiceProvider();
         this.packetReducer = new(this.serviceProvider.GetRequiredService<ILogger>());
 
-        this.resourceServer = this.serviceProvider.GetRequiredService<IResourceServer>();
-        this.resourceServer.Start();
+        foreach (var server in this.resourceServers)
+            server.Start();
 
         this.elementRepository = this.serviceProvider.GetRequiredService<IElementRepository>();
         this.elementIdGenerator = this.serviceProvider.GetService<IElementIdGenerator>();
+        this.resourceProvider = this.serviceProvider.GetRequiredService<IResourceProvider>();
 
         this.root.AssociateWith(this);
 
@@ -211,27 +169,54 @@ public class MtaServer
 
     public T AssociateElement<T>(T element) where T : Element
     {
-        this.ElementCreated?.Invoke(element);
+        if (element != this.root && element.Parent == null)
+            element.Parent = this.root;
 
         if (this.elementIdGenerator != null)
-        {
             element.Id = this.elementIdGenerator.GetId();
-        }
+
+        this.ElementCreated?.Invoke(element);
 
         this.elementRepository.Add(element);
         element.Destroyed += (element) => this.elementRepository.Remove(element);
 
-        if (element != this.root)
-            element.Parent = this.root;
-
         return element;
+    }
+
+    public void AddResourceServer(IResourceServer resourceServer)
+    {
+        this.resourceServers.Add(resourceServer);
+        resourceServer.Start();
+    }
+
+    public void AddAdditionalResource(Resource resource, Dictionary<string, byte[]> files)
+    {
+        resource.NetId = this.resourceProvider.ReserveNetId();
+        this.additionalResources.Add(resource);
+        foreach (var server in this.resourceServers)
+            server.AddAdditionalResource(resource, files);
+    }
+
+    public void RemoveAdditionalResource(Resource resource)
+    {
+        this.additionalResources.Remove(resource);
+        foreach (var server in this.resourceServers)
+            server.RemoveAdditionalResource(resource);
+    }
+
+    public TResource GetAdditionalResource<TResource>()
+        where TResource : Resource
+    {
+        return this.additionalResources
+            .Where(x => x is TResource)
+            .Select(x => (x as TResource)!)
+            .Single();
     }
 
     protected virtual void SetupDependencies(Action<ServiceCollection>? dependencyCallback)
     {
         this.serviceCollection.AddSingleton<IElementRepository, RTreeCompoundElementRepository>();
         this.serviceCollection.AddSingleton<ILogger, DefaultLogger>();
-        this.serviceCollection.AddSingleton<IResourceServer, BasicHttpServer>();
         this.serviceCollection.AddSingleton<IResourceProvider, FileSystemResourceProvider>();
         this.serviceCollection.AddSingleton<IElementIdGenerator, RepositoryBasedElementIdGenerator>();
         this.serviceCollection.AddSingleton<IAseQueryService, AseQueryService>();

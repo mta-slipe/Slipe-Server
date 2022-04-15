@@ -59,7 +59,7 @@ public class LuaEventService
         this.latentPacketService.EnqueueLatentPacket(new Player[] { player }, packet, sourceResource.NetId, rate);
     }
 
-    public void TriggerEvent(Player[] players, string eventName, Element? source = null, params LuaValue[] parameters)
+    public void TriggerEvent(IEnumerable<Player> players, string eventName, Element? source = null, params LuaValue[] parameters)
     {
         new LuaEventPacket(eventName, (source ?? this.root).Id, parameters).SendTo(players);
     }

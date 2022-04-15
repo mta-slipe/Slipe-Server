@@ -13,6 +13,6 @@ public class WeaponRemovedEventArgs : EventArgs
     {
         this.Ped = ped;
         this.WeaponId = weaponId;
-        this.AmmoCount = ammoCount;
+        this.AmmoCount = ammoCount == 0 ? null : ammoCount;
     }
 }
