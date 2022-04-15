@@ -61,9 +61,10 @@ public class FileSystemResourceProvider : IResourceProvider
                 resources.Add(this.resources[name]);
             } else
             {
-                var resource = new Resource(this.mtaServer, this.rootElement, this, name, subDirectory)
+                var resource = new Resource(this.mtaServer, this.rootElement, name, subDirectory)
                 {
-                    NetId = this.netId++
+                    NetId = this.ReserveNetId(),
+                    Files = GetFilesForResource(subDirectory)
                 };
                 resources.Add(resource);
             }
@@ -72,12 +73,8 @@ public class FileSystemResourceProvider : IResourceProvider
         return resources;
     }
 
-    public IEnumerable<ResourceFile> GetFilesForResource(string name) => GetFilesForResource(this.resources[name]);
-
-    public IEnumerable<ResourceFile> GetFilesForResource(Resource resource)
+    public List<ResourceFile> GetFilesForResource(string path)
     {
-        var path = resource.Path;
-
         List<ResourceFile> resourceFiles = new List<ResourceFile>();
 
         using (var md5 = MD5.Create())
@@ -102,6 +99,8 @@ public class FileSystemResourceProvider : IResourceProvider
             }
         }
 
-        return resourceFiles.ToArray();
+        return resourceFiles;
     }
+
+    public ushort ReserveNetId() => this.netId++;
 }

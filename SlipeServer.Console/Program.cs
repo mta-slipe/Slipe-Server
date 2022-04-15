@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SlipeServer.ConfigurationProviders;
+using SlipeServer.Console.AdditionalResources;
 using SlipeServer.Console.Elements;
 using SlipeServer.Console.Logic;
 using SlipeServer.Lua;
@@ -74,6 +75,7 @@ public partial class Program
                 });
                 builder.AddLua();
                 builder.AddPhysics();
+                builder.AddParachuteResource();
 
                 builder.AddLogic<ServerTestLogic>();
                 builder.AddLogic<LuaTestLogic>();

@@ -1,4 +1,5 @@
-﻿using MoonSharp.Interpreter;
+﻿using Microsoft.Extensions.Logging;
+using MoonSharp.Interpreter;
 using SlipeServer.Console.LuaDefinitions;
 using SlipeServer.Lua;
 using SlipeServer.Scripting;
@@ -11,15 +12,18 @@ public class LuaTestLogic
 {
     private readonly IScriptEventRuntime eventRuntime;
     private readonly LuaService luaService;
+    private readonly ILogger logger;
 
     public LuaTestLogic(
         IScriptEventRuntime eventRuntime, 
         LuaService luaService,
-        CommandService commandService)
+        CommandService commandService,
+        ILogger logger
+        )
     {
         this.eventRuntime = eventRuntime;
         this.luaService = luaService;
-
+        this.logger = logger;
         commandService.AddCommand("physics").Triggered += (source, args) => Init();
     }
 
@@ -40,7 +44,7 @@ public class LuaTestLogic
         }
         catch (InterpreterException ex)
         {
-            System.Console.WriteLine("Failed to load script\n\t{0}", ex.DecoratedMessage);
+            this.logger.LogInformation("Failed to load script\n\t{0}", ex.DecoratedMessage);
         }
     }
 }

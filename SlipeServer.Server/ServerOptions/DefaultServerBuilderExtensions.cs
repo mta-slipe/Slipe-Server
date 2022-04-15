@@ -35,6 +35,7 @@ using SlipeServer.Server.PacketHandling.QueueHandlers;
 using SlipeServer.Server.PacketHandling.Handlers.CustomData;
 using SlipeServer.Packets.Definitions.CustomElementData;
 using SlipeServer.Packets.Definitions.Resources;
+using SlipeServer.Server.Resources.Serving;
 
 namespace SlipeServer.Server.ServerBuilders;
 
@@ -227,10 +228,7 @@ public static class DefaultServerBuilderExtensions
                 services.AddSingleton<ISyncHandlerMiddleware<KeySyncPacket>, RangeSyncHandlerMiddleware<KeySyncPacket>>(
                     x => new RangeSyncHandlerMiddleware<KeySyncPacket>(x.GetRequiredService<IElementRepository>(), builder.Configuration.LightSyncRange));
 
-            if ((exceptMiddleware & ServerBuilderDefaultMiddleware.LightSyncBehaviourMiddleware) == 0)
-                services.AddSingleton<ISyncHandlerMiddleware<LightSyncBehaviour>, MaxRangeSyncHandlerMiddleware<LightSyncBehaviour>>(
-                    x => new MaxRangeSyncHandlerMiddleware<LightSyncBehaviour>(x.GetRequiredService<IElementRepository>(), builder.Configuration.LightSyncRange)
-                );
+
         });
     }
 
@@ -244,6 +242,8 @@ public static class DefaultServerBuilderExtensions
         builder.AddDefaultPacketHandler(exceptPacketHandlers);
         builder.AddDefaultBehaviours(exceptBehaviours);
         builder.AddDefaultServices(exceptServices, exceptMiddleware);
+
+        builder.AddResourceServer<BasicHttpServer>();
 
         builder.AddNetWrapper(
             Directory.GetCurrentDirectory(),

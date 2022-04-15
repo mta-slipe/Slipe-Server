@@ -459,6 +459,18 @@ public class ServerTestLogic
             }
         };
 
+        this.commandService.AddCommand("weapon").Triggered += (source, args) =>
+        {
+            if (args.Arguments.Length > 0)
+            {
+                if (Enum.TryParse(args.Arguments[0], true, out WeaponId weapon) && Enum.IsDefined(weapon))
+                {
+                    args.Player.CurrentWeapon = new Weapon(weapon, 500);
+                }
+            }
+        };
+
+
         this.commandService.AddCommand("upvehicle").Triggered += (source, args) =>
         {
             if (args.Arguments.Length > 0)
