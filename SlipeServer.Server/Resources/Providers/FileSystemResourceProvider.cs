@@ -48,6 +48,9 @@ public class FileSystemResourceProvider : IResourceProvider
     {
         List<Resource> resources = new();
 
+        if (!Directory.Exists(directory))
+            return resources;
+
         var directories = Directory.EnumerateDirectories(directory, "*", SearchOption.TopDirectoryOnly);
         foreach (var subDirectory in directories)
         {
