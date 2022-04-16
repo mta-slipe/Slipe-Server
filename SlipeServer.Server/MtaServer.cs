@@ -230,7 +230,7 @@ public class MtaServer
     {
         this.serviceCollection.AddSingleton<IElementRepository, RTreeCompoundElementRepository>();
         this.serviceCollection.AddSingleton<ILogger, DefaultLogger>();
-        this.serviceCollection.AddSingleton<IResourceProvider, FileSystemResourceProvider>();
+        this.serviceCollection.AddSingleton<IResourceProvider, SlipeLuaSupportingFileSystemResourceProvider>();
         this.serviceCollection.AddSingleton<IElementIdGenerator, RepositoryBasedElementIdGenerator>();
         this.serviceCollection.AddSingleton<IAseQueryService, AseQueryService>();
         this.serviceCollection.AddSingleton(typeof(ISyncHandlerMiddleware<>), typeof(BasicSyncHandlerMiddleware<>));

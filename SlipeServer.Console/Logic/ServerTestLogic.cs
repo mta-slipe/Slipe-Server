@@ -843,6 +843,11 @@ public class ServerTestLogic
             this.server.BroadcastPacket(PickupPacketFactory.CreateDestroyAllPacket());
         };
 
+        this.commandService.AddCommand("slipelua").Triggered += (source, args) =>
+        {
+            this.resourceProvider.GetResource("SlipeTestResource").StartFor(args.Player);
+        };
+
         this.commandService.AddCommand("hot").Triggered += (source, args) =>
         {
             // command for testing, use hot reload to write code and apply during a running debug session

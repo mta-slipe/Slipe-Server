@@ -1,0 +1,4 @@
+<meta>
+  <script src="Lua/patches.lua" type="client" />
+  <script src="Lua/main.lua" type="client" />
+</meta>

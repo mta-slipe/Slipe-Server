@@ -72,7 +72,6 @@ public class BasicHttpServer : IResourceServer
     private async Task HandleRequest(HttpListenerContext context)
     {
         var path = Path.Join(this.rootDirectory, context.Request.Url?.LocalPath);
-        this.logger.LogInformation("HTTP GET {0}", context.Request.Url?.LocalPath);
 
         if (File.Exists(path))
         {
