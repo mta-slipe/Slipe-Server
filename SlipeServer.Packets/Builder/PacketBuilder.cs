@@ -1,71 +1,59 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Text;
 
 namespace SlipeServer.Packets.Builder;
 
 public class PacketBuilder
 {
-    private readonly BitArray bits;
+    private readonly List<byte> data;
+    private byte byteIndex;
 
-    public int Length => this.bits.Length;
+    public int Length { get; private set; }
 
     public PacketBuilder()
     {
-        this.bits = new BitArray(0);
+        this.data = new List<byte>();
+        this.byteIndex = 0;
     }
 
 
     public byte[] Build()
     {
-        byte[] result = new byte[(int)Math.Ceiling(this.bits.Length / 8.0f)];
-        this.bits.Length = result.Length * 8;
-
-        for (int i = 0; i < result.Length; i++)
-        {
-
-            byte value = 0;
-
-            if (this.bits[i * 8 + 0]) value += 128;
-            if (this.bits[i * 8 + 1]) value += 64;
-            if (this.bits[i * 8 + 2]) value += 32;
-            if (this.bits[i * 8 + 3]) value += 16;
-            if (this.bits[i * 8 + 4]) value += 8;
-            if (this.bits[i * 8 + 5]) value += 4;
-            if (this.bits[i * 8 + 6]) value += 2;
-            if (this.bits[i * 8 + 7]) value += 1;
-
-            result[i] = value;
-        }
-
-        return result;
+        return this.data.ToArray();
     }
 
     private void WriteBit(bool bit)
     {
-        this.bits[this.bits.Length++] = bit;
+        if (this.byteIndex == 0)
+        {
+            this.byteIndex = 128;
+            this.data.Add(0);
+        }
+
+        if (bit)
+            this.data[this.data.Count - 1] += this.byteIndex;
+
+        this.byteIndex >>= 1;
+        this.Length++;
     }
 
     private void WriteBytes(IEnumerable<byte> bytes)
     {
         foreach (byte b in bytes)
-        {
-            WriteBit((b & 128) > 0);
-            WriteBit((b & 64) > 0);
-            WriteBit((b & 32) > 0);
-            WriteBit((b & 16) > 0);
-            WriteBit((b & 8) > 0);
-            WriteBit((b & 4) > 0);
-            WriteBit((b & 2) > 0);
-            WriteBit((b & 1) > 0);
-        }
+            WriteByte(b);
     }
 
     private void WriteByte(byte b)
     {
+        if (this.Length % 8 == 0)
+        {
+            this.data.Add(b);
+            this.Length += 8;
+            return;
+        }
+
         WriteBit((b & 128) > 0);
         WriteBit((b & 64) > 0);
         WriteBit((b & 32) > 0);
@@ -237,14 +225,8 @@ public class PacketBuilder
 
     public void AlignToByteBoundary()
     {
-        int bitsNeeded = 8 - (this.bits.Count % 8);
-        if (bitsNeeded > 0 && bitsNeeded < 8)
-        {
-            for (int i = 0; i < bitsNeeded; i++)
-            {
-                WriteBit(false);
-            }
-        }
+        this.data.Add(0);
+        this.byteIndex = 128;
     }
 
     public void WriteRange(ushort value, int bits, ushort min, ushort max)
