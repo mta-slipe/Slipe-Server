@@ -1,52 +1,51 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Text;
 
 namespace SlipeServer.Packets.Reader;
 
 public class PacketReader
 {
-    private readonly BitArray bitArray;
+    private readonly byte[] data;
+    private int dataIndex;
+    private byte byteIndex;
 
     public int Counter { get; private set; }
     public int Size { get; private set; }
-    public bool IsFinishedReading => this.Counter == this.bitArray.Length;
+    public bool IsFinishedReading => this.Counter == this.Size;
 
     public PacketReader(byte[] data)
     {
-        this.bitArray = new BitArray(data);
+        this.data = data;
         this.Counter = 0;
         this.Size = data.Length * 8;
 
-        this.FlipBytes();
+        this.dataIndex = 0;
+        this.byteIndex = 128;
     }
 
-    private void Swap(int indexA, int indexB)
+    private bool GetBitFromData()
     {
-        bool temp = this.bitArray[indexA];
-        this.bitArray[indexA] = this.bitArray[indexB];
-        this.bitArray[indexB] = temp;
-    }
-
-    private void FlipBytes()
-    {
-        int byteCount = this.bitArray.Count / 8;
-        for (int i = 0; i < byteCount; i++)
+        var current = this.data[this.dataIndex];
+        var bit = (current & this.byteIndex) > 0;
+        this.byteIndex >>= 1;
+        if (this.byteIndex == 0)
         {
-            Swap(i * 8 + 0, i * 8 + 7);
-            Swap(i * 8 + 1, i * 8 + 6);
-            Swap(i * 8 + 2, i * 8 + 5);
-            Swap(i * 8 + 3, i * 8 + 4);
+            this.byteIndex = 128;
+            this.dataIndex++;
         }
+        this.Counter++;
+        return bit;
     }
-
-    private bool GetBitFromData() => this.bitArray[this.Counter++];
 
     private byte GetByteFromData()
     {
+        if ((this.Counter % 8) == 0)
+        {
+            this.Counter += 8;
+            return this.data[this.dataIndex++];
+        }
+
         byte value = 0;
 
         if (GetBitFromData()) value += 128;
@@ -215,10 +214,7 @@ public class PacketReader
 
     public void AlignToByteBoundary()
     {
-        int bitsNeeded = 8 - (this.bitArray.Count % 8);
-        if (bitsNeeded > 0 && bitsNeeded < 8)
-        {
-            GetBits(bitsNeeded);
-        }
+        this.byteIndex = 128;
+        this.dataIndex++;
     }
 }

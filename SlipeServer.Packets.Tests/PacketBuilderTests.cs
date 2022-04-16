@@ -1,18 +1,27 @@
 ﻿using FluentAssertions;
 using SlipeServer.Packets.Builder;
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Numerics;
-using System.Security.Cryptography;
-using System.Text;
 using Xunit;
 
 namespace SlipeServer.Packets.Tests;
 
 public class PacketBuilderTests
 {
+
+    [Fact]
+    public void WriteBitsTest()
+    {
+        var builder = new PacketBuilder();
+        foreach (var bit in new bool[] { true, true, false, false, true, false, true, false })
+        {
+            builder.Write(bit);
+        }
+
+        var bytes = builder.Build();
+
+        bytes[0].Should().Be(0b11001010);
+    }
 
     [Fact]
     public void WriteIntTest()
