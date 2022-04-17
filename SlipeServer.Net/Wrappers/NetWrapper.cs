@@ -58,6 +58,8 @@ public class NetWrapper : IDisposable, INetWrapper
     {
         string idFile = Path.Join(directory, "id");
         Directory.SetCurrentDirectory(directory);
+        if (!File.Exists(Path.Join(directory, netDllPath)))
+            throw new FileNotFoundException($"File {netDllPath} not found in {directory}.", netDllPath);
 
         this.packetInterceptorDelegate = PacketInterceptor;
         int result = InitNetWrapper(Path.Join(directory, netDllPath), idFile, host, port, 1024, "C# server", this.packetInterceptorDelegate);
