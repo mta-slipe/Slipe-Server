@@ -212,6 +212,8 @@ public class Element : ISpatialData
 
     private List<ElementAttachment> attachedElements;
     public IReadOnlyCollection<ElementAttachment> AttachedElements => this.attachedElements.AsReadOnly();
+    public bool IsDestroyed { get; set; }
+    private object destroyLock = new object();
 
     public Element()
     {
@@ -267,7 +269,14 @@ public class Element : ISpatialData
 
     public void Destroy()
     {
-        this.Destroyed?.Invoke(this);
+        lock (this.destroyLock)
+        {
+            if (this.IsDestroyed)
+                return;
+
+            this.IsDestroyed = true;
+            this.Destroyed?.Invoke(this);
+        }
     }
 
     public void RunAsSync(Action action, bool value = true)
