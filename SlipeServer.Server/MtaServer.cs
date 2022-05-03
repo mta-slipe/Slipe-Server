@@ -302,6 +302,7 @@ public class MtaServer
                     _ => throw new NotImplementedException()
                 };
                 client.Player.TriggerDisconnected(quitReason);
+                client.SetDisconnected();
                 this.clients[netWrapper].Remove(binaryAddress);
             }
         }

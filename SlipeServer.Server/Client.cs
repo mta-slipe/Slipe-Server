@@ -84,6 +84,16 @@ public class Client<TPlayer>
             this.ConnectionState = (ClientConnectionState)packet;
     }
 
+    public void SetDisconnected()
+    {
+        this.ConnectionState = ClientConnectionState.Quit;
+    }
+
+    public void ResetConnectionState()
+    {
+        this.ConnectionState = ClientConnectionState.Disconnected;
+    }
+
     public void SetVersion(ushort version)
     {
         this.bitStreamVersion = version;
