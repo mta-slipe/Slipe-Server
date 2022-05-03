@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets;
 using SlipeServer.Server.Elements;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SlipeServer.Server.Extensions;
 
@@ -12,7 +13,7 @@ public static class PacketExtensions
     public static void SendTo(this Packet packet, IEnumerable<IClient> clients)
     {
         byte[] data = packet.Write();
-        foreach (var client in clients)
+        foreach (var client in clients.ToArray())
         {
             client.SendPacket(packet.PacketId, data, packet.Priority, packet.Reliability);
         }
@@ -21,7 +22,7 @@ public static class PacketExtensions
     public static void SendTo(this Packet packet, IEnumerable<Player> players)
     {
         byte[] data = packet.Write();
-        foreach (var player in players)
+        foreach (var player in players.ToArray())
         {
             player.Client.SendPacket(packet.PacketId, data, packet.Priority, packet.Reliability);
         }

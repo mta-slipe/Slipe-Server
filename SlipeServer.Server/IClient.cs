@@ -29,6 +29,10 @@ public interface IClient
     public void ResendPlayerACInfo();
 
     public void FetchSerial();
+
+    public void SetDisconnected();
+
+    public void ResetConnectionState();
 }
 
 public interface IClient<TPlayer> : IClient where TPlayer : Player, new()
