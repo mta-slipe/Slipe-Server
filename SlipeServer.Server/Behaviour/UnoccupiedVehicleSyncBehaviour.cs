@@ -139,6 +139,7 @@ public class UnoccupiedVehicleSyncBehaviour
         var players = this.elementRepository
             .GetWithinRange<Player>(vehicle.Position, maxDistance, ElementType.Player)
             .Where(x => x.Dimension == vehicle.Dimension)
+            .Where(x => x.Client.ConnectionState == Enums.ClientConnectionState.Joined)
             .ToArray();
 
         var nearestDistance = players.Any() ? players.Min(x => Vector3.Distance(x.Position, vehicle.Position)) : -1;

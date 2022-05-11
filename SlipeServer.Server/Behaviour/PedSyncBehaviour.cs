@@ -93,6 +93,7 @@ public class PedSyncBehaviour
         var players = this.elementRepository
             .GetWithinRange<Player>(ped.Position, maxDistance, ElementType.Player)
             .Where(x => x.Dimension == ped.Dimension)
+            .Where(x => x.Client.ConnectionState == Enums.ClientConnectionState.Joined)
             .ToArray();
 
         var nearestDistance = players.Any() ? players.Min(x => Vector3.Distance(x.Position, ped.Position)) : -1;
