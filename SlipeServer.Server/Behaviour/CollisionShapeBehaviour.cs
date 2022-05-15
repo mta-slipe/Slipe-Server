@@ -118,6 +118,9 @@ public class CollisionShapeBehaviour
 
     private void OnElementPositionChange(object sender, ElementChangedEventArgs<Vector3> eventArgs)
     {
-        RefreshColliders(eventArgs.Source);
+        eventArgs.Source.RunWithContext(
+            () => RefreshColliders(eventArgs.Source), 
+            Elements.Enums.ElementUpdateContext.PostEvent
+        );
     }
 }
