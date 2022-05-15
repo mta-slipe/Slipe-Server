@@ -189,15 +189,21 @@ public class Element : ISpatialData
         }
     }
 
-    private AsyncLocal<bool> isSync = new();
-    public bool IsSync
+    private AsyncLocal<ElementUpdateContext> updateContext = new();
+    public ElementUpdateContext UpdateContext
     {
-        get => this.isSync?.Value ?? false;
+        get => this.updateContext?.Value ?? ElementUpdateContext.Default;
         protected set
         {
-            this.isSync ??= new AsyncLocal<bool>();
-            this.isSync.Value = value;
+            this.updateContext ??= new AsyncLocal<ElementUpdateContext>();
+            this.updateContext.Value = value;
         }
+    }
+
+    public bool IsSync
+    {
+        get => this.UpdateContext.HasFlag(ElementUpdateContext.Sync);
+        set => this.UpdateContext = ElementUpdateContext.Sync;
     }
 
     private readonly HashSet<Player> subscribers;
@@ -279,21 +285,27 @@ public class Element : ISpatialData
         }
     }
 
-    public void RunAsSync(Action action, bool value = true)
+    public void RunWithContext(Action action, ElementUpdateContext context)
     {
-        var oldValue = this.IsSync;
-        this.IsSync = value;
+        var oldValue = this.UpdateContext;
+        this.UpdateContext = context;
         action();
-        this.IsSync = oldValue;
+        this.UpdateContext = oldValue;
     }
 
-    public async Task RunAsSync(Func<Task> action, bool value = true)
+    public async Task RunWithContext(Func<Task> action, ElementUpdateContext context)
     {
-        var oldValue = this.IsSync;
-        this.IsSync = value;
+        var oldValue = this.UpdateContext;
+        this.UpdateContext = context;
         await action();
-        this.IsSync = oldValue;
+        this.UpdateContext = oldValue;
     }
+
+    public void RunAsSync(Action action, bool value = true)
+        => RunWithContext(action, value ? ElementUpdateContext.Sync : ElementUpdateContext.NoRelay);
+
+    public Task RunAsSync(Func<Task> action, bool value = true)
+        => RunWithContext(action, value ? ElementUpdateContext.Sync : ElementUpdateContext.NoRelay);
 
     public Element AssociateWith(MtaServer server)
     {
