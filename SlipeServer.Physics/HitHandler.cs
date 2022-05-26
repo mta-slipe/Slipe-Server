@@ -26,7 +26,7 @@ internal struct HitHandler : IRayHitHandler
                 ray = ray,
                 Normal = normal,
                 distance = distance,
-                Collidable = collidable
+                Collidable = collidable,
             };
         }
     }

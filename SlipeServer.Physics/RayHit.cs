@@ -10,5 +10,4 @@ public struct RayHit
     public Vector3 Normal;
     public float distance;
     public CollidableReference Collidable;
-    public bool Hit;
 }
