@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using SlipeServer.Server.AllSeeingEye;
 using SlipeServer.Server.Constants;
 using System;
 using System.Net;
