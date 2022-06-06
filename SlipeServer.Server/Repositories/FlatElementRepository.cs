@@ -59,9 +59,7 @@ public class FlatElementRepository : IElementRepository
 
     public IEnumerable<TElement> GetByType<TElement>() where TElement : Element
     {
-        this.slimLock.EnterReadLock();
         var value = this.GetByType<TElement>(ElementTypeHelpers.GetElementType<TElement>());
-        this.slimLock.ExitReadLock();
         return value;
     }
 
