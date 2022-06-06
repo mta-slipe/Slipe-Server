@@ -36,6 +36,7 @@ using SlipeServer.Server.PacketHandling.Handlers.CustomData;
 using SlipeServer.Packets.Definitions.CustomElementData;
 using SlipeServer.Packets.Definitions.Resources;
 using SlipeServer.Server.Resources.Serving;
+using SlipeServer.Server.Mappers;
 
 namespace SlipeServer.Server.ServerBuilders;
 
@@ -247,6 +248,7 @@ public static class DefaultServerBuilderExtensions
         builder.AddDefaultPacketHandler(exceptPacketHandlers);
         builder.AddDefaultBehaviours(exceptBehaviours);
         builder.AddDefaultServices(exceptServices, exceptMiddleware);
+        builder.AddDefaultLuaMappings();
 
         builder.AddResourceServer<BasicHttpServer>();
 

@@ -59,7 +59,7 @@ public class ServerBuilder
     public void AddResourceServer<TResourceServer>(params object[] parameters)
         where TResourceServer : IResourceServer
     {
-        AddBuildStep(server => server.AddResourceServer(server.Instantiate<TResourceServer>()));
+        AddBuildStep(server => server.AddResourceServer(server.Instantiate<TResourceServer>(parameters)));
     }
 
     public void Instantiate<T>(params object[] parameters)

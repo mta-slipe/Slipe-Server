@@ -33,7 +33,7 @@ public class LocalServerAnnouncementBehaviour
                 IPEndPoint? source = new IPEndPoint(0, 0);
                 byte[] incomingData = socket.EndReceive(result, ref source);
                 string message = Encoding.UTF8.GetString(incomingData);
-                this.logger.LogInformation($"Local server broadcast received from {source?.Address} \"{message}\"");
+                this.logger.LogInformation("Local server broadcast received from {address} \"{message}\"", source?.Address, message);
 
                 byte[] data = Encoding.UTF8.GetBytes($"MTA-SERVER {this.configuration.Port + 123}");
 
@@ -42,7 +42,7 @@ public class LocalServerAnnouncementBehaviour
             }
             catch (Exception e)
             {
-                this.logger.LogError(e.Message);
+                this.logger.LogError("{exceptionMessage}", e.Message);
             }
         }
     }

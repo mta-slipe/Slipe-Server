@@ -10,21 +10,28 @@ using System.Runtime.CompilerServices;
 namespace SlipeServer.Server.Mappers;
 public class LuaValueMapper
 {
-    private readonly Dictionary<Type, Func<object, LuaValue>> strictlyDefinedMappers;
+    private readonly Dictionary<Type, Func<object, LuaValue>> strictlyDefinedClassMappers;
+    private readonly Dictionary<Type, Func<object, LuaValue>> strictlyDefinedStructMappers;
 
     public LuaValueMapper()
     {
-        this.strictlyDefinedMappers = new();
+        this.strictlyDefinedClassMappers = new();
+        this.strictlyDefinedStructMappers = new();
     }
 
     public void DefineMapper(Type type, Func<object, LuaValue> mapper)
     {
-        this.strictlyDefinedMappers[type] = mapper;
+        this.strictlyDefinedClassMappers[type] = mapper;
     }
 
-    public void DefineMapper<T>(Func<object, LuaValue> mapper)
+    public void DefineMapper<T>(Func<T, LuaValue> mapper) where T : class
     {
-        this.strictlyDefinedMappers[typeof(T)] = mapper;
+        this.strictlyDefinedClassMappers[typeof(T)] = (Func<object, LuaValue>)mapper;
+    }
+
+    public void DefineStructMapper<T>(Func<T, LuaValue> mapper) where T : struct
+    {
+        this.strictlyDefinedStructMappers[typeof(T)] = (x) => mapper((T)x);
     }
 
     public LuaValue Map(object? value)
@@ -32,8 +39,11 @@ public class LuaValueMapper
         if (value == null)
             return new LuaValue();
 
-        if (this.strictlyDefinedMappers.TryGetValue(value.GetType(), out var mapper))
+        if (this.strictlyDefinedClassMappers.TryGetValue(value.GetType(), out var mapper))
             return mapper.Invoke(value);
+
+        if (this.strictlyDefinedStructMappers.TryGetValue(value.GetType(), out var structMapper))
+            return structMapper.Invoke(value);
 
         if (value is ILuaMappable luaMappable)
             return Map(luaMappable);
@@ -54,7 +64,7 @@ public class LuaValueMapper
                 return text;
             case Element element:
                 return Map(element);
-            case SByte:
+            case sbyte:
             case byte:
             case short:
             case ushort:

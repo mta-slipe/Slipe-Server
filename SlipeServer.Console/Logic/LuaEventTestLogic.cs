@@ -7,7 +7,7 @@ using System.Numerics;
 
 namespace SlipeServer.Console.Logic;
 
-struct DataStruct
+internal struct DataStruct
 {
     public string Foo { get; set; } = "Foo";
     public int Bar { get; set; } = 1;
@@ -18,7 +18,7 @@ struct DataStruct
     }
 }
 
-struct LuaMappableStruct : ILuaMappable
+internal struct LuaMappableStruct : ILuaMappable
 {
     public LuaValue ToLuaValue()
     {
@@ -26,26 +26,23 @@ struct LuaMappableStruct : ILuaMappable
     }
 }
 
-struct ExplicitStruct
+internal struct ExplicitStruct
 {
 
 }
 
 public class LuaEventTestLogic
 {
-    private readonly ILogger logger;
     private readonly LuaEventService luaEventService;
 
     public LuaEventTestLogic(
-        ILogger logger,
         CommandService commandService,
         LuaEventService luaEventService,
         LuaValueMapper mapper)
     {
-        this.logger = logger;
         this.luaEventService = luaEventService;
 
-        mapper.DefineMapper<ExplicitStruct>(x => new LuaValue("Explicit!"));
+        mapper.DefineStructMapper<ExplicitStruct>(x => new LuaValue("Explicit!"));
 
         commandService.AddCommand("sendvector").Triggered += SendLuaVector;
         commandService.AddCommand("sendvectorlist").Triggered += SendLuaVectorList;
