@@ -128,7 +128,8 @@ public class RTreeElementRepository : IElementRepository
 
         var results = this.elements
             .Search(new Envelope(position.X - range, position.Y - range, position.X + range, position.Y + range))
-            .Select(x => x.Element);
+            .Select(x => x.Element)
+            .ToArray();
 
         this.slimLock.ExitReadLock();
 
@@ -146,10 +147,12 @@ public class RTreeElementRepository : IElementRepository
 
     private void ReInsertElement(Element element, ElementChangedEventArgs<Vector3> args)
     {
+        this.slimLock.EnterWriteLock();
         this.elements.Delete(this.elementRefs[element]);
 
         var elementRef = new RTreeRef(element);
         this.elements.Insert(elementRef);
         this.elementRefs[element] = elementRef;
+        this.slimLock.ExitWriteLock();
     }
 }

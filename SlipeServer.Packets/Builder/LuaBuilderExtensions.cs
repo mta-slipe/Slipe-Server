@@ -97,16 +97,16 @@ public static class LuaBuilderExtensions
         {
             builder.Write(false);
             builder.WriteCompressed(value.IntegerValue.Value);
-        } else if (value.FloatValue.HasValue)
+        } else if (value.FloatValue.HasValue && value.FloatValue.Value != 0)
         {
             builder.Write(true);
             builder.Write(false);
             builder.Write(value.FloatValue.Value);
-        } else if (value.DoubleValue.HasValue)
+        } else if (value.DoubleValue.HasValue || value.FloatValue == 0)
         {
             builder.Write(true);
             builder.Write(true);
-            builder.Write(value.DoubleValue.Value);
+            builder.Write((value.DoubleValue ?? value.FloatValue)!.Value);
         }
     }
 

@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
-using SlipeServer.Server.Elements.Structs;
 using SlipeServer.Server.Events;
 using SlipeServer.Server.Repositories;
 using SlipeServer.Server.Services;
@@ -34,7 +33,7 @@ public class ParachuteLogic
         this.resource = this.server.GetAdditionalResource<ParachuteResource>();
     }
 
-    private void HandlePlayerJoin(Server.Elements.Player player)
+    private void HandlePlayerJoin(Player player)
     {
         this.resource.StartFor(player);
     }
@@ -46,7 +45,7 @@ public class ParachuteLogic
         var otherPlayers = this.elementRepository
             .GetByType<Player>()
             .Except(new Player[] { luaEvent.Player });
-        this.luaEventService.TriggerEvent(otherPlayers, "doAddParachuteToPlayer", luaEvent.Player);
+        this.luaEventService.TriggerEventForMany(otherPlayers, "doAddParachuteToPlayer", luaEvent.Player);
     }
 
     public void HandleRequestRemoveParachute(LuaEvent luaEvent)
@@ -57,6 +56,6 @@ public class ParachuteLogic
         var otherPlayers = this.elementRepository
             .GetByType<Player>()
             .Except(new Player[] { luaEvent.Player });
-        this.luaEventService.TriggerEvent(otherPlayers, "doAddParachuteToPlayer", luaEvent.Player);
+        this.luaEventService.TriggerEventForMany(otherPlayers, "doAddParachuteToPlayer", luaEvent.Player);
     }
 }

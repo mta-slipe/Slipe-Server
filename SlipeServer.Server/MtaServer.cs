@@ -11,6 +11,7 @@ using SlipeServer.Server.Enums;
 using SlipeServer.Server.Events;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.Loggers;
+using SlipeServer.Server.Mappers;
 using SlipeServer.Server.PacketHandling;
 using SlipeServer.Server.PacketHandling.Handlers;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
@@ -239,6 +240,7 @@ public class MtaServer
         this.serviceCollection.AddSingleton<ChatBox>();
         this.serviceCollection.AddSingleton<ClientConsole>();
         this.serviceCollection.AddSingleton<DebugLog>();
+        this.serviceCollection.AddSingleton<LuaValueMapper>();
         this.serviceCollection.AddSingleton<LuaEventService>();
         this.serviceCollection.AddSingleton<LatentPacketService>();
         this.serviceCollection.AddSingleton<ExplosionService>();

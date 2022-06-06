@@ -1032,9 +1032,9 @@ public class ServerTestLogic
             {
                 player.HasJetpack = !player.HasJetpack;
                 if(player.HasJetpack)
-                    this.logger.LogInformation($"{sender.Name} put on a jetpack!");
+                    this.logger.LogInformation("{name} put on a jetpack!", sender.Name);
                 else
-                    this.logger.LogInformation($"{sender.Name} pulled off his jetpack!");
+                    this.logger.LogInformation("{name} pulled off his jetpack!", sender.Name);
             }
             else if(e.Key == "h")
             {
@@ -1116,6 +1116,6 @@ public class ServerTestLogic
         });
         table.TableValue?.Add("self", table);
 
-        this.luaService.TriggerEvent(player, "Slipe.Test.ClientEvent", this.root, "String value", true, 23, table);
+        this.luaService.TriggerEventFor(player, "Slipe.Test.ClientEvent", this.root, "String value", true, 23, table);
     }
 }
