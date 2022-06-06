@@ -49,11 +49,11 @@ public class LocalServerAnnouncementBehaviour
 
     private void StartListening(ushort port)
     {
-        IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-        IPAddress ipAddress = ipHostInfo.AddressList[0];
-        IPEndPoint localEndPoint = new IPEndPoint(ipAddress, port);
+        IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Any, port);
 
-        UdpClient socket = new UdpClient(port);
+        UdpClient socket = new UdpClient();
+        socket.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+        socket.Client.Bind(localEndPoint);
         socket.BeginReceive(new AsyncCallback(OnUdpData), socket);
     }
 
