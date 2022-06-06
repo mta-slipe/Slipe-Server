@@ -7,6 +7,7 @@ using KdTree.Math;
 using System.Numerics;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Helpers;
+using System.Threading;
 
 namespace SlipeServer.Server.Repositories;
 
@@ -14,6 +15,7 @@ public class KdTreeElementRepository : IElementRepository
 {
     public int Count => throw new NotImplementedException();
     private readonly KdTree<float, Element> elements;
+    private readonly ReaderWriterLockSlim slimLock = new();
 
     public KdTreeElementRepository()
     {
@@ -22,80 +24,98 @@ public class KdTreeElementRepository : IElementRepository
 
     public void Add(Element element)
     {
-        lock (element.ElementLock)
-        {
-            element.PositionChanged += ReInsertElement;
-            this.elements.Add(new float[] { element.Position.X, element.Position.Y, element.Position.Z }, element);
-        }
+        this.slimLock.EnterWriteLock();
+        element.PositionChanged += ReInsertElement;
+        this.elements.Add(new float[] { element.Position.X, element.Position.Y, element.Position.Z }, element);
+        this.slimLock.ExitWriteLock();
     }
 
     public Element? Get(uint id)
     {
-        return this.elements
+        this.slimLock.EnterReadLock();
+        var value = this.elements
             .Select(element => element.Value)
             .FirstOrDefault(element => element.Id == id);
+        this.slimLock.ExitReadLock();
+        return value;
     }
 
     public void Remove(Element element)
     {
-        lock (element.ElementLock)
-        {
-            element.PositionChanged -= ReInsertElement;
-            this.elements.RemoveAt(new float[] { element.Position.X, element.Position.Y, element.Position.Z });
-        }
+        this.slimLock.EnterWriteLock();
+        element.PositionChanged -= ReInsertElement;
+        this.elements.RemoveAt(new float[] { element.Position.X, element.Position.Y, element.Position.Z });
+        this.slimLock.ExitWriteLock();
     }
 
     public IEnumerable<Element> GetAll()
     {
-        return this.elements.Select(element => element.Value);
+        this.slimLock.EnterReadLock();
+        var value = this.elements.Select(element => element.Value);
+        this.slimLock.ExitReadLock();
+        return value;
     }
 
     public IEnumerable<TElement> GetByType<TElement>(ElementType elementType) where TElement : Element
     {
-        return this.elements
+        this.slimLock.EnterReadLock();
+        var value = this.elements
             .Select(element => element.Value)
             .Where(element => element.ElementType == elementType)
             .Cast<TElement>();
+        this.slimLock.ExitReadLock();
+        return value;
     }
 
     public IEnumerable<TElement> GetByType<TElement>() where TElement : Element
     {
-        return this.GetByType<TElement>(ElementTypeHelpers.GetElementType<TElement>());
+        this.slimLock.EnterReadLock();
+        var value = this.GetByType<TElement>(ElementTypeHelpers.GetElementType<TElement>());
+        this.slimLock.ExitReadLock();
+        return value;
     }
 
     public IEnumerable<Element> GetWithinRange(Vector3 position, float range)
     {
-        return this.elements
+        this.slimLock.EnterReadLock();
+        var value = this.elements
             .RadialSearch(new float[] { position.X, position.Y, position.Z }, range)
             .Select(entry => entry.Value);
+        this.slimLock.ExitReadLock();
+        return value;
     }
 
     public IEnumerable<TElement> GetWithinRange<TElement>(Vector3 position, float range, ElementType elementType) where TElement : Element
     {
-        return this.elements
+        this.slimLock.EnterReadLock();
+        var value = this.elements
             .RadialSearch(new float[] { position.X, position.Y, position.Z }, range)
             .Where(element => element.Value.ElementType == elementType)
             .Select(kvPair => kvPair.Value)
             .Cast<TElement>();
+        this.slimLock.ExitReadLock();
+        return value;
     }
 
     public IEnumerable<Element> GetNearest(Vector3 position, int count)
     {
-        return this.elements
+        this.slimLock.EnterReadLock();
+        var value = this.elements
             .GetNearestNeighbours(new float[] { position.X, position.Y, position.Z }, count)
             .Select(kvPair => kvPair.Value);
+        this.slimLock.ExitReadLock();
+        return value;
     }
 
     private void ReInsertElement(Element element, ElementChangedEventArgs<Vector3> args)
     {
-        lock (element.ElementLock)
-        {
-            var neighbour = this.elements
-                .RadialSearch(new float[] { args.OldValue.X, args.OldValue.Y, args.OldValue.Z }, 0.25f)
-                .SingleOrDefault(x => x.Value == element);
-            if (neighbour != null)
-                this.elements.RemoveAt(neighbour.Point);
-            this.elements.Add(new float[] { args.NewValue.X, args.NewValue.Y, args.NewValue.Z }, args.Source);
-        }
+        this.slimLock.EnterWriteLock();
+        var neighbour = this.elements
+            .RadialSearch(new float[] { args.OldValue.X, args.OldValue.Y, args.OldValue.Z }, 0.25f)
+            .SingleOrDefault(x => x.Value == element);
+        if (neighbour != null)
+            this.elements.RemoveAt(neighbour.Point);
+        this.elements.Add(new float[] { args.NewValue.X, args.NewValue.Y, args.NewValue.Z }, args.Source);
+        this.slimLock.ExitWriteLock();
     }
 }
