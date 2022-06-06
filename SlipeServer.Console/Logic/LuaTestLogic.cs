@@ -44,7 +44,7 @@ public class LuaTestLogic
         }
         catch (InterpreterException ex)
         {
-            this.logger.LogInformation("Failed to load script\n\t{0}", ex.DecoratedMessage);
+            this.logger.LogInformation("Failed to load script\n\t{message}", ex.DecoratedMessage);
         }
     }
 }

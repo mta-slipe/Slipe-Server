@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace SlipeServer.Server.Elements;
 
-public class Element : ISpatialData
+public class Element
 {
     public virtual ElementType ElementType => ElementType.Unknown;
 
@@ -56,7 +56,6 @@ public class Element : ISpatialData
     }
 
 
-    private Envelope envelope;
     protected Vector3 position;
     public Vector3 Position
     {
@@ -66,7 +65,6 @@ public class Element : ISpatialData
             var args = new ElementChangedEventArgs<Vector3>(this, this.Position, value, this.IsSync);
             this.position = value;
             PositionChanged?.Invoke(this, args);
-            this.envelope = new Envelope(value.X - .01f, value.Y - .01f, value.X + .01f, value.Y + .01f);
 
             foreach (var attachment in this.attachedElements)
                 attachment.UpdateAttachedElement();
@@ -208,18 +206,17 @@ public class Element : ISpatialData
 
     private readonly HashSet<Player> subscribers;
     public IEnumerable<Player> Subscribers => this.subscribers;
-    public object ElementLock { get; } = new();
-    ref readonly Envelope ISpatialData.Envelope => ref this.envelope;
 
     private Dictionary<string, ElementData> ElementData { get; set; }
     public ConcurrentDictionary<Player, ConcurrentDictionary<string, bool>> ElementDataSubscriptions { get; set; }
 
     public ElementAttachment? Attachment { get; private set; }
 
-    private List<ElementAttachment> attachedElements;
+    private readonly List<ElementAttachment> attachedElements;
     public IReadOnlyCollection<ElementAttachment> AttachedElements => this.attachedElements.AsReadOnly();
     public bool IsDestroyed { get; set; }
-    private object destroyLock = new object();
+
+    private readonly object destroyLock = new();
 
     public Element()
     {
@@ -372,7 +369,7 @@ public class Element : ISpatialData
     {
         if (this.ElementDataSubscriptions.TryGetValue(player, out var keys))
         {
-            keys.Remove(key, out var value);
+            keys.Remove(key, out var _);
             if (keys.IsEmpty)
                 UnsubscribeFromAllData(player);
         }

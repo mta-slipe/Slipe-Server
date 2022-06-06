@@ -1,12 +1,12 @@
-﻿using System;
+﻿using RBush;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements.Events;
+using SlipeServer.Server.Helpers;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using SlipeServer.Server.Elements.Events;
-using RBush;
-using System.Collections.Concurrent;
-using SlipeServer.Server.Helpers;
+using System.Threading;
 
 namespace SlipeServer.Server.Repositories;
 
@@ -38,7 +38,7 @@ public class RTreeElementRepository : IElementRepository
     public int Count => this.elements.Count;
     private readonly RBush<RTreeRef> elements;
     private readonly ConcurrentDictionary<Element, RTreeRef> elementRefs;
-    private object generalLock = new object();
+    private readonly ReaderWriterLockSlim slimLock = new();
 
     public RTreeElementRepository()
     {
@@ -48,92 +48,108 @@ public class RTreeElementRepository : IElementRepository
 
     public void Add(Element element)
     {
-        lock (this.generalLock)
-        {
-            element.PositionChanged += ReInsertElement;
-            var elementRef = new RTreeRef(element);
-            this.elements.Insert(elementRef);
-            this.elementRefs[element] = elementRef;
-        }
+        this.slimLock.EnterWriteLock();
+
+        element.PositionChanged += ReInsertElement;
+        var elementRef = new RTreeRef(element);
+        this.elements.Insert(elementRef);
+        this.elementRefs[element] = elementRef;
+
+        this.slimLock.ExitWriteLock();
     }
 
     public Element? Get(uint id)
     {
-        lock (this.generalLock)
-        {
-            return this.elements
-                .Search()
-                .Select(x => x.Element)
-                .FirstOrDefault(element => element.Id == id);
-        }
+        this.slimLock.EnterReadLock();
+
+        var results = this.elements
+            .Search()
+            .Select(x => x.Element)
+            .FirstOrDefault(element => element.Id == id);
+
+        this.slimLock.ExitReadLock();
+
+        return results;
     }
 
     public void Remove(Element element)
     {
-        lock (this.generalLock)
-        {
-            element.PositionChanged -= ReInsertElement;
-            if (this.elementRefs.Remove(element, out var value))
-                this.elements.Delete(value);
-        }
+        this.slimLock.EnterWriteLock();
+
+        element.PositionChanged -= ReInsertElement;
+        if (this.elementRefs.Remove(element, out var value))
+            this.elements.Delete(value);
+
+        this.slimLock.ExitWriteLock();
     }
 
     public IEnumerable<Element> GetAll()
     {
-        lock (this.generalLock)
-        {
-            return this.elements
+        this.slimLock.EnterReadLock();
+
+        var results = this.elements
             .Search()
             .Select(x => x.Element);
-        }
+
+        this.slimLock.ExitReadLock();
+
+        return results;
     }
 
     public IEnumerable<TElement> GetByType<TElement>(ElementType elementType) where TElement : Element
     {
-        lock (this.generalLock)
-        {
-            return this.elements
+        this.slimLock.EnterReadLock();
+
+        var results = this.elements
             .Search()
             .Select(x => x.Element)
             .Where(element => element.ElementType == elementType)
             .Cast<TElement>();
-        }
+
+        this.slimLock.ExitReadLock();
+
+        return results;
     }
 
     public IEnumerable<TElement> GetByType<TElement>() where TElement : Element
     {
-        return this.GetByType<TElement>(ElementTypeHelpers.GetElementType<TElement>());
+        this.slimLock.EnterReadLock();
+
+        var results = this.GetByType<TElement>(ElementTypeHelpers.GetElementType<TElement>());
+
+        this.slimLock.ExitReadLock();
+
+        return results;
     }
 
     public IEnumerable<Element> GetWithinRange(Vector3 position, float range)
     {
-        lock (this.generalLock)
-        {
-            return this.elements
-                .Search(new Envelope(position.X - range, position.Y - range, position.X + range, position.Y + range))
-                .Select(x => x.Element);
-        }
+        this.slimLock.EnterReadLock();
+
+        var results = this.elements
+            .Search(new Envelope(position.X - range, position.Y - range, position.X + range, position.Y + range))
+            .Select(x => x.Element);
+
+        this.slimLock.ExitReadLock();
+
+        return results;
     }
 
     public IEnumerable<TElement> GetWithinRange<TElement>(Vector3 position, float range, ElementType elementType) where TElement : Element
     {
-        lock (this.generalLock)
-        {
-            return this.GetWithinRange(position, range)
-                .Where(element => element.ElementType == elementType)
-                .Cast<TElement>();
-        }
+        var results = this.GetWithinRange(position, range)
+            .Where(element => element.ElementType == elementType)
+            .Cast<TElement>();
+
+        return results;
     }
 
     private void ReInsertElement(Element element, ElementChangedEventArgs<Vector3> args)
     {
-        lock (this.generalLock)
-        {
-            this.elements.Delete(this.elementRefs[element]);
+        this.elements.Delete(this.elementRefs[element]);
 
-            var elementRef = new RTreeRef(element);
-            this.elements.Insert(elementRef);
-            this.elementRefs[element] = elementRef;
-        }
+        var elementRef = new RTreeRef(element);
+        this.elements.Insert(elementRef);
+        this.elementRefs[element] = elementRef;
     }
 }

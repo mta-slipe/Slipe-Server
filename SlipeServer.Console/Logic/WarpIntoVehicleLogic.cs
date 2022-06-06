@@ -11,18 +11,12 @@ namespace SlipeServer.Console.Logic;
 public class WarpIntoVehicleLogic
 {
     private readonly ILogger logger;
-    private readonly LuaEventService luaEventService;
-    private readonly MtaServer server;
 
     public WarpIntoVehicleLogic(
-        MtaServer<CustomPlayer> server,
         ILogger logger,
-        CommandService commandService,
-        LuaEventService luaEventService)
+        CommandService commandService)
     {
-        this.server = server;
         this.logger = logger;
-        this.luaEventService = luaEventService;
 
         commandService.AddCommand("warpinvehicle").Triggered += SetWarpIntoVehicle;
     }
