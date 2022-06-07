@@ -17,12 +17,12 @@ public class TypeFilteredCollisionShapeBehaviour
     private readonly HashSet<CollisionShape> collisionShapes;
     private readonly HashSet<Type> types;
 
-    public TypeFilteredCollisionShapeBehaviour(MtaServer server, IElementCollection elementRepository, IEnumerable<Type> types)
+    public TypeFilteredCollisionShapeBehaviour(MtaServer server, IElementCollection elementCollection, IEnumerable<Type> types)
     {
         this.types = new HashSet<Type>(types);
 
         this.collisionShapes = new HashSet<CollisionShape>();
-        foreach (var collisionShape in elementRepository.GetByType<CollisionShape>(ElementType.Colshape))
+        foreach (var collisionShape in elementCollection.GetByType<CollisionShape>(ElementType.Colshape))
         {
             this.AddCollisionShape(collisionShape);
         }

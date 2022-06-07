@@ -11,19 +11,19 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Connection;
 
 public class PlayerQuitPacketHandler : IPacketHandler<PlayerQuitPacket>
 {
-    private readonly IElementCollection elementRepository;
+    private readonly IElementCollection elementCollection;
 
     public PacketId PacketId => PacketId.PACKET_ID_PLAYER_QUIT;
 
-    public PlayerQuitPacketHandler(IElementCollection elementRepository)
+    public PlayerQuitPacketHandler(IElementCollection elementCollection)
     {
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
     }
 
     public void HandlePacket(IClient client, PlayerQuitPacket packet)
     {
         var returnPacket = PlayerPacketFactory.CreateQuitPacket(client.Player, QuitReason.Quit);
-        returnPacket.SendTo(this.elementRepository.GetByType<Elements.Player>(ElementType.Player).Except(new Elements.Player[] { client.Player }));
+        returnPacket.SendTo(this.elementCollection.GetByType<Elements.Player>(ElementType.Player).Except(new Elements.Player[] { client.Player }));
 
         client.Player.Destroy();
     }

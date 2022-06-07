@@ -13,14 +13,14 @@ namespace SlipeServer.Server.Behaviour;
 
 public class VoiceBehaviour
 {
-    public VoiceBehaviour(MtaServer server, IElementCollection elementRepository)
+    public VoiceBehaviour(MtaServer server, IElementCollection elementCollection)
     {
         server.PlayerJoined += (player) =>
         {
             player.VoiceDataReceived += (sender, args) =>
             {
                 var packet = new VoiceDataPacket(player.Id, args.DataBuffer);
-                var otherPlayers = elementRepository.GetByType<Player>(ElementType.Player)
+                var otherPlayers = elementCollection.GetByType<Player>(ElementType.Player)
                     .Where(p => p.Client != player.Client).ToArray();
 
                 packet.SendTo(otherPlayers);
@@ -29,7 +29,7 @@ public class VoiceBehaviour
             player.VoiceDataEnded += (sender, args) =>
             {
                 var packet = new VoiceEndPacket(player.Id);
-                var otherPlayers = elementRepository.GetByType<Player>(ElementType.Player)
+                var otherPlayers = elementCollection.GetByType<Player>(ElementType.Player)
                     .Where(p => p.Client != player.Client).ToArray();
 
                 packet.SendTo(otherPlayers);

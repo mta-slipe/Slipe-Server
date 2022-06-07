@@ -17,20 +17,20 @@ public class LuaEventService
     private readonly MtaServer server;
     private readonly RootElement root;
     private readonly LatentPacketService latentPacketService;
-    private readonly IElementCollection elementRepository;
+    private readonly IElementCollection elementCollection;
     private readonly LuaValueMapper mapper;
     private readonly Dictionary<string, List<Action<LuaEvent>>> eventHandlers;
 
     public LuaEventService(MtaServer server,
         RootElement root,
         LatentPacketService latentPacketService,
-        IElementCollection elementRepository,
+        IElementCollection elementCollection,
         LuaValueMapper mapper)
     {
         this.server = server;
         this.root = root;
         this.latentPacketService = latentPacketService;
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
         this.mapper = mapper;
         this.eventHandlers = new Dictionary<string, List<Action<LuaEvent>>>();
 
@@ -87,7 +87,7 @@ public class LuaEventService
 
     public void TriggerLatentEvent(string eventName, Resource sourceResource, Element? source = null, int rate = 50000, params LuaValue[] parameters)
     {
-        TriggerLatentEventForMany(this.elementRepository.GetByType<Player>(ElementType.Player), eventName, sourceResource, source, rate, parameters);
+        TriggerLatentEventForMany(this.elementCollection.GetByType<Player>(ElementType.Player), eventName, sourceResource, source, rate, parameters);
     }
 
     public void TriggerLatentEvent(string eventName, Resource sourceResource, Element? source = null, int rate = 50000, params object[] parameters)

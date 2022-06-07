@@ -10,13 +10,13 @@ namespace SlipeServer.Server.Behaviour;
 
 public class PlayerBehaviour
 {
-    private readonly IElementCollection elementRepository;
+    private readonly IElementCollection elementCollection;
     private readonly MtaServer server;
     private readonly ILogger logger;
 
-    public PlayerBehaviour(IElementCollection elementRepository, MtaServer server, ILogger logger)
+    public PlayerBehaviour(IElementCollection elementCollection, MtaServer server, ILogger logger)
     {
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
         this.server = server;
         this.logger = logger;
         server.PlayerJoined += OnPlayerJoin;

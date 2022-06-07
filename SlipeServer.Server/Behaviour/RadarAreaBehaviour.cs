@@ -14,11 +14,11 @@ public class RadarAreaBehaviour
     private readonly MtaServer server;
     private readonly HashSet<RadarArea> radarAreas;
 
-    public RadarAreaBehaviour(MtaServer server, IElementCollection elementRepository)
+    public RadarAreaBehaviour(MtaServer server, IElementCollection elementCollection)
     {
         this.server = server;
         this.radarAreas = new HashSet<RadarArea>();
-        foreach (var radarArea in elementRepository.GetByType<RadarArea>(ElementType.RadarArea))
+        foreach (var radarArea in elementCollection.GetByType<RadarArea>(ElementType.RadarArea))
         {
             AddRadarArea(radarArea);
         }

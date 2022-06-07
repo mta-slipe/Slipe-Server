@@ -8,13 +8,13 @@ public class CameraSyncPacketHandler : IPacketHandler<CameraSyncPacket>
 {
     public PacketId PacketId => PacketId.PACKET_ID_CAMERA_SYNC;
 
-    private readonly IElementCollection elementRepository;
+    private readonly IElementCollection elementCollection;
 
     public CameraSyncPacketHandler(
-        IElementCollection elementRepository
+        IElementCollection elementCollection
     )
     {
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
     }
 
     public void HandlePacket(IClient client, CameraSyncPacket packet)
@@ -28,7 +28,7 @@ public class CameraSyncPacketHandler : IPacketHandler<CameraSyncPacket>
                 player.Camera.LookAt = packet.LookAt;
             } else
             {
-                player.Camera.Target = this.elementRepository.Get(packet.TargetId);
+                player.Camera.Target = this.elementCollection.Get(packet.TargetId);
             }
         });
     }

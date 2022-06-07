@@ -28,9 +28,9 @@ public class PureSyncPacketHandlerTests
         Mock<ISyncHandlerMiddleware<PlayerPureSyncPacket>> middlewareMock = new();
         middlewareMock.Setup(x => x.GetPlayersToSyncTo(sourcePlayer, It.IsAny<PlayerPureSyncPacket>())).Returns(otherPlayers);
 
-        Mock<IElementCollection> elementRepositoryMock = new();
+        Mock<IElementCollection> elementCollectionMock = new();
 
-        var handler = new PlayerPureSyncPacketHandler(loggerMock.Object, middlewareMock.Object, elementRepositoryMock.Object);
+        var handler = new PlayerPureSyncPacketHandler(loggerMock.Object, middlewareMock.Object, elementCollectionMock.Object);
 
         handler.HandlePacket(sourcePlayer.Client, new PlayerPureSyncPacket()
         {
@@ -53,9 +53,9 @@ public class PureSyncPacketHandlerTests
         Mock<ISyncHandlerMiddleware<PlayerPureSyncPacket>> middlewareMock = new();
         middlewareMock.Setup(x => x.GetPlayersToSyncTo(sourcePlayer, It.IsAny<PlayerPureSyncPacket>())).Returns(otherPlayers);
 
-        Mock<IElementCollection> elementRepositoryMock = new();
+        Mock<IElementCollection> elementCollectionMock = new();
 
-        var handler = new PlayerPureSyncPacketHandler(loggerMock.Object, middlewareMock.Object, elementRepositoryMock.Object);
+        var handler = new PlayerPureSyncPacketHandler(loggerMock.Object, middlewareMock.Object, elementCollectionMock.Object);
 
         handler.HandlePacket(sourcePlayer.Client, new PlayerPureSyncPacket()
         {
@@ -73,9 +73,9 @@ public class PureSyncPacketHandlerTests
 
         Mock<ILogger> loggerMock = new();
         Mock<ISyncHandlerMiddleware<PlayerPureSyncPacket>> middlewareMock = new();
-        Mock<IElementCollection> elementRepositoryMock = new();
+        Mock<IElementCollection> elementCollectionMock = new();
 
-        var handler = new PlayerPureSyncPacketHandler(loggerMock.Object, middlewareMock.Object, elementRepositoryMock.Object);
+        var handler = new PlayerPureSyncPacketHandler(loggerMock.Object, middlewareMock.Object, elementCollectionMock.Object);
 
         handler.HandlePacket(sourcePlayer.Client, new PlayerPureSyncPacket()
         {

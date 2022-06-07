@@ -15,12 +15,12 @@ namespace SlipeServer.Server.Behaviour;
 public class ElementPacketBehaviour
 {
     private readonly MtaServer server;
-    private readonly IElementCollection elementRepository;
+    private readonly IElementCollection elementCollection;
 
-    public ElementPacketBehaviour(MtaServer server, IElementCollection elementRepository)
+    public ElementPacketBehaviour(MtaServer server, IElementCollection elementCollection)
     {
         this.server = server;
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
         server.ElementCreated += OnElementCreate;
     }
 
@@ -78,7 +78,7 @@ public class ElementPacketBehaviour
             var packet = new RemoveEntityPacket();
             packet.AddEntity(element.Id);
 
-            var players = this.elementRepository
+            var players = this.elementCollection
                 .GetByType<Player>(ElementType.Player)
                 .Where(p => p != element);
             packet.SendTo(players);

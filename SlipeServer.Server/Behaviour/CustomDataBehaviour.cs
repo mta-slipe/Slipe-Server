@@ -10,7 +10,7 @@ public class CustomDataBehaviour
 {
     private readonly MtaServer server;
 
-    public CustomDataBehaviour(MtaServer server, IElementCollection elementRepository)
+    public CustomDataBehaviour(MtaServer server, IElementCollection elementCollection)
     {
         server.ElementCreated += HandleElementCreation;
         this.server = server;

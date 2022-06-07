@@ -7,16 +7,16 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Middleware;
 
 public class BasicSyncHandlerMiddleware<TData> : ISyncHandlerMiddleware<TData>
 {
-    private readonly IElementCollection elementRepository;
+    private readonly IElementCollection elementCollection;
 
-    public BasicSyncHandlerMiddleware(IElementCollection elementRepository)
+    public BasicSyncHandlerMiddleware(IElementCollection elementCollection)
     {
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
     }
 
     public IEnumerable<Elements.Player> GetPlayersToSyncTo(Elements.Player player, TData packet)
     {
-        return this.elementRepository
+        return this.elementCollection
             .GetByType<Elements.Player>(ElementType.Player)
             .Where(x => x != player);
     }

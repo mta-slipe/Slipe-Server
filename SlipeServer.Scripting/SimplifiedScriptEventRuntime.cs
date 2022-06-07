@@ -11,15 +11,15 @@ namespace SlipeServer.Scripting;
 public class SimplifiedScriptEventRuntime : IScriptEventRuntime
 {
     private readonly MtaServer server;
-    private readonly IElementCollection elementRepository;
+    private readonly IElementCollection elementCollection;
 
     private readonly List<RegisteredEventHandler> registeredEventHandlers;
     private readonly Dictionary<string, RegisteredEvent> registeredEvents;
 
-    public SimplifiedScriptEventRuntime(MtaServer server, IElementCollection elementRepository)
+    public SimplifiedScriptEventRuntime(MtaServer server, IElementCollection elementCollection)
     {
         this.server = server;
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
 
         this.registeredEventHandlers = new List<RegisteredEventHandler>();
         this.registeredEvents = new Dictionary<string, RegisteredEvent>();
@@ -56,7 +56,7 @@ public class SimplifiedScriptEventRuntime : IScriptEventRuntime
 
         this.registeredEventHandlers.Add(registeredEventHandler);
 
-        foreach (var element in this.elementRepository.GetAll())
+        foreach (var element in this.elementCollection.GetAll())
         {
             if (registeredEvent.ElementType.IsAssignableFrom(element.GetType()))
             {

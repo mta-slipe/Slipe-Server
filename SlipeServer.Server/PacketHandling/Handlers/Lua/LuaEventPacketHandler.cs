@@ -8,26 +8,26 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Lua;
 
 public class LuaEventPacketHandler : IPacketHandler<LuaEventPacket>
 {
-    private readonly IElementCollection elementRepository;
+    private readonly IElementCollection elementCollection;
     private readonly ILogger logger;
     private readonly MtaServer server;
 
     public PacketId PacketId => PacketId.PACKET_ID_LUA_EVENT;
 
     public LuaEventPacketHandler(
-        IElementCollection elementRepository,
+        IElementCollection elementCollection,
         ILogger logger,
         MtaServer server
     )
     {
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
         this.logger = logger;
         this.server = server;
     }
 
     public void HandlePacket(IClient client, LuaEventPacket packet)
     {
-        var element = this.elementRepository.Get(packet.ElementId);
+        var element = this.elementCollection.Get(packet.ElementId);
         if (element == null)
         {
             this.logger.LogWarning($"'{packet.Name}' event triggered on non-existant element {packet.ElementId}");

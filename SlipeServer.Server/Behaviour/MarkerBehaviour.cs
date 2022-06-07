@@ -16,10 +16,10 @@ public class MarkerBehaviour
 {
     private readonly MtaServer server;
 
-    public MarkerBehaviour(MtaServer server, IElementCollection elementRepository)
+    public MarkerBehaviour(MtaServer server, IElementCollection elementCollection)
     {
         this.server = server;
-        foreach (var marker in elementRepository.GetByType<Marker>(ElementType.Marker))
+        foreach (var marker in elementCollection.GetByType<Marker>(ElementType.Marker))
         {
             AddMarker(marker);
         }

@@ -28,7 +28,7 @@ public class RTreeCompoundElementCollection : IElementCollection
         this.flatElementCollection.Add(element);
         this.elementByIdCollection.Add(element);
         this.elementByTypeCollection.Add(element);
-        this.GetKdTreeElementRepository(element.ElementType).Add(element);
+        this.GetRTreeElementCollection(element.ElementType).Add(element);
     }
 
     public void Remove(Element element)
@@ -36,7 +36,7 @@ public class RTreeCompoundElementCollection : IElementCollection
         this.flatElementCollection.Remove(element);
         this.elementByIdCollection.Remove(element);
         this.elementByTypeCollection.Remove(element);
-        this.GetKdTreeElementRepository(element.ElementType).Remove(element);
+        this.GetRTreeElementCollection(element.ElementType).Remove(element);
     }
 
     public Element? Get(uint id)
@@ -67,10 +67,10 @@ public class RTreeCompoundElementCollection : IElementCollection
 
     public IEnumerable<TElement> GetWithinRange<TElement>(Vector3 position, float range, ElementType elementType) where TElement : Element
     {
-        return this.GetKdTreeElementRepository(elementType).GetWithinRange<TElement>(position, range, elementType);
+        return this.GetRTreeElementCollection(elementType).GetWithinRange<TElement>(position, range, elementType);
     }
 
-    private RTreeElementCollection GetKdTreeElementRepository(ElementType elementType)
+    private RTreeElementCollection GetRTreeElementCollection(ElementType elementType)
     {
         if (!this.spatialCollections.ContainsKey(elementType))
         {

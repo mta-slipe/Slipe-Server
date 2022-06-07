@@ -10,17 +10,17 @@ namespace SlipeServer.Server.Behaviour;
 
 public class LightSyncBehaviour
 {
-    private readonly IElementCollection elementRepository;
+    private readonly IElementCollection elementCollection;
     private readonly ISyncHandlerMiddleware<LightSyncBehaviour?> middleware;
 
     private readonly Timer timer;
 
     public LightSyncBehaviour(
-        IElementCollection elementRepository,
+        IElementCollection elementCollection,
         ISyncHandlerMiddleware<LightSyncBehaviour?> middleware,
         Configuration configuration)
     {
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
         this.middleware = middleware;
 
         this.timer = new Timer(configuration.SyncIntervals.LightSync)
@@ -33,7 +33,7 @@ public class LightSyncBehaviour
 
     private void SendLightSyncs()
     {
-        foreach (var player in this.elementRepository.GetByType<Player>(ElementType.Player))
+        foreach (var player in this.elementCollection.GetByType<Player>(ElementType.Player))
         {
             var otherPlayers = this.middleware.GetPlayersToSyncTo(player, null);
 

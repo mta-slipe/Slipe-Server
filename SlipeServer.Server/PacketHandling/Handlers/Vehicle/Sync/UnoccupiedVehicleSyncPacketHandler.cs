@@ -11,17 +11,17 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync;
 public class UnoccupiedVehicleSyncPacketHandler : IPacketHandler<UnoccupiedVehicleSyncPacket>
 {
     private readonly ISyncHandlerMiddleware<UnoccupiedVehicleSyncPacket> middleware;
-    private readonly IElementCollection elementRepository;
+    private readonly IElementCollection elementCollection;
 
     public PacketId PacketId => PacketId.PACKET_ID_UNOCCUPIED_VEHICLE_SYNC;
 
     public UnoccupiedVehicleSyncPacketHandler(
         ISyncHandlerMiddleware<UnoccupiedVehicleSyncPacket> middleware,
-        IElementCollection elementRepository
+        IElementCollection elementCollection
     )
     {
         this.middleware = middleware;
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
     }
 
     public void HandlePacket(IClient client, UnoccupiedVehicleSyncPacket packet)
@@ -30,7 +30,7 @@ public class UnoccupiedVehicleSyncPacketHandler : IPacketHandler<UnoccupiedVehic
 
         foreach (var vehicle in packet.Vehicles)
         {
-            Elements.Vehicle vehicleElement = (Elements.Vehicle)this.elementRepository.Get(vehicle.Id)!;
+            Elements.Vehicle vehicleElement = (Elements.Vehicle)this.elementCollection.Get(vehicle.Id)!;
 
             if (vehicleElement != null)
             {
@@ -55,7 +55,7 @@ public class UnoccupiedVehicleSyncPacketHandler : IPacketHandler<UnoccupiedVehic
 
                         if (vehicle.Trailer != null)
                         {
-                            var trailer = this.elementRepository.Get(vehicle.Trailer.Value) as Elements.Vehicle;
+                            var trailer = this.elementCollection.Get(vehicle.Trailer.Value) as Elements.Vehicle;
                             if (trailer != null)
                             {
                                 vehicleElement.AttachTrailer(trailer, true);

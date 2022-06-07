@@ -23,7 +23,7 @@ namespace SlipeServer.Console.Logic;
 public class PhysicsTestLogic
 {
     private readonly MtaServer server;
-    private readonly IElementCollection elementRepository;
+    private readonly IElementCollection elementCollection;
     private readonly PhysicsService physicsService;
     private readonly CommandService commandService;
     private readonly ILogger logger;
@@ -37,13 +37,13 @@ public class PhysicsTestLogic
 
     public PhysicsTestLogic(
         MtaServer server,
-        IElementCollection elementRepository,
+        IElementCollection elementCollection,
         PhysicsService physicsService,
         CommandService commandService,
         ILogger logger)
     {
         this.server = server;
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
         this.physicsService = physicsService;
         this.commandService = commandService;
         this.logger = logger;
@@ -101,7 +101,7 @@ public class PhysicsTestLogic
             this.commandService.AddCommand("stopsim").Triggered += HandleStopSimCommand;
 
             this.server.PlayerJoined += HandlePlayerJoin;
-            foreach (var player in this.elementRepository.GetByType<Player>())
+            foreach (var player in this.elementCollection.GetByType<Player>())
                 HandlePlayerJoin(player);
         }
         catch (IOException)

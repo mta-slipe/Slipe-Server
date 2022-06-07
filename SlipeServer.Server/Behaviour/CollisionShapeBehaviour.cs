@@ -16,10 +16,10 @@ public class CollisionShapeBehaviour
     private readonly HashSet<CollisionShape> collisionShapes;
     private readonly MtaServer server;
 
-    public CollisionShapeBehaviour(MtaServer server, IElementCollection elementRepository)
+    public CollisionShapeBehaviour(MtaServer server, IElementCollection elementCollection)
     {
         this.collisionShapes = new HashSet<CollisionShape>();
-        foreach (var collisionShape in elementRepository.GetByType<CollisionShape>(ElementType.Colshape))
+        foreach (var collisionShape in elementCollection.GetByType<CollisionShape>(ElementType.Colshape))
         {
             this.AddCollisionShape(collisionShape);
         }

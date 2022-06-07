@@ -9,17 +9,17 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Explosions;
 public class ExplosionPacketHandler : IPacketHandler<ExplosionPacket>
 {
     private readonly ISyncHandlerMiddleware<ExplosionPacket> middleware;
-    private readonly IElementCollection elementRepository;
+    private readonly IElementCollection elementCollection;
 
     public PacketId PacketId => PacketId.PACKET_ID_EXPLOSION;
 
     public ExplosionPacketHandler(
         ISyncHandlerMiddleware<ExplosionPacket> middleware,
-        IElementCollection elementRepository
+        IElementCollection elementCollection
     )
     {
         this.middleware = middleware;
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
     }
 
     public void HandlePacket(IClient client, ExplosionPacket packet)
@@ -29,7 +29,7 @@ public class ExplosionPacketHandler : IPacketHandler<ExplosionPacket>
 
         if (packet.OriginId != null)
         {
-            var explosionorigin = this.elementRepository.Get(packet.OriginId.Value);
+            var explosionorigin = this.elementCollection.Get(packet.OriginId.Value);
             if (explosionorigin != null)
             {
                 if (explosionorigin is Elements.Vehicle vehicle)

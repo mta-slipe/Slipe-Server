@@ -6,20 +6,20 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync;
 
 public class VehiclePushSyncPacketHandler : IPacketHandler<VehiclePushSyncPacket>
 {
-    private readonly IElementCollection elementRepository;
+    private readonly IElementCollection elementCollection;
 
     public PacketId PacketId => PacketId.PACKET_ID_VEHICLE_PUSH_SYNC;
 
     public VehiclePushSyncPacketHandler(
-        IElementCollection elementRepository
+        IElementCollection elementCollection
     )
     {
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
     }
 
     public void HandlePacket(IClient client, VehiclePushSyncPacket packet)
     {
-        if (this.elementRepository.Get(packet.ElementId) is Elements.Vehicle vehicle)
+        if (this.elementCollection.Get(packet.ElementId) is Elements.Vehicle vehicle)
         {
             vehicle.TriggerPushed(client.Player);
         }

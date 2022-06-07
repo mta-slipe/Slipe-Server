@@ -37,15 +37,15 @@ public class ConsoleLogger : ILogger
         [LogLevel.Critical] = new Tuple<ConsoleColor, string>(ConsoleColor.DarkRed, " [critical]"),
         [LogLevel.None] = new Tuple<ConsoleColor, string>(ConsoleColor.White, "        "),
     };
-    private readonly IElementCollection elementRepository;
+    private readonly IElementCollection elementCollection;
     private readonly DebugLog debugLog;
     private string prefix;
 
     private readonly ConcurrentQueue<Action> logActions;
 
-    public ConsoleLogger(IElementCollection elementRepository, DebugLog debugLog)
+    public ConsoleLogger(IElementCollection elementCollection, DebugLog debugLog)
     {
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
         this.debugLog = debugLog;
 
         this.logActions = new();
@@ -115,7 +115,7 @@ public class ConsoleLogger : ILogger
 
     private void OutputDebug(string message, DebugLevel level)
     {
-        var players = this.elementRepository.GetByType<Player>(ElementType.Player);
+        var players = this.elementCollection.GetByType<Player>(ElementType.Player);
         foreach (var player in players)
         {
             this.debugLog.OutputTo(player, message, level);

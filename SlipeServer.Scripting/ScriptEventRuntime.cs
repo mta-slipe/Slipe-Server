@@ -13,15 +13,15 @@ public class ScriptEventRuntime : IScriptEventRuntime
     private readonly List<RegisteredEventHandler> registeredEventHandlers;
     private readonly Dictionary<string, RegisteredEvent> registeredEvents;
     private readonly MtaServer server;
-    private readonly IElementCollection elementRepository;
+    private readonly IElementCollection elementCollection;
 
-    public ScriptEventRuntime(MtaServer server, IElementCollection elementRepository)
+    public ScriptEventRuntime(MtaServer server, IElementCollection elementCollection)
     {
         this.registeredEventHandlers = new List<RegisteredEventHandler>();
         this.registeredEvents = new Dictionary<string, RegisteredEvent>();
 
         this.server = server;
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
         this.server.ElementCreated += HandleElementCreation;
     }
 
@@ -78,7 +78,7 @@ public class ScriptEventRuntime : IScriptEventRuntime
 
         ScriptCallbackDelegateWrapper wrapper = new ScriptCallbackDelegateWrapper(elementCheckingDelegate, new());
 
-        foreach (var element in this.elementRepository.GetAll())
+        foreach (var element in this.elementCollection.GetAll())
         {
             if (registeredEvent.ElementType.IsAssignableFrom(element.GetType()))
             {

@@ -13,23 +13,23 @@ using SlipeServer.Server.ElementCollections;
 namespace SlipeServer.Server.Behaviour;
 
 /// <summary>
-/// Behaviour responsible for sending create entity packets for all elements in the repository on player join 
+/// Behaviour responsible for sending create entity packets for all elements in the collection on player join 
 /// </summary>
 public class PlayerJoinElementBehaviour
 {
-    private readonly IElementCollection elementRepository;
+    private readonly IElementCollection elementCollection;
     private readonly ILogger logger;
 
-    public PlayerJoinElementBehaviour(IElementCollection elementRepository, MtaServer server, ILogger logger)
+    public PlayerJoinElementBehaviour(IElementCollection elementCollection, MtaServer server, ILogger logger)
     {
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
         this.logger = logger;
         server.PlayerJoined += OnPlayerJoin;
     }
 
     private void OnPlayerJoin(Player player)
     {
-        var elements = this.elementRepository.GetAll();
+        var elements = this.elementCollection.GetAll();
         var packet = AddEntityPacketFactory.CreateAddEntityPacket(elements);
         player.Client.SendPacket(packet);
 
@@ -45,7 +45,7 @@ public class PlayerJoinElementBehaviour
 
         var packet = new PlayerQuitPacket(player.Id, (byte)e.Reason);
 
-        var otherPlayers = this.elementRepository
+        var otherPlayers = this.elementCollection
             .GetByType<Player>(ElementType.Player)
             .Where(p => p != player);
         packet.SendTo(otherPlayers);

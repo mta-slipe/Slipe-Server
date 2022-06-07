@@ -8,20 +8,20 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Player;
 
 public class PlayerWastedPacketHandler : IPacketHandler<PlayerWastedPacket>
 {
-    private readonly IElementCollection elementRepository;
+    private readonly IElementCollection elementCollection;
 
     public PacketId PacketId => PacketId.PACKET_ID_PLAYER_WASTED;
 
     public PlayerWastedPacketHandler(
-        IElementCollection elementRepository
+        IElementCollection elementCollection
     )
     {
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
     }
 
     public void HandlePacket(IClient client, PlayerWastedPacket packet)
     {
-        var damager = this.elementRepository.Get(packet.KillerId);
+        var damager = this.elementCollection.Get(packet.KillerId);
         client.Player.Kill(
             damager, (WeaponType)packet.WeaponType, (BodyPart)packet.BodyPart,
             packet.AnimationGroup, packet.AnimationId
