@@ -105,6 +105,9 @@ public class PhysicsWorldBuilder
                             this.logger.LogTrace($"Unable to locate dff {obj.ModelName}");
                         }
                     });
+                } else
+                {
+                    this.logger.LogTrace($"Unable to get dff {obj.ModelName} from img");
                 }
             }
         } else
@@ -196,6 +199,9 @@ public class PhysicsWorldBuilder
                         var euler = inst.Rotation.ToEuler();
                         euler = new Vector3(euler.X, euler.Y, -euler.Z);
                         world.AddStatic(mesh, inst.Position, euler.ToQuaternion());
+                    } else
+                    {
+                        this.logger.LogTrace("Dff not found for {dff}", inst.Id);
                     }
                 });
             } else
@@ -211,6 +217,9 @@ public class PhysicsWorldBuilder
                             euler = new Vector3(euler.X, euler.Y, -euler.Z);
                             world.AddStatic(mesh, inst.Position, euler.ToQuaternion());
                         }
+                    } else
+                    {
+                        this.logger.LogTrace("Col not found for {col}", inst.Id);
                     }
                 });
             }
@@ -245,6 +254,7 @@ public class PhysicsWorldBuilder
 
     private byte[]? GetAssetFromImg(string name)
     {
+        name = name.ToLower().Trim('\0');
         foreach (var img in this.imgs)
         {
             if (img.DataEntries.TryGetValue(name, out var value))
