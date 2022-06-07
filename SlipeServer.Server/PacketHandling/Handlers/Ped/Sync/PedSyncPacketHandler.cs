@@ -5,7 +5,7 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Handlers;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using System;
 using System.Collections.Generic;
 
@@ -13,12 +13,12 @@ namespace SlipeServer.Server.PacketHandling.QueueHandlers;
 
 public class PedSyncPacketHandler : IPacketHandler<PedSyncPacket>
 {
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementRepository;
     private readonly ISyncHandlerMiddleware<PedSyncPacket?> middleware;
 
     public PacketId PacketId => PacketId.PACKET_ID_PED_SYNC;
 
-    public PedSyncPacketHandler(IElementRepository elementRepository, ISyncHandlerMiddleware<PedSyncPacket?> middleware)
+    public PedSyncPacketHandler(IElementCollection elementRepository, ISyncHandlerMiddleware<PedSyncPacket?> middleware)
     {
         this.elementRepository = elementRepository;
         this.middleware = middleware;

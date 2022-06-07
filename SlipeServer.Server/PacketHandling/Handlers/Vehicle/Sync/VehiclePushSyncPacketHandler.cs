@@ -1,17 +1,17 @@
 ﻿using SlipeServer.Packets.Definitions.Vehicles;
 using SlipeServer.Packets.Enums;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync;
 
 public class VehiclePushSyncPacketHandler : IPacketHandler<VehiclePushSyncPacket>
 {
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementRepository;
 
     public PacketId PacketId => PacketId.PACKET_ID_VEHICLE_PUSH_SYNC;
 
     public VehiclePushSyncPacketHandler(
-        IElementRepository elementRepository
+        IElementCollection elementRepository
     )
     {
         this.elementRepository = elementRepository;

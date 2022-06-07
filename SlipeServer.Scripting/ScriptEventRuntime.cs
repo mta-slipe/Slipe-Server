@@ -1,7 +1,7 @@
 ﻿using SlipeServer.Scripting.EventDefinitions;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +13,9 @@ public class ScriptEventRuntime : IScriptEventRuntime
     private readonly List<RegisteredEventHandler> registeredEventHandlers;
     private readonly Dictionary<string, RegisteredEvent> registeredEvents;
     private readonly MtaServer server;
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementRepository;
 
-    public ScriptEventRuntime(MtaServer server, IElementRepository elementRepository)
+    public ScriptEventRuntime(MtaServer server, IElementCollection elementRepository)
     {
         this.registeredEventHandlers = new List<RegisteredEventHandler>();
         this.registeredEvents = new Dictionary<string, RegisteredEvent>();

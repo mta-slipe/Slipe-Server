@@ -5,21 +5,21 @@ using SlipeServer.Server.Constants;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using System.Numerics;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle;
 
 public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
 {
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementRepository;
     private readonly MtaServer server;
     private readonly ILogger logger;
 
     public PacketId PacketId => PacketId.PACKET_ID_VEHICLE_INOUT;
 
     public VehicleInOutPacketHandler(
-        IElementRepository elementRepository,
+        IElementCollection elementRepository,
         MtaServer server,
         ILogger logger
     )

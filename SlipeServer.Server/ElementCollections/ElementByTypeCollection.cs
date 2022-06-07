@@ -6,16 +6,16 @@ using System.Numerics;
 using SlipeServer.Server.Helpers;
 using System.Threading;
 
-namespace SlipeServer.Server.Repositories;
+namespace SlipeServer.Server.ElementCollections;
 
-public class ElementByTypeRepository : IElementRepository
+public class ElementByTypeCollection : IElementCollection
 {
     public int Count => this.elements.Count;
 
     private readonly Dictionary<ElementType, List<Element>> elements;
     private readonly ReaderWriterLockSlim slimLock = new();
 
-    public ElementByTypeRepository()
+    public ElementByTypeCollection()
     {
         this.elements = new Dictionary<ElementType, List<Element>>();
     }

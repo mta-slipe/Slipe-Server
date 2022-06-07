@@ -6,7 +6,7 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using System;
 using System.Linq;
 
@@ -16,14 +16,14 @@ public class PlayerPureSyncPacketHandler : IPacketHandler<PlayerPureSyncPacket>
 {
     private readonly ILogger logger;
     private readonly ISyncHandlerMiddleware<PlayerPureSyncPacket> pureSyncMiddleware;
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementRepository;
 
     public PacketId PacketId => PacketId.PACKET_ID_PLAYER_PURESYNC;
 
     public PlayerPureSyncPacketHandler(
         ILogger logger,
         ISyncHandlerMiddleware<PlayerPureSyncPacket> pureSyncMiddleware,
-        IElementRepository elementRepository
+        IElementCollection elementRepository
     )
     {
         this.logger = logger;

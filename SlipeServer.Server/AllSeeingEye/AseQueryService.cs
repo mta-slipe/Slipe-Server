@@ -2,7 +2,7 @@
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,12 +15,12 @@ public class AseQueryService : IAseQueryService
 {
     private readonly MtaServer mtaServer;
     private readonly Configuration configuration;
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementRepository;
     private readonly AseVersion aseVersion;
     private readonly BuildType buildType;
     private readonly Dictionary<string, string> rules;
 
-    public AseQueryService(MtaServer mtaServer, Configuration configuration, IElementRepository elementRepository)
+    public AseQueryService(MtaServer mtaServer, Configuration configuration, IElementCollection elementRepository)
     {
         this.mtaServer = mtaServer;
         this.configuration = configuration;

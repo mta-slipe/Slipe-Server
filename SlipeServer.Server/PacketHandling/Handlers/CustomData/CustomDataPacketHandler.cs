@@ -1,17 +1,17 @@
 ﻿using SlipeServer.Packets.Definitions.CustomElementData;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements.Enums;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.CustomData;
 public class CustomDataPacketHandler : IPacketHandler<CustomDataPacket>
 {
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementRepository;
 
     public PacketId PacketId => PacketId.PACKET_ID_CUSTOM_DATA;
 
     public CustomDataPacketHandler(
-        IElementRepository elementRepository
+        IElementCollection elementRepository
     )
     {
         this.elementRepository = elementRepository;

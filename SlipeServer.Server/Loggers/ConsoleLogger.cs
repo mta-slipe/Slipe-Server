@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Services;
 using System;
 using System.Collections.Concurrent;
@@ -37,13 +37,13 @@ public class ConsoleLogger : ILogger
         [LogLevel.Critical] = new Tuple<ConsoleColor, string>(ConsoleColor.DarkRed, " [critical]"),
         [LogLevel.None] = new Tuple<ConsoleColor, string>(ConsoleColor.White, "        "),
     };
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementRepository;
     private readonly DebugLog debugLog;
     private string prefix;
 
     private readonly ConcurrentQueue<Action> logActions;
 
-    public ConsoleLogger(IElementRepository elementRepository, DebugLog debugLog)
+    public ConsoleLogger(IElementCollection elementRepository, DebugLog debugLog)
     {
         this.elementRepository = elementRepository;
         this.debugLog = debugLog;

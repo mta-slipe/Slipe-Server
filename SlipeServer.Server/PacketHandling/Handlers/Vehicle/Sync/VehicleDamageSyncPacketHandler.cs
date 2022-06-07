@@ -2,7 +2,7 @@
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using System;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync;
@@ -10,13 +10,13 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync;
 public class VehicleDamageSyncPacketHandler : IPacketHandler<VehicleDamageSyncPacket>
 {
     private readonly ISyncHandlerMiddleware<VehicleDamageSyncPacket> middleware;
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementRepository;
 
     public PacketId PacketId => PacketId.PACKET_ID_VEHICLE_DAMAGE_SYNC;
 
     public VehicleDamageSyncPacketHandler(
         ISyncHandlerMiddleware<VehicleDamageSyncPacket> middleware,
-        IElementRepository elementRepository
+        IElementCollection elementRepository
     )
     {
         this.middleware = middleware;

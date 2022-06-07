@@ -2,7 +2,7 @@
 using SlipeServer.Server.Constants;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.IdGeneration;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using Xunit;
 
 namespace SlipeServer.Server.Tests.Unit.Elements.IdGeneration;
@@ -12,7 +12,7 @@ public class RepositoryBasedElementIdGeneratorTests
     [Fact]
     public void GetId_ShouldReturnUniqueIds()
     {
-        var repository = new ElementByIdRepository();
+        var repository = new ElementByIdCollection();
         var generator = new RepositoryBasedElementIdGenerator(repository);
 
         var first = generator.GetId();
@@ -27,7 +27,7 @@ public class RepositoryBasedElementIdGeneratorTests
     [Fact]
     public void GetId_ShouldReturnUnusedId()
     {
-        var repository = new ElementByIdRepository();
+        var repository = new ElementByIdCollection();
         var dummyElement = new DummyElement()
         {
             Id = 0
@@ -43,7 +43,7 @@ public class RepositoryBasedElementIdGeneratorTests
     [Fact]
     public void GetId_ShouldWrapAround()
     {
-        var repository = new ElementByIdRepository();
+        var repository = new ElementByIdCollection();
         var generator = new RepositoryBasedElementIdGenerator(repository);
 
         var first = generator.GetId();
@@ -65,7 +65,7 @@ public class RepositoryBasedElementIdGeneratorTests
     [Fact]
     public void GetId_ThrowsExceptionWhenOutOfElementIds()
     {
-        var repository = new ElementByIdRepository();
+        var repository = new ElementByIdCollection();
         var generator = new RepositoryBasedElementIdGenerator(repository);
 
         for (int i = 0; i < ElementConstants.MaxElementId - 1; i++)

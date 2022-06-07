@@ -6,7 +6,7 @@ using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.PacketHandling.Handlers.Player.Sync;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.TestTools;
 using System;
 using System.Numerics;
@@ -28,7 +28,7 @@ public class PureSyncPacketHandlerTests
         Mock<ISyncHandlerMiddleware<PlayerPureSyncPacket>> middlewareMock = new();
         middlewareMock.Setup(x => x.GetPlayersToSyncTo(sourcePlayer, It.IsAny<PlayerPureSyncPacket>())).Returns(otherPlayers);
 
-        Mock<IElementRepository> elementRepositoryMock = new();
+        Mock<IElementCollection> elementRepositoryMock = new();
 
         var handler = new PlayerPureSyncPacketHandler(loggerMock.Object, middlewareMock.Object, elementRepositoryMock.Object);
 
@@ -53,7 +53,7 @@ public class PureSyncPacketHandlerTests
         Mock<ISyncHandlerMiddleware<PlayerPureSyncPacket>> middlewareMock = new();
         middlewareMock.Setup(x => x.GetPlayersToSyncTo(sourcePlayer, It.IsAny<PlayerPureSyncPacket>())).Returns(otherPlayers);
 
-        Mock<IElementRepository> elementRepositoryMock = new();
+        Mock<IElementCollection> elementRepositoryMock = new();
 
         var handler = new PlayerPureSyncPacketHandler(loggerMock.Object, middlewareMock.Object, elementRepositoryMock.Object);
 
@@ -73,7 +73,7 @@ public class PureSyncPacketHandlerTests
 
         Mock<ILogger> loggerMock = new();
         Mock<ISyncHandlerMiddleware<PlayerPureSyncPacket>> middlewareMock = new();
-        Mock<IElementRepository> elementRepositoryMock = new();
+        Mock<IElementCollection> elementRepositoryMock = new();
 
         var handler = new PlayerPureSyncPacketHandler(loggerMock.Object, middlewareMock.Object, elementRepositoryMock.Object);
 

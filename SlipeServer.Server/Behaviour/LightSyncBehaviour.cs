@@ -2,7 +2,7 @@
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using System.Linq;
 using System.Timers;
 
@@ -10,13 +10,13 @@ namespace SlipeServer.Server.Behaviour;
 
 public class LightSyncBehaviour
 {
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementRepository;
     private readonly ISyncHandlerMiddleware<LightSyncBehaviour?> middleware;
 
     private readonly Timer timer;
 
     public LightSyncBehaviour(
-        IElementRepository elementRepository,
+        IElementCollection elementRepository,
         ISyncHandlerMiddleware<LightSyncBehaviour?> middleware,
         Configuration configuration)
     {

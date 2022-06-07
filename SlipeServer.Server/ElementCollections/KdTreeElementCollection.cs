@@ -9,15 +9,15 @@ using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Helpers;
 using System.Threading;
 
-namespace SlipeServer.Server.Repositories;
+namespace SlipeServer.Server.ElementCollections;
 
-public class KdTreeElementRepository : IElementRepository
+public class KdTreeElementCollection : IElementCollection
 {
     public int Count => throw new NotImplementedException();
     private readonly KdTree<float, Element> elements;
     private readonly ReaderWriterLockSlim slimLock = new();
 
-    public KdTreeElementRepository()
+    public KdTreeElementCollection()
     {
         this.elements = new KdTree<float, Element>(dimensions: 3, new FloatMath());
     }

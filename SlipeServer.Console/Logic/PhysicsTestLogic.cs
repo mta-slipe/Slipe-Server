@@ -7,7 +7,7 @@ using SlipeServer.Physics.Worlds;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Extensions;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Services;
 using System;
 using System.Collections.Generic;
@@ -23,7 +23,7 @@ namespace SlipeServer.Console.Logic;
 public class PhysicsTestLogic
 {
     private readonly MtaServer server;
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementRepository;
     private readonly PhysicsService physicsService;
     private readonly CommandService commandService;
     private readonly ILogger logger;
@@ -37,7 +37,7 @@ public class PhysicsTestLogic
 
     public PhysicsTestLogic(
         MtaServer server,
-        IElementRepository elementRepository,
+        IElementCollection elementRepository,
         PhysicsService physicsService,
         CommandService commandService,
         ILogger logger)

@@ -1,6 +1,6 @@
 ﻿using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Packets.Enums;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Player.Sync;
 
@@ -8,10 +8,10 @@ public class CameraSyncPacketHandler : IPacketHandler<CameraSyncPacket>
 {
     public PacketId PacketId => PacketId.PACKET_ID_CAMERA_SYNC;
 
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementRepository;
 
     public CameraSyncPacketHandler(
-        IElementRepository elementRepository
+        IElementCollection elementRepository
     )
     {
         this.elementRepository = elementRepository;

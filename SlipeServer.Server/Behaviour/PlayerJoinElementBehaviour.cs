@@ -8,7 +8,7 @@ using MTAServerWrapper.Packets.Outgoing.Connection;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Factories;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 
 namespace SlipeServer.Server.Behaviour;
 
@@ -17,10 +17,10 @@ namespace SlipeServer.Server.Behaviour;
 /// </summary>
 public class PlayerJoinElementBehaviour
 {
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementRepository;
     private readonly ILogger logger;
 
-    public PlayerJoinElementBehaviour(IElementRepository elementRepository, MtaServer server, ILogger logger)
+    public PlayerJoinElementBehaviour(IElementCollection elementRepository, MtaServer server, ILogger logger)
     {
         this.elementRepository = elementRepository;
         this.logger = logger;

@@ -1,5 +1,5 @@
 ﻿using SlipeServer.Server.Constants;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,10 +8,10 @@ namespace SlipeServer.Server.Elements.IdGeneration;
 
 public class RepositoryBasedElementIdGenerator : IElementIdGenerator
 {
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementRepository;
     private uint idCounter;
 
-    public RepositoryBasedElementIdGenerator(IElementRepository elementRepository)
+    public RepositoryBasedElementIdGenerator(IElementCollection elementRepository)
     {
         this.idCounter = 1;
         this.elementRepository = elementRepository;

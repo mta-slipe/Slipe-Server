@@ -8,7 +8,7 @@ using System.Linq;
 using System.Numerics;
 using System.Threading;
 
-namespace SlipeServer.Server.Repositories;
+namespace SlipeServer.Server.ElementCollections;
 
 internal class RTreeRef : ISpatialData
 {
@@ -33,14 +33,14 @@ internal class RTreeRef : ISpatialData
     public ref readonly Envelope Envelope => ref this.envelope;
 }
 
-public class RTreeElementRepository : IElementRepository
+public class RTreeElementCollection : IElementCollection
 {
     public int Count => this.elements.Count;
     private readonly RBush<RTreeRef> elements;
     private readonly ConcurrentDictionary<Element, RTreeRef> elementRefs;
     private readonly ReaderWriterLockSlim slimLock = new();
 
-    public RTreeElementRepository()
+    public RTreeElementCollection()
     {
         this.elements = new();
         this.elementRefs = new();

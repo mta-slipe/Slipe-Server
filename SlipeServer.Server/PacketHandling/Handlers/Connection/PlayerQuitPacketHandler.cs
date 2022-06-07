@@ -4,18 +4,18 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Factories;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using System.Linq;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Connection;
 
 public class PlayerQuitPacketHandler : IPacketHandler<PlayerQuitPacket>
 {
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementRepository;
 
     public PacketId PacketId => PacketId.PACKET_ID_PLAYER_QUIT;
 
-    public PlayerQuitPacketHandler(IElementRepository elementRepository)
+    public PlayerQuitPacketHandler(IElementCollection elementRepository)
     {
         this.elementRepository = elementRepository;
     }

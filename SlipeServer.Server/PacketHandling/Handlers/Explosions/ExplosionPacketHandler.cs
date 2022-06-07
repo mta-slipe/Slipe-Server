@@ -2,20 +2,20 @@
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Explosions;
 
 public class ExplosionPacketHandler : IPacketHandler<ExplosionPacket>
 {
     private readonly ISyncHandlerMiddleware<ExplosionPacket> middleware;
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementRepository;
 
     public PacketId PacketId => PacketId.PACKET_ID_EXPLOSION;
 
     public ExplosionPacketHandler(
         ISyncHandlerMiddleware<ExplosionPacket> middleware,
-        IElementRepository elementRepository
+        IElementCollection elementRepository
     )
     {
         this.middleware = middleware;

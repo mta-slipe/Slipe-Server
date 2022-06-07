@@ -1,16 +1,16 @@
 ﻿using SlipeServer.Packets.Definitions.Pickups;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Extensions;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 
 namespace SlipeServer.Server.Behaviour;
 
 public class PickupBehaviour
 {
     private readonly MtaServer server;
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementRepository;
 
-    public PickupBehaviour(MtaServer server, IElementRepository elementRepository)
+    public PickupBehaviour(MtaServer server, IElementCollection elementRepository)
     {
         this.server = server;
         this.elementRepository = elementRepository;

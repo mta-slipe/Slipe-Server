@@ -2,7 +2,7 @@
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Extensions;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 
 namespace SlipeServer.Server.Behaviour;
 
@@ -10,7 +10,7 @@ public class CustomDataBehaviour
 {
     private readonly MtaServer server;
 
-    public CustomDataBehaviour(MtaServer server, IElementRepository elementRepository)
+    public CustomDataBehaviour(MtaServer server, IElementCollection elementRepository)
     {
         server.ElementCreated += HandleElementCreation;
         this.server = server;

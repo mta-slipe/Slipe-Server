@@ -8,7 +8,7 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Factories;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using System;
 using System.Linq;
 
@@ -18,7 +18,7 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
 {
     public PacketId PacketId => PacketId.PACKET_ID_RPC;
 
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementRepository;
     private readonly Configuration configuration;
     private readonly ILogger logger;
     private readonly MtaServer server;
@@ -29,7 +29,7 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
         ILogger logger,
         MtaServer server,
         RootElement root,
-        IElementRepository elementRepository,
+        IElementCollection elementRepository,
         Configuration configuration
     )
     {

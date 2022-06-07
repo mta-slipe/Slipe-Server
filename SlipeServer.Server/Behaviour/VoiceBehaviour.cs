@@ -7,13 +7,13 @@ using SlipeServer.Packets.Definitions.Voice;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Extensions;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 
 namespace SlipeServer.Server.Behaviour;
 
 public class VoiceBehaviour
 {
-    public VoiceBehaviour(MtaServer server, IElementRepository elementRepository)
+    public VoiceBehaviour(MtaServer server, IElementCollection elementRepository)
     {
         server.PlayerJoined += (player) =>
         {

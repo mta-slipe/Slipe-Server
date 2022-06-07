@@ -3,7 +3,7 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Factories;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using System.Linq;
 using System.Numerics;
 
@@ -15,9 +15,9 @@ namespace SlipeServer.Server.Behaviour;
 public class ElementPacketBehaviour
 {
     private readonly MtaServer server;
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementRepository;
 
-    public ElementPacketBehaviour(MtaServer server, IElementRepository elementRepository)
+    public ElementPacketBehaviour(MtaServer server, IElementCollection elementRepository)
     {
         this.server = server;
         this.elementRepository = elementRepository;

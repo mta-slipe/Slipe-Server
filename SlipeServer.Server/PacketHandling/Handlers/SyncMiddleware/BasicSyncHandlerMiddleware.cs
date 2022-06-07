@@ -1,5 +1,5 @@
 ﻿using SlipeServer.Server.Elements;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,9 +7,9 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Middleware;
 
 public class BasicSyncHandlerMiddleware<TData> : ISyncHandlerMiddleware<TData>
 {
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementRepository;
 
-    public BasicSyncHandlerMiddleware(IElementRepository elementRepository)
+    public BasicSyncHandlerMiddleware(IElementCollection elementRepository)
     {
         this.elementRepository = elementRepository;
     }

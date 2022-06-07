@@ -2,7 +2,7 @@
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Events;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Services;
 using System.Linq;
 
@@ -13,13 +13,13 @@ public class ParachuteLogic
     private readonly MtaServer server;
     private readonly LuaEventService luaEventService;
     private readonly ILogger logger;
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementRepository;
     private readonly ParachuteResource resource;
 
     public ParachuteLogic(MtaServer server,
         LuaEventService luaEventService,
         ILogger logger,
-        IElementRepository elementRepository)
+        IElementCollection elementRepository)
     {
         this.server = server;
         this.luaEventService = luaEventService;

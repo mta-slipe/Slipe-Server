@@ -4,7 +4,7 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Events;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.Mappers;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Resources;
 using System;
 using System.Collections.Generic;
@@ -17,14 +17,14 @@ public class LuaEventService
     private readonly MtaServer server;
     private readonly RootElement root;
     private readonly LatentPacketService latentPacketService;
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementRepository;
     private readonly LuaValueMapper mapper;
     private readonly Dictionary<string, List<Action<LuaEvent>>> eventHandlers;
 
     public LuaEventService(MtaServer server,
         RootElement root,
         LatentPacketService latentPacketService,
-        IElementRepository elementRepository,
+        IElementCollection elementRepository,
         LuaValueMapper mapper)
     {
         this.server = server;

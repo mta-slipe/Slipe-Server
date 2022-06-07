@@ -15,7 +15,7 @@ using SlipeServer.Server.Mappers;
 using SlipeServer.Server.PacketHandling;
 using SlipeServer.Server.PacketHandling.Handlers;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.Resources.Serving;
@@ -37,7 +37,7 @@ public class MtaServer
     protected readonly Dictionary<INetWrapper, Dictionary<uint, IClient>> clients;
     protected readonly ServiceCollection serviceCollection;
     protected readonly ServiceProvider serviceProvider;
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementRepository;
     private readonly IElementIdGenerator? elementIdGenerator;
     private readonly IResourceProvider resourceProvider;
     private readonly RootElement root;
@@ -81,7 +81,7 @@ public class MtaServer
         foreach (var server in this.resourceServers)
             server.Start();
 
-        this.elementRepository = this.serviceProvider.GetRequiredService<IElementRepository>();
+        this.elementRepository = this.serviceProvider.GetRequiredService<IElementCollection>();
         this.elementIdGenerator = this.serviceProvider.GetService<IElementIdGenerator>();
         this.resourceProvider = this.serviceProvider.GetRequiredService<IResourceProvider>();
 
@@ -229,7 +229,7 @@ public class MtaServer
 
     protected virtual void SetupDependencies(Action<ServiceCollection>? dependencyCallback)
     {
-        this.serviceCollection.AddSingleton<IElementRepository, RTreeCompoundElementRepository>();
+        this.serviceCollection.AddSingleton<IElementCollection, RTreeCompoundElementCollection>();
         this.serviceCollection.AddSingleton<ILogger, DefaultLogger>();
         this.serviceCollection.AddSingleton<IResourceProvider, FileSystemResourceProvider>();
         this.serviceCollection.AddSingleton<IElementIdGenerator, RepositoryBasedElementIdGenerator>();

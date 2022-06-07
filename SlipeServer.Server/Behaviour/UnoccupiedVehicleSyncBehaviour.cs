@@ -2,7 +2,7 @@
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Factories;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using System.Linq;
 using System.Numerics;
 using System.Timers;
@@ -11,13 +11,13 @@ namespace SlipeServer.Server.Behaviour;
 
 public class UnoccupiedVehicleSyncBehaviour
 {
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementRepository;
     private readonly Configuration configuration;
     private readonly Timer timer;
 
     public UnoccupiedVehicleSyncBehaviour(
         MtaServer server,
-        IElementRepository elementRepository,
+        IElementCollection elementRepository,
         Configuration configuration)
     {
         this.elementRepository = elementRepository;

@@ -1,6 +1,6 @@
 ﻿using SlipeServer.Packets.Definitions.Ped;
 using SlipeServer.Server.Elements;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using System.Linq;
 using System.Numerics;
 using System.Timers;
@@ -9,13 +9,13 @@ namespace SlipeServer.Server.Behaviour;
 
 public class PedSyncBehaviour
 {
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementRepository;
     private readonly Configuration configuration;
     private readonly Timer timer;
 
     public PedSyncBehaviour(
         MtaServer server,
-        IElementRepository elementRepository,
+        IElementCollection elementRepository,
         Configuration configuration)
     {
         this.elementRepository = elementRepository;

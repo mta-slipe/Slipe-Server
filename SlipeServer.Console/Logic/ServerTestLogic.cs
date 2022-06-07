@@ -14,7 +14,7 @@ using SlipeServer.Server.Elements.Structs;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Events;
 using SlipeServer.Server.PacketHandling.Factories;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.Services;
@@ -34,7 +34,7 @@ namespace SlipeServer.Console.Logic;
 public class ServerTestLogic
 {
     private readonly MtaServer<CustomPlayer> server;
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementRepository;
     private readonly RootElement root;
     private readonly GameWorld worldService;
     private readonly DebugLog debugLog;
@@ -72,7 +72,7 @@ public class ServerTestLogic
 
     public ServerTestLogic(
         MtaServer<CustomPlayer> server,
-        IElementRepository elementRepository,
+        IElementCollection elementRepository,
         RootElement root,
         GameWorld world,
         DebugLog debugLog,

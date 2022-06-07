@@ -1,21 +1,21 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Lua.Event;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using System.Linq;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Lua;
 
 public class LuaEventPacketHandler : IPacketHandler<LuaEventPacket>
 {
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementRepository;
     private readonly ILogger logger;
     private readonly MtaServer server;
 
     public PacketId PacketId => PacketId.PACKET_ID_LUA_EVENT;
 
     public LuaEventPacketHandler(
-        IElementRepository elementRepository,
+        IElementCollection elementRepository,
         ILogger logger,
         MtaServer server
     )

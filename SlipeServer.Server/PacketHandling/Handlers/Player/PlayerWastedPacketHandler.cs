@@ -2,18 +2,18 @@
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Player;
 
 public class PlayerWastedPacketHandler : IPacketHandler<PlayerWastedPacket>
 {
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementRepository;
 
     public PacketId PacketId => PacketId.PACKET_ID_PLAYER_WASTED;
 
     public PlayerWastedPacketHandler(
-        IElementRepository elementRepository
+        IElementCollection elementRepository
     )
     {
         this.elementRepository = elementRepository;

@@ -4,17 +4,17 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Extensions;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 
 namespace SlipeServer.Server.Behaviour;
 
 public class PlayerBehaviour
 {
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementRepository;
     private readonly MtaServer server;
     private readonly ILogger logger;
 
-    public PlayerBehaviour(IElementRepository elementRepository, MtaServer server, ILogger logger)
+    public PlayerBehaviour(IElementCollection elementRepository, MtaServer server, ILogger logger)
     {
         this.elementRepository = elementRepository;
         this.server = server;

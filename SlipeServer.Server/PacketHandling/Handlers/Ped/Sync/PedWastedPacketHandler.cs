@@ -3,17 +3,17 @@ using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.PacketHandling.Handlers;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers;
 
 public class PedWastedPacketHandler : IPacketHandler<PedWastedPacket>
 {
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementRepository;
 
     public PacketId PacketId => PacketId.PACKET_ID_PED_WASTED;
 
-    public PedWastedPacketHandler(IElementRepository elementRepository)
+    public PedWastedPacketHandler(IElementCollection elementRepository)
     {
         this.elementRepository = elementRepository;
     }
