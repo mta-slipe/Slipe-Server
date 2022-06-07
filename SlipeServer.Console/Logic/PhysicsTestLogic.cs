@@ -8,6 +8,7 @@ using SlipeServer.Physics.Worlds;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Extensions;
+using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Services;
 using System;
 using System.Collections.Generic;
@@ -18,54 +19,73 @@ using System.IO;
 using System.Numerics;
 using System.Runtime.InteropServices;
 
-namespace SlipeServer.Console.Logic
+namespace SlipeServer.Console.Logic;
+
+public class PhysicsTestLogic
 {
-    public class PhysicsTestLogic
+    private readonly MtaServer server;
+    private readonly IElementCollection elementCollection;
+    private readonly PhysicsService physicsService;
+    private readonly CommandService commandService;
+    private readonly ILogger logger;
+
+    private PhysicsWorld? physicsWorld;
+    private StaticPhysicsElement? ufoInnMesh1;
+    private StaticPhysicsElement? ufoInnMesh2;
+    private StaticPhysicsElement? army;
+    private ConvexPhysicsMesh cylinder;
+    private ConvexPhysicsMesh ball;
+
+    public PhysicsTestLogic(
+        MtaServer server,
+        IElementCollection elementCollection,
+        PhysicsService physicsService,
+        CommandService commandService,
+        ILogger logger)
     {
-        private readonly MtaServer server;
-        private readonly ILogger logger;
-        private readonly PhysicsWorld physicsWorld;
+        this.server = server;
+        this.elementCollection = elementCollection;
+        this.physicsService = physicsService;
+        this.commandService = commandService;
+        this.logger = logger;
 
-        private StaticPhysicsElement? ufoInnMesh1;
-        private StaticPhysicsElement? ufoInnMesh2;
-        private StaticPhysicsElement? army;
-        private ConvexPhysicsMesh cylinder;
-        private ConvexPhysicsMesh ball;
+        this.commandService.AddCommand("physics").Triggered += (source, args) => InitEmpty();
+        this.commandService.AddCommand("physicshighres").Triggered += (source, args) => InitFullDff();
+        this.commandService.AddCommand("physicslowres").Triggered += (source, args) => InitFullCol();
+    }
 
-        public PhysicsTestLogic(MtaServer server, PhysicsService physicsService, CommandService commandService, ILogger logger)
+    private void InitEmpty()
+    {
+        this.physicsWorld = this.physicsService.CreateEmptyPhysicsWorld(new Vector3(0, 0, -1f));
+        this.Init();
+    }
+
+    private void InitFullDff()
+    {
+        string? gtaDirectory = GetGtasaDirectory();
+        this.physicsWorld = this.physicsService.CreatePhysicsWorldFromGtaDirectory(gtaDirectory ?? "gtasa", "gta.dat", PhysicsModelLoadMode.Dff, builderAction: (builder) =>
         {
-            this.server = server;
-            this.logger = logger;
+            builder.SetGravity(Vector3.UnitZ * -1.0f);
+        });
+        this.Init();
+    }
 
-            string? gtaDirectory = GetGtasaDirectory();
-
-            this.physicsWorld = physicsService.CreateEmptyPhysicsWorld(new Vector3(0, 0, -1f));
-            //this.physicsWorld = physicsService.CreatePhysicsWorldFromGtaDirectory(gtaDirectory ?? "gtasa", "gta.dat", PhysicsModelLoadMode.Col, builderAction: (builder) =>
-            //{
-            //    builder.SetGravity(Vector3.UnitZ * -1.0f);
-            //});
-
-            server.PlayerJoined += HandlePlayerJoin;
-            commandService.AddCommand("ray").Triggered += HandleRayCommand;
-            commandService.AddCommand("rayme").Triggered += HandleRayMeCommand;
-            commandService.AddCommand("ball").Triggered += HandleBallCommand;
-            commandService.AddCommand("startsim").Triggered += HandleStartSimCommand;
-            commandService.AddCommand("stopsim").Triggered += HandleStopSimCommand;
-            commandService.AddCommand("heightmap").Triggered += (s, a) => GenerateRaycastedHeightMap();
-
-            Init();
-            GenerateRaycastedImage(new Vector3(50, 0, 3));
-        }
-
-        private void HandlePlayerJoin(Player player)
+    private void InitFullCol()
+    {
+        string? gtaDirectory = GetGtasaDirectory();
+        this.physicsWorld = this.physicsService.CreatePhysicsWorldFromGtaDirectory(gtaDirectory ?? "gtasa", "gta.dat", PhysicsModelLoadMode.Col, builderAction: (builder) =>
         {
-            var playerElement = this.physicsWorld.AddKinematicBody(this.cylinder, player.Position, player.Rotation.ToQuaternion());
-            playerElement.CoupleWith(player, Vector3.Zero, new Vector3(0, 90, 0));
+            builder.SetGravity(Vector3.UnitZ * -1.0f);
+        });
+        this.Init();
+    }
 
-            player.Disconnected += (_, _) => this.physicsWorld.Destroy(playerElement);
-        }
+    private void Init()
+    {
+        if (this.physicsWorld == null)
+            return;
 
-        private void Init()
+        try
         {
             var img = this.physicsWorld.LoadImg(Path.Join(GetGtasaDirectory(), @"models\gta3.img"));
             var ufoInnMeshes = this.physicsWorld.CreateMesh(img, "countn2_20.col", "des_ufoinn");
@@ -85,128 +105,160 @@ namespace SlipeServer.Console.Logic
 
             this.cylinder = this.physicsWorld.CreateCylinder(0.35f, 1.8f);
             this.ball = this.physicsWorld.CreateSphere(0.25f);
-        }
 
-        private void HandleRayCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
-        {
-            GenerateRaycastedImage(new Vector3(50, 0, 3));
-        }
+            this.commandService.AddCommand("ray").Triggered += HandleRayCommand;
+            this.commandService.AddCommand("rayme").Triggered += HandleRayMeCommand;
+            this.commandService.AddCommand("ball").Triggered += HandleBallCommand;
+            this.commandService.AddCommand("startsim").Triggered += HandleStartSimCommand;
+            this.commandService.AddCommand("stopsim").Triggered += HandleStopSimCommand;
+            this.commandService.AddCommand("heightmap").Triggered += (s, a) => GenerateRaycastedHeightMap();
 
-        private void HandleRayMeCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
-        {
-            GenerateRaycastedImage(e.Player.Position);
+            this.server.PlayerJoined += HandlePlayerJoin;
+            foreach (var player in this.elementCollection.GetByType<Player>())
+                HandlePlayerJoin(player);
         }
-
-        private void HandleBallCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
+        catch (IOException)
         {
-            var physicsBall = this.physicsWorld.AddDynamicBody(this.ball, e.Player.Position, Quaternion.Identity, 1);
-            var ball = new WorldObject(2114, e.Player.Position + Vector3.UnitZ * 2).AssociateWith(this.server);
-            physicsBall.CoupleWith(ball);
+            this.logger.LogWarning("Failed to open gta3.img\nIf you're running MTA consider creating a copy of your GTA:SA directory and creating an environment variable named \"Slipe.GtaSAPath\" pointing to the path");
         }
+    }
 
-        private void HandleStartSimCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
-        {
-            this.physicsWorld.Start(5);
-        }
+    private void HandlePlayerJoin(Player player)
+    {
+        if (this.physicsWorld == null)
+            return;
 
-        private void HandleStopSimCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
-        {
-            this.physicsWorld.Stop();
-        }
+        var playerElement = this.physicsWorld.AddKinematicBody(this.cylinder, player.Position, player.Rotation.ToQuaternion());
+        playerElement.CoupleWith(player, Vector3.Zero, new Vector3(0, 90, 0));
 
-        private void GenerateRaycastedImage(Vector3 position)
+        player.Disconnected += (_, _) => this.physicsWorld.Destroy(playerElement);
+    }
+
+    private void HandleRayCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
+    {
+        GenerateRaycastedImage(new Vector3(50, 0, 3));
+    }
+
+    private void HandleRayMeCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
+    {
+        GenerateRaycastedImage(e.Player.Position);
+    }
+
+    private void HandleBallCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
+    {
+        if (this.physicsWorld == null)
+            return;
+
+        var physicsBall = this.physicsWorld.AddDynamicBody(this.ball, e.Player.Position, Quaternion.Identity, 1);
+        var ball = new WorldObject(2114, e.Player.Position + Vector3.UnitZ * 2).AssociateWith(this.server);
+        physicsBall.CoupleWith(ball);
+    }
+
+    private void HandleStartSimCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
+    {
+        this.physicsWorld?.Start(5);
+    }
+
+    private void HandleStopSimCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
+    {
+        this.physicsWorld?.Stop();
+    }
+
+    private void GenerateRaycastedImage(Vector3 position)
+    {
+        if (this.physicsWorld == null)
+            return;
+
+        static IEnumerable<Color> GetColors()
         {
-            static IEnumerable<Color> GetColors()
+            yield return Color.Red;
+            yield return Color.Green;
+            yield return Color.Blue;
+
+            var random = new Random();
+            while (true)
             {
-                yield return Color.Red;
-                yield return Color.Green;
-                yield return Color.Blue;
-
-                var random = new Random();
-                while (true)
-                {
-                    yield return Color.FromArgb(255, (byte)random.Next(255), (byte)random.Next(255), (byte)random.Next(255));
-                }
+                yield return Color.FromArgb(255, (byte)random.Next(255), (byte)random.Next(255), (byte)random.Next(255));
             }
+        }
 
-            var width = 1200;
-            var height = 1200;
-            var depth = 50f;
-            var pixelSize = 0.025f;
+        var width = 1200;
+        var height = 1200;
+        var depth = 50f;
+        var pixelSize = 0.025f;
 
-            var direction = new Vector3(0, 1, 0);
+        var direction = new Vector3(0, 1, 0);
 
-            var colors = GetColors().GetEnumerator();
-            var colorPerCollidable = new Dictionary<CollidableReference, Color>();
+        var colors = GetColors().GetEnumerator();
+        var colorPerCollidable = new Dictionary<CollidableReference, Color>();
 
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-            Bitmap output = new Bitmap(width, height);
-            for (int x = 0; x < width; x++)
+        var stopwatch = new Stopwatch();
+        stopwatch.Start();
+        using var output = new Bitmap(width, height);
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
             {
-                for (int y = 0; y < height; y++)
+                var from = position + new Vector3(x * pixelSize - 0.5f * width * pixelSize, -25, y * pixelSize - 0.5f * width * pixelSize);
+                var hit = this.physicsWorld.RayCast(from, direction, depth);
+                if (hit.HasValue)
                 {
-                    var from = position + new Vector3(x * pixelSize - 0.5f * width * pixelSize, -25, y * pixelSize - 0.5f * width * pixelSize);
-                    var hit = this.physicsWorld.RayCast(from, direction, depth);
-                    if (hit.HasValue)
+                    var intensity = 255 - (byte)(hit.Value.distance / depth * 255);
+                    if (!colorPerCollidable.ContainsKey(hit.Value.Collidable))
                     {
-                        var intensity = 255 - (byte)(hit.Value.distance / depth * 255);
-                        if (!colorPerCollidable.ContainsKey(hit.Value.Collidable))
-                        {
-                            colors.MoveNext();
-                            colorPerCollidable[hit.Value.Collidable] = colors.Current;
-                        }
-                        var color = Color.FromArgb(intensity, colorPerCollidable[hit.Value.Collidable]);
-                        output.SetPixel(x, height - y - 1, color);
+                        colors.MoveNext();
+                        colorPerCollidable[hit.Value.Collidable] = colors.Current;
                     }
+                    var color = Color.FromArgb(intensity, colorPerCollidable[hit.Value.Collidable]);
+                    output.SetPixel(x, height - y - 1, color);
                 }
             }
-            stopwatch.Stop();
-            var time = stopwatch.Elapsed;
-            this.logger.LogInformation($"Raycast image generated in {time.TotalMilliseconds}ms");
-
-            output.Save("rayresult.png", ImageFormat.Png);
         }
+        stopwatch.Stop();
+        var time = stopwatch.Elapsed;
+        this.logger.LogInformation("Raycast image generated in {time}ms", time.TotalMilliseconds);
+        output.Save("rayresult.png", ImageFormat.Png);
+    }
 
-        private void GenerateRaycastedHeightMap()
+    private void GenerateRaycastedHeightMap()
+    {
+        var width = 6000;
+        var height = 6000;
+        var depth = 500f;
+
+        var direction = new Vector3(0, 0, -1);
+
+        using var output = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+        for (int x = 0; x < width; x++)
         {
-            var width = 6000;
-            var height = 6000;
-            var depth = 900f;
-
-            var direction = new Vector3(0, 0, -1);
-
-            Bitmap output = new Bitmap(width, height);
-            for (int x = 0; x < width; x++)
+            for (int y = 0; y < height; y++)
             {
-                for (int y = 0; y < height; y++)
+                var from = new Vector3(x - width / 2, y - height / 2, 400);
+                var hit = this.physicsWorld!.RayCast(from, direction, depth);
+                if (hit.HasValue)
                 {
-                    var from = new Vector3(x - width / 2, y - height / 2, 800);
-                    var hit = this.physicsWorld.RayCast(from, direction, depth);
-                    if (hit.HasValue)
-                    {
-                        var intensity = 255 - (byte)(hit.Value.distance / depth * 255);
-                        var color = Color.FromArgb(255, intensity, intensity, intensity);
-                        output.SetPixel(x, height - y - 1, color);
-                    }
+                    var max = 256 * 3;
+                    var intensity = max - (hit.Value.distance / depth * max);
+                    var color = Color.FromArgb(255, (int)Math.Clamp(intensity, 0, 255), (int)Math.Clamp(intensity - 256, 0, 255), (int)Math.Clamp(intensity - 512, 0, 255));
+                    output.SetPixel(x, height - y - 1, color);
                 }
             }
-            this.logger.LogInformation($"Heightmap generated");
-
-            output.Save("heightmap.png", ImageFormat.Png);
         }
+        this.logger.LogInformation($"Heightmap generated");
 
-        private string? GetGtasaDirectory()
+        output.Save("heightmap.png", ImageFormat.Png);
+    }
+
+    private string? GetGtasaDirectory()
+    {
+        string? gtaDirectory = Environment.GetEnvironmentVariable("Slipe.GtaSAPath");
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && gtaDirectory == null)
         {
-            string? gtaDirectory = Environment.GetEnvironmentVariable("Slipe.GtaSAPath");
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && gtaDirectory == null)
-            {
-                using var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Multi Theft Auto: San Andreas All\Common");
-                gtaDirectory = key?.GetValue("GTA:SA Path")?.ToString();
-            }
-
-            return gtaDirectory;
+            using var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Multi Theft Auto: San Andreas All\Common");
+            gtaDirectory = key?.GetValue("GTA:SA Path")?.ToString();
         }
+
+        return gtaDirectory;
     }
 }

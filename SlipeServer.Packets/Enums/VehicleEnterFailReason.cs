@@ -1,15 +1,14 @@
-﻿namespace SlipeServer.Packets.Enums
+﻿namespace SlipeServer.Packets.Enums;
+
+public enum VehicleEnterFailReason
 {
-    public enum VehicleEnterFailReason
-    {
-        Invalid = 0,
-        Script,
-        Script2,
-        JackedAction,
-        Seat,
-        Distance,
-        InVehicle,
-        Action,
-        Trailer,
-    }
+    Invalid = 0,
+    Script,
+    Script2,
+    JackedAction,
+    Seat,
+    Distance,
+    InVehicle,
+    Action,
+    Trailer,
 }

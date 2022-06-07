@@ -2,24 +2,23 @@
 using SlipeServer.Packets.Definitions.Join;
 using SlipeServer.Packets.Enums;
 
-namespace SlipeServer.Server.PacketHandling.Handlers.Connection
+namespace SlipeServer.Server.PacketHandling.Handlers.Connection;
+
+public class JoinedGamePacketHandler : IPacketHandler<JoinedGamePacket>
 {
-    public class JoinedGamePacketHandler : IPacketHandler<JoinedGamePacket>
+    public PacketId PacketId => PacketId.PACKET_ID_PLAYER_JOIN;
+
+    private readonly ushort bitStreamVersion;
+
+    public JoinedGamePacketHandler(
+        Configuration configuration
+    )
     {
-        public PacketId PacketId => PacketId.PACKET_ID_PLAYER_JOIN;
+        this.bitStreamVersion = configuration.BitStreamVersion;
+    }
 
-        private readonly ushort bitStreamVersion;
-
-        public JoinedGamePacketHandler(
-            Configuration configuration
-        )
-        {
-            this.bitStreamVersion = configuration.BitStreamVersion;
-        }
-
-        public void HandlePacket(Client client, JoinedGamePacket packet)
-        {
-            client.SendPacket(new ModNamePacket(this.bitStreamVersion, "deathmatch"));
-        }
+    public void HandlePacket(IClient client, JoinedGamePacket packet)
+    {
+        client.SendPacket(new ModNamePacket(this.bitStreamVersion, "deathmatch"));
     }
 }

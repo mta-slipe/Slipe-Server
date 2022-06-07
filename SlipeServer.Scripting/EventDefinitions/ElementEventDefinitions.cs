@@ -1,24 +1,23 @@
 ﻿using SlipeServer.Server.Elements;
 using System;
 
-namespace SlipeServer.Scripting.EventDefinitions
+namespace SlipeServer.Scripting.EventDefinitions;
+
+public class ElementEventDefinitions : IEventDefinitions
 {
-    public class ElementEventDefinitions: IEventDefinitions
+    public void LoadInto(IScriptEventRuntime eventRuntime)
     {
-        public void LoadInto(IScriptEventRuntime eventRuntime)
-        {
-            eventRuntime.RegisterEvent<Element>(
-                "onElementDestroyed",
-                (element, callback) =>
+        eventRuntime.RegisterEvent<Element>(
+            "onElementDestroyed",
+            (element, callback) =>
+            {
+                void callbackProxy(Element e) => callback.CallbackDelegate(e);
+                return new EventHandlerActions<Element>()
                 {
-                    void callbackProxy(Element e) => callback.CallbackDelegate(e);
-                    return new EventHandlerActions<Element>()
-                    {
-                        Add = (element) => element.Destroyed += callbackProxy,
-                        Remove = (element) => element.Destroyed -= callbackProxy
-                    };
-                }
-            );
-        }
+                    Add = (element) => element.Destroyed += callbackProxy,
+                    Remove = (element) => element.Destroyed -= callbackProxy
+                };
+            }
+        );
     }
 }

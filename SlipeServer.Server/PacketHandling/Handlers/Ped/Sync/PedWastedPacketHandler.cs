@@ -3,30 +3,29 @@ using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.PacketHandling.Handlers;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 
-namespace SlipeServer.Server.PacketHandling.QueueHandlers
+namespace SlipeServer.Server.PacketHandling.QueueHandlers;
+
+public class PedWastedPacketHandler : IPacketHandler<PedWastedPacket>
 {
-    public class PedWastedPacketHandler : IPacketHandler<PedWastedPacket>
+    private readonly IElementCollection elementCollection;
+
+    public PacketId PacketId => PacketId.PACKET_ID_PED_WASTED;
+
+    public PedWastedPacketHandler(IElementCollection elementCollection)
     {
-        private readonly IElementRepository elementRepository;
+        this.elementCollection = elementCollection;
+    }
 
-        public PacketId PacketId => PacketId.PACKET_ID_PED_WASTED;
+    public void HandlePacket(IClient client, PedWastedPacket packet)
+    {
+        if (this.elementCollection.Get(packet.SourceElementId) is not Ped ped)
+            return;
 
-        public PedWastedPacketHandler(IElementRepository elementRepository)
+        ped.RunAsSync(() =>
         {
-            this.elementRepository = elementRepository;
-        }
-
-        public void HandlePacket(Client client, PedWastedPacket packet)
-        {
-            if (this.elementRepository.Get(packet.SourceElementId) is not Ped ped)
-                return;
-
-            ped.RunAsSync(() =>
-            {
-                ped.Kill(this.elementRepository.Get(packet.KillerId), (WeaponType)packet.KillerWeapon, (BodyPart)packet.BodyPart, packet.AnimGroup, packet.AnimId);
-            });
-        }
+            ped.Kill(this.elementCollection.Get(packet.KillerId), (WeaponType)packet.KillerWeapon, (BodyPart)packet.BodyPart, packet.AnimGroup, packet.AnimId);
+        });
     }
 }

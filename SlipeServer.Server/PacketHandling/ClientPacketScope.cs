@@ -1,31 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SlipeServer.Server.PacketHandling
+namespace SlipeServer.Server.PacketHandling;
+
+public class ClientPacketScope : IDisposable
 {
-    public class ClientPacketScope: IDisposable
+    public static ClientPacketScope? Current => AsyncLocalScopeStack.Instance.Peek();
+
+    private readonly HashSet<IClient> clients;
+
+    public ClientPacketScope(HashSet<IClient> clients)
     {
-        public static ClientPacketScope? Current => AsyncLocalScopeStack.Instance.Peek();
+        this.clients = clients;
 
-        private readonly HashSet<Client> clients;
-
-        public ClientPacketScope(HashSet<Client> clients)
-        {
-            this.clients = clients;
-
-            AsyncLocalScopeStack.Instance.Push(this);
-        }
-
-        public ClientPacketScope(IEnumerable<Client> clients) : this(new HashSet<Client>(clients))
-        {
-        }
-
-        public void Dispose()
-        {
-            AsyncLocalScopeStack.Instance.Pop();
-            GC.SuppressFinalize(this);
-        }
-
-        public bool ContainsClient(Client client) => this.clients.Contains(client);
+        AsyncLocalScopeStack.Instance.Push(this);
     }
+
+    public ClientPacketScope(IEnumerable<IClient> clients) : this(new HashSet<IClient>(clients))
+    {
+    }
+
+    public void Dispose()
+    {
+        AsyncLocalScopeStack.Instance.Pop();
+        GC.SuppressFinalize(this);
+    }
+
+    public bool ContainsClient(IClient client) => this.clients.Contains(client);
 }

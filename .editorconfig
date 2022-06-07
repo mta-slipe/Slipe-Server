@@ -137,3 +137,4 @@ dotnet_style_qualification_for_property=true:suggestion
 dotnet_style_qualification_for_method=false:silent
 dotnet_style_qualification_for_event=true:suggestion
 dotnet_diagnostic.CA1822.severity=silent
+csharp_style_namespace_declarations = file_scoped:warning

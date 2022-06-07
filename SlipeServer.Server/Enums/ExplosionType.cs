@@ -1,19 +1,18 @@
-﻿namespace SlipeServer.Server.Enums
+﻿namespace SlipeServer.Server.Enums;
+
+public enum ExplosionType
 {
-    public enum ExplosionType
-    {
-        Grenade,
-        Molotov,
-        Rocket,
-        WeakRocket,
-        Car,
-        CarQuick,
-        Boat,
-        Heli,
-        Mine,
-        Object,
-        TankGrenade,
-        Small,
-        Tiny,
-    }
+    Grenade,
+    Molotov,
+    Rocket,
+    WeakRocket,
+    Car,
+    CarQuick,
+    Boat,
+    Heli,
+    Mine,
+    Object,
+    TankGrenade,
+    Small,
+    Tiny,
 }

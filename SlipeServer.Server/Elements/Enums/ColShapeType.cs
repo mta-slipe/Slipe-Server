@@ -1,14 +1,13 @@
 ﻿using System;
 
-namespace SlipeServer.Server.Elements
+namespace SlipeServer.Server.Elements;
+
+public enum ColShapeType
 {
-    public enum ColShapeType
-    {
-        Circle,
-        Cuboid,
-        Sphere,
-        Rectangle,
-        Polygon,
-        Tube
-    }
+    Circle,
+    Cuboid,
+    Sphere,
+    Rectangle,
+    Polygon,
+    Tube
 }

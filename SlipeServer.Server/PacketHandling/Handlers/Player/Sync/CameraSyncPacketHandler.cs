@@ -1,36 +1,35 @@
 ﻿using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Packets.Enums;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 
-namespace SlipeServer.Server.PacketHandling.Handlers.Player.Sync
+namespace SlipeServer.Server.PacketHandling.Handlers.Player.Sync;
+
+public class CameraSyncPacketHandler : IPacketHandler<CameraSyncPacket>
 {
-    public class CameraSyncPacketHandler : IPacketHandler<CameraSyncPacket>
+    public PacketId PacketId => PacketId.PACKET_ID_CAMERA_SYNC;
+
+    private readonly IElementCollection elementCollection;
+
+    public CameraSyncPacketHandler(
+        IElementCollection elementCollection
+    )
     {
-        public PacketId PacketId => PacketId.PACKET_ID_CAMERA_SYNC;
+        this.elementCollection = elementCollection;
+    }
 
-        private readonly IElementRepository elementRepository;
-
-        public CameraSyncPacketHandler(
-            IElementRepository elementRepository
-        )
+    public void HandlePacket(IClient client, CameraSyncPacket packet)
+    {
+        var player = client.Player;
+        player.RunAsSync(() =>
         {
-            this.elementRepository = elementRepository;
-        }
-
-        public void HandlePacket(Client client, CameraSyncPacket packet)
-        {
-            var player = client.Player;
-            player.RunAsSync(() =>
+            if (packet.IsFixed)
             {
-                if (packet.IsFixed)
-                {
-                    player.Camera.Position = packet.Position;
-                    player.Camera.LookAt = packet.LookAt;
-                } else
-                {
-                    player.Camera.Target = this.elementRepository.Get(packet.TargetId);
-                }
-            });
-        }
+                player.Camera.Position = packet.Position;
+                player.Camera.LookAt = packet.LookAt;
+            } else
+            {
+                player.Camera.Target = this.elementCollection.Get(packet.TargetId);
+            }
+        });
     }
 }

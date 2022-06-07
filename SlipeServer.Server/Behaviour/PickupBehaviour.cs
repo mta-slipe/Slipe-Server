@@ -1,45 +1,44 @@
 ﻿using SlipeServer.Packets.Definitions.Pickups;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Extensions;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 
-namespace SlipeServer.Server.Behaviour
+namespace SlipeServer.Server.Behaviour;
+
+public class PickupBehaviour
 {
-    public class PickupBehaviour
+    private readonly MtaServer server;
+    private readonly IElementCollection elementCollection;
+
+    public PickupBehaviour(MtaServer server, IElementCollection elementCollection)
     {
-        private readonly MtaServer server;
-        private readonly IElementRepository elementRepository;
+        this.server = server;
+        this.elementCollection = elementCollection;
 
-        public PickupBehaviour(MtaServer server, IElementRepository elementRepository)
+
+        server.ElementCreated += HandleElementCreation;
+    }
+
+    private void HandleElementCreation(Element element)
+    {
+        if (element is Pickup pickup)
         {
-            this.server = server;
-            this.elementRepository = elementRepository;
-
-
-            server.ElementCreated += HandleElementCreation;
+            pickup.Used += HandlePickupUsed;
+            pickup.Reset += HandlePickupReset;
         }
+    }
 
-        private void HandleElementCreation(Element element)
-        {
-            if (element is Pickup pickup)
-            {
-                pickup.Used += HandlePickupUsed;
-                pickup.Reset += HandlePickupReset;
-            }
-        }
+    private void HandlePickupUsed(Pickup pickup, Elements.Events.PickupUsedEventArgs e)
+    {
+        (new PickupHitConfirmPacket(pickup.Id, false, true)).SendTo(e.Player);
 
-        private void HandlePickupUsed(Pickup pickup, Elements.Events.PickupUsedEventArgs e)
-        {
-            (new PickupHitConfirmPacket(pickup.Id, false, true)).SendTo(e.Player);
+        var otherPlayers = this.elementCollection
+            .GetByType<Player>(ElementType.Player);
+        (new PickupHitConfirmPacket(pickup.Id, false, false)).SendTo(otherPlayers);
+    }
 
-            var otherPlayers = this.elementRepository
-                .GetByType<Player>(ElementType.Player);
-            (new PickupHitConfirmPacket(pickup.Id, false, false)).SendTo(otherPlayers);
-        }
-
-        private void HandlePickupReset(Pickup pickup, System.EventArgs e)
-        {
-            this.server.BroadcastPacket(new PickupHideShowPacket(true, new PickupIdAndModel[] { new(pickup.Id, pickup.Model) }));
-        }
+    private void HandlePickupReset(Pickup pickup, System.EventArgs e)
+    {
+        this.server.BroadcastPacket(new PickupHideShowPacket(true, new PickupIdAndModel[] { new(pickup.Id, pickup.Model) }));
     }
 }

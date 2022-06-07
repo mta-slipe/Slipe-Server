@@ -1,11 +1,10 @@
-﻿namespace SlipeServer.Server.AllSeeingEye
+﻿namespace SlipeServer.Server.AllSeeingEye;
+
+public enum BuildType
 {
-    public enum BuildType
-    {
-        Custom = 0x01,
-        Experimental = 0x03,
-        Unstable = 0x05,
-        Untested = 0x07,
-        Release = 0x09
-    }
+    Custom = 0x01,
+    Experimental = 0x03,
+    Unstable = 0x05,
+    Untested = 0x07,
+    Release = 0x09
 }

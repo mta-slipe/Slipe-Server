@@ -10,53 +10,200 @@ pr:
 - master
 - development
 
-pool:
-  vmImage: 'windows-latest'
 
 variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
-steps:
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet restore'
-  inputs:
-    command: 'restore'
-    feedsToUse: 'select'
+jobs: 
+- job: 'windows_cpp_build'
+  pool:
+    vmImage: 'windows-2022'
+  steps:
+  
+  - task: VSBuild@1
+    displayName: 'x86 build'
+    inputs:
+      solution: '**\*.vcxproj'
+      msbuildArgs: '/p:PostBuildEventUseInBuild=false'
+      platform: 'x86'
+      configuration: 'release'
 
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet build'
-  inputs:
-    command: 'build'
+  - task: CopyFiles@2
+    displayName: 'Copy x86 NetModuleWrapper.dll'
+    inputs:
+      SourceFolder: 'NetModuleWrapper\release'
+      Contents: '**'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\x86'
 
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet test'
-  inputs:
-    command: 'test'
+  - task: VSBuild@1
+    displayName: 'x64 build'
+    inputs:
+      solution: '**\*.vcxproj'
+      msbuildArgs: '/p:PostBuildEventUseInBuild=false'
+      platform: 'x64'
+      configuration: 'release'
 
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet pack'
-  inputs:
-    command: 'pack'
-    packagesToPack: '**/SlipeServer.Packets.csproj;**/SlipeServer.Net.csproj;**/SlipeServer.Server.csproj;**/SlipeServer.Server.TestTools.csproj;**/SlipeServer.Scripting.csproj;**/SlipeServer.Lua.csproj;**/SlipeServer.Physics.csproj;**/SlipeServer.SourceGenerators.csproj'
-    versioningScheme: 'byPrereleaseNumber'
-    majorVersion: '0'
-    minorVersion: '1'
-    patchVersion: '0'
+  - task: CopyFiles@2
+    displayName: 'Copy x64 NetModuleWrapper.dll'
+    inputs:
+      SourceFolder: 'NetModuleWrapper\x64\release'
+      Contents: '**'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\x64'
+      
+  - task: PublishBuildArtifacts@1
+    displayName: 'publish artifacts to cpp_windows'
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'cpp_windows'
+      publishLocation: 'Container'
 
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet publish'
-  inputs:
-    command: 'publish'
-    publishWebProjects: false
-    projects: '**/*.sln'
-    arguments: '--output $(Build.ArtifactStagingDirectory)'
+- job: 'linux_cpp_build'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+    - task: CmdLine@2
+      inputs:
+        script: |
+          sudo apt-get update
+          sudo apt-get install g++-multilib gcc-multilib -y
+          cd NetModuleWrapper
+
+          mkdir x64          
+          g++ -c -o x64/wrapperFunctions.o wrapperFunctions.cpp -fPIC
+          g++ -c -o x64/NetWrapper.o NetWrapper.cpp -fPIC
+          g++ -c -o x64/CDynamicLibrary.o mta/core/CDynamicLibrary.cpp -fPIC
+          gcc x64/wrapperFunctions.o x64/NetWrapper.o x64/CDynamicLibrary.o -shared -o x64/NetModuleWrapper.so
+          
+          mkdir x86
+          g++ -c -m32 -o x86/wrapperFunctions.o wrapperFunctions.cpp -fPIC
+          g++ -c -m32 -o x86/NetWrapper.o NetWrapper.cpp -fPIC
+          g++ -c -m32 -o x86/CDynamicLibrary.o mta/core/CDynamicLibrary.cpp -fPIC
+          gcc -m32 x86/wrapperFunctions.o x86/NetWrapper.o x86/CDynamicLibrary.o -shared -o x86/NetModuleWrapper.so
+          
+          ls
+          
+    - task: CopyFiles@2
+      displayName: 'Copy x86 NetModuleWrapper.so'
+      inputs:
+        SourceFolder: 'NetModuleWrapper/x86'
+        Contents: 'NetModuleWrapper.so'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/x86'
+
+    - task: CopyFiles@2
+      displayName: 'Copy x64 NetModuleWrapper.so'
+      inputs:
+        SourceFolder: 'NetModuleWrapper/x64'
+        Contents: 'NetModuleWrapper.so'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/x64'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'publish artifacts to cpp_linux'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'cpp_linux'
+        publishLocation: 'Container'
     
-- task: PublishBuildArtifacts@1
-  displayName: 'publish artifacts'
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
+  
+- job: 'dotnet_build'
+  pool:
+    vmImage: 'windows-2022'
+  dependsOn:
+  - 'windows_cpp_build'
+  - 'linux_cpp_build' 
+  steps:
+  - task: DownloadBuildArtifacts@1
+    displayName: 'Download linux cpp'
+    inputs:
+      buildType: 'current'
+      downloadType: 'single'
+      artifactName: 'cpp_linux'
+      downloadPath: '$(System.ArtifactsDirectory)/netmodulewrapper/linux'
 
+  - task: CopyFiles@2
+    displayName: 'Copy x86 NetModuleWrapper.so'
+    inputs:
+      SourceFolder: '$(System.ArtifactsDirectory)/netmodulewrapper/linux/cpp_linux/x86'
+      Contents: 'NetModuleWrapper.so'
+      TargetFolder: 'SlipeServer.Net/Binaries/x86'
+      OverWrite: true
+
+  - task: CopyFiles@2
+    displayName: 'Copy x64 NetModuleWrapper.so'
+    inputs:
+      SourceFolder: '$(System.ArtifactsDirectory)/netmodulewrapper/linux/cpp_linux/x64'
+      Contents: 'NetModuleWrapper.so'
+      TargetFolder: 'SlipeServer.Net/Binaries/x64'
+      OverWrite: true
+
+  - task: DownloadBuildArtifacts@1
+    displayName: 'Download windows cpp'
+    inputs:
+      buildType: 'current'
+      downloadType: 'single'
+      artifactName: 'cpp_windows'
+      downloadPath: '$(System.ArtifactsDirectory)/netmodulewrapper/windows'
+
+  - task: CopyFiles@2
+    displayName: 'Copy x86 NetModuleWrapper.dll'
+    inputs:
+      SourceFolder: '$(System.ArtifactsDirectory)/netmodulewrapper/windows/cpp_windows/x86'
+      Contents: 'NetModuleWrapper.dll'
+      TargetFolder: 'SlipeServer.Net/Binaries/x86'
+      OverWrite: true
+
+  - task: CopyFiles@2
+    displayName: 'Copy x64 NetModuleWrapper.dll'
+    inputs:
+      SourceFolder: '$(System.ArtifactsDirectory)/netmodulewrapper/windows/cpp_windows/x64'
+      Contents: 'NetModuleWrapper.dll'
+      TargetFolder: 'SlipeServer.Net/Binaries/x64'
+      OverWrite: true
+  
+
+  - task: UseDotNet@2
+    inputs:
+      packageType: 'sdk'
+      version: '6.x'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet restore'
+    inputs:
+      command: 'restore'
+      feedsToUse: 'select'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet build'
+    inputs:
+      command: 'build'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet test'
+    inputs:
+      command: 'test'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet pack'
+    inputs:
+      command: 'pack'
+      packagesToPack: '**/SlipeServer.Packets.csproj;**/SlipeServer.Net.csproj;**/SlipeServer.Server.csproj;**/SlipeServer.Server.TestTools.csproj;**/SlipeServer.Scripting.csproj;**/SlipeServer.Lua.csproj;**/SlipeServer.Physics.csproj;**/SlipeServer.SourceGenerators.csproj'
+      versioningScheme: 'byPrereleaseNumber'
+      majorVersion: '0'
+      minorVersion: '1'
+      patchVersion: '0'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet publish'
+    inputs:
+      command: 'publish'
+      publishWebProjects: false
+      projects: '**/*.sln'
+      arguments: '--output $(Build.ArtifactStagingDirectory)'
+      
+  - task: PublishBuildArtifacts@1
+    displayName: 'publish artifacts'
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'drop'
+      publishLocation: 'Container'

@@ -1,24 +1,23 @@
 ﻿using SlipeServer.Scripting;
-using SlipeServer.Server.ServerOptions;
+using SlipeServer.Server.ServerBuilders;
 
-namespace SlipeServer.Lua
+namespace SlipeServer.Lua;
+
+public static class LuaServerBuilderExtensions
 {
-    public static class LuaServerBuilderExtensions
+    public static void AddLua(this ServerBuilder builder)
     {
-        public static void AddLua(this ServerBuilder builder)
+        builder.ConfigureServices(services =>
         {
-            builder.ConfigureServices(services =>
-            {
-                services.AddLua();
-            });
-        }
+            services.AddLua();
+        });
+    }
 
-        public static void AddLua<T>(this ServerBuilder builder) where T : class, IScriptEventRuntime
+    public static void AddLua<T>(this ServerBuilder builder) where T : class, IScriptEventRuntime
+    {
+        builder.ConfigureServices(services =>
         {
-            builder.ConfigureServices(services =>
-            {
-                services.AddLua<T>();
-            });
-        }
+            services.AddLua<T>();
+        });
     }
 }

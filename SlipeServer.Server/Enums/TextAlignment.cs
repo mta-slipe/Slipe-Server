@@ -1,11 +1,10 @@
-namespace SlipeServer.Server.Enums
+namespace SlipeServer.Server.Enums;
+
+public enum VerticalTextAlignment
 {
-    public enum VerticalTextAlignment
-    {
-        Top = 0, Center = 4, Bottom = 8
-    }
-    public enum HorizontalTextAlignment
-    {
-        Left = 0, Center = 1, Right = 2
-    }
+    Top = 0, Center = 4, Bottom = 8
+}
+public enum HorizontalTextAlignment
+{
+    Left = 0, Center = 1, Right = 2
 }

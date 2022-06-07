@@ -2,19 +2,18 @@
 using SlipeServer.Server.Events;
 using System;
 
-namespace SlipeServer.Server.Concepts
+namespace SlipeServer.Server.Concepts;
+
+public class Command
 {
-    public class Command
+    public string CommandText { get; set; }
+
+    public Command(string commandText)
     {
-        public string CommandText { get; set; }
-
-        public Command(string commandText)
-        {
-            this.CommandText = commandText;
-        }
-
-        public void Trigger(Player player, string[] arguments) => this.Triggered?.Invoke(this, new (player, arguments));
-
-        public event EventHandler<CommandTriggeredEventArgs>? Triggered;
+        this.CommandText = commandText;
     }
+
+    public void Trigger(Player player, string[] arguments) => this.Triggered?.Invoke(this, new(player, arguments));
+
+    public event EventHandler<CommandTriggeredEventArgs>? Triggered;
 }

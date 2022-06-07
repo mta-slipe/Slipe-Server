@@ -8,30 +8,30 @@ using SlipeServer.Server.PacketHandling.Factories;
 using System.Collections.Generic;
 using System.Timers;
 
-namespace SlipeServer.Server.Behaviour
+namespace SlipeServer.Server.Behaviour;
+
+public class VehicleRespawnBehaviour
 {
-    public class VehicleRespawnBehaviour
+    private readonly MtaServer server;
+
+    public VehicleRespawnBehaviour(MtaServer server)
     {
-        private readonly MtaServer server;
+        this.server = server;
 
-        public VehicleRespawnBehaviour(MtaServer server)
+        server.ElementCreated += OnElementCreate;
+    }
+
+    private void OnElementCreate(Element element)
+    {
+        if (element is Vehicle vehicle)
         {
-            this.server = server;
-
-            server.ElementCreated += OnElementCreate;
+            vehicle.Respawned += HandleRespawn;
         }
+    }
 
-        private void OnElementCreate(Element element)
-        {
-            if (element is Vehicle vehicle)
-            {
-                vehicle.Respawned += HandleRespawn;
-            }
-        }
-
-        private void HandleRespawn(object? sender, VehicleRespawnEventArgs args)
-        {
-            this.server.BroadcastPacket(new VehicleSpawnPacket(new VehicleSpawnInfo[] { new VehicleSpawnInfo
+    private void HandleRespawn(object? sender, VehicleRespawnEventArgs args)
+    {
+        this.server.BroadcastPacket(new VehicleSpawnPacket(new VehicleSpawnInfo[] { new VehicleSpawnInfo
                 {
                     ElementId = args.Vehicle.Id,
                     TimeContext = args.Vehicle.GetAndIncrementTimeContext(),
@@ -40,6 +40,5 @@ namespace SlipeServer.Server.Behaviour
                     Rotation = args.Vehicle.RespawnRotation,
                     Colors = args.Vehicle.Colors.AsArray(),
                 } }));
-        }
     }
 }

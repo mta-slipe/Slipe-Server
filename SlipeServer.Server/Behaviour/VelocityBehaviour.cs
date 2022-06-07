@@ -1,58 +1,74 @@
 ﻿using SlipeServer.Server.Elements;
-using SlipeServer.Server.PacketHandling.Factories;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Timers;
 
-namespace SlipeServer.Server.Behaviour
+namespace SlipeServer.Server.Behaviour;
+
+public class VelocityBehaviour
 {
-    public class VelocityBehaviour
+    private readonly float factor;
+
+    private readonly ConcurrentDictionary<Element, Element> velocityElements;
+    private readonly Timer timer;
+    private readonly Stopwatch stopwatch;
+    private readonly float interval;
+
+    public VelocityBehaviour(MtaServer server, float interval = 50)
     {
-        private readonly float factor;
+        this.factor = 20f / 1000 * interval;
 
-        private readonly HashSet<Element> velocityElements;
-        private readonly Timer timer;
-
-        public VelocityBehaviour(MtaServer server, float interval = 10)
+        this.velocityElements = new();
+        this.timer = new Timer(interval)
         {
-            this.factor = interval / 50.0f;
+            AutoReset = true,
+            Enabled = true
+        };
+        this.timer.Elapsed += OnTimerElapsed;
+        this.stopwatch = new();
+        this.stopwatch.Start();
 
-            this.velocityElements = new HashSet<Element>();
-            this.timer = new Timer(interval)
-            {
-                AutoReset = true,
-                Enabled = true
-            };
-            this.timer.Elapsed += OnTimerElapsed;
+        server.ElementCreated += OnElementCreate;
+        this.interval = interval;
+    }
 
-            server.ElementCreated += OnElementCreate;
+    private void OnTimerElapsed(object? sender, ElapsedEventArgs e)
+    {
+        var delta = this.stopwatch.ElapsedMilliseconds;
+        this.stopwatch.Restart();
+        foreach (var (_, element) in this.velocityElements)
+        {
+            element.Position += (element.Velocity * this.factor * (delta / this.interval));
         }
+    }
 
-        private void OnTimerElapsed(object sender, ElapsedEventArgs e)
+    private void OnElementCreate(Element element)
+    {
+        if (element is not Ped && element is not Vehicle)
         {
-            foreach (var element in this.velocityElements)
-            {
-                element.Position += (element.Velocity * this.factor);
-            }
-        }
+            if (element.Velocity.Length() > 0)
+                if (!this.velocityElements.ContainsKey(element))
+                    this.velocityElements.TryAdd(element, element);
 
-        private void OnElementCreate(Element element)
-        {
-            if (!(element is Ped) && !(element is Vehicle))
+            element.VelocityChanged += (sender, args) =>
             {
-                element.VelocityChanged += (sender, args) =>
+                if (args.NewValue.Length() > 0)
                 {
-                    if (args.NewValue.Length() > 0)
-                    {
-                        if (!this.velocityElements.Contains(args.Source))
-                            this.velocityElements.Add(args.Source);
-                    }
-                    else
-                    {
-                        if (this.velocityElements.Contains(args.Source))
-                            this.velocityElements.Remove(args.Source);
-                    }
-                };
-            }
+                    if (!this.velocityElements.ContainsKey(args.Source))
+                        this.velocityElements.TryAdd(args.Source, args.Source);
+                } else
+                {
+                    if (this.velocityElements.ContainsKey(args.Source))
+                        this.velocityElements.Remove(args.Source, out var value);
+                }
+            };
+
+            element.Destroyed += (source) =>
+            {
+                if (this.velocityElements.ContainsKey(source))
+                    this.velocityElements.Remove(source, out var value);
+            };
         }
     }
 }

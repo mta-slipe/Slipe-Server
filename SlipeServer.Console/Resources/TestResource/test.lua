@@ -37,7 +37,8 @@ outputChatBox("Event ready");
 addCommandHandler("crun", function(command, ...)
 	outputChatBox("Running code")
 	local code = table.concat({ ... }, " ")
-	loadstring(code)()
+	local result = loadstring(code)()
+	outputChatBox("Result: " .. tostring(result))
 end)
 
 setDevelopmentMode(true)

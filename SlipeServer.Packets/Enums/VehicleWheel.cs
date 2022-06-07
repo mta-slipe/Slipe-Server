@@ -4,13 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SlipeServer.Packets.Enums
+namespace SlipeServer.Packets.Enums;
+
+public enum VehicleWheel
 {
-    public enum VehicleWheel
-    {
-        FrontLeft,
-        RearLeft,
-        FrontRight,
-        RearRight,
-    }
+    FrontLeft,
+    RearLeft,
+    FrontRight,
+    RearRight,
 }

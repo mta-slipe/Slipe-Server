@@ -3,75 +3,74 @@ using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
 using System.Numerics;
 
-namespace SlipeServer.Packets.Definitions.Ped
+namespace SlipeServer.Packets.Definitions.Ped;
+
+public class PedWastedPacket : Packet
 {
-    public class PedWastedPacket : Packet
+    public override PacketId PacketId { get; } = PacketId.PACKET_ID_PED_WASTED;
+    public override PacketReliability Reliability { get; } = PacketReliability.ReliableSequenced;
+    public override PacketPriority Priority { get; } = PacketPriority.High;
+
+    public uint SourceElementId { get; set; }
+    public uint KillerId { get; set; }
+    public byte KillerWeapon { get; set; }
+    public byte BodyPart { get; set; }
+    public Vector3 Position { get; set; }
+    public ushort Ammo { get; set; }
+    public bool Stealth { get; set; }
+    public byte TimeContext { get; set; }
+    public ulong AnimGroup { get; set; }
+    public ulong AnimId { get; set; }
+
+    public PedWastedPacket(uint sourceElementId, uint killerId, byte killerWeapon, byte bodyPart, ushort ammo, bool stealth, byte timeContext, ulong animGroup, ulong animId)
     {
-        public override PacketId PacketId { get; } = PacketId.PACKET_ID_PED_WASTED;
-        public override PacketReliability Reliability { get; } = PacketReliability.ReliableSequenced;
-        public override PacketPriority Priority { get; } = PacketPriority.High;
+        this.SourceElementId = sourceElementId;
+        this.KillerId = killerId;
+        this.KillerWeapon = killerWeapon;
+        this.BodyPart = bodyPart;
+        this.Ammo = ammo;
+        this.Stealth = stealth;
+        this.TimeContext = timeContext;
+        this.AnimGroup = animGroup;
+        this.AnimId = animId;
+    }
 
-        public uint SourceElementId { get; set; }
-        public uint KillerId { get; set; }
-        public byte KillerWeapon { get; set; }
-        public byte BodyPart { get; set; }
-        public Vector3 Position { get; set; }
-        public ushort Ammo { get; set; }
-        public bool Stealth { get; set; }
-        public byte TimeContext { get; set; }
-        public ulong AnimGroup { get; set; }
-        public ulong AnimId { get; set; }
+    public PedWastedPacket()
+    {
 
-        public PedWastedPacket(uint sourceElementId, uint killerId, byte killerWeapon, byte bodyPart, ushort ammo, bool stealth, byte timeContext, ulong animGroup, ulong animId)
-        {
-            this.SourceElementId = sourceElementId;
-            this.KillerId = killerId;
-            this.KillerWeapon = killerWeapon;
-            this.BodyPart = bodyPart;
-            this.Ammo = ammo;
-            this.Stealth = stealth;
-            this.TimeContext = timeContext;
-            this.AnimGroup = animGroup;
-            this.AnimId = animId;
-        }
+    }
 
-        public PedWastedPacket()
-        {
+    public override byte[] Write()
+    {
+        var builder = new PacketBuilder();
 
-        }
+        builder.WriteElementId(this.SourceElementId);
+        builder.WriteElementId(this.KillerId);
 
-        public override byte[] Write()
-        {
-            var builder = new PacketBuilder();
+        builder.WriteWeaponType(this.KillerWeapon);
+        builder.WriteBodyPart(this.BodyPart);
 
-            builder.WriteElementId(this.SourceElementId);
-            builder.WriteElementId(this.KillerId);
+        builder.Write(this.Stealth);
+        builder.Write(this.TimeContext);
 
-            builder.WriteWeaponType(this.KillerWeapon);
-            builder.WriteBodyPart(this.BodyPart);
+        builder.WriteCompressed(this.AnimGroup);
+        builder.WriteCompressed(this.AnimId);
 
-            builder.Write(this.Stealth);
-            builder.Write(this.TimeContext);
+        return builder.Build();
+    }
 
-            builder.WriteCompressed(this.AnimGroup);
-            builder.WriteCompressed(this.AnimId);
+    public override void Read(byte[] bytes)
+    {
+        var data = new PacketReader(bytes);
 
-            return builder.Build();
-        }
+        this.AnimGroup = data.GetCompressedUInt32();
+        this.AnimId = data.GetCompressedUInt32();
+        this.KillerId = data.GetElementId();
+        this.KillerWeapon = data.GetWeaponType();
+        this.BodyPart = data.GetBodyPart();
+        this.Position = data.GetVector3WithZAsFloat();
+        this.SourceElementId = data.GetElementId();
 
-        public override void Read(byte[] bytes)
-        {
-            var data = new PacketReader(bytes);
-
-            this.AnimGroup = data.GetCompressedUInt32();
-            this.AnimId = data.GetCompressedUInt32();
-            this.KillerId = data.GetElementId();
-            this.KillerWeapon = data.GetWeaponType();
-            this.BodyPart = data.GetBodyPart();
-            this.Position = data.GetVector3WithZAsFloat();
-            this.SourceElementId = data.GetElementId();
-
-            this.Ammo = data.GetAmmo();
-        }
+        this.Ammo = data.GetAmmo();
     }
 }

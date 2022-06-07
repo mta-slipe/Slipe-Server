@@ -5,47 +5,46 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 
-namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element
+namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
+
+public class SetPedArmourRpcPacket : Packet
 {
-    public class SetPedArmourRpcPacket : Packet
+    public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
+    public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
+    public override PacketPriority Priority => PacketPriority.High;
+
+    public uint ElementId { get; set; }
+    public byte TimeContext { get; set; }
+    public float Armour { get; set; }
+
+    public SetPedArmourRpcPacket()
     {
-        public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
-        public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
-        public override PacketPriority Priority => PacketPriority.High;
 
-        public uint ElementId { get; set; }
-        public byte TimeContext { get; set; }
-        public float Armour { get; set; }
+    }
 
-        public SetPedArmourRpcPacket()
-        {
+    public SetPedArmourRpcPacket(uint elementId, byte timeContext, float armour)
+    {
+        this.ElementId = elementId;
+        this.TimeContext = timeContext;
+        this.Armour = armour;
+    }
 
-        }
+    public override void Read(byte[] bytes)
+    {
+        throw new NotSupportedException();
+    }
 
-        public SetPedArmourRpcPacket(uint elementId, byte timeContext, float armour)
-        {
-            this.ElementId = elementId;
-            this.TimeContext = timeContext;
-            this.Armour = armour;
-        }
+    public override byte[] Write()
+    {
+        var builder = new PacketBuilder();
 
-        public override void Read(byte[] bytes)
-        {
-            throw new NotSupportedException();
-        }
+        builder.Write((byte)ElementRpcFunction.SET_PED_ARMOR);
+        builder.WriteElementId(this.ElementId);
 
-        public override byte[] Write()
-        {
-            var builder = new PacketBuilder();
+        builder.Write((byte)(MathF.Min(this.Armour, 100) * 1.25f));
 
-            builder.Write((byte)ElementRpcFunction.SET_PED_ARMOR);
-            builder.WriteElementId(this.ElementId);
+        builder.Write(this.TimeContext);
 
-            builder.Write((byte)(MathF.Min(this.Armour, 100) * 1.25f));
-
-            builder.Write(this.TimeContext);
-
-            return builder.Build();
-        }
+        return builder.Build();
     }
 }

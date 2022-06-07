@@ -1,20 +1,15 @@
 ﻿using SlipeServer.Net.Wrappers;
-using SlipeServer.Server.Elements;
-using System;
 
-namespace SlipeServer.Server.TestTools
+namespace SlipeServer.Server.TestTools;
+
+public class TestingClient : Client<TestingPlayer>
 {
-    public class TestingClient : Client
-    {
-        public Player TestingPlayer
-        {
-            get => this.Player as TestingPlayer;
-            set => this.Player = value;
-        }
+    public uint Address { get; private set; }
 
-        public TestingClient(uint address, INetWrapper netWrapper) : base(address, netWrapper)
-        {
-            this.hasReceivedModNamePacket = true;
-        }
+    public TestingClient(uint address, INetWrapper netWrapper, TestingPlayer player)
+        : base(address, netWrapper, player)
+    {
+        this.Address = address;
+        this.ConnectionState = Enums.ClientConnectionState.Joined;
     }
 }

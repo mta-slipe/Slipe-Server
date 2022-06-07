@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SlipeServer.Server.Elements
+namespace SlipeServer.Server.Elements;
+
+public enum PickupType
 {
-    public enum PickupType
-    {
-        Health,
-        Armor,
-        Weapon,
-        Custom
-    }
+    Health,
+    Armor,
+    Weapon,
+    Custom
 }

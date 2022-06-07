@@ -2,18 +2,17 @@
 using SlipeServer.Server.Elements;
 using System.Collections.Generic;
 
-namespace SlipeServer.Server.PacketHandling.Factories
+namespace SlipeServer.Server.PacketHandling.Factories;
+
+public static class RemoveEntityPacketFactory
 {
-    public static class RemoveEntityPacketFactory
+    public static RemoveEntityPacket CreateRemoveEntityPacket(IEnumerable<Element> elements)
     {
-        public static RemoveEntityPacket CreateRemoveEntityPacket(IEnumerable<Element> elements)
-        {
-            var packet = new RemoveEntityPacket();
+        var packet = new RemoveEntityPacket();
 
-            foreach (var element in elements)
-                packet.AddEntity(element.Id);
+        foreach (var element in elements)
+            packet.AddEntity(element.Id);
 
-            return packet;
-        }
+        return packet;
     }
 }

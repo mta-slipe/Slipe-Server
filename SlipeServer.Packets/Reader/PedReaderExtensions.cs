@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Numerics;
 
-namespace SlipeServer.Packets.Reader
+namespace SlipeServer.Packets.Reader;
+
+public static class PedReaderExtensions
 {
-    public static class PedReaderExtensions
-    {
-        public static byte GetBodyPart(this PacketReader reader) => reader.GetByteCapped(3);
-    }
+    public static byte GetBodyPart(this PacketReader reader) => reader.GetByteCapped(3);
 }

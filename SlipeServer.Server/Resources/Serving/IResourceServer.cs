@@ -1,8 +1,11 @@
-﻿namespace SlipeServer.Server.Resources.Serving
+﻿using System.Collections.Generic;
+
+namespace SlipeServer.Server.Resources.Serving;
+
+public interface IResourceServer
 {
-    public interface IResourceServer
-    {
-        void Start();
-        void Stop();
-    }
+    void Start();
+    void Stop();
+    void AddAdditionalResource(Resource resource, Dictionary<string, byte[]> files);
+    void RemoveAdditionalResource(Resource resource);
 }

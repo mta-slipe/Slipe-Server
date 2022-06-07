@@ -1,10 +1,9 @@
 ﻿using BepuPhysics.Collidables;
 
-namespace SlipeServer.Physics.Entities
+namespace SlipeServer.Physics.Entities;
+
+public interface IPhysicsMesh
 {
-    public interface IPhysicsMesh
-    {
-        IShape Shape { get; }
-        TypedIndex MeshIndex { get; }
-    }
+    IShape Shape { get; }
+    TypedIndex MeshIndex { get; }
 }
