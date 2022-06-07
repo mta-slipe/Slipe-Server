@@ -1,26 +1,26 @@
 ﻿using SlipeServer.Server.Constants;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace SlipeServer.Server.Elements.IdGeneration;
 
-public class RepositoryBasedElementIdGenerator : IElementIdGenerator
+public class CollectionBasedElementIdGenerator : IElementIdGenerator
 {
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementCollection;
     private uint idCounter;
 
-    public RepositoryBasedElementIdGenerator(IElementRepository elementRepository)
+    public CollectionBasedElementIdGenerator(IElementCollection elementCollection)
     {
         this.idCounter = 1;
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
     }
 
     public uint GetId()
     {
         var start = this.idCounter;
-        while (this.elementRepository.Get(this.idCounter) != null)
+        while (this.elementCollection.Get(this.idCounter) != null)
         {
             this.idCounter = (this.idCounter + 1) % ElementConstants.MaxElementId;
             if (this.idCounter == 0)

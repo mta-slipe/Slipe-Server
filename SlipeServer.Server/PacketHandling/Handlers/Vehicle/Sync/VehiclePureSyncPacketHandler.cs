@@ -5,24 +5,24 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync;
 
 public class VehiclePureSyncPacketHandler : IPacketHandler<VehiclePureSyncPacket>
 {
     private readonly ISyncHandlerMiddleware<VehiclePureSyncPacket> middleware;
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementCollection;
 
     public PacketId PacketId => PacketId.PACKET_ID_PLAYER_VEHICLE_PURESYNC;
 
     public VehiclePureSyncPacketHandler(
         ISyncHandlerMiddleware<VehiclePureSyncPacket> middleware,
-        IElementRepository elementRepository
+        IElementCollection elementCollection
     )
     {
         this.middleware = middleware;
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
     }
 
     public void HandlePacket(IClient client, VehiclePureSyncPacket packet)
@@ -59,7 +59,7 @@ public class VehiclePureSyncPacketHandler : IPacketHandler<VehiclePureSyncPacket
 
             if (packet.DamagerId != null)
             {
-                var damager = this.elementRepository.Get(packet.DamagerId.Value);
+                var damager = this.elementCollection.Get(packet.DamagerId.Value);
                 player.TriggerDamaged(damager, (WeaponType)(packet.DamageWeaponType ?? (byte?)WeaponType.WEAPONTYPE_UNIDENTIFIED), (BodyPart)(packet.DamageBodyPart ?? (byte?)BodyPart.Torso));
             }
         });
@@ -85,7 +85,7 @@ public class VehiclePureSyncPacketHandler : IPacketHandler<VehiclePureSyncPacket
                     var previous = vehicle;
                     foreach (var trailer in packet.Trailers)
                     {
-                        var trailerElement = this.elementRepository.Get(trailer.Id) as Elements.Vehicle;
+                        var trailerElement = this.elementCollection.Get(trailer.Id) as Elements.Vehicle;
                         if (trailerElement == null)
                             break;
 

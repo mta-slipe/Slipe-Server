@@ -2,7 +2,7 @@
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.ColShapes;
 using SlipeServer.Server.Elements.Events;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
@@ -14,11 +14,11 @@ public class RadarAreaBehaviour
     private readonly MtaServer server;
     private readonly HashSet<RadarArea> radarAreas;
 
-    public RadarAreaBehaviour(MtaServer server, IElementRepository elementRepository)
+    public RadarAreaBehaviour(MtaServer server, IElementCollection elementCollection)
     {
         this.server = server;
         this.radarAreas = new HashSet<RadarArea>();
-        foreach (var radarArea in elementRepository.GetByType<RadarArea>(ElementType.RadarArea))
+        foreach (var radarArea in elementCollection.GetByType<RadarArea>(ElementType.RadarArea))
         {
             AddRadarArea(radarArea);
         }

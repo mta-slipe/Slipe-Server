@@ -5,31 +5,31 @@ using System.Linq;
 using System.Numerics;
 using System.Threading;
 
-namespace SlipeServer.Server.Repositories;
+namespace SlipeServer.Server.ElementCollections;
 
-public class ElementByIdRepository : IElementRepository
+public class FlatElementCollection : IElementCollection
 {
     public int Count => this.elements.Count;
 
-    private readonly Dictionary<uint, Element> elements;
+    private readonly List<Element> elements;
     private readonly ReaderWriterLockSlim slimLock = new();
 
-    public ElementByIdRepository()
+    public FlatElementCollection()
     {
-        this.elements = new Dictionary<uint, Element>();
+        this.elements = new List<Element>();
     }
 
     public void Add(Element element)
     {
         this.slimLock.EnterWriteLock();
-        this.elements[element.Id] = element;
+        this.elements.Add(element);
         this.slimLock.ExitWriteLock();
     }
 
     public Element? Get(uint id)
     {
         this.slimLock.EnterReadLock();
-        var value = this.elements.ContainsKey(id) ? this.elements[id] : null;
+        var value = this.elements.FirstOrDefault(element => element.Id == id);
         this.slimLock.ExitReadLock();
         return value;
     }
@@ -37,14 +37,14 @@ public class ElementByIdRepository : IElementRepository
     public void Remove(Element element)
     {
         this.slimLock.EnterWriteLock();
-        this.elements.Remove(element.Id);
+        this.elements.Remove(element);
         this.slimLock.ExitWriteLock();
     }
 
     public IEnumerable<Element> GetAll()
     {
         this.slimLock.EnterReadLock();
-        var value = this.elements.Values.ToArray();
+        var value = this.elements.Select(element => element);
         this.slimLock.ExitReadLock();
         return value;
     }
@@ -52,22 +52,21 @@ public class ElementByIdRepository : IElementRepository
     public IEnumerable<TElement> GetByType<TElement>(ElementType elementType) where TElement : Element
     {
         this.slimLock.EnterReadLock();
-        var value = this.elements.Values.Where(element => element.ElementType == elementType).Cast<TElement>();
+        var value = this.elements.Where(element => element.ElementType == elementType).Cast<TElement>();
         this.slimLock.ExitReadLock();
         return value;
     }
 
     public IEnumerable<TElement> GetByType<TElement>() where TElement : Element
     {
-        return this.GetByType<TElement>(ElementTypeHelpers.GetElementType<TElement>());
+        var value = this.GetByType<TElement>(ElementTypeHelpers.GetElementType<TElement>());
+        return value;
     }
 
     public IEnumerable<Element> GetWithinRange(Vector3 position, float range)
     {
         this.slimLock.EnterReadLock();
-        var value = this.elements
-            .Where(kvPair => Vector3.Distance(kvPair.Value.Position, position) < range)
-            .Select(kvPair => kvPair.Value);
+        var value = this.elements.Where(element => Vector3.Distance(element.Position, position) < range);
         this.slimLock.ExitReadLock();
         return value;
     }
@@ -76,8 +75,7 @@ public class ElementByIdRepository : IElementRepository
     {
         this.slimLock.EnterReadLock();
         var value = this.elements
-            .Where(element => Vector3.Distance(element.Value.Position, position) < range && element.Value.ElementType == elementType)
-            .Select(kvPair => kvPair.Value)
+            .Where(element => Vector3.Distance(element.Position, position) < range && element.ElementType == elementType)
             .Cast<TElement>();
         this.slimLock.ExitReadLock();
         return value;

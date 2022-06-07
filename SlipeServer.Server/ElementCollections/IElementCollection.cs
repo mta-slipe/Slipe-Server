@@ -1,11 +1,10 @@
-﻿using System;
-using SlipeServer.Server.Elements;
+﻿using SlipeServer.Server.Elements;
 using System.Collections.Generic;
 using System.Numerics;
 
-namespace SlipeServer.Server.Repositories;
+namespace SlipeServer.Server.ElementCollections;
 
-public interface IElementRepository
+public interface IElementCollection
 {
     int Count { get; }
 

@@ -2,7 +2,7 @@
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using System;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync;
@@ -10,17 +10,17 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync;
 public class VehicleDamageSyncPacketHandler : IPacketHandler<VehicleDamageSyncPacket>
 {
     private readonly ISyncHandlerMiddleware<VehicleDamageSyncPacket> middleware;
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementCollection;
 
     public PacketId PacketId => PacketId.PACKET_ID_VEHICLE_DAMAGE_SYNC;
 
     public VehicleDamageSyncPacketHandler(
         ISyncHandlerMiddleware<VehicleDamageSyncPacket> middleware,
-        IElementRepository elementRepository
+        IElementCollection elementCollection
     )
     {
         this.middleware = middleware;
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
     }
 
     public void HandlePacket(IClient client, VehicleDamageSyncPacket packet)
@@ -30,7 +30,7 @@ public class VehicleDamageSyncPacketHandler : IPacketHandler<VehicleDamageSyncPa
 
         var player = client.Player;
 
-        var vehicle = this.elementRepository.Get(packet.VehicleId) as Elements.Vehicle;
+        var vehicle = this.elementCollection.Get(packet.VehicleId) as Elements.Vehicle;
 
         if (vehicle != null)
         {

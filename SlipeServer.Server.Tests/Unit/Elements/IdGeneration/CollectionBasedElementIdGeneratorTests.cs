@@ -2,24 +2,24 @@
 using SlipeServer.Server.Constants;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.IdGeneration;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using Xunit;
 
 namespace SlipeServer.Server.Tests.Unit.Elements.IdGeneration;
 
-public class RepositoryBasedElementIdGeneratorTests
+public class CollectionBasedElementIdGeneratorTests
 {
     [Fact]
     public void GetId_ShouldReturnUniqueIds()
     {
-        var repository = new ElementByIdRepository();
-        var generator = new RepositoryBasedElementIdGenerator(repository);
+        var collection = new ElementByIdCollection();
+        var generator = new CollectionBasedElementIdGenerator(collection);
 
         var first = generator.GetId();
-        repository.Add(new DummyElement() { Id = first });
+        collection.Add(new DummyElement() { Id = first });
 
         var second = generator.GetId();
-        repository.Add(new DummyElement() { Id = second });
+        collection.Add(new DummyElement() { Id = second });
 
         first.Should().NotBe(second);
     }
@@ -27,13 +27,13 @@ public class RepositoryBasedElementIdGeneratorTests
     [Fact]
     public void GetId_ShouldReturnUnusedId()
     {
-        var repository = new ElementByIdRepository();
+        var collection = new ElementByIdCollection();
         var dummyElement = new DummyElement()
         {
             Id = 0
         };
-        repository.Add(dummyElement);
-        var generator = new RepositoryBasedElementIdGenerator(repository);
+        collection.Add(dummyElement);
+        var generator = new CollectionBasedElementIdGenerator(collection);
 
         var id = generator.GetId();
 
@@ -43,20 +43,20 @@ public class RepositoryBasedElementIdGeneratorTests
     [Fact]
     public void GetId_ShouldWrapAround()
     {
-        var repository = new ElementByIdRepository();
-        var generator = new RepositoryBasedElementIdGenerator(repository);
+        var collection = new ElementByIdCollection();
+        var generator = new CollectionBasedElementIdGenerator(collection);
 
         var first = generator.GetId();
         var firstElement = new DummyElement() { Id = first };
-        repository.Add(firstElement);
+        collection.Add(firstElement);
 
         for (int i = 0; i < ElementConstants.MaxElementId - 2; i++)
         {
             var id = generator.GetId();
-            repository.Add(new DummyElement() { Id = id });
+            collection.Add(new DummyElement() { Id = id });
         }
 
-        repository.Remove(firstElement);
+        collection.Remove(firstElement);
 
         var finalId = generator.GetId();
         finalId.Should().Be(first);
@@ -65,13 +65,13 @@ public class RepositoryBasedElementIdGeneratorTests
     [Fact]
     public void GetId_ThrowsExceptionWhenOutOfElementIds()
     {
-        var repository = new ElementByIdRepository();
-        var generator = new RepositoryBasedElementIdGenerator(repository);
+        var collection = new ElementByIdCollection();
+        var generator = new CollectionBasedElementIdGenerator(collection);
 
         for (int i = 0; i < ElementConstants.MaxElementId - 1; i++)
         {
             var second = generator.GetId();
-            repository.Add(new DummyElement() { Id = second });
+            collection.Add(new DummyElement() { Id = second });
         }
 
         bool exceptionThrown = false;

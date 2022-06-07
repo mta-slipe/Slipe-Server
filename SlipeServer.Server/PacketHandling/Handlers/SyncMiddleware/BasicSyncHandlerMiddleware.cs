@@ -1,5 +1,5 @@
 ﻿using SlipeServer.Server.Elements;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,16 +7,16 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Middleware;
 
 public class BasicSyncHandlerMiddleware<TData> : ISyncHandlerMiddleware<TData>
 {
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementCollection;
 
-    public BasicSyncHandlerMiddleware(IElementRepository elementRepository)
+    public BasicSyncHandlerMiddleware(IElementCollection elementCollection)
     {
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
     }
 
     public IEnumerable<Elements.Player> GetPlayersToSyncTo(Elements.Player player, TData packet)
     {
-        return this.elementRepository
+        return this.elementCollection
             .GetByType<Elements.Player>(ElementType.Player)
             .Where(x => x != player);
     }

@@ -1,19 +1,19 @@
 ﻿using SlipeServer.Packets.Definitions.Pickups;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Extensions;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 
 namespace SlipeServer.Server.Behaviour;
 
 public class PickupBehaviour
 {
     private readonly MtaServer server;
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementCollection;
 
-    public PickupBehaviour(MtaServer server, IElementRepository elementRepository)
+    public PickupBehaviour(MtaServer server, IElementCollection elementCollection)
     {
         this.server = server;
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
 
 
         server.ElementCreated += HandleElementCreation;
@@ -32,7 +32,7 @@ public class PickupBehaviour
     {
         (new PickupHitConfirmPacket(pickup.Id, false, true)).SendTo(e.Player);
 
-        var otherPlayers = this.elementRepository
+        var otherPlayers = this.elementCollection
             .GetByType<Player>(ElementType.Player);
         (new PickupHitConfirmPacket(pickup.Id, false, false)).SendTo(otherPlayers);
     }

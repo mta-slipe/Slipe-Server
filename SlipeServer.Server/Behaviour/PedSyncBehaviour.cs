@@ -1,6 +1,6 @@
 ﻿using SlipeServer.Packets.Definitions.Ped;
 using SlipeServer.Server.Elements;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using System.Linq;
 using System.Numerics;
 using System.Timers;
@@ -9,16 +9,16 @@ namespace SlipeServer.Server.Behaviour;
 
 public class PedSyncBehaviour
 {
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementCollection;
     private readonly Configuration configuration;
     private readonly Timer timer;
 
     public PedSyncBehaviour(
         MtaServer server,
-        IElementRepository elementRepository,
+        IElementCollection elementCollection,
         Configuration configuration)
     {
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
         this.configuration = configuration;
 
         this.timer = new Timer(configuration.SyncIntervals.LightSync)
@@ -46,7 +46,7 @@ public class PedSyncBehaviour
 
     private void HandlePedSyncers()
     {
-        var peds = this.elementRepository.GetByType<Ped>(ElementType.Ped)
+        var peds = this.elementCollection.GetByType<Ped>(ElementType.Ped)
             .Where(ped => !(ped is Player));
 
         foreach (var ped in peds)
@@ -90,7 +90,7 @@ public class PedSyncBehaviour
 
     private Player? GetClosestPlayer(Ped ped, float maxDistance)
     {
-        var players = this.elementRepository
+        var players = this.elementCollection
             .GetWithinRange<Player>(ped.Position, maxDistance, ElementType.Player)
             .Where(x => x.Dimension == ped.Dimension)
             .Where(x => x.Client.ConnectionState == Enums.ClientConnectionState.Joined)

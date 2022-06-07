@@ -5,7 +5,7 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.ColShapes;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
@@ -16,10 +16,10 @@ public class MarkerBehaviour
 {
     private readonly MtaServer server;
 
-    public MarkerBehaviour(MtaServer server, IElementRepository elementRepository)
+    public MarkerBehaviour(MtaServer server, IElementCollection elementCollection)
     {
         this.server = server;
-        foreach (var marker in elementRepository.GetByType<Marker>(ElementType.Marker))
+        foreach (var marker in elementCollection.GetByType<Marker>(ElementType.Marker))
         {
             AddMarker(marker);
         }

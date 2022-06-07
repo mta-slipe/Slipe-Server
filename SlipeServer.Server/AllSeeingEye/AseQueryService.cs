@@ -2,7 +2,7 @@
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,16 +15,16 @@ public class AseQueryService : IAseQueryService
 {
     private readonly MtaServer mtaServer;
     private readonly Configuration configuration;
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementCollection;
     private readonly AseVersion aseVersion;
     private readonly BuildType buildType;
     private readonly Dictionary<string, string> rules;
 
-    public AseQueryService(MtaServer mtaServer, Configuration configuration, IElementRepository elementRepository)
+    public AseQueryService(MtaServer mtaServer, Configuration configuration, IElementCollection elementCollection)
     {
         this.mtaServer = mtaServer;
         this.configuration = configuration;
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
 
         this.aseVersion = AseVersion.v1_5;
         this.buildType = BuildType.Release;
@@ -50,7 +50,7 @@ public class AseQueryService : IAseQueryService
     {
         using MemoryStream stream = new MemoryStream();
         using BinaryWriter bw = new BinaryWriter(stream);
-        IEnumerable<Player> players = this.elementRepository.GetByType<Player>(ElementType.Player);
+        IEnumerable<Player> players = this.elementCollection.GetByType<Player>(ElementType.Player);
 
         string aseVersion = GetVersion();
 
@@ -98,7 +98,7 @@ public class AseQueryService : IAseQueryService
     {
         using MemoryStream stream = new MemoryStream();
         using BinaryWriter bw = new BinaryWriter(stream);
-        int playerCount = this.elementRepository.GetByType<Player>(ElementType.Player).Count();
+        int playerCount = this.elementCollection.GetByType<Player>(ElementType.Player).Count();
         string strPlayerCount = playerCount + "/" + this.configuration.MaxPlayerCount;
 
         bw.Write("EYE3".AsSpan());
@@ -125,7 +125,7 @@ public class AseQueryService : IAseQueryService
     {
         using MemoryStream stream = new MemoryStream();
         using BinaryWriter bw = new BinaryWriter(stream);
-        List<string> playerNames = this.elementRepository.GetByType<Player>(ElementType.Player)
+        List<string> playerNames = this.elementCollection.GetByType<Player>(ElementType.Player)
             .Select(o => o.Name.StripColorCode())
             .ToList();
 
