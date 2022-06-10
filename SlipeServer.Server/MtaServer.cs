@@ -173,7 +173,7 @@ public class MtaServer
         if (element != this.root && element.Parent == null)
             element.Parent = this.root;
 
-        if (this.elementIdGenerator != null)
+        if (this.elementIdGenerator != null && element.Id == default)
             element.Id = this.elementIdGenerator.GetId();
 
         this.ElementCreated?.Invoke(element);
@@ -249,7 +249,7 @@ public class MtaServer
         this.serviceCollection.AddSingleton<WeaponConfigurationService>();
         this.serviceCollection.AddSingleton<CommandService>();
 
-        this.serviceCollection.AddSingleton<HttpClient>();
+        this.serviceCollection.AddHttpClient();
         this.serviceCollection.AddSingleton<Configuration>(this.configuration);
         this.serviceCollection.AddSingleton<RootElement>(this.root);
         this.serviceCollection.AddSingleton<MtaServer>(this);
