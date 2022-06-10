@@ -13,7 +13,7 @@ namespace SlipeServer.Server.ElementCollections;
 
 public class KdTreeElementCollection : IElementCollection
 {
-    public int Count => throw new NotImplementedException();
+    public int Count => this.elements.Count;
     private readonly KdTree<float, Element> elements;
     private readonly ReaderWriterLockSlim slimLock = new();
 
