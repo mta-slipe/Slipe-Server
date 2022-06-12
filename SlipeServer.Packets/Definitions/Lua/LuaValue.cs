@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Lua;
 
@@ -111,4 +112,41 @@ public class LuaValue
     public static implicit operator LuaValue(double value) => new(value);
     public static implicit operator LuaValue(Dictionary<LuaValue, LuaValue> value) => new(value);
     public static implicit operator LuaValue(LuaValue[] value) => new(value);
+
+    public static implicit operator LuaValue(Vector2 vector) => new(new Dictionary<LuaValue, LuaValue>()
+    {
+        ["X"] = vector.X,
+        ["Y"] = vector.Y,
+    });
+    public static implicit operator LuaValue(Vector3 vector) => new(new Dictionary<LuaValue, LuaValue>()
+    {
+        ["X"] = vector.X,
+        ["Y"] = vector.Y,
+        ["Z"] = vector.Z,
+    });
+
+    public static explicit operator uint(LuaValue value) => value.ElementId ?? 0;
+    public static explicit operator string(LuaValue value) => value.StringValue ?? "";
+    public static explicit operator bool(LuaValue value) => value.BoolValue ?? false;
+    public static explicit operator int(LuaValue value) => value.IntegerValue ?? 0;
+    public static explicit operator float(LuaValue value) => value.FloatValue ?? 0;
+    public static explicit operator double(LuaValue value) => value.DoubleValue ?? 0;
+
+    public static explicit operator Vector2(LuaValue value)
+    {
+        if (value.TableValue == null)
+            return Vector2.Zero;
+
+        var stringKeyedDictionary = value.TableValue.ToDictionary(x => x.Key.StringValue!, x => x.Value);
+        return new((float)stringKeyedDictionary["X"], (float)stringKeyedDictionary["Y"]);
+    }
+
+    public static explicit operator Vector3(LuaValue value)
+    {
+        if (value.TableValue == null)
+            return Vector3.Zero;
+
+        var stringKeyedDictionary = value.TableValue.ToDictionary(x => x.Key.StringValue!, x => x.Value);
+        return new ((float) stringKeyedDictionary["X"], (float)stringKeyedDictionary["Y"], (float)stringKeyedDictionary["Z"]);
+    }
 }

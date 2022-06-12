@@ -46,6 +46,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SlipeServer.ConfigurationProviders\SlipeServer.ConfigurationProviders.csproj" />
+    <ProjectReference Include="..\SlipeServer.LuaControllers\SlipeServer.LuaControllers.csproj" />
     <ProjectReference Include="..\SlipeServer.Lua\SlipeServer.Lua.csproj" />
     <ProjectReference Include="..\SlipeServer.Physics\SlipeServer.Physics.csproj" />
     <ProjectReference Include="..\SlipeServer.Server\SlipeServer.Server.csproj" />

@@ -5,6 +5,7 @@ using SlipeServer.Console.AdditionalResources;
 using SlipeServer.Console.Elements;
 using SlipeServer.Console.Logic;
 using SlipeServer.Lua;
+using SlipeServer.LuaControllers;
 using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Physics.Extensions;
 using SlipeServer.Server;
@@ -77,6 +78,7 @@ public partial class Program
                 builder.AddLua();
                 builder.AddPhysics();
                 builder.AddParachuteResource();
+                builder.AddLuaControllers();
 
                 builder.AddLogic<ServerTestLogic>();
                 builder.AddLogic<LuaTestLogic>();
@@ -85,6 +87,7 @@ public partial class Program
                 builder.AddLogic<WarpIntoVehicleLogic>();
                 builder.AddLogic<LuaEventTestLogic>();
                 //builder.AddBehaviour<VelocityBehaviour>();
+                //builder.AddBehaviour<EventLoggingBehaviour>();
             }
         )
         {
