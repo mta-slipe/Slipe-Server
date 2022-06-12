@@ -5,6 +5,7 @@ using SlipeServer.Packets;
 using SlipeServer.Packets.Definitions.Player;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.AllSeeingEye;
+using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.IdGeneration;
 using SlipeServer.Server.Enums;
@@ -15,7 +16,6 @@ using SlipeServer.Server.Mappers;
 using SlipeServer.Server.PacketHandling;
 using SlipeServer.Server.PacketHandling.Handlers;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
-using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.Resources.Serving;
@@ -24,7 +24,6 @@ using SlipeServer.Server.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 
 namespace SlipeServer.Server;
 
@@ -215,7 +214,7 @@ public class MtaServer
     }
 
     public void ForAny<TElement>(Action<TElement> action)
-        where TElement: Element
+        where TElement : Element
     {
         foreach (var element in this.elementCollection.GetByType<TElement>())
             action(element);
