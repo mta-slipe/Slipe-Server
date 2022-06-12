@@ -47,7 +47,7 @@ public class PedSyncBehaviour
     private void HandlePedSyncers()
     {
         var peds = this.elementCollection.GetByType<Ped>(ElementType.Ped)
-            .Where(ped => !(ped is Player));
+            .Where(ped => ped is not Player);
 
         foreach (var ped in peds)
             UpdatePedSyncer(ped);

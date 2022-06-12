@@ -3,20 +3,22 @@ using System;
 
 namespace SlipeServer.Server.Loggers;
 
-class DefaultLoggerScope : IDisposable
+public class DefaultLoggerScope : IDisposable
 {
-    public void Dispose() { }
+    public void Dispose() {
+        GC.SuppressFinalize(this);
+    }
 }
 
-class DefaultLogger : ILogger
+public class DefaultLogger : ILogger
 {
     private readonly IDisposable disposable = new DefaultLoggerScope();
 
-    public IDisposable BeginScope<TState>(TState state) => disposable;
+    public IDisposable BeginScope<TState>(TState state) => this.disposable;
 
     public bool IsEnabled(LogLevel logLevel) => false;
 
-    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception, string> formatter)
     {
 
     }

@@ -159,8 +159,8 @@ public class MtaServer
     public T Instantiate<T>(params object[] parameters)
         => ActivatorUtilities.CreateInstance<T>(this.serviceProvider, parameters);
 
-    public T GetService<T>() => this.serviceProvider.GetService<T>();
-    public T GetRequiredService<T>() => this.serviceProvider.GetRequiredService<T>();
+    public T? GetService<T>() => this.serviceProvider.GetService<T>();
+    public T GetRequiredService<T>() where T: notnull => this.serviceProvider.GetRequiredService<T>();
 
     public void BroadcastPacket(Packet packet)
     {
