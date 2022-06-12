@@ -113,13 +113,7 @@ public class RTreeElementCollection : IElementCollection
 
     public IEnumerable<TElement> GetByType<TElement>() where TElement : Element
     {
-        this.slimLock.EnterReadLock();
-
-        var results = this.GetByType<TElement>(ElementTypeHelpers.GetElementType<TElement>());
-
-        this.slimLock.ExitReadLock();
-
-        return results;
+        return this.GetByType<TElement>(ElementTypeHelpers.GetElementType<TElement>());
     }
 
     public IEnumerable<Element> GetWithinRange(Vector3 position, float range)
@@ -143,6 +137,11 @@ public class RTreeElementCollection : IElementCollection
             .Cast<TElement>();
 
         return results;
+    }
+
+    public IEnumerable<TElement> GetWithinRange<TElement>(Vector3 position, float range) where TElement : Element
+    {
+        return GetWithinRange<TElement>(position, range, ElementTypeHelpers.GetElementType<TElement>());
     }
 
     private void ReInsertElement(Element element, ElementChangedEventArgs<Vector3> args)

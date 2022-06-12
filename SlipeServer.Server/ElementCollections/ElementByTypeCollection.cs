@@ -10,7 +10,7 @@ namespace SlipeServer.Server.ElementCollections;
 
 public class ElementByTypeCollection : IElementCollection
 {
-    public int Count => this.elements.Count;
+    public int Count => this.elements.Select(x => x.Value.Count).Sum();
 
     private readonly Dictionary<ElementType, List<Element>> elements;
     private readonly ReaderWriterLockSlim slimLock = new();
@@ -98,5 +98,10 @@ public class ElementByTypeCollection : IElementCollection
             Array.Empty<TElement>();
         this.slimLock.ExitReadLock();
         return value;
+    }
+
+    public IEnumerable<TElement> GetWithinRange<TElement>(Vector3 position, float range) where TElement : Element
+    {
+        return GetWithinRange<TElement>(position, range, ElementTypeHelpers.GetElementType<TElement>());
     }
 }
