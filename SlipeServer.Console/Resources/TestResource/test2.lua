@@ -1,4 +1,4 @@
-outputChatBox("TEST TWO")
+outputChatBox("TEST TWO!")
 
 addCommandHandler("blurlevel", function()
 	triggerServerEvent("SlipeServer.Test.BlurLevel", root, getBlurLevel())

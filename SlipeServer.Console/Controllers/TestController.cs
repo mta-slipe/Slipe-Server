@@ -1,4 +1,5 @@
-﻿using SlipeServer.Console.LuaValues;
+﻿using SlipeServer.Console.Elements;
+using SlipeServer.Console.LuaValues;
 using SlipeServer.LuaControllers;
 using SlipeServer.LuaControllers.Attributes;
 using SlipeServer.Server.Services;
@@ -8,7 +9,7 @@ using System.Numerics;
 namespace SlipeServer.Console.Controllers;
 
 [LuaController("SlipeServer.Test.")]
-public class TestController : BaseLuaController
+public class TestController : BaseLuaController<CustomPlayer>
 {
     private readonly ChatBox chatBox;
 

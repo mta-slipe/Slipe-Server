@@ -18,7 +18,7 @@ public class LuaControllerLogic
     private readonly LuaEventService luaEventService;
     private readonly IElementCollection elementCollection;
     private readonly LuaValueMapper luaValueMapper;
-    private readonly Dictionary<string, List<Func<LuaEventContext, LuaValue[], LuaResult?>>> handlers;
+    private readonly Dictionary<string, List<Func<LuaEvent, LuaResult?>>> handlers;
     private readonly Dictionary<Type, Func<LuaValue, object>> implicitlyCastableTypes;
 
     public LuaControllerLogic(
@@ -76,14 +76,10 @@ public class LuaControllerLogic
         if (!this.handlers.ContainsKey(name))
             this.handlers[name] = new();
 
-        this.handlers[name].Add((context, values) =>
+        this.handlers[name].Add((luaEvent) =>
         {
-            controller.SetContext(context);
-
-            var parameters = MapParameters(values, method);
-
-            var result = method.Invoke(controller, parameters);
-            controller.SetContext(null);
+            var parameters = MapParameters(luaEvent.Parameters, method);
+            var result = controller.HandleEvent(luaEvent, (values) => method.Invoke(controller, parameters));
 
             if (method.ReturnType == typeof(void))
                 return null;
@@ -134,12 +130,11 @@ public class LuaControllerLogic
         if (!this.handlers.TryGetValue(luaEvent.Name, out var handlers))
             return;
 
-        var context = new LuaEventContext(luaEvent.Player, luaEvent.Source, luaEvent.Name);
         foreach (var handler in handlers)
         {
             try
             {
-                var result = handler.Invoke(context, luaEvent.Parameters);
+                var result = handler.Invoke(luaEvent);
                 if (result != null)
                     if (result is LuaResult<object> objectResult)
                         this.luaEventService.TriggerEventFor(
@@ -149,7 +144,7 @@ public class LuaControllerLogic
                             this.luaValueMapper.Map(objectResult.Data));
                     else
                         this.luaEventService.TriggerEventFor(luaEvent.Player, luaEvent.Name + result.EventSuffix, luaEvent.Player);
-            } catch (Exception _)
+            } catch (Exception)
             {
                 this.luaEventService.TriggerEventFor(luaEvent.Player, luaEvent.Name + ".Error", luaEvent.Player);
             }

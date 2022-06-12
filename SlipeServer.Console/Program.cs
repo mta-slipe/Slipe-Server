@@ -87,6 +87,7 @@ public partial class Program
                 builder.AddLogic<WarpIntoVehicleLogic>();
                 builder.AddLogic<LuaEventTestLogic>();
                 //builder.AddBehaviour<VelocityBehaviour>();
+                //builder.AddBehaviour<EventLoggingBehaviour>();
             }
         )
         {
