@@ -5,8 +5,8 @@ public class LuaControllerAttribute : Attribute
 {
     public string EventPrefix { get; }
 
-    public LuaControllerAttribute(string eventName)
+    public LuaControllerAttribute(string eventPrefix)
     {
-        this.EventPrefix = eventName;
+        this.EventPrefix = eventPrefix;
     }
 }
