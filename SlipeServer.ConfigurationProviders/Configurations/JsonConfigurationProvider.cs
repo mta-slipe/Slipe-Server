@@ -6,10 +6,10 @@ namespace SlipeServer.ConfigurationProviders.Configurations;
 
 public class JsonConfigurationProvider : IConfigurationProvider
 {
-    public Configuration configuration { private set; get; }
-    public Configuration GetConfiguration() => configuration;
+    public Configuration Configuration { private set; get; }
+    public Configuration GetConfiguration() => this.Configuration;
     public JsonConfigurationProvider(string fileName)
     {
-        this.configuration = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(fileName));
+        this.Configuration = JsonConvert.DeserializeObject<Configuration>(File.ReadAllText(fileName));
     }
 }

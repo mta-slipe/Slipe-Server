@@ -45,11 +45,12 @@ public class LuaValueMapper
         if (this.strictlyDefinedStructMappers.TryGetValue(value.GetType(), out var structMapper))
             return structMapper.Invoke(value);
 
-        if (value is ILuaMappable luaMappable)
-            return Map(luaMappable);
-
         switch (value)
         {
+            case LuaValue luaValue:
+                return luaValue;
+            case ILuaMappable luaMappable:
+                return Map(luaMappable);
             case int int32:
                 return int32;
             case uint uint32:

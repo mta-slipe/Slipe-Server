@@ -13,12 +13,12 @@ public class SetWorldObjectVisibileInAllDimensionsPacket : Packet
     public override PacketPriority Priority => PacketPriority.High;
 
     public uint ElementId { get; }
-    public bool isVisibleInAllDimensions { get; }
+    public bool IsVisibleInAllDimensions { get; }
 
     public SetWorldObjectVisibileInAllDimensionsPacket(uint elementId, bool isVisibleInAllDimensions)
     {
         this.ElementId = elementId;
-        this.isVisibleInAllDimensions = isVisibleInAllDimensions;
+        this.IsVisibleInAllDimensions = isVisibleInAllDimensions;
     }
 
     public override void Read(byte[] bytes)
@@ -31,7 +31,7 @@ public class SetWorldObjectVisibileInAllDimensionsPacket : Packet
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRpcFunction.SET_OBJECT_VISIBLE_IN_ALL_DIMENSIONS);
         builder.WriteElementId(this.ElementId);
-        builder.Write(this.isVisibleInAllDimensions);
+        builder.Write(this.IsVisibleInAllDimensions);
 
         return builder.Build();
     }

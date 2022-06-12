@@ -1,6 +1,5 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
-using SlipeServer.Packets.Reader;
 using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Vehicles;
@@ -28,7 +27,7 @@ public class UnoccupiedVehicleSyncStartPacket : Packet
 
     public override void Read(byte[] bytes)
     {
-        var reader = new PacketReader(bytes);
+
     }
 
     public override byte[] Write()

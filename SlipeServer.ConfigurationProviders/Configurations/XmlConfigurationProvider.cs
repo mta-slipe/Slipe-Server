@@ -1,20 +1,19 @@
 ﻿using SlipeServer.Server;
-using System.Xml;
-using System.Linq;
-using System.Collections;
-using System;
 using SlipeServer.Server.Enums;
+using System;
+using System.Linq;
+using System.Xml;
 
 namespace SlipeServer.ConfigurationProviders.Configurations;
 
 public class XmlConfigurationProvider : IConfigurationProvider
 {
-    public Configuration configuration { get; private set; }
-    public Configuration GetConfiguration() => configuration;
+    public Configuration Configuration { get; private set; }
+    public Configuration GetConfiguration() => this.Configuration;
 
     public XmlConfigurationProvider(string fileName)
     {
-        configuration = new Configuration();
+        this.Configuration = new Configuration();
         XmlDocument xmlConfig = new XmlDocument();
         xmlConfig.Load(fileName);
 
@@ -25,83 +24,83 @@ public class XmlConfigurationProvider : IConfigurationProvider
             switch (node.Name)
             {
                 case "serverName":
-                    configuration.ServerName = node.InnerText;
+                    this.Configuration.ServerName = node.InnerText;
                     break;
                 case "host":
-                    configuration.Host = node.InnerText;
+                    this.Configuration.Host = node.InnerText;
                     break;
                 case "port":
                     if (ushort.TryParse(node.InnerText, out result))
-                        configuration.Port = result;
+                        this.Configuration.Port = result;
 
                     break;
                 case "maxPlayers":
                     if (ushort.TryParse(node.InnerText, out result))
-                        configuration.MaxPlayerCount = result;
+                        this.Configuration.MaxPlayerCount = result;
 
                     break;
                 case "password":
-                    configuration.Password = node.InnerText;
+                    this.Configuration.Password = node.InnerText;
                     break;
 
                 case "httpPort":
-                    configuration.HttpPort = ushort.Parse(node.InnerText);
+                    this.Configuration.HttpPort = ushort.Parse(node.InnerText);
                     break;
 
                 case "httpUrl":
-                    configuration.HttpUrl = node.InnerText;
+                    this.Configuration.HttpUrl = node.InnerText;
                     break;
 
                 case "httpHost":
-                    configuration.HttpHost = node.InnerText;
+                    this.Configuration.HttpHost = node.InnerText;
                     break;
 
                 case "httpConnectionsPerClient":
-                    configuration.HttpConnectionsPerClient = int.Parse(node.InnerText);
+                    this.Configuration.HttpConnectionsPerClient = int.Parse(node.InnerText);
                     break;
 
                 case "ResourceDirectory":
-                    configuration.ResourceDirectory = node.InnerText;
+                    this.Configuration.ResourceDirectory = node.InnerText;
                     break;
 
                 case "ExplosionSyncDistance":
-                    configuration.ExplosionSyncDistance = float.Parse(node.InnerText);
+                    this.Configuration.ExplosionSyncDistance = float.Parse(node.InnerText);
                     break;
 
                 case "BulletSyncEnabledWeapons":
-                    configuration.BulletSyncEnabledWeapons = node.ChildNodes.Cast<XmlNode>().Select(node => (WeaponId)Enum.Parse(typeof(XmlNode), node.InnerText)).ToArray();
+                    this.Configuration.BulletSyncEnabledWeapons = node.ChildNodes.Cast<XmlNode>().Select(node => (WeaponId)Enum.Parse(typeof(XmlNode), node.InnerText)).ToArray();
                     break;
 
                 case "VehicleExtrapolationBaseMilliseconds":
-                    configuration.VehicleExtrapolationBaseMilliseconds = short.Parse(node.InnerText);
+                    this.Configuration.VehicleExtrapolationBaseMilliseconds = short.Parse(node.InnerText);
                     break;
 
                 case "VehicleExtrapolationPercentage":
-                    configuration.VehicleExtrapolationPercentage = short.Parse(node.InnerText);
+                    this.Configuration.VehicleExtrapolationPercentage = short.Parse(node.InnerText);
                     break;
 
                 case "VehicleExtrapolationMaxMilliseconds":
-                    configuration.VehicleExtrapolationMaxMilliseconds = short.Parse(node.InnerText);
+                    this.Configuration.VehicleExtrapolationMaxMilliseconds = short.Parse(node.InnerText);
                     break;
 
                 case "UseAlternativePulseOrder":
-                    configuration.UseAlternativePulseOrder = bool.Parse(node.InnerText);
+                    this.Configuration.UseAlternativePulseOrder = bool.Parse(node.InnerText);
                     break;
 
                 case "AllowFastSprintFix":
-                    configuration.AllowFastSprintFix = bool.Parse(node.InnerText);
+                    this.Configuration.AllowFastSprintFix = bool.Parse(node.InnerText);
                     break;
 
                 case "AllowDriveByAnimationFix":
-                    configuration.AllowDriveByAnimationFix = bool.Parse(node.InnerText);
+                    this.Configuration.AllowDriveByAnimationFix = bool.Parse(node.InnerText);
                     break;
 
                 case "AllowShotgunDamageFix":
-                    configuration.AllowShotgunDamageFix = bool.Parse(node.InnerText);
+                    this.Configuration.AllowShotgunDamageFix = bool.Parse(node.InnerText);
                     break;
 
                 case "IsVoiceEnabled":
-                    configuration.IsVoiceEnabled = bool.Parse(node.InnerText);
+                    this.Configuration.IsVoiceEnabled = bool.Parse(node.InnerText);
                     break;
             }
         }
