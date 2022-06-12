@@ -70,6 +70,11 @@ public class RTreeCompoundElementCollection : IElementCollection
         return this.GetRTreeElementCollection(elementType).GetWithinRange<TElement>(position, range, elementType);
     }
 
+    public IEnumerable<TElement> GetWithinRange<TElement>(Vector3 position, float range) where TElement : Element
+    {
+        return GetWithinRange<TElement>(position, range, ElementTypeHelpers.GetElementType<TElement>());
+    }
+
     private RTreeElementCollection GetRTreeElementCollection(ElementType elementType)
     {
         if (!this.spatialCollections.ContainsKey(elementType))

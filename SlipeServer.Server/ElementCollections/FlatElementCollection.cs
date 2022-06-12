@@ -80,4 +80,9 @@ public class FlatElementCollection : IElementCollection
         this.slimLock.ExitReadLock();
         return value;
     }
+
+    public IEnumerable<TElement> GetWithinRange<TElement>(Vector3 position, float range) where TElement : Element
+    {
+        return GetWithinRange<TElement>(position, range, ElementTypeHelpers.GetElementType<TElement>());
+    }
 }

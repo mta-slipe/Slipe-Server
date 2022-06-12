@@ -67,4 +67,9 @@ public class BasicCompoundElementCollection : IElementCollection
     {
         return this.kdTreeElementCollection.GetWithinRange<TElement>(position, range, elementType);
     }
+
+    public IEnumerable<TElement> GetWithinRange<TElement>(Vector3 position, float range) where TElement : Element
+    {
+        return GetWithinRange<TElement>(position, range, ElementTypeHelpers.GetElementType<TElement>());
+    }
 }

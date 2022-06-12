@@ -70,6 +70,11 @@ public class CompoundElementCollection : IElementCollection
         return this.GetKdTreeElementCollection(elementType).GetWithinRange<TElement>(position, range, elementType);
     }
 
+    public IEnumerable<TElement> GetWithinRange<TElement>(Vector3 position, float range) where TElement : Element
+    {
+        return GetWithinRange<TElement>(position, range, ElementTypeHelpers.GetElementType<TElement>());
+    }
+
     private KdTreeElementCollection GetKdTreeElementCollection(ElementType elementType)
     {
         if (!this.spatialCollection.ContainsKey(elementType))
