@@ -1,4 +1,5 @@
 ﻿using SlipeServer.Packets.Definitions.Lua;
+using SlipeServer.Server.Events;
 using SlipeServer.SourceGenerators;
 using System.ComponentModel.DataAnnotations;
 using System.Numerics;
@@ -6,7 +7,7 @@ using System.Numerics;
 namespace SlipeServer.Console.LuaValues;
 
 [LuaValue]
-public partial class SampleLuaValue
+public partial class SampleLuaValue : ILuaValue
 {
     public float Float { get; set; }
     public float? OptionalFloat { get; set; }
