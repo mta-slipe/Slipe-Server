@@ -1,5 +1,4 @@
 ﻿using SlipeServer.LuaControllers.Attributes;
-using SlipeServer.LuaControllers.Contexts;
 using SlipeServer.LuaControllers.Results;
 using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Server;
@@ -117,7 +116,7 @@ public class LuaControllerLogic
             return this.implicitlyCastableTypes[type](value);
         else if (type.IsAssignableTo(typeof(Dictionary<,>)) && value.TableValue != null)
             return value.TableValue.ToDictionary(
-                x => ConvertLuaValue(type.GenericTypeArguments.First(), x.Key) ?? new object(), 
+                x => ConvertLuaValue(type.GenericTypeArguments.First(), x.Key) ?? new object(),
                 x => ConvertLuaValue(type.GenericTypeArguments.ElementAt(1), x.Value));
         else if (type.IsAssignableTo(typeof(IEnumerable<>)) && value.TableValue != null)
             return value.TableValue.Values.Select(x => ConvertLuaValue(type.GenericTypeArguments.First(), value));
@@ -144,7 +143,8 @@ public class LuaControllerLogic
                             this.luaValueMapper.Map(objectResult.Data));
                     else
                         this.luaEventService.TriggerEventFor(luaEvent.Player, luaEvent.Name + result.EventSuffix, luaEvent.Player);
-            } catch (Exception)
+            }
+            catch (Exception)
             {
                 this.luaEventService.TriggerEventFor(luaEvent.Player, luaEvent.Name + ".Error", luaEvent.Player);
             }

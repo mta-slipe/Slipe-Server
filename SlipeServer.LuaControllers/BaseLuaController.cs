@@ -1,5 +1,4 @@
 ﻿using SlipeServer.LuaControllers.Contexts;
-using SlipeServer.LuaControllers.Results;
 using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Events;
@@ -37,7 +36,7 @@ public class BaseLuaController
 }
 
 
-public class BaseLuaController<TPlayer> : BaseLuaController where TPlayer: Player
+public class BaseLuaController<TPlayer> : BaseLuaController where TPlayer : Player
 {
     public new LuaEventContext<TPlayer> Context => (base.Context as LuaEventContext<TPlayer>)!;
 
