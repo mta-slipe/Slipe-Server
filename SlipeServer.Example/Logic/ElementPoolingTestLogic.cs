@@ -6,7 +6,7 @@ using SlipeServer.Server.Services;
 using System.Collections.Generic;
 using System.Numerics;
 
-namespace SlipeServer.Console.Logic;
+namespace SlipeServer.Example.Logic;
 
 public class ElementPoolingTestLogic
 {

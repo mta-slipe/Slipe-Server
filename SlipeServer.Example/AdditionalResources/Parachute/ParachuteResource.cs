@@ -4,10 +4,9 @@ using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Resources;
-using System.Collections.Generic;
 using System.Security.Cryptography;
 
-namespace SlipeServer.Console.AdditionalResources.Parachute;
+namespace SlipeServer.Example.AdditionalResources.Parachute;
 
 public class ParachuteResource : Resource
 {

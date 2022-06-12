@@ -21,24 +21,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="AdditionalResources\Parachute\Lua\client_anim.lua" />
-    <None Remove="AdditionalResources\Parachute\Lua\openChute.lua" />
-    <None Remove="AdditionalResources\Parachute\Lua\parachuteopen.mp3" />
-    <None Remove="AdditionalResources\Parachute\Lua\parachute_cl.lua" />
-    <None Remove="AdditionalResources\Parachute\Lua\skydiving_cl.lua" />
-    <None Remove="AdditionalResources\Parachute\Lua\utility.lua" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="AdditionalResources\Parachute\Lua\client_anim.lua" />
-    <EmbeddedResource Include="AdditionalResources\Parachute\Lua\openChute.lua" />
-    <EmbeddedResource Include="AdditionalResources\Parachute\Lua\parachuteopen.mp3" />
-    <EmbeddedResource Include="AdditionalResources\Parachute\Lua\parachute_cl.lua" />
-    <EmbeddedResource Include="AdditionalResources\Parachute\Lua\skydiving_cl.lua" />
-    <EmbeddedResource Include="AdditionalResources\Parachute\Lua\utility.lua" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.14" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="6.0.0-preview.5.21301.5" />
     <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
@@ -46,29 +28,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SlipeServer.ConfigurationProviders\SlipeServer.ConfigurationProviders.csproj" />
-    <ProjectReference Include="..\SlipeServer.LuaControllers\SlipeServer.LuaControllers.csproj" />
-    <ProjectReference Include="..\SlipeServer.Lua\SlipeServer.Lua.csproj" />
-    <ProjectReference Include="..\SlipeServer.Physics\SlipeServer.Physics.csproj" />
-    <ProjectReference Include="..\SlipeServer.Server\SlipeServer.Server.csproj" />
-    <ProjectReference Include="..\SlipeServer.SourceGenerators\SlipeServer.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Resources\SecondTestResource\test.lua">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\TestResource\vehicleWarp.lua">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\TestResource\test2.lua">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\TestResource\test.lua">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="test.lua">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <ProjectReference Include="..\SlipeServer.Example\SlipeServer.Example.csproj" />
+    <ProjectReference Include="..\SlipeServer.Web\SlipeServer.Web.csproj" />
   </ItemGroup>
   
   <PropertyGroup>

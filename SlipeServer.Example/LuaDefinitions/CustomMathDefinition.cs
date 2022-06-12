@@ -1,6 +1,6 @@
 ﻿using SlipeServer.Scripting;
 
-namespace SlipeServer.Console.LuaDefinitions;
+namespace SlipeServer.Example.LuaDefinitions;
 
 public class CustomMathDefinition
 {

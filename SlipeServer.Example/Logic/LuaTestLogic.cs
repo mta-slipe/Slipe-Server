@@ -1,12 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using MoonSharp.Interpreter;
-using SlipeServer.Console.LuaDefinitions;
+using SlipeServer.Example.LuaDefinitions;
 using SlipeServer.Lua;
 using SlipeServer.Scripting;
 using SlipeServer.Server.Services;
-using System.IO;
 
-namespace SlipeServer.Console.Logic;
+namespace SlipeServer.Example.Logic;
 
 public class LuaTestLogic
 {
@@ -15,7 +14,7 @@ public class LuaTestLogic
     private readonly ILogger logger;
 
     public LuaTestLogic(
-        IScriptEventRuntime eventRuntime, 
+        IScriptEventRuntime eventRuntime,
         LuaService luaService,
         CommandService commandService,
         ILogger logger

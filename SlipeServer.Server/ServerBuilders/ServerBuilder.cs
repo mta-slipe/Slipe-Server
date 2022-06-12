@@ -15,13 +15,17 @@ namespace SlipeServer.Server.ServerBuilders;
 public class ServerBuilder
 {
     private readonly List<ServerBuildStep> buildSteps;
+    private readonly List<PostDependencyBuildStep> postDependencyBuildSteps;
     public Configuration Configuration { get; private set; }
-    private readonly List<Action<ServiceCollection>> dependecyLoaders;
+    private readonly List<Action<IServiceCollection>> dependecyLoaders;
+    public IServiceCollection? ServiceCollection { get; private set; }
+    public IServiceProvider? ServiceProvider { get; private set; }
 
     public ServerBuilder()
     {
         this.Configuration = new();
         this.buildSteps = new();
+        this.postDependencyBuildSteps = new();
         this.dependecyLoaders = new();
     }
 
@@ -34,6 +38,21 @@ public class ServerBuilder
             throw new Exception($"An error has occurred while parsing configuration parameters:\r\n {invalidProperties}");
         }
         this.Configuration = configuration;
+    }
+
+    public void UseServiceCollection(IServiceCollection serviceCollection)
+    {
+        this.ServiceCollection = serviceCollection;
+    }
+
+    public void UseServiceProvider(IServiceProvider serviceProvider)
+    {
+        this.ServiceProvider = serviceProvider;
+    }
+
+    public void AddPostDependencyBuildStep(Action step, ServerBuildStepPriority priority = ServerBuildStepPriority.Default)
+    {
+        this.postDependencyBuildSteps.Add(new PostDependencyBuildStep(step, priority));
     }
 
     public void AddBuildStep(Action<MtaServer> step, ServerBuildStepPriority priority = ServerBuildStepPriority.Default)
@@ -77,7 +96,7 @@ public class ServerBuilder
         Instantiate<T>(parameters);
     }
 
-    public void ConfigureServices(Action<ServiceCollection> action)
+    public void ConfigureServices(Action<IServiceCollection> action)
     {
         this.dependecyLoaders.Add(action);
     }
@@ -104,9 +123,12 @@ public class ServerBuilder
             step.Step(server);
     }
 
-    public void LoadDependencies(ServiceCollection services)
+    public void LoadDependencies(IServiceCollection services)
     {
         foreach (var loader in this.dependecyLoaders)
             loader(services);
+
+        foreach (var step in this.postDependencyBuildSteps.OrderBy(x => (int)x.Priority))
+            step.Step();
     }
 }

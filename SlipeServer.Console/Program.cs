@@ -1,9 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SlipeServer.ConfigurationProviders;
-using SlipeServer.Console.AdditionalResources;
-using SlipeServer.Console.Elements;
-using SlipeServer.Console.Logic;
+using SlipeServer.Example.AdditionalResources;
+using SlipeServer.Example.Elements;
+using SlipeServer.Example.Logic;
 using SlipeServer.Lua;
 using SlipeServer.LuaControllers;
 using SlipeServer.Packets.Definitions.Sync;
@@ -13,6 +13,7 @@ using SlipeServer.Server.Behaviour;
 using SlipeServer.Server.Loggers;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.ServerBuilders;
+using SlipeServer.Web;
 using System;
 using System.Threading;
 
@@ -44,6 +45,7 @@ public partial class Program
 
     private readonly EventWaitHandle waitHandle = new(false, EventResetMode.AutoReset);
     private readonly MtaServer server;
+    private readonly SlipeWebApi api;
     private readonly Configuration configuration;
 
     public ILogger Logger { get; }
@@ -57,10 +59,20 @@ public partial class Program
             IsVoiceEnabled = true
         };
 
+        this.api = new SlipeWebApi();
+        this.api.InitialiseServices();
+
         this.server = new MtaServer<CustomPlayer>(
             (builder) =>
             {
                 builder.UseConfiguration(this.configuration);
+                builder.UseServiceCollection(this.api.Services);
+                builder.AddPostDependencyBuildStep(() =>
+                {
+                    this.api.Build();
+                    if (this.api.ServiceProvider != null)
+                        builder.UseServiceProvider(this.api.ServiceProvider);
+                });
 
 #if DEBUG
                 builder.AddDefaults(exceptBehaviours: ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour);
@@ -108,6 +120,7 @@ public partial class Program
     {
         this.server.Start();
         this.Logger.LogInformation("Server started.");
+        this.api.Run();
         this.waitHandle.WaitOne();
     }
 }

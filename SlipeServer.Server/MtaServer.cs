@@ -34,8 +34,8 @@ public class MtaServer
     private readonly List<Resource> additionalResources;
     protected readonly PacketReducer packetReducer;
     protected readonly Dictionary<INetWrapper, Dictionary<uint, IClient>> clients;
-    protected readonly ServiceCollection serviceCollection;
-    protected readonly ServiceProvider serviceProvider;
+    protected readonly IServiceCollection serviceCollection;
+    protected readonly IServiceProvider serviceProvider;
     private readonly IElementCollection elementCollection;
     private readonly IElementIdGenerator? elementIdGenerator;
     private readonly IResourceProvider resourceProvider;
@@ -64,17 +64,17 @@ public class MtaServer
         this.resourceServers = new();
         this.additionalResources = new();
 
-        this.root = new();
-        this.serviceCollection = new();
-
         var builder = new ServerBuilder();
         builderAction(builder);
+
+        this.root = new();
+        this.serviceCollection = builder.ServiceCollection ?? new ServiceCollection();
 
         this.configuration = builder.Configuration;
         this.Password = this.configuration.Password;
         this.SetupDependencies(services => builder.LoadDependencies(services));
 
-        this.serviceProvider = this.serviceCollection.BuildServiceProvider();
+        this.serviceProvider = builder.ServiceProvider ?? this.serviceCollection.BuildServiceProvider();
         this.packetReducer = new(this.serviceProvider.GetRequiredService<ILogger>());
 
         foreach (var server in this.resourceServers)
@@ -226,7 +226,7 @@ public class MtaServer
         };
     }
 
-    protected virtual void SetupDependencies(Action<ServiceCollection>? dependencyCallback)
+    protected virtual void SetupDependencies(Action<IServiceCollection>? dependencyCallback)
     {
         this.serviceCollection.AddSingleton<IElementCollection, RTreeCompoundElementCollection>();
         this.serviceCollection.AddSingleton<ILogger, DefaultLogger>();
@@ -349,10 +349,10 @@ public class MtaServer<TPlayer> : MtaServer
 
     }
 
-    protected override void SetupDependencies(Action<ServiceCollection>? dependencyCallback)
+    protected override void SetupDependencies(Action<IServiceCollection>? dependencyCallback)
     {
-        base.SetupDependencies(dependencyCallback);
         this.serviceCollection.AddSingleton<MtaServer<TPlayer>>(this);
+        base.SetupDependencies(dependencyCallback);
     }
 
     protected override IClient CreateClient(uint binaryAddress, INetWrapper netWrapper)

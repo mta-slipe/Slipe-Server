@@ -1,11 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using SlipeServer.Console.Elements;
-using SlipeServer.Console.LuaValues;
+using SlipeServer.Example.Elements;
+using SlipeServer.Example.LuaValues;
 using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Server;
 using SlipeServer.Server.Constants;
+using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.ColShapes;
 using SlipeServer.Server.Elements.Enums;
@@ -14,22 +15,16 @@ using SlipeServer.Server.Elements.Structs;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Events;
 using SlipeServer.Server.PacketHandling.Factories;
-using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.Services;
 using SlipeServer.Server.Structs;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.IO;
-using System.Linq;
 using System.Numerics;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace SlipeServer.Console.Logic;
+namespace SlipeServer.Example.Logic;
 
 public class ServerTestLogic
 {
@@ -1028,15 +1023,14 @@ public class ServerTestLogic
         player.SetBind("h", KeyState.Down);
         player.BindExecuted += (Player sender, PlayerBindExecutedEventArgs e) =>
         {
-            if(e.Key == "j")
+            if (e.Key == "j")
             {
                 player.HasJetpack = !player.HasJetpack;
-                if(player.HasJetpack)
+                if (player.HasJetpack)
                     this.logger.LogInformation("{name} put on a jetpack!", sender.Name);
                 else
                     this.logger.LogInformation("{name} pulled off his jetpack!", sender.Name);
-            }
-            else if(e.Key == "h")
+            } else if (e.Key == "h")
             {
                 jetpackBindEnabled = !jetpackBindEnabled;
                 player.SetBind("j", jetpackBindEnabled ? KeyState.Down : KeyState.None);

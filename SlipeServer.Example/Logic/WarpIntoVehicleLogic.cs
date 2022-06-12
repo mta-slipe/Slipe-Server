@@ -1,12 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
-using SlipeServer.Console.Elements;
-using SlipeServer.Server;
+using SlipeServer.Example.Elements;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Events;
 using SlipeServer.Server.Services;
 
-namespace SlipeServer.Console.Logic;
+namespace SlipeServer.Example.Logic;
 
 public class WarpIntoVehicleLogic
 {

@@ -6,6 +6,8 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
 COPY ["SlipeServer.Console/SlipeServer.Console.csproj", "SlipeServer.Console/"]
+COPY ["SlipeServer.Web/SlipeServer.Web.csproj", "SlipeServer.Web/"]
+COPY ["SlipeServer.LuaControllers/SlipeServer.LuaControllers.csproj", "SlipeServer.LuaControllers/"]
 COPY ["SlipeServer.Lua/SlipeServer.Lua.csproj", "SlipeServer.Lua/"]
 COPY ["SlipeServer.Scripting/SlipeServer.Scripting.csproj", "SlipeServer.Scripting/"]
 COPY ["SlipeServer.Server/SlipeServer.Server.csproj", "SlipeServer.Server/"]

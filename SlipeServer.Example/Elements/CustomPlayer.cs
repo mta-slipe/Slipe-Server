@@ -1,9 +1,8 @@
 ﻿using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Server.Elements;
 using System.Numerics;
-using System.Threading.Tasks;
 
-namespace SlipeServer.Console.Elements;
+namespace SlipeServer.Example.Elements;
 public class CustomPlayer : Player
 {
     public bool IsClickingVehicle { get; set; }

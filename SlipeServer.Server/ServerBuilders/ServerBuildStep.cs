@@ -13,3 +13,15 @@ public struct ServerBuildStep
         this.Priority = priority;
     }
 }
+
+public struct PostDependencyBuildStep
+{
+    public Action Step { get; init; }
+    public ServerBuildStepPriority Priority { get; init; }
+
+    public PostDependencyBuildStep(Action step, ServerBuildStepPriority priority)
+    {
+        this.Step = step;
+        this.Priority = priority;
+    }
+}

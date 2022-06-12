@@ -5,8 +5,9 @@ using SlipeServer.Server.Events;
 using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Services;
 using System.Linq;
+using SlipeServer.Example.AdditionalResources.Parachute;
 
-namespace SlipeServer.Console.AdditionalResources.Parachute;
+namespace SlipeServer.Example.AdditionalResources.Parachute;
 
 public class ParachuteLogic
 {

@@ -6,20 +6,17 @@ using SlipeServer.Physics.Enum;
 using SlipeServer.Physics.Services;
 using SlipeServer.Physics.Worlds;
 using SlipeServer.Server;
+using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Extensions;
-using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Services;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.IO;
 using System.Numerics;
 using System.Runtime.InteropServices;
 
-namespace SlipeServer.Console.Logic;
+namespace SlipeServer.Example.Logic;
 
 public class PhysicsTestLogic
 {
