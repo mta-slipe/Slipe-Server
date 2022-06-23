@@ -17,7 +17,7 @@ public class LuaControllerLogic
     private readonly LuaEventService luaEventService;
     private readonly IElementCollection elementCollection;
     private readonly LuaValueMapper luaValueMapper;
-    private readonly Dictionary<string, List<Func<LuaEvent, LuaResult?>>> handlers;
+    private readonly Dictionary<string, List<BoundEvent>> handlers;
     private readonly Dictionary<Type, Func<LuaValue, object>> implicitlyCastableTypes;
 
     public LuaControllerLogic(
@@ -53,41 +53,33 @@ public class LuaControllerLogic
 
         foreach (var controllerType in controllerTypes ?? Array.Empty<Type>())
         {
+            var controllerAttribute = controllerType
+                .GetCustomAttributes<LuaControllerAttribute>()
+                .SingleOrDefault();
+
             var methods = controllerType.GetMethods();
-            var controller = (BaseLuaController)this.server.Instantiate(controllerType);
-            var prefix = controllerType.GetCustomAttributes<LuaControllerAttribute>().Select(x => x.EventPrefix).FirstOrDefault() ?? "";
+            var prefix = controllerAttribute?.EventPrefix ?? "";
+
+            var controller = controllerAttribute?.UsesScopedEvents == true ? null : (BaseLuaController)this.server.Instantiate(controllerType);
 
             foreach (var method in methods)
             {
                 var attributes = method.GetCustomAttributes<LuaEventAttribute>();
                 foreach (var attribute in attributes)
-                    AddHandler(prefix + attribute.EventName, controller, method);
+                    AddHandler(prefix + attribute.EventName, controllerType, method, controller);
 
                 if (!attributes.Any())
-                    AddHandler(prefix + method.Name, controller, method);
+                    AddHandler(prefix + method.Name, controllerType, method, controller);
             }
         }
-
     }
 
-    private void AddHandler(string name, BaseLuaController controller, MethodInfo method)
+    private void AddHandler(string name, Type type, MethodInfo method, BaseLuaController? controller)
     {
         if (!this.handlers.ContainsKey(name))
             this.handlers[name] = new();
 
-        this.handlers[name].Add((luaEvent) =>
-        {
-            var parameters = MapParameters(luaEvent.Parameters, method);
-            var result = controller.HandleEvent(luaEvent, (values) => method.Invoke(controller, parameters));
-
-            if (method.ReturnType == typeof(void))
-                return null;
-
-            if (result is LuaResult luaResult)
-                return luaResult;
-
-            return LuaResult<object?>.Success(result);
-        });
+        this.handlers[name].Add(new BoundEvent(this.server.Services, name, type, method, controller));
 
         this.luaEventService.AddEventHandler(name, HandleLuaEvent);
     }
@@ -133,7 +125,8 @@ public class LuaControllerLogic
         {
             try
             {
-                var result = handler.Invoke(luaEvent);
+                var parameters = MapParameters(luaEvent.Parameters, handler.Method);
+                var result = handler.HandleEvent(luaEvent, parameters);
                 if (result != null)
                     if (result is LuaResult<object> objectResult)
                         this.luaEventService.TriggerEventFor(

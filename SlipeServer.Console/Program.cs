@@ -4,6 +4,7 @@ using SlipeServer.ConfigurationProviders;
 using SlipeServer.Console.AdditionalResources;
 using SlipeServer.Console.Elements;
 using SlipeServer.Console.Logic;
+using SlipeServer.Console.Services;
 using SlipeServer.Lua;
 using SlipeServer.LuaControllers;
 using SlipeServer.Packets.Definitions.Sync;
@@ -74,6 +75,8 @@ public partial class Program
                     services.AddSingleton<ILogger, ConsoleLogger>();
                     services.AddSingleton<ISyncHandlerMiddleware<PlayerPureSyncPacket>, SubscriptionSyncHandlerMiddleware<PlayerPureSyncPacket>>();
                     services.AddSingleton<ISyncHandlerMiddleware<KeySyncPacket>, SubscriptionSyncHandlerMiddleware<KeySyncPacket>>();
+
+                    services.AddScoped<TestService>();
                 });
                 builder.AddLua();
                 builder.AddPhysics();

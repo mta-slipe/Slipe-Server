@@ -52,6 +52,7 @@ public class MtaServer
     public bool IsRunning { get; private set; }
     public DateTime StartDatetime { get; private set; }
     public TimeSpan Uptime => DateTime.Now - this.StartDatetime;
+    public IServiceProvider Services => this.serviceProvider;
 
     public MtaServer(
         Action<ServerBuilder> builderAction,
