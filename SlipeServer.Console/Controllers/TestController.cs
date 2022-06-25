@@ -22,9 +22,9 @@ public class TestController : BaseLuaController<CustomPlayer>
     }
 
     [LuaEvent("BlurLevel")]
-    public void OutputFps(int level)
+    public void HandleblurLevel(int level)
     {
-        this.chatBox.Output($"{this.Context.Player.Name}'s Blur level is {level}");
+        this.testService.HandleBlurLevel(this.Context.Player, level);
     }
 
     [LuaEvent("Ui")]
