@@ -64,12 +64,15 @@ public class LuaControllerLogic
 
             foreach (var method in methods)
             {
-                var attributes = method.GetCustomAttributes<LuaEventAttribute>();
-                foreach (var attribute in attributes)
-                    AddHandler(prefix + attribute.EventName, controllerType, method, controller);
+                if (!method.GetCustomAttributes<NoLuaEventAttribute>().Any())
+                {
+                    var attributes = method.GetCustomAttributes<LuaEventAttribute>();
+                    foreach (var attribute in attributes)
+                        AddHandler(prefix + attribute.EventName, controllerType, method, controller);
 
-                if (!attributes.Any())
-                    AddHandler(prefix + method.Name, controllerType, method, controller);
+                    if (!attributes.Any())
+                        AddHandler(prefix + method.Name, controllerType, method, controller);
+                }
             }
         }
     }

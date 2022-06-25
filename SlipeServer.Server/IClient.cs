@@ -35,7 +35,7 @@ public interface IClient
     public void ResetConnectionState();
 }
 
-public interface IClient<TPlayer> : IClient where TPlayer : Player, new()
+public interface IClient<TPlayer> : IClient where TPlayer : Player
 {
     new TPlayer Player { get; set; }
 }

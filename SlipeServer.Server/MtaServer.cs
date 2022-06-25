@@ -155,10 +155,22 @@ public class MtaServer
         this.packetReducer.RegisterPacketHandler(packetHandler.PacketId, queueHandler!);
     }
 
-    public object Instantiate(Type type, params object[] parameters) => ActivatorUtilities.CreateInstance(this.serviceProvider, type, parameters);
-    public T Instantiate<T>() => ActivatorUtilities.CreateInstance<T>(this.serviceProvider);
+    public object Instantiate(Type type, params object[] parameters) 
+        => ActivatorUtilities.CreateInstance(this.serviceProvider, type, parameters);
     public T Instantiate<T>(params object[] parameters)
         => ActivatorUtilities.CreateInstance<T>(this.serviceProvider, parameters);
+
+    public object InstantiateScoped(Type type, params object[] parameters)
+    {
+        var scope = this.serviceProvider.CreateScope();
+        return ActivatorUtilities.CreateInstance(scope.ServiceProvider, type, parameters);
+    }
+
+    public T InstantiateScoped<T>(params object[] parameters)
+    {
+        var scope = this.serviceProvider.CreateScope();
+        return ActivatorUtilities.CreateInstance<T>(scope.ServiceProvider, parameters);
+    }
 
     public T? GetService<T>() => this.serviceProvider.GetService<T>();
     public T GetRequiredService<T>() where T: notnull => this.serviceProvider.GetRequiredService<T>();
@@ -334,6 +346,13 @@ public class MtaServer
         BroadcastPacket(new ServerInfoSyncPacket(slots));
     }
 
+    public static MtaServer Create(Action<ServerBuilder> builderAction) 
+        => new(builderAction);
+    public static MtaServer<TPlayer> Create<TPlayer>(Action<ServerBuilder> builderAction) where TPlayer: Player, new() 
+        => new MtaNewPlayerServer<TPlayer>(builderAction);
+    public static MtaServer<TPlayer> CreateWithDiSupport<TPlayer>(Action<ServerBuilder> builderAction) where TPlayer: Player
+        => new MtaDiPlayerServer<TPlayer>(builderAction);
+
     public event Action<Element>? ElementCreated;
     public event Action<Player>? PlayerJoined;
     public event Action<IClient>? ClientConnected;
@@ -341,26 +360,14 @@ public class MtaServer
 
 }
 
-public class MtaServer<TPlayer> : MtaServer
-    where TPlayer : Player, new()
+public abstract class MtaServer<TPlayer> : MtaServer where TPlayer : Player
 {
-    public MtaServer(Action<ServerBuilder> builderAction)
-        : base(builderAction)
-    {
-
-    }
+    public MtaServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
 
     protected override void SetupDependencies(Action<ServiceCollection>? dependencyCallback)
     {
         base.SetupDependencies(dependencyCallback);
         this.serviceCollection.AddSingleton<MtaServer<TPlayer>>(this);
-    }
-
-    protected override IClient CreateClient(uint binaryAddress, INetWrapper netWrapper)
-    {
-        var player = new TPlayer();
-        player.Client = new Client<TPlayer>(binaryAddress, netWrapper, player);
-        return player.Client;
     }
 
     public override void HandlePlayerJoin(Player player)
@@ -370,4 +377,28 @@ public class MtaServer<TPlayer> : MtaServer
     }
 
     public new event Action<TPlayer>? PlayerJoined;
+}
+
+public class MtaNewPlayerServer<TPlayer> : MtaServer<TPlayer> where TPlayer : Player, new()
+{
+    internal MtaNewPlayerServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
+
+    protected override IClient CreateClient(uint binaryAddress, INetWrapper netWrapper)
+    {
+        var player = new TPlayer();
+        player.Client = new Client<TPlayer>(binaryAddress, netWrapper, player);
+        return player.Client;
+    }
+}
+
+public class MtaDiPlayerServer<TPlayer> : MtaServer<TPlayer> where TPlayer : Player
+{
+    internal MtaDiPlayerServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
+
+    protected override IClient CreateClient(uint binaryAddress, INetWrapper netWrapper)
+    {
+        var player = this.Instantiate<TPlayer>();
+        player.Client = new Client<TPlayer>(binaryAddress, netWrapper, player);
+        return player.Client;
+    }
 }

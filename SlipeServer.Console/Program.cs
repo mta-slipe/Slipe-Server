@@ -58,7 +58,7 @@ public partial class Program
             IsVoiceEnabled = true
         };
 
-        this.server = new MtaServer<CustomPlayer>(
+        this.server = MtaServer.CreateWithDiSupport<CustomPlayer>(
             (builder) =>
             {
                 builder.UseConfiguration(this.configuration);
@@ -89,14 +89,14 @@ public partial class Program
                 builder.AddLogic<ElementPoolingTestLogic>();
                 builder.AddLogic<WarpIntoVehicleLogic>();
                 builder.AddLogic<LuaEventTestLogic>();
+                builder.AddLogic<ServiceUsageTestLogic>();
                 //builder.AddBehaviour<VelocityBehaviour>();
                 //builder.AddBehaviour<EventLoggingBehaviour>();
             }
-        )
-        {
-            GameType = "Slipe Server",
-            MapName = "N/A"
-        };
+        );
+
+        this.server.GameType = "Slipe Server";
+        this.server.MapName = "N/A";
 
         this.Logger = this.server.GetRequiredService<ILogger>();
 
