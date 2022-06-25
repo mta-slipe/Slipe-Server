@@ -362,7 +362,7 @@ public class MtaServer
 
 public abstract class MtaServer<TPlayer> : MtaServer where TPlayer : Player
 {
-    internal MtaServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
+    public MtaServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
 
     protected override void SetupDependencies(Action<ServiceCollection>? dependencyCallback)
     {
