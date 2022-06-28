@@ -27,7 +27,7 @@ public class VehiclePureSyncPacketHandler : IPacketHandler<VehiclePureSyncPacket
 
     public void HandlePacket(IClient client, VehiclePureSyncPacket packet)
     {
-        client.SendPacket(new ReturnSyncPacket(packet.Position));
+        client.SendPacket(new ReturnSyncPacket(packet.Position, packet.Rotation));
 
         packet.PlayerId = client.Player.Id;
         packet.Latency = (ushort)client.Ping;
