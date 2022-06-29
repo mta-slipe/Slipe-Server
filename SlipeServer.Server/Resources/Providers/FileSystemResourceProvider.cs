@@ -79,29 +79,14 @@ public class FileSystemResourceProvider : IResourceProvider
     public List<ResourceFile> GetFilesForResource(string path)
     {
         List<ResourceFile> resourceFiles = new List<ResourceFile>();
-
-        using (var md5 = MD5.Create())
+                
+        foreach (var file in Directory.GetFiles(path))
         {
-            foreach (var file in Directory.GetFiles(path))
-            {
-                byte[] content = File.ReadAllBytes(file);
-                var hash = md5.ComputeHash(content);
-                var checksum = Crc32Algorithm.Compute(content);
-
-                string fileName = Path.GetRelativePath(path, file);
-                var fileType = fileName.EndsWith(".lua") ? ResourceFileType.ClientScript : ResourceFileType.ClientFile;
-                resourceFiles.Add(new ResourceFile()
-                {
-                    Name = fileName,
-                    AproximateSize = content.Length,
-                    IsAutoDownload = fileType == ResourceFileType.ClientFile ? true : null,
-                    CheckSum = checksum,
-                    FileType = (byte)fileType,
-                    Md5 = hash
-                });
-            }
+            byte[] content = File.ReadAllBytes(file);
+            string fileName = Path.GetRelativePath(path, file);
+            resourceFiles.Add(ResourceFileFactory.FromBytes(content, fileName));
         }
-
+       
         return resourceFiles;
     }
 
