@@ -270,15 +270,16 @@ public class Element
         return (this.TimeContext == remoteContext || remoteContext == 0 || this.TimeContext == 0);
     }
 
-    public void Destroy()
+    public bool Destroy()
     {
         lock (this.destroyLock)
         {
             if (this.IsDestroyed)
-                return;
+                return false;
 
             this.IsDestroyed = true;
             this.Destroyed?.Invoke(this);
+            return true;
         }
     }
 

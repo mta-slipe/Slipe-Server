@@ -1,13 +1,6 @@
-﻿using SlipeServer.Packets.Enums;
-using SlipeServer.Packets.Structures;
-using System;
-using System.Collections.Generic;
+﻿using SlipeServer.Packets.Builder;
+using SlipeServer.Packets.Enums;
 using System.Numerics;
-using System.Text;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using SlipeServer.Packets.Builder;
-using SlipeServer.Packets.Reader;
 
 namespace SlipeServer.Packets.Definitions.Sync;
 
@@ -18,7 +11,7 @@ public class ReturnSyncPacket : Packet
     public override PacketPriority Priority => PacketPriority.High;
 
     public Vector3 Position { get; set; }
-    public float Rotation { get; set; }
+    public Vector3 Rotation { get; set; }
     public bool IsInVechicle { get; set; }
 
 
@@ -27,14 +20,14 @@ public class ReturnSyncPacket : Packet
 
     }
 
-    public ReturnSyncPacket(bool isInVehicle, Vector3 position, float rotation)
+    public ReturnSyncPacket(bool isInVehicle, Vector3 position, Vector3 rotation)
     {
         this.IsInVechicle = isInVehicle;
         this.Position = position;
         this.Rotation = rotation;
     }
 
-    public ReturnSyncPacket(Vector3 position, float rotation)
+    public ReturnSyncPacket(Vector3 position, Vector3 rotation)
     {
         this.IsInVechicle = true;
         this.Position = position;
@@ -56,10 +49,11 @@ public class ReturnSyncPacket : Packet
     {
         var builder = new PacketBuilder();
 
+        builder.Write(this.IsInVechicle);
         if (this.IsInVechicle)
         {
             builder.WriteVector3WithZAsFloat(this.Position);
-            // TODO: write vehicle rotation
+            builder.WriteVehicleRotation(this.Rotation);
         } else
         {
             builder.WriteVector3WithZAsFloat(this.Position);

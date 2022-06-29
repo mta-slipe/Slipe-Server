@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Example.Elements;
 using SlipeServer.Example.LuaValues;
+using SlipeServer.Example.Services;
 using SlipeServer.LuaControllers;
 using SlipeServer.LuaControllers.Attributes;
 using SlipeServer.Server.Services;
@@ -11,16 +12,18 @@ namespace SlipeServer.Example.Controllers;
 public class TestController : BaseLuaController<CustomPlayer>
 {
     private readonly ChatBox chatBox;
+    private readonly TestService testService;
 
-    public TestController(ChatBox chatBox)
+    public TestController(ChatBox chatBox, TestService testService)
     {
         this.chatBox = chatBox;
+        this.testService = testService;
     }
 
     [LuaEvent("BlurLevel")]
-    public void OutputFps(int level)
+    public void HandleblurLevel(int level)
     {
-        this.chatBox.Output($"{this.Context.Player.Name}'s Blur level is {level}");
+        this.testService.HandleBlurLevel(this.Context.Player, level);
     }
 
     [LuaEvent("Ui")]

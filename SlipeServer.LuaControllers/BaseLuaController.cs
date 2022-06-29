@@ -5,7 +5,6 @@ using SlipeServer.Server.Events;
 
 namespace SlipeServer.LuaControllers;
 
-
 public class BaseLuaController
 {
     private readonly AsyncLocal<LuaEventContext?> context = new();

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SlipeServer.Packets.Structs;
+﻿namespace SlipeServer.Packets.Structs;
 
 public struct ResourceFile
 {

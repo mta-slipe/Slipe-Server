@@ -4,6 +4,7 @@ using SlipeServer.ConfigurationProviders;
 using SlipeServer.Example.AdditionalResources;
 using SlipeServer.Example.Elements;
 using SlipeServer.Example.Logic;
+using SlipeServer.Example.Services;
 using SlipeServer.Lua;
 using SlipeServer.LuaControllers;
 using SlipeServer.Packets.Definitions.Sync;
@@ -44,7 +45,7 @@ public partial class Program
     }
 
     private readonly EventWaitHandle waitHandle = new(false, EventResetMode.AutoReset);
-    private readonly MtaServer server;
+    private readonly MtaServer<CustomPlayer> server;
     private readonly SlipeWebApi api;
     private readonly Configuration configuration;
 
@@ -61,8 +62,7 @@ public partial class Program
 
         this.api = new SlipeWebApi();
         this.api.InitialiseServices();
-
-        this.server = new MtaServer<CustomPlayer>(
+        this.server = MtaServer.CreateWithDiSupport<CustomPlayer>(
             (builder) =>
             {
                 builder.UseConfiguration(this.configuration);
@@ -86,6 +86,8 @@ public partial class Program
                     services.AddSingleton<ILogger, ConsoleLogger>();
                     services.AddSingleton<ISyncHandlerMiddleware<PlayerPureSyncPacket>, SubscriptionSyncHandlerMiddleware<PlayerPureSyncPacket>>();
                     services.AddSingleton<ISyncHandlerMiddleware<KeySyncPacket>, SubscriptionSyncHandlerMiddleware<KeySyncPacket>>();
+
+                    services.AddScoped<TestService>();
                 });
                 builder.AddLua();
                 builder.AddPhysics();
@@ -98,14 +100,14 @@ public partial class Program
                 builder.AddLogic<ElementPoolingTestLogic>();
                 builder.AddLogic<WarpIntoVehicleLogic>();
                 builder.AddLogic<LuaEventTestLogic>();
+                builder.AddLogic<ServiceUsageTestLogic>();
                 //builder.AddBehaviour<VelocityBehaviour>();
                 //builder.AddBehaviour<EventLoggingBehaviour>();
             }
-        )
-        {
-            GameType = "Slipe Server",
-            MapName = "N/A"
-        };
+        );
+
+        this.server.GameType = "Slipe Server";
+        this.server.MapName = "N/A";
 
         this.Logger = this.server.GetRequiredService<ILogger>();
 
