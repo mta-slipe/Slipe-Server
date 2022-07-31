@@ -55,6 +55,8 @@ public enum ServerBuilderDefaultPacketHandlers : ulong
     CustomDataPacketHandler = 0x400000000,
     VehicleTrailerSyncPacketHandler = 0x800000000,
     PlayerResourceStartedPacketHandler = 0x1000000000,
+
+    All = 0xFFFFFFFFFFFFFFFF
 }
 
 [Flags]
@@ -93,6 +95,8 @@ public enum ServerBuilderDefaultBehaviours : ulong
     UnoccupiedVehicleSyncBehaviour = 0x2000000,
     CustomDataBehaviour = 0x4000000,
     PlayerBehaviour = 0x8000000,
+
+    All = 0xFFFFFFFFFFFFFFFF
 }
 
 [Flags]
@@ -107,10 +111,41 @@ public enum ServerBuilderDefaultMiddleware : ulong
     PlayerPureSyncPacketMiddleware = 0x10,
     KeySyncPacketMiddleware = 0x20,
     LightSyncBehaviourMiddleware = 0x40,
+
+    All = 0xFFFFFFFFFFFFFFFF
 }
 
 [Flags]
 public enum ServerBuilderDefaultServices : ulong
 {
     None = 0x00,
+
+    All = 0xFFFFFFFFFFFFFFFF
+}
+
+
+[Flags]
+public enum ServerBuilderDefaultRelayers : ulong
+{
+    None = 0x00,
+    ElementPosition = 0x01, 
+    ElementRotation = 0x02,
+    ElementAlpha = 0x04,
+    ElementDimension = 0x08,
+    ElementInterior = 0x10,
+    ElementIsCallPropagationEnabled = 0x20,
+    ElementAreCollisionsEnabled = 0x40,
+    ElementIsFrozenChanged = 0x80,
+    ElementDestroyed = 0x100,
+    ElementAttached = 0x200,
+    ElementDetached = 0x400,
+    ElementAttachmentOffsetChanged = 0x800,
+
+    BlipColorChanged = 0x1000,
+    BlipSizeChanged = 0x2000,
+    BlipIconCHanged = 0x4000,
+    BlipVisibleDistanceChanged = 0x8000,
+    BlipOrderingChanged = 0x10000,
+
+    All = 0xFFFFFFFFFFFFFFFF
 }

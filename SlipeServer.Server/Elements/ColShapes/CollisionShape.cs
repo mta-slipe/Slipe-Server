@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SlipeServer.Server.Elements.Events;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -45,7 +46,7 @@ public abstract class CollisionShape : Element
         }
     }
 
-    private void OnElementDestroyed(Element element)
+    private void OnElementDestroyed(Element element, ElementDestroyedEventArgs args)
     {
         this.ElementLeft?.Invoke(element);
     }

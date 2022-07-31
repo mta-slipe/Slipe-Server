@@ -30,7 +30,7 @@ public class ElementPool<TElement>
             return createCall();
 
         var createdElement = createCall();
-        createdElement.Destroyed += (_) => ReturnElement(createdElement);
+        createdElement.Destroyed += (_, _) => ReturnElement(createdElement);
         return createdElement;
     }
 

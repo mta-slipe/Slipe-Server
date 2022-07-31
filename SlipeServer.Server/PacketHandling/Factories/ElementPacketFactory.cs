@@ -1,13 +1,9 @@
 ﻿using SlipeServer.Packets;
-using SlipeServer.Packets.Definitions.Join;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 using SlipeServer.Packets.Definitions.Player;
 using SlipeServer.Server.Elements;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Numerics;
-using System.Text;
 
 namespace SlipeServer.Server.PacketHandling.Factories;
 
@@ -16,6 +12,16 @@ public static class ElementPacketFactory
     public static SetElementPositionRpcPacket CreateSetPositionPacket(Element element, Vector3 position, bool isWarp = false)
     {
         return new SetElementPositionRpcPacket(element.Id, element.GetAndIncrementTimeContext(), position, isWarp);
+    }
+
+    public static RemoveEntityPacket? CreateRemoveEntityPacket(Element element)
+    {
+        if (element is Player)
+            return null;
+
+        var packet = new RemoveEntityPacket();
+        packet.AddEntity(element.Id);
+        return packet;
     }
 
     public static Packet CreateSetRotationPacket(Element element, Vector3 rotation)

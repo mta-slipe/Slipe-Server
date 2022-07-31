@@ -191,7 +191,7 @@ public class MtaServer
         this.ElementCreated?.Invoke(element);
 
         this.elementCollection.Add(element);
-        element.Destroyed += (element) => this.elementCollection.Remove(element);
+        element.Destroyed += (element, _) => this.elementCollection.Remove(element);
 
         return element;
     }
