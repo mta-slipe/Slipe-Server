@@ -1,9 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SlipeServer.Packets;
-using SlipeServer.Server.Elements;
 using SlipeServer.Server.PacketHandling.Handlers;
 using SlipeServer.Server.PacketHandling.Handlers.QueueHandlers;
-using SlipeServer.Server.Relayers;
 using SlipeServer.Server.Resources.Serving;
 using System;
 using System.Collections.Generic;
@@ -70,24 +68,6 @@ public class ServerBuilder
     }
 
     public void AddBehaviour<T>(params object[] parameters)
-    {
-        Instantiate<T>(parameters);
-    }
-
-    public void AddRelayer<TElement, TEventArgs>(
-        Action<TElement, Action<TElement, TEventArgs>> registerHandlerCallback,
-        Func<TElement, TEventArgs, Packet?> packetCallback,
-        bool onlyWhenNotSync = true
-    )
-        where TElement : Element
-    {
-        AddBuildStep(server =>
-        {
-            var relayer = new ConfigurablePropertyRelayer<TElement, TEventArgs>(registerHandlerCallback, packetCallback, server, onlyWhenNotSync);
-        });
-    }
-
-    public void AddRelayer<T>(params object[] parameters)
     {
         Instantiate<T>(parameters);
     }

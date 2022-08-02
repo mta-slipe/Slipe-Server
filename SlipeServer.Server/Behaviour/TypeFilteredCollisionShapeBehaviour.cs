@@ -44,7 +44,7 @@ public class TypeFilteredCollisionShapeBehaviour
     private void AddCollisionShape(CollisionShape collisionShape)
     {
         this.collisionShapes.Add(collisionShape);
-        collisionShape.Destroyed += (source, _) => this.collisionShapes.Remove(collisionShape);
+        collisionShape.Destroyed += (source) => this.collisionShapes.Remove(collisionShape);
     }
 
     private void OnElementPositionChange(object sender, ElementChangedEventArgs<Vector3> eventArgs)

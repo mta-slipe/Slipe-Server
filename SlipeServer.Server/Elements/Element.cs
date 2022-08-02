@@ -278,7 +278,7 @@ public class Element
                 return false;
 
             this.IsDestroyed = true;
-            this.Destroyed?.Invoke(this, new());
+            this.Destroyed?.Invoke(this);
             return true;
         }
     }
@@ -313,7 +313,7 @@ public class Element
     public void AddChild(Element element)
     {
         this.children.Add(element);
-        element.Destroyed += (element, _) => RemoveChild(element);
+        element.Destroyed += (element) => RemoveChild(element);
     }
 
     public void RemoveChild(Element element)
@@ -360,7 +360,7 @@ public class Element
 
     }
 
-    private void HandleElementDataSubscriberDestruction(Element element, ElementDestroyedEventArgs args)
+    private void HandleElementDataSubscriberDestruction(Element element)
     {
         if (element is Player player)
             UnsubscribeFromAllData(player);
@@ -456,7 +456,7 @@ public class Element
     public event ElementEventHandler<Element, ElementAttachedEventArgs>? Attached;
     public event ElementEventHandler<Element, ElementDetachedEventArgs>? Detached;
     public event ElementEventHandler<Element, ElementAttachOffsetsChangedArgs>? AttachedOffsetChanged;
-    public event ElementEventHandler<Element, ElementDestroyedEventArgs>? Destroyed;
+    public event Action<Element>? Destroyed;
 
 
     public static implicit operator LuaValue(Element value) => new(value.Id);

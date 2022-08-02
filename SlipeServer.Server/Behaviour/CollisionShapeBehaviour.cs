@@ -105,7 +105,7 @@ public class CollisionShapeBehaviour
     private void AddCollisionShape(CollisionShape collisionShape)
     {
         this.collisionShapes.Add(collisionShape);
-        collisionShape.Destroyed += (source, _) => this.collisionShapes.Remove(collisionShape);
+        collisionShape.Destroyed += (source) => this.collisionShapes.Remove(collisionShape);
     }
 
     private void RefreshColliders(Element element)

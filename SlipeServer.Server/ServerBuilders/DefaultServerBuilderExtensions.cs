@@ -37,11 +37,6 @@ using SlipeServer.Packets.Definitions.CustomElementData;
 using SlipeServer.Packets.Definitions.Resources;
 using SlipeServer.Server.Resources.Serving;
 using SlipeServer.Server.Mappers;
-using SlipeServer.Server.Elements;
-using SlipeServer.Server.Elements.Events;
-using System.Numerics;
-using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
-using SlipeServer.Server.PacketHandling.Factories;
 
 namespace SlipeServer.Server.ServerBuilders;
 
@@ -51,92 +46,92 @@ public static class DefaultServerBuilderExtensions
         this ServerBuilder builder,
         ServerBuilderDefaultPacketHandlers except = ServerBuilderDefaultPacketHandlers.None)
     {
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.JoinedGamePacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.JoinedGamePacketHandler) == 0)
             builder.AddPacketHandler<JoinedGamePacketHandler, JoinedGamePacket>();
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.JoinDataPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.JoinDataPacketHandler) == 0)
             builder.AddPacketHandler<JoinDataPacketHandler, PlayerJoinDataPacket>();
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.PlayerQuitPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.PlayerQuitPacketHandler) == 0)
             builder.AddPacketHandler<PlayerQuitPacketHandler, PlayerQuitPacket>();
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.PlayerTimeoutPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.PlayerTimeoutPacketHandler) == 0)
             builder.AddPacketHandler<PlayerTimeoutPacketHandler, PlayerTimeoutPacket>();
 
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.PlayerPureSyncPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.PlayerPureSyncPacketHandler) == 0)
             builder.AddPacketHandler<PlayerPureSyncPacketHandler, PlayerPureSyncPacket>();
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.KeySyncPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.KeySyncPacketHandler) == 0)
             builder.AddPacketHandler<KeySyncPacketHandler, KeySyncPacket>();
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.CameraSyncPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.CameraSyncPacketHandler) == 0)
             builder.AddPacketHandler<CameraSyncPacketHandler, CameraSyncPacket>();
 
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.WeaponBulletSyncPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.WeaponBulletSyncPacketHandler) == 0)
             builder.AddPacketHandler<WeaponBulletSyncPacketHandler, WeaponBulletSyncPacket>();
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.PlayerBulletSyncPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.PlayerBulletSyncPacketHandler) == 0)
             builder.AddPacketHandler<PlayerBulletSyncPacketHandler, PlayerBulletSyncPacket>();
 
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.ProjectileSyncPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.ProjectileSyncPacketHandler) == 0)
             builder.AddPacketHandler<ProjectileSyncPacketHandler, ProjectileSyncPacket>();
 
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.ExplosionPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.ExplosionPacketHandler) == 0)
             builder.AddPacketHandler<ExplosionPacketHandler, ExplosionPacket>();
 
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.CommandPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.CommandPacketHandler) == 0)
             builder.AddPacketHandler<CommandPacketHandler, CommandPacket>();
 
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.DetonateSatchelsPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.DetonateSatchelsPacketHandler) == 0)
             builder.AddPacketHandler<DetonateSatchelsPacketHandler, DetonateSatchelsPacket>();
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.DestroySatchelsPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.DestroySatchelsPacketHandler) == 0)
             builder.AddPacketHandler<DestroySatchelsPacketHandler, DestroySatchelsPacket>();
 
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.RpcPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.RpcPacketHandler) == 0)
             builder.AddPacketHandler<RpcPacketHandler, RpcPacket>();
 
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.LuaEventPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.LuaEventPacketHandler) == 0)
             builder.AddPacketHandler<LuaEventPacketHandler, LuaEventPacket>();
 
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.PlayerAcInfoPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.PlayerAcInfoPacketHandler) == 0)
             builder.AddPacketHandler<PlayerAcInfoPacketHandler, PlayerACInfoPacket>();
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.PlayerDiagnosticPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.PlayerDiagnosticPacketHandler) == 0)
             builder.AddPacketHandler<PlayerDiagnosticPacketHandler, PlayerDiagnosticPacket>();
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.PlayerModInfoPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.PlayerModInfoPacketHandler) == 0)
             builder.AddPacketHandler<PlayerModInfoPacketHandler, PlayerModInfoPacket>();
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.PlayerNetworkStatusPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.PlayerNetworkStatusPacketHandler) == 0)
             builder.AddPacketHandler<PlayerNetworkStatusPacketHandler, PlayerNetworkStatusPacket>();
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.PlayerScreenshotPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.PlayerScreenshotPacketHandler) == 0)
             builder.AddPacketHandler<PlayerScreenshotPacketHandler, PlayerScreenshotPacket>();
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.PlayerWastedPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.PlayerWastedPacketHandler) == 0)
             builder.AddPacketHandler<PlayerWastedPacketHandler, PlayerWastedPacket>();
 
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.VehicleInOutPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.VehicleInOutPacketHandler) == 0)
             builder.AddPacketHandler<VehicleInOutPacketHandler, VehicleInOutPacket>();
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.VehiclePureSyncPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.VehiclePureSyncPacketHandler) == 0)
             builder.AddPacketHandler<VehiclePureSyncPacketHandler, VehiclePureSyncPacket>();
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.VehicleDamageSyncPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.VehicleDamageSyncPacketHandler) == 0)
             builder.AddPacketHandler<VehicleDamageSyncPacketHandler, VehicleDamageSyncPacket>();
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.UnoccupiedVehicleSyncPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.UnoccupiedVehicleSyncPacketHandler) == 0)
             builder.AddPacketHandler<UnoccupiedVehicleSyncPacketHandler, UnoccupiedVehicleSyncPacket>();
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.VehiclePushSyncPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.VehiclePushSyncPacketHandler) == 0)
             builder.AddPacketHandler<VehiclePushSyncPacketHandler, VehiclePushSyncPacket>();
 
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.VoiceDataPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.VoiceDataPacketHandler) == 0)
             builder.AddPacketHandler<VoiceDataPacketHandler, VoiceDataPacket>();
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.VoiceEndPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.VoiceEndPacketHandler) == 0)
             builder.AddPacketHandler<VoiceEndPacketHandler, VoiceEndPacket>();
 
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.TransgressionPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.TransgressionPacketHandler) == 0)
             builder.AddPacketHandler<TransgressionPacketHandler, TransgressionPacket>();
 
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.PedSyncPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.PedSyncPacketHandler) == 0)
             builder.AddPacketHandler<PedSyncPacketHandler, PedSyncPacket>();
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.PedTaskPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.PedTaskPacketHandler) == 0)
             builder.AddPacketHandler<PedTaskPacketHandler, PedTaskPacket>();
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.PedWastedPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.PedWastedPacketHandler) == 0)
             builder.AddPacketHandler<PedWastedPacketHandler, PedWastedPacket>();
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.LatentLuaEventPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.LatentLuaEventPacketHandler) == 0)
             builder.AddPacketHandler<LatentLuaEventPacketHandler, LatentLuaEventPacket>();
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.CustomDataPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.CustomDataPacketHandler) == 0)
             builder.AddPacketHandler<CustomDataPacketHandler, CustomDataPacket>();
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.VehicleTrailerSyncPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.VehicleTrailerSyncPacketHandler) == 0)
             builder.AddPacketHandler<VehicleTrailerSyncPacketHandler, VehicleTrailerSyncPacket>();
-        if (!except.HasFlag(ServerBuilderDefaultPacketHandlers.PlayerResourceStartedPacketHandler))
+        if ((except & ServerBuilderDefaultPacketHandlers.PlayerResourceStartedPacketHandler) == 0)
             builder.AddPacketHandler<PlayerResourceStartedPacketHandler, PlayerResourceStartedPacket>();
     }
 
@@ -144,62 +139,62 @@ public static class DefaultServerBuilderExtensions
         this ServerBuilder builder,
         ServerBuilderDefaultBehaviours except = ServerBuilderDefaultBehaviours.None)
     {
-        if (!except.HasFlag(ServerBuilderDefaultBehaviours.AseBehaviour))
+        if ((except & ServerBuilderDefaultBehaviours.AseBehaviour) == 0)
             builder.AddBehaviour<AseBehaviour>();
-        if (!except.HasFlag(ServerBuilderDefaultBehaviours.LocalServerAnnouncementBehaviour))
+        if ((except & ServerBuilderDefaultBehaviours.LocalServerAnnouncementBehaviour) == 0)
             builder.AddBehaviour<LocalServerAnnouncementBehaviour>();
-        if (!except.HasFlag(ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour))
+        if ((except & ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour) == 0)
             builder.AddBehaviour<MasterServerAnnouncementBehaviour>("http://master.mtasa.com/ase/add.php");
 
-        if (!except.HasFlag(ServerBuilderDefaultBehaviours.VelocityBehaviour))
+        if ((except & ServerBuilderDefaultBehaviours.VelocityBehaviour) == 0)
             builder.AddBehaviour<VelocityBehaviour>();
-        if (!except.HasFlag(ServerBuilderDefaultBehaviours.DefaultChatBehaviour))
+        if ((except & ServerBuilderDefaultBehaviours.DefaultChatBehaviour) == 0)
             builder.AddBehaviour<DefaultChatBehaviour>();
-        if (!except.HasFlag(ServerBuilderDefaultBehaviours.NicknameChangeBehaviour))
+        if ((except & ServerBuilderDefaultBehaviours.NicknameChangeBehaviour) == 0)
             builder.AddBehaviour<NicknameChangeBehaviour>();
-        if (!except.HasFlag(ServerBuilderDefaultBehaviours.CollisionShapeBehaviour))
+        if ((except & ServerBuilderDefaultBehaviours.CollisionShapeBehaviour) == 0)
             builder.AddBehaviour<CollisionShapeBehaviour>();
 
-        if (!except.HasFlag(ServerBuilderDefaultBehaviours.PlayerJoinElementBehaviour))
+        if ((except & ServerBuilderDefaultBehaviours.PlayerJoinElementBehaviour) == 0)
             builder.AddBehaviour<PlayerJoinElementBehaviour>();
 
-        if (!except.HasFlag(ServerBuilderDefaultBehaviours.ElementPacketBehaviour))
+        if ((except & ServerBuilderDefaultBehaviours.ElementPacketBehaviour) == 0)
             builder.AddBehaviour<ElementPacketBehaviour>();
-        if (!except.HasFlag(ServerBuilderDefaultBehaviours.PedPacketBehaviour))
+        if ((except & ServerBuilderDefaultBehaviours.PedPacketBehaviour) == 0)
             builder.AddBehaviour<PedPacketBehaviour>();
-        if (!except.HasFlag(ServerBuilderDefaultBehaviours.PlayerPacketBehaviour))
+        if ((except & ServerBuilderDefaultBehaviours.PlayerPacketBehaviour) == 0)
             builder.AddBehaviour<PlayerPacketBehaviour>();
-        if (!except.HasFlag(ServerBuilderDefaultBehaviours.VehicleWarpBehaviour))
+        if ((except & ServerBuilderDefaultBehaviours.VehicleWarpBehaviour) == 0)
             builder.AddBehaviour<VehicleWarpBehaviour>();
-        if (!except.HasFlag(ServerBuilderDefaultBehaviours.VehicleRespawnBehaviour))
+        if ((except & ServerBuilderDefaultBehaviours.VehicleRespawnBehaviour) == 0)
             builder.AddBehaviour<VehicleRespawnBehaviour>();
-        if (!except.HasFlag(ServerBuilderDefaultBehaviours.VehicleBehaviour))
+        if ((except & ServerBuilderDefaultBehaviours.VehicleBehaviour) == 0)
             builder.AddBehaviour<VehicleBehaviour>();
-        if (!except.HasFlag(ServerBuilderDefaultBehaviours.VoiceBehaviour))
+        if ((except & ServerBuilderDefaultBehaviours.VoiceBehaviour) == 0)
             builder.AddBehaviour<VoiceBehaviour>();
-        if (!except.HasFlag(ServerBuilderDefaultBehaviours.LightSyncBehaviour))
+        if ((except & ServerBuilderDefaultBehaviours.LightSyncBehaviour) == 0)
             builder.AddBehaviour<LightSyncBehaviour>();
-        if (!except.HasFlag(ServerBuilderDefaultBehaviours.TeamBehaviour))
+        if ((except & ServerBuilderDefaultBehaviours.TeamBehaviour) == 0)
             builder.AddBehaviour<TeamBehaviour>();
-        if (!except.HasFlag(ServerBuilderDefaultBehaviours.RadarAreaBehaviour))
+        if ((except & ServerBuilderDefaultBehaviours.RadarAreaBehaviour) == 0)
             builder.AddBehaviour<RadarAreaBehaviour>();
-        if (!except.HasFlag(ServerBuilderDefaultBehaviours.BlipBehaviour))
+        if ((except & ServerBuilderDefaultBehaviours.BlipBehaviour) == 0)
             builder.AddBehaviour<BlipBehaviour>();
-        if (!except.HasFlag(ServerBuilderDefaultBehaviours.ObjectPacketBehaviour))
+        if ((except & ServerBuilderDefaultBehaviours.ObjectPacketBehaviour) == 0)
             builder.AddBehaviour<ObjectPacketBehaviour>();
-        if (!except.HasFlag(ServerBuilderDefaultBehaviours.PickupBehaviour))
+        if ((except & ServerBuilderDefaultBehaviours.PickupBehaviour) == 0)
             builder.AddBehaviour<PickupBehaviour>();
-        if (!except.HasFlag(ServerBuilderDefaultBehaviours.MarkerBehaviour))
+        if ((except & ServerBuilderDefaultBehaviours.MarkerBehaviour) == 0)
             builder.AddBehaviour<MarkerBehaviour>();
-        if (!except.HasFlag(ServerBuilderDefaultBehaviours.MapInfoBehaviour))
+        if ((except & ServerBuilderDefaultBehaviours.MapInfoBehaviour) == 0)
             builder.AddBehaviour<MapInfoBehaviour>();
-        if (!except.HasFlag(ServerBuilderDefaultBehaviours.PedSyncBehaviour))
+        if ((except & ServerBuilderDefaultBehaviours.PedSyncBehaviour) == 0)
             builder.AddBehaviour<PedSyncBehaviour>();
-        if (!except.HasFlag(ServerBuilderDefaultBehaviours.UnoccupiedVehicleSyncBehaviour))
+        if ((except & ServerBuilderDefaultBehaviours.UnoccupiedVehicleSyncBehaviour) == 0)
             builder.AddBehaviour<UnoccupiedVehicleSyncBehaviour>();
-        if (!except.HasFlag(ServerBuilderDefaultBehaviours.CustomDataBehaviour))
+        if ((except & ServerBuilderDefaultBehaviours.CustomDataBehaviour) == 0)
             builder.AddBehaviour<CustomDataBehaviour>();
-        if (!except.HasFlag(ServerBuilderDefaultBehaviours.PlayerBehaviour))
+        if ((except & ServerBuilderDefaultBehaviours.PlayerBehaviour) == 0)
             builder.AddBehaviour<PlayerBehaviour>();
     }
 
@@ -210,32 +205,32 @@ public static class DefaultServerBuilderExtensions
     {
         builder.ConfigureServices(services =>
         {
-            if (!exceptMiddleware.HasFlag(ServerBuilderDefaultMiddleware.ProjectileSyncPacketMiddleware))
+            if ((exceptMiddleware & ServerBuilderDefaultMiddleware.ProjectileSyncPacketMiddleware) == 0)
                 services.AddSingleton<ISyncHandlerMiddleware<ProjectileSyncPacket>, RangeSyncHandlerMiddleware<ProjectileSyncPacket>>(
                     x => new RangeSyncHandlerMiddleware<ProjectileSyncPacket>(x.GetRequiredService<IElementCollection>(), builder.Configuration.ExplosionSyncDistance)
                 );
-            if (!exceptMiddleware.HasFlag(ServerBuilderDefaultMiddleware.DetonateSatchelsPacketMiddleware))
+            if ((exceptMiddleware & ServerBuilderDefaultMiddleware.DetonateSatchelsPacketMiddleware) == 0)
                 services.AddSingleton<ISyncHandlerMiddleware<DetonateSatchelsPacket>, RangeSyncHandlerMiddleware<DetonateSatchelsPacket>>(
                     x => new RangeSyncHandlerMiddleware<DetonateSatchelsPacket>(x.GetRequiredService<IElementCollection>(), builder.Configuration.ExplosionSyncDistance, false)
                 );
-            if (!exceptMiddleware.HasFlag(ServerBuilderDefaultMiddleware.DestroySatchelsPacketMiddleware))
+            if ((exceptMiddleware & ServerBuilderDefaultMiddleware.DestroySatchelsPacketMiddleware) == 0)
                 services.AddSingleton<ISyncHandlerMiddleware<DestroySatchelsPacket>, RangeSyncHandlerMiddleware<DestroySatchelsPacket>>(
                     x => new RangeSyncHandlerMiddleware<DestroySatchelsPacket>(x.GetRequiredService<IElementCollection>(), builder.Configuration.ExplosionSyncDistance, false)
                 );
-            if (!exceptMiddleware.HasFlag(ServerBuilderDefaultMiddleware.ExplosionPacketMiddleware))
+            if ((exceptMiddleware & ServerBuilderDefaultMiddleware.ExplosionPacketMiddleware) == 0)
                 services.AddSingleton<ISyncHandlerMiddleware<ExplosionPacket>, RangeSyncHandlerMiddleware<ExplosionPacket>>(
                     x => new RangeSyncHandlerMiddleware<ExplosionPacket>(x.GetRequiredService<IElementCollection>(), builder.Configuration.ExplosionSyncDistance, false)
                 );
 
-            if (!exceptMiddleware.HasFlag(ServerBuilderDefaultMiddleware.PlayerPureSyncPacketMiddleware))
+            if ((exceptMiddleware & ServerBuilderDefaultMiddleware.PlayerPureSyncPacketMiddleware) == 0)
                 services.AddSingleton<ISyncHandlerMiddleware<PlayerPureSyncPacket>, RangeSyncHandlerMiddleware<PlayerPureSyncPacket>>(
                     x => new RangeSyncHandlerMiddleware<PlayerPureSyncPacket>(x.GetRequiredService<IElementCollection>(), builder.Configuration.LightSyncRange));
 
-            if (!exceptMiddleware.HasFlag(ServerBuilderDefaultMiddleware.KeySyncPacketMiddleware))
+            if ((exceptMiddleware & ServerBuilderDefaultMiddleware.KeySyncPacketMiddleware) == 0)
                 services.AddSingleton<ISyncHandlerMiddleware<KeySyncPacket>, RangeSyncHandlerMiddleware<KeySyncPacket>>(
                     x => new RangeSyncHandlerMiddleware<KeySyncPacket>(x.GetRequiredService<IElementCollection>(), builder.Configuration.LightSyncRange));
 
-            if (!exceptMiddleware.HasFlag(ServerBuilderDefaultMiddleware.LightSyncBehaviourMiddleware))
+            if ((exceptMiddleware & ServerBuilderDefaultMiddleware.LightSyncBehaviourMiddleware) == 0)
                 services.AddSingleton<ISyncHandlerMiddleware<LightSyncBehaviour>, MaxRangeSyncHandlerMiddleware<LightSyncBehaviour>>(
                     x => new MaxRangeSyncHandlerMiddleware<LightSyncBehaviour>(x.GetRequiredService<IElementCollection>(), builder.Configuration.LightSyncRange));
 
@@ -248,13 +243,11 @@ public static class DefaultServerBuilderExtensions
         ServerBuilderDefaultPacketHandlers exceptPacketHandlers = ServerBuilderDefaultPacketHandlers.None,
         ServerBuilderDefaultBehaviours exceptBehaviours = ServerBuilderDefaultBehaviours.None,
         ServerBuilderDefaultServices exceptServices = ServerBuilderDefaultServices.None,
-        ServerBuilderDefaultMiddleware exceptMiddleware = ServerBuilderDefaultMiddleware.None,
-        ServerBuilderDefaultRelayers exceptRelayers = ServerBuilderDefaultRelayers.None)
+        ServerBuilderDefaultMiddleware exceptMiddleware = ServerBuilderDefaultMiddleware.None)
     {
         builder.AddDefaultPacketHandler(exceptPacketHandlers);
         builder.AddDefaultBehaviours(exceptBehaviours);
         builder.AddDefaultServices(exceptServices, exceptMiddleware);
-        builder.AddDefaultRelayers(exceptRelayers);
         builder.AddDefaultLuaMappings();
 
         builder.AddResourceServer<BasicHttpServer>();

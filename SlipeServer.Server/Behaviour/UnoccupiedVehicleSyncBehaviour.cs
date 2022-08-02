@@ -45,7 +45,7 @@ public class UnoccupiedVehicleSyncBehaviour
         if (element is Vehicle vehicle)
         {
             vehicle.Pushed += HandleVehiclePush;
-            vehicle.Destroyed += (e, _) => vehicle.Pushed -= HandleVehiclePush;
+            vehicle.Destroyed += (e) => vehicle.Pushed -= HandleVehiclePush;
             vehicle.DimensionChanged += HandleVehicleDimensionChange;
         }
     }

@@ -37,7 +37,7 @@ public class RadarAreaBehaviour
     private void AddRadarArea(RadarArea radarArea)
     {
         this.radarAreas.Add(radarArea);
-        radarArea.Destroyed += (source, _) => this.radarAreas.Remove(radarArea);
+        radarArea.Destroyed += (source) => this.radarAreas.Remove(radarArea);
         radarArea.ColorChanged += ColorChanged;
         radarArea.SizeChanged += SizeChanged;
         radarArea.FlashingStateChanged += FlashingStateChanged;

@@ -64,7 +64,7 @@ public class VelocityBehaviour
                 }
             };
 
-            element.Destroyed += (source, _) =>
+            element.Destroyed += (source) =>
             {
                 if (this.velocityElements.ContainsKey(source))
                     this.velocityElements.Remove(source, out var value);

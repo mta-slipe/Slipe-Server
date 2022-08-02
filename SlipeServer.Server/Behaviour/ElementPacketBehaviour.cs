@@ -71,9 +71,9 @@ public class ElementPacketBehaviour
         this.server.BroadcastPacket(ElementPacketFactory.CreateSetElementAttachedOffsetsPacket(args.Source, args.OffsetPosition, args.OffsetRotation));
     }
 
-    private void RelayElementDestroy(Element element, ElementDestroyedEventArgs args)
+    private void RelayElementDestroy(Element element)
     {
-        if (element is not Player)
+        if (!(element is Player))
         {
             var packet = new RemoveEntityPacket();
             packet.AddEntity(element.Id);
