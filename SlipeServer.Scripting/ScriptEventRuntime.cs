@@ -5,6 +5,7 @@ using SlipeServer.Server.ElementCollections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SlipeServer.Server.Elements.Events;
 
 namespace SlipeServer.Scripting;
 
@@ -37,7 +38,7 @@ public class ScriptEventRuntime : IScriptEventRuntime
         element.Destroyed += HandleElementDestruction;
     }
 
-    private void HandleElementDestruction(Element element)
+    private void HandleElementDestruction(Element element, ElementDestroyedEventArgs _)
     {
         var handlers = this.registeredEventHandlers.RemoveAll(handler => handler.Element == element);
     }

@@ -55,6 +55,8 @@ public enum ServerBuilderDefaultPacketHandlers : ulong
     CustomDataPacketHandler = 0x400000000,
     VehicleTrailerSyncPacketHandler = 0x800000000,
     PlayerResourceStartedPacketHandler = 0x1000000000,
+
+    All = 0xFFFFFFFFFFFFFFFF
 }
 
 [Flags]
@@ -93,6 +95,8 @@ public enum ServerBuilderDefaultBehaviours : ulong
     UnoccupiedVehicleSyncBehaviour = 0x2000000,
     CustomDataBehaviour = 0x4000000,
     PlayerBehaviour = 0x8000000,
+
+    All = 0xFFFFFFFFFFFFFFFF
 }
 
 [Flags]
@@ -107,10 +111,86 @@ public enum ServerBuilderDefaultMiddleware : ulong
     PlayerPureSyncPacketMiddleware = 0x10,
     KeySyncPacketMiddleware = 0x20,
     LightSyncBehaviourMiddleware = 0x40,
+
+    All = 0xFFFFFFFFFFFFFFFF
 }
 
 [Flags]
 public enum ServerBuilderDefaultServices : ulong
 {
     None = 0x00,
+
+    All = 0xFFFFFFFFFFFFFFFF
+}
+
+
+[Flags]
+public enum ServerBuilderDefaultElementRelayers : ulong
+{
+    None = 0x00,
+    ElementPosition = 0x01,
+    ElementRotation = 0x02,
+    ElementAlpha = 0x04,
+    ElementDimension = 0x08,
+    ElementInterior = 0x10,
+    ElementIsCallPropagationEnabled = 0x20,
+    ElementAreCollisionsEnabled = 0x40,
+    ElementIsFrozenChanged = 0x80,
+    ElementDestroyed = 0x100,
+    ElementAttached = 0x200,
+    ElementDetached = 0x400,
+    ElementAttachmentOffsetChanged = 0x800,
+
+    All = 0xFFFFFFFFFFFFFFFF
+}
+
+
+[Flags]
+public enum ServerBuilderDefaultBlipRelayers : ulong
+{
+    None = 0x00,
+    BlipColorChanged = 0x1,
+    BlipSizeChanged = 0x2,
+    BlipIconChanged = 0x4,
+    BlipVisibleDistanceChanged = 0x8,
+    BlipOrderingChanged = 0x10,
+
+    All = 0xFFFFFFFFFFFFFFFF
+}
+
+
+[Flags]
+public enum ServerBuilderDefaultMarkerRelayers : ulong
+{
+    None = 0x00,
+
+    MarkerTypeChanged = 0x1,
+    MarkerIconChanged = 0x2,
+    MarkerSizeChanged = 0x4,
+    MarkerColorChanged = 0x8,
+    MarkerTargetPositionChanged = 0x10,
+
+    All = 0xFFFFFFFFFFFFFFFF
+}
+
+
+public struct ServerBuilderDefaultRelayers
+{
+    public ServerBuilderDefaultElementRelayers Element { get; set; }
+    public ServerBuilderDefaultBlipRelayers Blip { get; set; }
+    public ServerBuilderDefaultMarkerRelayers Marker { get; set; }
+
+    public static ServerBuilderDefaultRelayers None => new()
+    {
+        Element = ServerBuilderDefaultElementRelayers.None,
+        Blip = ServerBuilderDefaultBlipRelayers.None,
+        Marker = ServerBuilderDefaultMarkerRelayers.None,
+    };
+
+    public static ServerBuilderDefaultRelayers All => new()
+    {
+        Element = ServerBuilderDefaultElementRelayers.All,
+        Blip = ServerBuilderDefaultBlipRelayers.All,
+        Marker = ServerBuilderDefaultMarkerRelayers.All,
+    };
 }

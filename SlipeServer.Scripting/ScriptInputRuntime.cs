@@ -28,7 +28,7 @@ public class ScriptInputRuntime : IScriptInputRuntime
         player.Destroyed += Destroyed;
     }
 
-    private void Destroyed(Element obj)
+    private void Destroyed(Element obj, ElementDestroyedEventArgs _)
     {
         (obj as Player)!.CommandEntered -= CommandEntered;
     }
