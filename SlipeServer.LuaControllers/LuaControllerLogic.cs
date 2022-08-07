@@ -115,6 +115,8 @@ public class LuaControllerLogic
                 x => ConvertLuaValue(type.GenericTypeArguments.ElementAt(1), x.Value));
         else if (type.IsAssignableTo(typeof(IEnumerable<>)) && value.TableValue != null)
             return value.TableValue.Values.Select(x => ConvertLuaValue(type.GenericTypeArguments.First(), value));
+        else if (type.IsEnum && value.IntegerValue.HasValue)
+            return Enum.ToObject(type, Convert.ChangeType(value.IntegerValue.Value, Enum.GetUnderlyingType(type) ?? typeof(int)));
         else
             return null;
     }

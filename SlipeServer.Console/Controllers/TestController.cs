@@ -3,6 +3,8 @@ using SlipeServer.Console.LuaValues;
 using SlipeServer.Console.Services;
 using SlipeServer.LuaControllers;
 using SlipeServer.LuaControllers.Attributes;
+using SlipeServer.Server.Elements;
+using SlipeServer.Server.Enums;
 using SlipeServer.Server.Services;
 using System;
 using System.Numerics;
@@ -52,5 +54,11 @@ public class TestController : BaseLuaController<CustomPlayer>
     public void OutputCursorPosition(Vector2 position)
     {
         this.chatBox.Output($"{this.Context.Player.Name}'s cursor is at  {position}");
+    }
+
+    public void EnumTest(WeaponType weapon, BodyPart bodyPart)
+    {
+        this.chatBox.Output($"Weapon : {weapon}");
+        this.chatBox.Output($"BodyPart : {bodyPart}");
     }
 }

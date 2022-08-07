@@ -260,6 +260,7 @@ public class MtaServer
         this.serviceCollection.AddSingleton<TextItemService>();
         this.serviceCollection.AddSingleton<WeaponConfigurationService>();
         this.serviceCollection.AddSingleton<CommandService>();
+        this.serviceCollection.AddSingleton<ITimerService, TimerService>();
 
         this.serviceCollection.AddHttpClient();
         this.serviceCollection.AddSingleton<Configuration>(this.configuration);
