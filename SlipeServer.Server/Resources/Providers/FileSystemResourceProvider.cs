@@ -1,10 +1,7 @@
-﻿using Force.Crc32;
-using SlipeServer.Packets.Structs;
+﻿using SlipeServer.Packets.Structs;
 using SlipeServer.Server.Elements;
-using SlipeServer.Server.Elements.Enums;
 using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography;
 
 namespace SlipeServer.Server.Resources.Providers;
 
@@ -37,8 +34,8 @@ public class FileSystemResourceProvider : IResourceProvider
 
     public void Refresh()
     {
-        var resources = IndexResourceDirectory(this.configuration.ResourceDirectory);
         this.resources.Clear();
+        var resources = IndexResourceDirectory(this.configuration.ResourceDirectory);
 
         foreach (var resource in resources)
             this.resources[resource.Name] = resource;
@@ -79,14 +76,14 @@ public class FileSystemResourceProvider : IResourceProvider
     public List<ResourceFile> GetFilesForResource(string path)
     {
         List<ResourceFile> resourceFiles = new List<ResourceFile>();
-                
+
         foreach (var file in Directory.GetFiles(path))
         {
             byte[] content = File.ReadAllBytes(file);
             string fileName = Path.GetRelativePath(path, file);
             resourceFiles.Add(ResourceFileFactory.FromBytes(content, fileName));
         }
-       
+
         return resourceFiles;
     }
 
