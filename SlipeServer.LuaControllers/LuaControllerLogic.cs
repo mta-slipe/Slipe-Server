@@ -46,10 +46,10 @@ public class LuaControllerLogic
 
     private void IndexControllers()
     {
-        var controllerTypes = Assembly
-            .GetEntryAssembly()?
-            .GetTypes()
-            .Where(x => x.IsAssignableTo(typeof(BaseLuaController)));
+        var controllerTypes = AppDomain.CurrentDomain.GetAssemblies()
+            .SelectMany(x => x.GetTypes())
+            .Where(x => x.IsAssignableTo(typeof(BaseLuaController)))
+            .Where(x => !x.IsAbstract);
 
         foreach (var controllerType in controllerTypes ?? Array.Empty<Type>())
         {

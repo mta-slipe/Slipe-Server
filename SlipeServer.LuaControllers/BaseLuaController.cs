@@ -5,7 +5,7 @@ using SlipeServer.Server.Events;
 
 namespace SlipeServer.LuaControllers;
 
-public class BaseLuaController
+public abstract class BaseLuaController
 {
     private readonly AsyncLocal<LuaEventContext?> context = new();
 
@@ -35,7 +35,7 @@ public class BaseLuaController
 }
 
 
-public class BaseLuaController<TPlayer> : BaseLuaController where TPlayer : Player
+public abstract class BaseLuaController<TPlayer> : BaseLuaController where TPlayer : Player
 {
     public new LuaEventContext<TPlayer> Context => (base.Context as LuaEventContext<TPlayer>)!;
 
