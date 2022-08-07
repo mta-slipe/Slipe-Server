@@ -4,6 +4,8 @@ using SlipeServer.Server.ElementCollections;
 using System.Linq;
 using System.Numerics;
 using System.Timers;
+using SlipeServer.Server.Services;
+using System;
 
 namespace SlipeServer.Server.Behaviour;
 
@@ -11,22 +13,17 @@ public class PedSyncBehaviour
 {
     private readonly IElementCollection elementCollection;
     private readonly Configuration configuration;
-    private readonly Timer timer;
 
     public PedSyncBehaviour(
         MtaServer server,
         IElementCollection elementCollection,
-        Configuration configuration)
+        Configuration configuration,
+        ITimerService timerService)
     {
         this.elementCollection = elementCollection;
         this.configuration = configuration;
 
-        this.timer = new Timer(configuration.SyncIntervals.LightSync)
-        {
-            AutoReset = true,
-        };
-        this.timer.Start();
-        this.timer.Elapsed += (sender, args) => HandlePedSyncers();
+        timerService.CreateTimer(HandlePedSyncers, TimeSpan.FromMilliseconds(configuration.SyncIntervals.LightSync));
 
         server.PlayerJoined += HandlePlayerJoin;
     }

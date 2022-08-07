@@ -3,10 +3,7 @@ using SlipeServer.Server.Behaviour;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.ColShapes;
 using SlipeServer.Server.TestTools;
-using System;
-using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
 using Xunit;
 
 namespace SlipeServer.Server.Tests.Integration.Behaviours;
