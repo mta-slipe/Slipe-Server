@@ -55,5 +55,6 @@ public static class LuaMapperBuilderExtensions
     public static void AddDefaultLuaMappings(this ServerBuilder builder)
     {
         builder.AddVectorMappings();
+        builder.AddStructLuaMapping<Guid>(x => x.ToString());
     }
 }
