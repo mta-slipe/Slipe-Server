@@ -97,4 +97,6 @@ public class PedSyncPacket : Packet
             this.Syncs.Add(data);
         }
     }
+
+    public override void Reset() => this.Syncs.Clear();
 }

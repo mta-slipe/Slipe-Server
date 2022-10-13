@@ -28,7 +28,6 @@ public class PlayerQuitPacket : Packet
     {
         var builder = new PacketBuilder();
 
-        builder.Write(new byte[] { 0, 0 }); // 2 bytes of padding is required for some reason
         builder.WriteElementId(this.PlayerId);
         builder.WriteCapped(this.QuitReason, 3);
 

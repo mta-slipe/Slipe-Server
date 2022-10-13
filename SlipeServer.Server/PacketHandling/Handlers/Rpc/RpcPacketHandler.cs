@@ -8,7 +8,7 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Factories;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using System;
 using System.Linq;
 
@@ -18,7 +18,7 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
 {
     public PacketId PacketId => PacketId.PACKET_ID_RPC;
 
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementCollection;
     private readonly Configuration configuration;
     private readonly ILogger logger;
     private readonly MtaServer server;
@@ -29,14 +29,14 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
         ILogger logger,
         MtaServer server,
         RootElement root,
-        IElementRepository elementRepository,
+        IElementCollection elementCollection,
         Configuration configuration
     )
     {
         this.logger = logger;
         this.server = server;
         this.root = root;
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
         this.configuration = configuration;
     }
 
@@ -72,7 +72,7 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
 
     private void HandleIngameNotice(IClient client)
     {
-        var players = this.elementRepository.GetByType<Elements.Player>(ElementType.Player);
+        var players = this.elementCollection.GetByType<Elements.Player>(ElementType.Player);
 
         var isVersionValid = Version.TryParse(string.Join(".", client.Version!.Replace("-", ".").Split(".").Take(4)), out Version? result);
         if (!isVersionValid)
@@ -155,7 +155,7 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
     private void HandlePlayerTarget(IClient client, RpcPacket packet)
     {
         uint id = packet.Reader.GetElementId();
-        Element? element = this.elementRepository.Get(id);
+        Element? element = this.elementCollection.Get(id);
         client.Player.Target = element;
     }
 
@@ -176,7 +176,7 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
         var worldPosition = packet.Reader.GetVector3WithZAsFloat();
         Element? element = null;
         if (packet.Reader.GetBit())
-            element = this.elementRepository.Get(packet.Reader.GetElementId());
+            element = this.elementCollection.Get(packet.Reader.GetElementId());
 
         client.Player.TriggerCursorClicked(button, new(x, y), worldPosition, element);
     }

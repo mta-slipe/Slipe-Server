@@ -5,16 +5,17 @@ using SlipeServer.Packets;
 using SlipeServer.Packets.Definitions.Player;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.AllSeeingEye;
+using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.IdGeneration;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Events;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.Loggers;
+using SlipeServer.Server.Mappers;
 using SlipeServer.Server.PacketHandling;
 using SlipeServer.Server.PacketHandling.Handlers;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
-using SlipeServer.Server.Repositories;
 using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.Resources.Serving;
@@ -23,7 +24,6 @@ using SlipeServer.Server.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 
 namespace SlipeServer.Server;
 
@@ -36,7 +36,7 @@ public class MtaServer
     protected readonly Dictionary<INetWrapper, Dictionary<uint, IClient>> clients;
     protected readonly ServiceCollection serviceCollection;
     protected readonly ServiceProvider serviceProvider;
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementCollection;
     private readonly IElementIdGenerator? elementIdGenerator;
     private readonly IResourceProvider resourceProvider;
     private readonly RootElement root;
@@ -52,6 +52,7 @@ public class MtaServer
     public bool IsRunning { get; private set; }
     public DateTime StartDatetime { get; private set; }
     public TimeSpan Uptime => DateTime.Now - this.StartDatetime;
+    public IServiceProvider Services => this.serviceProvider;
 
     public MtaServer(
         Action<ServerBuilder> builderAction,
@@ -80,7 +81,7 @@ public class MtaServer
         foreach (var server in this.resourceServers)
             server.Start();
 
-        this.elementRepository = this.serviceProvider.GetRequiredService<IElementRepository>();
+        this.elementCollection = this.serviceProvider.GetRequiredService<IElementCollection>();
         this.elementIdGenerator = this.serviceProvider.GetService<IElementIdGenerator>();
         this.resourceProvider = this.serviceProvider.GetRequiredService<IResourceProvider>();
 
@@ -154,13 +155,25 @@ public class MtaServer
         this.packetReducer.RegisterPacketHandler(packetHandler.PacketId, queueHandler!);
     }
 
-    public object Instantiate(Type type, params object[] parameters) => ActivatorUtilities.CreateInstance(this.serviceProvider, type, parameters);
-    public T Instantiate<T>() => ActivatorUtilities.CreateInstance<T>(this.serviceProvider);
+    public object Instantiate(Type type, params object[] parameters) 
+        => ActivatorUtilities.CreateInstance(this.serviceProvider, type, parameters);
     public T Instantiate<T>(params object[] parameters)
         => ActivatorUtilities.CreateInstance<T>(this.serviceProvider, parameters);
 
-    public T GetService<T>() => this.serviceProvider.GetService<T>();
-    public T GetRequiredService<T>() => this.serviceProvider.GetRequiredService<T>();
+    public object InstantiateScoped(Type type, params object[] parameters)
+    {
+        var scope = this.serviceProvider.CreateScope();
+        return ActivatorUtilities.CreateInstance(scope.ServiceProvider, type, parameters);
+    }
+
+    public T InstantiateScoped<T>(params object[] parameters)
+    {
+        var scope = this.serviceProvider.CreateScope();
+        return ActivatorUtilities.CreateInstance<T>(scope.ServiceProvider, parameters);
+    }
+
+    public T? GetService<T>() => this.serviceProvider.GetService<T>();
+    public T GetRequiredService<T>() where T: notnull => this.serviceProvider.GetRequiredService<T>();
 
     public void BroadcastPacket(Packet packet)
     {
@@ -172,13 +185,13 @@ public class MtaServer
         if (element != this.root && element.Parent == null)
             element.Parent = this.root;
 
-        if (this.elementIdGenerator != null)
+        if (this.elementIdGenerator != null && element.Id == default)
             element.Id = this.elementIdGenerator.GetId();
 
         this.ElementCreated?.Invoke(element);
 
-        this.elementRepository.Add(element);
-        element.Destroyed += (element) => this.elementRepository.Remove(element);
+        this.elementCollection.Add(element);
+        element.Destroyed += (element) => this.elementCollection.Remove(element);
 
         return element;
     }
@@ -214,9 +227,9 @@ public class MtaServer
     }
 
     public void ForAny<TElement>(Action<TElement> action)
-        where TElement: Element
+        where TElement : Element
     {
-        foreach (var element in this.elementRepository.GetByType<TElement>())
+        foreach (var element in this.elementCollection.GetByType<TElement>())
             action(element);
 
         this.ElementCreated += (element) =>
@@ -228,10 +241,11 @@ public class MtaServer
 
     protected virtual void SetupDependencies(Action<ServiceCollection>? dependencyCallback)
     {
-        this.serviceCollection.AddSingleton<IElementRepository, RTreeCompoundElementRepository>();
+        this.serviceCollection.AddSingleton<IElementCollection, RTreeCompoundElementCollection>();
         this.serviceCollection.AddSingleton<ILogger, DefaultLogger>();
         this.serviceCollection.AddSingleton<IResourceProvider, SlipeLuaSupportingFileSystemResourceProvider>();
-        this.serviceCollection.AddSingleton<IElementIdGenerator, RepositoryBasedElementIdGenerator>();
+        //this.serviceCollection.AddSingleton<IResourceProvider, FileSystemResourceProvider>();
+        this.serviceCollection.AddSingleton<IElementIdGenerator, CollectionBasedElementIdGenerator>();
         this.serviceCollection.AddSingleton<IAseQueryService, AseQueryService>();
         this.serviceCollection.AddSingleton(typeof(ISyncHandlerMiddleware<>), typeof(BasicSyncHandlerMiddleware<>));
 
@@ -239,6 +253,7 @@ public class MtaServer
         this.serviceCollection.AddSingleton<ChatBox>();
         this.serviceCollection.AddSingleton<ClientConsole>();
         this.serviceCollection.AddSingleton<DebugLog>();
+        this.serviceCollection.AddSingleton<LuaValueMapper>();
         this.serviceCollection.AddSingleton<LuaEventService>();
         this.serviceCollection.AddSingleton<LatentPacketService>();
         this.serviceCollection.AddSingleton<ExplosionService>();
@@ -246,8 +261,9 @@ public class MtaServer
         this.serviceCollection.AddSingleton<TextItemService>();
         this.serviceCollection.AddSingleton<WeaponConfigurationService>();
         this.serviceCollection.AddSingleton<CommandService>();
+        this.serviceCollection.AddSingleton<ITimerService, TimerService>();
 
-        this.serviceCollection.AddSingleton<HttpClient>();
+        this.serviceCollection.AddHttpClient();
         this.serviceCollection.AddSingleton<Configuration>(this.configuration);
         this.serviceCollection.AddSingleton<RootElement>(this.root);
         this.serviceCollection.AddSingleton<MtaServer>(this);
@@ -302,6 +318,7 @@ public class MtaServer
                     _ => throw new NotImplementedException()
                 };
                 client.Player.TriggerDisconnected(quitReason);
+                client.SetDisconnected();
                 this.clients[netWrapper].Remove(binaryAddress);
             }
         }
@@ -331,6 +348,13 @@ public class MtaServer
         BroadcastPacket(new ServerInfoSyncPacket(slots));
     }
 
+    public static MtaServer Create(Action<ServerBuilder> builderAction) 
+        => new(builderAction);
+    public static MtaServer<TPlayer> Create<TPlayer>(Action<ServerBuilder> builderAction) where TPlayer: Player, new() 
+        => new MtaNewPlayerServer<TPlayer>(builderAction);
+    public static MtaServer<TPlayer> CreateWithDiSupport<TPlayer>(Action<ServerBuilder> builderAction) where TPlayer: Player
+        => new MtaDiPlayerServer<TPlayer>(builderAction);
+
     public event Action<Element>? ElementCreated;
     public event Action<Player>? PlayerJoined;
     public event Action<IClient>? ClientConnected;
@@ -338,26 +362,14 @@ public class MtaServer
 
 }
 
-public class MtaServer<TPlayer> : MtaServer
-    where TPlayer : Player, new()
+public abstract class MtaServer<TPlayer> : MtaServer where TPlayer : Player
 {
-    public MtaServer(Action<ServerBuilder> builderAction)
-        : base(builderAction)
-    {
-
-    }
+    public MtaServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
 
     protected override void SetupDependencies(Action<ServiceCollection>? dependencyCallback)
     {
         base.SetupDependencies(dependencyCallback);
         this.serviceCollection.AddSingleton<MtaServer<TPlayer>>(this);
-    }
-
-    protected override IClient CreateClient(uint binaryAddress, INetWrapper netWrapper)
-    {
-        var player = new TPlayer();
-        player.Client = new Client<TPlayer>(binaryAddress, netWrapper, player);
-        return player.Client;
     }
 
     public override void HandlePlayerJoin(Player player)
@@ -367,4 +379,28 @@ public class MtaServer<TPlayer> : MtaServer
     }
 
     public new event Action<TPlayer>? PlayerJoined;
+}
+
+public class MtaNewPlayerServer<TPlayer> : MtaServer<TPlayer> where TPlayer : Player, new()
+{
+    internal MtaNewPlayerServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
+
+    protected override IClient CreateClient(uint binaryAddress, INetWrapper netWrapper)
+    {
+        var player = new TPlayer();
+        player.Client = new Client<TPlayer>(binaryAddress, netWrapper, player);
+        return player.Client;
+    }
+}
+
+public class MtaDiPlayerServer<TPlayer> : MtaServer<TPlayer> where TPlayer : Player
+{
+    internal MtaDiPlayerServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
+
+    protected override IClient CreateClient(uint binaryAddress, INetWrapper netWrapper)
+    {
+        var player = this.Instantiate<TPlayer>();
+        player.Client = new Client<TPlayer>(binaryAddress, netWrapper, player);
+        return player.Client;
+    }
 }

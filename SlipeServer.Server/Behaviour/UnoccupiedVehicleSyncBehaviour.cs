@@ -2,7 +2,7 @@
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Factories;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using System.Linq;
 using System.Numerics;
 using System.Timers;
@@ -11,16 +11,16 @@ namespace SlipeServer.Server.Behaviour;
 
 public class UnoccupiedVehicleSyncBehaviour
 {
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementCollection;
     private readonly Configuration configuration;
     private readonly Timer timer;
 
     public UnoccupiedVehicleSyncBehaviour(
         MtaServer server,
-        IElementRepository elementRepository,
+        IElementCollection elementCollection,
         Configuration configuration)
     {
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
         this.configuration = configuration;
 
         this.timer = new Timer(configuration.SyncIntervals.LightSync)
@@ -70,7 +70,7 @@ public class UnoccupiedVehicleSyncBehaviour
         if (sender is not Player player)
             return;
 
-        var vehicles = this.elementRepository.GetByType<Vehicle>(ElementType.Vehicle)
+        var vehicles = this.elementCollection.GetByType<Vehicle>(ElementType.Vehicle)
             .Where(x => x.Dimension == player.Dimension);
         foreach (var vehicle in vehicles)
             VehiclePacketFactory.CreateVehicleResyncPacket(vehicle).SendTo(player);
@@ -81,14 +81,14 @@ public class UnoccupiedVehicleSyncBehaviour
         if (sender is not Vehicle vehicle)
             return;
 
-        var players = this.elementRepository.GetByType<Player>(ElementType.Player)
+        var players = this.elementCollection.GetByType<Player>(ElementType.Player)
             .Where(x => x.Dimension == vehicle.Dimension);
         VehiclePacketFactory.CreateVehicleResyncPacket(vehicle).SendTo(players);
     }
 
     private void HandleVehicleSyncers()
     {
-        var vehicles = this.elementRepository.GetByType<Vehicle>(ElementType.Vehicle);
+        var vehicles = this.elementCollection.GetByType<Vehicle>(ElementType.Vehicle);
 
         foreach (var vehicle in vehicles)
             UpdateVehicleSyncer(vehicle);
@@ -136,9 +136,10 @@ public class UnoccupiedVehicleSyncBehaviour
 
     private Player? GetClosestPlayer(Vehicle vehicle, float maxDistance)
     {
-        var players = this.elementRepository
+        var players = this.elementCollection
             .GetWithinRange<Player>(vehicle.Position, maxDistance, ElementType.Player)
             .Where(x => x.Dimension == vehicle.Dimension)
+            .Where(x => x.Client.ConnectionState == Enums.ClientConnectionState.Joined)
             .ToArray();
 
         var nearestDistance = players.Any() ? players.Min(x => Vector3.Distance(x.Position, vehicle.Position)) : -1;

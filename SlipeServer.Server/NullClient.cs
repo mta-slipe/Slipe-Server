@@ -34,6 +34,6 @@ public class NullClient : IClient
     public void SendPacket(Packet packet) => throw new NullReferenceException("Attempt to access client of player without client.");
     public void SendPacket(PacketId packetId, byte[] data, PacketPriority priority = PacketPriority.Medium, PacketReliability reliability = PacketReliability.Unreliable) => throw new NullReferenceException("Attempt to access client of player without client.");
     public void SetVersion(ushort version) => throw new NullReferenceException("Attempt to access client of player without client.");
-
-    private void Throw() => throw new NullReferenceException("Attempt to access client of player without client.");
+    public void SetDisconnected() => throw new NullReferenceException("Attempt to access client of player without client.");
+    public void ResetConnectionState() => throw new NullReferenceException("Attempt to access client of player without client.");
 }

@@ -8,7 +8,7 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.PacketHandling.Factories;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 
 namespace SlipeServer.Server.Behaviour;
 

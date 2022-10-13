@@ -42,11 +42,13 @@ public class ExplosionPacket : Packet
         if (reader.GetBit())
         {
             this.OriginId = reader.GetElementId();
+
+            this.IsVehicleResponsible = reader.GetBit();
+            if (this.IsVehicleResponsible)
+                this.BlowVehicleWithoutExplosion = reader.GetBit();
         }
 
-        this.IsVehicleResponsible = reader.GetBit();
-        if (this.IsVehicleResponsible)
-            this.BlowVehicleWithoutExplosion = reader.GetBit();
+
 
         this.Position = reader.GetVector3WithZAsFloat();
         this.ExplosionType = reader.GetByteCapped(4);

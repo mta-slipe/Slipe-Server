@@ -8,6 +8,7 @@ using SlipeServer.Physics.Assets;
 using SlipeServer.Physics.Callbacks;
 using SlipeServer.Physics.Entities;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
@@ -114,6 +115,13 @@ public class PhysicsWorld : IDisposable
         HitHandler handler = new();
         this.simulation.RayCast(from, direction, length, ref handler);
         return handler.Hit;
+    }
+
+    public IEnumerable<RayHit> MultiRayCast(Vector3 from, Vector3 direction, float length)
+    {
+        MultiHitHandler handler = new();
+        this.simulation.RayCast(from, direction, length, ref handler);
+        return handler.Hits;
     }
 
     public PhysicsImg LoadImg(string path)

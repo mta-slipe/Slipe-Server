@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 
 namespace SlipeServer.Server.Elements.ColShapes;
 
@@ -34,10 +31,7 @@ public abstract class CollisionShape : Element
             if (!this.elementsWithin.Contains(element))
             {
                 this.elementsWithin.Add(element);
-                element.RunAsSync(() =>
-                {
-                    this.ElementEntered?.Invoke(element);
-                }, false);
+                this.ElementEntered?.Invoke(element);
                 element.Destroyed += OnElementDestroyed;
             }
         } else
@@ -45,10 +39,7 @@ public abstract class CollisionShape : Element
             if (this.elementsWithin.Contains(element))
             {
                 this.elementsWithin.Remove(element);
-                element.RunAsSync(() =>
-                {
-                    this.ElementLeft?.Invoke(element);
-                }, false);
+                this.ElementLeft?.Invoke(element);
                 element.Destroyed -= OnElementDestroyed;
             }
         }

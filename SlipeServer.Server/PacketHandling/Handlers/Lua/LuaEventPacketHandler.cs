@@ -1,33 +1,33 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Lua.Event;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using System.Linq;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Lua;
 
 public class LuaEventPacketHandler : IPacketHandler<LuaEventPacket>
 {
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementCollection;
     private readonly ILogger logger;
     private readonly MtaServer server;
 
     public PacketId PacketId => PacketId.PACKET_ID_LUA_EVENT;
 
     public LuaEventPacketHandler(
-        IElementRepository elementRepository,
+        IElementCollection elementCollection,
         ILogger logger,
         MtaServer server
     )
     {
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
         this.logger = logger;
         this.server = server;
     }
 
     public void HandlePacket(IClient client, LuaEventPacket packet)
     {
-        var element = this.elementRepository.Get(packet.ElementId);
+        var element = this.elementCollection.Get(packet.ElementId);
         if (element == null)
         {
             this.logger.LogWarning($"'{packet.Name}' event triggered on non-existant element {packet.ElementId}");

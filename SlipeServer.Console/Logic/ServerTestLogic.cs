@@ -14,7 +14,7 @@ using SlipeServer.Server.Elements.Structs;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Events;
 using SlipeServer.Server.PacketHandling.Factories;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.Services;
@@ -34,7 +34,7 @@ namespace SlipeServer.Console.Logic;
 public class ServerTestLogic
 {
     private readonly MtaServer<CustomPlayer> server;
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementCollection;
     private readonly RootElement root;
     private readonly GameWorld worldService;
     private readonly DebugLog debugLog;
@@ -72,7 +72,7 @@ public class ServerTestLogic
 
     public ServerTestLogic(
         MtaServer<CustomPlayer> server,
-        IElementRepository elementRepository,
+        IElementCollection elementCollection,
         RootElement root,
         GameWorld world,
         DebugLog debugLog,
@@ -88,7 +88,7 @@ public class ServerTestLogic
     )
     {
         this.server = server;
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
         this.root = root;
         this.worldService = world;
         this.debugLog = debugLog;
@@ -414,7 +414,7 @@ public class ServerTestLogic
 
         this.commandService.AddCommand("playerlist").Triggered += (source, args) =>
         {
-            var players = this.elementRepository.GetByType<Player>();
+            var players = this.elementCollection.GetByType<Player>();
             foreach (var remotePlayer in players)
                 this.chatBox.OutputTo(args.Player, remotePlayer.Name);
 
@@ -541,7 +541,7 @@ public class ServerTestLogic
 
         this.commandService.AddCommand("closevehicles").Triggered += (source, args) =>
         {
-            var vehicles = this.elementRepository.GetWithinRange<Vehicle>(args.Player.Position, 25, ElementType.Vehicle);
+            var vehicles = this.elementCollection.GetWithinRange<Vehicle>(args.Player.Position, 25, ElementType.Vehicle);
             this.chatBox.OutputTo(args.Player, $"There are {vehicles.Count()} vehicles near you.");
             foreach (var vehicle in vehicles)
                 this.chatBox.OutputTo(args.Player, $"- {(VehicleModel)vehicle.Model}.");
@@ -1037,9 +1037,9 @@ public class ServerTestLogic
             {
                 player.HasJetpack = !player.HasJetpack;
                 if(player.HasJetpack)
-                    this.logger.LogInformation($"{sender.Name} put on a jetpack!");
+                    this.logger.LogInformation("{name} put on a jetpack!", sender.Name);
                 else
-                    this.logger.LogInformation($"{sender.Name} pulled off his jetpack!");
+                    this.logger.LogInformation("{name} pulled off his jetpack!", sender.Name);
             }
             else if(e.Key == "h")
             {
@@ -1055,7 +1055,7 @@ public class ServerTestLogic
 
     private void HandlePlayerSubscriptions(Player player)
     {
-        var otherPlayers = this.elementRepository.GetByType<Player>().Where(x => x != player);
+        var otherPlayers = this.elementCollection.GetByType<Player>().Where(x => x != player);
         foreach (var otherPlayer in otherPlayers)
         {
             otherPlayer.SubscribeTo(player);
@@ -1069,7 +1069,7 @@ public class ServerTestLogic
             switch (args.Command)
             {
                 case "sub":
-                    otherPlayer = this.elementRepository
+                    otherPlayer = this.elementCollection
                         .GetByType<Player>()
                         .SingleOrDefault(x => x.Name == args.Arguments[0]);
 
@@ -1077,7 +1077,7 @@ public class ServerTestLogic
                         player.SubscribeTo(otherPlayer);
                     break;
                 case "unsub":
-                    otherPlayer = this.elementRepository
+                    otherPlayer = this.elementCollection
                         .GetByType<Player>()
                         .SingleOrDefault(x => x.Name == args.Arguments[0]);
 
@@ -1121,6 +1121,6 @@ public class ServerTestLogic
         });
         table.TableValue?.Add("self", table);
 
-        this.luaService.TriggerEvent(player, "Slipe.Test.ClientEvent", this.root, "String value", true, 23, table);
+        this.luaService.TriggerEventFor(player, "Slipe.Test.ClientEvent", this.root, "String value", true, 23, table);
     }
 }

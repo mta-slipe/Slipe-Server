@@ -1,10 +1,9 @@
-﻿namespace SlipeServer.Server.Elements.Enums
+﻿namespace SlipeServer.Server.Elements.Enums;
+
+public enum KeyState
 {
-    public enum KeyState
-    {
-        None,
-        Up,
-        Down,
-        Both,
-    }
+    None,
+    Up,
+    Down,
+    Both,
 }

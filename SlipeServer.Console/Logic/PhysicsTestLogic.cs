@@ -2,12 +2,13 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using SlipeServer.Physics.Entities;
+using SlipeServer.Physics.Enum;
 using SlipeServer.Physics.Services;
 using SlipeServer.Physics.Worlds;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Extensions;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Services;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace SlipeServer.Console.Logic;
 public class PhysicsTestLogic
 {
     private readonly MtaServer server;
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementCollection;
     private readonly PhysicsService physicsService;
     private readonly CommandService commandService;
     private readonly ILogger logger;
@@ -37,19 +38,20 @@ public class PhysicsTestLogic
 
     public PhysicsTestLogic(
         MtaServer server,
-        IElementRepository elementRepository,
+        IElementCollection elementCollection,
         PhysicsService physicsService,
         CommandService commandService,
         ILogger logger)
     {
         this.server = server;
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
         this.physicsService = physicsService;
         this.commandService = commandService;
         this.logger = logger;
 
         this.commandService.AddCommand("physics").Triggered += (source, args) => InitEmpty();
-        this.commandService.AddCommand("physicsfull").Triggered += (source, args) => InitFull();
+        this.commandService.AddCommand("physicshighres").Triggered += (source, args) => InitFullDff();
+        this.commandService.AddCommand("physicslowres").Triggered += (source, args) => InitFullCol();
     }
 
     private void InitEmpty()
@@ -58,10 +60,20 @@ public class PhysicsTestLogic
         this.Init();
     }
 
-    private void InitFull()
+    private void InitFullDff()
     {
         string? gtaDirectory = GetGtasaDirectory();
-        this.physicsWorld = this.physicsService.CreatePhysicsWorldFromGtaDirectory(gtaDirectory ?? "gtasa", "gta.dat", builderAction: (builder) =>
+        this.physicsWorld = this.physicsService.CreatePhysicsWorldFromGtaDirectory(gtaDirectory ?? "gtasa", "gta.dat", PhysicsModelLoadMode.Dff, builderAction: (builder) =>
+        {
+            builder.SetGravity(Vector3.UnitZ * -1.0f);
+        });
+        this.Init();
+    }
+
+    private void InitFullCol()
+    {
+        string? gtaDirectory = GetGtasaDirectory();
+        this.physicsWorld = this.physicsService.CreatePhysicsWorldFromGtaDirectory(gtaDirectory ?? "gtasa", "gta.dat", PhysicsModelLoadMode.Col, builderAction: (builder) =>
         {
             builder.SetGravity(Vector3.UnitZ * -1.0f);
         });
@@ -99,9 +111,10 @@ public class PhysicsTestLogic
             this.commandService.AddCommand("ball").Triggered += HandleBallCommand;
             this.commandService.AddCommand("startsim").Triggered += HandleStartSimCommand;
             this.commandService.AddCommand("stopsim").Triggered += HandleStopSimCommand;
+            this.commandService.AddCommand("heightmap").Triggered += (s, a) => GenerateRaycastedHeightMap();
 
             this.server.PlayerJoined += HandlePlayerJoin;
-            foreach (var player in this.elementRepository.GetByType<Player>())
+            foreach (var player in this.elementCollection.GetByType<Player>())
                 HandlePlayerJoin(player);
         }
         catch (IOException)
@@ -181,7 +194,7 @@ public class PhysicsTestLogic
 
         var stopwatch = new Stopwatch();
         stopwatch.Start();
-        Bitmap output = new Bitmap(width, height);
+        using var output = new Bitmap(width, height);
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -204,8 +217,36 @@ public class PhysicsTestLogic
         stopwatch.Stop();
         var time = stopwatch.Elapsed;
         this.logger.LogInformation("Raycast image generated in {time}ms", time.TotalMilliseconds);
-
         output.Save("rayresult.png", ImageFormat.Png);
+    }
+
+    private void GenerateRaycastedHeightMap()
+    {
+        var width = 6000;
+        var height = 6000;
+        var depth = 500f;
+
+        var direction = new Vector3(0, 0, -1);
+
+        using var output = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                var from = new Vector3(x - width / 2, y - height / 2, 400);
+                var hit = this.physicsWorld!.RayCast(from, direction, depth);
+                if (hit.HasValue)
+                {
+                    var max = 256 * 3;
+                    var intensity = max - (hit.Value.distance / depth * max);
+                    var color = Color.FromArgb(255, (int)Math.Clamp(intensity, 0, 255), (int)Math.Clamp(intensity - 256, 0, 255), (int)Math.Clamp(intensity - 512, 0, 255));
+                    output.SetPixel(x, height - y - 1, color);
+                }
+            }
+        }
+        this.logger.LogInformation($"Heightmap generated");
+
+        output.Save("heightmap.png", ImageFormat.Png);
     }
 
     private string? GetGtasaDirectory()

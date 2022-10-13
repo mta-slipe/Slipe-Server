@@ -24,7 +24,7 @@ public class LuaTestLogic
         this.eventRuntime = eventRuntime;
         this.luaService = luaService;
         this.logger = logger;
-        commandService.AddCommand("physics").Triggered += (source, args) => Init();
+        commandService.AddCommand("lua").Triggered += (source, args) => Init();
     }
 
     private void Init()
@@ -44,7 +44,7 @@ public class LuaTestLogic
         }
         catch (InterpreterException ex)
         {
-            this.logger.LogInformation("Failed to load script\n\t{0}", ex.DecoratedMessage);
+            this.logger.LogInformation("Failed to load script\n\t{message}", ex.DecoratedMessage);
         }
     }
 }

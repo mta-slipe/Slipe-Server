@@ -1,7 +1,6 @@
 ﻿using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Structures;
 using System;
-using System.Collections.Generic;
 using System.Numerics;
 using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Reader;

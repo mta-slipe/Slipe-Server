@@ -2,7 +2,7 @@
 using SlipeServer.Server.Elements.ColShapes;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.PacketHandling.Factories;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using System.Collections.Generic;
 using System.Numerics;
 
@@ -16,10 +16,10 @@ public class CollisionShapeBehaviour
     private readonly HashSet<CollisionShape> collisionShapes;
     private readonly MtaServer server;
 
-    public CollisionShapeBehaviour(MtaServer server, IElementRepository elementRepository)
+    public CollisionShapeBehaviour(MtaServer server, IElementCollection elementCollection)
     {
         this.collisionShapes = new HashSet<CollisionShape>();
-        foreach (var collisionShape in elementRepository.GetByType<CollisionShape>(ElementType.Colshape))
+        foreach (var collisionShape in elementCollection.GetByType<CollisionShape>(ElementType.Colshape))
         {
             this.AddCollisionShape(collisionShape);
         }
@@ -118,6 +118,9 @@ public class CollisionShapeBehaviour
 
     private void OnElementPositionChange(object sender, ElementChangedEventArgs<Vector3> eventArgs)
     {
-        RefreshColliders(eventArgs.Source);
+        eventArgs.Source.RunWithContext(
+            () => RefreshColliders(eventArgs.Source), 
+            Elements.Enums.ElementUpdateContext.PostEvent
+        );
     }
 }

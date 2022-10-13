@@ -6,7 +6,7 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using System;
 using System.Linq;
 
@@ -16,19 +16,19 @@ public class PlayerPureSyncPacketHandler : IPacketHandler<PlayerPureSyncPacket>
 {
     private readonly ILogger logger;
     private readonly ISyncHandlerMiddleware<PlayerPureSyncPacket> pureSyncMiddleware;
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementCollection;
 
     public PacketId PacketId => PacketId.PACKET_ID_PLAYER_PURESYNC;
 
     public PlayerPureSyncPacketHandler(
         ILogger logger,
         ISyncHandlerMiddleware<PlayerPureSyncPacket> pureSyncMiddleware,
-        IElementRepository elementRepository
+        IElementCollection elementCollection
     )
     {
         this.logger = logger;
         this.pureSyncMiddleware = pureSyncMiddleware;
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
     }
 
     public void HandlePacket(IClient client, PlayerPureSyncPacket packet)
@@ -59,7 +59,7 @@ public class PlayerPureSyncPacketHandler : IPacketHandler<PlayerPureSyncPacket>
             player.AimOrigin = packet.AimOrigin;
             player.AimDirection = packet.AimDirection;
 
-            player.ContactElement = this.elementRepository.Get(packet.ContactElementId);
+            player.ContactElement = this.elementCollection.Get(packet.ContactElementId);
             if (player.ContactElement != null)
             {
                 player.Position = player.ContactElement.Position + packet.Position;
@@ -89,7 +89,7 @@ public class PlayerPureSyncPacketHandler : IPacketHandler<PlayerPureSyncPacket>
 
             if (packet.IsDamageChanged)
             {
-                var damager = this.elementRepository.Get(packet.DamagerId);
+                var damager = this.elementCollection.Get(packet.DamagerId);
                 player.TriggerDamaged(damager, (WeaponType)packet.DamageType, (BodyPart)packet.DamageBodypart);
             }
         });

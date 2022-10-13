@@ -229,8 +229,8 @@ public class Player : Ped
 
     public void TriggerDisconnected(QuitReason reason)
     {
-        this.Disconnected?.Invoke(this, new PlayerQuitEventArgs(reason));
-        this.Destroy();
+        if (this.Destroy())
+            this.Disconnected?.Invoke(this, new PlayerQuitEventArgs(reason));        
     }
 
     public void TakeScreenshot(ushort width, ushort height, string tag = "", byte quality = 30, uint maxBandwith = 5000, ushort maxPacketSize = 500)

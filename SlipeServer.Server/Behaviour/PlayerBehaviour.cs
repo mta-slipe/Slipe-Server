@@ -1,24 +1,15 @@
-﻿using Microsoft.Extensions.Logging;
-using SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
+﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Extensions;
-using SlipeServer.Server.Repositories;
 
 namespace SlipeServer.Server.Behaviour;
 
 public class PlayerBehaviour
 {
-    private readonly IElementRepository elementRepository;
-    private readonly MtaServer server;
-    private readonly ILogger logger;
-
-    public PlayerBehaviour(IElementRepository elementRepository, MtaServer server, ILogger logger)
+    public PlayerBehaviour(MtaServer server)
     {
-        this.elementRepository = elementRepository;
-        this.server = server;
-        this.logger = logger;
         server.PlayerJoined += OnPlayerJoin;
     }
 

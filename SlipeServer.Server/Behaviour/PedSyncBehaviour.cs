@@ -1,32 +1,29 @@
 ﻿using SlipeServer.Packets.Definitions.Ped;
 using SlipeServer.Server.Elements;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using System.Linq;
 using System.Numerics;
 using System.Timers;
+using SlipeServer.Server.Services;
+using System;
 
 namespace SlipeServer.Server.Behaviour;
 
 public class PedSyncBehaviour
 {
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementCollection;
     private readonly Configuration configuration;
-    private readonly Timer timer;
 
     public PedSyncBehaviour(
         MtaServer server,
-        IElementRepository elementRepository,
-        Configuration configuration)
+        IElementCollection elementCollection,
+        Configuration configuration,
+        ITimerService timerService)
     {
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
         this.configuration = configuration;
 
-        this.timer = new Timer(configuration.SyncIntervals.LightSync)
-        {
-            AutoReset = true,
-        };
-        this.timer.Start();
-        this.timer.Elapsed += (sender, args) => HandlePedSyncers();
+        timerService.CreateTimer(HandlePedSyncers, TimeSpan.FromMilliseconds(configuration.SyncIntervals.LightSync));
 
         server.PlayerJoined += HandlePlayerJoin;
     }
@@ -46,8 +43,8 @@ public class PedSyncBehaviour
 
     private void HandlePedSyncers()
     {
-        var peds = this.elementRepository.GetByType<Ped>(ElementType.Ped)
-            .Where(ped => !(ped is Player));
+        var peds = this.elementCollection.GetByType<Ped>(ElementType.Ped)
+            .Where(ped => ped is not Player);
 
         foreach (var ped in peds)
             UpdatePedSyncer(ped);
@@ -90,9 +87,10 @@ public class PedSyncBehaviour
 
     private Player? GetClosestPlayer(Ped ped, float maxDistance)
     {
-        var players = this.elementRepository
+        var players = this.elementCollection
             .GetWithinRange<Player>(ped.Position, maxDistance, ElementType.Player)
             .Where(x => x.Dimension == ped.Dimension)
+            .Where(x => x.Client.ConnectionState == Enums.ClientConnectionState.Joined)
             .ToArray();
 
         var nearestDistance = players.Any() ? players.Min(x => Vector3.Distance(x.Position, ped.Position)) : -1;

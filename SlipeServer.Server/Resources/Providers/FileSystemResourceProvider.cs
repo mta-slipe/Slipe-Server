@@ -1,10 +1,7 @@
-﻿using Force.Crc32;
-using SlipeServer.Packets.Structs;
+﻿using SlipeServer.Packets.Structs;
 using SlipeServer.Server.Elements;
-using SlipeServer.Server.Elements.Enums;
 using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography;
 
 namespace SlipeServer.Server.Resources.Providers;
 
@@ -37,8 +34,8 @@ public class FileSystemResourceProvider : IResourceProvider
 
     public void Refresh()
     {
-        var resources = IndexResourceDirectory(this.configuration.ResourceDirectory);
         this.resources.Clear();
+        var resources = IndexResourceDirectory(this.configuration.ResourceDirectory);
 
         foreach (var resource in resources)
             this.resources[resource.Name] = resource;
@@ -80,26 +77,11 @@ public class FileSystemResourceProvider : IResourceProvider
     {
         List<ResourceFile> resourceFiles = new List<ResourceFile>();
 
-        using (var md5 = MD5.Create())
+        foreach (var file in Directory.GetFiles(path))
         {
-            foreach (var file in Directory.GetFiles(path))
-            {
-                byte[] content = File.ReadAllBytes(file);
-                var hash = md5.ComputeHash(content);
-                var checksum = Crc32Algorithm.Compute(content);
-
-                string fileName = Path.GetRelativePath(path, file);
-                var fileType = fileName.EndsWith(".lua") ? ResourceFileType.ClientScript : ResourceFileType.ClientFile;
-                resourceFiles.Add(new ResourceFile()
-                {
-                    Name = fileName,
-                    AproximateSize = content.Length,
-                    IsAutoDownload = fileType == ResourceFileType.ClientFile ? true : null,
-                    CheckSum = checksum,
-                    FileType = (byte)fileType,
-                    Md5 = hash
-                });
-            }
+            byte[] content = File.ReadAllBytes(file);
+            string fileName = Path.GetRelativePath(path, file);
+            resourceFiles.Add(ResourceFileFactory.FromBytes(content, fileName));
         }
 
         return resourceFiles;

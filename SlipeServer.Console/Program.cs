@@ -4,7 +4,9 @@ using SlipeServer.ConfigurationProviders;
 using SlipeServer.Console.AdditionalResources;
 using SlipeServer.Console.Elements;
 using SlipeServer.Console.Logic;
+using SlipeServer.Console.Services;
 using SlipeServer.Lua;
+using SlipeServer.LuaControllers;
 using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Physics.Extensions;
 using SlipeServer.Server;
@@ -55,7 +57,7 @@ public partial class Program
             IsVoiceEnabled = true
         };
 
-        this.server = new MtaServer<CustomPlayer>(
+        this.server = MtaServer.CreateWithDiSupport<CustomPlayer>(
             (builder) =>
             {
                 builder.UseConfiguration(this.configuration);
@@ -72,23 +74,28 @@ public partial class Program
                     services.AddSingleton<ILogger, ConsoleLogger>();
                     services.AddSingleton<ISyncHandlerMiddleware<PlayerPureSyncPacket>, SubscriptionSyncHandlerMiddleware<PlayerPureSyncPacket>>();
                     services.AddSingleton<ISyncHandlerMiddleware<KeySyncPacket>, SubscriptionSyncHandlerMiddleware<KeySyncPacket>>();
+
+                    services.AddScoped<TestService>();
                 });
                 builder.AddLua();
                 builder.AddPhysics();
                 builder.AddParachuteResource();
+                builder.AddLuaControllers();
 
                 builder.AddLogic<ServerTestLogic>();
                 builder.AddLogic<LuaTestLogic>();
                 builder.AddLogic<PhysicsTestLogic>();
                 builder.AddLogic<ElementPoolingTestLogic>();
                 builder.AddLogic<WarpIntoVehicleLogic>();
+                builder.AddLogic<LuaEventTestLogic>();
+                builder.AddLogic<ServiceUsageTestLogic>();
                 //builder.AddBehaviour<VelocityBehaviour>();
+                //builder.AddBehaviour<EventLoggingBehaviour>();
             }
-        )
-        {
-            GameType = "Slipe Server",
-            MapName = "N/A"
-        };
+        );
+
+        this.server.GameType = "Slipe Server";
+        this.server.MapName = "N/A";
 
         this.Logger = this.server.GetRequiredService<ILogger>();
 

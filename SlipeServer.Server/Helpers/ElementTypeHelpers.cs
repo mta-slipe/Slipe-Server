@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace SlipeServer.Server.Helpers;
 public static class ElementTypeHelpers
 {
-    private static Dictionary<Type, ElementType> elementTypeCache = new();
+    private readonly static Dictionary<Type, ElementType> elementTypeCache = new();
 
     private static ElementType DeterineElementType(Type type)
     {

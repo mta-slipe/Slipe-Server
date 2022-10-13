@@ -12,7 +12,7 @@ namespace SlipeServer.Server;
 
 public class Client<TPlayer> 
     : IClient, IClient<TPlayer>
-    where TPlayer: Player, new()
+    where TPlayer: Player
 {
     private readonly INetWrapper netWrapper;
     private readonly uint binaryAddress;
@@ -82,6 +82,16 @@ public class Client<TPlayer>
     {
         if (Enum.IsDefined((ClientConnectionState)packet))
             this.ConnectionState = (ClientConnectionState)packet;
+    }
+
+    public void SetDisconnected()
+    {
+        this.ConnectionState = ClientConnectionState.Quit;
+    }
+
+    public void ResetConnectionState()
+    {
+        this.ConnectionState = ClientConnectionState.Disconnected;
     }
 
     public void SetVersion(ushort version)

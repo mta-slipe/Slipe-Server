@@ -45,8 +45,8 @@ public class SlipeLuaSupportingFileSystemResourceProvider : IResourceProvider
 
     public void Refresh()
     {
-        var resources = IndexResourceDirectory(this.configuration.ResourceDirectory);
         this.resources.Clear();
+        var resources = IndexResourceDirectory(this.configuration.ResourceDirectory);
 
         foreach (var resource in resources)
             this.resources[resource.Name] = resource;

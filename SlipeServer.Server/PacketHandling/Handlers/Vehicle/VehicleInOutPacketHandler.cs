@@ -5,33 +5,33 @@ using SlipeServer.Server.Constants;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using System.Numerics;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle;
 
 public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
 {
-    private readonly IElementRepository elementRepository;
+    private readonly IElementCollection elementCollection;
     private readonly MtaServer server;
     private readonly ILogger logger;
 
     public PacketId PacketId => PacketId.PACKET_ID_VEHICLE_INOUT;
 
     public VehicleInOutPacketHandler(
-        IElementRepository elementRepository,
+        IElementCollection elementCollection,
         MtaServer server,
         ILogger logger
     )
     {
-        this.elementRepository = elementRepository;
+        this.elementCollection = elementCollection;
         this.server = server;
         this.logger = logger;
     }
 
     public void HandlePacket(IClient client, VehicleInOutPacket packet)
     {
-        var element = this.elementRepository.Get(packet.VehicleId);
+        var element = this.elementCollection.Get(packet.VehicleId);
         if (element == null)
         {
             this.logger.LogWarning("Attempt to enter non-existant vehicle");

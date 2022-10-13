@@ -8,12 +8,12 @@ namespace SlipeServer.Server.Behaviour;
 /// </summary>
 public class EventLoggingBehaviour
 {
-    public EventLoggingBehaviour(MtaServer server, ILogger? logger)
+    public EventLoggingBehaviour(MtaServer server, ILogger logger)
     {
         server.LuaEventTriggered += (luaEvent) =>
         {
-            logger.LogInformation($"The lua '{luaEvent.Name}' event was triggered by {luaEvent.Player.Name} with variables:\n" +
-                $"{string.Join(", ", luaEvent.Parameters.Select(p => p.ToString()))}");
+            logger.LogInformation("The lua '{luaEventName}' event was triggered by {luaEventPlayerName} with variables:\n" +
+                "{parameters}", luaEvent.Name, luaEvent.Player.Name, string.Join(", ", luaEvent.Parameters.Select(p => p.ToString())));
         };
     }
 }

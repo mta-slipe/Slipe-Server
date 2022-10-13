@@ -5,10 +5,10 @@ namespace SlipeServer.ConfigurationProviders.Configurations;
 
 public class TomlConfigurationProvider : IConfigurationProvider
 {
-    public Configuration configuration { private set; get; }
-    public Configuration GetConfiguration() => configuration;
+    public Configuration Configuration { private set; get; }
+    public Configuration GetConfiguration() => this.Configuration;
     public TomlConfigurationProvider(string fileName)
     {
-        this.configuration = Toml.ReadFile<Configuration>(fileName);
+        this.Configuration = Toml.ReadFile<Configuration>(fileName);
     }
 }
