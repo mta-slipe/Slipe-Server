@@ -239,13 +239,27 @@ public static class DefaultServerBuilderExtensions
 
         });
     }
+    public static void AddDefaultResourceInterpreters(
+        this ServerBuilder builder,
+        ServerBuilderDefaultResourceInterpreters except = ServerBuilderDefaultResourceInterpreters.None)
+    {
+        if (!except.HasFlag(ServerBuilderDefaultResourceInterpreters.Basic))
+            builder.AddResourceInterpreter<BasicResourceInterpreter>();
 
-    public static void AddDefaults(
+        if (!except.HasFlag(ServerBuilderDefaultResourceInterpreters.MetaXml))
+            builder.AddResourceInterpreter<MetaXmlResourceInterpreter>();
+
+        if (!except.HasFlag(ServerBuilderDefaultResourceInterpreters.SlipeLua))
+            builder.AddResourceInterpreter<SlipeLuaResourceInterpreter>();
+    }
+
+        public static void AddDefaults(
         this ServerBuilder builder,
         ServerBuilderDefaultPacketHandlers exceptPacketHandlers = ServerBuilderDefaultPacketHandlers.None,
         ServerBuilderDefaultBehaviours exceptBehaviours = ServerBuilderDefaultBehaviours.None,
         ServerBuilderDefaultServices exceptServices = ServerBuilderDefaultServices.None,
-        ServerBuilderDefaultMiddleware exceptMiddleware = ServerBuilderDefaultMiddleware.None)
+        ServerBuilderDefaultMiddleware exceptMiddleware = ServerBuilderDefaultMiddleware.None,
+        ServerBuilderDefaultResourceInterpreters exceptResourceInterpreters = ServerBuilderDefaultResourceInterpreters.None)
     {
         builder.AddDefaultPacketHandler(exceptPacketHandlers);
         builder.AddDefaultBehaviours(exceptBehaviours);
@@ -253,7 +267,7 @@ public static class DefaultServerBuilderExtensions
         builder.AddDefaultLuaMappings();
 
         builder.AddResourceServer<BasicHttpServer>();
-        builder.AddResourceInterpreter<BasicResourceInterpreter>();
+        builder.AddDefaultResourceInterpreters(exceptResourceInterpreters);
 
         builder.AddNetWrapper(
             Directory.GetCurrentDirectory(),

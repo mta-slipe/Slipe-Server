@@ -97,9 +97,6 @@ public partial class Program
                 builder.AddLogic<ServiceUsageTestLogic>();
                 //builder.AddBehaviour<VelocityBehaviour>();
                 //builder.AddBehaviour<EventLoggingBehaviour>();
-
-                builder.AddResourceInterpreter<MetaXmlResourceInterpreter>();
-                builder.AddResourceInterpreter<SlipeLuaResourceInterpreter>();
             }
         );
 
