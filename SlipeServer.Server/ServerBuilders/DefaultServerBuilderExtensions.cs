@@ -253,7 +253,7 @@ public static class DefaultServerBuilderExtensions
             builder.AddResourceInterpreter<SlipeLuaResourceInterpreter>();
     }
 
-        public static void AddDefaults(
+    public static void AddDefaults(
         this ServerBuilder builder,
         ServerBuilderDefaultPacketHandlers exceptPacketHandlers = ServerBuilderDefaultPacketHandlers.None,
         ServerBuilderDefaultBehaviours exceptBehaviours = ServerBuilderDefaultBehaviours.None,
