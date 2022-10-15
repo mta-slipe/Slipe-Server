@@ -10,9 +10,9 @@ using SlipeServer.LuaControllers;
 using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Physics.Extensions;
 using SlipeServer.Server;
-using SlipeServer.Server.Behaviour;
 using SlipeServer.Server.Loggers;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
+using SlipeServer.Server.Resources.Interpreters;
 using SlipeServer.Server.ServerBuilders;
 using System;
 using System.Threading;
@@ -33,11 +33,16 @@ public partial class Program
         {
             if (program != null)
             {
-                program.Logger.LogCritical(exception, "{message}", exception.Message);
+                program.Logger.LogCritical(exception, "{message}\n{stackTrace}", exception.Message, exception.StackTrace);
             } else
             {
                 System.Console.WriteLine($"Error in startup {exception.Message}");
+                System.Console.WriteLine($"Error in startup {exception.Message}\n{exception.StackTrace}");
             }
+
+#if DEBUG
+            throw;
+#endif
             System.Console.WriteLine("Press any key to exit...");
             System.Console.ReadKey();
         }

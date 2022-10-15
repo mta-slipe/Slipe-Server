@@ -100,7 +100,7 @@ public class ServerBuilder
 
     public void ApplyTo(MtaServer server)
     {
-        foreach (var step in this.buildSteps.OrderBy(x => (int)x.Priority))
+        foreach (var step in this.buildSteps.OrderByDescending(x => (int)x.Priority))
             step.Step(server);
     }
 

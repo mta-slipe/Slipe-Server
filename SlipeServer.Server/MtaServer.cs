@@ -88,6 +88,8 @@ public class MtaServer
         this.root.AssociateWith(this);
 
         builder.ApplyTo(this);
+
+        this.resourceProvider.Refresh();
     }
 
     public void Start()

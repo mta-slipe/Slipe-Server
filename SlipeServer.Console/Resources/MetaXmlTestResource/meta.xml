@@ -1,0 +1,5 @@
+<meta>
+	<script src="test.lua" type="client"></script>
+	<script src="servertest.lua" type="server"></script>
+	<file src="file.txt"></file>"
+</meta>
