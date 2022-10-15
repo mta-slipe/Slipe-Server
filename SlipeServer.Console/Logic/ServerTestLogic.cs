@@ -49,6 +49,7 @@ public class ServerTestLogic
     private readonly CommandService commandService;
     private Resource? testResource;
     private Resource? secondTestResource;
+    private Resource? thirdTestResource;
 
     private readonly Random random = new();
     private RadarArea? RadarArea { get; set; }
@@ -129,6 +130,7 @@ public class ServerTestLogic
         this.secondTestResource = this.resourceProvider.GetResource("SecondTestResource");
         this.secondTestResource.NoClientScripts[$"{this.secondTestResource!.Name}/testfile.lua"] =
             Encoding.UTF8.GetBytes("outputChatBox(\"I AM A NOT CACHED MESSAGE\")");
+        this.thirdTestResource = this.resourceProvider.GetResource("MetaXmlTestResource");
 
         new WorldObject(321, new Vector3(5, 0, 3)).AssociateWith(this.server);
         new Water(new Vector3[]
@@ -977,6 +979,7 @@ public class ServerTestLogic
 
         this.testResource?.StartFor(player);
         this.secondTestResource?.StartFor(player);
+        this.thirdTestResource?.StartFor(player);
 
         this.HandlePlayerSubscriptions(player);
 

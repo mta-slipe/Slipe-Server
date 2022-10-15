@@ -37,6 +37,8 @@ using SlipeServer.Packets.Definitions.CustomElementData;
 using SlipeServer.Packets.Definitions.Resources;
 using SlipeServer.Server.Resources.Serving;
 using SlipeServer.Server.Mappers;
+using SlipeServer.Server.Resources.Providers;
+using SlipeServer.Server.Resources.Interpreters;
 
 namespace SlipeServer.Server.ServerBuilders;
 
@@ -251,6 +253,7 @@ public static class DefaultServerBuilderExtensions
         builder.AddDefaultLuaMappings();
 
         builder.AddResourceServer<BasicHttpServer>();
+        builder.AddResourceInterpreter<BasicResourceInterpreter>();
 
         builder.AddNetWrapper(
             Directory.GetCurrentDirectory(),

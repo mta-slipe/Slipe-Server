@@ -15,6 +15,7 @@ public class BasicHttpServer : IResourceServer
     private readonly Configuration configuration;
     private readonly ILogger logger;
     private readonly string httpAddress;
+    private readonly Dictionary<string, byte[]> additionalFiles;
 
     private bool isRunning;
 
@@ -23,6 +24,7 @@ public class BasicHttpServer : IResourceServer
         this.httpAddress = $"http://{configuration.HttpHost}:{configuration.HttpPort}/";
         this.httpListener = new HttpListener();
         this.httpListener.Prefixes.Add(this.httpAddress);
+        this.additionalFiles = new();
 
         this.isRunning = false;
         this.rootDirectory = configuration.ResourceDirectory;
@@ -73,7 +75,12 @@ public class BasicHttpServer : IResourceServer
     {
         var path = Path.Join(this.rootDirectory, context.Request.Url?.LocalPath);
 
-        if (File.Exists(path))
+        if (this.additionalFiles.TryGetValue(path, out var value))
+        {
+            context.Response.OutputStream.Write(value, 0, value.Length);
+            context.Response.StatusCode = 200;
+        }
+        else if (File.Exists(path))
         {
             using var file = File.Open(path, FileMode.Open, FileAccess.Read);
             await file.CopyToAsync(context.Response.OutputStream);
@@ -93,8 +100,7 @@ public class BasicHttpServer : IResourceServer
         {
             var content = files[file.Name];
             var path = Path.Join(this.rootDirectory, resource.Name, file.Name);
-            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-            File.WriteAllBytes(path, content);
+            this.additionalFiles[path.Replace("\\", "/")] = content;
         }
     }
 

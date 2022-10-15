@@ -88,6 +88,8 @@ public class MtaServer
         this.root.AssociateWith(this);
 
         builder.ApplyTo(this);
+
+        this.resourceProvider.Refresh();
     }
 
     public void Start()
@@ -243,8 +245,7 @@ public class MtaServer
     {
         this.serviceCollection.AddSingleton<IElementCollection, RTreeCompoundElementCollection>();
         this.serviceCollection.AddSingleton<ILogger, DefaultLogger>();
-        this.serviceCollection.AddSingleton<IResourceProvider, SlipeLuaSupportingFileSystemResourceProvider>();
-        //this.serviceCollection.AddSingleton<IResourceProvider, FileSystemResourceProvider>();
+        this.serviceCollection.AddSingleton<IResourceProvider, FileSystemResourceProvider>();
         this.serviceCollection.AddSingleton<IElementIdGenerator, CollectionBasedElementIdGenerator>();
         this.serviceCollection.AddSingleton<IAseQueryService, AseQueryService>();
         this.serviceCollection.AddSingleton(typeof(ISyncHandlerMiddleware<>), typeof(BasicSyncHandlerMiddleware<>));
