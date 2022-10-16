@@ -39,6 +39,11 @@ public class FromLuaValueMapper
         this.strictlyDefinedMappers[typeof(T)] = mapper;
     }
 
+    public void DefineMapper(Func<LuaValue, object> mapper, Type type)
+    {
+        this.strictlyDefinedMappers[type] = mapper;
+    }
+
     public object? Map(Type type, LuaValue value)
     {
         if (this.strictlyDefinedMappers.TryGetValue(type, out var mapper))
