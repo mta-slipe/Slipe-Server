@@ -91,8 +91,15 @@ public class LuaValue
 
     public override bool Equals(object? obj)
     {
-        if (obj is LuaValue luaValue && luaValue.StringValue != null && luaValue.StringValue == this.StringValue)
-            return true;
+        if (obj is LuaValue luaValue)
+            return 
+                (luaValue.IntegerValue != null && luaValue.IntegerValue == this.IntegerValue) ||
+                (luaValue.DoubleValue != null && luaValue.DoubleValue == this.DoubleValue) ||
+                (luaValue.FloatValue != null && luaValue.FloatValue == this.FloatValue) ||
+                (luaValue.BoolValue != null && luaValue.BoolValue == this.BoolValue) ||
+                (luaValue.ElementId != null && luaValue.ElementId == this.ElementId) ||
+                (luaValue.StringValue != null && luaValue.StringValue == this.StringValue) ||
+                base.Equals(obj);
 
         return base.Equals(obj);
     }
