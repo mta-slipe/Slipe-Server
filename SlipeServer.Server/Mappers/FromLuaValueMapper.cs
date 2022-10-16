@@ -9,15 +9,13 @@ using System.Linq;
 namespace SlipeServer.Server.Mappers;
 public class FromLuaValueMapper
 {
-    private readonly Dictionary<Type, Func<LuaValue, object>> strictlyDefinedClassMappers;
-    private readonly Dictionary<Type, Func<LuaValue, object>> strictlyDefinedStructMappers;
+    private readonly Dictionary<Type, Func<LuaValue, object>> strictlyDefinedMappers;
     private readonly Dictionary<Type, Func<LuaValue, object>> implicitlyCastableTypes;
     private readonly IElementCollection elementCollection;
 
     public FromLuaValueMapper(IElementCollection elementCollection)
     {
-        this.strictlyDefinedClassMappers = new();
-        this.strictlyDefinedStructMappers = new();
+        this.strictlyDefinedMappers = new();
         this.implicitlyCastableTypes = new();
 
         this.elementCollection = elementCollection;
@@ -33,27 +31,27 @@ public class FromLuaValueMapper
 
     public void DefineMapper(Type type, Func<LuaValue, object> mapper)
     {
-        this.strictlyDefinedClassMappers[type] = mapper;
+        this.strictlyDefinedMappers[type] = mapper;
     }
 
     public void DefineMapper<T>(Func<LuaValue, T> mapper) where T : class
     {
-        this.strictlyDefinedClassMappers[typeof(T)] = (Func<LuaValue, object>)mapper;
-    }
-
-    public void DefineStructMapper<T>(Func<LuaValue, T> mapper) where T : struct
-    {
-        this.strictlyDefinedStructMappers[typeof(T)] = (x) => mapper(x);
+        this.strictlyDefinedMappers[typeof(T)] = mapper;
     }
 
     public object? Map(Type type, LuaValue value)
     {
-        if (type.IsAssignableTo(typeof(ILuaValue)))
+        if (this.strictlyDefinedMappers.TryGetValue(type, out var mapper))
+            return mapper(value);
+
+        else if (type.IsAssignableTo(typeof(ILuaValue)))
         {
             var instance = (ILuaValue)Activator.CreateInstance(type)!;
             instance.Parse(value);
             return instance;
-        } else if (type.IsAssignableTo(typeof(Element)) && value.ElementId.HasValue)
+        } 
+        
+        else if (type.IsAssignableTo(typeof(Element)) && value.ElementId.HasValue)
             return this.elementCollection.Get(value.ElementId!.Value);
 
         else if (this.implicitlyCastableTypes.ContainsKey(type))
