@@ -89,6 +89,33 @@ public class LuaValue
         this.IsNil = value == null;
     }
 
+    public override bool Equals(object? obj)
+    {
+        if (obj is LuaValue luaValue)
+            return 
+                (luaValue.IntegerValue != null && luaValue.IntegerValue == this.IntegerValue) ||
+                (luaValue.DoubleValue != null && luaValue.DoubleValue == this.DoubleValue) ||
+                (luaValue.FloatValue != null && luaValue.FloatValue == this.FloatValue) ||
+                (luaValue.BoolValue != null && luaValue.BoolValue == this.BoolValue) ||
+                (luaValue.ElementId != null && luaValue.ElementId == this.ElementId) ||
+                (luaValue.StringValue != null && luaValue.StringValue == this.StringValue) ||
+                base.Equals(obj);
+
+        return base.Equals(obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return
+            this.IntegerValue?.GetHashCode() ??
+            this.DoubleValue?.GetHashCode() ??
+            this.FloatValue?.GetHashCode() ??
+            this.BoolValue?.GetHashCode() ??
+            this.ElementId?.GetHashCode() ??
+            this.StringValue?.GetHashCode() ??
+            base.GetHashCode();
+    }
+
     public override string ToString()
     {
         if (this.TableValue != null)
@@ -112,6 +139,9 @@ public class LuaValue
     public static implicit operator LuaValue(double value) => new(value);
     public static implicit operator LuaValue(Dictionary<LuaValue, LuaValue> value) => new(value);
     public static implicit operator LuaValue(LuaValue[] value) => new(value);
+
+    public static bool operator == (LuaValue left, LuaValue right) => left.Equals(right);
+    public static bool operator != (LuaValue left, LuaValue right) => !left.Equals(right);
 
     public static implicit operator LuaValue(Vector2 vector) => new(new Dictionary<LuaValue, LuaValue>()
     {
