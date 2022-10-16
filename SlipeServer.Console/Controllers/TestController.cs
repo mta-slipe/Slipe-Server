@@ -11,6 +11,11 @@ using System.Numerics;
 
 namespace SlipeServer.Console.Controllers;
 
+public class GenericDto<T> where T: class
+{
+    public T Value { get; set; } = null!;
+}
+
 [LuaController("SlipeServer.Test.")]
 public class TestController : BaseLuaController<CustomPlayer>
 {
@@ -60,5 +65,10 @@ public class TestController : BaseLuaController<CustomPlayer>
     {
         this.chatBox.Output($"Weapon : {weapon}");
         this.chatBox.Output($"BodyPart : {bodyPart}");
+    }
+
+    public void GenericTest(GenericDto<string> dto)
+    {
+        this.chatBox.Output(dto.Value);
     }
 }

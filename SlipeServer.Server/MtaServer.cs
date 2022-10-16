@@ -254,6 +254,7 @@ public class MtaServer
         this.serviceCollection.AddSingleton<ChatBox>();
         this.serviceCollection.AddSingleton<ClientConsole>();
         this.serviceCollection.AddSingleton<DebugLog>();
+        this.serviceCollection.AddSingleton<FromLuaValueMapper>();
         this.serviceCollection.AddSingleton<LuaValueMapper>();
         this.serviceCollection.AddSingleton<LuaEventService>();
         this.serviceCollection.AddSingleton<LatentPacketService>();

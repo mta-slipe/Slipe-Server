@@ -17,31 +17,24 @@ public class LuaControllerLogic
     private readonly LuaEventService luaEventService;
     private readonly IElementCollection elementCollection;
     private readonly LuaValueMapper luaValueMapper;
+    private readonly FromLuaValueMapper fromLuaValueMapper;
     private readonly Dictionary<string, List<BoundEvent>> handlers;
-    private readonly Dictionary<Type, Func<LuaValue, object>> implicitlyCastableTypes;
 
     public LuaControllerLogic(
         MtaServer server,
         LuaEventService luaEventService,
         IElementCollection elementCollection,
-        LuaValueMapper luaValueMapper)
+        LuaValueMapper luaValueMapper,
+        FromLuaValueMapper fromLuaValueMapper)
     {
         this.server = server;
         this.luaEventService = luaEventService;
         this.elementCollection = elementCollection;
         this.luaValueMapper = luaValueMapper;
-
+        this.fromLuaValueMapper = fromLuaValueMapper;
         this.handlers = new();
-        this.implicitlyCastableTypes = new();
 
-        IndexImplicitlyCastableTypes();
         IndexControllers();
-    }
-
-    private void IndexImplicitlyCastableTypes()
-    {
-        foreach (var method in typeof(LuaValue).GetMethods().Where(x => x.Name == "op_Explicit"))
-            this.implicitlyCastableTypes[method.ReturnType] = (value) => method.Invoke(null, new object[] { value })!;
     }
 
     private void IndexControllers()
@@ -93,32 +86,9 @@ public class LuaControllerLogic
 
         var parameters = method.GetParameters();
         for (var i = 0; i < parameters.Length; i++)
-            objects.Add(ConvertLuaValue(parameters[i].ParameterType, values[i]));
+            objects.Add(this.fromLuaValueMapper.Map(parameters[i].ParameterType, values[i]));
 
         return objects.ToArray();
-    }
-
-    private object? ConvertLuaValue(Type type, LuaValue value)
-    {
-        if (type.IsAssignableTo(typeof(ILuaValue)))
-        {
-            var instance = (ILuaValue)Activator.CreateInstance(type)!;
-            instance.Parse(value);
-            return instance;
-        } else if (type.IsAssignableTo(typeof(Element)) && value.ElementId.HasValue)
-            return this.elementCollection.Get(value.ElementId!.Value);
-        else if (this.implicitlyCastableTypes.ContainsKey(type))
-            return this.implicitlyCastableTypes[type](value);
-        else if (type.IsAssignableTo(typeof(Dictionary<,>)) && value.TableValue != null)
-            return value.TableValue.ToDictionary(
-                x => ConvertLuaValue(type.GenericTypeArguments.First(), x.Key) ?? new object(),
-                x => ConvertLuaValue(type.GenericTypeArguments.ElementAt(1), x.Value));
-        else if (type.IsAssignableTo(typeof(IEnumerable<>)) && value.TableValue != null)
-            return value.TableValue.Values.Select(x => ConvertLuaValue(type.GenericTypeArguments.First(), value));
-        else if (type.IsEnum && value.IntegerValue.HasValue)
-            return Enum.ToObject(type, Convert.ChangeType(value.IntegerValue.Value, Enum.GetUnderlyingType(type) ?? typeof(int)));
-        else
-            return null;
     }
 
     private void HandleLuaEvent(LuaEvent luaEvent)

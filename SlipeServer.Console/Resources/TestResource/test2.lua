@@ -41,3 +41,9 @@ addCommandHandler("enumtest", function()
 	local bodypart = math.random(3, 9)
 	triggerServerEvent("SlipeServer.Test.EnumTest", root, weapon, bodypart)
 end)
+
+addCommandHandler("generic", function()
+	triggerServerEvent("SlipeServer.Test.GenericTest", root, {
+		Value = "Generic test message"	
+	})
+end)
