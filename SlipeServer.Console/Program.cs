@@ -42,9 +42,10 @@ public partial class Program
 
 #if DEBUG
             throw;
-#endif
+#else
             System.Console.WriteLine("Press any key to exit...");
             System.Console.ReadKey();
+#endif
         }
     }
 
