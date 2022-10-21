@@ -94,7 +94,7 @@ public class KeySyncPacket : Packet
 
         if (this.SmallKeySyncStructure.ButtonCircle || this.SmallKeySyncStructure.RightShoulder1)
         {
-            builder.WriteCapped(this.WeaponSlot, 4);
+            builder.WriteWeaponSlot(this.WeaponSlot);
 
             if (WeaponConstants.WeaponsWithAmmo.Contains(this.WeaponSlot))
             {

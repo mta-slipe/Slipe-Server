@@ -36,7 +36,7 @@ public class PlayerPureSyncPacketHandler : IPacketHandler<PlayerPureSyncPacket>
 
         if (packet.TimeContext != client.Player.TimeContext && packet.TimeContext > 0 && client.Player.TimeContext > 0)
         {
-            this.logger.LogWarning($"Received outdated Pure sync packet from {client.Player.Name}");
+            this.logger.LogWarning("Received outdated Pure sync packet from {player}", client.Player.Name);
             return;
         }
 
@@ -93,6 +93,9 @@ public class PlayerPureSyncPacketHandler : IPacketHandler<PlayerPureSyncPacket>
                 player.TriggerDamaged(damager, (WeaponType)packet.DamageType, (BodyPart)packet.DamageBodypart);
             }
         });
+
+        System.IO.Directory.CreateDirectory("packetlog/puresync");
+        //System.IO.File.WriteAllText($"packetlog/puresync/{(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds}.packet", Newtonsoft.Json.JsonConvert.SerializeObject(packet));
 
         player.TriggerSync();
     }

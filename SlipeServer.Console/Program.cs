@@ -95,6 +95,7 @@ public partial class Program
                 builder.AddLogic<WarpIntoVehicleLogic>();
                 builder.AddLogic<LuaEventTestLogic>();
                 builder.AddLogic<ServiceUsageTestLogic>();
+                builder.AddLogic<PacketReplayerLogic>();
                 //builder.AddBehaviour<VelocityBehaviour>();
                 //builder.AddBehaviour<EventLoggingBehaviour>();
             }
