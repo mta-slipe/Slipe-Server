@@ -26,7 +26,7 @@ public class LuaValueMapper
 
     public void DefineMapper<T>(Func<T, LuaValue> mapper) where T : class
     {
-        this.strictlyDefinedClassMappers[typeof(T)] = (Func<object, LuaValue>)mapper;
+        this.strictlyDefinedClassMappers[typeof(T)] = (x) => mapper((T)x);
     }
 
     public void DefineStructMapper<T>(Func<T, LuaValue> mapper) where T : struct
@@ -69,7 +69,7 @@ public class LuaValueMapper
             case byte:
             case short:
             case ushort:
-                return (int)value;
+                return Convert.ToInt32(value);
             case ulong:
             case long:
                 throw new NotSupportedException($"Type {value.GetType()} not supported for Lua mapping");
@@ -103,13 +103,34 @@ public class LuaValueMapper
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public LuaValue Map(IEnumerable values)
+    public LuaValue Map(IEnumerable? values)
     {
+        if (values == null)
+            return new LuaValue();
+
+        if (values is string str)
+            return new LuaValue(str);
+
+        if (values is IDictionary dictionary)
+            return Map(dictionary);
+
         var luaValues = new List<LuaValue>();
         foreach (var value in values)
             luaValues.Add(Map(value));
 
         return new LuaValue(luaValues);
+    }
+
+    public LuaValue Map(IDictionary source)
+    {
+        var dictionary = new Dictionary<LuaValue, LuaValue>();
+
+        foreach (DictionaryEntry kvPair in source)
+        {
+            dictionary[Map(kvPair.Key)] = Map(kvPair.Value);
+        }
+
+        return dictionary;
     }
 
     private LuaValue MapBasedOnReflection(object value)

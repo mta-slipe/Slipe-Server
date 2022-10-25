@@ -88,6 +88,8 @@ public class MtaServer
         this.root.AssociateWith(this);
 
         builder.ApplyTo(this);
+
+        this.resourceProvider.Refresh();
     }
 
     public void Start()
@@ -252,6 +254,7 @@ public class MtaServer
         this.serviceCollection.AddSingleton<ChatBox>();
         this.serviceCollection.AddSingleton<ClientConsole>();
         this.serviceCollection.AddSingleton<DebugLog>();
+        this.serviceCollection.AddSingleton<FromLuaValueMapper>();
         this.serviceCollection.AddSingleton<LuaValueMapper>();
         this.serviceCollection.AddSingleton<LuaEventService>();
         this.serviceCollection.AddSingleton<LatentPacketService>();
@@ -260,6 +263,7 @@ public class MtaServer
         this.serviceCollection.AddSingleton<TextItemService>();
         this.serviceCollection.AddSingleton<WeaponConfigurationService>();
         this.serviceCollection.AddSingleton<CommandService>();
+        this.serviceCollection.AddSingleton<ITimerService, TimerService>();
 
         this.serviceCollection.AddHttpClient();
         this.serviceCollection.AddSingleton<Configuration>(this.configuration);

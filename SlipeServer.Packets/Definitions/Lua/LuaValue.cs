@@ -89,6 +89,34 @@ public class LuaValue
         this.IsNil = value == null;
     }
 
+    public override bool Equals(object? obj)
+    {
+        if (obj is LuaValue luaValue)
+            return 
+                (luaValue.IntegerValue != null && luaValue.IntegerValue == this.IntegerValue) ||
+                (luaValue.DoubleValue != null && luaValue.DoubleValue == this.DoubleValue) ||
+                (luaValue.FloatValue != null && luaValue.FloatValue == this.FloatValue) ||
+                (luaValue.BoolValue != null && luaValue.BoolValue == this.BoolValue) ||
+                (luaValue.ElementId != null && luaValue.ElementId == this.ElementId) ||
+                (luaValue.StringValue != null && luaValue.StringValue == this.StringValue) ||
+                (luaValue.IsNil && this.IsNil) ||
+                base.Equals(obj);
+
+        return base.Equals(obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return
+            this.IntegerValue?.GetHashCode() ??
+            this.DoubleValue?.GetHashCode() ??
+            this.FloatValue?.GetHashCode() ??
+            this.BoolValue?.GetHashCode() ??
+            this.ElementId?.GetHashCode() ??
+            this.StringValue?.GetHashCode() ??
+            base.GetHashCode();
+    }
+
     public override string ToString()
     {
         if (this.TableValue != null)
@@ -113,6 +141,9 @@ public class LuaValue
     public static implicit operator LuaValue(Dictionary<LuaValue, LuaValue> value) => new(value);
     public static implicit operator LuaValue(LuaValue[] value) => new(value);
 
+    public static bool operator == (LuaValue left, LuaValue right) => left.Equals(right);
+    public static bool operator != (LuaValue left, LuaValue right) => !left.Equals(right);
+
     public static implicit operator LuaValue(Vector2 vector) => new(new Dictionary<LuaValue, LuaValue>()
     {
         ["X"] = vector.X,
@@ -128,9 +159,10 @@ public class LuaValue
     public static explicit operator uint(LuaValue value) => value.ElementId ?? 0;
     public static explicit operator string(LuaValue value) => value.StringValue ?? "";
     public static explicit operator bool(LuaValue value) => value.BoolValue ?? false;
-    public static explicit operator int(LuaValue value) => value.IntegerValue ?? 0;
-    public static explicit operator float(LuaValue value) => value.FloatValue ?? 0;
-    public static explicit operator double(LuaValue value) => value.DoubleValue ?? 0;
+
+    public static explicit operator int(LuaValue value) => value.IntegerValue ?? (int?)value.FloatValue ?? (int?)value.DoubleValue ?? 0;
+    public static explicit operator float(LuaValue value) => value.FloatValue ?? (float?)value.DoubleValue ?? (float?)value.IntegerValue ?? 0;
+    public static explicit operator double(LuaValue value) => value.DoubleValue ?? (double?)value.FloatValue ?? (double?)value.IntegerValue ?? 0;
 
     public static explicit operator Vector2(LuaValue value)
     {
@@ -147,6 +179,6 @@ public class LuaValue
             return Vector3.Zero;
 
         var stringKeyedDictionary = value.TableValue.ToDictionary(x => x.Key.StringValue!, x => x.Value);
-        return new ((float) stringKeyedDictionary["X"], (float)stringKeyedDictionary["Y"], (float)stringKeyedDictionary["Z"]);
+        return new ((float)stringKeyedDictionary["X"], (float)stringKeyedDictionary["Y"], (float)stringKeyedDictionary["Z"]);
     }
 }

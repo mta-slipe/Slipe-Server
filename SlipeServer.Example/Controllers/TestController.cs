@@ -3,10 +3,17 @@ using SlipeServer.Example.LuaValues;
 using SlipeServer.Example.Services;
 using SlipeServer.LuaControllers;
 using SlipeServer.LuaControllers.Attributes;
+using SlipeServer.Server.Elements;
+using SlipeServer.Server.Enums;
 using SlipeServer.Server.Services;
 using System.Numerics;
 
 namespace SlipeServer.Example.Controllers;
+
+public class GenericDto<T> where T: class
+{
+    public T Value { get; set; } = null!;
+}
 
 [LuaController("SlipeServer.Test.")]
 public class TestController : BaseLuaController<CustomPlayer>
@@ -51,5 +58,16 @@ public class TestController : BaseLuaController<CustomPlayer>
     public void OutputCursorPosition(Vector2 position)
     {
         this.chatBox.Output($"{this.Context.Player.Name}'s cursor is at  {position}");
+    }
+
+    public void EnumTest(WeaponType weapon, BodyPart bodyPart)
+    {
+        this.chatBox.Output($"Weapon : {weapon}");
+        this.chatBox.Output($"BodyPart : {bodyPart}");
+    }
+
+    public void GenericTest(GenericDto<string> dto)
+    {
+        this.chatBox.Output(dto.Value);
     }
 }

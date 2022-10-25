@@ -1,5 +1,4 @@
-﻿using Moq;
-using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
+﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.TestTools;
 using Xunit;

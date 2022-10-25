@@ -1,10 +1,8 @@
-﻿using Force.Crc32;
-using SlipeServer.Packets.Structs;
-using SlipeServer.Server.Elements;
-using SlipeServer.Server.Elements.Enums;
+﻿using SlipeServer.Server.Elements;
+using SlipeServer.Server.Resources.Interpreters;
 using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography;
+using System.Linq;
 
 namespace SlipeServer.Server.Resources.Providers;
 
@@ -14,6 +12,9 @@ public class FileSystemResourceProvider : IResourceProvider
     private readonly RootElement rootElement;
     private readonly Configuration configuration;
     private readonly Dictionary<string, Resource> resources;
+    private readonly List<IResourceInterpreter> resourceInterpreters;
+
+    private readonly object netIdLock = new();
     private ushort netId = 0;
 
     public FileSystemResourceProvider(MtaServer mtaServer, RootElement rootElement, Configuration configuration)
@@ -22,7 +23,7 @@ public class FileSystemResourceProvider : IResourceProvider
         this.rootElement = rootElement;
         this.configuration = configuration;
         this.resources = new();
-        this.Refresh();
+        this.resourceInterpreters = new();
     }
 
     public Resource GetResource(string name)
@@ -37,8 +38,8 @@ public class FileSystemResourceProvider : IResourceProvider
 
     public void Refresh()
     {
-        var resources = IndexResourceDirectory(this.configuration.ResourceDirectory);
         this.resources.Clear();
+        var resources = IndexResourceDirectory(this.configuration.ResourceDirectory);
 
         foreach (var resource in resources)
             this.resources[resource.Name] = resource;
@@ -64,31 +65,49 @@ public class FileSystemResourceProvider : IResourceProvider
                 resources.Add(this.resources[name]);
             } else
             {
-                var resource = new Resource(this.mtaServer, this.rootElement, name, subDirectory)
+                Resource? resource = null;
+                foreach (var resourceInterpreter in this.resourceInterpreters)
                 {
-                    NetId = this.ReserveNetId(),
-                    Files = GetFilesForResource(subDirectory)
-                };
-                resources.Add(resource);
+                    if (resourceInterpreter.TryInterpretResource(this.mtaServer, this.rootElement, name, subDirectory, this, out resource))
+                    {
+                        resource!.NetId = this.ReserveNetId();
+                        resources.Add(resource);
+                        break;
+                    }
+                }
+
+                if (resource == null)
+                {
+                    throw new System.Exception($"Unable to interpret resource {name}");
+                }
             }
         }
 
         return resources;
     }
 
-    public List<ResourceFile> GetFilesForResource(string path)
+    public IEnumerable<string> GetFilesForResource(string name)
     {
-        List<ResourceFile> resourceFiles = new List<ResourceFile>();
-                
-        foreach (var file in Directory.GetFiles(path))
-        {
-            byte[] content = File.ReadAllBytes(file);
-            string fileName = Path.GetRelativePath(path, file);
-            resourceFiles.Add(ResourceFileFactory.FromBytes(content, fileName));
-        }
-       
-        return resourceFiles;
+        var path = Path.Join(this.configuration.ResourceDirectory, name);
+        var files = Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories);
+
+        return files.Select(file => Path.GetRelativePath(path, file));
     }
 
-    public ushort ReserveNetId() => this.netId++;
+    public byte[] GetFileContent(string resource, string file)
+    {
+        return File.ReadAllBytes(Path.Join(this.configuration.ResourceDirectory, resource, file));
+    }
+
+    public ushort ReserveNetId()
+    {
+        lock (this.netIdLock)
+            return this.netId++;
+    }
+
+    public void AddResourceInterpreter(IResourceInterpreter resourceInterpreter)
+    {
+        this.resourceInterpreters.Add(resourceInterpreter);
+        this.resourceInterpreters.Sort((a, b) => (a.IsFallback ? 1 : 0) - (b.IsFallback ? 1 : 0));
+    }
 }

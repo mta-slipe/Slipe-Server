@@ -1,6 +1,6 @@
 ﻿namespace SlipeServer.Server.Enums;
 
-public enum BodyPart
+public enum BodyPart : byte
 {
     Torso = 3,
     Ass,

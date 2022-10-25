@@ -114,3 +114,14 @@ public enum ServerBuilderDefaultServices : ulong
 {
     None = 0x00,
 }
+
+
+[Flags]
+public enum ServerBuilderDefaultResourceInterpreters : ulong
+{
+    None = 0x00,
+
+    Basic = 0x01,
+    MetaXml = 0x02,
+    SlipeLua = 0x04,
+}
