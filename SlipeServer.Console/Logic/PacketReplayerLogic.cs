@@ -24,7 +24,7 @@ public class PacketReplayerLogic
             IPAddress = System.Net.IPAddress.Parse("127.0.0.1"),
             Player = new Player() { 
                 Name = "Replayer",
-                Position = new System.Numerics.Vector3(0, 0, 3),
+                Position = new System.Numerics.Vector3(0, 0.5f, 3),
                 Model = 9,
             }
         };
