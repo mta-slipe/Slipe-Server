@@ -98,7 +98,7 @@ public class KeySyncPacket : Packet
 
             if (WeaponConstants.WeaponsWithAmmo.Contains(this.WeaponSlot))
             {
-                builder.WriteCompressed(this.AmmoInClip);
+                builder.WriteAmmo(this.AmmoInClip);
 
                 builder.Write((short)(this.AimArm * 90f * 180f / MathF.PI));
                 builder.Write(this.AimOrigin);
