@@ -138,7 +138,7 @@ public class PlayerPureSyncPacket : Packet
 
         if (this.SyncFlags.HasAWeapon)
         {
-            builder.WriteCapped(this.WeaponSlot, 4);
+            builder.WriteWeaponSlot(this.WeaponSlot);
 
             if (WeaponConstants.SlotsWithAmmo.Contains(this.WeaponSlot))
             {

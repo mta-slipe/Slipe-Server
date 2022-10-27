@@ -30,6 +30,7 @@ public class PacketReplayerLogic
         };
         client.Player.Client = client;
         this.replayer = client.Player.AssociateWith(this.server);
+        this.replayer.AddWeapon(Server.Enums.WeaponId.Deagle, 500);
 
         commandService.AddCommand("replaypuresync").Triggered += ReplayPackets;
         commandService.AddCommand("replaykeysync").Triggered += ReplayKeySyncPackets;
@@ -63,9 +64,7 @@ public class PacketReplayerLogic
             .OrderBy(x => x)
             .Select(x => System.IO.File.ReadAllText(x))
             .Select(x => Newtonsoft.Json.JsonConvert.DeserializeObject<KeySyncPacket>(x))
-            .Where(x => x != null)
-            .Skip(50)
-            .Take(1);
+            .Where(x => x != null);
 
         foreach (var packet in packets)
         {

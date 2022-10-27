@@ -70,7 +70,7 @@ public class KeySyncPacket : Packet
                 {
                     this.AmmoInClip = reader.GetAmmo();
 
-                    this.AimArm = ((reader.GetUint16()) * MathF.PI / 180) / 90.0f;
+                    this.AimArm = ((reader.GetInt16()) * MathF.PI / 180f) / 90.0f;
                     this.AimOrigin = reader.GetVector3();
                     this.AimDirection = reader.GetNormalizedVector();
                     this.VehicleAimDirection = (VehicleAimDirection)reader.GetByteCapped(2);
@@ -100,7 +100,7 @@ public class KeySyncPacket : Packet
             {
                 builder.WriteCompressed(this.AmmoInClip);
 
-                builder.Write((ushort)(this.AimArm * 90 * 180 * MathF.PI));
+                builder.Write((short)(this.AimArm * 90f * 180f / MathF.PI));
                 builder.Write(this.AimOrigin);
                 builder.WriteNormalizedVector(this.AimDirection);
                 builder.Write((byte)this.VehicleAimDirection);
