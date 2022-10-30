@@ -70,7 +70,7 @@ public class KeySyncPacket : Packet
                 {
                     this.AmmoInClip = reader.GetAmmo();
 
-                    this.AimArm = ((reader.GetUint16()) * MathF.PI / 180) / 90.0f;
+                    this.AimArm = ((reader.GetInt16()) * MathF.PI / 180f) / 90.0f;
                     this.AimOrigin = reader.GetVector3();
                     this.AimDirection = reader.GetNormalizedVector();
                     this.VehicleAimDirection = (VehicleAimDirection)reader.GetByteCapped(2);
@@ -94,13 +94,13 @@ public class KeySyncPacket : Packet
 
         if (this.SmallKeySyncStructure.ButtonCircle || this.SmallKeySyncStructure.RightShoulder1)
         {
-            builder.WriteCapped(this.WeaponSlot, 4);
+            builder.WriteWeaponSlot(this.WeaponSlot);
 
             if (WeaponConstants.WeaponsWithAmmo.Contains(this.WeaponSlot))
             {
-                builder.WriteCompressed(this.AmmoInClip);
+                builder.WriteAmmo(this.AmmoInClip);
 
-                builder.Write((ushort)(this.AimArm * 90 * 180 * MathF.PI));
+                builder.Write((short)(this.AimArm * 90f * 180f / MathF.PI));
                 builder.Write(this.AimOrigin);
                 builder.WriteNormalizedVector(this.AimDirection);
                 builder.Write((byte)this.VehicleAimDirection);
@@ -111,7 +111,7 @@ public class KeySyncPacket : Packet
         {
             // write turret if vehicle has turret
             // write hydraulics if upgrade present
-            // write should buttons if in plane or heli
+            // write shoulder buttons if in plane or heli
         }
 
         return builder.Build();

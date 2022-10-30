@@ -1,12 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Packets.Enums;
-using SlipeServer.Server.Constants;
+using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
-using SlipeServer.Server.ElementCollections;
 using System;
 using System.Linq;
 
@@ -36,7 +35,7 @@ public class PlayerPureSyncPacketHandler : IPacketHandler<PlayerPureSyncPacket>
 
         if (packet.TimeContext != client.Player.TimeContext && packet.TimeContext > 0 && client.Player.TimeContext > 0)
         {
-            this.logger.LogWarning($"Received outdated Pure sync packet from {client.Player.Name}");
+            this.logger.LogWarning("Received outdated Pure sync packet from {player}", client.Player.Name);
             return;
         }
 
