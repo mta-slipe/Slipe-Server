@@ -71,6 +71,12 @@ public class VehicleUpgradeConstants
         [VehicleUpgradeRearBullbar.Slamin] = new ushort[] { 1110 },
     };
 
+    public static Dictionary<VehicleUpgradeLamp, ushort[]> LampIds { get; } = new()
+    {
+        [VehicleUpgradeLamp.SquareFog] = new ushort[] { 1024 },
+        [VehicleUpgradeLamp.RoundFog] = new ushort[] { 1013 },
+    };
+
     public static Dictionary<VehicleUpgradeWheel, ushort[]> WheelUpgradeIds { get; } = new()
     {
         [VehicleUpgradeWheel.Wires] = new ushort[] { 1076 },
@@ -105,23 +111,33 @@ public class VehicleUpgradeConstants
 
         if (upgradeType == typeof(VehicleUpgradeHood))
             upgrades = HoodUpgradeIds[(VehicleUpgradeHood)upgrade];
+
         else if (upgradeType == typeof(VehicleUpgradeVent))
             upgrades = VentUpgradeIds[(VehicleUpgradeVent)upgrade];
+
         else if (upgradeType == typeof(VehicleUpgradeSpoiler))
             upgrades = SpoilerUpgradeIds[(VehicleUpgradeSpoiler)upgrade];
+
         else if (upgradeType == typeof(VehicleUpgradeSideskirt))
             upgrades = SideskirtUpgradeIds[(VehicleUpgradeSideskirt)upgrade];
+
         else if (upgradeType == typeof(VehicleUpgradeFrontBullbar))
             upgrades = FrontBullbarIds[(VehicleUpgradeFrontBullbar)upgrade];
+
         else if (upgradeType == typeof(VehicleUpgradeRearBullbar))
             upgrades = RearBullbarIds[(VehicleUpgradeRearBullbar)upgrade];
+
+        else if (upgradeType == typeof(VehicleUpgradeLamp))
+            upgrades = LampIds[(VehicleUpgradeLamp)upgrade];
+
         else if (upgradeType == typeof(VehicleUpgradeWheel))
             upgrades = WheelUpgradeIds[(VehicleUpgradeWheel)upgrade];
+
         else if (upgradeType == typeof(VehicleUpgradeMisc))
             upgrades = MiscUpgradeIds[(VehicleUpgradeMisc)upgrade];
 
         var result = upgrades.Intersect(VehicleUpgradesPerModel.AvailiableUpgradesPerVehicleModel[model]);
-        return result.Single();
+        return result.Any() ? result.First() : null;
     }
 
     public static ushort? GetUpgradeIdForVehicle<TEnum>(ushort model, ushort upgrade) where TEnum : struct, Enum

@@ -63,7 +63,11 @@ public class VehicleUpgradeChanged : EventArgs
                     this.NewUpgradeId = VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeRearBullbar), vehicle.Model, newUpgrade);
                 break;
 
-            case VehicleUpgradeSlot.Headlights:
+            case VehicleUpgradeSlot.Lamps:
+                if (previousUpgrade != 0)
+                    this.PreviousUpgradeId = VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeLamp), vehicle.Model, previousUpgrade);
+                if (newUpgrade != 0)
+                    this.NewUpgradeId = VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeLamp), vehicle.Model, newUpgrade);
                 break;
 
             case VehicleUpgradeSlot.Roof:

@@ -945,6 +945,7 @@ public class ServerTestLogic
             this.Club!.Upgrades.Hood = VehicleUpgradeHood.LeftSquare;
             this.Club!.Upgrades.Vent = VehicleUpgradeVent.FuryScoop;
             this.Club!.Upgrades.Sideskirt = VehicleUpgradeSideskirt.Left;
+            this.Club!.Upgrades.Lamps = VehicleUpgradeLamp.SquareFog;
             this.Slamvan!.Upgrades.FrontBullbar = VehicleUpgradeFrontBullbar.Slamin;
             this.Slamvan!.Upgrades.RearBullbar = VehicleUpgradeRearBullbar.Chrome;
             this.Remmington!.Upgrades.Misc = VehicleUpgradeMisc.BullbarChromeBars;

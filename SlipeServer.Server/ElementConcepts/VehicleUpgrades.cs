@@ -105,7 +105,21 @@ public class VehicleUpgrades
         }
     }
 
-    //public VehicleUpgradeHood Headlights { get; set; }
+
+    private VehicleUpgradeLamp lamps = VehicleUpgradeLamp.None;
+    public VehicleUpgradeLamp Lamps
+    {
+        get => this.lamps;
+        set
+        {
+            if (this.Lamps != value && CanHave(value))
+            {
+                var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.Lamps, (ushort)this.Lamps, (ushort)value);
+                this.lamps = value;
+                UpgradeChanged?.Invoke(this.vehicle, args);
+            }
+        }
+    }
 
     private VehicleUpgradeRoof roof = VehicleUpgradeRoof.None;
     public VehicleUpgradeRoof Roof
@@ -274,6 +288,11 @@ public class VehicleUpgrades
     public bool CanHave(VehicleUpgradeRearBullbar bullbar)
     {
         return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeRearBullbar), this.vehicle.Model, (ushort)bullbar) != null;
+    }
+
+    public bool CanHave(VehicleUpgradeLamp lamps)
+    {
+        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeLamp), this.vehicle.Model, (ushort)lamps) != null;
     }
 
     public bool CanHave(VehicleUpgradeRoof bullbar)

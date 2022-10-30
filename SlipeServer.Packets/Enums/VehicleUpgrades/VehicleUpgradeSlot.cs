@@ -8,7 +8,7 @@ public enum VehicleUpgradeSlot
     Sideskirt,
     FrontBullbars,
     RearBullbars,
-    Headlights,
+    Lamps,
     Roof,
     Nitro,
     Hydraulics,

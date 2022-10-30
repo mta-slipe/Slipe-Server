@@ -4,9 +4,7 @@ using SlipeServer.Server.Constants;
 using SlipeServer.Server.Elements;
 using System;
 using System.Numerics;
-using System.Threading.Tasks;
 using Xunit;
-using Xunit.Sdk;
 
 namespace SlipeServer.Server.Tests.Unit.Elements;
 
@@ -18,7 +16,7 @@ public class VehicleUpgradesTests
     [InlineData(509, typeof(VehicleUpgradeSpoiler), (ushort)VehicleUpgradeSpoiler.XFlow, null)] // Bike
     public void UpgradeVehicleUpgradeIdTest(ushort model, Type upgradeType, ushort upgrade, int? expectedValue)
     {
-        ushort? upgradeId = VehicleConstants.UpgradeVehicleUpgradeId(upgradeType, model, upgrade);
+        ushort? upgradeId = VehicleUpgradeConstants.GetUpgradeIdForVehicle(upgradeType, model, upgrade);
 
         upgradeId.Should().Be((ushort?)expectedValue);
     }
