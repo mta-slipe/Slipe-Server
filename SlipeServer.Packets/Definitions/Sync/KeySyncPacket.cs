@@ -111,7 +111,7 @@ public class KeySyncPacket : Packet
         {
             // write turret if vehicle has turret
             // write hydraulics if upgrade present
-            // write should buttons if in plane or heli
+            // write shoulder buttons if in plane or heli
         }
 
         return builder.Build();

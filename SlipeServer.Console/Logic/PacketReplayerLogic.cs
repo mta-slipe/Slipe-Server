@@ -31,6 +31,7 @@ public class PacketReplayerLogic
         client.Player.Client = client;
         this.replayer = client.Player.AssociateWith(this.server);
         this.replayer.AddWeapon(Server.Enums.WeaponId.Deagle, 500);
+        this.replayer.AddWeapon(Server.Enums.WeaponId.Golfclub, 1);
 
         commandService.AddCommand("replaypuresync").Triggered += ReplayPackets;
         commandService.AddCommand("replaykeysync").Triggered += ReplayKeySyncPackets;

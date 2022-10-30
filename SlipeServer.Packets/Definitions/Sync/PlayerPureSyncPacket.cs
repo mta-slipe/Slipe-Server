@@ -88,7 +88,7 @@ public class PlayerPureSyncPacket : Packet
                 this.TotalAmmo = reader.GetAmmo();
                 this.AmmoInClip = reader.GetAmmo();
 
-                this.Arm = ((reader.GetUint16()) * MathF.PI / 180) / 90.0f;
+                this.Arm = ((reader.GetUint16()) * MathF.PI / 180f) / 90.0f;
 
                 // if player is aiming
                 if (this.KeySync.RightShoulder1 || this.KeySync.ButtonCircle)
@@ -104,7 +104,7 @@ public class PlayerPureSyncPacket : Packet
         {
             this.DamagerId = reader.GetElementId();
             this.DamageType = reader.GetByteCapped(6);
-            this.DamageBodypart = reader.GetByteCapped(3);
+            this.DamageBodypart = reader.GetBodyPart();
         }
     }
 
@@ -144,7 +144,7 @@ public class PlayerPureSyncPacket : Packet
             {
                 builder.WriteAmmo(null, this.AmmoInClip);
 
-                builder.Write((short)(this.Arm * 90 * 180 / MathF.PI));
+                builder.Write((short)(this.Arm * 90f * 180f / MathF.PI));
 
                 // if player is aiming
                 if (this.KeySync.RightShoulder1 || this.KeySync.ButtonCircle)

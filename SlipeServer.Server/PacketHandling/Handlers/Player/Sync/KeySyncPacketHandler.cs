@@ -2,7 +2,6 @@
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
-using System;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Player.Sync;
 
