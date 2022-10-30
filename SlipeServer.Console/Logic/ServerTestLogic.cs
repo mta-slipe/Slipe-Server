@@ -852,7 +852,6 @@ public class ServerTestLogic
 
         this.commandService.AddCommand("hot").Triggered += (source, args) =>
         {
-            args.Player.SetStat(Packets.Enums.PedStat.MAX_HEALTH, 1000);
             // command for testing, use hot reload to write code and apply during a running debug session
             var x = this;
         };
