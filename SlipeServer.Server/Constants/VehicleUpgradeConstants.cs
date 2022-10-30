@@ -77,6 +77,19 @@ public class VehicleUpgradeConstants
         [VehicleUpgradeLamp.RoundFog] = new ushort[] { 1013 },
     };
 
+    public static Dictionary<VehicleUpgradeRoof, ushort[]> RoofIds { get; } = new()
+    {
+        [VehicleUpgradeRoof.XFlowRoofVent] = new ushort[] {  1033, 1035 },
+        [VehicleUpgradeRoof.XFlow] = new ushort[] {  1053, 1061, 1068, 1091 },
+        [VehicleUpgradeRoof.VinylHardtop] = new ushort[] { 1128 },
+        [VehicleUpgradeRoof.Softtop] = new ushort[] {  1131 },
+        [VehicleUpgradeRoof.RoofScoop] = new ushort[] { 1006 },
+        [VehicleUpgradeRoof.Hardtop] = new ushort[] {  1130 },
+        [VehicleUpgradeRoof.Covertible] = new ushort[] {  1103 },
+        [VehicleUpgradeRoof.AlienRoofVent] = new ushort[] { 1032, 1038 },
+        [VehicleUpgradeRoof.Alien] = new ushort[] { 1054, 1055, 1067, 1088 },
+    };
+
     public static Dictionary<VehicleUpgradeWheel, ushort[]> WheelUpgradeIds { get; } = new()
     {
         [VehicleUpgradeWheel.Wires] = new ushort[] { 1076 },
@@ -129,6 +142,9 @@ public class VehicleUpgradeConstants
 
         else if (upgradeType == typeof(VehicleUpgradeLamp))
             upgrades = LampIds[(VehicleUpgradeLamp)upgrade];
+
+        else if (upgradeType == typeof(VehicleUpgradeRoof))
+            upgrades = RoofIds[(VehicleUpgradeRoof)upgrade];
 
         else if (upgradeType == typeof(VehicleUpgradeWheel))
             upgrades = WheelUpgradeIds[(VehicleUpgradeWheel)upgrade];
