@@ -30,6 +30,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="slipe-logo.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Include="AdditionalResources\Parachute\Lua\client_anim.lua" />
     <EmbeddedResource Include="AdditionalResources\Parachute\Lua\openChute.lua" />
     <EmbeddedResource Include="AdditionalResources\Parachute\Lua\parachuteopen.mp3" />
@@ -41,7 +45,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.14" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="6.0.0-preview.5.21301.5" />
-    <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.3" />
   </ItemGroup>
 
   <ItemGroup>
@@ -64,6 +68,7 @@
   
   <PropertyGroup>
     <DockerfileRunArguments>-p 50666:50666/udp -p 50667:50667/udp -p 50789:50789/udp -p 40680:40680</DockerfileRunArguments>
+    <ApplicationIcon>slipe-logo.ico</ApplicationIcon>
   </PropertyGroup>
 
 </Project>

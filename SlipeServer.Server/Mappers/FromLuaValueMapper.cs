@@ -44,6 +44,11 @@ public class FromLuaValueMapper
         this.strictlyDefinedMappers[type] = mapper;
     }
 
+    public T? Map<T>(LuaValue luaValue)
+    {
+        return (T?)Map(typeof(T), luaValue);
+    }
+
     public object? Map(Type type, LuaValue value)
     {
         if (this.strictlyDefinedMappers.TryGetValue(type, out var mapper))
@@ -62,13 +67,13 @@ public class FromLuaValueMapper
         else if (this.implicitlyCastableTypes.ContainsKey(type))
             return this.implicitlyCastableTypes[type](value);
 
-        else if (type.IsAssignableTo(typeof(Dictionary<,>)) && value.TableValue != null)
+        else if (IsAssignableToGenericType(type, typeof(Dictionary<,>)) && value.TableValue != null)
             return value.TableValue.ToDictionary(
                 x => Map(type.GenericTypeArguments.First(), x.Key) ?? new object(),
                 x => Map(type.GenericTypeArguments.ElementAt(1), x.Value));
 
-        else if (type.IsAssignableTo(typeof(IEnumerable<>)) && value.TableValue != null)
-            return value.TableValue.Values.Select(x => Map(type.GenericTypeArguments.First(), value));
+        else if (IsAssignableToGenericType(type, typeof(IEnumerable<>)) && value.TableValue != null)
+            return value.TableValue.Values.Select(x => Map(type.GenericTypeArguments.First(), x));
 
         else if (type.IsEnum && value.IntegerValue.HasValue)
             return Enum.ToObject(type, Convert.ChangeType(value.IntegerValue.Value, Enum.GetUnderlyingType(type) ?? typeof(int)));
@@ -100,5 +105,23 @@ public class FromLuaValueMapper
         }
 
         return instance;
+    }
+
+    private bool IsAssignableToGenericType(Type givenType, Type genericType)
+    {
+        if (givenType.IsGenericType && givenType.GetGenericTypeDefinition() == genericType)
+            return true;
+
+        var interfaceTypes = givenType.GetInterfaces();
+
+        foreach (var it in interfaceTypes)
+            if (it.IsGenericType && it.GetGenericTypeDefinition() == genericType)
+                return true;
+
+        var baseType = givenType?.BaseType;
+        if (baseType == null) 
+            return false;
+
+        return IsAssignableToGenericType(baseType, genericType);
     }
 }
