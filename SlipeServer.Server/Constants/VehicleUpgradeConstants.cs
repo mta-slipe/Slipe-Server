@@ -90,6 +90,13 @@ public class VehicleUpgradeConstants
         [VehicleUpgradeRoof.Alien] = new ushort[] { 1054, 1055, 1067, 1088 },
     };
 
+    public static Dictionary<VehicleUpgradeNitro, ushort[]> NitroIds { get; } = new()
+    {
+        [VehicleUpgradeNitro.x2]= new ushort[] { 1009 },
+        [VehicleUpgradeNitro.x5]= new ushort[] { 1008 },
+        [VehicleUpgradeNitro.x10]= new ushort[] { 1010 },
+    };
+
     public static Dictionary<VehicleUpgradeWheel, ushort[]> WheelUpgradeIds { get; } = new()
     {
         [VehicleUpgradeWheel.Wires] = new ushort[] { 1076 },
@@ -145,6 +152,9 @@ public class VehicleUpgradeConstants
 
         else if (upgradeType == typeof(VehicleUpgradeRoof))
             upgrades = RoofIds[(VehicleUpgradeRoof)upgrade];
+
+        else if (upgradeType == typeof(VehicleUpgradeNitro))
+            upgrades = NitroIds[(VehicleUpgradeNitro)upgrade];
 
         else if (upgradeType == typeof(VehicleUpgradeWheel))
             upgrades = WheelUpgradeIds[(VehicleUpgradeWheel)upgrade];

@@ -113,7 +113,19 @@ public class VehicleUpgradeChanged : EventArgs
                 break;
 
             case VehicleUpgradeSlot.Hydraulics:
+                if (previousUpgrade != 0)
+                    this.PreviousUpgradeId = 1087;
+                if (newUpgrade != 0)
+                    this.NewUpgradeId = 1087;
+                break;
+
             case VehicleUpgradeSlot.Stereo:
+                if (previousUpgrade != 0)
+                    this.PreviousUpgradeId = 1086;
+                if (newUpgrade != 0)
+                    this.NewUpgradeId = 1086;
+                break;
+
             case VehicleUpgradeSlot.Unknown:
                 throw new NotImplementedException();
 

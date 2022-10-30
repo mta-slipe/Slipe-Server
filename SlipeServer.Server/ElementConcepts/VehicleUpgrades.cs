@@ -160,7 +160,7 @@ public class VehicleUpgrades
         {
             if (this.HasHydraulics != value && CanHaveHydraulics())
             {
-                var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.Nitro, (ushort)(this.HasHydraulics ? 0 : 1087), (ushort)(value ? 1087 : 0));
+                var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.Hydraulics, (ushort)(this.HasHydraulics ? 0 : 1087), (ushort)(value ? 1087 : 0));
                 this.hasHydraulics = value;
                 UpgradeChanged?.Invoke(this.vehicle, args);
             }
@@ -175,7 +175,7 @@ public class VehicleUpgrades
         {
             if (this.HasStereo != value && CanHaveStereo())
             {
-                var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.Nitro, (ushort)(this.HasStereo ? 0 : 1086), (ushort)(value ? 1086 : 0));
+                var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.Stereo, (ushort)(this.HasStereo ? 0 : 1086), (ushort)(value ? 1086 : 0));
                 this.hasStereo = value;
                 UpgradeChanged?.Invoke(this.vehicle, args);
             }
@@ -302,7 +302,7 @@ public class VehicleUpgrades
 
     public bool CanHave(VehicleUpgradeNitro nitro)
     {
-        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeRoof), this.vehicle.Model, (ushort)nitro) != null;
+        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeNitro), this.vehicle.Model, (ushort)nitro) != null;
     }
 
     public bool CanHave(VehicleUpgradeWheel wheel)

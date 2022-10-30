@@ -950,6 +950,9 @@ public class ServerTestLogic
             this.Slamvan!.Upgrades.RearBullbar = VehicleUpgradeRearBullbar.Chrome;
             this.Remmington!.Upgrades.Misc = VehicleUpgradeMisc.BullbarChromeBars;
             this.Sultan!.Upgrades.Roof = VehicleUpgradeRoof.AlienRoofVent;
+            this.Sultan!.Upgrades.Nitro = VehicleUpgradeNitro.x10;
+            this.Sultan!.Upgrades.HasHydraulics = true;
+            this.Sultan!.Upgrades.HasStereo = true;
 
             this.chatBox.OutputTo(args.Player, "tuning applied, spoiler = alien, wheels = cutter", Color.YellowGreen);
         };
