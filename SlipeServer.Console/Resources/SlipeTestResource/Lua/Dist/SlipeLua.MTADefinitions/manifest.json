@@ -1,0 +1,12 @@
+{
+  "modules": [
+    "shared",
+    "client",
+    "server",
+    "exports",
+    "json",
+    "events"
+  ],
+  "types": [],
+  "requiredAssemblies": []
+}

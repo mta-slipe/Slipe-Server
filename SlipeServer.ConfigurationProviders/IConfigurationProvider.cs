@@ -1,9 +1,8 @@
 ﻿using SlipeServer.Server;
 
-namespace SlipeServer.ConfigurationProviders
+namespace SlipeServer.ConfigurationProviders;
+
+public interface IConfigurationProvider
 {
-    public interface IConfigurationProvider
-    {
-        public Configuration GetConfiguration();
-    }
+    public Configuration GetConfiguration();
 }

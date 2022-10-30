@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -6,28 +7,29 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using SlipeServer.Server.Elements.Events;
 
-namespace SlipeServer.Server.Elements
+namespace SlipeServer.Server.Elements;
+
+public class Team : Element, IEnumerable
 {
-    public class Team : Element
+    public override ElementType ElementType => ElementType.Team;
+
+    public string TeamName { get; set; }
+    public Color Color { get; set; }
+    public bool IsFriendlyFireEnabled { get; set; }
+    public List<Player> Players { get; set; }
+
+    public Team(string name, Color color) : base()
     {
-        public override ElementType ElementType => ElementType.Team;
+        this.TeamName = name;
+        this.Color = color;
 
-        public string TeamName { get; set; }
-        public Color Color { get; set; }
-        public bool IsFriendlyFireEnabled { get; set; }
-        public List<Player> Players { get; set; }
-
-        public Team(string name, Color color): base()
-        {
-            this.TeamName = name;
-            this.Color = color;
-
-            this.Players = new List<Player>();
-        }
-
-        public new Team AssociateWith(MtaServer server)
-        {
-            return server.AssociateElement(this);
-        }
+        this.Players = new List<Player>();
     }
+
+    public new Team AssociateWith(MtaServer server)
+    {
+        return server.AssociateElement(this);
+    }
+
+    public IEnumerator GetEnumerator() => Players.GetEnumerator();
 }

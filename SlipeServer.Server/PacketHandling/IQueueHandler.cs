@@ -4,11 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SlipeServer.Server.PacketHandling
+namespace SlipeServer.Server.PacketHandling;
+
+public interface IQueueHandler
 {
-    public interface IQueueHandler
-    {
-        IEnumerable<PacketId> SupportedPacketIds { get; }
-        void EnqueuePacket(Client client, PacketId packetId, byte[] data);
-    }
+    IEnumerable<PacketId> SupportedPacketIds { get; }
+    void EnqueuePacket(IClient client, PacketId packetId, byte[] data);
 }

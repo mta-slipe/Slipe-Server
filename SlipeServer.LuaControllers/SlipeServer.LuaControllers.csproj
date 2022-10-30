@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	<TargetFramework>net6.0</TargetFramework>
+	<ImplicitUsings>enable</ImplicitUsings>
+	<Nullable>enable</Nullable>
+	<Version>0.1.0</Version>
+	<Authors>Slipe</Authors>
+	<Company></Company>
+	<Product>Slipe Server</Product>
+	<PackageProjectUrl>https://github.com/mta-slipe/Slipe-server</PackageProjectUrl>
+	<PackageIcon>slipe-logo.png</PackageIcon>
+	<RepositoryUrl>https://github.com/mta-slipe/Slipe-server</RepositoryUrl>
+	<RepositoryType>git</RepositoryType>
+	<PackageLicenseFile>LICENSE</PackageLicenseFile>
+	<Description>MVC Like controllers for Slipe Server</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SlipeServer.Server\SlipeServer.Server.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="..\slipe-logo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

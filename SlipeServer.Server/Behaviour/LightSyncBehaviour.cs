@@ -2,54 +2,53 @@
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
-using SlipeServer.Server.Repositories;
+using SlipeServer.Server.ElementCollections;
 using System.Linq;
 using System.Timers;
 
-namespace SlipeServer.Server.Behaviour
+namespace SlipeServer.Server.Behaviour;
+
+public class LightSyncBehaviour
 {
-    public class LightSyncBehaviour
+    private readonly IElementCollection elementCollection;
+    private readonly ISyncHandlerMiddleware<LightSyncBehaviour?> middleware;
+
+    private readonly Timer timer;
+
+    public LightSyncBehaviour(
+        IElementCollection elementCollection,
+        ISyncHandlerMiddleware<LightSyncBehaviour?> middleware,
+        Configuration configuration)
     {
-        private readonly IElementRepository elementRepository;
-        private readonly ISyncHandlerMiddleware<LightSyncBehaviour?> middleware;
+        this.elementCollection = elementCollection;
+        this.middleware = middleware;
 
-        private readonly Timer timer;
-
-        public LightSyncBehaviour(
-            IElementRepository elementRepository,
-            ISyncHandlerMiddleware<LightSyncBehaviour?> middleware,
-            Configuration configuration)
+        this.timer = new Timer(configuration.SyncIntervals.LightSync)
         {
-            this.elementRepository = elementRepository;
-            this.middleware = middleware;
+            AutoReset = true,
+        };
+        this.timer.Start();
+        this.timer.Elapsed += (sender, args) => SendLightSyncs();
+    }
 
-            this.timer = new Timer(configuration.SyncIntervals.LightSync)
-            {
-                AutoReset = true,
-            };
-            this.timer.Start();
-            this.timer.Elapsed += (sender, args) => SendLightSyncs();
-        }
-
-        private void SendLightSyncs()
+    private void SendLightSyncs()
+    {
+        foreach (var player in this.elementCollection.GetByType<Player>(ElementType.Player))
         {
-            foreach (var player in this.elementRepository.GetByType<Player>(ElementType.Player))
-            {
-                var otherPlayers = this.middleware.GetPlayersToSyncTo(player, null);
+            var otherPlayers = this.middleware.GetPlayersToSyncTo(player, null);
 
-                if (otherPlayers.Any())
-                {
-                    var lightSyncPacket = new LightSyncPacket(
-                        elementId: player.Id,
-                        timeContext: player.TimeContext,
-                        latency: (ushort)player.Client.Ping,
-                        health: player.Health,
-                        armor: player.Armor,
-                        position: player.Position,
-                        vehicleHealth: player.Vehicle?.Health
-                    );
-                    lightSyncPacket.SendTo(otherPlayers);
-                }
+            if (otherPlayers.Any())
+            {
+                var lightSyncPacket = new LightSyncPacket(
+                    elementId: player.Id,
+                    timeContext: player.TimeContext,
+                    latency: (ushort)player.Client.Ping,
+                    health: player.Health,
+                    armor: player.Armor,
+                    position: player.Position,
+                    vehicleHealth: player.Vehicle?.Health
+                );
+                lightSyncPacket.SendTo(otherPlayers);
             }
         }
     }

@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SlipeServer.Server.Elements.Enums
+namespace SlipeServer.Server.Elements.Enums;
+
+public enum ResourceFileType
 {
-    public enum  ResourceFileType
-    {
-        Map,
-        Script,
-        ClientScript,
-        Config,
-        ClientConfig,
-        Html,
-        ClientFile,
-        None,
-    }
+    Map,
+    Script,
+    ClientScript,
+    Config,
+    ClientConfig,
+    Html,
+    ClientFile,
+    None,
 }

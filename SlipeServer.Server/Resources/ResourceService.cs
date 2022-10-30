@@ -1,56 +1,62 @@
 ﻿using SlipeServer.Server.Elements;
-using SlipeServer.Server.Resources.ResourceServing;
-using System;
+using SlipeServer.Server.Resources.Providers;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-namespace SlipeServer.Server.Resources
+namespace SlipeServer.Server.Resources;
+
+public class ResourceService
 {
-    public class ResourceService
+    private readonly MtaServer server;
+    private readonly RootElement root;
+    private readonly IResourceProvider resourceProvider;
+
+    private readonly List<Resource> startedResources;
+
+    public IReadOnlyCollection<Resource> StartedResources => this.startedResources.AsReadOnly();
+
+    public ResourceService(MtaServer server, RootElement root, IResourceProvider resourceProvider)
     {
-        private readonly MtaServer server;
-        private readonly RootElement root;
-        private readonly IResourceServer resourceServer;
+        this.server = server;
+        this.root = root;
+        this.resourceProvider = resourceProvider;
 
-        private readonly List<Resource> startedResources;
+        this.startedResources = new List<Resource>();
 
-        public IReadOnlyCollection<Resource> StartedResources => this.startedResources.AsReadOnly();
+        this.server.PlayerJoined += HandlePlayerJoin;
+    }
 
-        public ResourceService(MtaServer server, RootElement root, IResourceServer resourceServer)
+    private void HandlePlayerJoin(Player player)
+    {
+        foreach (var resource in this.startedResources)
         {
-            this.server = server;
-            this.root = root;
-            this.resourceServer = resourceServer;
-
-            this.startedResources = new List<Resource>();
-
-            this.server.PlayerJoined += HandlePlayerJoin;
+            resource.StartFor(player);
         }
+    }
 
-        private void HandlePlayerJoin(Player player)
+    public Resource? StartResource(string name)
+    {
+        if (!this.startedResources.Any(r => r.Name == name))
         {
-            foreach (var resource in this.startedResources)
-            {
-                resource.StartFor(player);
-            }
-        }
+            var resource = this.resourceProvider.GetResource(name);
+            resource.Start();
+            this.startedResources.Add(resource);
 
-        public void StartResource(string name)
-        {
-            if (!this.startedResources.Any(r => r.Name == name))
-            {
-                var resource = new Resource(this.server, this.root, this.resourceServer, name);
-                resource.Start();
-                this.startedResources.Add(resource);
-            }
+            return resource;
         }
+        return null;
+    }
 
-        public void StopResource(string name)
-        {
-            var resource = this.startedResources.Single(r => r.Name == name);
-            this.startedResources.Remove(resource);
-            resource.Stop();
-        }
+    public void StopResource(string name)
+    {
+        var resource = this.startedResources.Single(r => r.Name == name);
+        this.startedResources.Remove(resource);
+        resource.Stop();
+    }
+
+    public void StopResource(Resource resource)
+    {
+        this.startedResources.Remove(resource);
+        resource.Stop();
     }
 }

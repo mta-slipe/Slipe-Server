@@ -1,11 +1,10 @@
-﻿namespace SlipeServer.Packets.Enums
+﻿namespace SlipeServer.Packets.Enums;
+
+public enum ChatEchoType : byte
 {
-    public enum ChatEchoType : byte
-    {
-        Player,
-        Action,
-        Team,
-        Private,
-        Internal
-    };
-}
+    Player,
+    Action,
+    Team,
+    Private,
+    Internal
+};

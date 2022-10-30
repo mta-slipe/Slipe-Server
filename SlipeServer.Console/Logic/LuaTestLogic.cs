@@ -4,33 +4,47 @@ using SlipeServer.Console.LuaDefinitions;
 using SlipeServer.Lua;
 using SlipeServer.Scripting;
 using SlipeServer.Server.Services;
-using System;
-using System.Collections.Generic;
 using System.IO;
 
-namespace SlipeServer.Console.Logic
+namespace SlipeServer.Console.Logic;
+
+public class LuaTestLogic
 {
-    public class LuaTestLogic
+    private readonly IScriptEventRuntime eventRuntime;
+    private readonly LuaService luaService;
+    private readonly ILogger logger;
+
+    public LuaTestLogic(
+        IScriptEventRuntime eventRuntime, 
+        LuaService luaService,
+        CommandService commandService,
+        ILogger logger
+        )
     {
-        public LuaTestLogic(IScriptEventRuntime eventRuntime, LuaService luaService)
+        this.eventRuntime = eventRuntime;
+        this.luaService = luaService;
+        this.logger = logger;
+        commandService.AddCommand("lua").Triggered += (source, args) => Init();
+    }
+
+    private void Init()
+    {
+        this.eventRuntime.LoadDefaultEvents();
+
+        this.luaService.LoadDefaultDefinitions();
+
+        this.luaService.LoadDefinitions<CustomMathDefinition>();
+        this.luaService.LoadDefinitions<TestDefinition>();
+
+        using FileStream testLua = File.OpenRead("test.lua");
+        using StreamReader reader = new StreamReader(testLua);
+        try
         {
-            eventRuntime.LoadDefaultEvents();
-
-            luaService.LoadDefaultDefinitions();
-
-            luaService.LoadDefinitions<CustomMathDefinition>();
-            luaService.LoadDefinitions<TestDefinition>();
-
-            using FileStream testLua = File.OpenRead("test.lua");
-            using StreamReader reader = new StreamReader(testLua);
-            try
-            {
-                luaService.LoadScript("test.lua", reader.ReadToEnd());
-            }
-            catch (InterpreterException ex)
-            {
-                System.Console.WriteLine("Failed to load script\n\t{0}", ex.DecoratedMessage);
-            }
+            this.luaService.LoadScript("test.lua", reader.ReadToEnd());
+        }
+        catch (InterpreterException ex)
+        {
+            this.logger.LogInformation("Failed to load script\n\t{message}", ex.DecoratedMessage);
         }
     }
 }

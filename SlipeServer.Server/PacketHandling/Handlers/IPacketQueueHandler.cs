@@ -1,9 +1,11 @@
 ﻿using SlipeServer.Packets;
+using System;
 
-namespace SlipeServer.Server.PacketHandling.Handlers
+namespace SlipeServer.Server.PacketHandling.Handlers;
+
+public interface IPacketQueueHandler<T> where T : Packet
 {
-    public interface IPacketQueueHandler<T> where T : Packet
-    {
-        void EnqueuePacket(Client client, T packet);
-    }
+    void EnqueuePacket(IClient client, T packet);
+
+    event Action<T> PacketHandled;
 }

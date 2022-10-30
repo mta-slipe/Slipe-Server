@@ -3,21 +3,20 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SlipeServer.Server.Elements.Events
-{
-    public class PlayerDamagedEventArgs : EventArgs
-    {
-        public Player Source { get; }
-        public Element? Damager { get; }
-        public WeaponType WeaponType { get; }
-        public BodyPart BodyPart { get; }
+namespace SlipeServer.Server.Elements.Events;
 
-        public PlayerDamagedEventArgs(Player source, Element? damager, WeaponType weaponType, BodyPart bodyPart)
-        {
-            this.Source = source;
-            this.Damager = damager;
-            this.WeaponType = weaponType;
-            this.BodyPart = bodyPart;
-        }
+public class PlayerDamagedEventArgs : EventArgs
+{
+    public Player Source { get; }
+    public Element? Damager { get; }
+    public WeaponType WeaponType { get; }
+    public BodyPart BodyPart { get; }
+
+    public PlayerDamagedEventArgs(Player source, Element? damager, WeaponType weaponType, BodyPart bodyPart)
+    {
+        this.Source = source;
+        this.Damager = damager;
+        this.WeaponType = weaponType;
+        this.BodyPart = bodyPart;
     }
 }
