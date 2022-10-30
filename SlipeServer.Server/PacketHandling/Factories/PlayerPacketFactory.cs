@@ -37,7 +37,7 @@ public static class PlayerPacketFactory
 
                 isDead: !player.IsAlive,
                 isInVehicle: player.Vehicle != null,
-                hasJetpack: false,
+                hasJetpack: player.HasJetpack,
                 isNametagShowing: true,
                 isNametagColorOverriden: true,
                 isHeadless: player.IsHeadless,
@@ -48,7 +48,7 @@ public static class PlayerPacketFactory
                 moveAnimation: 0,
 
                 model: player.Model,
-                teamId: null,
+                teamId: player.Team?.Id,
 
                 vehicleId: player.Vehicle?.Id,
                 seat: player.Seat,
