@@ -2,7 +2,6 @@
 using SlipeServer.Server.Constants;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
-using System;
 
 namespace SlipeServer.Server.ElementConcepts;
 
@@ -14,8 +13,6 @@ public class VehicleUpgrades
     {
         this.vehicle = vehicle;
     }
-
-    public byte[] Bytes { get; set; } = Array.Empty<byte>();
 
 
     private VehicleUpgradeHood hood = VehicleUpgradeHood.None;
@@ -147,7 +144,7 @@ public class VehicleUpgrades
         get => this.hasHydraulics;
         set
         {
-            if (this.HasHydraulics != value && CanHaveHydralics())
+            if (this.HasHydraulics != value && CanHaveHydraulics())
             {
                 var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.Nitro, (ushort)(this.HasHydraulics ? 0 : 1087), (ushort)(value ? 1087 : 0));
                 this.hasHydraulics = value;
@@ -237,67 +234,67 @@ public class VehicleUpgrades
 
     public bool CanHave(VehicleUpgradeHood hood)
     {
-        return VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeHood), this.vehicle.Model, (ushort)hood) != null;
+        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeHood), this.vehicle.Model, (ushort)hood) != null;
     }
 
     public bool CanHave(VehicleUpgradeSpoiler spoiler)
     {
-        return VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeSpoiler), this.vehicle.Model, (ushort)spoiler) != null;
+        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeSpoiler), this.vehicle.Model, (ushort)spoiler) != null;
     }
 
     public bool CanHave(VehicleUpgradeVent vent)
     {
-        return VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeVent), this.vehicle.Model, (ushort)vent) != null;
+        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeVent), this.vehicle.Model, (ushort)vent) != null;
     }
 
     public bool CanHave(VehicleUpgradeSideskirt sideskirt)
     {
-        return VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeSideskirt), this.vehicle.Model, (ushort)sideskirt) != null;
+        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeSideskirt), this.vehicle.Model, (ushort)sideskirt) != null;
     }
 
     public bool CanHave(VehicleUpgradeBullbar bullbar)
     {
-        return VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeBullbar), this.vehicle.Model, (ushort)bullbar) != null;
+        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeBullbar), this.vehicle.Model, (ushort)bullbar) != null;
     }
 
     public bool CanHave(VehicleUpgradeRoof bullbar)
     {
-        return VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeRoof), this.vehicle.Model, (ushort)bullbar) != null;
+        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeRoof), this.vehicle.Model, (ushort)bullbar) != null;
     }
 
     public bool CanHave(VehicleUpgradeNitro nitro)
     {
-        return VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeRoof), this.vehicle.Model, (ushort)nitro) != null;
+        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeRoof), this.vehicle.Model, (ushort)nitro) != null;
     }
 
     public bool CanHave(VehicleUpgradeWheel wheel)
     {
-        return VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeWheel), this.vehicle.Model, (ushort)wheel) != null;
+        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeWheel), this.vehicle.Model, (ushort)wheel) != null;
     }
 
     public bool CanHave(VehicleUpgradeExhaust exhaust)
     {
-        return VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeExhaust), this.vehicle.Model, (ushort)exhaust) != null;
+        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeExhaust), this.vehicle.Model, (ushort)exhaust) != null;
     }
 
     public bool CanHave(VehicleUpgradeFrontBumper frontBumper)
     {
-        return VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeFrontBumper), this.vehicle.Model, (ushort)frontBumper) != null;
+        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeFrontBumper), this.vehicle.Model, (ushort)frontBumper) != null;
     }
 
     public bool CanHave(VehicleUpgradeRearBumper rearBumper)
     {
-        return VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeRearBumper), this.vehicle.Model, (ushort)rearBumper) != null;
+        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeRearBumper), this.vehicle.Model, (ushort)rearBumper) != null;
     }
 
     public bool CanHaveStereo()
     {
-        return VehicleConstants.AvailiableUpgrades[this.vehicle.Model].Contains(1086);
+        return VehicleUpgradesPerModel.AvailiableUpgradesPerVehicleModel[this.vehicle.Model].Contains(1086);
     }
 
-    public bool CanHaveHydralics()
+    public bool CanHaveHydraulics()
     {
-        return VehicleConstants.AvailiableUpgrades[this.vehicle.Model].Contains(1087);
+        return VehicleUpgradesPerModel.AvailiableUpgradesPerVehicleModel[this.vehicle.Model].Contains(1087);
     }
 
     public event ElementEventHandler<Vehicle, VehicleUpgradeChanged>? UpgradeChanged;

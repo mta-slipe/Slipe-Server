@@ -1,7 +1,9 @@
 ﻿using SlipeServer.Packets;
 using SlipeServer.Packets.Definitions.Entities.Structs;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
+using SlipeServer.Packets.Enums.VehicleUpgrades;
 using SlipeServer.Server.Constants;
+using SlipeServer.Server.ElementConcepts;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.ColShapes;
 using System;
@@ -151,11 +153,21 @@ public class AddEntityPacketBuilder
         this.packet.AddVehicle(element.Id, (byte)element.ElementType, element.Parent?.Id ?? 0, element.Interior, element.Dimension,
             null, element.AreCollisionsEnabled, element.IsCallPropagationEnabled, new CustomData(), element.Name, element.TimeContext,
             element.Position, element.Rotation, element.Model, element.Health, (byte)element.BlownState, element.Colors.AsArray(), element.PaintJob, element.Damage, element.Variant1,
-            element.Variant2, element.TurretRotation, element.AdjustableProperty, VehicleConstants.DoorsPerVehicle[(VehicleModel)element.Model] > 0 ? element.DoorRatios : Array.Empty<float>(), element.Upgrades.Bytes, element.PlateText, 
+            element.Variant2, element.TurretRotation, element.AdjustableProperty, VehicleConstants.DoorsPerVehicle[(VehicleModel)element.Model] > 0 ? element.DoorRatios : Array.Empty<float>(), MapVehicleUpgrades(element.Model, element.Upgrades), element.PlateText, 
             element.OverrideLights, element.IsLandingGearDown, element.IsSirenActive, element.IsFuelTankExplodable, element.IsEngineOn, element.IsLocked, 
             element.AreDoorsUndamageable, element.IsDamageProof, element.IsFrozen, element.IsDerailed, element.IsDerailable, element.TrainDirection, element.IsTaxiLightOn, 
             element.Alpha, element.HeadlightColor, element.Handling, element.Sirens
         );
+    }
+
+    private byte[] MapVehicleUpgrades(ushort model, VehicleUpgrades upgrades)
+    {
+        var upgradeList = new List<byte>();
+
+        if (upgrades.Hood != VehicleUpgradeHood.None)
+            upgradeList.Add((byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeHood>(model, (ushort)upgrades.Hood) - 1000)!);
+
+        return upgradeList.ToArray();
     }
 
     public void AddWeapon(WeaponObject element)

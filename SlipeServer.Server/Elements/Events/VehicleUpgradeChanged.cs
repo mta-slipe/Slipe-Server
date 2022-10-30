@@ -1,10 +1,6 @@
 ﻿using SlipeServer.Packets.Enums.VehicleUpgrades;
 using SlipeServer.Server.Constants;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SlipeServer.Server.Elements.Events;
 
@@ -26,79 +22,92 @@ public class VehicleUpgradeChanged : EventArgs
         switch (slot)
         {
             case VehicleUpgradeSlot.Hood:
-                if(previousUpgrade != 0)
-                    this.PreviousUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeHood), vehicle.Model, previousUpgrade);
-                if(newUpgrade != 0)
-                    this.NewUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeHood), vehicle.Model, newUpgrade);
+                if (previousUpgrade != 0)
+                    this.PreviousUpgradeId = VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeHood), vehicle.Model, previousUpgrade);
+                if (newUpgrade != 0)
+                    this.NewUpgradeId = VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeHood), vehicle.Model, newUpgrade);
                 break;
+
             case VehicleUpgradeSlot.Vent:
                 if (previousUpgrade != 0)
-                    this.PreviousUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeVent), vehicle.Model, previousUpgrade);
+                    this.PreviousUpgradeId = VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeVent), vehicle.Model, previousUpgrade);
                 if (newUpgrade != 0)
-                    this.NewUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeVent), vehicle.Model, newUpgrade);
+                    this.NewUpgradeId = VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeVent), vehicle.Model, newUpgrade);
                 break;
+
             case VehicleUpgradeSlot.Spoiler:
                 if (previousUpgrade != 0)
-                    this.PreviousUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeSpoiler), vehicle.Model, previousUpgrade);
+                    this.PreviousUpgradeId = VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeSpoiler), vehicle.Model, previousUpgrade);
                 if (newUpgrade != 0)
-                    this.NewUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeSpoiler), vehicle.Model, newUpgrade);
+                    this.NewUpgradeId = VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeSpoiler), vehicle.Model, newUpgrade);
                 break;
+
             case VehicleUpgradeSlot.Sideskirt:
                 if (previousUpgrade != 0)
-                    this.PreviousUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeSideskirt), vehicle.Model, previousUpgrade);
+                    this.PreviousUpgradeId = VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeSideskirt), vehicle.Model, previousUpgrade);
                 if (newUpgrade != 0)
-                    this.NewUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeSideskirt), vehicle.Model, newUpgrade);
+                    this.NewUpgradeId = VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeSideskirt), vehicle.Model, newUpgrade);
                 break;
+
             case VehicleUpgradeSlot.FrontBullbars:
                 if (previousUpgrade != 0)
-                    this.PreviousUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeBullbar), vehicle.Model, previousUpgrade);
+                    this.PreviousUpgradeId = VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeBullbar), vehicle.Model, previousUpgrade);
                 if (newUpgrade != 0)
-                    this.NewUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeBullbar), vehicle.Model, newUpgrade);
+                    this.NewUpgradeId = VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeBullbar), vehicle.Model, newUpgrade);
                 break;
+
             case VehicleUpgradeSlot.RearBullbars:
                 if (previousUpgrade != 0)
-                    this.PreviousUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeBullbar), vehicle.Model, previousUpgrade);
+                    this.PreviousUpgradeId = VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeBullbar), vehicle.Model, previousUpgrade);
                 if (newUpgrade != 0)
-                    this.NewUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeBullbar), vehicle.Model, newUpgrade);
+                    this.NewUpgradeId = VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeBullbar), vehicle.Model, newUpgrade);
                 break;
+
             case VehicleUpgradeSlot.Headlights:
                 break;
+
             case VehicleUpgradeSlot.Roof:
                 if (previousUpgrade != 0)
-                    this.PreviousUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeRoof), vehicle.Model, previousUpgrade);
+                    this.PreviousUpgradeId = VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeRoof), vehicle.Model, previousUpgrade);
                 if (newUpgrade != 0)
-                    this.NewUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeRoof), vehicle.Model, newUpgrade);
+                    this.NewUpgradeId = VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeRoof), vehicle.Model, newUpgrade);
                 break;
+
             case VehicleUpgradeSlot.Nitro:
                 if (previousUpgrade != 0)
-                    this.PreviousUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeNitro), vehicle.Model, previousUpgrade);
+                    this.PreviousUpgradeId = VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeNitro), vehicle.Model, previousUpgrade);
                 if (newUpgrade != 0)
-                    this.NewUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeNitro), vehicle.Model, newUpgrade);
+                    this.NewUpgradeId = VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeNitro), vehicle.Model, newUpgrade);
                 break;
+
             case VehicleUpgradeSlot.Wheels:
                 if (previousUpgrade != 0)
-                    this.PreviousUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeWheel), vehicle.Model, previousUpgrade);
+                    this.PreviousUpgradeId = VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeWheel), vehicle.Model, previousUpgrade);
                 if (newUpgrade != 0)
-                    this.NewUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeWheel), vehicle.Model, newUpgrade);
+                    this.NewUpgradeId = VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeWheel), vehicle.Model, newUpgrade);
                 break;
+
             case VehicleUpgradeSlot.Exhaust:
                 if (previousUpgrade != 0)
-                    this.PreviousUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeExhaust), vehicle.Model, previousUpgrade);
+                    this.PreviousUpgradeId = VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeExhaust), vehicle.Model, previousUpgrade);
                 if (newUpgrade != 0)
-                    this.NewUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeExhaust), vehicle.Model, newUpgrade);
+                    this.NewUpgradeId = VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeExhaust), vehicle.Model, newUpgrade);
                 break;
+
             case VehicleUpgradeSlot.FrontBumper:
                 if (previousUpgrade != 0)
-                    this.PreviousUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeFrontBumper), vehicle.Model, previousUpgrade);
+                    this.PreviousUpgradeId = VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeFrontBumper), vehicle.Model, previousUpgrade);
                 if (newUpgrade != 0)
-                    this.NewUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeFrontBumper), vehicle.Model, newUpgrade);
+                    this.NewUpgradeId = VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeFrontBumper), vehicle.Model, newUpgrade);
                 break;
+
             case VehicleUpgradeSlot.RearBumper:
                 if (previousUpgrade != 0)
-                    this.PreviousUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeRearBumper), vehicle.Model, previousUpgrade);
+                    this.PreviousUpgradeId = VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeRearBumper), vehicle.Model, previousUpgrade);
                 if (newUpgrade != 0)
-                    this.NewUpgradeId = VehicleConstants.UpgradeVehicleUpgradeId(typeof(VehicleUpgradeRearBumper), vehicle.Model, newUpgrade);
+                    this.NewUpgradeId = VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeRearBumper), vehicle.Model, newUpgrade);
                 break;
+
             case VehicleUpgradeSlot.Hydraulics:
             case VehicleUpgradeSlot.Stereo:
             case VehicleUpgradeSlot.Unknown:

@@ -55,7 +55,7 @@ public class VehicleUpgradesTests
     public void TestVehicleCanHaveNitroOrHydraulics(ushort model, bool canHaveHydraulics, bool canHaveStereo)
     {
         Vehicle vehicle = new Vehicle(model, Vector3.Zero);
-        vehicle.Upgrades.CanHaveHydralics().Should().Be(canHaveHydraulics);
+        vehicle.Upgrades.CanHaveHydraulics().Should().Be(canHaveHydraulics);
         vehicle.Upgrades.CanHaveStereo().Should().Be(canHaveStereo);
     }
 }
