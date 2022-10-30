@@ -57,7 +57,7 @@ public static class PlayerPacketFactory
                 rotation: player.PedRotation,
 
                 dimension: player.Dimension,
-                fightingStyle: 0,
+                fightingStyle: (byte)player.FightingStyle,
                 alpha: player.Alpha,
                 interior: player.Interior,
 
