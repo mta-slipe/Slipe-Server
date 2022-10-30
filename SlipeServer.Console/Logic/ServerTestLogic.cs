@@ -71,6 +71,8 @@ public class ServerTestLogic
     private Vehicle? Jester { get; set; }
     private Vehicle? Uranus { get; set; }
     private Vehicle? Club { get; set; }
+    private Vehicle? Slamvan { get; set; }
+    private Vehicle? Remmington { get; set; }
     private Vehicle? FrozenVehicle { get; set; }
     private Vehicle? Roadtrain { get; set; }
     private Vehicle? Trailer1 { get; set; }
@@ -213,6 +215,8 @@ public class ServerTestLogic
         this.Jester = new Vehicle(559, new Vector3(46, -20, 3)).AssociateWith(this.server);
         this.Uranus = new Vehicle(558, new Vector3(50, -20, 3)).AssociateWith(this.server);
         this.Club = new Vehicle(589, new Vector3(54, -20, 3)).AssociateWith(this.server);
+        this.Slamvan = new Vehicle(535, new Vector3(58, -20, 3)).AssociateWith(this.server);
+        this.Remmington = new Vehicle(534, new Vector3(62, -20, 3)).AssociateWith(this.server);
 
         var forklift2 = new Vehicle(530, new Vector3(22, 5, 3)).AssociateWith(this.server);
         var firetruck = new Vehicle(407, new Vector3(30, 5, 3)).AssociateWith(this.server);
@@ -939,6 +943,11 @@ public class ServerTestLogic
             this.Uranus!.Upgrades.Wheels = VehicleUpgradeWheel.Cutter;
 
             this.Club!.Upgrades.Hood = VehicleUpgradeHood.LeftSquare;
+            this.Club!.Upgrades.Vent = VehicleUpgradeVent.FuryScoop;
+            this.Club!.Upgrades.Sideskirt = VehicleUpgradeSideskirt.Left;
+            this.Slamvan!.Upgrades.FrontBullbar = VehicleUpgradeFrontBullbar.Slamin;
+            this.Slamvan!.Upgrades.RearBullbar = VehicleUpgradeRearBullbar.Chrome;
+            this.Remmington!.Upgrades.Misc = VehicleUpgradeMisc.BullbarChromeBars;
 
             this.chatBox.OutputTo(args.Player, "tuning applied, spoiler = alien, wheels = cutter", Color.YellowGreen);
         };

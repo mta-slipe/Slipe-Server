@@ -75,8 +75,8 @@ public class VehicleUpgrades
         }
     }
 
-    private VehicleUpgradeBullbar frontBullbar = VehicleUpgradeBullbar.None;
-    public VehicleUpgradeBullbar FrontBullbar
+    private VehicleUpgradeFrontBullbar frontBullbar = VehicleUpgradeFrontBullbar.None;
+    public VehicleUpgradeFrontBullbar FrontBullbar
     {
         get => this.frontBullbar;
         set
@@ -90,8 +90,8 @@ public class VehicleUpgrades
         }
     }
 
-    private VehicleUpgradeBullbar rearBullbar = VehicleUpgradeBullbar.None;
-    public VehicleUpgradeBullbar RearBullbar
+    private VehicleUpgradeRearBullbar rearBullbar = VehicleUpgradeRearBullbar.None;
+    public VehicleUpgradeRearBullbar RearBullbar
     {
         get => this.rearBullbar;
         set
@@ -230,7 +230,21 @@ public class VehicleUpgrades
         }
     }
 
-    //public VehicleUpgradeHood Misc { get; set; }
+
+    private VehicleUpgradeMisc misc = VehicleUpgradeMisc.None;
+    public VehicleUpgradeMisc Misc
+    {
+        get => this.misc;
+        set
+        {
+            if (this.Misc != value && CanHave(value))
+            {
+                var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.Misc, (ushort)this.Misc, (ushort)value);
+                this.misc = value;
+                UpgradeChanged?.Invoke(this.vehicle, args);
+            }
+        }
+    }
 
     public bool CanHave(VehicleUpgradeHood hood)
     {
@@ -252,9 +266,14 @@ public class VehicleUpgrades
         return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeSideskirt), this.vehicle.Model, (ushort)sideskirt) != null;
     }
 
-    public bool CanHave(VehicleUpgradeBullbar bullbar)
+    public bool CanHave(VehicleUpgradeFrontBullbar bullbar)
     {
-        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeBullbar), this.vehicle.Model, (ushort)bullbar) != null;
+        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeFrontBullbar), this.vehicle.Model, (ushort)bullbar) != null;
+    }
+
+    public bool CanHave(VehicleUpgradeRearBullbar bullbar)
+    {
+        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeRearBullbar), this.vehicle.Model, (ushort)bullbar) != null;
     }
 
     public bool CanHave(VehicleUpgradeRoof bullbar)
@@ -295,6 +314,11 @@ public class VehicleUpgrades
     public bool CanHaveHydraulics()
     {
         return VehicleUpgradesPerModel.AvailiableUpgradesPerVehicleModel[this.vehicle.Model].Contains(1087);
+    }
+
+    public bool CanHave(VehicleUpgradeMisc misc)
+    {
+        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeMisc), this.vehicle.Model, (ushort)misc) != null;
     }
 
     public event ElementEventHandler<Vehicle, VehicleUpgradeChanged>? UpgradeChanged;

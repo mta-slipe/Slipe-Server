@@ -1,11 +1,15 @@
 ﻿namespace SlipeServer.Packets.Enums.VehicleUpgrades;
 
-public enum VehicleUpgradeBullbar
+public enum VehicleUpgradeFrontBullbar
 {
     None,
-    ChromeGrill,
-    BullbarChromeLights,
-    BullbarChromeBars,
+    Slamin,
+    Chrome,
+}
+
+public enum VehicleUpgradeRearBullbar
+{
+    None,
     Slamin,
     Chrome,
 }
