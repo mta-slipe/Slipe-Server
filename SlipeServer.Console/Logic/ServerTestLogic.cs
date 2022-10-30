@@ -4,7 +4,6 @@ using SlipeServer.Console.Elements;
 using SlipeServer.Console.LuaValues;
 using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
-using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Server;
 using SlipeServer.Server.Constants;
@@ -30,6 +29,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using SlipeServer.Packets.Enums.VehicleUpgrades;
 
 namespace SlipeServer.Console.Logic;
 

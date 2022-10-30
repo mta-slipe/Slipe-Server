@@ -1,9 +1,9 @@
-using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using SlipeServer.Packets.Enums.VehicleUpgrades;
 
 namespace SlipeServer.Server.Constants;
 
