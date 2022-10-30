@@ -2,14 +2,13 @@
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
-using System;
 using System.Net;
 
 namespace SlipeServer.Server;
 
 public class FakeClient : IClient
 {
-    public Player? Player { get; set; }
+    public Player Player { get; set; }
 
     public string? Serial { get; set; }
 
@@ -23,6 +22,11 @@ public class FakeClient : IClient
     public ClientConnectionState ConnectionState { get; set; }
 
     public uint Ping { get; set; }
+
+    public FakeClient(Player player)
+    {
+        this.Player = player;
+    }
 
     public void FetchSerial() { }
     public void ResendModPackets() { }

@@ -23,9 +23,5 @@ public class KeySyncPacketHandler : IPacketHandler<KeySyncPacket>
         packet.PlayerId = client.Player.Id;
         var otherPlayers = this.middleware.GetPlayersToSyncTo(client.Player, packet);
         packet.SendTo(otherPlayers);
-
-        System.IO.Directory.CreateDirectory("packetlog/keysync");
-        //System.IO.File.WriteAllText($"packetlog/keysync/{(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds}.packet", Newtonsoft.Json.JsonConvert.SerializeObject(packet));
-
     }
 }

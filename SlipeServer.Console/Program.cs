@@ -4,6 +4,7 @@ using SlipeServer.ConfigurationProviders;
 using SlipeServer.Console.AdditionalResources;
 using SlipeServer.Console.Elements;
 using SlipeServer.Console.Logic;
+using SlipeServer.Console.PacketReplayer;
 using SlipeServer.Console.Services;
 using SlipeServer.Lua;
 using SlipeServer.LuaControllers;
@@ -42,9 +43,10 @@ public partial class Program
 
 #if DEBUG
             throw;
-#endif
+#else
             System.Console.WriteLine("Press any key to exit...");
             System.Console.ReadKey();
+#endif
         }
     }
 
@@ -82,6 +84,7 @@ public partial class Program
                     services.AddSingleton<ISyncHandlerMiddleware<KeySyncPacket>, SubscriptionSyncHandlerMiddleware<KeySyncPacket>>();
 
                     services.AddScoped<TestService>();
+                    services.AddSingleton<PacketReplayerService>();
                 });
                 builder.AddLua();
                 builder.AddPhysics();
@@ -95,9 +98,12 @@ public partial class Program
                 builder.AddLogic<WarpIntoVehicleLogic>();
                 builder.AddLogic<LuaEventTestLogic>();
                 builder.AddLogic<ServiceUsageTestLogic>();
-                builder.AddLogic<PacketReplayerLogic>();
                 //builder.AddBehaviour<VelocityBehaviour>();
                 //builder.AddBehaviour<EventLoggingBehaviour>();
+
+                builder.AddPacketHandler<KeySyncReplayerPacketHandler, KeySyncPacket>();
+                builder.AddPacketHandler<PureSyncReplayerPacketHandler, PlayerPureSyncPacket>();
+                builder.AddLogic<PacketReplayerLogic>();
             }
         );
 

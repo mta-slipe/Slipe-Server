@@ -93,9 +93,6 @@ public class PlayerPureSyncPacketHandler : IPacketHandler<PlayerPureSyncPacket>
             }
         });
 
-        System.IO.Directory.CreateDirectory("packetlog/puresync");
-        //System.IO.File.WriteAllText($"packetlog/puresync/{(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds}.packet", Newtonsoft.Json.JsonConvert.SerializeObject(packet));
-
         player.TriggerSync();
     }
 }
