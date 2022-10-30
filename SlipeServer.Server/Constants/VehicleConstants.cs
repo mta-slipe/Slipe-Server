@@ -1,9 +1,8 @@
+using SlipeServer.Packets.Enums.VehicleUpgrades;
 using SlipeServer.Server.Elements;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-using SlipeServer.Packets.Enums.VehicleUpgrades;
 
 namespace SlipeServer.Server.Constants;
 
@@ -479,7 +478,7 @@ public class VehicleConstants
         VehicleModel.SwatTank,
     };
 
-    public static Dictionary<ushort, HashSet<ushort>> AvailiableUpgrades = new()
+    public static Dictionary<ushort, HashSet<ushort>> AvailiableUpgrades { get; } = new()
     {
         [400] = new HashSet<ushort> { 1008, 1009, 1010, 1013, 1018, 1019, 1020, 1021, 1024, 1025, 1073, 1074, 1075, 1076, 1077, 1078, 1079, 1080, 1081, 1082, 1083, 1084, 1085, 1086, 1087, 1096, 1097, 1098 },
         [401] = new HashSet<ushort> { 1001, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010, 1013, 1017, 1019, 1020, 1025, 1073, 1074, 1075, 1076, 1077, 1078, 1079, 1080, 1081, 1082, 1083, 1084, 1085, 1086, 1087, 1096, 1097, 1098, 1142, 1143, 1144, 1146, 1147, 1158, 1162, 1163 },
@@ -691,7 +690,7 @@ public class VehicleConstants
 
     public static ushort? UpgradeVehicleUpgradeId(Type upgradeType, ushort model, ushort upgrade)
     {
-        ushort[] upgrades = new ushort[] { };
+        ushort[] upgrades = Array.Empty<ushort>();
         if (upgradeType == typeof(VehicleUpgradeSpoiler))
             upgrades = UpgradeToIds((VehicleUpgradeSpoiler)upgrade);
         if (upgradeType == typeof(VehicleUpgradeWheel))
@@ -716,71 +715,44 @@ public class VehicleConstants
 
     public static ushort[] UpgradeToIds(VehicleUpgradeSpoiler vehicleUpgradeSpoiler)
     {
-        switch (vehicleUpgradeSpoiler)
+        return vehicleUpgradeSpoiler switch
         {
-            case VehicleUpgradeSpoiler.XFlow:
-                return new ushort[] { 1050, 1060, 1139, 1146, 1158, 1163 };
-            case VehicleUpgradeSpoiler.Worx:
-                return new ushort[] { 1016 };
-            case VehicleUpgradeSpoiler.Win:
-                return new ushort[] { 1001 };
-            case VehicleUpgradeSpoiler.Race:
-                return new ushort[] { 1015 };
-            case VehicleUpgradeSpoiler.Pro:
-                return new ushort[] { 1000 };
-            case VehicleUpgradeSpoiler.Fury:
-                return new ushort[] { 1023 };
-            case VehicleUpgradeSpoiler.Drag:
-                return new ushort[] { 1002 };
-            case VehicleUpgradeSpoiler.Champ:
-                return new ushort[] { 1014 };
-            case VehicleUpgradeSpoiler.Alpha:
-                return new ushort[] { 1003 };
-            case VehicleUpgradeSpoiler.Alien:
-                return new ushort[] { 1049, 1058, 1138, 1147, 1162, 1164 };
-        }
-        return Array.Empty<ushort>();
+            VehicleUpgradeSpoiler.XFlow => new ushort[] { 1050, 1060, 1139, 1146, 1158, 1163 },
+            VehicleUpgradeSpoiler.Worx => new ushort[] { 1016 },
+            VehicleUpgradeSpoiler.Win => new ushort[] { 1001 },
+            VehicleUpgradeSpoiler.Race => new ushort[] { 1015 },
+            VehicleUpgradeSpoiler.Pro => new ushort[] { 1000 },
+            VehicleUpgradeSpoiler.Fury => new ushort[] { 1023 },
+            VehicleUpgradeSpoiler.Drag => new ushort[] { 1002 },
+            VehicleUpgradeSpoiler.Champ => new ushort[] { 1014 },
+            VehicleUpgradeSpoiler.Alpha => new ushort[] { 1003 },
+            VehicleUpgradeSpoiler.Alien => new ushort[] { 1049, 1058, 1138, 1147, 1162, 1164 },
+            _ => Array.Empty<ushort>(),
+        };
     }
 
     public static ushort[] UpgradeToIds(VehicleUpgradeWheel vehicleUpgradeWheel)
     {
-        switch (vehicleUpgradeWheel)
+        return vehicleUpgradeWheel switch
         {
-            case VehicleUpgradeWheel.Wires:
-                return new ushort[] { 1076 };
-            case VehicleUpgradeWheel.Virtual:
-                return new ushort[] { 1097 };
-            case VehicleUpgradeWheel.Twist:
-                return new ushort[] { 1078 };
-            case VehicleUpgradeWheel.Trance:
-                return new ushort[] { 1084 };
-            case VehicleUpgradeWheel.Switch:
-                return new ushort[] { 1080 };
-            case VehicleUpgradeWheel.Shadow:
-                return new ushort[] { 1073 };
-            case VehicleUpgradeWheel.Rimshine:
-                return new ushort[] { 1075 };
-            case VehicleUpgradeWheel.Offroad:
-                return new ushort[] { 1025 };
-            case VehicleUpgradeWheel.Mega:
-                return new ushort[] { 1074 };
-            case VehicleUpgradeWheel.Import:
-                return new ushort[] { 1082 };
-            case VehicleUpgradeWheel.Grove:
-                return new ushort[] { 1081 };
-            case VehicleUpgradeWheel.Dollar:
-                return new ushort[] { 1083 };
-            case VehicleUpgradeWheel.Cutter:
-                return new ushort[] { 1079 };
-            case VehicleUpgradeWheel.Classic:
-                return new ushort[] { 1077 };
-            case VehicleUpgradeWheel.Atomic:
-                return new ushort[] { 1085 };
-            case VehicleUpgradeWheel.Ahab:
-                return new ushort[] { 1096 };
-            case VehicleUpgradeWheel.Access:
-                return new ushort[] { 1098 };
-        }
-        return Array.Empty<ushort>();
+            VehicleUpgradeWheel.Wires => new ushort[] { 1076 },
+            VehicleUpgradeWheel.Virtual => new ushort[] { 1097 },
+            VehicleUpgradeWheel.Twist => new ushort[] { 1078 },
+            VehicleUpgradeWheel.Trance => new ushort[] { 1084 },
+            VehicleUpgradeWheel.Switch => new ushort[] { 1080 },
+            VehicleUpgradeWheel.Shadow => new ushort[] { 1073 },
+            VehicleUpgradeWheel.Rimshine => new ushort[] { 1075 },
+            VehicleUpgradeWheel.Offroad => new ushort[] { 1025 },
+            VehicleUpgradeWheel.Mega => new ushort[] { 1074 },
+            VehicleUpgradeWheel.Import => new ushort[] { 1082 },
+            VehicleUpgradeWheel.Grove => new ushort[] { 1081 },
+            VehicleUpgradeWheel.Dollar => new ushort[] { 1083 },
+            VehicleUpgradeWheel.Cutter => new ushort[] { 1079 },
+            VehicleUpgradeWheel.Classic => new ushort[] { 1077 },
+            VehicleUpgradeWheel.Atomic => new ushort[] { 1085 },
+            VehicleUpgradeWheel.Ahab => new ushort[] { 1096 },
+            VehicleUpgradeWheel.Access => new ushort[] { 1098 },
+            _ => Array.Empty<ushort>(),
+        };
     }
 }

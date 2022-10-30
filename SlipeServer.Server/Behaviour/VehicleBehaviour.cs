@@ -47,16 +47,6 @@ public class VehicleBehaviour
         }
     }
 
-    private void RelayUpgradeChanged(Vehicle sender, VehicleUpgradeChanged args)
-    {
-        if(args.PreviousUpgradeId.HasValue)
-            this.server.BroadcastPacket(VehiclePacketFactory.CreateRemoveUpgradePacket(args.Vehicle, args.PreviousUpgradeId.Value));
-
-        if(args.NewUpgradeId.HasValue)
-            this.server.BroadcastPacket(VehiclePacketFactory.CreateAddUpgradePacket(args.Vehicle, args.NewUpgradeId.Value));
-
-    }
-
     private void RelayPlateTextChanged(Element sender, ElementChangedEventArgs<Vehicle, string> args)
     {
         this.server.BroadcastPacket(VehiclePacketFactory.CreateSetPlateTextPacket(args.Source));
@@ -163,5 +153,14 @@ public class VehicleBehaviour
     private void RelayFuelTankExplodable(Vehicle sender, ElementChangedEventArgs<Vehicle, bool> args)
     {
         this.server.BroadcastPacket(VehiclePacketFactory.CreateSetFuelTankExplodablePacket(args.Source));
+    }
+
+    private void RelayUpgradeChanged(Vehicle sender, VehicleUpgradeChanged args)
+    {
+        if (args.PreviousUpgradeId.HasValue)
+            this.server.BroadcastPacket(VehiclePacketFactory.CreateRemoveUpgradePacket(args.Vehicle, args.PreviousUpgradeId.Value));
+
+        if (args.NewUpgradeId.HasValue)
+            this.server.BroadcastPacket(VehiclePacketFactory.CreateAddUpgradePacket(args.Vehicle, args.NewUpgradeId.Value));
     }
 }

@@ -3,10 +3,6 @@ using SlipeServer.Server.Constants;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SlipeServer.Server.ElementConcepts;
 
@@ -19,7 +15,9 @@ public class VehicleUpgrades
         this.vehicle = vehicle;
     }
 
-    public byte[] Bytes { get; set; } = new byte[] { };
+    public byte[] Bytes { get; set; } = Array.Empty<byte>();
+
+
     private VehicleUpgradeHood hood = VehicleUpgradeHood.None;
     public VehicleUpgradeHood Hood
     {
