@@ -4,19 +4,19 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
 
-public class AddVehicleUpgradeRpcPacket : Packet
+public class SetVehiclePaintjobRpcPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
     public uint ElementId { get; set; }
-    public ushort UpgradeId { get; set; }
+    public byte Paintjob { get; set; }
 
-    public AddVehicleUpgradeRpcPacket(uint elementId, ushort upgradeId)
+    public SetVehiclePaintjobRpcPacket(uint elementId, byte paintjob)
     {
         this.ElementId = elementId;
-        this.UpgradeId = upgradeId;
+        this.Paintjob = paintjob;
     }
 
     public override void Read(byte[] bytes)
@@ -27,9 +27,9 @@ public class AddVehicleUpgradeRpcPacket : Packet
     public override byte[] Write()
     {
         var builder = new PacketBuilder();
-        builder.Write((byte)ElementRpcFunction.ADD_VEHICLE_UPGRADE);
+        builder.Write((byte)ElementRpcFunction.SET_VEHICLE_PAINTJOB);
         builder.WriteElementId(this.ElementId);
-        builder.Write(this.UpgradeId);
+        builder.Write(this.Paintjob);
         return builder.Build();
     }
 }

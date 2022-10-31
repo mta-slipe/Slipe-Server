@@ -95,6 +95,11 @@ public static class VehiclePacketFactory
         return new RemoveVehicleUpgradeRpcPacket(vehicle.Id, upgradeId);
     }
 
+    public static SetVehiclePaintjobRpcPacket CreateSetPaintjobPacket(Vehicle vehicle, byte paintjob)
+    {
+        return new SetVehiclePaintjobRpcPacket(vehicle.Id, paintjob);
+    }
+
     public static DestroyAllVehiclesRpcPacket CreateDestroyAllPacket()
     {
         return new DestroyAllVehiclesRpcPacket();

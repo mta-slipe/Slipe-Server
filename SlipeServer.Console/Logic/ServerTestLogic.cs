@@ -968,6 +968,12 @@ public class ServerTestLogic
             this.chatBox.OutputTo(args.Player, "Bumpers removed", Color.YellowGreen);
         };
 
+        this.commandService.AddCommand("paintjob").Triggered += (source, args) =>
+        {
+            if (args.Player.Vehicle != null && args.Arguments.Any() && byte.TryParse(args.Arguments.First(), out var paintjob))
+                args.Player.Vehicle.PaintJob = paintjob;
+        };
+
         this.commandService.AddCommand("personalFashion").Triggered += (source, args) =>
         {
             long i = (new Random()).NextInt64();

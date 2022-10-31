@@ -34,7 +34,18 @@ public class Vehicle : Element
     public float Health { get; set; } = 1000;
     public Colors Colors { get; private set; }
 
-    public byte PaintJob { get; set; } = 0;
+    protected byte paintJob = 255;
+    public byte PaintJob
+    {
+        get => this.paintJob;
+        set
+        {
+            var args = new ElementChangedEventArgs<Vehicle, byte>(this, this.PaintJob, value, this.IsSync);
+            this.paintJob = value;
+            PaintJobChanged?.Invoke(this, args);
+        }
+    }
+
     public VehicleDamage Damage
     {
         get => new()
@@ -456,6 +467,7 @@ public class Vehicle : Element
     public event ElementChangedEventHandler<Vehicle, Vehicle?>? TowedVehicleChanged;
     public event ElementChangedEventHandler<Vehicle, Vehicle?>? TowingVehicleChanged;
     public event ElementChangedEventHandler<Vehicle, bool>? FuelTankExplodableChanged;
+    public event ElementChangedEventHandler<Vehicle, byte>? PaintJobChanged;
     public event ElementEventHandler<VehicleRespawnEventArgs>? Respawned;
     public event ElementEventHandler<VehicleDoorStateChangedArgs>? DoorStateChanged;
     public event ElementEventHandler<VehicleWheelStateChangedArgs>? WheelStateChanged;
