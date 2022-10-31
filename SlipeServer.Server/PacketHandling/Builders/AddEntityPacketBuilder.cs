@@ -167,6 +167,51 @@ public class AddEntityPacketBuilder
         if (upgrades.Hood != VehicleUpgradeHood.None)
             upgradeList.Add((byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeHood>(model, (ushort)upgrades.Hood) - 1000)!);
 
+        if (upgrades.Vent != VehicleUpgradeVent.None)
+            upgradeList.Add((byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeVent>(model, (ushort)upgrades.Vent) - 1000)!);
+
+        if (upgrades.Spoiler != VehicleUpgradeSpoiler.None)
+            upgradeList.Add((byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeSpoiler>(model, (ushort)upgrades.Spoiler) - 1000)!);
+
+        if (upgrades.Sideskirt != VehicleUpgradeSideskirt.None)
+            upgradeList.Add((byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeSideskirt>(model, (ushort)upgrades.Sideskirt) - 1000)!);
+
+        if (upgrades.FrontBullbar != VehicleUpgradeFrontBullbar.None)
+            upgradeList.Add((byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeFrontBullbar>(model, (ushort)upgrades.FrontBullbar) - 1000)!);
+
+        if (upgrades.RearBullbar != VehicleUpgradeRearBullbar.None)
+            upgradeList.Add((byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeRearBullbar>(model, (ushort)upgrades.RearBullbar) - 1000)!);
+
+        if (upgrades.Lamps != VehicleUpgradeLamp.None)
+            upgradeList.Add((byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeLamp>(model, (ushort)upgrades.Lamps) - 1000)!);
+
+        if (upgrades.Roof != VehicleUpgradeRoof.None)
+            upgradeList.Add((byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeRoof>(model, (ushort)upgrades.Roof) - 1000)!);
+
+        if (upgrades.Nitro != VehicleUpgradeNitro.None)
+            upgradeList.Add((byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeNitro>(model, (ushort)upgrades.Nitro) - 1000)!);
+
+        if (upgrades.Wheels != VehicleUpgradeWheel.None)
+            upgradeList.Add((byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeWheel>(model, (ushort)upgrades.Wheels) - 1000)!);
+
+        if (upgrades.Exhaust != VehicleUpgradeExhaust.None)
+            upgradeList.Add((byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeExhaust>(model, (ushort)upgrades.Exhaust) - 1000)!);
+
+        if (upgrades.FrontBumper != VehicleUpgradeFrontBumper.None)
+            upgradeList.Add((byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeFrontBumper>(model, (ushort)upgrades.FrontBumper) - 1000)!);
+
+        if (upgrades.RearBumper != VehicleUpgradeRearBumper.None)
+            upgradeList.Add((byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeRearBumper>(model, (ushort)upgrades.RearBumper) - 1000)!);
+
+        if (upgrades.HasHydraulics)
+            upgradeList.Add((byte)(VehicleUpgradeConstants.HydraulicsId - 1000));
+
+        if (upgrades.HasStereo)
+            upgradeList.Add((byte)(VehicleUpgradeConstants.StereoId - 1000));
+
+        if (upgrades.Misc != VehicleUpgradeMisc.None)
+            upgradeList.Add((byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeMisc>(model, (ushort)upgrades.Misc) - 1000)!);
+
         return upgradeList.ToArray();
     }
 

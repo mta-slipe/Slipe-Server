@@ -154,6 +154,9 @@ public class VehicleUpgradeConstants
         [VehicleUpgradeMisc.BullbarChromeBars] = new ushort[] { 1125 },
     };
 
+    public const ushort HydraulicsId = 1087;
+    public const ushort StereoId = 1086;
+
     public static ushort? GetUpgradeIdForVehicle(Type upgradeType, ushort model, ushort upgrade)
     {
         ushort[] upgrades = Array.Empty<ushort>();

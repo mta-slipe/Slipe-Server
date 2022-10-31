@@ -114,16 +114,16 @@ public class VehicleUpgradeChanged : EventArgs
 
             case VehicleUpgradeSlot.Hydraulics:
                 if (previousUpgrade != 0)
-                    this.PreviousUpgradeId = 1087;
+                    this.PreviousUpgradeId = VehicleUpgradeConstants.HydraulicsId;
                 if (newUpgrade != 0)
-                    this.NewUpgradeId = 1087;
+                    this.NewUpgradeId = VehicleUpgradeConstants.HydraulicsId;
                 break;
 
             case VehicleUpgradeSlot.Stereo:
                 if (previousUpgrade != 0)
-                    this.PreviousUpgradeId = 1086;
+                    this.PreviousUpgradeId = VehicleUpgradeConstants.StereoId;
                 if (newUpgrade != 0)
-                    this.NewUpgradeId = 1086;
+                    this.NewUpgradeId = VehicleUpgradeConstants.StereoId;
                 break;
 
             case VehicleUpgradeSlot.Unknown:
