@@ -43,6 +43,8 @@ public class VehicleBehaviour
             vehicle.HeadlightColorChanged += RelayHeadlightColorChanged;
             vehicle.TowedVehicleChanged += RelayTowedVehicleChanged;
             vehicle.FuelTankExplodableChanged += RelayFuelTankExplodable;
+            vehicle.Upgrades.UpgradeChanged += RelayUpgradeChanged;
+            vehicle.PaintJobChanged += RelayPaintjobChanged;
         }
     }
 
@@ -152,5 +154,18 @@ public class VehicleBehaviour
     private void RelayFuelTankExplodable(Vehicle sender, ElementChangedEventArgs<Vehicle, bool> args)
     {
         this.server.BroadcastPacket(VehiclePacketFactory.CreateSetFuelTankExplodablePacket(args.Source));
+    }
+
+    private void RelayUpgradeChanged(Vehicle sender, VehicleUpgradeChanged args)
+    {
+        if (args.NewUpgradeId.HasValue)
+            this.server.BroadcastPacket(VehiclePacketFactory.CreateAddUpgradePacket(args.Vehicle, args.NewUpgradeId.Value));
+        else if (args.PreviousUpgradeId.HasValue)
+            this.server.BroadcastPacket(VehiclePacketFactory.CreateRemoveUpgradePacket(args.Vehicle, args.PreviousUpgradeId.Value));
+    }
+
+    private void RelayPaintjobChanged(Vehicle sender, ElementChangedEventArgs<Vehicle, byte> args)
+    {
+        this.server.BroadcastPacket(VehiclePacketFactory.CreateSetPaintjobPacket(args.Source, args.NewValue));
     }
 }

@@ -85,6 +85,21 @@ public static class VehiclePacketFactory
         };
     }
 
+    public static AddVehicleUpgradeRpcPacket CreateAddUpgradePacket(Vehicle vehicle, ushort upgradeId)
+    {
+        return new AddVehicleUpgradeRpcPacket(vehicle.Id, upgradeId);
+    }
+
+    public static RemoveVehicleUpgradeRpcPacket CreateRemoveUpgradePacket(Vehicle vehicle, ushort upgradeId)
+    {
+        return new RemoveVehicleUpgradeRpcPacket(vehicle.Id, upgradeId);
+    }
+
+    public static SetVehiclePaintjobRpcPacket CreateSetPaintjobPacket(Vehicle vehicle, byte paintjob)
+    {
+        return new SetVehiclePaintjobRpcPacket(vehicle.Id, paintjob);
+    }
+
     public static DestroyAllVehiclesRpcPacket CreateDestroyAllPacket()
     {
         return new DestroyAllVehiclesRpcPacket();

@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using SlipeServer.Console.Elements;
 using SlipeServer.Console.LuaValues;
 using SlipeServer.Packets.Definitions.Lua;
+using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Server;
 using SlipeServer.Server.Constants;
@@ -28,6 +29,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using SlipeServer.Packets.Enums.VehicleUpgrades;
 
 namespace SlipeServer.Console.Logic;
 
@@ -62,6 +64,15 @@ public class ServerTestLogic
     private Vehicle? Aircraft { get; set; }
     private Vehicle? Taxi { get; set; }
     private Vehicle? Rhino { get; set; }
+    private Vehicle? Elegy { get; set; }
+    private Vehicle? Flash { get; set; }
+    private Vehicle? Stratum { get; set; }
+    private Vehicle? Sultan { get; set; }
+    private Vehicle? Jester { get; set; }
+    private Vehicle? Uranus { get; set; }
+    private Vehicle? Club { get; set; }
+    private Vehicle? Slamvan { get; set; }
+    private Vehicle? Remmington { get; set; }
     private Vehicle? FrozenVehicle { get; set; }
     private Vehicle? Roadtrain { get; set; }
     private Vehicle? Trailer1 { get; set; }
@@ -196,6 +207,17 @@ public class ServerTestLogic
         this.Vehicle = new Vehicle(530, new Vector3(20, 5, 3)).AssociateWith(this.server);
         this.Taxi = new Vehicle((ushort)VehicleModel.Taxi, new Vector3(20, -5, 3)).AssociateWith(this.server);
         this.Rhino = new Vehicle((ushort)VehicleModel.Rhino, new Vector3(20, -25, 3)).AssociateWith(this.server);
+
+        this.Elegy = new Vehicle(562, new Vector3(30, -20, 3)).AssociateWith(this.server);
+        this.Flash = new Vehicle(565, new Vector3(34, -20, 3)).AssociateWith(this.server);
+        this.Stratum = new Vehicle(561, new Vector3(38, -20, 3)).AssociateWith(this.server);
+        this.Sultan = new Vehicle(560, new Vector3(42, -20, 3)).AssociateWith(this.server);
+        this.Jester = new Vehicle(559, new Vector3(46, -20, 3)).AssociateWith(this.server);
+        this.Uranus = new Vehicle(558, new Vector3(50, -20, 3)).AssociateWith(this.server);
+        this.Club = new Vehicle(589, new Vector3(54, -20, 3)).AssociateWith(this.server);
+        this.Slamvan = new Vehicle(535, new Vector3(58, -20, 3)).AssociateWith(this.server);
+        this.Remmington = new Vehicle(534, new Vector3(62, -20, 3)).AssociateWith(this.server);
+
         var forklift2 = new Vehicle(530, new Vector3(22, 5, 3)).AssociateWith(this.server);
         var firetruck = new Vehicle(407, new Vector3(30, 5, 3)).AssociateWith(this.server);
         var firetruck2 = new Vehicle(407, new Vector3(35, 5, 3)).AssociateWith(this.server);
@@ -903,6 +925,61 @@ public class ServerTestLogic
                     i++;
                 }
             });
+        };
+
+        this.commandService.AddCommand("upgrade").Triggered += (source, args) =>
+        {
+            this.Flash!.Upgrades.Spoiler = VehicleUpgradeSpoiler.Alien;
+            this.Stratum!.Upgrades.Spoiler = VehicleUpgradeSpoiler.Alien;
+            this.Sultan!.Upgrades.Spoiler = VehicleUpgradeSpoiler.Alien;
+            this.Elegy!.Upgrades.Spoiler = VehicleUpgradeSpoiler.Alien;
+            this.Jester!.Upgrades.Spoiler = VehicleUpgradeSpoiler.Alien;
+            this.Uranus!.Upgrades.Spoiler = VehicleUpgradeSpoiler.Alien;
+            this.Flash!.Upgrades.Wheels = VehicleUpgradeWheel.Cutter;
+            this.Stratum!.Upgrades.Wheels = VehicleUpgradeWheel.Cutter;
+            this.Sultan!.Upgrades.Wheels = VehicleUpgradeWheel.Cutter;
+            this.Elegy!.Upgrades.Wheels = VehicleUpgradeWheel.Cutter;
+            this.Jester!.Upgrades.Wheels = VehicleUpgradeWheel.Cutter;
+            this.Uranus!.Upgrades.Wheels = VehicleUpgradeWheel.Cutter;
+
+            this.Club!.Upgrades.Hood = VehicleUpgradeHood.LeftSquare;
+            this.Club!.Upgrades.Vent = VehicleUpgradeVent.FuryScoop;
+            this.Club!.Upgrades.Sideskirt = VehicleUpgradeSideskirt.Left;
+            this.Club!.Upgrades.Lamps = VehicleUpgradeLamp.SquareFog;
+            this.Slamvan!.Upgrades.FrontBullbar = VehicleUpgradeFrontBullbar.Slamin;
+            this.Slamvan!.Upgrades.RearBullbar = VehicleUpgradeRearBullbar.Chrome;
+            this.Remmington!.Upgrades.Misc = VehicleUpgradeMisc.BullbarChromeBars;
+            this.Sultan!.Upgrades.Roof = VehicleUpgradeRoof.AlienRoofVent;
+            this.Sultan!.Upgrades.Nitro = VehicleUpgradeNitro.x10;
+            this.Sultan!.Upgrades.HasHydraulics = true;
+            this.Sultan!.Upgrades.HasStereo = true;
+            this.Sultan!.Upgrades.Exhaust = VehicleUpgradeExhaust.Alien;
+            this.Sultan!.Upgrades.FrontBumper = VehicleUpgradeFrontBumper.Alien;
+            this.Sultan!.Upgrades.RearBumper = VehicleUpgradeRearBumper.Alien;
+
+            this.chatBox.OutputTo(args.Player, "Upgrades applied", Color.YellowGreen);
+        };
+
+        this.commandService.AddCommand("nomorebumpers").Triggered += (source, args) =>
+        {
+            this.Sultan!.Upgrades.FrontBumper = VehicleUpgradeFrontBumper.None;
+            this.Sultan!.Upgrades.RearBumper = VehicleUpgradeRearBumper.None;
+
+            this.chatBox.OutputTo(args.Player, "Bumpers removed", Color.YellowGreen);
+        };
+
+        this.commandService.AddCommand("xflow").Triggered += (source, args) =>
+        {
+            this.Sultan!.Upgrades.FrontBumper = VehicleUpgradeFrontBumper.XFlow;
+            this.Sultan!.Upgrades.RearBumper = VehicleUpgradeRearBumper.XFlow;
+
+            this.chatBox.OutputTo(args.Player, "X-Flow Bumpers installed", Color.YellowGreen);
+        };
+
+        this.commandService.AddCommand("paintjob").Triggered += (source, args) =>
+        {
+            if (args.Player.Vehicle != null && args.Arguments.Any() && byte.TryParse(args.Arguments.First(), out var paintjob))
+                args.Player.Vehicle.PaintJob = paintjob;
         };
 
         this.commandService.AddCommand("personalFashion").Triggered += (source, args) =>

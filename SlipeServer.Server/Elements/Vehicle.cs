@@ -2,6 +2,7 @@
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Concepts;
 using SlipeServer.Server.Constants;
+using SlipeServer.Server.ElementConcepts;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Enums;
 using System;
@@ -33,7 +34,18 @@ public class Vehicle : Element
     public float Health { get; set; } = 1000;
     public Colors Colors { get; private set; }
 
-    public byte PaintJob { get; set; } = 0;
+    protected byte paintJob = 255;
+    public byte PaintJob
+    {
+        get => this.paintJob;
+        set
+        {
+            var args = new ElementChangedEventArgs<Vehicle, byte>(this, this.PaintJob, value, this.IsSync);
+            this.paintJob = value;
+            PaintJobChanged?.Invoke(this, args);
+        }
+    }
+
     public VehicleDamage Damage
     {
         get => new()
@@ -81,7 +93,7 @@ public class Vehicle : Element
     private byte[] WheelStates { get; set; }
     private byte[] PanelStates { get; set; }
     private byte[] LightStates { get; set; }
-    public VehicleUpgrade[] Upgrades { get; set; }
+    public VehicleUpgrades Upgrades { get; set; }
 
     private string plateText = "";
     public string PlateText
@@ -240,7 +252,7 @@ public class Vehicle : Element
         this.WheelStates = new byte[4];
         this.PanelStates = new byte[7];
         this.LightStates = new byte[4];
-        this.Upgrades = Array.Empty<VehicleUpgrade>();
+        this.Upgrades = new(this);
 
         this.Name = $"vehicle{this.Id}";
         this.Occupants = new Dictionary<byte, Ped>();
@@ -455,6 +467,7 @@ public class Vehicle : Element
     public event ElementChangedEventHandler<Vehicle, Vehicle?>? TowedVehicleChanged;
     public event ElementChangedEventHandler<Vehicle, Vehicle?>? TowingVehicleChanged;
     public event ElementChangedEventHandler<Vehicle, bool>? FuelTankExplodableChanged;
+    public event ElementChangedEventHandler<Vehicle, byte>? PaintJobChanged;
     public event ElementEventHandler<VehicleRespawnEventArgs>? Respawned;
     public event ElementEventHandler<VehicleDoorStateChangedArgs>? DoorStateChanged;
     public event ElementEventHandler<VehicleWheelStateChangedArgs>? WheelStateChanged;

@@ -1,4 +1,4 @@
-﻿using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements;
 using System.Collections.Generic;
 
 namespace SlipeServer.Server.Constants;
