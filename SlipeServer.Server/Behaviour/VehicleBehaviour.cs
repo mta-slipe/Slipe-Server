@@ -158,11 +158,10 @@ public class VehicleBehaviour
 
     private void RelayUpgradeChanged(Vehicle sender, VehicleUpgradeChanged args)
     {
-        if (args.PreviousUpgradeId.HasValue)
-            this.server.BroadcastPacket(VehiclePacketFactory.CreateRemoveUpgradePacket(args.Vehicle, args.PreviousUpgradeId.Value));
-
         if (args.NewUpgradeId.HasValue)
             this.server.BroadcastPacket(VehiclePacketFactory.CreateAddUpgradePacket(args.Vehicle, args.NewUpgradeId.Value));
+        else if (args.PreviousUpgradeId.HasValue)
+            this.server.BroadcastPacket(VehiclePacketFactory.CreateRemoveUpgradePacket(args.Vehicle, args.PreviousUpgradeId.Value));
     }
 
     private void RelayPaintjobChanged(Vehicle sender, ElementChangedEventArgs<Vehicle, byte> args)
