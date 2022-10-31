@@ -44,7 +44,7 @@ public class BasicHttpServer : IResourceServer
         }
         catch (HttpListenerException exception)
         {
-            if (exception.Message == "Access is denied." && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (exception.ErrorCode == 5 && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 string command = $@"netsh http add urlacl url=http://{this.configuration.HttpHost}:{this.configuration.HttpPort}/ sddl=D:(A;;GX;;;S-1-1-0)";
                 throw new Exception($"Could not start http server on address {this.httpAddress}\n{exception.Message}\nYou might need to run the following command in an administrator command prompt: \n{command}", exception);
