@@ -960,6 +960,14 @@ public class ServerTestLogic
             this.chatBox.OutputTo(args.Player, "Upgrades applied", Color.YellowGreen);
         };
 
+        this.commandService.AddCommand("nomorebumpers").Triggered += (source, args) =>
+        {
+            this.Sultan!.Upgrades.FrontBumper = VehicleUpgradeFrontBumper.None;
+            this.Sultan!.Upgrades.RearBumper = VehicleUpgradeRearBumper.None;
+
+            this.chatBox.OutputTo(args.Player, "Bumpers removed", Color.YellowGreen);
+        };
+
         this.commandService.AddCommand("personalFashion").Triggered += (source, args) =>
         {
             long i = (new Random()).NextInt64();

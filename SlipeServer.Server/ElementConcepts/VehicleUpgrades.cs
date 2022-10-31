@@ -262,67 +262,67 @@ public class VehicleUpgrades
 
     public bool CanHave(VehicleUpgradeHood hood)
     {
-        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeHood), this.vehicle.Model, (ushort)hood) != null;
+        return hood == VehicleUpgradeHood.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeHood), this.vehicle.Model, (ushort)hood) != null;
     }
 
     public bool CanHave(VehicleUpgradeSpoiler spoiler)
     {
-        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeSpoiler), this.vehicle.Model, (ushort)spoiler) != null;
+        return spoiler == VehicleUpgradeSpoiler.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeSpoiler), this.vehicle.Model, (ushort)spoiler) != null;
     }
 
     public bool CanHave(VehicleUpgradeVent vent)
     {
-        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeVent), this.vehicle.Model, (ushort)vent) != null;
+        return vent == VehicleUpgradeVent.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeVent), this.vehicle.Model, (ushort)vent) != null;
     }
 
     public bool CanHave(VehicleUpgradeSideskirt sideskirt)
     {
-        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeSideskirt), this.vehicle.Model, (ushort)sideskirt) != null;
+        return sideskirt == VehicleUpgradeSideskirt.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeSideskirt), this.vehicle.Model, (ushort)sideskirt) != null;
     }
 
     public bool CanHave(VehicleUpgradeFrontBullbar bullbar)
     {
-        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeFrontBullbar), this.vehicle.Model, (ushort)bullbar) != null;
+        return bullbar == VehicleUpgradeFrontBullbar.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeFrontBullbar), this.vehicle.Model, (ushort)bullbar) != null;
     }
 
     public bool CanHave(VehicleUpgradeRearBullbar bullbar)
     {
-        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeRearBullbar), this.vehicle.Model, (ushort)bullbar) != null;
+        return bullbar == VehicleUpgradeRearBullbar.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeRearBullbar), this.vehicle.Model, (ushort)bullbar) != null;
     }
 
     public bool CanHave(VehicleUpgradeLamp lamps)
     {
-        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeLamp), this.vehicle.Model, (ushort)lamps) != null;
+        return lamps == VehicleUpgradeLamp.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeLamp), this.vehicle.Model, (ushort)lamps) != null;
     }
 
     public bool CanHave(VehicleUpgradeRoof bullbar)
     {
-        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeRoof), this.vehicle.Model, (ushort)bullbar) != null;
+        return bullbar == VehicleUpgradeRoof.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeRoof), this.vehicle.Model, (ushort)bullbar) != null;
     }
 
     public bool CanHave(VehicleUpgradeNitro nitro)
     {
-        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeNitro), this.vehicle.Model, (ushort)nitro) != null;
+        return nitro == VehicleUpgradeNitro.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeNitro), this.vehicle.Model, (ushort)nitro) != null;
     }
 
     public bool CanHave(VehicleUpgradeWheel wheel)
     {
-        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeWheel), this.vehicle.Model, (ushort)wheel) != null;
+        return wheel == VehicleUpgradeWheel.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeWheel), this.vehicle.Model, (ushort)wheel) != null;
     }
 
     public bool CanHave(VehicleUpgradeExhaust exhaust)
     {
-        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeExhaust), this.vehicle.Model, (ushort)exhaust) != null;
+        return exhaust == VehicleUpgradeExhaust.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeExhaust), this.vehicle.Model, (ushort)exhaust) != null;
     }
 
     public bool CanHave(VehicleUpgradeFrontBumper frontBumper)
     {
-        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeFrontBumper), this.vehicle.Model, (ushort)frontBumper) != null;
+        return frontBumper == VehicleUpgradeFrontBumper.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeFrontBumper), this.vehicle.Model, (ushort)frontBumper) != null;
     }
 
     public bool CanHave(VehicleUpgradeRearBumper rearBumper)
     {
-        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeRearBumper), this.vehicle.Model, (ushort)rearBumper) != null;
+        return rearBumper  == VehicleUpgradeRearBumper.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeRearBumper), this.vehicle.Model, (ushort)rearBumper) != null;
     }
 
     public bool CanHaveStereo()
