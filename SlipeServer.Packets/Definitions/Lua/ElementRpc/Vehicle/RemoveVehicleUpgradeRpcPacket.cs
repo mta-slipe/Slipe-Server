@@ -1,8 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
 using System;
-using System.Drawing;
-using System.Linq;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
 
@@ -29,7 +27,7 @@ public class RemoveVehicleUpgradeRpcPacket : Packet
     public override byte[] Write()
     {
         var builder = new PacketBuilder();
-        builder.Write((byte)ElementRpcFunction.ADD_VEHICLE_UPGRADE);
+        builder.Write((byte)ElementRpcFunction.REMOVE_VEHICLE_UPGRADE);
         builder.WriteElementId(this.ElementId);
         builder.Write(this.UpgradeId);
         return builder.Build();

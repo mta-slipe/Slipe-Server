@@ -118,6 +118,35 @@ public class VehicleUpgradeConstants
         [VehicleUpgradeWheel.Access] = new ushort[] { 1098 },
     };
 
+    public static Dictionary<VehicleUpgradeExhaust, ushort[]> ExhaustUpgradeIds { get; } = new()
+    {
+        [VehicleUpgradeExhaust.XFlow] = new ushort[] { 1029, 1037, 1045, 1059, 1066, 1089 },
+        [VehicleUpgradeExhaust.Upswept] = new ushort[] { 1018 },
+        [VehicleUpgradeExhaust.Twin] = new ushort[] { 1019 },
+        [VehicleUpgradeExhaust.Small] = new ushort[] { 1022 },
+        [VehicleUpgradeExhaust.Slamin] = new ushort[] { 1127, 1043, 1105, 1114, 1132, 1135 },
+        [VehicleUpgradeExhaust.Medium] = new ushort[] { 1021 },
+        [VehicleUpgradeExhaust.Large] = new ushort[] { 1020 },
+        [VehicleUpgradeExhaust.Chrome] = new ushort[] { 1126, 1044, 1104, 1113, 1129, 1136 },
+        [VehicleUpgradeExhaust.Alien] = new ushort[] { 1028, 1034, 1046, 1064, 1065, 1092 },
+    };
+
+    public static Dictionary<VehicleUpgradeFrontBumper, ushort[]> FrontBumperUpgradeIds { get; } = new()
+    {
+        [VehicleUpgradeFrontBumper.Chrome] = new ushort[] { 1117, 1174, 1176, 1179, 1182, 1189, 1191 },
+        [VehicleUpgradeFrontBumper.XFlow] = new ushort[] { 1152, 1157, 1165, 1170, 1172, 1173 },
+        [VehicleUpgradeFrontBumper.Alien] = new ushort[] { 1153, 1155, 1160, 1166, 1169, 1171 },
+        [VehicleUpgradeFrontBumper.Slamin] = new ushort[] { 1181, 1185, 1188, 1190 },
+    };
+
+    public static Dictionary<VehicleUpgradeRearBumper, ushort[]> RearBumperUpgradeIds { get; } = new()
+    {
+        [VehicleUpgradeRearBumper.XFlow] = new ushort[] { 1140, 1148, 1151, 1156, 1161, 1167, },
+        [VehicleUpgradeRearBumper.Alien] = new ushort[] { 1141, 1149, 1150, 1154, 1159, 1168, },
+        [VehicleUpgradeRearBumper.Slamin] = new ushort[] { 1175, 1177, 1178, 1183, 1186, 1193 },
+        [VehicleUpgradeRearBumper.Chrome] = new ushort[] { 1180, 1184, 1187, 1192 },
+    };
+
     public static Dictionary<VehicleUpgradeMisc, ushort[]> MiscUpgradeIds { get; } = new()
     {
         [VehicleUpgradeMisc.ChromeGrill] = new ushort[] { 1100 },
@@ -158,6 +187,15 @@ public class VehicleUpgradeConstants
 
         else if (upgradeType == typeof(VehicleUpgradeWheel))
             upgrades = WheelUpgradeIds[(VehicleUpgradeWheel)upgrade];
+
+        else if (upgradeType == typeof(VehicleUpgradeExhaust))
+            upgrades = ExhaustUpgradeIds[(VehicleUpgradeExhaust)upgrade];
+
+        else if (upgradeType == typeof(VehicleUpgradeFrontBumper))
+            upgrades = FrontBumperUpgradeIds[(VehicleUpgradeFrontBumper)upgrade];
+
+        else if (upgradeType == typeof(VehicleUpgradeRearBumper))
+            upgrades = RearBumperUpgradeIds[(VehicleUpgradeRearBumper)upgrade];
 
         else if (upgradeType == typeof(VehicleUpgradeMisc))
             upgrades = MiscUpgradeIds[(VehicleUpgradeMisc)upgrade];

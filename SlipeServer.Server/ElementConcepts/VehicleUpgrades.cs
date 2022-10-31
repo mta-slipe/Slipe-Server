@@ -207,7 +207,7 @@ public class VehicleUpgrades
         {
             if (this.Exhaust != value && CanHave(value))
             {
-                var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.Wheels, (ushort)this.Exhaust, (ushort)value);
+                var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.Exhaust, (ushort)this.Exhaust, (ushort)value);
                 this.exhaust = value;
                 UpgradeChanged?.Invoke(this.vehicle, args);
             }
@@ -222,7 +222,7 @@ public class VehicleUpgrades
         {
             if (this.FrontBumper != value && CanHave(value))
             {
-                var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.Wheels, (ushort)this.FrontBumper, (ushort)value);
+                var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.FrontBumper, (ushort)this.FrontBumper, (ushort)value);
                 this.frontBumper = value;
                 UpgradeChanged?.Invoke(this.vehicle, args);
             }

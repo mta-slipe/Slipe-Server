@@ -953,8 +953,11 @@ public class ServerTestLogic
             this.Sultan!.Upgrades.Nitro = VehicleUpgradeNitro.x10;
             this.Sultan!.Upgrades.HasHydraulics = true;
             this.Sultan!.Upgrades.HasStereo = true;
+            this.Sultan!.Upgrades.Exhaust = VehicleUpgradeExhaust.Alien;
+            this.Sultan!.Upgrades.FrontBumper = VehicleUpgradeFrontBumper.Alien;
+            this.Sultan!.Upgrades.RearBumper = VehicleUpgradeRearBumper.Alien;
 
-            this.chatBox.OutputTo(args.Player, "tuning applied, spoiler = alien, wheels = cutter", Color.YellowGreen);
+            this.chatBox.OutputTo(args.Player, "Upgrades applied", Color.YellowGreen);
         };
 
         this.commandService.AddCommand("personalFashion").Triggered += (source, args) =>
