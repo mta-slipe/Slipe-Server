@@ -867,9 +867,14 @@ public class ServerTestLogic
             this.server.BroadcastPacket(PickupPacketFactory.CreateDestroyAllPacket());
         };
 
-        this.commandService.AddCommand("slipelua").Triggered += (source, args) =>
+        this.commandService.AddCommand("slipelua").Triggered += async (source, args) =>
         {
-            this.resourceProvider.GetResource("SlipeTestResource").StartFor(args.Player);
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            await this.resourceProvider.GetResource("SlipeTestResource").StartForAsync(args.Player);
+            stopwatch.Stop();
+            this.logger.LogInformation("Starting Slipe Lua test resource for {playerName} took {milliseconds}ms", args.Player.Name, stopwatch.ElapsedMilliseconds);
         };
 
         this.commandService.AddCommand("hot").Triggered += (source, args) =>
