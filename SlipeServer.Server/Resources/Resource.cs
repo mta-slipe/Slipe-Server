@@ -4,6 +4,7 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Extensions;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SlipeServer.Server.Resources;
 
@@ -70,8 +71,35 @@ public class Resource
         new ResourceStartPacket(this.Name, this.NetId, this.Root.Id, this.DynamicRoot.Id, (ushort)this.NoClientScripts.Count, null, null, false, this.PriorityGroup, this.Files, this.Exports)
             .SendTo(player);
 
-        new ResourceClientScriptsPacket(this.NetId, this.NoClientScripts.ToDictionary(x => x.Key, x => CompressFile(x.Value)))
+        if (this.NoClientScripts.Any())
+            new ResourceClientScriptsPacket(this.NetId, this.NoClientScripts.ToDictionary(x => x.Key, x => CompressFile(x.Value)))
+                .SendTo(player);
+    }
+
+    public Task StartForAsync(Player player)
+    {
+        var source = new TaskCompletionSource();
+
+        void HandleResourceStart(Player sender, Elements.Events.PlayerResourceStartedEventArgs e)
+        {
+            if (e.NetId != this.NetId)
+                return;
+
+            player.ResourceStarted -= HandleResourceStart;
+            source.SetResult();
+        }
+
+        player.ResourceStarted += HandleResourceStart;
+
+
+        new ResourceStartPacket(this.Name, this.NetId, this.Root.Id, this.DynamicRoot.Id, (ushort)this.NoClientScripts.Count, null, null, false, this.PriorityGroup, this.Files, this.Exports)
             .SendTo(player);
+
+        if (this.NoClientScripts.Any())
+            new ResourceClientScriptsPacket(this.NetId, this.NoClientScripts.ToDictionary(x => x.Key, x => CompressFile(x.Value)))
+                .SendTo(player);
+
+        return source.Task;
     }
 
     public void StopFor(Player player)
