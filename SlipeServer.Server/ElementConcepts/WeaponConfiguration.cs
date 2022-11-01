@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace SlipeServer.Server.ElementConcepts;
 
-public class WeaponConfiguration
+public struct WeaponConfiguration
 {
     public WeaponFireType FireType { get; set; }
     public WeaponId WeaponType { get; set; }
