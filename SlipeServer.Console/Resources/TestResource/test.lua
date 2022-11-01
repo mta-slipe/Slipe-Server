@@ -41,6 +41,10 @@ addCommandHandler("crun", function(command, ...)
 	outputChatBox("Result: " .. tostring(result))
 end)
 
+addCommandHandler("exporttest", function(command, ...)
+	exports.MetaXmlTestResource:exportMeBaby()
+end)
+
 setDevelopmentMode(true)
 
 addCommandHandler("TriggerTests", function(command, ...)

@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
-using SlipeServer.Packets.Structs;
+﻿using SlipeServer.Packets.Structs;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Enums;
+using SlipeServer.Server.Resources.Interpreters.Meta;
 using SlipeServer.Server.Resources.Providers;
 using System.Collections.Generic;
 using System.IO;
@@ -10,31 +10,6 @@ using System.Text;
 using System.Xml.Serialization;
 
 namespace SlipeServer.Server.Resources.Interpreters;
-
-[XmlRoot("meta")]
-public struct MetaXml
-{
-    [XmlElement("file")]
-    public MetaXmlFile[] files;
-
-    [XmlElement("script")]
-    public MetaXmlScript[] scripts;
-}
-
-public struct MetaXmlFile
-{
-    [XmlAttribute("src")]
-    public string Source { get; set; }
-}
-
-public struct MetaXmlScript
-{
-    [XmlAttribute("src")]
-    public string Source { get; set; }
-
-    [XmlAttribute("type")]
-    public string Type { get; set; }
-}
 
 public class MetaXmlResourceInterpreter : IResourceInterpreter
 {
@@ -56,17 +31,12 @@ public class MetaXmlResourceInterpreter : IResourceInterpreter
             return false;
         }
 
-        List<ResourceFile> resourceFiles = GetFilesForMetaXmlResource(resourceProvider, name, path, files);
-
-        resource = new Resource(mtaServer, rootElement, name, path)
-        {
-            Files = resourceFiles
-        };
+        resource = GetResource(mtaServer, rootElement, resourceProvider, name, path, files);
 
         return true;
     }
 
-    private List<ResourceFile> GetFilesForMetaXmlResource(IResourceProvider resourceProvider, string name, string path, IEnumerable<string> fileNames)
+    private Resource GetResource(MtaServer mtaServer, RootElement rootElement, IResourceProvider resourceProvider, string name, string path, IEnumerable<string> fileNames)
     {
         var files = fileNames.ToDictionary(x => x, file => resourceProvider.GetFileContent(name, file));
 
@@ -80,12 +50,25 @@ public class MetaXmlResourceInterpreter : IResourceInterpreter
         if (meta == null)
             throw new System.Exception($"Unable to parse meta file for resource {name}");
 
-        foreach (var file in meta.Value.files)
+        var resource = new Resource(mtaServer, rootElement, name, path)
+        {
+            Files = GetFilesForMetaXmlResource(meta.Value, files),
+            Exports = GetExportsForMetaXmlResource(meta.Value).ToList(),
+            NoClientScripts = GetNoCacheFiles(meta.Value, files),
+        };
+        return resource;
+    }
+
+    private List<ResourceFile> GetFilesForMetaXmlResource(MetaXml meta, Dictionary<string, byte[]> files)
+    {
+        List<ResourceFile> resourceFiles = new List<ResourceFile>();
+
+        foreach (var file in meta.files)
         {
             resourceFiles.Add(ResourceFileFactory.FromBytes(files[file.Source], file.Source, ResourceFileType.ClientFile));
         }
 
-        foreach (var file in meta.Value.scripts.Where(x => x.Type == "client"))
+        foreach (var file in meta.scripts.Where(x => x.Type == "client" && x.Cache != "false"))
         {
             resourceFiles.Add(ResourceFileFactory.FromBytes(files[file.Source], file.Source, ResourceFileType.ClientScript));
         }
@@ -93,8 +76,17 @@ public class MetaXmlResourceInterpreter : IResourceInterpreter
         return resourceFiles;
     }
 
-    private ResourceFile GetResourceFileForPath(Dictionary<string, byte[]> files, string path)
+    private Dictionary<string, byte[]> GetNoCacheFiles(MetaXml meta, Dictionary<string, byte[]> files)
     {
-        return ResourceFileFactory.FromBytes(files[path], path);
+        return meta.scripts
+            .Where(x => x.Type == "client" && x.Cache == "false")
+            .ToDictionary(x => x.Source, x => files[x.Source]);
+    }
+
+    private IEnumerable<string> GetExportsForMetaXmlResource(MetaXml meta)
+    {
+        return meta.exports
+            .Where(x => x.Type == "client")
+            .Select(x => x.Function);
     }
 }

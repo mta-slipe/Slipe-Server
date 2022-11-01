@@ -16,7 +16,7 @@ public class Resource
     public DummyElement DynamicRoot { get; }
     public ushort NetId { get; set; }
     public int PriorityGroup { get; set; }
-    public List<string> Exports { get; }
+    public List<string> Exports { get; init; }
     public List<ResourceFile> Files { get; init; }
     public Dictionary<string, byte[]> NoClientScripts { get; init; }
     public string Name { get; }
