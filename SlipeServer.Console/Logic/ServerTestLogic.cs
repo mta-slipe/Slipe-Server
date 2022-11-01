@@ -49,6 +49,7 @@ public class ServerTestLogic
     private readonly TextItemService textItemService;
     private readonly IResourceProvider resourceProvider;
     private readonly CommandService commandService;
+    private readonly WeaponConfigurationService weaponConfigurationService;
     private Resource? testResource;
     private Resource? secondTestResource;
     private Resource? thirdTestResource;
@@ -96,7 +97,8 @@ public class ServerTestLogic
         FireService fireService,
         TextItemService textItemService,
         IResourceProvider resourceProvider,
-        CommandService commandService
+        CommandService commandService,
+        WeaponConfigurationService weaponConfigurationService
     )
     {
         this.server = server;
@@ -113,6 +115,8 @@ public class ServerTestLogic
         this.textItemService = textItemService;
         this.resourceProvider = resourceProvider;
         this.commandService = commandService;
+        this.weaponConfigurationService = weaponConfigurationService;
+
         this.slipeDevsTeam = new Team("Slipe devs", Color.FromArgb(255, 255, 81, 81));
         this.SetupTestLogic();
     }
@@ -985,6 +989,20 @@ public class ServerTestLogic
         {
             if (args.Player.Vehicle != null && args.Arguments.Any() && byte.TryParse(args.Arguments.First(), out var paintjob))
                 args.Player.Vehicle.PaintJob = paintjob;
+        };
+
+        this.commandService.AddCommand("ammoInClip").Triggered += (source, args) =>
+        {
+            if (!args.Arguments.Any() || !short.TryParse(args.Arguments.First(), out var ammoInClip))
+                return;
+
+            if (args.Player.CurrentWeapon == null)
+                return;
+
+            var weapon = args.Player.CurrentWeapon.Type;
+            var config = this.weaponConfigurationService.GetWeaponConfiguration(weapon);
+            config.MaximumClipAmmo = ammoInClip;
+            this.weaponConfigurationService.SetWeaponConfigurationFor(weapon, config, args.Player);
         };
 
         this.commandService.AddCommand("personalFashion").Triggered += (source, args) =>
