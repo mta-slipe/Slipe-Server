@@ -27,4 +27,35 @@ public class WeaponConfigurationServiceTests
             }
         }
     }
+
+    [Fact]
+    public void GetWeaponConfiguration_ReturnsOverwrittenValue_WhenModified()
+    {
+        var mtaServer = new TestingServer();
+
+        var service = new WeaponConfigurationService(mtaServer);
+
+        var original = service.GetWeaponConfiguration(Enums.WeaponId.Deagle);
+        var modified = original;
+        modified.MaximumClipAmmo = 15;
+        service.SetWeaponConfiguration(Enums.WeaponId.Deagle, modified);
+
+        var result = service.GetWeaponConfiguration(Enums.WeaponId.Deagle);
+        result.Should().BeEquivalentTo(modified);
+    }
+
+    [Fact]
+    public void GetWeaponConfiguration_ReturnsOriginalValue_WhenReturnTypeIsModified()
+    {
+        var mtaServer = new TestingServer();
+
+        var service = new WeaponConfigurationService(mtaServer);
+
+        var original = service.GetWeaponConfiguration(Enums.WeaponId.Deagle);
+        var modified = original;
+        modified.MaximumClipAmmo = 15;
+
+        var result = service.GetWeaponConfiguration(Enums.WeaponId.Deagle);
+        result.MaximumClipAmmo.Should().Be(7);
+    }
 }
