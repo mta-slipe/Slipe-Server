@@ -44,7 +44,7 @@ public class WeaponConfigurationService
 
     private IEnumerable<SetWeaponPropertyRpcPacket> CreateSetStatPackets(WeaponId weapon, WeaponConfiguration weaponConfiguration, WeaponSkillLevel skill)
     {
-        //yield return new SetWeaponPropertyRpcPacket((byte)weapon, (byte)WeaponProperty.FireType, (byte)skill, (short)weaponConfiguration.FireType);
+        yield return new SetWeaponPropertyRpcPacket((byte)weapon, (byte)WeaponProperty.FireType, (byte)skill, (short)weaponConfiguration.FireType);
         yield return new SetWeaponPropertyRpcPacket((byte)weapon, (byte)WeaponProperty.TargetRange, (byte)skill, weaponConfiguration.TargetRange);
         yield return new SetWeaponPropertyRpcPacket((byte)weapon, (byte)WeaponProperty.WeaponRange, (byte)skill, weaponConfiguration.WeaponRange);
 
@@ -66,20 +66,20 @@ public class WeaponConfigurationService
         yield return new SetWeaponPropertyRpcPacket((byte)weapon, (byte)WeaponProperty.AnimationBreakoutTime, (byte)skill, weaponConfiguration.AnimationBreakoutTime);
 
 
-        //yield return new SetWeaponPropertyRpcPacket((byte)weapon, (byte)WeaponProperty.AnimationGroup, (byte)skill, weaponConfiguration.AnimationGroup);
+        yield return new SetWeaponPropertyRpcPacket((byte)weapon, (byte)WeaponProperty.AnimationGroup, (byte)skill, weaponConfiguration.AnimationGroup);
 
         yield return new SetWeaponPropertyRpcPacket((byte)weapon, (byte)WeaponProperty.MaxClipAmmo, (byte)skill, weaponConfiguration.MaximumClipAmmo);
         //yield return new SetWeaponPropertyRpcPacket((byte)weapon, (byte)WeaponProperty.FireOffset, (byte)skill, weaponConfiguration.FireOffset);
 
-        //yield return new SetWeaponPropertyRpcPacket((byte)weapon, (byte)WeaponProperty.SkillLevel, (byte)skill, (short)weaponConfiguration.SkillLevel);
-        //yield return new SetWeaponPropertyRpcPacket((byte)weapon, (byte)WeaponProperty.RequiredSkillLevel, (byte)skill, weaponConfiguration.RequiredSkillLevelStat);
+        yield return new SetWeaponPropertyRpcPacket((byte)weapon, (byte)WeaponProperty.SkillLevel, (byte)skill, (short)weaponConfiguration.SkillLevel);
+        yield return new SetWeaponPropertyRpcPacket((byte)weapon, (byte)WeaponProperty.RequiredSkillLevel, (byte)skill, weaponConfiguration.RequiredSkillLevelStat);
 
-        //yield return new SetWeaponPropertyRpcPacket((byte)weapon, (byte)WeaponProperty.FiringSpeed, (byte)skill, weaponConfiguration.FiringSpeed);
-        //yield return new SetWeaponPropertyRpcPacket((byte)weapon, (byte)WeaponProperty.Radius, (byte)skill, weaponConfiguration.Radius);
-        //yield return new SetWeaponPropertyRpcPacket((byte)weapon, (byte)WeaponProperty.LifeSpan, (byte)skill, weaponConfiguration.LifeSpan);
-        //yield return new SetWeaponPropertyRpcPacket((byte)weapon, (byte)WeaponProperty.Spread, (byte)skill, weaponConfiguration.Spread);
+        yield return new SetWeaponPropertyRpcPacket((byte)weapon, (byte)WeaponProperty.FiringSpeed, (byte)skill, weaponConfiguration.FiringSpeed);
+        yield return new SetWeaponPropertyRpcPacket((byte)weapon, (byte)WeaponProperty.Radius, (byte)skill, weaponConfiguration.Radius);
+        yield return new SetWeaponPropertyRpcPacket((byte)weapon, (byte)WeaponProperty.LifeSpan, (byte)skill, weaponConfiguration.LifeSpan);
+        yield return new SetWeaponPropertyRpcPacket((byte)weapon, (byte)WeaponProperty.Spread, (byte)skill, weaponConfiguration.Spread);
 
-        //yield return new SetWeaponPropertyRpcPacket((byte)weapon, (byte)WeaponProperty.AimOffset, (byte)skill, weaponConfiguration.AimOffset);
+        yield return new SetWeaponPropertyRpcPacket((byte)weapon, (byte)WeaponProperty.AimOffset, (byte)skill, weaponConfiguration.AimOffset);
         yield return new SetWeaponPropertyRpcPacket((byte)weapon, (byte)WeaponProperty.DefaultCombo, (byte)skill, weaponConfiguration.DefaultCombo);
         yield return new SetWeaponPropertyRpcPacket((byte)weapon, (byte)WeaponProperty.CombosAvailable, (byte)skill, weaponConfiguration.CombosAvailable);
 

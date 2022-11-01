@@ -45,6 +45,9 @@ public class SetWeaponPropertyRpcPacket : Packet
     public SetWeaponPropertyRpcPacket(byte weapon, byte property, byte skillLevel, int value)
         : this(weapon, property, skillLevel, (short)value) { }
 
+    public SetWeaponPropertyRpcPacket(byte weapon, byte property, byte skillLevel, ulong value)
+        : this(weapon, property, skillLevel, (short)value) { }
+
     public override void Read(byte[] bytes)
     {
         throw new NotSupportedException();
