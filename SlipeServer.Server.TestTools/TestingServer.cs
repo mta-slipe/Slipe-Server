@@ -3,7 +3,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using SlipeServer.Net.Wrappers;
 using SlipeServer.Packets;
+using SlipeServer.Packets.Definitions.Lua.ElementRpc;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Server.Elements;
 using SlipeServer.Server.Resources.Serving;
 using System;
 using System.Collections.Generic;
@@ -109,6 +111,16 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
     {
         this.sendPacketCalls.Count(x =>
             x.PacketId == packetId && x.Address == to.Address && (data == null || x.Data.SequenceEqual(data))
+        ).Should().Be(count);
+    }
+
+    public void VerifyLuaElementRpcPacketSent(ElementRpcFunction packetId, TPlayer to, byte[] data = null, int count = 1)
+    {
+        this.sendPacketCalls.Count(x =>
+            x.PacketId == PacketId.PACKET_ID_LUA_ELEMENT_RPC && 
+            x.Address == to.Address && 
+            x.Data[0] == (byte)packetId 
+            && (data == null || x.Data.SequenceEqual(data))
         ).Should().Be(count);
     }
 
