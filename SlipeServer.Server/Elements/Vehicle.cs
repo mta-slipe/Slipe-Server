@@ -133,7 +133,6 @@ public class Vehicle : Element
         }
     }
 
-    public bool IsSirenActive { get; set; } = false;
     private bool isEngineOn = false;
     public bool IsEngineOn
     {
@@ -245,7 +244,58 @@ public class Vehicle : Element
     }
 
     public VehicleHandling? Handling { get; set; }
-    public VehicleSirenSet? Sirens { get; set; }
+
+    private VehicleSirenSet? sirens;
+    public VehicleSirenSet? Sirens
+    {
+        get => this.sirens;
+        set
+        {
+            if (this.sirens != null)
+            {
+                this.sirens.Value.SirenAdded -= HandleSirenAdd;
+                this.sirens.Value.SirenModified -= HandleSirenModify;
+                this.sirens.Value.SirenRemoved -= HandleSirenRemove;
+            }
+
+            var args = new ElementChangedEventArgs<Vehicle, VehicleSirenSet?>(this, this.sirens, value, this.IsSync);
+            this.sirens = value;
+            SirensChanged?.Invoke(this, args);
+
+            if (value != null)
+            {
+                value.Value.SirenAdded += HandleSirenAdd;
+                value.Value.SirenModified += HandleSirenModify;
+                value.Value.SirenRemoved += HandleSirenRemove;
+            }
+        }
+    }
+
+    private bool isSirenActive;
+    public bool IsSirenActive
+    {
+        get => this.isSirenActive;
+        set
+        {
+            var args = new ElementChangedEventArgs<Vehicle, bool>(this, this.isSirenActive, value, this.IsSync);
+            this.isSirenActive = value;
+            AreSirensOnChanged?.Invoke(this, args);
+        }
+    }
+
+    private void HandleSirenAdd(VehicleSirenSet sirenSet, VehicleSiren sirens)
+    {
+        this.sirens = sirenSet;
+    }
+    private void HandleSirenModify(VehicleSirenSet sirenSet, VehicleSiren sirens)
+    {
+        this.SirenUpdated?.Invoke(this, new VehicleSirenUpdatedEventArgs(this, sirens));
+    }
+
+    private void HandleSirenRemove(VehicleSirenSet sirenSet, VehicleSiren sirens)
+    {
+        this.sirens = sirenSet;
+    }
 
     public bool IsTrailer => VehicleConstants.TrailerModels.Contains((VehicleModel)this.Model);
 
@@ -543,6 +593,9 @@ public class Vehicle : Element
     public event ElementChangedEventHandler<Vehicle, bool>? IsDerailedChanged;
     public event ElementChangedEventHandler<Vehicle, bool>? IsDerailableChanged;
     public event ElementChangedEventHandler<Vehicle, TrainDirection>? TrainDirectionChanged;
+    public event ElementChangedEventHandler<Vehicle, bool>? AreSirensOnChanged;
+    public event ElementChangedEventHandler<Vehicle, VehicleSirenSet?>? SirensChanged;
+    public event ElementEventHandler<Vehicle, VehicleSirenUpdatedEventArgs>? SirenUpdated;
     public event ElementEventHandler<VehicleRespawnEventArgs>? Respawned;
     public event ElementEventHandler<VehicleDoorStateChangedArgs>? DoorStateChanged;
     public event ElementEventHandler<VehicleWheelStateChangedArgs>? WheelStateChanged;

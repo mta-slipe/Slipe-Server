@@ -1,4 +1,5 @@
 ﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
+using SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle.Sirens;
 using SlipeServer.Packets.Definitions.Vehicles;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
@@ -48,6 +49,9 @@ public class VehicleBehaviour
             vehicle.IsDerailedChanged += RelayIsDerailedChanged;
             vehicle.IsDerailableChanged += RelayIsDerailableChanged;
             vehicle.TrainDirectionChanged += RelayTrainDirectionChanged;
+            vehicle.SirensChanged += RelaySirensChanged;
+            vehicle.SirenUpdated += RelaySirenUpdated;
+            vehicle.AreSirensOnChanged += RelayAreSirensOn;
         }
     }
 
@@ -203,5 +207,52 @@ public class VehicleBehaviour
     private void RelayTrainDirectionChanged(Vehicle sender, ElementChangedEventArgs<Vehicle, TrainDirection> args)
     {
         this.server.BroadcastPacket(new SetTrainDirectionPacket(sender.Id, args.NewValue == TrainDirection.Clockwise));
+    }
+
+    private void RelaySirensChanged(Vehicle sender, ElementChangedEventArgs<Vehicle, Packets.Definitions.Entities.Structs.VehicleSirenSet?> args)
+    {
+        if (args.NewValue == null)
+            this.server.BroadcastPacket(new RemoveVehicleSirensPacket(args.Source.Id));
+        else
+        {
+            var sirens = args.NewValue.Value;
+            this.server.BroadcastPacket(new GiveVehicleSirensPacket(args.Source.Id, true, sirens.SirenType, sirens.Count, false, true, true, false));
+            foreach (var siren in sirens.Sirens)
+            {
+                this.server.BroadcastPacket(new SetVehicleSirensPacket(
+                    args.Source.Id,
+                    true,
+                    siren.Id,
+                    siren.Position,
+                    siren.Color,
+                    siren.SirenMinAlpha,
+                    siren.Is360,
+                    siren.UsesLineOfSightCheck,
+                    siren.UsesRandomizer,
+                    siren.IsSilent));
+            }
+        }
+    }
+
+    private void RelaySirenUpdated(Vehicle sender, VehicleSirenUpdatedEventArgs args)
+    {
+        var siren = args.Siren;
+
+        this.server.BroadcastPacket(new SetVehicleSirensPacket(
+            sender.Id,
+            true,
+            siren.Id,
+            siren.Position,
+            siren.Color,
+            siren.SirenMinAlpha,
+            siren.Is360,
+            siren.UsesLineOfSightCheck,
+            siren.UsesRandomizer,
+            siren.IsSilent));
+    }
+
+    private void RelayAreSirensOn(Vehicle sender, ElementChangedEventArgs<Vehicle, bool> args)
+    {
+        this.server.BroadcastPacket(new SetVehicleSirensOnPacket(sender.Id, args.NewValue));
     }
 }
