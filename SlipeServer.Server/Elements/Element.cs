@@ -1,5 +1,4 @@
-﻿using RBush;
-using SlipeServer.Packets.Definitions.Lua;
+﻿using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Server.Concepts;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
@@ -12,6 +11,7 @@ using System.Linq;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace SlipeServer.Server.Elements;
 
@@ -399,10 +399,10 @@ public class Element
     internal void AddElementAttachment(ElementAttachment attachment) => this.attachedElements.Add(attachment);
     internal void RemoveElementAttachment(ElementAttachment attachment) => this.attachedElements.Remove(attachment);
 
-    public void AttachTo(Element element, Vector3? positionOffset = null, Vector3? rotationOffset = null)
+    public ElementAttachment AttachTo(Element element, Vector3? positionOffset = null, Vector3? rotationOffset = null)
     {
         var position = positionOffset ?? Vector3.Zero;
-        var rotation = rotationOffset?? Vector3.Zero;
+        var rotation = rotationOffset ?? Vector3.Zero;
 
         if (this.Attachment != null)
             DetachFrom(this.Attachment.Target);
@@ -410,13 +410,24 @@ public class Element
         var attachment = new ElementAttachment(this, element, position, rotation);
         this.Attachment = attachment;
         element.AddElementAttachment(attachment);
+        attachment.UpdateAttachedElement();
 
-        attachment.PositionOffsetChanged += (newPosition) 
-            => this.AttachedOffsetChanged?.Invoke(this, new ElementAttachOffsetsChangedArgs(this, element, newPosition, attachment.RotationOffset));
-        attachment.RotationOffsetChanged += (newRotation) 
-            => this.AttachedOffsetChanged?.Invoke(this, new ElementAttachOffsetsChangedArgs(this, element, attachment.PositionOffset, newRotation));
+        attachment.PositionOffsetChanged += HandleAttachmentPositionOffsetChange;
+        attachment.RotationOffsetChanged += HandleAttachmentRotationOffsetChange;
 
         this.Attached?.Invoke(this, new ElementAttachedEventArgs(this, element, position, rotation));
+
+        return attachment;
+    }
+
+    private void HandleAttachmentPositionOffsetChange(Vector3 newPosition)
+    {
+        this.AttachedOffsetChanged?.Invoke(this, new ElementAttachOffsetsChangedArgs(this, this.Attachment!.Target, newPosition, this.Attachment.RotationOffset));
+    }
+
+    private void HandleAttachmentRotationOffsetChange(Vector3 newRotation)
+    {
+        this.AttachedOffsetChanged?.Invoke(this, new ElementAttachOffsetsChangedArgs(this, this.Attachment!.Target, this.Attachment.PositionOffset, newRotation));
     }
 
     public virtual void DetachFrom(Element? element = null)
@@ -425,6 +436,10 @@ public class Element
         {
             this.Detached?.Invoke(this, new ElementDetachedEventArgs(this, this.Attachment.Target));
             (element ?? this.Attachment.Target).RemoveElementAttachment(this.Attachment);
+
+            this.Attachment.PositionOffsetChanged -= HandleAttachmentPositionOffsetChange;
+            this.Attachment.RotationOffsetChanged -= HandleAttachmentRotationOffsetChange;
+
             this.Attachment = null;
         }
     }

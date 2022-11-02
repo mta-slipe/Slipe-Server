@@ -1,6 +1,4 @@
-﻿using SlipeServer.Packets.Definitions.Lua;
-using SlipeServer.Server.Elements;
-using SlipeServer.Server.Elements.Enums;
+﻿using SlipeServer.Server.Elements;
 using System;
 using System.Numerics;
 
@@ -19,6 +17,7 @@ public class ElementAttachment
         {
             this.positionOffset = value;
             this.PositionOffsetChanged?.Invoke(value);
+            this.UpdateAttachedElement();
         }
     }
 
@@ -30,6 +29,7 @@ public class ElementAttachment
         {
             this.rotationOffset = value;
             this.RotationOffsetChanged?.Invoke(value);
+            this.UpdateAttachedElement();
         }
     }
 
