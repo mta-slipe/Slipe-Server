@@ -42,6 +42,8 @@ public class VehicleBehaviour
             vehicle.Upgrades.UpgradeChanged += RelayUpgradeChanged;
             vehicle.PaintJobChanged += RelayPaintjobChanged;
             vehicle.VariantsChanged += RelayVariantsChanged;
+            vehicle.IsDamageProofChanged += RelayIsDamageProofChanged;
+            vehicle.AreDoorsDamageProofChanged += RelayAreDoorsDamageProofChanged;
         }
     }
 
@@ -169,5 +171,15 @@ public class VehicleBehaviour
     private void RelayVariantsChanged(Vehicle sender, ElementChangedEventArgs<Vehicle, ElementConcepts.VehicleVariants> args)
     {
         this.server.BroadcastPacket(new SetVehicleVariantPacket(sender.Id, args.NewValue.Variant1, args.NewValue.Variant2));
+    }
+
+    private void RelayIsDamageProofChanged(Vehicle sender, ElementChangedEventArgs<Vehicle, bool> args)
+    {
+        this.server.BroadcastPacket(new SetVehicleDamageProofPacket(sender.Id, args.NewValue));
+    }
+
+    private void RelayAreDoorsDamageProofChanged(Vehicle sender, ElementChangedEventArgs<Vehicle, bool> args)
+    {
+        this.server.BroadcastPacket(new SetVehicleDoorsDamageProofPacket(sender.Id, args.NewValue));
     }
 }

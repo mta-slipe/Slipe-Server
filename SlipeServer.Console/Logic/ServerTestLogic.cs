@@ -898,6 +898,24 @@ public class ServerTestLogic
             };
         };
 
+        this.commandService.AddCommand("damageproof").Triggered += (source, args) =>
+        {
+            if (args.Player.Vehicle == null)
+                return;
+
+            args.Player.Vehicle.IsDamageProof = !args.Player.Vehicle.IsDamageProof;
+            this.chatBox.OutputTo(args.Player, $"Vehicle damage proof state: {args.Player.Vehicle.IsDamageProof}");
+        };
+
+        this.commandService.AddCommand("damageproofdoors").Triggered += (source, args) =>
+        {
+            if (args.Player.Vehicle == null)
+                return;
+
+            args.Player.Vehicle.AreDoorsDamageProof = !args.Player.Vehicle.AreDoorsDamageProof;
+            this.chatBox.OutputTo(args.Player, $"Vehicle doors damage proof state: {args.Player.Vehicle.AreDoorsDamageProof}");
+        };
+
         this.commandService.AddCommand("hot").Triggered += (source, args) =>
         {
             // command for testing, use hot reload to write code and apply during a running debug session

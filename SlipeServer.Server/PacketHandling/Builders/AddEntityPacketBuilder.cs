@@ -155,7 +155,7 @@ public class AddEntityPacketBuilder
             element.Position, element.Rotation, element.Model, element.Health, (byte)element.BlownState, element.Colors.AsArray(), element.PaintJob, element.Damage, element.Variants.Variant1,
             element.Variants.Variant2, element.TurretRotation, element.AdjustableProperty, VehicleConstants.DoorsPerVehicle[(VehicleModel)element.Model] > 0 ? element.DoorRatios : Array.Empty<float>(), MapVehicleUpgrades(element.Model, element.Upgrades), element.PlateText, 
             element.OverrideLights, element.IsLandingGearDown, element.IsSirenActive, element.IsFuelTankExplodable, element.IsEngineOn, element.IsLocked, 
-            element.AreDoorsUndamageable, element.IsDamageProof, element.IsFrozen, element.IsDerailed, element.IsDerailable, element.TrainDirection, element.IsTaxiLightOn, 
+            element.AreDoorsDamageProof, element.IsDamageProof, element.IsFrozen, element.IsDerailed, element.IsDerailable, element.TrainDirection, element.IsTaxiLightOn, 
             element.Alpha, element.HeadlightColor, element.Handling, element.Sirens
         );
     }
