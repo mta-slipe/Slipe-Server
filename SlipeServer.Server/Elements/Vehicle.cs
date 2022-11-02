@@ -156,11 +156,36 @@ public class Vehicle : Element
             LockedStateChanged?.Invoke(this, args);
         }
     }
-    public bool AreDoorsUndamageable { get; set; } = false;
-    public bool IsDamageProof { get; set; } = false;
+
+
+    private bool areDoorsDamageProof = false;
+    public bool AreDoorsDamageProof
+    {
+        get => this.areDoorsDamageProof;
+        set
+        {
+            var args = new ElementChangedEventArgs<Vehicle, bool>(this, this.areDoorsDamageProof, value, this.IsSync);
+            this.areDoorsDamageProof = value;
+            AreDoorsDamageProofChanged?.Invoke(this, args);
+        }
+    }
+
+    private bool isDamageProof = false;
+    public bool IsDamageProof
+    {
+        get => this.isDamageProof;
+        set
+        {
+            var args = new ElementChangedEventArgs<Vehicle, bool>(this, this.isDamageProof, value, this.IsSync);
+            this.isDamageProof = value;
+            IsDamageProofChanged?.Invoke(this, args);
+        }
+    }
+
     public bool IsDerailed { get; set; } = false;
     public bool IsDerailable { get; set; } = true;
     public bool TrainDirection { get; set; } = true;
+
 
     private bool isTaxiLightOn = false;
     public bool IsTaxiLightOn
@@ -480,6 +505,8 @@ public class Vehicle : Element
     public event ElementChangedEventHandler<Vehicle, bool>? FuelTankExplodableChanged;
     public event ElementChangedEventHandler<Vehicle, byte>? PaintJobChanged;
     public event ElementChangedEventHandler<Vehicle, VehicleVariants>? VariantsChanged;
+    public event ElementChangedEventHandler<Vehicle, bool>? IsDamageProofChanged;
+    public event ElementChangedEventHandler<Vehicle, bool>? AreDoorsDamageProofChanged;
     public event ElementEventHandler<VehicleRespawnEventArgs>? Respawned;
     public event ElementEventHandler<VehicleDoorStateChangedArgs>? DoorStateChanged;
     public event ElementEventHandler<VehicleWheelStateChangedArgs>? WheelStateChanged;
