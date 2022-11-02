@@ -63,8 +63,19 @@ public class Vehicle : Element
             this.LightStates = value.Lights;
         }
     }
-    public byte Variant1 { get; set; } = 0;
-    public byte Variant2 { get; set; } = 0;
+
+    private VehicleVariants variants;
+    public VehicleVariants Variants
+    {
+        get => this.variants;
+        set
+        {
+            var args = new ElementChangedEventArgs<Vehicle, VehicleVariants>(this, this.Variants, value, this.IsSync);
+            this.variants = value;
+            VariantsChanged?.Invoke(this, args);
+        }
+    }
+
     public Vector3 RespawnPosition { get; set; }
     public Vector3 RespawnRotation { get; set; }
     public float RespawnHealth { get; set; } = 1000;
@@ -93,7 +104,7 @@ public class Vehicle : Element
     private byte[] WheelStates { get; set; }
     private byte[] PanelStates { get; set; }
     private byte[] LightStates { get; set; }
-    public VehicleUpgrades Upgrades { get; set; }
+    public VehicleUpgrades Upgrades { get; private set; }
 
     private string plateText = "";
     public string PlateText
@@ -468,6 +479,7 @@ public class Vehicle : Element
     public event ElementChangedEventHandler<Vehicle, Vehicle?>? TowingVehicleChanged;
     public event ElementChangedEventHandler<Vehicle, bool>? FuelTankExplodableChanged;
     public event ElementChangedEventHandler<Vehicle, byte>? PaintJobChanged;
+    public event ElementChangedEventHandler<Vehicle, VehicleVariants>? VariantsChanged;
     public event ElementEventHandler<VehicleRespawnEventArgs>? Respawned;
     public event ElementEventHandler<VehicleDoorStateChangedArgs>? DoorStateChanged;
     public event ElementEventHandler<VehicleWheelStateChangedArgs>? WheelStateChanged;

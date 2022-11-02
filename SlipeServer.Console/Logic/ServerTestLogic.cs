@@ -3,10 +3,11 @@ using Newtonsoft.Json;
 using SlipeServer.Console.Elements;
 using SlipeServer.Console.LuaValues;
 using SlipeServer.Packets.Definitions.Lua;
-using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
+using SlipeServer.Packets.Enums.VehicleUpgrades;
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Server;
 using SlipeServer.Server.Constants;
+using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.ColShapes;
 using SlipeServer.Server.Elements.Enums;
@@ -15,7 +16,6 @@ using SlipeServer.Server.Elements.Structs;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Events;
 using SlipeServer.Server.PacketHandling.Factories;
-using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.Services;
@@ -29,7 +29,6 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
-using SlipeServer.Packets.Enums.VehicleUpgrades;
 
 namespace SlipeServer.Console.Logic;
 
@@ -881,6 +880,24 @@ public class ServerTestLogic
             this.logger.LogInformation("Starting Slipe Lua test resource for {playerName} took {milliseconds}ms", args.Player.Name, stopwatch.ElapsedMilliseconds);
         };
 
+        this.commandService.AddCommand("variant").Triggered += (source, args) =>
+        {
+            if (args.Player.Vehicle == null)
+                return;
+
+            if (args.Arguments.Length < 2)
+                return;
+
+            if (!byte.TryParse(args.Arguments[0], out var variant1) || !byte.TryParse(args.Arguments[1], out var variant2))
+                return;
+
+            args.Player.Vehicle.Variants = new()
+            {
+                Variant1 = variant1,
+                Variant2 = variant2
+            };
+        };
+
         this.commandService.AddCommand("hot").Triggered += (source, args) =>
         {
             // command for testing, use hot reload to write code and apply during a running debug session
@@ -1136,15 +1153,14 @@ public class ServerTestLogic
         player.SetBind("h", KeyState.Down);
         player.BindExecuted += (Player sender, PlayerBindExecutedEventArgs e) =>
         {
-            if(e.Key == "j")
+            if (e.Key == "j")
             {
                 player.HasJetpack = !player.HasJetpack;
-                if(player.HasJetpack)
+                if (player.HasJetpack)
                     this.logger.LogInformation("{name} put on a jetpack!", sender.Name);
                 else
                     this.logger.LogInformation("{name} pulled off his jetpack!", sender.Name);
-            }
-            else if(e.Key == "h")
+            } else if (e.Key == "h")
             {
                 jetpackBindEnabled = !jetpackBindEnabled;
                 player.SetBind("j", jetpackBindEnabled ? KeyState.Down : KeyState.None);
