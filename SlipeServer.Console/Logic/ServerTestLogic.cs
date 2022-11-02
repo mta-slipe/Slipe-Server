@@ -916,6 +916,33 @@ public class ServerTestLogic
             this.chatBox.OutputTo(args.Player, $"Vehicle doors damage proof state: {args.Player.Vehicle.AreDoorsDamageProof}");
         };
 
+        this.commandService.AddCommand("derailable").Triggered += (source, args) =>
+        {
+            if (args.Player.Vehicle == null)
+                return;
+
+            args.Player.Vehicle.IsDerailable = !args.Player.Vehicle.IsDerailable;
+            this.chatBox.OutputTo(args.Player, $"Train derailable state: {args.Player.Vehicle.IsDerailable}");
+        };
+
+        this.commandService.AddCommand("derailed").Triggered += (source, args) =>
+        {
+            if (args.Player.Vehicle == null)
+                return;
+
+            args.Player.Vehicle.IsDerailed = !args.Player.Vehicle.IsDerailed;
+            this.chatBox.OutputTo(args.Player, $"Train derailed state: {args.Player.Vehicle.IsDerailed}");
+        };
+
+        this.commandService.AddCommand("traindirection").Triggered += (source, args) =>
+        {
+            if (args.Player.Vehicle == null)
+                return;
+
+            args.Player.Vehicle.TrainDirection = args.Player.Vehicle.TrainDirection == TrainDirection.Clockwise ? TrainDirection.CounterClockwise : TrainDirection.Clockwise;
+            this.chatBox.OutputTo(args.Player, $"Train direction: {args.Player.Vehicle.TrainDirection}");
+        };
+
         this.commandService.AddCommand("hot").Triggered += (source, args) =>
         {
             // command for testing, use hot reload to write code and apply during a running debug session

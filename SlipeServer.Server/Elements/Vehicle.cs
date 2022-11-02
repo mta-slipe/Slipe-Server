@@ -3,6 +3,7 @@ using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Concepts;
 using SlipeServer.Server.Constants;
 using SlipeServer.Server.ElementConcepts;
+using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Enums;
 using System;
@@ -182,9 +183,41 @@ public class Vehicle : Element
         }
     }
 
-    public bool IsDerailed { get; set; } = false;
-    public bool IsDerailable { get; set; } = true;
-    public bool TrainDirection { get; set; } = true;
+    private bool isDerailed = false;
+    public bool IsDerailed
+    {
+        get => this.isDerailed;
+        set
+        {
+            var args = new ElementChangedEventArgs<Vehicle, bool>(this, this.isDerailed, value, this.IsSync);
+            this.isDerailed = value;
+            IsDerailedChanged?.Invoke(this, args);
+        }
+    }
+
+    private bool isDerailable = true;
+    public bool IsDerailable
+    {
+        get => this.isDerailable;
+        set
+        {
+            var args = new ElementChangedEventArgs<Vehicle, bool>(this, this.isDerailable, value, this.IsSync);
+            this.isDerailable = value;
+            IsDerailableChanged?.Invoke(this, args);
+        }
+    }
+
+    private TrainDirection trainDirection = TrainDirection.Clockwise;
+    public TrainDirection TrainDirection
+    {
+        get => this.trainDirection;
+        set
+        {
+            var args = new ElementChangedEventArgs<Vehicle, TrainDirection>(this, this.trainDirection, value, this.IsSync);
+            this.trainDirection = value;
+            TrainDirectionChanged?.Invoke(this, args);
+        }
+    }
 
 
     private bool isTaxiLightOn = false;
@@ -507,6 +540,9 @@ public class Vehicle : Element
     public event ElementChangedEventHandler<Vehicle, VehicleVariants>? VariantsChanged;
     public event ElementChangedEventHandler<Vehicle, bool>? IsDamageProofChanged;
     public event ElementChangedEventHandler<Vehicle, bool>? AreDoorsDamageProofChanged;
+    public event ElementChangedEventHandler<Vehicle, bool>? IsDerailedChanged;
+    public event ElementChangedEventHandler<Vehicle, bool>? IsDerailableChanged;
+    public event ElementChangedEventHandler<Vehicle, TrainDirection>? TrainDirectionChanged;
     public event ElementEventHandler<VehicleRespawnEventArgs>? Respawned;
     public event ElementEventHandler<VehicleDoorStateChangedArgs>? DoorStateChanged;
     public event ElementEventHandler<VehicleWheelStateChangedArgs>? WheelStateChanged;
