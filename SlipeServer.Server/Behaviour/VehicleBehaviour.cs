@@ -2,6 +2,7 @@
 using SlipeServer.Packets.Definitions.Vehicles;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.PacketHandling.Factories;
 using System.Drawing;
@@ -44,6 +45,9 @@ public class VehicleBehaviour
             vehicle.VariantsChanged += RelayVariantsChanged;
             vehicle.IsDamageProofChanged += RelayIsDamageProofChanged;
             vehicle.AreDoorsDamageProofChanged += RelayAreDoorsDamageProofChanged;
+            vehicle.IsDerailedChanged += RelayIsDerailedChanged;
+            vehicle.IsDerailableChanged += RelayIsDerailableChanged;
+            vehicle.TrainDirectionChanged += RelayTrainDirectionChanged;
         }
     }
 
@@ -181,5 +185,20 @@ public class VehicleBehaviour
     private void RelayAreDoorsDamageProofChanged(Vehicle sender, ElementChangedEventArgs<Vehicle, bool> args)
     {
         this.server.BroadcastPacket(new SetVehicleDoorsDamageProofPacket(sender.Id, args.NewValue));
+    }
+
+    private void RelayIsDerailedChanged(Vehicle sender, ElementChangedEventArgs<Vehicle, bool> args)
+    {
+        this.server.BroadcastPacket(new SetTrainDerailedPacket(sender.Id, args.NewValue));
+    }
+
+    private void RelayIsDerailableChanged(Vehicle sender, ElementChangedEventArgs<Vehicle, bool> args)
+    {
+        this.server.BroadcastPacket(new SetTrainDerailablePacket(sender.Id, args.NewValue));
+    }
+
+    private void RelayTrainDirectionChanged(Vehicle sender, ElementChangedEventArgs<Vehicle, TrainDirection> args)
+    {
+        this.server.BroadcastPacket(new SetTrainDirectionPacket(sender.Id, args.NewValue == TrainDirection.CounterClockwise));
     }
 }
