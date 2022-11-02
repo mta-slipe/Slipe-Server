@@ -22,7 +22,7 @@ public class GiveVehicleSirensPacket : Packet
     public GiveVehicleSirensPacket(
         uint elementId,
         bool isOverride,
-        byte sirenType,
+        VehicleSirenType sirenType,
         byte sirenCount,
         bool is360Degrees,
         bool doLineOfSightCheck,
@@ -32,7 +32,7 @@ public class GiveVehicleSirensPacket : Packet
     {
         this.ElementId = elementId;
         this.IsOverride = isOverride;
-        this.SirenType = sirenType;
+        this.SirenType = (byte)sirenType;
         this.SirenCount = sirenCount;
         this.Is360Degrees = is360Degrees;
         this.DoLineOfSightCheck = doLineOfSightCheck;

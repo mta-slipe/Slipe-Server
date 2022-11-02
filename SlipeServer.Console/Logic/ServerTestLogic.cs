@@ -4,6 +4,7 @@ using SlipeServer.Console.Elements;
 using SlipeServer.Console.LuaValues;
 using SlipeServer.Packets.Definitions.Entities.Structs;
 using SlipeServer.Packets.Definitions.Lua;
+using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Enums.VehicleUpgrades;
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Server;
@@ -960,7 +961,7 @@ public class ServerTestLogic
 
             var sirens = new VehicleSirenSet()
             {
-                SirenType = 3
+                SirenType = VehicleSirenType.Dual
             };
             sirens.AddSiren(new VehicleSiren()
             {

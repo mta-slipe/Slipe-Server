@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SlipeServer.Packets.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,7 +7,7 @@ namespace SlipeServer.Packets.Definitions.Entities.Structs;
 
 public struct VehicleSirenSet
 {
-    public byte SirenType { get; set; }
+    public VehicleSirenType SirenType { get; set; }
 
     // We use 8 different fields instead of a collection to make sure
     // When a copy of this struct is made it also copies the sirens
@@ -47,7 +48,7 @@ public struct VehicleSirenSet
 
     public VehicleSirenSet()
     {
-        this.SirenType = 2;
+        this.SirenType = VehicleSirenType.Dual;
     }
 
     public void AddSiren(VehicleSiren siren)

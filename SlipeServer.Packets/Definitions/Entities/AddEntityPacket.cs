@@ -430,7 +430,7 @@ public class AddEntityPacket : Packet
         if (sirenSet != null)
         {
             this.builder.Write(sirenSet.Value.Count);
-            this.builder.Write(sirenSet.Value.SirenType);
+            this.builder.Write((byte)sirenSet.Value.SirenType);
 
             foreach (var siren in sirenSet.Value.Sirens)
             {
