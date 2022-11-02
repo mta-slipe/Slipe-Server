@@ -2,6 +2,6 @@
 
 public enum TrainDirection : byte
 {
-    CounterClockwise,
     Clockwise,
+    CounterClockwise,
 }
