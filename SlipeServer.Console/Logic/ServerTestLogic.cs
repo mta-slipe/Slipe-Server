@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using SlipeServer.Console.Elements;
 using SlipeServer.Console.LuaValues;
+using SlipeServer.Packets.Definitions.Entities.Structs;
 using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Packets.Enums.VehicleUpgrades;
 using SlipeServer.Packets.Lua.Camera;
@@ -941,6 +942,65 @@ public class ServerTestLogic
 
             args.Player.Vehicle.TrainDirection = args.Player.Vehicle.TrainDirection == TrainDirection.Clockwise ? TrainDirection.CounterClockwise : TrainDirection.Clockwise;
             this.chatBox.OutputTo(args.Player, $"Train direction: {args.Player.Vehicle.TrainDirection}");
+        };
+
+        this.commandService.AddCommand("togglesirens").Triggered += (source, args) =>
+        {
+            if (args.Player.Vehicle == null)
+                return;
+
+            args.Player.Vehicle.IsSirenActive = !args.Player.Vehicle.IsSirenActive;
+            this.chatBox.OutputTo(args.Player, $"Siren state: {args.Player.Vehicle.IsSirenActive}.");
+        };
+
+        this.commandService.AddCommand("customsirens").Triggered += (source, args) =>
+        {
+            if (args.Player.Vehicle == null)
+                return;
+
+            var sirens = new VehicleSirenSet()
+            {
+                SirenType = 3
+            };
+            sirens.AddSiren(new VehicleSiren()
+            {
+                Id = 0,
+                Color = Color.AliceBlue,
+                Is360 = true,
+                UsesLineOfSightCheck = false,
+                Position = new Vector3(1, 0, 1),
+                SirenMinAlpha = 150
+            });
+            sirens.AddSiren(new VehicleSiren()
+            {
+                Id = 1,
+                Color = Color.Crimson,
+                Is360 = true,
+                UsesLineOfSightCheck = false,
+                Position = new Vector3(-1, 0, 1),
+                SirenMinAlpha = 150
+            });
+            sirens.AddSiren(new VehicleSiren()
+            {
+                Id = 2,
+                Color = Color.DarkBlue,
+                Is360 = true,
+                UsesLineOfSightCheck = false,
+                Position = new Vector3(1, -1, 0),
+                SirenMinAlpha = 150
+            });
+            sirens.AddSiren(new VehicleSiren()
+            {
+                Id = 3,
+                Color = Color.IndianRed,
+                Is360 = true,
+                UsesLineOfSightCheck = false,
+                Position = new Vector3(-1, -1, 0),
+                SirenMinAlpha = 150
+            });
+
+            args.Player.Vehicle.Sirens = sirens;
+            this.chatBox.OutputTo(args.Player, $"Sirens applied.");
         };
 
         this.commandService.AddCommand("hot").Triggered += (source, args) =>

@@ -3,6 +3,7 @@ using SlipeServer.Packets.Definitions.Entities.Structs;
 using SlipeServer.Packets.Enums;
 using System;
 using System.Drawing;
+using System.Linq;
 using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
@@ -428,11 +429,12 @@ public class AddEntityPacket : Packet
         this.builder.Write(sirenSet != null);
         if (sirenSet != null)
         {
-            this.builder.Write((byte)sirenSet.Value.Sirens.Length);
+            this.builder.Write(sirenSet.Value.Count);
             this.builder.Write(sirenSet.Value.SirenType);
 
             foreach (var siren in sirenSet.Value.Sirens)
             {
+                this.builder.Write(true);
                 this.builder.Write(siren.Id);
                 this.builder.Write(siren.Position);
                 this.builder.Write(siren.Color, true, true);
