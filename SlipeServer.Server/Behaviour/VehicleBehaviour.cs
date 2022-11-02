@@ -202,6 +202,6 @@ public class VehicleBehaviour
 
     private void RelayTrainDirectionChanged(Vehicle sender, ElementChangedEventArgs<Vehicle, TrainDirection> args)
     {
-        this.server.BroadcastPacket(new SetTrainDirectionPacket(sender.Id, args.NewValue == TrainDirection.CounterClockwise));
+        this.server.BroadcastPacket(new SetTrainDirectionPacket(sender.Id, args.NewValue == TrainDirection.Clockwise));
     }
 }

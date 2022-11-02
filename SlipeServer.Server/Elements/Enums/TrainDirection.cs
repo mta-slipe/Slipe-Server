@@ -3,5 +3,5 @@
 public enum TrainDirection : byte
 {
     Clockwise,
-    CounterClockwise,
+    CounterClockwise
 }
