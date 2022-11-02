@@ -1,14 +1,10 @@
-﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
-using SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
-using SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
+﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
 using SlipeServer.Packets.Definitions.Vehicles;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.PacketHandling.Factories;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Timers;
 
 namespace SlipeServer.Server.Behaviour;
 
@@ -45,6 +41,7 @@ public class VehicleBehaviour
             vehicle.FuelTankExplodableChanged += RelayFuelTankExplodable;
             vehicle.Upgrades.UpgradeChanged += RelayUpgradeChanged;
             vehicle.PaintJobChanged += RelayPaintjobChanged;
+            vehicle.VariantsChanged += RelayVariantsChanged;
         }
     }
 
@@ -167,5 +164,10 @@ public class VehicleBehaviour
     private void RelayPaintjobChanged(Vehicle sender, ElementChangedEventArgs<Vehicle, byte> args)
     {
         this.server.BroadcastPacket(VehiclePacketFactory.CreateSetPaintjobPacket(args.Source, args.NewValue));
+    }
+
+    private void RelayVariantsChanged(Vehicle sender, ElementChangedEventArgs<Vehicle, ElementConcepts.VehicleVariants> args)
+    {
+        this.server.BroadcastPacket(new SetVehicleVariantPacket(sender.Id, args.NewValue.Variant1, args.NewValue.Variant2));
     }
 }

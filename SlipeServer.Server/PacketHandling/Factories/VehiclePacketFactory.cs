@@ -10,7 +10,7 @@ public static class VehiclePacketFactory
 {
     public static SetElementModelRpcPacket CreateSetModelPacket(Vehicle vehicle)
     {
-        return new SetElementModelRpcPacket(vehicle.Id, vehicle.Model, vehicle.Variant1, vehicle.Variant2);
+        return new SetElementModelRpcPacket(vehicle.Id, vehicle.Model, vehicle.Variants.Variant1, vehicle.Variants.Variant2);
     }
 
     public static SetVehicleLandingGearDownRpcPacket CreateSetLandingGearDownPacket(Vehicle vehicle)
