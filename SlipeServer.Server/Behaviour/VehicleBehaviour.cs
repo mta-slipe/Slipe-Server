@@ -189,6 +189,9 @@ public class VehicleBehaviour
 
     private void RelayIsDerailedChanged(Vehicle sender, ElementChangedEventArgs<Vehicle, bool> args)
     {
+        if (args.Source.IsSync)
+            return;
+
         this.server.BroadcastPacket(new SetTrainDerailedPacket(sender.Id, args.NewValue));
     }
 
