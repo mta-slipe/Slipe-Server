@@ -51,6 +51,7 @@ public class ServerTestLogic
     private readonly IResourceProvider resourceProvider;
     private readonly CommandService commandService;
     private readonly WeaponConfigurationService weaponConfigurationService;
+    private readonly GameWorld gameWorld;
     private Resource? testResource;
     private Resource? secondTestResource;
     private Resource? thirdTestResource;
@@ -99,7 +100,8 @@ public class ServerTestLogic
         TextItemService textItemService,
         IResourceProvider resourceProvider,
         CommandService commandService,
-        WeaponConfigurationService weaponConfigurationService
+        WeaponConfigurationService weaponConfigurationService,
+        GameWorld gameWorld
     )
     {
         this.server = server;
@@ -117,7 +119,7 @@ public class ServerTestLogic
         this.resourceProvider = resourceProvider;
         this.commandService = commandService;
         this.weaponConfigurationService = weaponConfigurationService;
-
+        this.gameWorld = gameWorld;
         this.slipeDevsTeam = new Team("Slipe devs", Color.FromArgb(255, 255, 81, 81));
         this.SetupTestLogic();
     }
@@ -1002,6 +1004,61 @@ public class ServerTestLogic
 
             args.Player.Vehicle.Sirens = sirens;
             this.chatBox.OutputTo(args.Player, $"Sirens applied.");
+        };
+
+        this.commandService.AddCommand("removenearby").Triggered += (source, args) =>
+        {
+            if (!args.Arguments.Any())
+                return;
+
+            if (!ushort.TryParse(args.Arguments.First(), out var model))
+                return;
+
+            this.gameWorld.RemoveWorldModel(model, args.Player.Position, 100);
+        };
+
+        this.commandService.AddCommand("removeeverywhere").Triggered += (source, args) =>
+        {
+            if (!args.Arguments.Any())
+                return;
+
+            if (!ushort.TryParse(args.Arguments.First(), out var model))
+                return;
+
+            this.gameWorld.RemoveWorldModel(model, args.Player.Position, 12000);
+        };
+
+        this.commandService.AddCommand("restorenearby").Triggered += (source, args) =>
+        {
+            if (!args.Arguments.Any())
+                return;
+
+            if (!ushort.TryParse(args.Arguments.First(), out var model))
+                return;
+
+            this.gameWorld.RestoreWorldModel(model, args.Player.Position, 100);
+        };
+
+        this.commandService.AddCommand("restoreeverywhere").Triggered += (source, args) =>
+        {
+            if (!args.Arguments.Any())
+                return;
+
+            if (!ushort.TryParse(args.Arguments.First(), out var model))
+                return;
+
+            this.gameWorld.RestoreWorldModel(model, args.Player.Position, 12000);
+        };
+
+        this.commandService.AddCommand("removeall").Triggered += (source, args) =>
+        {
+            for (ushort i = 550; i < 20000; i++)
+                this.gameWorld.RemoveWorldModel(i, Vector3.Zero, 12000);
+        };
+
+        this.commandService.AddCommand("restoreall").Triggered += (source, args) =>
+        {
+            this.gameWorld.RestoreAllWorldModels();
         };
 
         this.commandService.AddCommand("hot").Triggered += (source, args) =>

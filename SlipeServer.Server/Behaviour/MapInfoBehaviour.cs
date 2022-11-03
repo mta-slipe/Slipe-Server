@@ -78,7 +78,7 @@ public class MapInfoBehaviour
                     return MapWeaponConfiguration(this.weaponConfigurationService.GetWeaponConfiguration(x, skill));
                 }).ToArray()
             }).ToArray(),
-            RemovedWorldModels = Array.Empty<(ushort model, float radius, Vector3 position, byte interior)>(),
+            RemovedWorldModels = this.gameWorld.WorldObjectRemovals,
             OcclusionsEnabled = this.gameWorld.OcclusionsEnabled,
         }.SendTo(player);
     }

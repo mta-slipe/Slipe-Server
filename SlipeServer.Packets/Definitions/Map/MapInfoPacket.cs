@@ -53,8 +53,7 @@ public class MapInfoPacket : Packet
     public MapInfoWeaponProperty[] WeaponProperties { get; set; } = Array.Empty<MapInfoWeaponProperty>();
 
 
-    public (ushort model, float radius, Vector3 position, byte interior)[] RemovedWorldModels { get; set; }
-        = Array.Empty<(ushort model, float radius, Vector3 position, byte interior)>();
+    public IEnumerable<WorldObjectRemoval> RemovedWorldModels { get; set; } = Array.Empty<WorldObjectRemoval>();
 
     public bool OcclusionsEnabled { get; set; }
 
@@ -270,13 +269,13 @@ public class MapInfoPacket : Packet
 
     private void WriteRemovals(PacketBuilder builder)
     {
-        foreach (var (model, radius, position, interior) in this.RemovedWorldModels)
+        foreach (var removal in this.RemovedWorldModels)
         {
             builder.Write(true);
-            builder.Write(model);
-            builder.Write(radius);
-            builder.Write(position);
-            builder.Write(interior);
+            builder.Write(removal.Model);
+            builder.Write(removal.Radius);
+            builder.Write(removal.Position);
+            builder.Write(removal.Interior);
         }
 
         builder.Write(false);
