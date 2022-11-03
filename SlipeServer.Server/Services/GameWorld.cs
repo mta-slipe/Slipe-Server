@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
 using SlipeServer.Packets.Definitions.Lua.Rpc.World;
+using SlipeServer.Packets.Definitions.Map.Structs;
 using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
@@ -7,6 +8,7 @@ using SlipeServer.Server.Structs;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Numerics;
 using System.Timers;
 
@@ -309,6 +311,10 @@ public class GameWorld
         }
     }
 
+    private readonly List<WorldObjectRemoval> worldObjectRemovals;
+    public IReadOnlyCollection<WorldObjectRemoval> WorldObjectRemovals => this.worldObjectRemovals.AsReadOnly();
+
+
     #endregion
 
     public GameWorld(MtaServer server)
@@ -329,6 +335,7 @@ public class GameWorld
             [GlitchType.GLITCH_QUICKSTAND] = false,
             [GlitchType.GLITCH_KICKOUTOFVEHICLE_ONMODELREPLACE] = false,
         };
+        this.worldObjectRemovals = new();
 
         this.timeTimer = new Timer(this.minuteDuration)
         {
@@ -506,6 +513,25 @@ public class GameWorld
         return value;
     }
 
+    public void RemoveWorldModel(ushort model, Vector3 position, float range, byte interior = 0)
+    {
+        this.worldObjectRemovals.Add(new(model, range, position, interior));
+        this.server.BroadcastPacket(new RemoveWorldModelPacket(model, range, position, interior));
+    }
+
+    public void RestoreWorldModel(ushort model, Vector3 position, float range, byte interior = 0)
+    {
+        this.worldObjectRemovals.RemoveAll(x =>
+            Vector3.Distance(x.Position, position) < range && x.Interior == interior
+        );
+        this.server.BroadcastPacket(new RestoreWorldModelPacket(model, range, position, interior));
+    }
+
+    public void RestoreAllWorldModels()
+    {
+        this.worldObjectRemovals.Clear();
+        this.server.BroadcastPacket(new RestoreAllWorldModelsPacket());
+    }
 
     #endregion
 }
