@@ -1,9 +1,6 @@
 ﻿using FluentAssertions;
 using SlipeServer.Server.Elements.ColShapes;
-using System;
-using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
 using Xunit;
 
 namespace SlipeServer.Server.Tests.Unit.CollisionShapes;

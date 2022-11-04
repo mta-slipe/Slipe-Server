@@ -1,6 +1,5 @@
 using FluentAssertions;
 using SlipeServer.Server.Elements;
-using System;
 using System.Threading.Tasks;
 using Xunit;
 

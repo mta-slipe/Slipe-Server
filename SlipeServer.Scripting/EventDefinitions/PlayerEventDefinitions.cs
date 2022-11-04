@@ -1,6 +1,5 @@
 ﻿using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
-using System;
 
 namespace SlipeServer.Scripting.EventDefinitions;
 

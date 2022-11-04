@@ -6,10 +6,7 @@ using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Enums;
 using MTAServerWrapper.Packets.Outgoing.Connection;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Numerics;
-using System.Text;
 using SlipeServer.Packets.Definitions.Player;
 using System.Linq;
 

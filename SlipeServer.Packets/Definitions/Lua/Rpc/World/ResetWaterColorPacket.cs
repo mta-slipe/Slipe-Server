@@ -1,7 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
 using System;
-using System.Drawing;
 
 namespace SlipeServer.Packets.Definitions.Lua.Rpc.World;
 

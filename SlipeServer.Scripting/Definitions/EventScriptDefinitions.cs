@@ -1,5 +1,4 @@
 ﻿using SlipeServer.Server.Elements;
-using System;
 
 namespace SlipeServer.Scripting.Definitions;
 

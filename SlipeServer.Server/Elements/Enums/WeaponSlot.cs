@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SlipeServer.Server.Elements;
+﻿namespace SlipeServer.Server.Elements;
 
 public enum WeaponSlot
 {

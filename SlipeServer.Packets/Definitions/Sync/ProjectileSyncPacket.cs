@@ -1,13 +1,7 @@
 ﻿using SlipeServer.Packets.Enums;
-using SlipeServer.Packets.Structures;
-using System;
-using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
-using System.Linq;
 using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Reader;
-using SlipeServer.Packets.Constants;
 
 namespace SlipeServer.Packets.Definitions.Sync;
 

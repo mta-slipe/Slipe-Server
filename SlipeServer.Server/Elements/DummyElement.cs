@@ -1,7 +1,4 @@
-﻿using System;
-using System.Numerics;
-
-namespace SlipeServer.Server.Elements;
+﻿namespace SlipeServer.Server.Elements;
 
 public class DummyElement : Element
 {

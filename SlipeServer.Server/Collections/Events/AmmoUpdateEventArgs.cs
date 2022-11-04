@@ -1,5 +1,4 @@
 ﻿using SlipeServer.Server.Elements.Structs;
-using SlipeServer.Server.Enums;
 using System;
 
 namespace SlipeServer.Server.Collections.Events;

@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Numerics;
-using System.Text;
-using SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
+﻿using System.Numerics;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.PacketHandling.Factories;
-using SlipeServer.Server.ElementCollections;
 
 namespace SlipeServer.Server.Behaviour;
 

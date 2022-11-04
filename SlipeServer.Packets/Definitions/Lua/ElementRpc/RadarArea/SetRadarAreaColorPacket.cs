@@ -1,9 +1,7 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
-using SlipeServer.Packets.Reader;
 using System;
 using System.Drawing;
-using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 

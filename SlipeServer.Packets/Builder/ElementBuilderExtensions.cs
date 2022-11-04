@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Text;
-
-namespace SlipeServer.Packets.Builder;
+﻿namespace SlipeServer.Packets.Builder;
 
 public static class ElementBuilderExtensions
 {

@@ -1,8 +1,5 @@
 using FluentAssertions;
 using SlipeServer.Packets.Definitions.Player;
-using SlipeServer.Packets.Definitions.Sync;
-using System;
-using System.Numerics;
 using Xunit;
 
 namespace SlipeServer.Packets.Tests.Packets;

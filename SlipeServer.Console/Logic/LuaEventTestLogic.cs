@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using SlipeServer.Packets.Definitions.Lua;
+﻿using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Server.Events;
 using SlipeServer.Server.Mappers;
 using SlipeServer.Server.Services;

@@ -1,6 +1,4 @@
-﻿using SlipeServer.Server;
-using SlipeServer.Server.Elements;
-using System;
+﻿using SlipeServer.Server.Elements;
 using System.Numerics;
 
 namespace SlipeServer.Scripting.Definitions;

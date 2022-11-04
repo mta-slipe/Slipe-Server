@@ -1,9 +1,6 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using Microsoft.Extensions.Logging;
-using SlipeServer.Packets.Definitions.Commands;
 using SlipeServer.Packets.Enums;
-using SlipeServer.Server.Elements;
 using SlipeServer.Server.Services;
 
 namespace SlipeServer.Server.Behaviour;

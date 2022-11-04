@@ -1,8 +1,6 @@
 using SlipeServer.Server.Elements.Events;
-using System;
 using System.Drawing;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 
 namespace SlipeServer.Server.Elements;
 

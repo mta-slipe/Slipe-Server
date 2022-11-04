@@ -1,6 +1,5 @@
 ﻿using MoonSharp.Interpreter;
 using System;
-using System.Runtime.Serialization;
 
 namespace SlipeServer.Lua;
 

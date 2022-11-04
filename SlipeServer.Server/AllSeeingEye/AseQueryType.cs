@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SlipeServer.Server.AllSeeingEye;
+﻿namespace SlipeServer.Server.AllSeeingEye;
 
 public enum AseQueryType
 {

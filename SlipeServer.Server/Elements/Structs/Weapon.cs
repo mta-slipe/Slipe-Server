@@ -3,8 +3,6 @@ using SlipeServer.Server.Collections.Events;
 using SlipeServer.Server.Constants;
 using SlipeServer.Server.Enums;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SlipeServer.Server.Elements.Structs;
 

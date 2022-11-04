@@ -1,7 +1,6 @@
 using FluentAssertions;
 using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Packets.Enums;
-using System;
 using System.Numerics;
 using Xunit;
 

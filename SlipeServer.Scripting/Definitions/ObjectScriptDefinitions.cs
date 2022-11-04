@@ -1,6 +1,5 @@
 ﻿using SlipeServer.Server;
 using SlipeServer.Server.Elements;
-using System;
 using System.Numerics;
 
 namespace SlipeServer.Scripting.Definitions;

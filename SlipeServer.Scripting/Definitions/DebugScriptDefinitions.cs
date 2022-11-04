@@ -1,9 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using SlipeServer.Server;
-using SlipeServer.Server.Elements;
 using SlipeServer.Server.Services;
-using System;
-using System.Numerics;
 
 namespace SlipeServer.Scripting.Definitions;
 

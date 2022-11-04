@@ -1,6 +1,5 @@
 using FluentAssertions;
 using SlipeServer.Packets.Definitions.Vehicles;
-using System;
 using System.Numerics;
 using Xunit;
 

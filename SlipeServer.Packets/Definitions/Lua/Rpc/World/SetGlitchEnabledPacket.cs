@@ -2,8 +2,6 @@
 using SlipeServer.Packets.Definitions.Lua.ElementRpc;
 using SlipeServer.Packets.Enums;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SlipeServer.Packets.Definitions.Lua.Rpc.World;
 

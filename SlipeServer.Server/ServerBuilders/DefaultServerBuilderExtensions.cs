@@ -37,7 +37,6 @@ using SlipeServer.Packets.Definitions.CustomElementData;
 using SlipeServer.Packets.Definitions.Resources;
 using SlipeServer.Server.Resources.Serving;
 using SlipeServer.Server.Mappers;
-using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.Resources.Interpreters;
 
 namespace SlipeServer.Server.ServerBuilders;

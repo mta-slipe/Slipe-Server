@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-
-namespace SlipeServer.Packets.Reader;
+﻿namespace SlipeServer.Packets.Reader;
 
 public static class ElementReaderExtensions
 {

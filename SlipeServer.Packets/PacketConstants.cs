@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SlipeServer.Packets;
+﻿namespace SlipeServer.Packets;
 
 public class PacketConstants
 {

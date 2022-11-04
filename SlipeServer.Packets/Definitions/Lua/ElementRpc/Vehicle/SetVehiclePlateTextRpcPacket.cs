@@ -1,9 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
 using System;
-using System.Drawing;
-using System.Linq;
-using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
 
