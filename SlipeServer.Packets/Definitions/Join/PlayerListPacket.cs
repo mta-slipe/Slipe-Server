@@ -33,12 +33,11 @@ public class PlayerListPacket : Packet
         bool isInVehicle,
         bool hasJetpack,
         bool isNametagShowing,
-        bool isNametagColorOverriden,
         bool isHeadless,
         bool isFrozen,
 
         string nametagText,
-        Color? color,
+        Color? nametagColor,
         byte moveAnimation,
 
         ushort model,
@@ -70,20 +69,14 @@ public class PlayerListPacket : Packet
         this.builder.Write(isInVehicle);
         this.builder.Write(hasJetpack);
         this.builder.Write(isNametagShowing);
-        this.builder.Write(isNametagColorOverriden);
+        this.builder.Write(nametagColor != null);
         this.builder.Write(isHeadless);
         this.builder.Write(isFrozen);
 
         this.builder.WriteStringWithByteAsLength(nametagText);
-        if (isNametagColorOverriden)
+        if (nametagColor != null)
         {
-            if (color == null)
-            {
-                throw new Exception($"Can not write player list packet. {nameof(isNametagColorOverriden)} is true, but required data is null");
-            } else
-            {
-                this.builder.Write(color.Value);
-            }
+            this.builder.Write(nametagColor.Value);
         }
 
         this.builder.Write(moveAnimation);

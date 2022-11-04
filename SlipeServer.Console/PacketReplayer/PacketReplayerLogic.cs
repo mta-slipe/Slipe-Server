@@ -18,6 +18,9 @@ public class PacketReplayerLogic
             Name = "Replayer",
             Position = new System.Numerics.Vector3(0, 0.5f, 3),
             Model = 9,
+            NametagText = "Fake(Re)Player",
+            IsNametagShowing = true,
+            NametagColor = System.Drawing.Color.BlueViolet
         };
         var client = new FakeClient(this.replayer)
         {

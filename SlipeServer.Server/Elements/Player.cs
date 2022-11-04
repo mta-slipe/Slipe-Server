@@ -97,6 +97,43 @@ public class Player : Ped
         }
     }
 
+    private string? nametagText;
+    public string NametagText
+    {
+        get => this.nametagText ?? this.Name;
+        set
+        {
+            var args = new ElementChangedEventArgs<Player, string>(this, this.NametagText, value, this.IsSync);
+            this.nametagText = value;
+            NametagTextChanged?.Invoke(this, args);
+        }
+    }
+
+    private bool isNametagShowing;
+    public bool IsNametagShowing
+    {
+        get => this.isNametagShowing;
+        set
+        {
+            var args = new ElementChangedEventArgs<Player, bool>(this, this.IsNametagShowing, value, this.IsSync);
+            this.isNametagShowing = value;
+            IsNametagShowingChanged?.Invoke(this, args);
+        }
+    }
+
+    private Color? nametagColor;
+    public Color? NametagColor
+    {
+        get => this.nametagColor;
+        set
+        {
+            var args = new ElementChangedEventArgs<Player, Color?>(this, this.NametagColor, value, this.IsSync);
+            this.nametagColor = value;
+            NametagColorChanged?.Invoke(this, args);
+        }
+
+    }
+
     private string DebuggerDisplay => $"{this.Name} ({this.Id})";
 
     public Player() : base(0, Vector3.Zero)
@@ -358,6 +395,9 @@ public class Player : Ped
     }
 
     public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
+    public event ElementChangedEventHandler<Player, string>? NametagTextChanged;
+    public event ElementChangedEventHandler<Player, bool>? IsNametagShowingChanged;
+    public event ElementChangedEventHandler<Player, Color?>? NametagColorChanged;
     public event ElementEventHandler<Player, PlayerDamagedEventArgs>? Damaged;
     public event ElementEventHandler<Player, PlayerSpawnedEventArgs>? Spawned;
     public event ElementEventHandler<Player, PlayerCommandEventArgs>? CommandEntered;

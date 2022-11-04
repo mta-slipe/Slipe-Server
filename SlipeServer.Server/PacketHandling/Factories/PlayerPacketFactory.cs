@@ -38,13 +38,12 @@ public static class PlayerPacketFactory
                 isDead: !player.IsAlive,
                 isInVehicle: player.Vehicle != null,
                 hasJetpack: player.HasJetpack,
-                isNametagShowing: true,
-                isNametagColorOverriden: true,
+                isNametagShowing: player.IsNametagShowing,
                 isHeadless: player.IsHeadless,
                 isFrozen: player.IsFrozen,
 
-                nametagText: player.Name,
-                color: Color.FromArgb(255, 255, 0, 255),
+                nametagText: player.NametagText,
+                nametagColor: player.NametagColor,
                 moveAnimation: 0,
 
                 model: player.Model,
