@@ -8,7 +8,6 @@ using SlipeServer.Server.Structs;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Numerics;
 using System.Timers;
 
@@ -519,7 +518,7 @@ public class GameWorld
         this.server.BroadcastPacket(new RemoveWorldModelPacket(model, range, position, interior));
     }
 
-    public void RestoreWorldModel(ushort model, Vector3  position, float range, byte interior = 0)
+    public void RestoreWorldModel(ushort model, Vector3 position, float range, byte interior = 0)
     {
         this.worldObjectRemovals.RemoveAll(x =>
             Vector3.Distance(x.Position, position) < range && x.Interior == interior && x.Model == model

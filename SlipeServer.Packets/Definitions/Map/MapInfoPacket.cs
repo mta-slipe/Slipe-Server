@@ -79,9 +79,9 @@ public class MapInfoPacket : Packet
 
         builder.Write(new bool[]
         {
-                this.Flags.areNametagsShowing,
-                this.Flags.isRadarShowing,
-                this.Flags.areCloudsEnabled,
+            this.Flags.areCloudsEnabled,
+            this.Flags.isRadarShowing,
+            this.Flags.areNametagsShowing,
         });
 
         builder.Write(this.Gravity);
@@ -97,15 +97,15 @@ public class MapInfoPacket : Packet
 
         builder.Write(new bool[]
         {
-                this.BugsEnabled.closeRangeDamage,
-                this.BugsEnabled.quickReload,
-                this.BugsEnabled.fastFire,
-                this.BugsEnabled.fastMove,
-                this.BugsEnabled.crouchBug,
-                this.BugsEnabled.hitAnimation,
-                this.BugsEnabled.fastSprint,
-                this.BugsEnabled.badDrivebyHitboxes,
-                this.BugsEnabled.quickStand,
+            this.BugsEnabled.closeRangeDamage,
+            this.BugsEnabled.quickReload,
+            this.BugsEnabled.fastFire,
+            this.BugsEnabled.fastMove,
+            this.BugsEnabled.crouchBug,
+            this.BugsEnabled.hitAnimation,
+            this.BugsEnabled.fastSprint,
+            this.BugsEnabled.badDrivebyHitboxes,
+            this.BugsEnabled.quickStand,
         });
 
         builder.Write(this.MaximumJetpackHeight);
