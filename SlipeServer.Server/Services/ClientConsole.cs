@@ -1,6 +1,5 @@
 ﻿using SlipeServer.Packets.Definitions.Commands;
 using SlipeServer.Server.Elements;
-using System;
 
 namespace SlipeServer.Server.Services;
 

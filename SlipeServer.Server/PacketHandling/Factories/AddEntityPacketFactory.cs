@@ -2,8 +2,6 @@
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.ColShapes;
 using SlipeServer.Server.PacketHandling.Builders;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace SlipeServer.Server.PacketHandling.Factories;

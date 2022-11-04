@@ -3,7 +3,6 @@ using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Handlers;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
-using SlipeServer.Server.ElementCollections;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers;
 

@@ -4,7 +4,6 @@ using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Factories;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.ElementCollections;
-using System;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync;
 

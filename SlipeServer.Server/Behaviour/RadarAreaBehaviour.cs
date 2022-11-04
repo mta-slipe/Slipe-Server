@@ -1,6 +1,5 @@
 ﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 using SlipeServer.Server.Elements;
-using SlipeServer.Server.Elements.ColShapes;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.ElementCollections;
 using System.Collections.Generic;

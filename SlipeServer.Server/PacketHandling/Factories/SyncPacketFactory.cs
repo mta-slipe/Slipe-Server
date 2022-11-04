@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using SlipeServer.Packets.Definitions.Sync;
 
 namespace SlipeServer.Server.PacketHandling.Factories;

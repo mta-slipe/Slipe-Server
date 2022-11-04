@@ -1,6 +1,5 @@
 ﻿using SlipeServer.Server.Resources.Interpreters;
 using System.Collections.Generic;
-using System.IO;
 
 namespace SlipeServer.Server.Resources.Providers;
 

@@ -1,12 +1,6 @@
 ﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
-using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SlipeServer.Server.Concepts;
 

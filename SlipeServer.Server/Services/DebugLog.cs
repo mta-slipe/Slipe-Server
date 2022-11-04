@@ -1,7 +1,6 @@
 ﻿using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.PacketHandling.Factories;
-using System;
 using System.Drawing;
 
 namespace SlipeServer.Server.Services;

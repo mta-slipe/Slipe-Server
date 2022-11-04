@@ -1,8 +1,5 @@
 ﻿using SlipeServer.Packets.Enums;
 using System;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Text;
 
 namespace SlipeServer.Server.Elements.Events;
 

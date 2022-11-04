@@ -2,7 +2,6 @@
 using SlipeServer.Packets.Definitions.Player;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
-using System;
 using System.Drawing;
 
 namespace SlipeServer.Server.Services;

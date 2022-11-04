@@ -1,10 +1,6 @@
 using FluentAssertions;
-using SlipeServer.Packets.Builder;
-using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Packets.Reader;
 using SlipeServer.Packets.Structures;
-using System;
-using System.Numerics;
 using Xunit;
 
 namespace SlipeServer.Packets.Tests.Structs;

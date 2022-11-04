@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Extensions.Logging;
+﻿using System.Linq;
 using SlipeServer.Packets.Definitions.Voice;
 using SlipeServer.Server.Elements;
-using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.ElementCollections;
 

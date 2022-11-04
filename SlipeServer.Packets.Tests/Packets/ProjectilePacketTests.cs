@@ -1,12 +1,6 @@
 ﻿using FluentAssertions;
 using SlipeServer.Packets.Definitions.Sync;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace SlipeServer.Packets.Tests.Packets;

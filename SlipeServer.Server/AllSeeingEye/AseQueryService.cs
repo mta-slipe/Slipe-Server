@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using SlipeServer.Server.Elements;
+﻿using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.ElementCollections;
@@ -7,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace SlipeServer.Server.AllSeeingEye;
 

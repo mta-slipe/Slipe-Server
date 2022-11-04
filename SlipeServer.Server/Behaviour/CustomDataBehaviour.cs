@@ -1,5 +1,4 @@
-﻿using SlipeServer.Packets.Definitions.CustomElementData;
-using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
+﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.ElementCollections;

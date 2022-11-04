@@ -1,7 +1,5 @@
 ﻿using SlipeServer.Packets.Enums;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 using SlipeServer.Packets.Reader;
 

@@ -1,10 +1,6 @@
-﻿using System.Diagnostics.Contracts;
-using System.Linq;
-using System.Runtime.Serialization;
-using SlipeServer.Packets.Builder;
+﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
-using System.Text;
 
 namespace SlipeServer.Packets.Definitions.Voice;
 

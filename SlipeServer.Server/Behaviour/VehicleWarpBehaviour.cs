@@ -1,9 +1,6 @@
 ﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
-using SlipeServer.Server.PacketHandling.Factories;
-using System.Collections.Generic;
-using System.Timers;
 
 namespace SlipeServer.Server.Behaviour;
 

@@ -1,8 +1,5 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
-using System;
-using System.Linq;
-using System.Numerics;
 
 namespace SlipeServer.Packets.Lua.Camera;
 

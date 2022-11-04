@@ -1,11 +1,6 @@
-﻿using SlipeServer.Packets.Lua.Camera;
-using SlipeServer.Server.Elements;
+﻿using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Numerics;
-using System.Text;
 
 namespace SlipeServer.Server.Concepts;
 

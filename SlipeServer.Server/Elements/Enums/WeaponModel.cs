@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SlipeServer.Server.Elements.Enums;
+﻿namespace SlipeServer.Server.Elements.Enums;
 
 public enum WeaponModel
 {

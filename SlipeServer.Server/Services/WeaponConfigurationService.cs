@@ -1,5 +1,4 @@
-﻿using SlipeServer.Packets;
-using SlipeServer.Packets.Definitions.Lua.ElementRpc.Weapons;
+﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Weapons;
 using SlipeServer.Server.Constants;
 using SlipeServer.Server.ElementConcepts;
 using SlipeServer.Server.Elements;

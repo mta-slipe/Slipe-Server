@@ -2,7 +2,6 @@
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
 using System;
-using System.Collections.Generic;
 
 namespace SlipeServer.Packets.Definitions.Player;
 

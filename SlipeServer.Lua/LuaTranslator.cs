@@ -1,6 +1,5 @@
 ﻿using MoonSharp.Interpreter;
 using SlipeServer.Scripting;
-using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using System;
 using System.Collections.Generic;

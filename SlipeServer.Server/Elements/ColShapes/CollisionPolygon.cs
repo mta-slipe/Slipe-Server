@@ -2,9 +2,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 
 namespace SlipeServer.Server.Elements.ColShapes;
 
