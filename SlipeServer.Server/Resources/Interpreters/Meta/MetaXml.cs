@@ -8,6 +8,9 @@ public struct MetaXml
     [XmlElement("file")]
     public MetaXmlFile[] files;
 
+    [XmlElement("config")]
+    public MetaXmlConfig[] configs;
+
     [XmlElement("script")]
     public MetaXmlScript[] scripts;
 
@@ -22,6 +25,15 @@ public struct MetaXmlFile
 {
     [XmlAttribute("src")]
     public string Source { get; set; }
+}
+
+public struct MetaXmlConfig
+{
+    [XmlAttribute("src")]
+    public string Source { get; set; }
+
+    [XmlAttribute("type")]
+    public string Type { get; set; }
 }
 
 public struct MetaXmlOop
