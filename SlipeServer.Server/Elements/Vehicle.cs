@@ -51,17 +51,17 @@ public class Vehicle : Element
     {
         get => new()
         {
-            Doors = this.DoorStates,
-            Wheels = this.WheelStates,
-            Panels = this.PanelStates,
-            Lights = this.LightStates
+            Doors = this.doorStates,
+            Wheels = this.wheelStates,
+            Panels = this.panelStates,
+            Lights = this.lightStates
         };
-        set
+        init
         {
-            this.DoorStates = value.Doors;
-            this.WheelStates = value.Wheels;
-            this.PanelStates = value.Panels;
-            this.LightStates = value.Lights;
+            this.doorStates = value.Doors;
+            this.wheelStates = value.Wheels;
+            this.panelStates = value.Panels;
+            this.lightStates = value.Lights;
         }
     }
 
@@ -100,11 +100,32 @@ public class Vehicle : Element
         set => this.adjustableProperty = value;
     }
 
-    public float[] DoorRatios { get; set; }
-    private byte[] DoorStates { get; set; }
-    private byte[] WheelStates { get; set; }
-    private byte[] PanelStates { get; set; }
-    private byte[] LightStates { get; set; }
+    private readonly float[] doorRatios;
+    public float[] DoorRatios
+    {
+        get => this.doorRatios;
+        set
+        {
+            if (this.UpdateContext.HasFlag(ElementUpdateContext.Relay))
+            {
+                for (int i = 0; i < this.doorRatios.Length; i++)
+                    if (value.Length > i)
+                        this.SetDoorOpenRatio((VehicleDoor)i, value[i]);
+            }
+            else
+            {
+                for (int i = 0; i < this.doorRatios.Length; i++)
+                    if (value.Length > i)
+                        this.doorRatios[i] = value[i];
+            }
+        }
+    }
+
+    private byte[] doorStates;
+    private byte[] wheelStates;
+    private byte[] panelStates;
+    private byte[] lightStates;
+
     public VehicleUpgrades Upgrades { get; private set; }
 
     private string plateText = "";
@@ -366,11 +387,11 @@ public class Vehicle : Element
 
         this.Colors = new Colors(this, Color.White, Color.White);
         this.Damage = VehicleDamage.Undamaged;
-        this.DoorRatios = new float[6];
-        this.DoorStates = new byte[6];
-        this.WheelStates = new byte[4];
-        this.PanelStates = new byte[7];
-        this.LightStates = new byte[4];
+        this.doorRatios = new float[6];
+        this.doorStates = new byte[6];
+        this.wheelStates = new byte[4];
+        this.panelStates = new byte[7];
+        this.lightStates = new byte[4];
         this.Upgrades = new(this);
 
         this.Name = $"vehicle{this.Id}";
@@ -449,31 +470,31 @@ public class Vehicle : Element
 
     public void SetDoorState(VehicleDoor door, VehicleDoorState state, bool spawnFlyingComponent = false)
     {
-        this.DoorStates[(int)door] = (byte)state;
+        this.doorStates[(int)door] = (byte)state;
         this.DoorStateChanged?.Invoke(this, new VehicleDoorStateChangedArgs(this, door, state, spawnFlyingComponent));
     }
 
     public void SetWheelState(VehicleWheel wheel, VehicleWheelState state)
     {
-        this.WheelStates[(int)wheel] = (byte)state;
+        this.wheelStates[(int)wheel] = (byte)state;
         this.WheelStateChanged?.Invoke(this, new VehicleWheelStateChangedArgs(this, wheel, state));
     }
 
     public void SetPanelState(VehiclePanel panel, VehiclePanelState state)
     {
-        this.PanelStates[(int)panel] = (byte)state;
+        this.panelStates[(int)panel] = (byte)state;
         this.PanelStateChanged?.Invoke(this, new VehiclePanelStateChangedArgs(this, panel, state));
     }
 
     public void SetLightState(VehicleLight light, VehicleLightState state)
     {
-        this.LightStates[(int)light] = (byte)state;
+        this.lightStates[(int)light] = (byte)state;
         this.LightStateChanged?.Invoke(this, new VehicleLightStateChangedArgs(this, light, state));
     }
 
     public void SetDoorOpenRatio(VehicleDoor door, float ratio, uint time = 0)
     {
-        this.DoorRatios[(int)door] = ratio;
+        this.doorRatios[(int)door] = ratio;
         this.DoorOpenRatioChanged?.Invoke(this, new VehicleDoorOpenRatioChangedArgs(this, door, ratio, time));
     }
 
@@ -482,11 +503,11 @@ public class Vehicle : Element
         this.Pushed?.Invoke(this, new VehiclePushedEventArgs(player));
     }
 
-    public VehicleDoorState GetDoorState(VehicleDoor door) => (VehicleDoorState)this.DoorStates[(int)door];
-    public VehicleWheelState GetWheelState(VehicleWheel wheel) => (VehicleWheelState)this.WheelStates[(int)wheel];
-    public VehiclePanelState GetPanelState(VehiclePanel panel) => (VehiclePanelState)this.PanelStates[(int)panel];
-    public VehicleLightState GetLightState(VehicleLight light) => (VehicleLightState)this.LightStates[(int)light];
-    public float GetDoorOpenRatio(VehicleDoor door) => this.DoorRatios[(int)door];
+    public VehicleDoorState GetDoorState(VehicleDoor door) => (VehicleDoorState)this.doorStates[(int)door];
+    public VehicleWheelState GetWheelState(VehicleWheel wheel) => (VehicleWheelState)this.wheelStates[(int)wheel];
+    public VehiclePanelState GetPanelState(VehiclePanel panel) => (VehiclePanelState)this.panelStates[(int)panel];
+    public VehicleLightState GetLightState(VehicleLight light) => (VehicleLightState)this.lightStates[(int)light];
+    public float GetDoorOpenRatio(VehicleDoor door) => this.doorRatios[(int)door];
 
     public void ResetDoorsWheelsPanelsLights()
     {
