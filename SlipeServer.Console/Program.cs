@@ -98,6 +98,7 @@ public partial class Program
                 builder.AddLogic<LuaEventTestLogic>();
                 builder.AddLogic<ServiceUsageTestLogic>();
                 builder.AddLogic<NametagTestLogic>();
+                builder.AddLogic<VehicleTestLogic>();
                 //builder.AddBehaviour<VelocityBehaviour>();
                 //builder.AddBehaviour<EventLoggingBehaviour>();
 

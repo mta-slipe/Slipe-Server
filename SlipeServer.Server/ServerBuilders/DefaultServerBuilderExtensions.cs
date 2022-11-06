@@ -197,6 +197,8 @@ public static class DefaultServerBuilderExtensions
             builder.AddBehaviour<CustomDataBehaviour>();
         if ((except & ServerBuilderDefaultBehaviours.PlayerBehaviour) == 0)
             builder.AddBehaviour<PlayerBehaviour>();
+        if ((except & ServerBuilderDefaultBehaviours.VehicleHandlingBehaviour) == 0)
+            builder.AddBehaviour<VehicleHandlingBehaviour>();
     }
 
     public static void AddDefaultServices(

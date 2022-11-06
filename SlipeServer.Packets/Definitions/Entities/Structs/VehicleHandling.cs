@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using SlipeServer.Packets.Enums;
+using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Entities.Structs;
 
@@ -13,8 +14,8 @@ public struct VehicleHandling
 
     public float TractionMultiplier { get; set; }
 
-    public byte DriveType { get; set; }
-    public byte EngineType { get; set; }
+    public VehicleDriveType DriveType { get; set; }
+    public VehicleEngineType EngineType { get; set; }
     public byte NumberOfGears { get; set; }
 
     public float EngineAcceleration { get; set; }
@@ -22,7 +23,7 @@ public struct VehicleHandling
     public float MaxVelocity { get; set; }
 
     public float BrakeDeceleration { get; set; }
-    public float BrakeBids { get; set; }
+    public float BrakeBias { get; set; }
     public bool Abs { get; set; }
 
     public float SteeringLock { get; set; }
@@ -32,8 +33,8 @@ public struct VehicleHandling
     public float SuspensionForceLevel { get; set; }
     public float SuspensionDampening { get; set; }
     public float SuspensionHighSpeedDampening { get; set; }
-    public float SuspennsionUpperLimit { get; set; }
-    public float SuspenionLowerLimit { get; set; }
+    public float SuspensionUpperLimit { get; set; }
+    public float SuspensionLowerLimit { get; set; }
     public float SuspensionFrontRearBias { get; set; }
     public float SuspensionAntiDiveMultiplier { get; set; }
 

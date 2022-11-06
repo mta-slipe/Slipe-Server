@@ -93,6 +93,7 @@ public enum ServerBuilderDefaultBehaviours : ulong
     UnoccupiedVehicleSyncBehaviour = 0x2000000,
     CustomDataBehaviour = 0x4000000,
     PlayerBehaviour = 0x8000000,
+    VehicleHandlingBehaviour = 0x10000000,
 }
 
 [Flags]
