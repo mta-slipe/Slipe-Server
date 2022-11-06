@@ -76,7 +76,7 @@ public class MetaXmlResourceInterpreter : IResourceInterpreter
 
         foreach (var file in meta.configs.Where(x => x.Type == "client"))
         {
-            resourceFiles.Add(ResourceFileFactory.FromBytes(files[file.Source], file.Source, ResourceFileType.Config));
+            resourceFiles.Add(ResourceFileFactory.FromBytes(files[file.Source], file.Source, ResourceFileType.ClientConfig));
         }
 
         return resourceFiles;
