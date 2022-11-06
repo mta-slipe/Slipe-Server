@@ -264,7 +264,21 @@ public class Vehicle : Element
         }
     }
 
-    public VehicleHandling? Handling { get; set; }
+    public VehicleHandling DefaultHandling => VehicleHandlingConstants.GetVehicleHandlingFor(this.model);
+
+    private VehicleHandling? handling;
+    public VehicleHandling? Handling
+    {
+        get => this.handling;
+        set
+        {
+            var args = new ElementChangedEventArgs<Vehicle, VehicleHandling?>(this, this.handling, value, this.IsSync);
+            this.handling = value;
+            HandlingChanged?.Invoke(this, args);
+        }
+    }
+
+    public VehicleHandling AppliedHandling => this.handling ?? this.DefaultHandling;
 
     private VehicleSirenSet? sirens;
     public VehicleSirenSet? Sirens
@@ -616,6 +630,7 @@ public class Vehicle : Element
     public event ElementChangedEventHandler<Vehicle, TrainDirection>? TrainDirectionChanged;
     public event ElementChangedEventHandler<Vehicle, bool>? AreSirensOnChanged;
     public event ElementChangedEventHandler<Vehicle, VehicleSirenSet?>? SirensChanged;
+    public event ElementChangedEventHandler<Vehicle, VehicleHandling?>? HandlingChanged;
     public event ElementEventHandler<Vehicle, VehicleSirenUpdatedEventArgs>? SirenUpdated;
     public event ElementEventHandler<VehicleRespawnEventArgs>? Respawned;
     public event ElementEventHandler<VehicleDoorStateChangedArgs>? DoorStateChanged;

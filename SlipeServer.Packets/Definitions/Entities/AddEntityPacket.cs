@@ -383,8 +383,8 @@ public class AddEntityPacket : Packet
 
         this.builder.Write(handling.TractionMultiplier);
 
-        this.builder.Write(handling.DriveType);
-        this.builder.Write(handling.EngineType);
+        this.builder.Write((byte)handling.DriveType);
+        this.builder.Write((byte)handling.EngineType);
         this.builder.Write(handling.NumberOfGears);
 
         this.builder.Write(handling.EngineAcceleration);
@@ -392,7 +392,7 @@ public class AddEntityPacket : Packet
         this.builder.Write(handling.MaxVelocity);
 
         this.builder.Write(handling.BrakeDeceleration);
-        this.builder.Write(handling.BrakeBids);
+        this.builder.Write(handling.BrakeBias);
         this.builder.Write(handling.Abs);
 
         this.builder.Write(handling.SteeringLock);
@@ -402,8 +402,8 @@ public class AddEntityPacket : Packet
         this.builder.Write(handling.SuspensionForceLevel);
         this.builder.Write(handling.SuspensionDampening);
         this.builder.Write(handling.SuspensionHighSpeedDampening);
-        this.builder.Write(handling.SuspennsionUpperLimit);
-        this.builder.Write(handling.SuspenionLowerLimit);
+        this.builder.Write(handling.SuspensionUpperLimit);
+        this.builder.Write(handling.SuspensionLowerLimit);
         this.builder.Write(handling.SuspensionFrontRearBias);
         this.builder.Write(handling.SuspensionAntiDiveMultiplier);
 
