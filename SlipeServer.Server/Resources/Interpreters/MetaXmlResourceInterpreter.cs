@@ -55,6 +55,7 @@ public class MetaXmlResourceInterpreter : IResourceInterpreter
             Files = GetFilesForMetaXmlResource(meta.Value, files),
             Exports = GetExportsForMetaXmlResource(meta.Value).ToList(),
             NoClientScripts = GetNoCacheFiles(meta.Value, files),
+            IsOopEnabled = meta.Value.oops.Any(x => x.Data.ToLower() == "true")
         };
         return resource;
     }

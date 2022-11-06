@@ -13,12 +13,21 @@ public struct MetaXml
 
     [XmlElement("export")]
     public MetaXmlExport[] exports;
+
+    [XmlElement("oop")]
+    public MetaXmlOop[] oops;
 }
 
 public struct MetaXmlFile
 {
     [XmlAttribute("src")]
     public string Source { get; set; }
+}
+
+public struct MetaXmlOop
+{
+    [XmlText()]
+    public string Data { get; set; }
 }
 
 public struct MetaXmlScript

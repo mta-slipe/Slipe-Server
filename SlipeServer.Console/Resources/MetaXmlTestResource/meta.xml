@@ -8,4 +8,6 @@
 
 	<export type="client" function="exportMeBaby"></export>
 	<export type="server" function="doNotExportMeBecauseIAmServerSided"></export>
+	
+	<oop>false</oop>
 </meta>

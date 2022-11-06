@@ -21,6 +21,7 @@ public class Resource
     public Dictionary<string, byte[]> NoClientScripts { get; init; }
     public string Name { get; }
     public string Path { get; }
+    public bool IsOopEnabled { get; set; }
 
     public Resource(
         MtaServer server, 
@@ -53,7 +54,7 @@ public class Resource
     public void Start()
     {
         this.server.BroadcastPacket(new ResourceStartPacket(
-            this.Name, this.NetId, this.Root.Id, this.DynamicRoot.Id, 0, null, null, false, this.PriorityGroup, this.Files, this.Exports)
+            this.Name, this.NetId, this.Root.Id, this.DynamicRoot.Id, 0, null, null, this.IsOopEnabled, this.PriorityGroup, this.Files, this.Exports)
         );
 
         this.server.BroadcastPacket(new ResourceClientScriptsPacket(
