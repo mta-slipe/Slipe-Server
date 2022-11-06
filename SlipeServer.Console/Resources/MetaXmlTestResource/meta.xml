@@ -4,6 +4,7 @@
 	<script src="servertest.lua" type="server"></script>
 	
 	<file src="file.txt"></file>
+	<file src="directory/file.txt"></file>
 
 	<export type="client" function="exportMeBaby"></export>
 	<export type="server" function="doNotExportMeBecauseIAmServerSided"></export>
