@@ -3,7 +3,7 @@
 public enum BlipIcon
 {
     Marker,
-    WhiteWquare,
+    WhiteSquare,
     Centre,
     MapHere,
     North,
