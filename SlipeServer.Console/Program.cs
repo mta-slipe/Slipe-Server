@@ -100,6 +100,7 @@ public partial class Program
                 builder.AddLogic<NametagTestLogic>();
                 builder.AddLogic<VehicleTestLogic>();
                 builder.AddLogic<ClothingTestLogic>();
+                builder.AddLogic<PedTestLogic>();
                 //builder.AddBehaviour<VelocityBehaviour>();
                 //builder.AddBehaviour<EventLoggingBehaviour>();
 

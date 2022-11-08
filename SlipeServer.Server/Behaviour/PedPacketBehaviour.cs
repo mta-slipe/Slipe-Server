@@ -36,6 +36,8 @@ public class PedPacketBehaviour
             ped.JetpackStateChanged += RelayJetpackStateChanged;
             ped.StatChanged += RelayStatChanged;
             ped.Clothing.Changed += RelayClothesChanged;
+            ped.AnimationStarted += RelayPedAnimationStart;
+            ped.AnimationStopped += RelayPedAnimationStop;
 
             if (ped is not Player)
             {
@@ -118,5 +120,25 @@ public class PedPacketBehaviour
     {
         var packet = PedPacketFactory.CreatePlayerStatsPacket(sender);
         this.server.BroadcastPacket(packet);
+    }
+
+    private void RelayPedAnimationStart(Ped sender, PedAnimationStartedEventArgs e)
+    {
+        this.server.BroadcastPacket(new SetPedAnimationRpcPacket(
+            sender.Id,
+            e.Block,
+            e.Animation,
+            (int)e.Time.TotalMilliseconds,
+            e.Loops,
+            e.UpdatesPosition,
+            e.IsInteruptable,
+            e.FreezesOnLastFrame,
+            e.BlendTime.Milliseconds,
+            e.RetainPedState));
+    }
+
+    private void RelayPedAnimationStop(Ped sender, System.EventArgs e)
+    {
+        this.server.BroadcastPacket(new StopPedAnimationRpcPacket(sender.Id));
     }
 }
