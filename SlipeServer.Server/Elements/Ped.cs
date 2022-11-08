@@ -347,6 +347,12 @@ public class Ped : Element
         this.AnimationStopped?.Invoke(this, EventArgs.Empty);
     }
 
+    public void SetAnimationProgress(string animation, float progress)
+        => this.AnimationProgressChanged?.Invoke(this, new(this, animation, progress));
+
+    public void SetAnimationSpeed(string animation, float speed) 
+        => this.AnimationSpeedChanged?.Invoke(this, new(this, animation, speed));
+
     public event ElementEventHandler<Ped, PedWastedEventArgs>? Wasted;
     public event ElementChangedEventHandler<Ped, ushort>? ModelChanged;
     public event ElementChangedEventHandler<Ped, float>? HealthChanged;
@@ -362,4 +368,6 @@ public class Ped : Element
     public event ElementEventHandler<Ped, AmmoUpdateEventArgs>? AmmoUpdated;
     public event ElementEventHandler<Ped, PedAnimationStartedEventArgs>? AnimationStarted;
     public event ElementEventHandler<Ped, EventArgs>? AnimationStopped;
+    public event ElementEventHandler<Ped, PedAnimationProgressChangedEventArgs>? AnimationProgressChanged;
+    public event ElementEventHandler<Ped, PedAnimationSpeedChangedEventArgs>? AnimationSpeedChanged;
 }

@@ -38,6 +38,8 @@ public class PedPacketBehaviour
             ped.Clothing.Changed += RelayClothesChanged;
             ped.AnimationStarted += RelayPedAnimationStart;
             ped.AnimationStopped += RelayPedAnimationStop;
+            ped.AnimationProgressChanged += RelayPedAnimationProgress;
+            ped.AnimationSpeedChanged += RelayPedAnimationSpeed;
 
             if (ped is not Player)
             {
@@ -140,5 +142,15 @@ public class PedPacketBehaviour
     private void RelayPedAnimationStop(Ped sender, System.EventArgs e)
     {
         this.server.BroadcastPacket(new StopPedAnimationRpcPacket(sender.Id));
+    }
+
+    private void RelayPedAnimationProgress(Ped sender, PedAnimationProgressChangedEventArgs e)
+    {
+        this.server.BroadcastPacket(new SetPedAnimationProgressRpcPacket(sender.Id, e.Animation, e.Progress));
+    }
+
+    private void RelayPedAnimationSpeed(Ped sender, PedAnimationSpeedChangedEventArgs e)
+    {
+        this.server.BroadcastPacket(new SetPedAnimationSpeedRpcPacket(sender.Id, e.Animation, e.Speed));
     }
 }

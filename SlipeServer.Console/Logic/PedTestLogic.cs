@@ -51,6 +51,32 @@ public class PedTestLogic
             this.ped.SetAnimation(args.Arguments[0], args.Arguments[1], updatesPosition: false);
         };
 
+        this.commandService.AddCommand("pedanimprogress").Triggered += (source, args) =>
+        {
+            if (args.Arguments.Length < 1)
+                return;
+
+            var progress = 0f;
+            if (args.Arguments.Length > 1)
+                if (!float.TryParse(args.Arguments[1], out progress))
+                    progress = 0;
+
+            this.ped.SetAnimationProgress(args.Arguments[0], progress);
+        };
+
+        this.commandService.AddCommand("pedanimspeed").Triggered += (source, args) =>
+        {
+            if (args.Arguments.Length < 1)
+                return;
+
+            var speed = 1f;
+            if (args.Arguments.Length > 1)
+                if (!float.TryParse(args.Arguments[1], out speed))
+                    speed = 1;
+
+            this.ped.SetAnimationSpeed(args.Arguments[0], speed);
+        };
+
         this.commandService.AddCommand("stoppedanim").Triggered += (source, args) =>
         {
             this.ped.StopAnimation();
