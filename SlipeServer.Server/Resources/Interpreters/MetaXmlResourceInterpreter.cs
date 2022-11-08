@@ -64,19 +64,28 @@ public class MetaXmlResourceInterpreter : IResourceInterpreter
     {
         List<ResourceFile> resourceFiles = new List<ResourceFile>();
 
-        foreach (var file in meta.files)
+        if (meta.files != null)
         {
-            resourceFiles.Add(ResourceFileFactory.FromBytes(files[file.Source], file.Source, ResourceFileType.ClientFile));
+            foreach (var file in meta.files)
+            {
+                resourceFiles.Add(ResourceFileFactory.FromBytes(files[file.Source], file.Source, ResourceFileType.ClientFile));
+            }
         }
 
-        foreach (var file in meta.scripts.Where(x => x.Type == "client" && x.Cache != "false"))
+        if (meta.scripts != null)
         {
-            resourceFiles.Add(ResourceFileFactory.FromBytes(files[file.Source], file.Source, ResourceFileType.ClientScript));
+            foreach (var file in meta.scripts.Where(x => x.Type == "client" && x.Cache != "false"))
+            {
+                resourceFiles.Add(ResourceFileFactory.FromBytes(files[file.Source], file.Source, ResourceFileType.ClientScript));
+            }
         }
 
-        foreach (var file in meta.configs.Where(x => x.Type == "client"))
+        if (meta.configs != null)
         {
-            resourceFiles.Add(ResourceFileFactory.FromBytes(files[file.Source], file.Source, ResourceFileType.ClientConfig));
+            foreach (var file in meta.configs.Where(x => x.Type == "client"))
+            {
+                resourceFiles.Add(ResourceFileFactory.FromBytes(files[file.Source], file.Source, ResourceFileType.ClientConfig));
+            }
         }
 
         return resourceFiles;

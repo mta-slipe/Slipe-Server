@@ -4,9 +4,17 @@ using System.Collections.Generic;
 
 namespace SlipeServer.Server.Constants;
 
-public class ClothesConstants
+public class ClothingConstants
 {
-    public static Dictionary<ClothingType, PedClothing[]> ClothesTextureModel = new Dictionary<ClothingType, PedClothing[]>
+    public static Dictionary<ClothingType, byte> Defaults { get; } = new()
+    {
+        [ClothingType.Shirt] = 1,
+        [ClothingType.Head] = 0,
+        [ClothingType.Trousers] = 7,
+        [ClothingType.Shoes] = 6,
+    };
+
+    public static Dictionary<ClothingType, PedClothing[]> ClothesTextureModel { get; } = new()
     {
         [ClothingType.Shirt] = new PedClothing[] {
                 new PedClothing("player_torso", "torso", (byte)ClothingType.Shirt),

@@ -2,7 +2,7 @@
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc;
 
-public enum ElementRpcFunction
+public enum ElementRpcFunction : byte
 {
     DONT_USE_0 = 0,
     SET_TIME,

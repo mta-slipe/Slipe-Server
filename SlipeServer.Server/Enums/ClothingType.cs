@@ -1,6 +1,6 @@
 ﻿namespace SlipeServer.Server.Enums;
 
-public enum ClothingType
+public enum ClothingType : byte
 {
     Shirt,
     Head,

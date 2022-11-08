@@ -2,6 +2,7 @@
 using SlipeServer.Server.Constants;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
+using SlipeServer.Server.Enums;
 using System;
 using System.Collections.Generic;
 
@@ -18,45 +19,188 @@ public class Clothing
 
     public IEnumerable<PedClothing> GetClothing()
     {
-        if (this.Shirt != 255)
-            yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.Shirt][this.Shirt];
-        if (this.Head != 255)
-            yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.Head][this.Head];
-        if (this.Trousers != 255)
-            yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.Trousers][this.Trousers];
-        if (this.Shoes != 255)
-            yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.Shoes][this.Shoes];
-        if (this.TattoosLeftUpperArm != 255)
-            yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.TattoosLeftUpperArm][this.TattoosLeftUpperArm];
-        if (this.TattoosLeftLowerArm != 255)
-            yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.TattoosLeftLowerArm][this.TattoosLeftLowerArm];
-        if (this.TattoosRightUpperArm != 255)
-            yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.TattoosRightUpperArm][this.TattoosRightUpperArm];
-        if (this.TattoosRightLowerArm != 255)
-            yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.TattoosRightLowerArm][this.TattoosRightLowerArm];
-        if (this.TattoosBack != 255)
-            yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.TattoosBack][this.TattoosBack];
-        if (this.TattoosLeftChest != 255)
-            yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.TattoosLeftChest][this.TattoosLeftChest];
-        if (this.TattoosRightChest != 255)
-            yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.TattoosRightChest][this.TattoosRightChest];
-        if (this.TattoosStomach != 255)
-            yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.TattoosStomach][this.TattoosStomach];
-        if (this.TattoosLowerBack != 255)
-            yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.TattoosLowerBack][this.TattoosLowerBack];
-        if (this.Necklace != 255)
-            yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.Necklace][this.Necklace];
-        if (this.Watch != 255)
-            yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.Watches][this.Watch];
-        if (this.Glasses != 255)
-            yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.Glasses][this.Glasses];
-        if (this.Hat != 255)
-            yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.Hats][this.Hat];
-        if (this.Extra != 255)
-            yield return ClothesConstants.ClothesTextureModel[Enums.ClothingType.Extra][this.Extra];
+        yield return ClothingConstants.ClothesTextureModel[Enums.ClothingType.Shirt][this.Shirt];
+        yield return ClothingConstants.ClothesTextureModel[Enums.ClothingType.Head][this.Head];
+        yield return ClothingConstants.ClothesTextureModel[Enums.ClothingType.Trousers][this.Trousers];
+        yield return ClothingConstants.ClothesTextureModel[Enums.ClothingType.Shoes][this.Shoes];
+
+        if (this.TattoosLeftUpperArm.HasValue)
+            yield return ClothingConstants.ClothesTextureModel[Enums.ClothingType.TattoosLeftUpperArm][this.TattoosLeftUpperArm.Value];
+        if (this.TattoosLeftLowerArm.HasValue)
+            yield return ClothingConstants.ClothesTextureModel[Enums.ClothingType.TattoosLeftLowerArm][this.TattoosLeftLowerArm.Value];
+        if (this.TattoosRightUpperArm.HasValue)
+            yield return ClothingConstants.ClothesTextureModel[Enums.ClothingType.TattoosRightUpperArm][this.TattoosRightUpperArm.Value];
+        if (this.TattoosRightLowerArm.HasValue)
+            yield return ClothingConstants.ClothesTextureModel[Enums.ClothingType.TattoosRightLowerArm][this.TattoosRightLowerArm.Value];
+        if (this.TattoosBack.HasValue)
+            yield return ClothingConstants.ClothesTextureModel[Enums.ClothingType.TattoosBack][this.TattoosBack.Value];
+        if (this.TattoosLeftChest.HasValue)
+            yield return ClothingConstants.ClothesTextureModel[Enums.ClothingType.TattoosLeftChest][this.TattoosLeftChest.Value];
+        if (this.TattoosRightChest.HasValue)
+            yield return ClothingConstants.ClothesTextureModel[Enums.ClothingType.TattoosRightChest][this.TattoosRightChest.Value];
+        if (this.TattoosStomach.HasValue)
+            yield return ClothingConstants.ClothesTextureModel[Enums.ClothingType.TattoosStomach][this.TattoosStomach.Value];
+        if (this.TattoosLowerBack.HasValue)
+            yield return ClothingConstants.ClothesTextureModel[Enums.ClothingType.TattoosLowerBack][this.TattoosLowerBack.Value];
+        if (this.Necklace.HasValue)
+            yield return ClothingConstants.ClothesTextureModel[Enums.ClothingType.Necklace][this.Necklace.Value];
+        if (this.Watch.HasValue)
+            yield return ClothingConstants.ClothesTextureModel[Enums.ClothingType.Watches][this.Watch.Value];
+        if (this.Glasses.HasValue)
+            yield return ClothingConstants.ClothesTextureModel[Enums.ClothingType.Glasses][this.Glasses.Value];
+        if (this.Hat.HasValue)
+            yield return ClothingConstants.ClothesTextureModel[Enums.ClothingType.Hats][this.Hat.Value];
+        if (this.Extra.HasValue)
+            yield return ClothingConstants.ClothesTextureModel[Enums.ClothingType.Extra][this.Extra.Value];
     }
 
-    private byte shirt = 255;
+    public void AddClothing(PedClothing clothing)
+    {
+        var type = (ClothingType)clothing.Type;
+        var value = (byte)Array.FindIndex(ClothingConstants.ClothesTextureModel[type], x => x.Model == clothing.Model && x.Texture == clothing.Texture);
+        switch (type)
+        {
+            case ClothingType.Shirt:
+                this.Shirt = value;
+                break;
+            case ClothingType.Head:
+                this.Head = value;
+                break;
+            case ClothingType.Trousers:
+                this.Trousers = value;
+                break;
+            case ClothingType.Shoes:
+                this.Shoes = value;
+                break;
+            case ClothingType.TattoosLeftUpperArm:
+                this.TattoosLeftUpperArm = value;
+                break;
+            case ClothingType.TattoosLeftLowerArm:
+                this.TattoosLeftLowerArm = value;
+                break;
+            case ClothingType.TattoosRightUpperArm:
+                this.TattoosRightUpperArm = value;
+                break;
+            case ClothingType.TattoosRightLowerArm:
+                this.TattoosRightLowerArm = value;
+                break;
+            case ClothingType.TattoosBack:
+                this.TattoosBack = value;
+                break;
+            case ClothingType.TattoosLeftChest:
+                this.TattoosLeftChest = value;
+                break;
+            case ClothingType.TattoosRightChest:
+                this.TattoosRightChest = value;
+                break;
+            case ClothingType.TattoosStomach:
+                this.TattoosStomach = value;
+                break;
+            case ClothingType.TattoosLowerBack:
+                this.TattoosLowerBack = value;
+                break;
+            case ClothingType.Necklace:
+                this.Necklace = value;
+                break;
+            case ClothingType.Watches:
+                this.Watch = value;
+                break;
+            case ClothingType.Glasses:
+                this.Glasses = value;
+                break;
+            case ClothingType.Hats:
+                this.Hat = value;
+                break;
+            case ClothingType.Extra:
+                this.Extra = value;
+                break;
+        }
+    }
+
+    public void RemoveClothing(ClothingType type)
+    {
+        switch (type)
+        {
+            case ClothingType.Shirt:
+                this.Shirt = ClothingConstants.Defaults[type];
+                break;
+            case ClothingType.Head:
+                this.Head = ClothingConstants.Defaults[type];
+                break;
+            case ClothingType.Trousers:
+                this.Trousers = ClothingConstants.Defaults[type];
+                break;
+            case ClothingType.Shoes:
+                this.Shoes = ClothingConstants.Defaults[type];
+                break;
+            case ClothingType.TattoosLeftUpperArm:
+                this.TattoosLeftUpperArm = null;
+                break;
+            case ClothingType.TattoosLeftLowerArm:
+                this.TattoosLeftLowerArm = null;
+                break;
+            case ClothingType.TattoosRightUpperArm:
+                this.TattoosRightUpperArm = null;
+                break;
+            case ClothingType.TattoosRightLowerArm:
+                this.TattoosRightLowerArm = null;
+                break;
+            case ClothingType.TattoosBack:
+                this.TattoosBack = null;
+                break;
+            case ClothingType.TattoosLeftChest:
+                this.TattoosLeftChest = null;
+                break;
+            case ClothingType.TattoosRightChest:
+                this.TattoosRightChest = null;
+                break;
+            case ClothingType.TattoosStomach:
+                this.TattoosStomach = null;
+                break;
+            case ClothingType.TattoosLowerBack:
+                this.TattoosLowerBack = null;
+                break;
+            case ClothingType.Necklace:
+                this.Necklace = null;
+                break;
+            case ClothingType.Watches:
+                this.Watch = null;
+                break;
+            case ClothingType.Glasses:
+                this.Glasses = null;
+                break;
+            case ClothingType.Hats:
+                this.Hat = null;
+                break;
+            case ClothingType.Extra:
+                this.Extra = null;
+                break;
+        }
+    }
+
+    public void Reset()
+    {
+        this.Shirt = ClothingConstants.Defaults[ClothingType.Shirt];
+        this.Head = ClothingConstants.Defaults[ClothingType.Head];
+        this.Trousers = ClothingConstants.Defaults[ClothingType.Trousers];
+        this.Shoes = ClothingConstants.Defaults[ClothingType.Shoes];
+        this.TattoosLeftUpperArm = null;
+        this.TattoosLeftLowerArm = null;
+        this.TattoosRightUpperArm = null;
+        this.TattoosRightLowerArm = null;
+        this.TattoosBack = null;
+        this.TattoosLeftChest = null;
+        this.TattoosRightChest = null;
+        this.TattoosStomach = null;
+        this.TattoosLowerBack = null;
+        this.Necklace = null;
+        this.Watch = null;
+        this.Glasses = null;
+        this.Hat = null;
+        this.Extra = null;
+    }
+
+    private byte shirt = ClothingConstants.Defaults[ClothingType.Shirt];
     public byte Shirt
     {
         get => this.shirt;
@@ -64,19 +208,19 @@ public class Clothing
         {
             if (this.ped.Model == 0 && value != this.Shirt)
             {
-                if (value >= 0 && value <= ClothesConstants.ShirtsCount)
+                if (value >= 0 && value <= ClothingConstants.ShirtsCount)
                 {
                     Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.Shirt, this.Shirt, value));
                     this.shirt = value;
                 } else
                 {
-                    throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.Shirt}.");
+                    throw new ArgumentOutOfRangeException($"{value} is invalid clothing id for {Enums.ClothingType.Shirt}.");
                 }
             }
         }
     }
 
-    private byte head = 255;
+    private byte head = ClothingConstants.Defaults[ClothingType.Head];
     public byte Head
     {
         get => this.head;
@@ -84,19 +228,19 @@ public class Clothing
         {
             if (this.ped.Model == 0 && value != this.Head)
             {
-                if (value >= 0 && value <= ClothesConstants.HeadsCount)
+                if (value >= 0 && value <= ClothingConstants.HeadsCount)
                 {
                     Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.Head, this.Head, value));
                     this.head = value;
                 } else
                 {
-                    throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.Head}.");
+                    throw new ArgumentOutOfRangeException($"{value} is invalid clothing id for {Enums.ClothingType.Head}.");
                 }
             }
         }
     }
 
-    private byte trousers = 255;
+    private byte trousers = ClothingConstants.Defaults[ClothingType.Trousers];
     public byte Trousers
     {
         get => this.trousers;
@@ -104,19 +248,19 @@ public class Clothing
         {
             if (this.ped.Model == 0 && value != this.Trousers)
             {
-                if (value >= 0 && value <= ClothesConstants.TrousersCount)
+                if (value >= 0 && value <= ClothingConstants.TrousersCount)
                 {
                     Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.Trousers, this.Trousers, value));
                     this.trousers = value;
                 } else
                 {
-                    throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.Trousers}.");
+                    throw new ArgumentOutOfRangeException($"{value} is invalid clothing id for {Enums.ClothingType.Trousers}.");
                 }
             }
         }
     }
 
-    private byte shoes = 255;
+    private byte shoes = ClothingConstants.Defaults[ClothingType.Shoes];
     public byte Shoes
     {
         get => this.shoes;
@@ -124,293 +268,293 @@ public class Clothing
         {
             if (this.ped.Model == 0 && value != this.Shoes)
             {
-                if (value >= 0 && value <= ClothesConstants.ShoesCount)
+                if (value >= 0 && value <= ClothingConstants.ShoesCount)
                 {
                     Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.Shoes, this.Shoes, value));
                     this.shoes = value;
                 } else
                 {
-                    throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.Shoes}.");
+                    throw new ArgumentOutOfRangeException($"{value} is invalid clothing id for {Enums.ClothingType.Shoes}.");
                 }
             }
         }
     }
 
-    private byte tattoosLeftUpperArm = 255;
-    public byte TattoosLeftUpperArm
+    private byte? tattoosLeftUpperArm;
+    public byte? TattoosLeftUpperArm
     {
         get => this.tattoosLeftUpperArm;
         set
         {
             if (this.ped.Model == 0 && value != this.TattoosLeftUpperArm)
             {
-                if (value >= 0 && value <= ClothesConstants.TattoosLeftUpperArmCount)
+                if (value >= 0 && value <= ClothingConstants.TattoosLeftUpperArmCount || value == null)
                 {
                     Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.TattoosLeftUpperArm, this.TattoosLeftUpperArm, value));
                     this.tattoosLeftUpperArm = value;
                 } else
                 {
-                    throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.TattoosLeftUpperArm}.");
+                    throw new ArgumentOutOfRangeException($"{value} is invalid clothing id for {Enums.ClothingType.TattoosLeftUpperArm}.");
                 }
             }
         }
     }
 
-    private byte tattoosLeftLowerArm = 255;
-    public byte TattoosLeftLowerArm
+    private byte? tattoosLeftLowerArm;
+    public byte? TattoosLeftLowerArm
     {
         get => this.tattoosLeftLowerArm;
         set
         {
             if (this.ped.Model == 0 && value != this.TattoosLeftUpperArm)
             {
-                if (value >= 0 && value <= ClothesConstants.TattoosLeftLowerArmCount)
+                if (value >= 0 && value <= ClothingConstants.TattoosLeftLowerArmCount || value == null)
                 {
                     Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.TattoosLeftLowerArm, this.TattoosLeftLowerArm, value));
                     this.tattoosLeftLowerArm = value;
                 } else
                 {
-                    throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.TattoosLeftLowerArm}.");
+                    throw new ArgumentOutOfRangeException($"{value} is invalid clothing id for {Enums.ClothingType.TattoosLeftLowerArm}.");
                 }
             }
         }
     }
 
-    private byte tattoosRightUpperArm = 255;
-    public byte TattoosRightUpperArm
+    private byte? tattoosRightUpperArm;
+    public byte? TattoosRightUpperArm
     {
         get => this.tattoosRightUpperArm;
         set
         {
             if (this.ped.Model == 0 && value != this.TattoosRightUpperArm)
             {
-                if (value >= 0 && value <= ClothesConstants.TattoosRightUpperArmCount)
+                if (value >= 0 && value <= ClothingConstants.TattoosRightUpperArmCount || value == null)
                 {
                     Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.TattoosRightUpperArm, this.TattoosRightUpperArm, value));
                     this.tattoosRightUpperArm = value;
                 } else
                 {
-                    throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.TattoosRightUpperArm}.");
+                    throw new ArgumentOutOfRangeException($"{value} is invalid clothing id for {Enums.ClothingType.TattoosRightUpperArm}.");
                 }
             }
         }
     }
 
-    private byte tattoosRightLowerArm = 255;
-    public byte TattoosRightLowerArm
+    private byte? tattoosRightLowerArm;
+    public byte? TattoosRightLowerArm
     {
         get => this.tattoosRightLowerArm;
         set
         {
             if (this.ped.Model == 0 && value != this.TattoosRightLowerArm)
             {
-                if (value >= 0 && value <= ClothesConstants.TattoosRightLowerArmCount)
+                if (value >= 0 && value <= ClothingConstants.TattoosRightLowerArmCount || value == null)
                 {
                     Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.TattoosRightLowerArm, this.TattoosRightLowerArm, value));
                     this.tattoosRightLowerArm = value;
                 } else
                 {
-                    throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.TattoosRightLowerArm}.");
+                    throw new ArgumentOutOfRangeException($"{value} is invalid clothing id for {Enums.ClothingType.TattoosRightLowerArm}.");
                 }
             }
         }
     }
 
-    private byte tattoosBack = 255;
-    public byte TattoosBack
+    private byte? tattoosBack;
+    public byte? TattoosBack
     {
         get => this.tattoosBack;
         set
         {
             if (this.ped.Model == 0 && value != this.TattoosBack)
             {
-                if (value >= 0 && value <= ClothesConstants.TattoosBackCount)
+                if (value >= 0 && value <= ClothingConstants.TattoosBackCount || value == null)
                 {
                     Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.TattoosBack, this.TattoosBack, value));
                     this.tattoosBack = value;
                 } else
                 {
-                    throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.TattoosBack}.");
+                    throw new ArgumentOutOfRangeException($"{value} is invalid clothing id for {Enums.ClothingType.TattoosBack}.");
                 }
             }
         }
     }
 
-    private byte tattoosLeftChest = 255;
-    public byte TattoosLeftChest
+    private byte? tattoosLeftChest;
+    public byte? TattoosLeftChest
     {
         get => this.tattoosLeftChest;
         set
         {
             if (this.ped.Model == 0 && value != this.TattoosLeftChest)
             {
-                if (value >= 0 && value <= ClothesConstants.TattoosLeftChestCount)
+                if (value >= 0 && value <= ClothingConstants.TattoosLeftChestCount || value == null)
                 {
                     Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.TattoosLeftChest, this.TattoosLeftChest, value));
                     this.tattoosLeftChest = value;
                 } else
                 {
-                    throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.TattoosLeftChest}.");
+                    throw new ArgumentOutOfRangeException($"{value} is invalid clothing id for {Enums.ClothingType.TattoosLeftChest}.");
                 }
             }
         }
     }
 
-    private byte tattoosRightChest = 255;
-    public byte TattoosRightChest
+    private byte? tattoosRightChest;
+    public byte? TattoosRightChest
     {
         get => this.tattoosRightChest;
         set
         {
             if (this.ped.Model == 0 && value != this.TattoosRightChest)
             {
-                if (value >= 0 && value <= ClothesConstants.TattoosRightChestCount)
+                if (value >= 0 && value <= ClothingConstants.TattoosRightChestCount || value == null)
                 {
                     Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.TattoosRightChest, this.TattoosRightChest, value));
                     this.tattoosRightChest = value;
                 } else
                 {
-                    throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.TattoosRightChest}.");
+                    throw new ArgumentOutOfRangeException($"{value} is invalid clothing id for {Enums.ClothingType.TattoosRightChest}.");
                 }
             }
         }
     }
 
-    private byte tattoosStomach = 255;
-    public byte TattoosStomach
+    private byte? tattoosStomach;
+    public byte? TattoosStomach
     {
         get => this.tattoosStomach;
         set
         {
             if (this.ped.Model == 0 && value != this.TattoosStomach)
             {
-                if (value >= 0 && value <= ClothesConstants.TattoosStomachCount)
+                if (value >= 0 && value <= ClothingConstants.TattoosStomachCount || value == null)
                 {
                     Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.TattoosStomach, this.TattoosStomach, value));
                     this.tattoosStomach = value;
                 } else
                 {
-                    throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.TattoosStomach}.");
+                    throw new ArgumentOutOfRangeException($"{value} is invalid clothing id for {Enums.ClothingType.TattoosStomach}.");
                 }
             }
         }
     }
 
-    private byte tattoosLowerBack = 255;
-    public byte TattoosLowerBack
+    private byte? tattoosLowerBack;
+    public byte? TattoosLowerBack
     {
         get => this.tattoosLowerBack;
         set
         {
             if (this.ped.Model == 0 && value != this.TattoosLowerBack)
             {
-                if (value >= 0 && value <= ClothesConstants.TattoosLowerBackCount)
+                if (value >= 0 && value <= ClothingConstants.TattoosLowerBackCount || value == null)
                 {
                     Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.TattoosLowerBack, this.TattoosLowerBack, value));
                     this.tattoosLowerBack = value;
                 } else
                 {
-                    throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.TattoosLowerBack}.");
+                    throw new ArgumentOutOfRangeException($"{value} is invalid clothing id for {Enums.ClothingType.TattoosLowerBack}.");
                 }
             }
         }
     }
 
-    private byte necklace = 255;
-    public byte Necklace
+    private byte? necklace;
+    public byte? Necklace
     {
         get => this.necklace;
         set
         {
             if (this.ped.Model == 0 && value != this.Necklace)
             {
-                if (value >= 0 && value <= ClothesConstants.NecklaceCount)
+                if (value >= 0 && value <= ClothingConstants.NecklaceCount || value == null)
                 {
                     Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.Necklace, this.Necklace, value));
                     this.necklace = value;
                 } else
                 {
-                    throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.Necklace}.");
+                    throw new ArgumentOutOfRangeException($"{value} is invalid clothing id for {Enums.ClothingType.Necklace}.");
                 }
             }
         }
     }
 
-    private byte watch = 255;
-    public byte Watch
+    private byte? watch;
+    public byte? Watch
     {
         get => this.watch;
         set
         {
             if (this.ped.Model == 0 && value != this.Watch)
             {
-                if (value >= 0 && value <= ClothesConstants.WatchesCount)
+                if (value >= 0 && value <= ClothingConstants.WatchesCount || value == null)
                 {
                     Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.Watches, this.Watch, value));
                     this.watch = value;
                 } else
                 {
-                    throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.Watches}.");
+                    throw new ArgumentOutOfRangeException($"{value} is invalid clothing id for {Enums.ClothingType.Watches}.");
                 }
             }
         }
     }
 
-    private byte glasses = 255;
-    public byte Glasses
+    private byte? glasses;
+    public byte? Glasses
     {
         get => this.glasses;
         set
         {
             if (this.ped.Model == 0 && value != this.Glasses)
             {
-                if (value >= 0 && value <= ClothesConstants.GlassesCount)
+                if (value >= 0 && value <= ClothingConstants.GlassesCount || value == null)
                 {
                     Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.Glasses, this.glasses, value));
                     this.glasses = value;
                 } else
                 {
-                    throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.Glasses}.");
+                    throw new ArgumentOutOfRangeException($"{value} is invalid clothing id for {Enums.ClothingType.Glasses}.");
                 }
             }
         }
     }
 
-    private byte hat = 255;
-    public byte Hat
+    private byte? hat;
+    public byte? Hat
     {
         get => this.hat;
         set
         {
             if (this.ped.Model == 0 && value != this.Hat)
             {
-                if (value >= 0 && value <= ClothesConstants.HatsCount)
+                if (value >= 0 && value <= ClothingConstants.HatsCount || value == null)
                 {
                     Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.Hats, this.hat, value));
                     this.hat = value;
                 } else
                 {
-                    throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.Hats}.");
+                    throw new ArgumentOutOfRangeException($"{value} is invalid clothing id for {Enums.ClothingType.Hats}.");
                 }
             }
         }
     }
 
-    private byte extra = 255;
-    public byte Extra
+    private byte? extra;
+    public byte? Extra
     {
         get => this.extra;
         set
         {
             if (this.ped.Model == 0 && value != this.Extra)
             {
-                if (value >= 0 && value <= ClothesConstants.ExtraCount)
+                if (value >= 0 && value <= ClothingConstants.ExtraCount || value == null)
                 {
                     Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.Extra, this.extra, value));
                     this.extra = value;
                 } else
                 {
-                    throw new ArgumentOutOfRangeException($"{value} is invalid cloth id for {Enums.ClothingType.Extra}.");
+                    throw new ArgumentOutOfRangeException($"{value} is invalid clothing id for {Enums.ClothingType.Extra}.");
                 }
             }
         }

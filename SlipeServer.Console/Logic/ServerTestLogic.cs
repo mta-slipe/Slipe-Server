@@ -1093,24 +1093,24 @@ public class ServerTestLogic
                 while (true)
                 {
                     await Task.Delay(1000);
-                    CJ0.Clothing.Shirt = (byte)(i % ClothesConstants.ShirtsCount);
-                    CJ1.Clothing.Head = (byte)(i % ClothesConstants.HeadsCount);
-                    CJ2.Clothing.Trousers = (byte)(i % ClothesConstants.TrousersCount);
-                    CJ3.Clothing.Shoes = (byte)(i % ClothesConstants.ShoesCount);
-                    CJ4.Clothing.TattoosLeftUpperArm = (byte)(i % ClothesConstants.TattoosLeftUpperArmCount);
-                    CJ5.Clothing.TattoosLeftLowerArm = (byte)(i % ClothesConstants.TattoosLeftLowerArmCount);
-                    CJ6.Clothing.TattoosRightUpperArm = (byte)(i % ClothesConstants.TattoosRightUpperArmCount);
-                    CJ7.Clothing.TattoosRightLowerArm = (byte)(i % ClothesConstants.TattoosRightLowerArmCount);
-                    CJ8.Clothing.TattoosBack = (byte)(i % ClothesConstants.TattoosBackCount);
-                    CJ9.Clothing.TattoosLeftChest = (byte)(i % ClothesConstants.TattoosLeftChestCount);
-                    CJ10.Clothing.TattoosRightChest = (byte)(i % ClothesConstants.TattoosRightChestCount);
-                    CJ11.Clothing.TattoosStomach = (byte)(i % ClothesConstants.TattoosStomachCount);
-                    CJ12.Clothing.TattoosLowerBack = (byte)(i % ClothesConstants.TattoosLowerBackCount);
-                    CJ13.Clothing.Necklace = (byte)(i % ClothesConstants.NecklaceCount);
-                    CJ14.Clothing.Watch = (byte)(i % ClothesConstants.WatchesCount);
-                    CJ15.Clothing.Glasses = (byte)(i % ClothesConstants.GlassesCount);
-                    CJ16.Clothing.Hat = (byte)(i % ClothesConstants.HatsCount);
-                    CJ17.Clothing.Extra = (byte)(i % ClothesConstants.ExtraCount);
+                    CJ0.Clothing.Shirt = (byte)(i % ClothingConstants.ShirtsCount);
+                    CJ1.Clothing.Head = (byte)(i % ClothingConstants.HeadsCount);
+                    CJ2.Clothing.Trousers = (byte)(i % ClothingConstants.TrousersCount);
+                    CJ3.Clothing.Shoes = (byte)(i % ClothingConstants.ShoesCount);
+                    CJ4.Clothing.TattoosLeftUpperArm = (byte)(i % ClothingConstants.TattoosLeftUpperArmCount);
+                    CJ5.Clothing.TattoosLeftLowerArm = (byte)(i % ClothingConstants.TattoosLeftLowerArmCount);
+                    CJ6.Clothing.TattoosRightUpperArm = (byte)(i % ClothingConstants.TattoosRightUpperArmCount);
+                    CJ7.Clothing.TattoosRightLowerArm = (byte)(i % ClothingConstants.TattoosRightLowerArmCount);
+                    CJ8.Clothing.TattoosBack = (byte)(i % ClothingConstants.TattoosBackCount);
+                    CJ9.Clothing.TattoosLeftChest = (byte)(i % ClothingConstants.TattoosLeftChestCount);
+                    CJ10.Clothing.TattoosRightChest = (byte)(i % ClothingConstants.TattoosRightChestCount);
+                    CJ11.Clothing.TattoosStomach = (byte)(i % ClothingConstants.TattoosStomachCount);
+                    CJ12.Clothing.TattoosLowerBack = (byte)(i % ClothingConstants.TattoosLowerBackCount);
+                    CJ13.Clothing.Necklace = (byte)(i % ClothingConstants.NecklaceCount);
+                    CJ14.Clothing.Watch = (byte)(i % ClothingConstants.WatchesCount);
+                    CJ15.Clothing.Glasses = (byte)(i % ClothingConstants.GlassesCount);
+                    CJ16.Clothing.Hat = (byte)(i % ClothingConstants.HatsCount);
+                    CJ17.Clothing.Extra = (byte)(i % ClothingConstants.ExtraCount);
                     i++;
                 }
             });
@@ -1183,28 +1183,6 @@ public class ServerTestLogic
             var config = this.weaponConfigurationService.GetWeaponConfiguration(weapon);
             config.MaximumClipAmmo = ammoInClip;
             this.weaponConfigurationService.SetWeaponConfigurationFor(weapon, config, args.Player);
-        };
-
-        this.commandService.AddCommand("personalFashion").Triggered += (source, args) =>
-        {
-            long i = (new Random()).NextInt64();
-            args.Player.Clothing.Shirt = (byte)(i % ClothesConstants.ShirtsCount);
-            args.Player.Clothing.Head = (byte)(i % ClothesConstants.HeadsCount);
-            args.Player.Clothing.Trousers = (byte)(i % ClothesConstants.TrousersCount);
-            args.Player.Clothing.Shoes = (byte)(i % ClothesConstants.ShoesCount);
-            args.Player.Clothing.TattoosLeftUpperArm = (byte)(i % ClothesConstants.TattoosLeftUpperArmCount);
-            args.Player.Clothing.TattoosLeftLowerArm = (byte)(i % ClothesConstants.TattoosLeftLowerArmCount);
-            args.Player.Clothing.TattoosRightUpperArm = (byte)(i % ClothesConstants.TattoosRightUpperArmCount);
-            args.Player.Clothing.TattoosRightLowerArm = (byte)(i % ClothesConstants.TattoosRightLowerArmCount);
-            args.Player.Clothing.TattoosBack = (byte)(i % ClothesConstants.TattoosBackCount);
-            args.Player.Clothing.TattoosLeftChest = (byte)(i % ClothesConstants.TattoosLeftChestCount);
-            args.Player.Clothing.TattoosRightChest = (byte)(i % ClothesConstants.TattoosRightChestCount);
-            args.Player.Clothing.TattoosStomach = (byte)(i % ClothesConstants.TattoosStomachCount);
-            args.Player.Clothing.TattoosLowerBack = (byte)(i % ClothesConstants.TattoosLowerBackCount);
-            args.Player.Clothing.Necklace = (byte)(i % ClothesConstants.NecklaceCount);
-            args.Player.Clothing.Watch = (byte)(i % ClothesConstants.WatchesCount);
-            args.Player.Clothing.Glasses = (byte)(i % ClothesConstants.GlassesCount);
-            args.Player.Clothing.Hat = (byte)(i % ClothesConstants.HatsCount);
         };
     }
 

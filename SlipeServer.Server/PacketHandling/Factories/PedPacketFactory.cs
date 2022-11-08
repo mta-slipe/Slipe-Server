@@ -1,4 +1,5 @@
-﻿using SlipeServer.Packets.Definitions.Entities.Structs;
+﻿using SlipeServer.Packets;
+using SlipeServer.Packets.Definitions.Entities.Structs;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 using SlipeServer.Packets.Definitions.Ped;
@@ -46,9 +47,12 @@ public static class PedPacketFactory
         };
     }
 
-    public static PedClothesPacket CreateClothesPacket(Ped ped, ClothingType cloth, byte index)
+    public static Packet CreateClothesPacket(Ped ped, ClothingType clothingType, byte? index)
     {
-        return new PedClothesPacket(ped.Id, new PedClothing[] { ClothesConstants.ClothesTextureModel[cloth][index] });
+        if (index == null)
+            return new RemovePedClothesRpcPacket(ped.Id, (byte)clothingType);
+
+        return new PedClothesPacket(ped.Id, new PedClothing[] { ClothingConstants.ClothesTextureModel[clothingType][index.Value] });
     }
 
     public static PedClothesPacket CreateFullClothesPacket(Ped ped)
