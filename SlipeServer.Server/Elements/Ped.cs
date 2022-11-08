@@ -315,6 +315,44 @@ public class Ped : Element
         return 0;
     }
 
+    public void SetAnimation(
+        string group,
+        string animation,
+        TimeSpan? time = null,
+        bool loops = true,
+        bool updatesPosition = true,
+        bool isInteruptable = true,
+        bool freezesOnLastFrame = true,
+        TimeSpan? blendTime = null,
+        bool retainPedState = false)
+    {
+        if (this.hasJetpack)
+            this.HasJetpack = false;
+
+        this.AnimationStarted?.Invoke(this, new PedAnimationStartedEventArgs(
+            this,
+            group, 
+            animation, 
+            time ?? TimeSpan.FromMilliseconds(-1), 
+            loops,
+            updatesPosition,
+            isInteruptable,
+            freezesOnLastFrame,
+            blendTime ?? TimeSpan.FromMilliseconds(250),
+            retainPedState));
+    }
+
+    public void StopAnimation()
+    {
+        this.AnimationStopped?.Invoke(this, EventArgs.Empty);
+    }
+
+    public void SetAnimationProgress(string animation, float progress)
+        => this.AnimationProgressChanged?.Invoke(this, new(this, animation, progress));
+
+    public void SetAnimationSpeed(string animation, float speed) 
+        => this.AnimationSpeedChanged?.Invoke(this, new(this, animation, speed));
+
     public event ElementEventHandler<Ped, PedWastedEventArgs>? Wasted;
     public event ElementChangedEventHandler<Ped, ushort>? ModelChanged;
     public event ElementChangedEventHandler<Ped, float>? HealthChanged;
@@ -328,4 +366,8 @@ public class Ped : Element
     public event ElementEventHandler<Ped, WeaponReceivedEventArgs>? WeaponReceived;
     public event ElementEventHandler<Ped, WeaponRemovedEventArgs>? WeaponRemoved;
     public event ElementEventHandler<Ped, AmmoUpdateEventArgs>? AmmoUpdated;
+    public event ElementEventHandler<Ped, PedAnimationStartedEventArgs>? AnimationStarted;
+    public event ElementEventHandler<Ped, EventArgs>? AnimationStopped;
+    public event ElementEventHandler<Ped, PedAnimationProgressChangedEventArgs>? AnimationProgressChanged;
+    public event ElementEventHandler<Ped, PedAnimationSpeedChangedEventArgs>? AnimationSpeedChanged;
 }
