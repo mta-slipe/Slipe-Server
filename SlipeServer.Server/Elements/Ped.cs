@@ -80,6 +80,18 @@ public class Ped : Element
         }
     }
 
+    private float gravity = GravityConstants.Default;
+    public float Gravity
+    {
+        get => this.gravity;
+        set
+        {
+            var args = new ElementChangedEventArgs<Ped, float>(this, this.gravity, value, this.IsSync);
+            this.gravity = value;
+            GravityChanged?.Invoke(this, args);
+        }
+    }
+
     public object CurrentWeaponLock { get; } = new();
     public Weapon? CurrentWeapon
     {
@@ -362,6 +374,7 @@ public class Ped : Element
     public event ElementChangedEventHandler<Ped, bool>? JetpackStateChanged;
     public event ElementChangedEventHandler<Ped, Element?>? TargetChanged;
     public event ElementChangedEventHandler<Ped, Player?>? SyncerChanged;
+    public event ElementChangedEventHandler<Ped, float>? GravityChanged;
     public event ElementEventHandler<Ped, PedStatChangedEventArgs>? StatChanged;
     public event ElementEventHandler<Ped, WeaponReceivedEventArgs>? WeaponReceived;
     public event ElementEventHandler<Ped, WeaponRemovedEventArgs>? WeaponRemoved;
