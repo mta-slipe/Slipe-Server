@@ -140,7 +140,18 @@ public class Vehicle : Element
             PlateTextChanged?.Invoke(this, args);
         }
     }
-    public byte OverrideLights { get; set; } = 0;
+
+    private VehicleOverrideLights overrideLights = 0;
+    public VehicleOverrideLights OverrideLights
+    {
+        get => this.overrideLights;
+        set
+        {
+            var args = new ElementChangedEventArgs<Vehicle, VehicleOverrideLights>(this, this.overrideLights, value, this.IsSync);
+            this.overrideLights = value;
+            OverrideLightsChanged?.Invoke(this, args);
+        }
+    }
 
     private bool isLandingGearDown = true;
     public bool IsLandingGearDown
@@ -631,6 +642,7 @@ public class Vehicle : Element
     public event ElementChangedEventHandler<Vehicle, bool>? AreSirensOnChanged;
     public event ElementChangedEventHandler<Vehicle, VehicleSirenSet?>? SirensChanged;
     public event ElementChangedEventHandler<Vehicle, VehicleHandling?>? HandlingChanged;
+    public event ElementChangedEventHandler<Vehicle, VehicleOverrideLights>? OverrideLightsChanged;
     public event ElementEventHandler<Vehicle, VehicleSirenUpdatedEventArgs>? SirenUpdated;
     public event ElementEventHandler<VehicleRespawnEventArgs>? Respawned;
     public event ElementEventHandler<VehicleDoorStateChangedArgs>? DoorStateChanged;
