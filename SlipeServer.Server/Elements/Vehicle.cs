@@ -32,7 +32,17 @@ public class Vehicle : Element
         }
     }
 
-    public float Health { get; set; } = 1000;
+    private float health = 1000;
+    public float Health {
+        get => this.health;
+        set
+        {
+            var args = new ElementChangedEventArgs<Vehicle, float>(this, this.health, value, this.IsSync);
+            this.health = value;
+            HealthChanged?.Invoke(this, args);
+        }
+    }
+
     public Colors Colors { get; private set; }
 
     protected byte paintJob = 255;
@@ -644,6 +654,7 @@ public class Vehicle : Element
     public event ElementChangedEventHandler<Vehicle, VehicleSirenSet?>? SirensChanged;
     public event ElementChangedEventHandler<Vehicle, VehicleHandling?>? HandlingChanged;
     public event ElementChangedEventHandler<Vehicle, VehicleOverrideLights>? OverrideLightsChanged;
+    public event ElementChangedEventHandler<Vehicle, float>? HealthChanged;
     public event ElementEventHandler<Vehicle, VehicleSirenUpdatedEventArgs>? SirenUpdated;
     public event ElementEventHandler<VehicleRespawnEventArgs>? Respawned;
     public event ElementEventHandler<VehicleDoorStateChangedArgs>? DoorStateChanged;

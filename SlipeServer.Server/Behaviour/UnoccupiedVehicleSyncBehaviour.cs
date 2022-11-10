@@ -47,7 +47,19 @@ public class UnoccupiedVehicleSyncBehaviour
             vehicle.Pushed += HandleVehiclePush;
             vehicle.Destroyed += (e) => vehicle.Pushed -= HandleVehiclePush;
             vehicle.DimensionChanged += HandleVehicleDimensionChange;
+            vehicle.PedEntered += HandlePedEnter;
+            vehicle.PedLeft += HandlePedLeft;
         }
+    }
+
+    private void HandlePedLeft(Element sender, Elements.Events.VehicleLeftEventArgs e)
+    {
+        UpdateVehicleSyncer(e.Vehicle);
+    }
+
+    private void HandlePedEnter(Element sender, Elements.Events.VehicleEnteredEventsArgs e)
+    {
+        UpdateVehicleSyncer(e.Vehicle);
     }
 
     private void HandleVehiclePush(Vehicle vehicle, Elements.Events.VehiclePushedEventArgs e)
@@ -96,7 +108,11 @@ public class UnoccupiedVehicleSyncBehaviour
 
     private void UpdateVehicleSyncer(Vehicle vehicle)
     {
-        Player? newSyncer = GetClosestPlayer(vehicle, this.configuration.UnoccupiedVehicleSyncerDistance);
+        Player? newSyncer;
+        if (vehicle.Driver is Player player)
+            newSyncer = player;
+        else
+            newSyncer = GetClosestPlayer(vehicle, this.configuration.UnoccupiedVehicleSyncerDistance);
 
         if (newSyncer == vehicle.Syncer)
             return;

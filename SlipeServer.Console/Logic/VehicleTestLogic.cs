@@ -108,5 +108,16 @@ public class VehicleTestLogic
             args.Player.Vehicle.OverrideLights = args.Player.Vehicle.OverrideLights == VehicleOverrideLights.On ?
                 VehicleOverrideLights.Off : VehicleOverrideLights.On;
         };
+
+        this.commandService.AddCommand("vehiclehealth").Triggered += (source, args) =>
+        {
+            if (args.Player.Vehicle == null || !args.Arguments.Any())
+                return;
+
+            if (!float.TryParse(args.Arguments[0], out float health))
+                health = 500;
+
+            args.Player.Vehicle.Health = health;
+        };
     }
 }
