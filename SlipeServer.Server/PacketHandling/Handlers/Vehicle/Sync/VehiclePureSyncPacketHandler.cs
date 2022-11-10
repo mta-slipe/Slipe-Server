@@ -66,7 +66,7 @@ public class VehiclePureSyncPacketHandler : IPacketHandler<VehiclePureSyncPacket
 
         var vehicle = player?.Vehicle;
 
-        if (vehicle != null)
+        if (vehicle != null && player == vehicle.Driver)
         {
             vehicle.RunAsSync(() =>
             {
