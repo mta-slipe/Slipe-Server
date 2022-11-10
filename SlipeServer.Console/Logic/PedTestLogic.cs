@@ -81,5 +81,16 @@ public class PedTestLogic
         {
             this.ped.StopAnimation();
         };
+
+        this.commandService.AddCommand("mygravity").Triggered += (source, args) =>
+        {
+            if (args.Arguments.Length < 1)
+                return;
+
+            if (!float.TryParse(args.Arguments[0], out float gravity))
+                gravity = 1;
+
+            args.Player.Gravity = gravity;
+        };
     }
 }

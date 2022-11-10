@@ -40,6 +40,7 @@ public class PedPacketBehaviour
             ped.AnimationStopped += RelayPedAnimationStop;
             ped.AnimationProgressChanged += RelayPedAnimationProgress;
             ped.AnimationSpeedChanged += RelayPedAnimationSpeed;
+            ped.GravityChanged += RelayPedGravityChange; ;
 
             if (ped is not Player)
             {
@@ -152,5 +153,10 @@ public class PedPacketBehaviour
     private void RelayPedAnimationSpeed(Ped sender, PedAnimationSpeedChangedEventArgs e)
     {
         this.server.BroadcastPacket(new SetPedAnimationSpeedRpcPacket(sender.Id, e.Animation, e.Speed));
+    }
+
+    private void RelayPedGravityChange(Ped sender, ElementChangedEventArgs<Ped, float> args)
+    {
+        this.server.BroadcastPacket(new SetPedGravityRpcPacket(sender.Id, args.NewValue));
     }
 }

@@ -52,7 +52,13 @@ public class VehicleBehaviour
             vehicle.SirensChanged += RelaySirensChanged;
             vehicle.SirenUpdated += RelaySirenUpdated;
             vehicle.AreSirensOnChanged += RelayAreSirensOn;
+            vehicle.OverrideLightsChanged += RelayOverrideLights;
         }
+    }
+
+    private void RelayOverrideLights(Vehicle sender, ElementChangedEventArgs<Vehicle, VehicleOverrideLights> args)
+    {
+        this.server.BroadcastPacket(new SetVehicleOverrideLightsPacket(sender.Id, (byte)args.NewValue));
     }
 
     private void RelayPlateTextChanged(Element sender, ElementChangedEventArgs<Vehicle, string> args)
