@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using System;
 using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Vehicles;

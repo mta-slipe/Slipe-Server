@@ -1,4 +1,5 @@
-﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
+﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
+using SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle.Sirens;
 using SlipeServer.Packets.Definitions.Vehicles;
 using SlipeServer.Packets.Enums;
@@ -53,6 +54,7 @@ public class VehicleBehaviour
             vehicle.SirenUpdated += RelaySirenUpdated;
             vehicle.AreSirensOnChanged += RelayAreSirensOn;
             vehicle.OverrideLightsChanged += RelayOverrideLights;
+            vehicle.HealthChanged += RelayHealthChange;
         }
     }
 
@@ -260,5 +262,11 @@ public class VehicleBehaviour
     private void RelayAreSirensOn(Vehicle sender, ElementChangedEventArgs<Vehicle, bool> args)
     {
         this.server.BroadcastPacket(new SetVehicleSirensOnPacket(sender.Id, args.NewValue));
+    }
+
+    private void RelayHealthChange(Vehicle sender, ElementChangedEventArgs<Vehicle, float> args)
+    {
+        if (!args.IsSync)
+            this.server.BroadcastPacket(new SetElementHealthRpcPacket(sender.Id, sender.GetAndIncrementTimeContext(), args.NewValue));
     }
 }
