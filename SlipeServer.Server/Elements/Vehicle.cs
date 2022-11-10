@@ -141,7 +141,7 @@ public class Vehicle : Element
         }
     }
 
-    private VehicleOverrideLights overrideLights = 0;
+    private VehicleOverrideLights overrideLights = VehicleOverrideLights.None;
     public VehicleOverrideLights OverrideLights
     {
         get => this.overrideLights;
@@ -449,6 +449,7 @@ public class Vehicle : Element
         }
         this.Occupants[seat] = ped;
         ped.Vehicle = this;
+        ped.Seat = seat;
 
         this.PedEntered?.Invoke(this, new VehicleEnteredEventsArgs(ped, this, seat, warpsIn));
     }

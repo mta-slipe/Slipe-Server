@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Console.Elements;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server;
+using SlipeServer.Server.Elements;
 using SlipeServer.Server.Services;
 using System;
 using System.Drawing;
@@ -97,6 +98,15 @@ public class VehicleTestLogic
 
             args.Player.Vehicle.Health = 1000;
             this.chatBox.OutputTo(args.Player, "Your vehicle has been repaired");
+        };
+
+        this.commandService.AddCommand("lights").Triggered += (source, args) =>
+        {
+            if (args.Player.Vehicle == null)
+                return;
+
+            args.Player.Vehicle.OverrideLights = args.Player.Vehicle.OverrideLights == VehicleOverrideLights.On ?
+                VehicleOverrideLights.Off : VehicleOverrideLights.On;
         };
     }
 }

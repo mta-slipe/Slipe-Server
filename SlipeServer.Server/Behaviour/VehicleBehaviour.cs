@@ -58,7 +58,7 @@ public class VehicleBehaviour
 
     private void RelayOverrideLights(Vehicle sender, ElementChangedEventArgs<Vehicle, VehicleOverrideLights> args)
     {
-        // TODO
+        this.server.BroadcastPacket(new SetVehicleOverrideLightsPacket(sender.Id, (byte)args.NewValue));
     }
 
     private void RelayPlateTextChanged(Element sender, ElementChangedEventArgs<Vehicle, string> args)

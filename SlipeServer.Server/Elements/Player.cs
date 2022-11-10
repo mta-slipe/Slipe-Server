@@ -109,7 +109,7 @@ public class Player : Ped
         }
     }
 
-    private bool isNametagShowing;
+    private bool isNametagShowing = true;
     public bool IsNametagShowing
     {
         get => this.isNametagShowing;
