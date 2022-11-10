@@ -32,7 +32,12 @@ public class Vehicle : Element
         }
     }
 
-    public float Health { get; set; } = 1000;
+    private float health = 1000;
+    public float Health {
+        get => this.health;
+        set => this.health = value;
+    }
+
     public Colors Colors { get; private set; }
 
     protected byte paintJob = 255;
