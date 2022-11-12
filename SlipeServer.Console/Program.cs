@@ -61,7 +61,10 @@ public partial class Program
 
         this.configuration = configurationProvider?.GetConfiguration() ?? new Configuration()
         {
-            IsVoiceEnabled = true
+            IsVoiceEnabled = true,
+#if DEBUG
+            DebugPort = 50667
+#endif
         };
 
         this.server = MtaServer.CreateWithDiSupport<CustomPlayer>(
@@ -71,9 +74,8 @@ public partial class Program
 
 #if DEBUG
                 builder.AddDefaults(exceptBehaviours: ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour);
-                builder.AddNetWrapper(dllPath: "net_d", port: (ushort)(this.configuration.Port + 1));
 #else
-                    builder.AddDefaults();
+                builder.AddDefaults();
 #endif
 
                 builder.ConfigureServices(services =>

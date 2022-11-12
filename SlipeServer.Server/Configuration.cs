@@ -15,6 +15,8 @@ public class Configuration
 
     public ushort Port { get; set; } = 50666;
 
+    public ushort? DebugPort { get; set; } = null;
+
     public ushort MaxPlayerCount { get; set; } = 64;
 
     [MaxLength(128)]

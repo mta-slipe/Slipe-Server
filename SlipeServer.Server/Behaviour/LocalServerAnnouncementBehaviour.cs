@@ -34,7 +34,11 @@ public class LocalServerAnnouncementBehaviour
                 string message = Encoding.UTF8.GetString(incomingData);
                 this.logger.LogInformation("Local server broadcast received from {address} \"{message}\"", source?.Address, message);
 
-                byte[] data = Encoding.UTF8.GetBytes($"MTA-SERVER {this.configuration.Port + 123}");
+                var port = this.configuration.Port + 123;
+                if (message.TrimEnd().EndsWith("n"))
+                    port = (this.configuration.DebugPort ?? this.configuration.Port) + 123;
+
+                byte[] data = Encoding.UTF8.GetBytes($"MTA-SERVER {port}");
 
                 socket.Send(data, data.Length, source);
                 socket.BeginReceive(new AsyncCallback(OnUdpData), socket);
@@ -55,5 +59,4 @@ public class LocalServerAnnouncementBehaviour
         socket.Client.Bind(localEndPoint);
         socket.BeginReceive(new AsyncCallback(OnUdpData), socket);
     }
-
 }

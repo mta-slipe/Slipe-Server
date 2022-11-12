@@ -15,7 +15,6 @@ public class AseQueryService : IAseQueryService
     private readonly Configuration configuration;
     private readonly IElementCollection elementCollection;
     private readonly AseVersion aseVersion;
-    private readonly BuildType buildType;
     private readonly Dictionary<string, string> rules;
 
     public AseQueryService(MtaServer mtaServer, Configuration configuration, IElementCollection elementCollection)
@@ -25,7 +24,6 @@ public class AseQueryService : IAseQueryService
         this.elementCollection = elementCollection;
 
         this.aseVersion = AseVersion.v1_5;
-        this.buildType = BuildType.Release;
 
         this.rules = new Dictionary<string, string>();
     }
@@ -44,17 +42,17 @@ public class AseQueryService : IAseQueryService
     }
 
 
-    public byte[] QueryFull()
+    public byte[] QueryFull(ushort port)
     {
         using MemoryStream stream = new MemoryStream();
         using BinaryWriter bw = new BinaryWriter(stream);
         IEnumerable<Player> players = this.elementCollection.GetByType<Player>(ElementType.Player);
 
-        string aseVersion = GetVersion();
+        string aseVersion = GetVersion(this.aseVersion);
 
         bw.Write("EYE1".AsSpan());
         bw.WriteWithLength("mta");
-        bw.WriteWithLength(this.configuration.Port);
+        bw.WriteWithLength(port);
         bw.WriteWithLength(this.configuration.ServerName);
         bw.WriteWithLength(this.mtaServer.GameType);
         bw.WriteWithLength(this.mtaServer.MapName);
@@ -109,7 +107,7 @@ public class AseQueryService : IAseQueryService
         bw.Write((byte)0);
         bw.Write(strPlayerCount.AsSpan());  // client double checks this field in clientside against fake players count function:
                                             // "CCore::GetSingleton().GetNetwork()->UpdatePingStatus(*strPingStatus, info.players);" 
-        bw.WriteWithLength(GetVersion());
+        bw.WriteWithLength(GetVersion(this.aseVersion));
         bw.Write((byte)(this.mtaServer.HasPassword ? 1 : 0));
         bw.Write((byte)Math.Min(playerCount, 255));
         bw.Write((byte)Math.Min(this.configuration.MaxPlayerCount, (ushort)255));
@@ -119,7 +117,7 @@ public class AseQueryService : IAseQueryService
     }
 
 
-    public byte[] QueryLight()
+    public byte[] QueryLight(ushort port, VersionType version = VersionType.Release)
     {
         using MemoryStream stream = new MemoryStream();
         using BinaryWriter bw = new BinaryWriter(stream);
@@ -127,11 +125,11 @@ public class AseQueryService : IAseQueryService
             .Select(o => o.Name.StripColorCode())
             .ToList();
 
-        string aseVersion = GetVersion();
+        string aseVersion = GetVersion(version == VersionType.Release ? this.aseVersion : AseVersion.v1_5n);
         int playerCount = playerNames.Count;
         string strPlayerCount = playerCount + "/" + this.configuration.MaxPlayerCount;
-        string buildType = $"{(byte)(VersionType.Release)} ";
-        string buildNumber = $"{(byte)this.buildType}";
+        string buildType = $"{(byte)version} ";
+        string buildNumber = $"0";
         string pingStatus = new('P', 32);
         string strNetRoute = new('N', 32);
         string strUpTime = $"{(int)this.mtaServer.Uptime.Ticks / TimeSpan.TicksPerSecond}";
@@ -140,7 +138,7 @@ public class AseQueryService : IAseQueryService
 
         bw.Write("EYE2".AsSpan());
         bw.WriteWithLength("mta");
-        bw.WriteWithLength(this.configuration.Port);
+        bw.WriteWithLength(port);
         bw.WriteWithLength(this.configuration.ServerName);
         bw.WriteWithLength(this.mtaServer.GameType);
 
@@ -187,9 +185,9 @@ public class AseQueryService : IAseQueryService
         return stream.ToArray();
     }
 
-    public string GetVersion()
+    public string GetVersion(AseVersion version = AseVersion.v1_5)
     {
-        return this.aseVersion switch
+        return version switch
         {
             AseVersion.v1_5 => "1.5",
             AseVersion.v1_5n => "1.5n",
