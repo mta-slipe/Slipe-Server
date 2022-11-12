@@ -92,5 +92,10 @@ public class PedTestLogic
 
             args.Player.Gravity = gravity;
         };
+
+        this.commandService.AddCommand("reload").Triggered += (source, args) =>
+        {
+            args.Player.ReloadWeapon();
+        };
     }
 }
