@@ -276,5 +276,9 @@ public static class DefaultServerBuilderExtensions
             builder.Configuration.Host,
             builder.Configuration.Port,
             builder.Configuration.AntiCheat);
+
+        if (builder.Configuration.DebugPort.HasValue)
+            builder.AddNetWrapper(dllPath: "net_d", port: builder.Configuration.DebugPort.Value);
+
     }
 }
