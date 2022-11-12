@@ -359,6 +359,11 @@ public class Ped : Element
         this.AnimationStopped?.Invoke(this, EventArgs.Empty);
     }
 
+    public void ReloadWeapon()
+    {
+        this.WeaponReloaded?.Invoke(this, EventArgs.Empty);
+    }
+
     public void SetAnimationProgress(string animation, float progress)
         => this.AnimationProgressChanged?.Invoke(this, new(this, animation, progress));
 
@@ -383,4 +388,5 @@ public class Ped : Element
     public event ElementEventHandler<Ped, EventArgs>? AnimationStopped;
     public event ElementEventHandler<Ped, PedAnimationProgressChangedEventArgs>? AnimationProgressChanged;
     public event ElementEventHandler<Ped, PedAnimationSpeedChangedEventArgs>? AnimationSpeedChanged;
+    public event ElementEventHandler<Ped, EventArgs>? WeaponReloaded;
 }

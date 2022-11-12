@@ -40,7 +40,8 @@ public class PedPacketBehaviour
             ped.AnimationStopped += RelayPedAnimationStop;
             ped.AnimationProgressChanged += RelayPedAnimationProgress;
             ped.AnimationSpeedChanged += RelayPedAnimationSpeed;
-            ped.GravityChanged += RelayPedGravityChange; ;
+            ped.GravityChanged += RelayPedGravityChange;
+            ped.WeaponReloaded += RelayWeaponReload;
 
             if (ped is not Player)
             {
@@ -158,5 +159,10 @@ public class PedPacketBehaviour
     private void RelayPedGravityChange(Ped sender, ElementChangedEventArgs<Ped, float> args)
     {
         this.server.BroadcastPacket(new SetPedGravityRpcPacket(sender.Id, args.NewValue));
+    }
+
+    private void RelayWeaponReload(Ped sender, System.EventArgs e)
+    {
+        this.server.BroadcastPacket(new ReloadPedWeaponRpcPacket(sender.Id));
     }
 }
