@@ -394,6 +394,33 @@ public class Player : Ped
         this.CursorClicked?.Invoke(this, new PlayerCursorClickedEventArgs(button, position, worldPosition, element));
     }
 
+    public void TriggerJoined()
+    {
+        this.Joined?.Invoke(this, EventArgs.Empty);
+    }
+
+    public Blip CreateBlipFor(BlipIcon icon, ushort visibleDistance = 16000, short ordering = 0, byte size = 2, Color? color = null)
+    {
+        var blip = new Blip(this.position, icon, visibleDistance, ordering)
+        {
+            Size = size,
+            Color = color ?? Color.White
+        };
+
+        void attachBlip(Element element, EventArgs args)
+        {
+            blip.AttachTo(this);
+            this.Joined -= attachBlip;
+        }
+
+        if (this.Id == 0)
+            this.Joined += attachBlip;
+        else
+            blip.AttachTo(this);
+
+        return blip;
+    }
+
     public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
     public event ElementChangedEventHandler<Player, string>? NametagTextChanged;
     public event ElementChangedEventHandler<Player, bool>? IsNametagShowingChanged;
@@ -420,4 +447,5 @@ public class Player : Ped
     public event ElementEventHandler<Player, PlayerResourceStartedEventArgs>? ResourceStarted;
     public event ElementEventHandler<Player, PlayerBindExecutedEventArgs>? BindExecuted;
     public event ElementEventHandler<Player, PlayerCursorClickedEventArgs>? CursorClicked;
+    public event ElementEventHandler<Player, EventArgs>? Joined;
 }

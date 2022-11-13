@@ -12,6 +12,9 @@ public static class PacketExtensions
 
     public static void SendTo(this Packet packet, IEnumerable<IClient> clients)
     {
+        if (!clients.Any())
+            return;
+
         byte[] data = packet.Write();
         foreach (var client in clients.ToArray())
         {
@@ -21,6 +24,9 @@ public static class PacketExtensions
 
     public static void SendTo(this Packet packet, IEnumerable<Player> players)
     {
+        if (!players.Any())
+            return;
+
         byte[] data = packet.Write();
         foreach (var player in players.ToArray())
         {

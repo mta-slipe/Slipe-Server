@@ -341,7 +341,11 @@ public class MtaServer
         this.packetReducer.EnqueuePacket(client, packetId, data);
     }
 
-    public virtual void HandlePlayerJoin(Player player) => PlayerJoined?.Invoke(player);
+    public virtual void HandlePlayerJoin(Player player)
+    {
+        player.TriggerJoined();
+        PlayerJoined?.Invoke(player);
+    }
     public void HandleLuaEvent(LuaEvent luaEvent) => LuaEventTriggered?.Invoke(luaEvent);
 
     public void SetMaxPlayers(ushort slots)

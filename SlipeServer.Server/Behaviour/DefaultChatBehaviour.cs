@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Server.Extensions;
 using SlipeServer.Server.Services;
 using System.Drawing;
 
@@ -18,7 +19,7 @@ public class DefaultChatBehaviour
             {
                 if (arguments.Command == "say")
                 {
-                    string message = $"{player.Name}: #ffffff{string.Join(' ', arguments.Arguments)}";
+                    string message = $"{player.NametagColor.ToColorCode()}{player.Name}: #ffffff{string.Join(' ', arguments.Arguments)}";
                     chatBox.Output(message, Color.White, true, ChatEchoType.Player, player);
                     logger?.LogInformation("{message}", message);
                 }

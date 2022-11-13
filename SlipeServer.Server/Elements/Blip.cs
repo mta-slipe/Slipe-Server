@@ -69,7 +69,7 @@ public class Blip : Element
         }
     }
 
-    public Blip(Vector3 position, BlipIcon icon, ushort visibleDistance = 0, short ordering = 0)
+    public Blip(Vector3 position, BlipIcon icon, ushort visibleDistance = 16000, short ordering = 0)
     {
         this.Position = position;
         this.Icon = icon;

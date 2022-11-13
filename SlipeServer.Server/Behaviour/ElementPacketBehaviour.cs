@@ -56,6 +56,7 @@ public class ElementPacketBehaviour
     {
         this.server.BroadcastPacket(ElementPacketFactory.CreateSetCollisionsEnabledPacket(args.Source, args.NewValue));
     }
+
     private void RelayAttached(Element sender, ElementAttachedEventArgs args)
     {
         this.server.BroadcastPacket(ElementPacketFactory.CreateAttachElementPacket(args.Source, args.AttachedTo, args.OffsetPosition, args.OffsetRotation));
