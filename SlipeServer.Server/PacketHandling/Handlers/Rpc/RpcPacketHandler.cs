@@ -105,14 +105,21 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
             .Except(new Elements.Player[] { client.Player })
             .ToArray();
 
+        var existingPlayersListPacket = PlayerPacketFactory.CreatePlayerListPacket(otherPlayers, true);
+        client.SendPacket(existingPlayersListPacket);
+
         var elements = this.elementCollection
             .GetAll()
             .Where(x => x.ExistsForAllPlayers);
         var packet = AddEntityPacketFactory.CreateAddEntityPacket(elements);
         client.SendPacket(packet);
 
-        var existingPlayersListPacket = PlayerPacketFactory.CreatePlayerListPacket(otherPlayers, true);
-        client.SendPacket(existingPlayersListPacket);
+        using (var scope = new ClientPacketScope(client.Player))
+        {
+            foreach (var player in otherPlayers)
+                if (player.Vehicle != null && player.Seat.HasValue)
+                    player.WarpIntoVehicle(player.Vehicle, player.Seat.Value);
+        }
 
         var newPlayerListPacket = PlayerPacketFactory.CreatePlayerListPacket(new Elements.Player[] { client.Player }, false);
         newPlayerListPacket.SendTo(otherPlayers);
