@@ -7,6 +7,7 @@ using SlipeServer.Server.PacketHandling.Factories;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using System.Threading;
@@ -38,7 +39,17 @@ public class Element
     private readonly List<Element> children;
     public IReadOnlyCollection<Element> Children => this.children.AsReadOnly();
 
-    public uint Id { get; set; }
+    private uint id;
+    public uint Id
+    {
+        get => this.id;
+        set
+        {
+            var args = new ElementChangedEventArgs<uint>(this, this.id, value, this.IsSync);
+            this.id = value;
+            IdChanged?.Invoke(this, args);
+        }
+    }
 
     private readonly object timeContextLock = new();
     public byte TimeContext { get; private set; }
@@ -218,6 +229,8 @@ public class Element
     public bool IsDestroyed { get; set; }
 
     private readonly object destroyLock = new();
+
+    public bool ExistsForAllPlayers { get; set; } = true;
 
     public Element()
     {
@@ -402,6 +415,9 @@ public class Element
 
     public ElementAttachment AttachTo(Element element, Vector3? positionOffset = null, Vector3? rotationOffset = null)
     {
+        if (element.Id == 0)
+            throw new Exception(string.Format("Can not attach {0} to {1} because {1} has no id", this, element, element));
+
         var position = positionOffset ?? Vector3.Zero;
         var rotation = rotationOffset ?? Vector3.Zero;
 
@@ -468,6 +484,7 @@ public class Element
     public event ElementChangedEventHandler<bool>? CallPropagationChanged;
     public event ElementChangedEventHandler<bool>? CollisionEnabledhanged;
     public event ElementChangedEventHandler<bool>? FrozenChanged;
+    public event ElementChangedEventHandler<Element, uint>? IdChanged;
     public event ElementEventHandler<Element, ElementDataChangedArgs>? DataChanged;
     public event ElementEventHandler<Element, ElementAttachedEventArgs>? Attached;
     public event ElementEventHandler<Element, ElementDetachedEventArgs>? Detached;

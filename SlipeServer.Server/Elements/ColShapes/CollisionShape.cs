@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -12,12 +13,12 @@ public abstract class CollisionShape : Element
     public bool IsEnabled { get; set; } = true;
     public bool AutoCallEvent { get; set; } = true;
 
-    private readonly HashSet<Element> elementsWithin;
-    public IEnumerable<Element> ElementsWithin => this.elementsWithin.AsEnumerable();
+    private readonly ConcurrentDictionary<Element, byte> elementsWithin;
+    public IEnumerable<Element> ElementsWithin => this.elementsWithin.Select(x => x.Key);
 
     public CollisionShape()
     {
-        this.elementsWithin = new HashSet<Element>();
+        this.elementsWithin = new();
     }
 
     public abstract bool IsWithin(Vector3 position);
@@ -28,17 +29,17 @@ public abstract class CollisionShape : Element
     {
         if (IsWithin(element))
         {
-            if (!this.elementsWithin.Contains(element))
+            if (!this.elementsWithin.ContainsKey(element))
             {
-                this.elementsWithin.Add(element);
+                this.elementsWithin[element] = 0;
                 this.ElementEntered?.Invoke(element);
                 element.Destroyed += OnElementDestroyed;
             }
         } else
         {
-            if (this.elementsWithin.Contains(element))
+            if (this.elementsWithin.ContainsKey(element))
             {
-                this.elementsWithin.Remove(element);
+                this.elementsWithin.Remove(element, out var _);
                 this.ElementLeft?.Invoke(element);
                 element.Destroyed -= OnElementDestroyed;
             }

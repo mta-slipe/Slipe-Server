@@ -14,6 +14,7 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.ColShapes;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
+using SlipeServer.Server.Elements.IdGeneration;
 using SlipeServer.Server.Elements.Structs;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Events;
@@ -120,6 +121,7 @@ public class ServerTestLogic
         this.commandService = commandService;
         this.weaponConfigurationService = weaponConfigurationService;
         this.gameWorld = gameWorld;
+
         this.slipeDevsTeam = new Team("Slipe devs", Color.FromArgb(255, 255, 81, 81));
         this.SetupTestLogic();
     }
@@ -1059,6 +1061,12 @@ public class ServerTestLogic
         this.commandService.AddCommand("restoreall").Triggered += (source, args) =>
         {
             this.gameWorld.RestoreAllWorldModels();
+        };
+
+        this.commandService.AddCommand("blipidzero").Triggered += (source, args) =>
+        {
+            var blip = new Blip(Vector3.Zero, BlipIcon.Truth);
+            blip.CreateFor(args.Player);
         };
 
         this.commandService.AddCommand("hot").Triggered += (source, args) =>

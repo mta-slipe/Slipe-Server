@@ -1,6 +1,9 @@
 ﻿using SlipeServer.Packets.Lua.Camera;
+using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Services;
+using System;
+using System.Drawing;
 using System.Numerics;
 using System.Threading.Tasks;
 
@@ -10,12 +13,17 @@ public class CustomPlayer : Player
     private readonly ExplosionService explosionService;
 
     public bool IsClickingVehicle { get; set; }
+    public Blip Blip { get; }
 
-    public CustomPlayer(ExplosionService explosionService) : base()
+    public CustomPlayer(ExplosionService explosionService, MtaServer server) : base()
     {
         this.explosionService = explosionService;
 
         this.Wasted += HandleWasted;
+
+        var color = this.GetColor();
+        this.Blip = this.CreateBlipFor(BlipIcon.Marker, color: color).AssociateWith(server);
+        this.NametagColor = color;
     }
 
     private async void HandleWasted(Ped sender, Server.Elements.Events.PedWastedEventArgs e)
@@ -31,5 +39,11 @@ public class CustomPlayer : Player
     public void SetIsCursorShowing(bool isShowing)
     {
         this.TriggerLuaEvent("Slipe.Test.RequestCursor", parameters: isShowing);
+    }
+
+    private Color GetColor()
+    {
+        var random = new Random();
+        return Color.FromArgb(255, random.Next(1, 255), random.Next(1, 255), random.Next(1, 255));
     }
 }

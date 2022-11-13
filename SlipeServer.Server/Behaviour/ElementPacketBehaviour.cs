@@ -39,7 +39,8 @@ public class ElementPacketBehaviour
         element.Detached += RelayDetached;
         element.AttachedOffsetChanged += RelayAttachedOffsetChanged;
 
-        this.server.BroadcastPacket(AddEntityPacketFactory.CreateAddEntityPacket(new Element[] { element }));
+        if (element.ExistsForAllPlayers)
+            this.server.BroadcastPacket(AddEntityPacketFactory.CreateAddEntityPacket(new Element[] { element }));
     }
 
     private void RelayElementFrozenChanged(Element sender, ElementChangedEventArgs<bool> args)
@@ -56,6 +57,7 @@ public class ElementPacketBehaviour
     {
         this.server.BroadcastPacket(ElementPacketFactory.CreateSetCollisionsEnabledPacket(args.Source, args.NewValue));
     }
+
     private void RelayAttached(Element sender, ElementAttachedEventArgs args)
     {
         this.server.BroadcastPacket(ElementPacketFactory.CreateAttachElementPacket(args.Source, args.AttachedTo, args.OffsetPosition, args.OffsetRotation));

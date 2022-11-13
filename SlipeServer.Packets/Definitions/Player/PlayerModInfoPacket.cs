@@ -2,6 +2,7 @@
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
 using System;
+using System.Linq;
 
 namespace SlipeServer.Packets.Definitions.Player;
 
@@ -25,6 +26,9 @@ public class PlayerModInfoPacket : Packet
 
     public override void Read(byte[] bytes)
     {
+        if (!bytes.Any())
+            return;
+
         var reader = new PacketReader(bytes);
         this.InfoType = reader.GetString();
         this.Count = reader.GetUint32();

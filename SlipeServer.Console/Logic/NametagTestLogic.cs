@@ -14,7 +14,7 @@ public class NametagTestLogic
 
     public NametagTestLogic(MtaServer server, CommandService commandService)
     {
-        this.nametagPlayer = new CustomPlayer(server.GetRequiredService<ExplosionService>())
+        this.nametagPlayer = new CustomPlayer(server.GetRequiredService<ExplosionService>(), server)
         {
             Name = "NametagTester",
             Position = new System.Numerics.Vector3(-2, 0.5f, 3),

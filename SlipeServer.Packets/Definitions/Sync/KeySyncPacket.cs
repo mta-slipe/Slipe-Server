@@ -30,6 +30,17 @@ public class KeySyncPacket : Packet
     public float AimArm { get; set; }
     public VehicleAimDirection VehicleAimDirection { get; set; }
 
+    public Vector2? TurretRotation { get; set; }
+
+    public short? HydraulicsRightStickX { get; set; }
+    public short? HydraulicsRightStickY { get; set; }
+
+    public short? HydraulicsOrTurretRotationX { get; set; }
+    public short? HydraulicsOrTurretRotationY { get; set; }
+
+    public bool? PlaneLeftShoulder2 { get; set; }
+    public bool? PlaneRightShoulder2 { get; set; }
+
     public uint PlayerId { get; set; }
 
     public KeySyncPacket()
@@ -77,6 +88,42 @@ public class KeySyncPacket : Packet
                 }
             }
         }
+
+        ReadVehicleSpecific(reader);
+    }
+
+    // MTA fetches the vehicle and uses that to determine whether or not data should be read
+    // We however do not want to bring elements into packet definitions so instead we make
+    // some assumptions based on the size of the packet
+    private void ReadVehicleSpecific(PacketReader reader)
+    {
+        if (this.KeySyncFlagsStructure.IsSyncingVehicle)
+        {
+            var dataLeft = reader.Size - reader.Counter;
+
+            // the packet contains both the turret rotation AND hydraulics control state
+            // if it only contains one of the two we can not determine which it is, so we 
+            if (dataLeft >= 64)
+            {
+                this.TurretRotation = reader.GetTurretRotation();
+                this.HydraulicsRightStickX = reader.GetInt16();
+                this.HydraulicsRightStickY = reader.GetInt16();
+
+                dataLeft -= 64;
+            } else if (dataLeft >= 32)
+            {
+                this.HydraulicsOrTurretRotationX = reader.GetInt16();
+                this.HydraulicsOrTurretRotationY = reader.GetInt16();
+
+                dataLeft -= 32;
+            }
+
+            if (dataLeft >= 2)
+            {
+                this.PlaneLeftShoulder2 = reader.GetBit();
+                this.PlaneRightShoulder2 = reader.GetBit();
+            }
+        }
     }
 
     public override byte[] Write()
@@ -109,9 +156,26 @@ public class KeySyncPacket : Packet
 
         if (this.KeySyncFlagsStructure.IsSyncingVehicle)
         {
-            // write turret if vehicle has turret
-            // write hydraulics if upgrade present
-            // write shoulder buttons if in plane or heli
+            if (this.TurretRotation != null)            
+                builder.WriteTurretRotation(this.TurretRotation.Value);
+
+            if (this.HydraulicsRightStickX.HasValue && this.HydraulicsRightStickY.HasValue)
+            {
+                builder.Write(this.HydraulicsRightStickX.Value);
+                builder.Write(this.HydraulicsRightStickY.Value);
+            }
+
+            if (this.HydraulicsOrTurretRotationX.HasValue && this.HydraulicsOrTurretRotationY.HasValue)
+            {
+                builder.Write(this.HydraulicsOrTurretRotationX.Value);
+                builder.Write(this.HydraulicsOrTurretRotationY.Value);
+            }
+
+            if (this.PlaneLeftShoulder2.HasValue && this.PlaneRightShoulder2.HasValue)
+            {
+                builder.Write(this.PlaneLeftShoulder2);
+                builder.Write(this.PlaneRightShoulder2);
+            }
         }
 
         return builder.Build();

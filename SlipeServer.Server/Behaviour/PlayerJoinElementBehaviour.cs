@@ -25,19 +25,14 @@ public class PlayerJoinElementBehaviour
 
     private void OnPlayerJoin(Player player)
     {
-        var elements = this.elementCollection.GetAll();
-        var packet = AddEntityPacketFactory.CreateAddEntityPacket(elements);
-        player.Client.SendPacket(packet);
-
         player.Disconnected += OnPlayerDisconnect;
 
-        this.logger.LogInformation($"{player.Name} ({player.Client.Version}) ({player.Client.Serial}) has joined the server!");
+        this.logger.LogInformation("{Name} ({Version}) ({Serial}) has joined the server!", player.Name, player.Client.Version, player.Client.Serial);
     }
 
-    private void OnPlayerDisconnect(object? sender, Elements.Events.PlayerQuitEventArgs e)
+    private void OnPlayerDisconnect(Player player, Elements.Events.PlayerQuitEventArgs e)
     {
-        var player = sender as Player;
-        this.logger.LogInformation($"{player!.Name} ({player.Client.Version}) ({player.Client.Serial}) has left the server!");
+        this.logger.LogInformation("{Name} ({Version}) ({Serial}) has left the server!", player!.Name, player.Client.Version, player.Client.Serial);
 
         var packet = new PlayerQuitPacket(player.Id, (byte)e.Reason);
 

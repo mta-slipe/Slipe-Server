@@ -59,4 +59,17 @@ public class ElementAttachment
 
     public event Action<Vector3>? PositionOffsetChanged;
     public event Action<Vector3>? RotationOffsetChanged;
+
+    public static implicit operator SlipeServer.Packets.Definitions.Entities.Structs.ElementAttachment?(ElementAttachment? attachment)
+    {
+        if (attachment == null)
+            return null;
+
+        return new Packets.Definitions.Entities.Structs.ElementAttachment()
+        {
+            ElementId = attachment.Target.Id,
+            AttachmentPosition = attachment.PositionOffset,
+            AttachmentRotation = attachment.rotationOffset
+        };
+    }
 }

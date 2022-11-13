@@ -32,10 +32,9 @@ public class PlayerPureSyncPacketHandler : IPacketHandler<PlayerPureSyncPacket>
 
     public void HandlePacket(IClient client, PlayerPureSyncPacket packet)
     {
-
         if (packet.TimeContext != client.Player.TimeContext && packet.TimeContext > 0 && client.Player.TimeContext > 0)
         {
-            this.logger.LogWarning("Received outdated Pure sync packet from {player}", client.Player.Name);
+            this.logger.LogTrace("Received outdated Pure sync packet from {player}", client.Player.Name);
             return;
         }
 

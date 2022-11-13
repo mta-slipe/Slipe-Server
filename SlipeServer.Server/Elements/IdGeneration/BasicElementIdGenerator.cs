@@ -5,6 +5,7 @@ namespace SlipeServer.Server.Elements.IdGeneration;
 public class BasicElementIdGenerator : IElementIdGenerator
 {
     private uint idCounter;
+    private readonly object idLock = new();
 
     public BasicElementIdGenerator()
     {
@@ -13,9 +14,12 @@ public class BasicElementIdGenerator : IElementIdGenerator
 
     public uint GetId()
     {
-        this.idCounter = (this.idCounter + 1) % ElementConstants.MaxElementId;
-        if (this.idCounter == 0)
-            this.idCounter++;
-        return this.idCounter;
+        lock (this.idLock)
+        {
+            this.idCounter = (this.idCounter + 1) % ElementConstants.MaxElementId;
+            if (this.idCounter == 0)
+                this.idCounter++;
+            return this.idCounter;
+        }
     }
 }
