@@ -14,6 +14,9 @@ public static class AddEntityPacketFactory
 
         foreach (var element in elements)
         {
+            if (element.Id == 0)
+                throw new System.Exception(string.Format("Element {0} can not be created with id 0", element.ElementType));
+
             switch (element.ElementType)
             {
                 case ElementType.Dummy:

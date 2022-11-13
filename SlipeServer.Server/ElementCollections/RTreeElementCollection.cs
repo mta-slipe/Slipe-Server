@@ -147,11 +147,17 @@ public class RTreeElementCollection : IElementCollection
     private void ReInsertElement(Element element, ElementChangedEventArgs<Vector3> args)
     {
         this.slimLock.EnterWriteLock();
-        this.elements.Delete(this.elementRefs[element]);
+        try
+        {
+            this.elements.Delete(this.elementRefs[element]);
 
-        var elementRef = new RTreeRef(element);
-        this.elements.Insert(elementRef);
-        this.elementRefs[element] = elementRef;
-        this.slimLock.ExitWriteLock();
+            var elementRef = new RTreeRef(element);
+            this.elements.Insert(elementRef);
+            this.elementRefs[element] = elementRef;
+        }
+        finally
+        {
+            this.slimLock.ExitWriteLock();
+        }
     }
 }

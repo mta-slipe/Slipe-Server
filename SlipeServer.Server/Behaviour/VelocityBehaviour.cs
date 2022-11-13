@@ -49,14 +49,14 @@ public class VelocityBehaviour
         {
             if (element.Velocity.Length() > 0)
                 if (!this.velocityElements.ContainsKey(element))
-                    this.velocityElements.TryAdd(element, element);
+                    this.velocityElements[element] = element;
 
             element.VelocityChanged += (sender, args) =>
             {
                 if (args.NewValue.Length() > 0)
                 {
                     if (!this.velocityElements.ContainsKey(args.Source))
-                        this.velocityElements.TryAdd(args.Source, args.Source);
+                        this.velocityElements[args.Source] = args.Source;
                 } else
                 {
                     if (this.velocityElements.ContainsKey(args.Source))

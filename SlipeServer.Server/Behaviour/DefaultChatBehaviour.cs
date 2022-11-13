@@ -18,7 +18,7 @@ public class DefaultChatBehaviour
             {
                 if (arguments.Command == "say")
                 {
-                    string message = $"{player.Name}: {string.Join(' ', arguments.Arguments)}";
+                    string message = $"{player.Name}: #ffffff{string.Join(' ', arguments.Arguments)}";
                     chatBox.Output(message, Color.White, true, ChatEchoType.Player, player);
                     logger?.LogInformation("{message}", message);
                 }

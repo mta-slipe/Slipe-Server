@@ -5,6 +5,8 @@ using SlipeServer.Server.PacketHandling.Factories;
 using SlipeServer.Server.ElementCollections;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Collections.Concurrent;
+using System.Linq;
 
 namespace SlipeServer.Server.Behaviour;
 
@@ -13,12 +15,12 @@ namespace SlipeServer.Server.Behaviour;
 /// </summary>
 public class CollisionShapeBehaviour
 {
-    private readonly HashSet<CollisionShape> collisionShapes;
+    private readonly ConcurrentDictionary<CollisionShape, byte> collisionShapes;
     private readonly MtaServer server;
 
     public CollisionShapeBehaviour(MtaServer server, IElementCollection elementCollection)
     {
-        this.collisionShapes = new HashSet<CollisionShape>();
+        this.collisionShapes = new();
         foreach (var collisionShape in elementCollection.GetByType<CollisionShape>(ElementType.Colshape))
         {
             this.AddCollisionShape(collisionShape);
@@ -104,15 +106,15 @@ public class CollisionShapeBehaviour
 
     private void AddCollisionShape(CollisionShape collisionShape)
     {
-        this.collisionShapes.Add(collisionShape);
-        collisionShape.Destroyed += (source) => this.collisionShapes.Remove(collisionShape);
+        this.collisionShapes[collisionShape] = 0;
+        collisionShape.Destroyed += (source) => this.collisionShapes.Remove(collisionShape, out var _);
     }
 
     private void RefreshColliders(Element element)
     {
         foreach (var shape in this.collisionShapes)
         {
-            shape.CheckElementWithin(element);
+            shape.Key.CheckElementWithin(element);
         }
     }
 

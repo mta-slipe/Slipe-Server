@@ -34,10 +34,10 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
         var element = this.elementCollection.Get(packet.VehicleId);
         if (element == null)
         {
-            this.logger.LogWarning("Attempt to enter non-existant vehicle");
+            this.logger.LogTrace("Attempt to enter non-existant vehicle by {player}", client.Player.Name);
             return;
         }
-        this.logger.LogInformation($"Vehicle entry attempt {packet.ActionId}");
+
         if (element is Elements.Vehicle vehicle)
         {
             switch (packet.ActionId)
