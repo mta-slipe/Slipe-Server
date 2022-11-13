@@ -230,6 +230,8 @@ public class Element
 
     private readonly object destroyLock = new();
 
+    public bool ExistsForAllPlayers { get; set; } = true;
+
     public Element()
     {
         this.children = new();

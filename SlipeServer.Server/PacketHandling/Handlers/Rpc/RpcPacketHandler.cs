@@ -105,7 +105,9 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
             .Except(new Elements.Player[] { client.Player })
             .ToArray();
 
-        var elements = this.elementCollection.GetAll();
+        var elements = this.elementCollection
+            .GetAll()
+            .Where(x => x.ExistsForAllPlayers);
         var packet = AddEntityPacketFactory.CreateAddEntityPacket(elements);
         client.SendPacket(packet);
 
