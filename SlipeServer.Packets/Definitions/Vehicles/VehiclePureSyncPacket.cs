@@ -59,6 +59,11 @@ public class VehiclePureSyncPacket : Packet
     public ushort LeftShoulder2 { get; set; }
     public ushort RightShoulder2 { get; set; }
 
+    public byte[] DoorStates { get; set; } = Array.Empty<byte>();
+    public byte[] WheelStates { get; set; } = Array.Empty<byte>();
+    public byte[] PanelStates { get; set; } = Array.Empty<byte>();
+    public byte[] LightStates { get; set; } = Array.Empty<byte>();
+
     public VehiclePureSyncPacket()
     {
         this.Trailers = new List<TrailerSync>();
@@ -269,9 +274,24 @@ public class VehiclePureSyncPacket : Packet
             builder.Write(this.RightShoulder2 != 0);
         }
 
-        builder.WriteCapped(0, 4);
+        builder.Write(true);
+        builder.Write(true);
+        builder.Write(true);
+        builder.Write(true);
+
+        WriteComponentStates(builder, this.DoorStates, 3);
+        WriteComponentStates(builder, this.WheelStates, 2);
+        WriteComponentStates(builder, this.PanelStates, 2);
+        WriteComponentStates(builder, this.LightStates, 2);
 
         return builder.Build();
+    }
+
+    private void WriteComponentStates(PacketBuilder builder, byte[] data, int bits)
+    {
+        builder.Write(true);
+        foreach (var d in data)
+            builder.WriteCapped(d, bits);
     }
 
     public override void Reset()
@@ -315,6 +335,11 @@ public class VehiclePureSyncPacket : Packet
 
         this.LeftShoulder2 = default;
         this.RightShoulder2 = default;
+
+        this.DoorStates = Array.Empty<byte>();
+        this.WheelStates = Array.Empty<byte>();
+        this.PanelStates = Array.Empty<byte>();
+        this.LightStates = Array.Empty<byte>();
     }
 }
 

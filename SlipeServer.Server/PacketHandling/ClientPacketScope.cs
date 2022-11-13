@@ -1,5 +1,7 @@
-﻿using System;
+﻿using SlipeServer.Server.Elements;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SlipeServer.Server.PacketHandling;
 
@@ -17,6 +19,18 @@ public class ClientPacketScope : IDisposable
     }
 
     public ClientPacketScope(IEnumerable<IClient> clients) : this(new HashSet<IClient>(clients))
+    {
+    }
+
+    public ClientPacketScope(IClient client) : this(new HashSet<IClient>() { client })
+    {
+    }
+
+    public ClientPacketScope(Player player) : this(player.Client)
+    {
+    }
+
+    public ClientPacketScope(IEnumerable<Player> players) : this(players.Select(x => x.Client))
     {
     }
 

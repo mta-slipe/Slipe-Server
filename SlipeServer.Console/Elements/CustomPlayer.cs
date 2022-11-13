@@ -24,6 +24,8 @@ public class CustomPlayer : Player
         var color = this.GetColor();
         this.Blip = this.CreateBlipFor(BlipIcon.Marker, color: color).AssociateWith(server);
         this.NametagColor = color;
+
+        this.Disconnected += HandleDisconnect;
     }
 
     private async void HandleWasted(Ped sender, Server.Elements.Events.PedWastedEventArgs e)
@@ -34,6 +36,11 @@ public class CustomPlayer : Player
         await Task.Delay(2000);
         this.Camera.Fade(CameraFade.In, 0);
         this.Spawn(new Vector3(0, 0, 3), 0, 7, 0, 0);
+    }
+
+    private void HandleDisconnect(Player sender, Server.Elements.Events.PlayerQuitEventArgs e)
+    {
+        this.Blip.Destroy();
     }
 
     public void SetIsCursorShowing(bool isShowing)
