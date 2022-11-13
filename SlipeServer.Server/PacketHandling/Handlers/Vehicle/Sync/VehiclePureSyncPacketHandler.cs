@@ -6,6 +6,7 @@ using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.ElementCollections;
+using System;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync;
 
@@ -27,15 +28,22 @@ public class VehiclePureSyncPacketHandler : IPacketHandler<VehiclePureSyncPacket
 
     public void HandlePacket(IClient client, VehiclePureSyncPacket packet)
     {
+        var player = client.Player;
+        var vehicle = player.Vehicle;
+
         client.SendPacket(new ReturnSyncPacket(packet.Position, packet.Rotation));
 
         packet.PlayerId = client.Player.Id;
         packet.Latency = (ushort)client.Ping;
 
+        packet.DoorStates = vehicle?.Damage.Doors ?? Array.Empty<byte>();
+        packet.WheelStates = vehicle?.Damage.Wheels ?? Array.Empty<byte>();
+        packet.PanelStates = vehicle?.Damage.Panels ?? Array.Empty<byte>();
+        packet.LightStates = vehicle?.Damage.Lights ?? Array.Empty<byte>();
+
         var otherPlayers = this.middleware.GetPlayersToSyncTo(client.Player, packet);
         packet.SendTo(otherPlayers);
 
-        var player = client.Player;
         player.RunAsSync(() =>
         {
             player.Position = packet.Position;
@@ -63,8 +71,6 @@ public class VehiclePureSyncPacketHandler : IPacketHandler<VehiclePureSyncPacket
                 player.TriggerDamaged(damager, (WeaponType)(packet.DamageWeaponType ?? (byte?)WeaponType.WEAPONTYPE_UNIDENTIFIED), (BodyPart)(packet.DamageBodyPart ?? (byte?)BodyPart.Torso));
             }
         });
-
-        var vehicle = player?.Vehicle;
 
         if (vehicle != null && player == vehicle.Driver)
         {
