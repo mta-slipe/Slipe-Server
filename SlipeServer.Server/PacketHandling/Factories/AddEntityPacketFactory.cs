@@ -45,7 +45,7 @@ public static class AddEntityPacketFactory
                     break;
 
                 case ElementType.Ped:
-                    if (element is Ped ped && !(element is Player))
+                    if (element is Ped ped && element is not Player)
                         builder.AddPed(ped);
                     break;
 
