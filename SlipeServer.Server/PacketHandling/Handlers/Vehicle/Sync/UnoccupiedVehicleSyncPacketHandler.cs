@@ -59,7 +59,7 @@ public class UnoccupiedVehicleSyncPacketHandler : IPacketHandler<UnoccupiedVehic
                             {
                                 vehicleElement.AttachTrailer(trailer, true);
                             }
-                        } else if (vehicleElement.TowedVehicle != null)
+                        } else if (vehicleElement.TowingVehicle != null)
                         {
                             vehicleElement.AttachTrailer(null, true);
                         }

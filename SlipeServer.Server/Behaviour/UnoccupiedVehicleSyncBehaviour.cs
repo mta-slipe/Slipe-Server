@@ -111,6 +111,9 @@ public class UnoccupiedVehicleSyncBehaviour
         Player? newSyncer;
         if (vehicle.Driver is Player player)
             newSyncer = player;
+        else if (vehicle.TowingChainHead != null)
+            newSyncer = vehicle.TowingChainHead.Driver as Player 
+                ?? GetClosestPlayer(vehicle, this.configuration.UnoccupiedVehicleSyncerDistance);
         else
             newSyncer = GetClosestPlayer(vehicle, this.configuration.UnoccupiedVehicleSyncerDistance);
 

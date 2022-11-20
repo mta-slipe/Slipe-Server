@@ -393,6 +393,18 @@ public class Vehicle : Element
     /// </summary>
     public Vehicle? TowingVehicle { get; private set; }
 
+    public Vehicle? TowingChainHead
+    {
+        get
+        {
+            if (this.TowingVehicle != null)
+                return this.TowingVehicle.TowingChainHead;
+            if (this.TowedVehicle != null)
+                return this;
+            return null;
+        }
+    }
+
     /// <summary>
     /// Vehicle that is being towed by this vehicle
     /// </summary>
