@@ -26,5 +26,5 @@ public class Team : Element, IEnumerable
         return server.AssociateElement(this);
     }
 
-    public IEnumerator GetEnumerator() => Players.GetEnumerator();
+    public IEnumerator GetEnumerator() => this.Players.GetEnumerator();
 }

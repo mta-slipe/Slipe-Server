@@ -127,6 +127,18 @@ public class MtaServer
         return wrapper;
     }
 
+    public INetWrapper AddNetWrapper(INetWrapper wrapper, AntiCheatConfiguration? configuration = null)
+    {
+        this.netWrappers.Add(wrapper);
+
+        ConfigureAntiCheat(wrapper, configuration ?? new AntiCheatConfiguration());
+
+        if (this.IsRunning)
+            wrapper.Start();
+
+        return wrapper;
+    }
+
     private void ConfigureAntiCheat(INetWrapper netWrapper, AntiCheatConfiguration configuration)
     {
         netWrapper.SetAntiCheatConfig(
@@ -280,7 +292,7 @@ public class MtaServer
         return netWrapper;
     }
 
-    protected void RegisterNetWrapper(INetWrapper netWrapper)
+    public void RegisterNetWrapper(INetWrapper netWrapper)
     {
         netWrapper.PacketReceived += EnqueueIncomingPacket;
         this.clients[netWrapper] = new Dictionary<uint, IClient>();

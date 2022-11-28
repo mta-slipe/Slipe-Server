@@ -5,9 +5,11 @@ using SlipeServer.Console.AdditionalResources;
 using SlipeServer.Console.Elements;
 using SlipeServer.Console.Logic;
 using SlipeServer.Console.PacketReplayer;
+using SlipeServer.Console.Proxy;
 using SlipeServer.Console.Services;
 using SlipeServer.Lua;
 using SlipeServer.LuaControllers;
+using SlipeServer.Net.Wrappers;
 using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Physics.Extensions;
 using SlipeServer.Server;
@@ -15,6 +17,7 @@ using SlipeServer.Server.Loggers;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.ServerBuilders;
 using System;
+using System.IO;
 using System.Threading;
 
 namespace SlipeServer.Console;
@@ -52,6 +55,7 @@ public partial class Program
     private readonly EventWaitHandle waitHandle = new(false, EventResetMode.AutoReset);
     private readonly MtaServer server;
     private readonly Configuration configuration;
+    private readonly ProfilingNetWrapper profilingNetWrapper;
 
     public ILogger Logger { get; }
 
@@ -67,6 +71,12 @@ public partial class Program
 #endif
         };
 
+        this.profilingNetWrapper = new ProfilingNetWrapper(
+            Directory.GetCurrentDirectory(),
+            "net.dll",
+            this.configuration.Host,
+            50664);
+
         this.server = MtaServer.CreateWithDiSupport<CustomPlayer>(
             (builder) =>
             {
@@ -74,6 +84,7 @@ public partial class Program
 
 #if DEBUG
                 builder.AddDefaults(exceptBehaviours: ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour);
+                builder.AddBuildStep(server => server.AddNetWrapper(this.profilingNetWrapper));
 #else
                 builder.AddDefaults();
 #endif
@@ -83,6 +94,7 @@ public partial class Program
                     services.AddSingleton<ILogger, ConsoleLogger>();
                     services.AddSingleton<ISyncHandlerMiddleware<PlayerPureSyncPacket>, SubscriptionSyncHandlerMiddleware<PlayerPureSyncPacket>>();
                     services.AddSingleton<ISyncHandlerMiddleware<KeySyncPacket>, SubscriptionSyncHandlerMiddleware<KeySyncPacket>>();
+                    services.AddSingleton<ProfilingNetWrapper>(this.profilingNetWrapper);
 
                     services.AddScoped<TestService>();
                     services.AddSingleton<PacketReplayerService>();
@@ -103,6 +115,8 @@ public partial class Program
                 builder.AddLogic<VehicleTestLogic>();
                 builder.AddLogic<ClothingTestLogic>();
                 builder.AddLogic<PedTestLogic>();
+                builder.AddLogic<ProfilingLogic>();
+                builder.AddLogic<ProxyService>();
                 //builder.AddBehaviour<VelocityBehaviour>();
                 //builder.AddBehaviour<EventLoggingBehaviour>();
 
