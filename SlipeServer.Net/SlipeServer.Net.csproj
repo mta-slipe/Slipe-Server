@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <Platforms>AnyCPU;x64;x86</Platforms>
     <Nullable>enable</Nullable>
     <Version>0.1.0</Version>
@@ -87,8 +87,8 @@
     <Content Include="Binaries\x64\net.so" Pack="true" PackagePath="\runtimes\linux-x64\native"></Content>
     <Content Include="Binaries\x64\NetModuleWrapper.so" Pack="true" PackagePath="\runtimes\linux-x64\native"></Content>
 
-    <Content Include="SlipeServer.Net.targets" Pack="true" PackagePath="\build\net6.0\SlipeServer.Net.targets"></Content>
-    <Content Include="SlipeServer.Net.targets" Pack="true" PackagePath="\buildTransitive\net6.0\SlipeServer.Net.targets"></Content>
+    <Content Include="SlipeServer.Net.targets" Pack="true" PackagePath="\build\net7.0\SlipeServer.Net.targets"></Content>
+    <Content Include="SlipeServer.Net.targets" Pack="true" PackagePath="\buildTransitive\net7.0\SlipeServer.Net.targets"></Content>
   </ItemGroup>
 
   <ItemGroup>

@@ -83,7 +83,7 @@ public class NetWrapper : IDisposable, INetWrapper
 
     public void Stop() => StopNetWrapper(this.id);
 
-    private void SendPacket(uint binaryAddress, byte packetId, ushort bitStreamVersion, byte[] payload, PacketPriority priority, PacketReliability reliability)
+    protected virtual void SendPacket(uint binaryAddress, byte packetId, ushort bitStreamVersion, byte[] payload, PacketPriority priority, PacketReliability reliability)
     {
         int size = Marshal.SizeOf((byte)0) * payload.Length;
         IntPtr pointer = Marshal.AllocHGlobal(size);
@@ -154,7 +154,7 @@ public class NetWrapper : IDisposable, INetWrapper
             allowGta3ImgMods.ToString().ToLower());
     }
 
-    private void PacketInterceptor(byte packetId, uint binaryAddress, IntPtr payload, uint payloadSize, bool hasPing, uint ping)
+    protected virtual void PacketInterceptor(byte packetId, uint binaryAddress, IntPtr payload, uint payloadSize, bool hasPing, uint ping)
     {
         byte[] data = new byte[payloadSize];
         Marshal.Copy(payload, data, 0, (int)payloadSize);
