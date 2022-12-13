@@ -28,7 +28,7 @@ public class SetTrafficLightStatePacket : Packet
     {
         PacketBuilder builder = new PacketBuilder();
         builder.Write((byte)ElementRPCFunction.SET_TRAFFIC_LIGHT_STATE);
-        builder.WriteBytesCapped(BitConverter.GetBytes(this.State), 4);
+        builder.WriteCapped(this.State, 4);
         builder.Write(this.Forced);
 
         return builder.Build();
