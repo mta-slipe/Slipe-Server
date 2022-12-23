@@ -36,4 +36,18 @@ public class ChatBox
     {
         player.Client.SendPacket(new ClearChatPacket());
     }
+
+    public void SetVisible(bool visible, bool? inputBlocked = null)
+    {
+        if(inputBlocked == null)
+            inputBlocked = !visible;
+        this.server.BroadcastPacket(new ShowChatPacket(visible, inputBlocked.Value));
+    }
+
+    public void SetVisibleFor(Player player, bool visible, bool? inputBlocked = null)
+    {
+        if (inputBlocked == null)
+            inputBlocked = !visible;
+        player.Client.SendPacket(new ShowChatPacket(visible, inputBlocked.Value));
+    }
 }
