@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Server.Elements;
 using SlipeServer.Server.Helpers;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -13,14 +14,14 @@ public class RTreeCompoundElementCollection : IElementCollection
     private readonly FlatElementCollection flatElementCollection;
     private readonly ElementByIdCollection elementByIdCollection;
     private readonly ElementByTypeCollection elementByTypeCollection;
-    private readonly Dictionary<ElementType, RTreeElementCollection> spatialCollections;
+    private readonly ConcurrentDictionary<ElementType, RTreeElementCollection> spatialCollections;
 
     public RTreeCompoundElementCollection()
     {
-        this.flatElementCollection = new FlatElementCollection();
-        this.elementByIdCollection = new ElementByIdCollection();
-        this.elementByTypeCollection = new ElementByTypeCollection();
-        this.spatialCollections = new Dictionary<ElementType, RTreeElementCollection>();
+        this.flatElementCollection = new();
+        this.elementByIdCollection = new();
+        this.elementByTypeCollection = new();
+        this.spatialCollections = new();
     }
 
     public void Add(Element element)

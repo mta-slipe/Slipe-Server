@@ -44,6 +44,7 @@ public class Pickup : Element
 
         this.CollisionShape = new CollisionSphere(position, 2);
         this.CollisionShape.ElementEntered += HandleCollisionHit;
+        this.CollisionShape.AttachTo(this);
     }
 
     public Pickup(Vector3 position, WeaponType type, ushort ammo)
