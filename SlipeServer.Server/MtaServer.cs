@@ -44,6 +44,8 @@ public class MtaServer
 
     private readonly Func<uint, INetWrapper, IClient>? clientCreationMethod;
 
+    private readonly HashSet<object> persistentInstances;
+
     public string GameType { get; set; } = "unknown";
     public string MapName { get; set; } = "unknown";
     public string? Password { get; set; }
@@ -64,6 +66,7 @@ public class MtaServer
         this.clientCreationMethod = clientCreationMethod;
         this.resourceServers = new();
         this.additionalResources = new();
+        this.persistentInstances = new();
 
         this.root = new();
         this.serviceCollection = new();
@@ -173,6 +176,23 @@ public class MtaServer
         => ActivatorUtilities.CreateInstance(this.serviceProvider, type, parameters);
     public T Instantiate<T>(params object[] parameters)
         => ActivatorUtilities.CreateInstance<T>(this.serviceProvider, parameters);
+
+    public object InstantiatePersistent(Type type, params object[] parameters)
+    {
+        var instance = this.Instantiate(type, parameters);
+        this.persistentInstances.Add(instance);
+        return instance;
+    }
+
+    public T InstantiatePersistent<T>(params object[] parameters)
+    {
+        var instance = this.Instantiate<T>(parameters);
+        if (instance == null)
+            throw new Exception($"Unable to instantiate {typeof(T)}");
+
+        this.persistentInstances.Add(instance);
+        return instance;
+    }
 
     public object InstantiateScoped(Type type, params object[] parameters)
     {
