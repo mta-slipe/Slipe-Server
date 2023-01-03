@@ -53,6 +53,7 @@ public class ServerTestLogic
     private readonly CommandService commandService;
     private readonly WeaponConfigurationService weaponConfigurationService;
     private readonly GameWorld gameWorld;
+    private readonly IElementIdGenerator elementIdGenerator;
     private Resource? testResource;
     private Resource? secondTestResource;
     private Resource? thirdTestResource;
@@ -102,7 +103,8 @@ public class ServerTestLogic
         IResourceProvider resourceProvider,
         CommandService commandService,
         WeaponConfigurationService weaponConfigurationService,
-        GameWorld gameWorld
+        GameWorld gameWorld,
+        IElementIdGenerator elementIdGenerator
     )
     {
         this.server = server;
@@ -120,6 +122,7 @@ public class ServerTestLogic
         this.resourceProvider = resourceProvider;
         this.commandService = commandService;
         this.weaponConfigurationService = weaponConfigurationService;
+        this.elementIdGenerator = elementIdGenerator;
         this.gameWorld = gameWorld;
 
         this.slipeDevsTeam = new Team("Slipe devs", Color.FromArgb(255, 255, 81, 81));
@@ -1067,6 +1070,38 @@ public class ServerTestLogic
         {
             var blip = new Blip(Vector3.Zero, BlipIcon.Truth);
             blip.CreateFor(args.Player);
+        };
+
+        this.commandService.AddCommand("gp").Triggered += (source, args) =>
+        {
+            this.chatBox.Output($"{args.Player.Position}");
+        };
+
+        this.commandService.AddCommand("createelementsforme").Triggered += (source, args) =>
+        {
+            var create = (Element element) =>
+            {
+                element.Id = this.elementIdGenerator.GetId();
+                element.CreateFor(args.Player);
+            };
+
+            var origin = new Vector3(-13.200195f, 26.257812f, 3.1171875f);
+            args.Player.Position = origin;
+            create(new Ped(PedModel.Ballas1, origin));
+            create(new Vehicle(404, origin));
+            create(new WorldObject(1337, origin));
+            create(new Pickup(origin, 1274));
+
+            var marker = new Marker(origin, MarkerType.Arrow);
+            marker.Color = Color.Pink;
+            create(marker);
+            var collisionSphere = new CollisionSphere(origin, 3);
+            collisionSphere.ElementEntered += e =>
+            {
+                this.chatBox.Output("entered element created for me");
+            };
+            create(collisionSphere);
+            create(new Blip(origin, BlipIcon.Truth));
         };
 
         this.commandService.AddCommand("hot").Triggered += (source, args) =>
