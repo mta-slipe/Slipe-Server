@@ -67,14 +67,19 @@ public class ServerBuilder
         AddBuildStep(server => server.Instantiate<T>(parameters));
     }
 
+    public void InstantiatePersistent<T>(params object[] parameters)
+    {
+        AddBuildStep(server => server.InstantiatePersistent<T>(parameters));
+    }
+
     public void AddBehaviour<T>(params object[] parameters)
     {
-        Instantiate<T>(parameters);
+        InstantiatePersistent<T>(parameters);
     }
 
     public void AddLogic<T>(params object[] parameters)
     {
-        Instantiate<T>(parameters);
+        InstantiatePersistent<T>(parameters);
     }
 
     public void ConfigureServices(Action<ServiceCollection> action)

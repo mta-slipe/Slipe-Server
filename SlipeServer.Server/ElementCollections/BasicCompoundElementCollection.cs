@@ -16,10 +16,10 @@ public class BasicCompoundElementCollection : IElementCollection
 
     public BasicCompoundElementCollection()
     {
-        this.flatElementCollection = new FlatElementCollection();
-        this.elementByIdCollection = new ElementByIdCollection();
-        this.elementByTypeCollection = new ElementByTypeCollection();
-        this.kdTreeElementCollection = new KdTreeElementCollection();
+        this.flatElementCollection = new();
+        this.elementByIdCollection = new();
+        this.elementByTypeCollection = new();
+        this.kdTreeElementCollection = new();
     }
 
     public void Add(Element element)

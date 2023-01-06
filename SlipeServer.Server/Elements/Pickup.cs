@@ -44,6 +44,8 @@ public class Pickup : Element
 
         this.CollisionShape = new CollisionSphere(position, 2);
         this.CollisionShape.ElementEntered += HandleCollisionHit;
+
+        this.PositionChanged += UpdatePosition;
     }
 
     public Pickup(Vector3 position, WeaponType type, ushort ammo)
@@ -149,6 +151,11 @@ public class Pickup : Element
     {
         this.CollisionShape.AssociateWith(server);
         return server.AssociateElement(this);
+    }
+
+    private void UpdatePosition(Element sender, ElementChangedEventArgs<Vector3> args)
+    {
+        this.CollisionShape.Position = args.NewValue;
     }
 
     public event ElementEventHandler<Pickup, PickupUsedEventArgs>? Used;
