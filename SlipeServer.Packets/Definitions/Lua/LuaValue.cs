@@ -18,7 +18,7 @@ public class LuaValue
     public uint? ElementId { get; }
     public Dictionary<LuaValue, LuaValue>? TableValue { get; }
     public bool IsNil { get; }
-
+    public static LuaValue Nil { get; } = new LuaValue();
 
     public LuaValue()
     {
