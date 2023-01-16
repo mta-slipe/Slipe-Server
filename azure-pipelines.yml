@@ -105,6 +105,31 @@ jobs:
         ArtifactName: 'cpp_linux'
         publishLocation: 'Container'
     
+- job: 'docfx_build'
+  pool:
+    vmImage: 'windows-2022'
+  steps:
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'custom'
+      custom: 'tool'
+      arguments: 'update -g docfx'
+  - task: CmdLine@2
+    inputs:
+      script: 'docfx SlipeServer.Docs/docfx.json'
+  - task: CopyFiles@2
+    displayName: 'Copy DocFx output'
+    inputs:
+      SourceFolder: 'SlipeServer.Docs/_site'
+      Contents: 'NetModuleWrapper.dll'
+      TargetFolder: '$(System.ArtifactsDirectory)/docs'
+      OverWrite: true
+  - task: PublishBuildArtifacts@1
+    displayName: 'publish artifacts'
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'docs'
+      publishLocation: 'Container'
   
 - job: 'dotnet_build'
   pool:
