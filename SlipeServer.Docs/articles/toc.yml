@@ -16,6 +16,8 @@
   items:
   - name: Per player elements
     href: advanced-features/per-player-elements.md
+  - name: Client Packet Scope
+    href: advanced-features/client-packet-scope.md
   - name: Custom Sync (middleware)
     href: advanced-features/sync-middleware.md
 - name: Technical details  

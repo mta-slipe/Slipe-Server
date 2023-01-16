@@ -40,3 +40,6 @@ In order to facilitate handling ids for these elements you can also create an in
 (There is also `DestroyFor` counterpart to the `CreateFor` method)
 
 ## Other per-player actions
+There might be other cases where you want certain changes to only affect a subset of clients. For example you might want to change the colour of a vehicle for just one player. Normally you would do this with client-sided scripts, but Slipe Server can do this server sided.
+
+In order to do this we use the `ClientPacketScope` class. You can read more about that on the [dedicated article](/articles/advanced-features/client-packet-scope.html).
