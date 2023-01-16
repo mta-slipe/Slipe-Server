@@ -68,4 +68,4 @@ Other element classes are used in very similar ways, these other classes are:
 - `WorldObject`
 
 ### Next?
-When you're ready to proceed and, we recommend: [Injectable services](/articles/injectable-services.html)
+When you're ready to proceed and, we recommend: [Injectable services](/articles/getting-started/injectable-services.html)

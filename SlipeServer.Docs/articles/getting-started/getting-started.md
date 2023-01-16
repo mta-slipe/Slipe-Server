@@ -2,7 +2,7 @@
 
 This article will describe how to get started with your first Slipe Server project.
 
-## Preqequisites
+## Prerequisites
 - Visual Studio (or another editor if you prefer)
 - dotnet 7.0
 
@@ -29,4 +29,4 @@ We're going to create and run our first Slipe Server project, in order to do so:
 - 5. Go to your local server tab in your browser
 - 6. Connect to the server
 
-If everything worked as intended, you are now connected to an MTA server, you will however just see a black screen. In the next article: [your first logic](/articles/your-first-logic.html) we will add some logic to the server so you actually spawn somewhere.
+If everything worked as intended, you are now connected to an MTA server, you will however just see a black screen. In the next article: [your first logic](/articles/getting-started/your-first-logic.html) we will add some logic to the server so you actually spawn somewhere.

@@ -2,7 +2,7 @@
 
 This article will describe how to start implementing gameplay logic to your server.
 
-## Preqequisites
+## Prerequisites
 - Complete the getting-started tutorial
 
 ### Dependency injection
@@ -79,4 +79,4 @@ When you run this code, and connect ot the server, your player should now be spa
 
 At this point feel free to look at the different properties, methods and events that are available on the `Player` class.   
 
-When you're ready to proceed and create some other elements, read the next article: [More Elements](/articles/more-elements.html)
+When you're ready to proceed and create some other elements, read the next article: [More Elements](/articles/getting-started/more-elements.html)
