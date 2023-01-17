@@ -115,16 +115,14 @@ jobs:
       custom: 'tool'
       arguments: 'update -g docfx'
   - task: CmdLine@2
+    displayName: 'docfx build'
     inputs:
       script: 'docfx SlipeServer.Docs/docfx.json --build'
-  - task: CmdLine@2
-    inputs:
-      script: 'tree'
   - task: CopyFiles@2
     displayName: 'Copy DocFx output'
     inputs:
       SourceFolder: 'SlipeServer.Docs/_site'
-      Contents: 'NetModuleWrapper.dll'
+      Contents: '*'
       TargetFolder: '$(System.ArtifactsDirectory)/docs'
       OverWrite: true
   - task: PublishBuildArtifacts@1
