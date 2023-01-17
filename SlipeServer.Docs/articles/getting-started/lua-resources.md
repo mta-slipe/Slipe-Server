@@ -76,3 +76,15 @@ The default implementation for this is the [`BasicHttpServer`](/api/server/Slipe
 This will serve resource files over HTTP, much like the internal HTTP server in the regular MTA server does.  
 
 You can replace this with anything else you want (you might want to use external processes for example)
+
+## Starting resources
+Once you have your resource, either through the default resource provider, or a more complex setup, you can start the resource.  
+Unlike default MTA servers, Slipe Server allows you to start resources for only a single player.
+
+If you just want to start resources for a single user, you can use the `StartResource` method on the [`ResourceService`](https://server.mta-slipe.com/api/server/SlipeServer.Server.Resources.ResourceService.html) class.
+
+If you want to do more complex things (like the mentioned starting for individual clients), you can inject the `IResourceProvider`, to get a reference to the [`Resource` class](/api/server/SlipeServer.Server.Resources.Resource.html) instance. 
+
+Once you have this resource instance you can use the `StartFor()` or `StartForAsync()` methods.
+
+The `StartForAsync` method is awaitable, if you await this it will continue execution once the resource has actually started on the client.
