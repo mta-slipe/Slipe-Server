@@ -122,7 +122,7 @@ jobs:
     displayName: 'Copy DocFx output'
     inputs:
       SourceFolder: 'SlipeServer.Docs/_site'
-      Contents: '*'
+      Contents: '**'
       TargetFolder: '$(System.ArtifactsDirectory)/docs'
       OverWrite: true
   - task: PublishBuildArtifacts@1
