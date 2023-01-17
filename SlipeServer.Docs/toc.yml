@@ -1,0 +1,15 @@
+- name: Docs
+  href: articles/
+- name: Server API
+  href: api/server/
+- name: Networking API
+  href: api/networking/
+- name: Extensions
+  dropdown: true
+  items:
+  - name: Scripting
+    href: api/optionals/scripting/
+  - name: Physics
+    href: api/optionals/physics/
+  - name: Lua Controllers
+    href: api/optionals/lua-controllers/
