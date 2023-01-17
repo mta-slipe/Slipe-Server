@@ -12,6 +12,10 @@
     href: getting-started/injectable-services.md
   - name: Custom Player Types
     href: getting-started/custom-player-types.md
+  - name: Server Configuration
+    href: getting-started/configuration.md
+  - name: Lua Resources
+    href: getting-started/lua-resources.md
 - name: Advanced features
   items:
   - name: Per player elements
@@ -24,3 +28,9 @@
   items:
   - name: Concurrency
     href: technical-details/concurrency.md
+- name: Extensions
+  items:
+  - name: Physics
+    href: extensions/physics.md
+  - name: Lua Controllers
+    href: extensions/lua-controllers.md

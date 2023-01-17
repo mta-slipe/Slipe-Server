@@ -5,6 +5,20 @@ As stated before, there are several services that can be injected into your Logi
 ## Injecting
 You can inject these classes into any class that is created by the dependency injection container. This includes logics created by `.AddLogic()`, and any of its dependencies.  
 
+## Setting up additional dependencies
+You can also register additional classes and/or services with the server's dependency injection container, you do this in your Program.cs like so:
+```cs
+var server = MtaServer.CreateWithDiSupport<FreeroamPlayer>(builder =>
+{
+    builder.AddDefaults();
+
+    builder.ConfigureServices(services =>
+    {
+        // register your services here 
+        services.AddSingleton<ILogger, ConsoleLogger>();
+    });
+}
+```
 
 ## Next?
 You do not need to know all of these in order to get started, but this can be good reference to see what's available to you.  

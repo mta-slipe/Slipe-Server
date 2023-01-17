@@ -18,4 +18,10 @@
   {{#_noindex}}<meta name="searchOption" content="noindex">{{/_noindex}}
   {{#_enableSearch}}<meta property="docfx:rel" content="{{_rel}}">{{/_enableSearch}}
   {{#_enableNewTab}}<meta property="docfx:newtab" content="true">{{/_enableNewTab}}
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://server.mta-slipe.com">
+  <meta property="og:title" content="Slipe Server">
+  <meta property="og:description" content="Slipe Server is a native C# MTA Server development platform.">
+  <meta property="og:image" content="/images/logo_large.png">
 </head>
