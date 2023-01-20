@@ -3,7 +3,7 @@
 As stated before, there are several services that can be injected into your Logics (or other classes). These offer various ways of interacting with the server. At the end of the article is a list of these services, the list contains links to the individual docs for every one of these classes.
 
 ## Injecting
-You can inject these classes into any class that is created by the dependency injection container. This includes logics created by `.AddLogic()`, and any of its dependencies.  
+You can inject these classes into any class that is created by the dependency injection container. This includes logics created by `.AddLogic()` and any of its dependencies.  
 
 ## Setting up additional dependencies
 You can also register additional classes and/or services with the server's dependency injection container, you do this in your Program.cs like so:
@@ -40,7 +40,7 @@ Next up we recommend reading [Custom player types](/articles/getting-started/cus
 - [FireService](/api/server/SlipeServer.Server.Services.FireService.html)  
   Allows you to create fires.
 - [GameWorld](/api/server/SlipeServer.Server.Services.GameWorld.html)  
-  Allows you to modify properties related to the game world, including as: 
+  Allows you to modify properties related to the game world, including: 
   - weather
   - game speed
   - fps limit
@@ -59,9 +59,9 @@ Next up we recommend reading [Custom player types](/articles/getting-started/cus
 
 ### Lua value mapping
 - [LuaValueMapper](/api/server/SlipeServer.Server.Mappers.LuaValueMapper.html)  
-  Allows you to map any C# type to a LuaValue, and allows you to define custom mapping logic for specific types.
+  Allows you to map any C# type to a LuaValue and allows you to define custom mapping logic for specific types.
 - [FromLuaValueMapper](/api/server/SlipeServer.Server.Mappers.FromLuaValueMapper.html)  
-  Allows you to map LuaValues to any C# type, and allows you to define custom mapping logic for specific types.
+  Allows you to map LuaValues to any C# type and allows you to define custom mapping logic for specific types.
 
 ### Misc
 - [RootElement](/api/server/SlipeServer.Server.Elements.RootElement.html)  
@@ -69,7 +69,7 @@ Next up we recommend reading [Custom player types](/articles/getting-started/cus
 - [MtaServer](/api/server/SlipeServer.Server.Elements.RootElement.html)  
   The MTA server itself that's running, useful for global server-wide events like `PlayerJoined` and `ElementCreated`, or other server specific methods.
 - [Configuration](/api/server/SlipeServer.Server.Configuration.html)  
-  The servers configuration, containing fiels like the host, port, anticheat settings, etc.
+  The servers configuration, containing fields like the host, port, anticheat settings, etc.
 - [HttpClient](https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient)  
   C# Built in HTTP client for making HTTP requests.
 - [IElementCollection](/api/server/SlipeServer.Server.ElementCollections.IElementCollection.html)  
