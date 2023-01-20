@@ -40,7 +40,7 @@ We inject these servers into our `SpawningLogic` by defining (additional) constr
 
 We will inject the `MtaServer` class, and the `ILogger` interface, and store these as private members for later use.  
 
-We also registeran event handler for the `PlayerJoined` event on the `MtaServer` instance, this will trigger your method as soon any player has successfully joined your server.
+We also register an event handler for the `PlayerJoined` event on the `MtaServer` instance, this will trigger your method as soon any player has successfully joined your server.
 
 ```cs
 public class SpawningLogic
@@ -73,7 +73,7 @@ private void OnPlayerJoin(Player player)
 }
 ```
 
-When you run this code, and connect ot the server, your player should now be spawned, and be able to see the world around you.
+When you run this code, and connect to the server, your player should now be spawned and be able to see the world around you.
 
 ## Next?
 
