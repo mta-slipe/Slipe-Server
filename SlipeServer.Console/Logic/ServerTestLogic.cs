@@ -1079,9 +1079,10 @@ public class ServerTestLogic
 
         this.commandService.AddCommand("createelementsforme").Triggered += (source, args) =>
         {
+            uint id = 10_000;
             var create = (Element element) =>
             {
-                element.Id = this.elementIdGenerator.GetId();
+                element.Id = id++;
                 element.CreateFor(args.Player);
             };
 
