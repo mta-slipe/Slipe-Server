@@ -4,6 +4,9 @@ using SlipeServer.Server.Elements.Events;
 
 namespace SlipeServer.Server.Behaviour;
 
+/// <summary>
+/// Behaviours handling warping players into / out of vehicles
+/// </summary>
 public class VehicleWarpBehaviour
 {
     private readonly MtaServer server;

@@ -254,6 +254,15 @@ public static class DefaultServerBuilderExtensions
             builder.AddResourceInterpreter<SlipeLuaResourceInterpreter>();
     }
 
+    /// <summary>
+    /// Registers all default packet handlers, behaviours, services, lua mappings, resource servers, resource interpreters, and networking interfaces
+    /// More information can be found on https://server.mta-slipe.com/articles/getting-started/configuration.html#building-your-server
+    /// </summary>
+    /// <param name="exceptPacketHandlers">Packet handlers to exclude</param>
+    /// <param name="exceptBehaviours">Behaviours to exclude</param>
+    /// <param name="exceptServices">Services to exclude</param>
+    /// <param name="exceptMiddleware">Middleware to exclude</param>
+    /// <param name="exceptResourceInterpreters">Resource interpreters to exclude</param>
     public static void AddDefaults(
         this ServerBuilder builder,
         ServerBuilderDefaultPacketHandlers exceptPacketHandlers = ServerBuilderDefaultPacketHandlers.None,

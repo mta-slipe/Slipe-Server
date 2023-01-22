@@ -7,6 +7,9 @@ using System.Net.Sockets;
 
 namespace SlipeServer.Server.AllSeeingEye;
 
+/// <summary>
+/// UDP listeners responsible for handling ASE query requests
+/// </summary>
 public class AseUdpListener
 {
     private const int cacheTime = 10 * 1000;

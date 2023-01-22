@@ -4,6 +4,9 @@ using System;
 
 namespace SlipeServer.Server.Concepts;
 
+/// <summary>
+/// Represents a command a player can use to execute an action
+/// </summary>
 public class Command
 {
     public string CommandText { get; set; }

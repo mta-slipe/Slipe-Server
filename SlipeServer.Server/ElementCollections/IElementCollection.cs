@@ -4,6 +4,10 @@ using System.Numerics;
 
 namespace SlipeServer.Server.ElementCollections;
 
+/// <summary>
+/// Represents an arbitrary collection of elements, used (among others) as a repository of all elements associated with the server.
+/// Specific implementations of this can have optimised implementations for certain methods, like getting elements within range of a certain position.
+/// </summary>
 public interface IElementCollection
 {
     int Count { get; }

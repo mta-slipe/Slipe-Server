@@ -4,6 +4,10 @@ using System.Drawing;
 
 namespace SlipeServer.Server.Elements;
 
+/// <summary>
+/// A team element
+/// A team represents a collection of players, along with some simple properties like a color, name and friendly fire setting.
+/// </summary>
 public class Team : Element, IEnumerable
 {
     public override ElementType ElementType => ElementType.Team;

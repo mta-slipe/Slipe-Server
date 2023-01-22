@@ -27,6 +27,9 @@ using System.Linq;
 
 namespace SlipeServer.Server;
 
+/// <summary>
+/// A highly-configurable implementation of an MTA Server. 
+/// </summary>
 public class MtaServer
 {
     private readonly List<INetWrapper> netWrappers;
@@ -95,6 +98,9 @@ public class MtaServer
         this.resourceProvider.Refresh();
     }
 
+    /// <summary>
+    /// Starts the networking interfaces, allowing clients to connect and packets to be sent out to clients.
+    /// </summary>
     public void Start()
     {
         this.StartDatetime = DateTime.Now;
@@ -107,6 +113,9 @@ public class MtaServer
         this.IsRunning = true;
     }
 
+    /// <summary>
+    /// Stops the networking interfaces.
+    /// </summary>
     public void Stop()
     {
         foreach (var netWrapper in this.netWrappers)
@@ -117,6 +126,15 @@ public class MtaServer
         this.IsRunning = false;
     }
 
+    /// <summary>
+    /// Adds a new networking interface using MTA's net.dll
+    /// </summary>
+    /// <param name="directory">directory to run in</param>
+    /// <param name="netDllPath">path to the net.dll, relative to the directory</param>
+    /// <param name="host">host ip for the server</param>
+    /// <param name="port">UDP port for incoming traffic to the server, this is what port players connect to</param>
+    /// <param name="configuration">anti cheat configuration to apply on this networking interface</param>
+    /// <returns></returns>
     public INetWrapper AddNetWrapper(string directory, string netDllPath, string host, ushort port, AntiCheatConfiguration? configuration = null)
     {
         var wrapper = CreateNetWrapper(directory, netDllPath, host, port);
@@ -130,6 +148,12 @@ public class MtaServer
         return wrapper;
     }
 
+    /// <summary>
+    /// Adds an arbitrary networking interface
+    /// </summary>
+    /// <param name="wrapper">the networking interface</param>
+    /// <param name="configuration">anti cheat configuration to apply on this networking interface</param>
+    /// <returns></returns>
     public INetWrapper AddNetWrapper(INetWrapper wrapper, AntiCheatConfiguration? configuration = null)
     {
         this.netWrappers.Add(wrapper);
@@ -142,6 +166,7 @@ public class MtaServer
         return wrapper;
     }
 
+
     private void ConfigureAntiCheat(INetWrapper netWrapper, AntiCheatConfiguration configuration)
     {
         netWrapper.SetAntiCheatConfig(
@@ -153,9 +178,23 @@ public class MtaServer
         );
     }
 
+
+    /// <summary>
+    /// Registers a packet handler, to handle incoming packets from clients
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="packetId">The packet ID to handle, this identifies which packet types should be handled by this handler</param>
+    /// <param name="queueHandler">The packet handler in question</param>
     public void RegisterPacketHandler<T>(PacketId packetId, IPacketQueueHandler<T> queueHandler) where T : Packet, new()
         => this.packetReducer.RegisterPacketHandler(packetId, queueHandler);
 
+    /// <summary>
+    /// Registers a packet handler, to handle incoming packets from clients
+    /// </summary>
+    /// <typeparam name="TPacket">The type of packet ot handle</typeparam>
+    /// <typeparam name="TPacketQueueHandler">The type of packet queue handler to handle the queue of packets</typeparam>
+    /// <typeparam name="TPacketHandler">The type of packet handler to instantiate</typeparam>
+    /// <param name="parameters">Any parameters to pass to the constructor of the packet handler that are not injected by the dependency injection container</param>
     public void RegisterPacketHandler<TPacket, TPacketQueueHandler, TPacketHandler>(params object[] parameters)
         where TPacket : Packet, new()
         where TPacketQueueHandler : class, IPacketQueueHandler<TPacket>
@@ -172,11 +211,30 @@ public class MtaServer
         this.packetReducer.RegisterPacketHandler(packetHandler.PacketId, queueHandler!);
     }
 
+    /// <summary>
+    /// Instantiates a type using the dependency injection container
+    /// </summary>
+    /// <param name="type">The type to instiantiate</param>
+    /// <param name="parameters">Any constructor parameters that are not supplied by the dependency injection container</param>
+    /// <returns></returns>
     public object Instantiate(Type type, params object[] parameters) 
         => ActivatorUtilities.CreateInstance(this.serviceProvider, type, parameters);
+
+    /// <summary>
+    /// Instantiates a type using the dependency injection container
+    /// </summary>
+    /// <typeparam name="T">The type to instiantiate</typeparam>
+    /// <param name="parameters">Any constructor parameters that are not supplied by the dependency injection container</param>
+    /// <returns></returns>
     public T Instantiate<T>(params object[] parameters)
         => ActivatorUtilities.CreateInstance<T>(this.serviceProvider, parameters);
 
+    /// <summary>
+    /// Instantiates a type using the dependency injection container, and keeps a reference to it on the MTA server, making sure it does not get garbage collected
+    /// </summary>
+    /// <param name="type">The type to instiantiate</param>
+    /// <param name="parameters">Any constructor parameters that are not supplied by the dependency injection container</param>
+    /// <returns></returns>
     public object InstantiatePersistent(Type type, params object[] parameters)
     {
         var instance = this.Instantiate(type, parameters);
@@ -184,6 +242,12 @@ public class MtaServer
         return instance;
     }
 
+    /// <summary>
+    /// Instantiates a type using the dependency injection container, and keeps a reference to it on the MTA server, making sure it does not get garbage collected
+    /// </summary>
+    /// <typeparam name="T">The type to instiantiate</typeparam>
+    /// <param name="parameters">Any constructor parameters that are not supplied by the dependency injection container</param>
+    /// <returns></returns>
     public T InstantiatePersistent<T>(params object[] parameters)
     {
         var instance = this.Instantiate<T>(parameters);
@@ -194,26 +258,58 @@ public class MtaServer
         return instance;
     }
 
+    /// <summary>
+    /// Instantiates a type using the dependency injection container, in a newly created scope.
+    /// </summary>
+    /// <param name="type">The type to instiantiate</param>
+    /// <param name="parameters">Any constructor parameters that are not supplied by the dependency injection container</param>
+    /// <returns></returns>
     public object InstantiateScoped(Type type, params object[] parameters)
     {
         var scope = this.serviceProvider.CreateScope();
         return ActivatorUtilities.CreateInstance(scope.ServiceProvider, type, parameters);
     }
 
+    /// <summary>
+    /// Instantiates a type using the dependency injection container, in a newly created scope.
+    /// </summary>
+    /// <typeparam name="T">The type to instiantiate</typeparam>
+    /// <param name="parameters">Any constructor parameters that are not supplied by the dependency injection container</param>
+    /// <returns></returns>
     public T InstantiateScoped<T>(params object[] parameters)
     {
         var scope = this.serviceProvider.CreateScope();
         return ActivatorUtilities.CreateInstance<T>(scope.ServiceProvider, parameters);
     }
 
+    /// <summary>
+    /// Gets a registered service from the dependency injection conatiner
+    /// </summary>
+    /// <returns></returns>
     public T? GetService<T>() => this.serviceProvider.GetService<T>();
+
+    /// <summary>
+    /// Gets a registered service from the dependency injection conatiner, throwing an exception if there is no registered service for the specified type
+    /// </summary>
+    /// <returns></returns>
     public T GetRequiredService<T>() where T: notnull => this.serviceProvider.GetRequiredService<T>();
 
+    /// <summary>
+    /// Sends a packet to all players on the server.
+    /// </summary>
+    /// <param name="packet"></param>
     public void BroadcastPacket(Packet packet)
     {
         packet.SendTo(this.clients.SelectMany(x => x.Value.Values));
     }
 
+    /// <summary>
+    /// Associates an element with the entire server, meaning any player that connects to the server will be made aware of the element
+    /// and changes to the element will be relayed to all the players connected to the server.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="element"></param>
+    /// <returns>Returns the element, allowing for method chaining</returns>
     public T AssociateElement<T>(T element) where T : Element
     {
         if (element != this.root && element.Parent == null)
@@ -230,12 +326,18 @@ public class MtaServer
         return element;
     }
 
+    /// <summary>
+    /// Adds a resource server, this is responsible for providing the files for client side resources to clients, over HTTP.
+    /// </summary>
     public void AddResourceServer(IResourceServer resourceServer)
     {
         this.resourceServers.Add(resourceServer);
         resourceServer.Start();
     }
 
+    /// <summary>
+    /// Adds an additional resource to the server, which then gets registered with all resource servers.
+    /// </summary>
     public void AddAdditionalResource(Resource resource, Dictionary<string, byte[]> files)
     {
         resource.NetId = this.resourceProvider.ReserveNetId();
@@ -244,6 +346,9 @@ public class MtaServer
             server.AddAdditionalResource(resource, files);
     }
 
+    /// <summary>
+    /// Removes a registered additional resource.
+    /// </summary>
     public void RemoveAdditionalResource(Resource resource)
     {
         this.additionalResources.Remove(resource);
@@ -251,6 +356,9 @@ public class MtaServer
             server.RemoveAdditionalResource(resource);
     }
 
+    /// <summary>
+    /// Gets a registered additional resource of a certain type.
+    /// </summary>
     public TResource GetAdditionalResource<TResource>()
         where TResource : Resource
     {
@@ -260,6 +368,12 @@ public class MtaServer
             .Single();
     }
 
+    /// <summary>
+    /// Execcutes an action for every single element of a specific type on the server. 
+    /// This includes both currently existing elements, and elements to be created in the future.
+    /// </summary>
+    /// <typeparam name="TElement">The type of element to execute the action for</typeparam>
+    /// <param name="action">The action to be executed for every element of the type</param>
     public void ForAny<TElement>(Action<TElement> action)
         where TElement : Element
     {
@@ -276,11 +390,15 @@ public class MtaServer
     protected virtual void SetupDependencies(Action<ServiceCollection>? dependencyCallback)
     {
         this.serviceCollection.AddSingleton<IElementCollection, RTreeCompoundElementCollection>();
-        this.serviceCollection.AddSingleton<ILogger, DefaultLogger>();
         this.serviceCollection.AddSingleton<IResourceProvider, FileSystemResourceProvider>();
         this.serviceCollection.AddSingleton<IElementIdGenerator, CollectionBasedElementIdGenerator>();
         this.serviceCollection.AddSingleton<IAseQueryService, AseQueryService>();
         this.serviceCollection.AddSingleton(typeof(ISyncHandlerMiddleware<>), typeof(BasicSyncHandlerMiddleware<>));
+
+        if (Environment.UserInteractive)
+            this.serviceCollection.AddSingleton<ILogger, ConsoleLogger>();
+        else
+            this.serviceCollection.AddSingleton<ILogger, NullLogger>();
 
         this.serviceCollection.AddSingleton<GameWorld>();
         this.serviceCollection.AddSingleton<ChatBox>();
@@ -312,6 +430,10 @@ public class MtaServer
         return netWrapper;
     }
 
+    /// <summary>
+    /// Registers a networking interface, meaning any packets received by this will be handled by registered packet handlers.
+    /// </summary>
+    /// <param name="netWrapper"></param>
     public void RegisterNetWrapper(INetWrapper netWrapper)
     {
         netWrapper.PacketReceived += EnqueueIncomingPacket;
@@ -368,36 +490,88 @@ public class MtaServer
         return player.Client;
     }
 
+    /// <summary>
+    /// Enqueues a packet as if it were received from a specific client
+    /// </summary>
     public void EnqueuePacketToClient(IClient client, PacketId packetId, byte[] data)
     {
         this.packetReducer.EnqueuePacket(client, packetId, data);
     }
 
+    /// <summary>
+    /// Handles a player joining the server, and triggers the appropriate event.
+    /// This method is generally intended to be called from packet handlers.
+    /// </summary>
+    /// <param name="player"></param>
     public virtual void HandlePlayerJoin(Player player)
     {
         player.TriggerJoined();
         PlayerJoined?.Invoke(player);
     }
+
+    /// <summary>
+    /// Handles a lua event, and triggers the appropriate event.
+    /// This method is generally intended to be called from packet handlers.
+    /// </summary>
+    /// <param name="luaEvent"></param>
     public void HandleLuaEvent(LuaEvent luaEvent) => LuaEventTriggered?.Invoke(luaEvent);
 
+    /// <summary>
+    /// Sets the maximum amount of players on the server
+    /// </summary>
+    /// <param name="slots"></param>
     public void SetMaxPlayers(ushort slots)
     {
         this.configuration.MaxPlayerCount = slots;
         BroadcastPacket(new ServerInfoSyncPacket(slots));
     }
 
+    /// <summary>
+    /// Creates an MTA Server.
+    /// </summary>
+    /// <param name="builderAction">Action that allows you to configure the server</param>
+    /// <returns></returns>
     public static MtaServer Create(Action<ServerBuilder> builderAction) 
         => new(builderAction);
+
+    /// <summary>
+    /// Creates an MTA server using a specific type for connecting players
+    /// </summary>
+    /// <typeparam name="TPlayer">The type to use for connecting players</typeparam>
+    /// <param name="builderAction">Action that allows you to configure the server</param>
+    /// <returns></returns>
     public static MtaServer<TPlayer> Create<TPlayer>(Action<ServerBuilder> builderAction) where TPlayer: Player, new() 
         => new MtaNewPlayerServer<TPlayer>(builderAction);
+
+    /// <summary>
+    /// Creates an MTA server using a specific type for connecting players.
+    /// This player type will be instantiated using the dependency injection container, allowing you to inject dependencies into the TPlayer class.
+    /// </summary>
+    /// <typeparam name="TPlayer"></typeparam>
+    /// <param name="builderAction"></param>
+    /// <returns></returns>
     public static MtaServer<TPlayer> CreateWithDiSupport<TPlayer>(Action<ServerBuilder> builderAction) where TPlayer: Player
         => new MtaDiPlayerServer<TPlayer>(builderAction);
 
+    /// <summary>
+    /// Triggered when any element is created on the server through the .AssociateElement method
+    /// </summary>
     public event Action<Element>? ElementCreated;
-    public event Action<Player>? PlayerJoined;
-    public event Action<IClient>? ClientConnected;
-    public event Action<LuaEvent>? LuaEventTriggered;
 
+    /// <summary>
+    /// Triggered when any player joins the server
+    /// </summary>
+    public event Action<Player>? PlayerJoined;
+
+    /// <summary>
+    /// Triggered when a client connects to the server
+    /// </summary>
+    public event Action<IClient>? ClientConnected;
+
+    /// <summary>
+    /// Triggered when a lua event has been triggered by a client
+    /// </summary>
+    public event Action<LuaEvent>? LuaEventTriggered;
 }
 
 public abstract class MtaServer<TPlayer> : MtaServer where TPlayer : Player

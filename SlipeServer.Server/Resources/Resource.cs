@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace SlipeServer.Server.Resources;
 
+/// <summary>
+/// Represents a client-side Lua resource
+/// </summary>
 public class Resource
 {
     private readonly MtaServer server;

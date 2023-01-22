@@ -6,6 +6,9 @@ using SlipeServer.Server.ElementCollections;
 
 namespace SlipeServer.Server.Behaviour;
 
+/// <summary>
+/// Behaviour responsible for relaying voice chat information
+/// </summary>
 public class VoiceBehaviour
 {
     public VoiceBehaviour(MtaServer server, IElementCollection elementCollection)

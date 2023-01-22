@@ -4,12 +4,25 @@ using System.Numerics;
 
 namespace SlipeServer.Server.Concepts;
 
+/// <summary>
+/// Represents an element that is attached to another element.
+/// </summary>
 public class ElementAttachment
 {
+    /// <summary>
+    /// The element that is attached to another element
+    /// </summary>
     public Element Source { get; }
+
+    /// <summary>
+    /// The element that the source is attached to
+    /// </summary>
     public Element Target { get; }
 
     private Vector3 positionOffset;
+    /// <summary>
+    /// The position offset between the source and the target
+    /// </summary>
     public Vector3 PositionOffset
     {
         get => this.positionOffset;
@@ -22,6 +35,9 @@ public class ElementAttachment
     }
 
     private Vector3 rotationOffset;
+    /// <summary>
+    /// The rotation offset between the source and the target
+    /// </summary>
     public Vector3 RotationOffset
     {
         get => this.rotationOffset;
@@ -44,6 +60,9 @@ public class ElementAttachment
         this.rotationOffset = rotationOffset ?? Vector3.Zero;
     }
 
+    /// <summary>
+    /// Updates the position (and rotation) of the source element based on the position (and rotation) of the target element
+    /// </summary>
     public void UpdateAttachedElement()
     {
         this.Source.RunAsSync(() =>
@@ -57,7 +76,14 @@ public class ElementAttachment
         }, this.Target.IsSync);
     }
 
+    /// <summary>
+    /// Triggered when the position offset changes
+    /// </summary>
     public event Action<Vector3>? PositionOffsetChanged;
+
+    /// <summary>
+    /// Triggered when the rotation offset changes
+    /// </summary>
     public event Action<Vector3>? RotationOffsetChanged;
 
     public static implicit operator SlipeServer.Packets.Definitions.Entities.Structs.ElementAttachment?(ElementAttachment? attachment)

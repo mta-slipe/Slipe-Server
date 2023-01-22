@@ -6,6 +6,9 @@ using System.Timers;
 
 namespace SlipeServer.Server.Behaviour;
 
+/// <summary>
+/// Behaviour that moves elements with velocity server sided
+/// </summary>
 public class VelocityBehaviour
 {
     private readonly float factor;

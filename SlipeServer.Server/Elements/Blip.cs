@@ -4,6 +4,10 @@ using System.Numerics;
 
 namespace SlipeServer.Server.Elements;
 
+/// <summary>
+/// Blip element
+/// A blip is an icon that shows up on the F11 map, and the radar.
+/// </summary>
 public class Blip : Element
 {
     public override ElementType ElementType => ElementType.Blip;

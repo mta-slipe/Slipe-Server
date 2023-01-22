@@ -12,6 +12,9 @@ using System.Linq;
 
 namespace SlipeServer.Server.Behaviour;
 
+/// <summary>
+/// Behaviour responsbile for sending map info packets on player join
+/// </summary>
 public class MapInfoBehaviour
 {
     private readonly GameWorld gameWorld;

@@ -5,6 +5,9 @@ using SlipeServer.Server.ElementCollections;
 
 namespace SlipeServer.Server.Behaviour;
 
+/// <summary>
+/// Behaviour responsible for relaying element data changes
+/// </summary>
 public class CustomDataBehaviour
 {
     private readonly MtaServer server;

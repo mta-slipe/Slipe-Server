@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace SlipeServer.Server.Resources.Serving;
 
+/// <summary>
+/// Simple HTTP server that hosts the content of the resources directory (as configured in the server configuration). 
+/// </summary>
 public class BasicHttpServer : IResourceServer
 {
     private readonly HttpListener httpListener;

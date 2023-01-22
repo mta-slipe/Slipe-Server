@@ -5,6 +5,10 @@ using System.Numerics;
 
 namespace SlipeServer.Server.Elements;
 
+/// <summary>
+/// World object element
+/// World objects are physical representations of any object in the world.
+/// </summary>
 public class WorldObject : Element
 {
     public override ElementType ElementType => ElementType.Object;

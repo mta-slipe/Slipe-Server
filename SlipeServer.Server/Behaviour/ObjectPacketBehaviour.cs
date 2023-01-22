@@ -5,6 +5,9 @@ using SlipeServer.Server.PacketHandling.Factories;
 
 namespace SlipeServer.Server.Behaviour;
 
+/// <summary>
+/// Handles relaying of world object property changes
+/// </summary>
 public class ObjectPacketBehaviour
 {
     private readonly MtaServer server;

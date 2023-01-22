@@ -5,6 +5,9 @@ using System.Drawing;
 
 namespace SlipeServer.Server.Behaviour;
 
+/// <summary>
+/// Behaviour responsible for relaying blip property changes
+/// </summary>
 public class BlipBehaviour
 {
     private readonly MtaServer server;

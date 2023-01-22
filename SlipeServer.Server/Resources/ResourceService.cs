@@ -5,6 +5,9 @@ using System.Linq;
 
 namespace SlipeServer.Server.Resources;
 
+/// <summary>
+/// Service that allows simple ways to start and stop resources (for all players)
+/// </summary>
 public class ResourceService
 {
     private readonly MtaServer server;

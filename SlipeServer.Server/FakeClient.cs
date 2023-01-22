@@ -6,6 +6,11 @@ using System.Net;
 
 namespace SlipeServer.Server;
 
+/// <summary>
+/// A stub implementation for a client, you can use this to implement fake players for testing purposes
+/// There is no point in using this in production, since players do not yield any additional values over using peds
+/// And the MTA master server list will not include fake clients in the player count
+/// </summary>
 public class FakeClient : IClient
 {
     public Player Player { get; set; }

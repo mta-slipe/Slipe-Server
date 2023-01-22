@@ -6,6 +6,9 @@ using System.Drawing;
 
 namespace SlipeServer.Server.Services;
 
+/// <summary>
+/// Represents the ingame chat, allows you to send messages to (individual) players
+/// </summary>
 public class ChatBox
 {
     private readonly MtaServer server;

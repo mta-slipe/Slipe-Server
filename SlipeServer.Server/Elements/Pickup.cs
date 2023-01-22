@@ -8,6 +8,11 @@ using System.Numerics;
 
 namespace SlipeServer.Server.Elements;
 
+/// <summary>
+/// A pickup element
+/// Pickups are rotating objects that have logic when a player collides with them.
+/// Some default pickups are weapon, health and armor pickups. But you can also have custom pickups with custom logic when hit
+/// </summary>
 public class Pickup : Element
 {
     public override ElementType ElementType => ElementType.Pickup;

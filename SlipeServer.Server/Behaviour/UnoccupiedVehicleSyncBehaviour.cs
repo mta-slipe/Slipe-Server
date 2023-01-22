@@ -9,6 +9,9 @@ using System.Timers;
 
 namespace SlipeServer.Server.Behaviour;
 
+/// <summary>
+/// Handles the synchronisation of unoccupied vehicles, assigning players to sync a vehicle based on distance to the vehicle.
+/// </summary>
 public class UnoccupiedVehicleSyncBehaviour
 {
     private readonly IElementCollection elementCollection;

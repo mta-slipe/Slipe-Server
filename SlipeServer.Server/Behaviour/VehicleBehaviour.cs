@@ -11,6 +11,9 @@ using System.Drawing;
 
 namespace SlipeServer.Server.Behaviour;
 
+/// <summary>
+/// Handles the handling of vehicle property changes
+/// </summary>
 public class VehicleBehaviour
 {
     private readonly MtaServer server;

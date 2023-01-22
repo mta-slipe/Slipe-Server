@@ -7,6 +7,9 @@ using System.Collections.Generic;
 
 namespace SlipeServer.Server.PacketHandling;
 
+/// <summary>
+/// Class responsible for routing packets to the appropriate queues
+/// </summary>
 public class PacketReducer
 {
     private readonly List<IQueueHandler> queueHandlers;
@@ -22,17 +25,6 @@ public class PacketReducer
         this.registeredQueueHandlers = new();
         this.registeredPacketHandlerActions = new();
         this.logger = logger;
-    }
-
-    [Obsolete("RegisterQueueHandler is deprecated, use RegisterPacketHandler<TPacket> instead")]
-    public void RegisterQueueHandler(PacketId packetId, IQueueHandler queueHandler)
-    {
-        if (!this.registeredQueueHandlers.ContainsKey(packetId))
-        {
-            this.registeredQueueHandlers[packetId] = new();
-        }
-        this.registeredQueueHandlers[packetId].Add(queueHandler);
-        this.queueHandlers.Add(queueHandler);
     }
 
     public void UnregisterQueueHandler(PacketId packetId, IQueueHandler queueHandler)

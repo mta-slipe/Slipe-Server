@@ -5,6 +5,10 @@ using System.Linq;
 
 namespace SlipeServer.Server.PacketHandling;
 
+/// <summary>
+/// Scope that allows you to specify a set of players to send packets to.
+/// More information can be found at https://server.mta-slipe.com/articles/advanced-features/client-packet-scope.html
+/// </summary>
 public class ClientPacketScope : IDisposable
 {
     public static ClientPacketScope? Current => AsyncLocalScopeStack.Instance.Peek();

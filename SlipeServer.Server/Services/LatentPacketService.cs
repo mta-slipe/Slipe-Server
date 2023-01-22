@@ -29,6 +29,11 @@ class LatentTransfer
 
 }
 
+/// <summary>
+/// Allows you to perform latent transfers to clients.
+/// Latent transfers mean sending data (triggering lua events) while limiting the data rate.
+/// This is useful when sending large amounts of data on limited bandwidth.
+/// </summary>
 public class LatentPacketService
 {
     private readonly MtaServer server;

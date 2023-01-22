@@ -5,6 +5,10 @@ using System.Numerics;
 
 namespace SlipeServer.Server.Elements;
 
+/// <summary>
+/// A marker element
+/// A marker represent a visual marking in the game. This can be in one of several shapes based on the marker type.
+/// </summary>
 public class Marker : Element
 {
     public override ElementType ElementType => ElementType.Marker;

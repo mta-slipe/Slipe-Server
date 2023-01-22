@@ -7,6 +7,9 @@ using System.Text;
 
 namespace SlipeServer.Server.Resources;
 
+/// <summary>
+/// Allows for creating resource files. This computes required hashes for download checks.
+/// </summary>
 public static class ResourceFileFactory
 {
     public static ResourceFile FromStream(Stream content, string fileName, ResourceFileType? fileType = null)

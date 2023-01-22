@@ -3,6 +3,9 @@ using SlipeServer.Server.Elements.Enums;
 
 namespace SlipeServer.Server.Concepts;
 
+/// <summary>
+/// Represents an item of Lua element data
+/// </summary>
 public class ElementData
 {
     public string Key { get; set; }

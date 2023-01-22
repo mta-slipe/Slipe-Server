@@ -7,6 +7,11 @@ using System.Numerics;
 namespace SlipeServer.Server.Mappers;
 public static class LuaMapperBuilderExtensions
 {
+    /// <summary>
+    /// Adds a lua value mapping for the specified type
+    /// </summary>
+    /// <typeparam name="T">Type to map to</typeparam>
+    /// <param name="mapper">mapper function</param>
     public static void AddLuaMapping<T>(this ServerBuilder builder, Func<T, LuaValue> mapper) where T: class
     {
         builder.AddBuildStep((x) =>
@@ -15,6 +20,11 @@ public static class LuaMapperBuilderExtensions
         }, ServerBuildStepPriority.Low);
     }
 
+    /// <summary>
+    /// Adds a lua value mapping for the specified struct type
+    /// </summary>
+    /// <typeparam name="T">Type to map to</typeparam>
+    /// <param name="mapper">mapper function</param>
     public static void AddStructLuaMapping<T>(this ServerBuilder builder, Func<T, LuaValue> mapper) where T: struct
     {
         builder.AddBuildStep((x) =>
@@ -23,6 +33,9 @@ public static class LuaMapperBuilderExtensions
         }, ServerBuildStepPriority.Low);
     }
 
+    /// <summary>
+    /// Adds a lua value mapping for the specified type
+    /// </summary>
     public static void AddLuaMapping(this ServerBuilder builder, Type type, Func<object, LuaValue> mapper)
     {
         builder.AddBuildStep((x) =>
@@ -31,6 +44,11 @@ public static class LuaMapperBuilderExtensions
         }, ServerBuildStepPriority.Low);
     }
 
+    /// <summary>
+    /// Adds a mapping from Lua values for the specified type
+    /// </summary>
+    /// <typeparam name="T">type to map from</typeparam>
+    /// <param name="mapper">mapper function</param>
     public static void AddFromLuaMapping<T>(this ServerBuilder builder, Func<LuaValue, T> mapper) where T : class
     {
         builder.AddBuildStep((x) =>
@@ -39,6 +57,11 @@ public static class LuaMapperBuilderExtensions
         }, ServerBuildStepPriority.Low);
     }
 
+    /// <summary>
+    /// Adds a mapping from Lua values for the specified type
+    /// </summary>
+    /// <param name="mapper">mapper function</param>
+    /// <param name="type">type to map from</param>
     public static void AddFromLuaMapping(this ServerBuilder builder, Func<LuaValue, object> mapper, Type type)
     {
         builder.AddBuildStep((x) =>
@@ -47,6 +70,10 @@ public static class LuaMapperBuilderExtensions
         }, ServerBuildStepPriority.Low);
     }
 
+    /// <summary>
+    /// Adds mappings to and from Vector3
+    /// </summary>
+    /// <param name="builder"></param>
     public static void AddVectorMappings(this ServerBuilder builder)
     {
         builder.AddStructLuaMapping<Vector2>(x => new Dictionary<LuaValue, LuaValue>()
@@ -88,6 +115,9 @@ public static class LuaMapperBuilderExtensions
     }
 
 
+    /// <summary>
+    /// Adds default mappings to and from lua values
+    /// </summary>
     public static void AddDefaultLuaMappings(this ServerBuilder builder)
     {
         builder.AddVectorMappings();

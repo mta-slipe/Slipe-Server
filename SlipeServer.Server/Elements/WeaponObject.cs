@@ -2,6 +2,10 @@
 
 namespace SlipeServer.Server.Elements;
 
+/// <summary>
+/// Weapon object element
+/// A weapon object is a physical object that represents a weapon (usually a firearm), and is able to fire and reload. Much like a player's weapon.
+/// </summary>
 public class WeaponObject : WorldObject
 {
     public override ElementType ElementType => ElementType.Weapon;

@@ -8,6 +8,11 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace SlipeServer.Server.Mappers;
+
+/// <summary>
+/// Maps arbitrary C# types to Lua values
+/// Supports registring additional mappings for specified types
+/// </summary>
 public class LuaValueMapper
 {
     private readonly Dictionary<Type, Func<object, LuaValue>> strictlyDefinedClassMappers;

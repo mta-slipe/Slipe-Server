@@ -9,6 +9,9 @@ using System.Linq;
 
 namespace SlipeServer.Server.AllSeeingEye;
 
+/// <summary>
+/// Service responsible for generating the response to the ASE queries
+/// </summary>
 public class AseQueryService : IAseQueryService
 {
     private readonly MtaServer mtaServer;
@@ -122,6 +125,7 @@ public class AseQueryService : IAseQueryService
         using MemoryStream stream = new MemoryStream();
         using BinaryWriter bw = new BinaryWriter(stream);
         List<string> playerNames = this.elementCollection.GetByType<Player>(ElementType.Player)
+            .Where(x => x.Client is not FakeClient)
             .Select(o => o.Name.StripColorCode())
             .ToList();
 
