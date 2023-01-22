@@ -6,6 +6,7 @@ using SlipeServer.Packets;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Resources.Serving;
+using SlipeServer.Server.ServerBuilders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,10 +21,12 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
 
     private readonly List<SendPacketCall> sendPacketCalls;
 
-    public TestingServer(Configuration configuration = null) : base(x =>
+    public TestingServer(Configuration configuration = null, Action<ServerBuilder> configure = null) : base(x =>
     {
         x.UseConfiguration(configuration ?? new());
         x.ConfigureServices(ConfigureOverrides);
+        if (configure != null)
+            configure(x);
     })
     {
         this.NetWrapperMock = new Mock<INetWrapper>();
@@ -128,7 +131,7 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
 
 public class TestingServer : TestingServer<TestingPlayer>
 {
-    public TestingServer(Configuration configuration = null) : base(configuration)
+    public TestingServer(Configuration configuration = null, Action<ServerBuilder>? configure = null) : base(configuration, configure)
     {
 
     }

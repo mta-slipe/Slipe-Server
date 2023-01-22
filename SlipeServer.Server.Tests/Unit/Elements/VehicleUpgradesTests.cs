@@ -28,7 +28,7 @@ public class VehicleUpgradesTests
     {
         VehicleUpgradeSpoiler newUpgrade = VehicleUpgradeSpoiler.None;
         Vehicle vehicle = new Vehicle(model, Vector3.Zero);
-        vehicle.Upgrades.UpgradeChanged += (Vehicle sender, Server.Elements.Events.VehicleUpgradeChanged e) =>
+        vehicle.Upgrades.UpgradeChanged += (Vehicle sender, SlipeServer.Server.Elements.Events.VehicleUpgradeChanged e) =>
         {
             newUpgrade = (VehicleUpgradeSpoiler)e.NewUpgrade;
         };
