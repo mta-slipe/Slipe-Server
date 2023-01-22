@@ -605,6 +605,10 @@ public class MtaNewPlayerServer<TPlayer> : MtaServer<TPlayer> where TPlayer : Pl
     }
 }
 
+/// <summary>
+/// A highly-configurable implementation of an MTA Server, with support for dependency injection for the player class.
+/// Instances of this class can be created using `MtaServer.CreateWithDiSupport()`
+/// </summary>
 public class MtaDiPlayerServer<TPlayer> : MtaServer<TPlayer> where TPlayer : Player
 {
     internal MtaDiPlayerServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
