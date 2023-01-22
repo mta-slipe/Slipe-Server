@@ -20,7 +20,7 @@ public class PlayerTests
         player.Dimension = 10;
         player.Interior = 10;
         player.VehicleAction = VehicleAction.Entering;
-        player.Vehicle = new Server.Elements.Vehicle(Server.Elements.VehicleModel.Alpha, Vector3.Zero);
+        player.Vehicle = new SlipeServer.Server.Elements.Vehicle(SlipeServer.Server.Elements.VehicleModel.Alpha, Vector3.Zero);
         player.Seat = 0;
 
         player.Spawn(Vector3.Zero, 0, 0, 5, 5);
