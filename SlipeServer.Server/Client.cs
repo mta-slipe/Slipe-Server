@@ -192,6 +192,9 @@ public class Client<TPlayer>
     }
 }
 
+/// <summary>
+/// Representation of a client connected to the server
+/// </summary>
 public class Client : Client<Player>
 {
     public Client(uint binaryAddress, INetWrapper netWrapper, Player player) 

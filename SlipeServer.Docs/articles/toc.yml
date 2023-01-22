@@ -34,3 +34,17 @@
     href: extensions/physics.md
   - name: Lua Controllers
     href: extensions/lua-controllers.md
+- name: Resources
+  items:
+  - name: Introduction
+    href: Resources/intro.md
+  - name: NoClip
+    href: Resources/noclip.md
+  - name: DGS
+    href: Resources/dgs.md
+  - name: Parachute
+    href: Resources/parachute.md
+  - name: Reload
+    href: Resources/reload.md
+  - name: Text3d
+    href: Resources/text3d.md

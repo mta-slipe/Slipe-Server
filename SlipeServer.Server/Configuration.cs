@@ -156,6 +156,9 @@ public class Configuration
     public SyncIntervals SyncIntervals { get; set; } = new();
 }
 
+/// <summary>
+/// Contains the anti-cheat configuration for the server
+/// </summary>
 public class AntiCheatConfiguration
 {
     public AllowGta3ImgMods AllowGta3ImgMods { get; set; } = AllowGta3ImgMods.None;
@@ -166,6 +169,9 @@ public class AntiCheatConfiguration
     public int VerifyClientSettings { get; set; } = -1;
 }
 
+/// <summary>
+/// Contains the synchronisation intervals in milliseconds at which clients send synchronisation data
+/// </summary>
 public class SyncIntervals
 {
     public int PureSync { get; set; } = 100;
