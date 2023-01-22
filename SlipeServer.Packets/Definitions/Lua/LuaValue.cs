@@ -18,12 +18,7 @@ public class LuaValue
     public uint? ElementId { get; }
     public Dictionary<LuaValue, LuaValue>? TableValue { get; }
     public bool IsNil { get; }
-
-
-    private static readonly LuaValue nil = new LuaValue
-    {
-        LuaType = LuaType.Nil
-    };
+    public static LuaValue Nil { get; } = new LuaValue();
 
     public LuaValue()
     {
@@ -186,6 +181,4 @@ public class LuaValue
         var stringKeyedDictionary = value.TableValue.ToDictionary(x => x.Key.StringValue!, x => x.Value);
         return new ((float)stringKeyedDictionary["X"], (float)stringKeyedDictionary["Y"], (float)stringKeyedDictionary["Z"]);
     }
-
-    public static LuaValue Nil => nil;
 }

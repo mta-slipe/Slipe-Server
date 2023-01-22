@@ -7,8 +7,16 @@ using System.Net;
 
 namespace SlipeServer.Server;
 
+/// <summary>
+/// Class indicating the lack of a client.
+/// An instance of this class is only ever used 
+/// </summary>
 public class NullClient : IClient
 {
+    public static NullClient Instance { get; } = new();
+
+    private NullClient() { }
+
     public Player Player
     {
         get => throw new NullReferenceException("Attempt to access client of player without client.");

@@ -9,6 +9,9 @@ using System.Numerics;
 
 namespace SlipeServer.Server.Services;
 
+/// <summary>
+/// Allows you to create and delete text items to be displayed on a client's UI
+/// </summary>
 public class TextItemService
 {
     private ulong textItemId;

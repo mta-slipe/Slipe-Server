@@ -4,6 +4,9 @@ using System.Numerics;
 
 namespace SlipeServer.Server.ElementConcepts;
 
+/// <summary>
+/// Represents configuration for a single weapon, at a specific skill level.
+/// </summary>
 public struct WeaponConfiguration
 {
     public WeaponFireType FireType { get; set; }

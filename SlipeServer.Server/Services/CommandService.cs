@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace SlipeServer.Server.Services;
 
+/// <summary>
+/// Service to allow you to add and remove commands, these commands can then be handled by their `Triggered` event
+/// </summary>
 public class CommandService
 {
     private readonly Dictionary<string, HashSet<Command>> commandHandlers;

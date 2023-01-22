@@ -10,6 +10,10 @@ public class VehicleHandlingBehaviour
 {
     private readonly MtaServer server;
 
+    /// <summary>
+    /// Handles the relaying of vehicle handling changes
+    /// </summary>
+    /// <param name="server"></param>
     public VehicleHandlingBehaviour(MtaServer server)
     {
         this.server = server;

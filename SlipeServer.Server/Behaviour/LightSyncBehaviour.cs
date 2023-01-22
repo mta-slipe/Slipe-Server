@@ -8,6 +8,9 @@ using System.Timers;
 
 namespace SlipeServer.Server.Behaviour;
 
+/// <summary>
+/// Behaviour responsible for sending light sync information to players that are far away from a to-be-synced player
+/// </summary>
 public class LightSyncBehaviour
 {
     private readonly IElementCollection elementCollection;

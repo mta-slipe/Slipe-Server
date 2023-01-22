@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 
 namespace SlipeServer.Server.Helpers;
+
 public static class ElementTypeHelpers
 {
     private readonly static Dictionary<Type, ElementType> elementTypeCache = new();
@@ -56,6 +57,9 @@ public static class ElementTypeHelpers
         return result;
     }
 
+    /// <summary>
+    /// Gets the elements type of a specific class, this supports inherited element classes
+    /// </summary>
     public static ElementType GetElementType<TElement>()
     {
         return DeterineElementType(typeof(TElement));

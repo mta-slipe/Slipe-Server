@@ -4,6 +4,10 @@ using System.Drawing;
 
 namespace SlipeServer.Server.Concepts;
 
+/// <summary>
+/// Represents a vehicle's colors.
+/// This contains 4 color values, but some vehicles may use less than that.
+/// </summary>
 public class Colors
 {
     private readonly Vehicle vehicle;

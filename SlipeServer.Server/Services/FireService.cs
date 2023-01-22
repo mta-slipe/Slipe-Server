@@ -6,6 +6,9 @@ using System.Numerics;
 
 namespace SlipeServer.Server.Services;
 
+/// <summary>
+/// Allows for the creation of fire
+/// </summary>
 public class FireService
 {
     private readonly MtaServer server;

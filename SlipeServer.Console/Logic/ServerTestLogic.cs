@@ -1228,6 +1228,14 @@ public class ServerTestLogic
             config.MaximumClipAmmo = ammoInClip;
             this.weaponConfigurationService.SetWeaponConfigurationFor(weapon, config, args.Player);
         };
+
+        this.commandService.AddCommand("testShowChat").Triggered += (source, args) =>
+        {
+            bool show = false;
+            if (args.Arguments.FirstOrDefault() == "true")
+                show = true;
+            this.chatBox.SetVisibleFor(args.Player, show);
+        };
     }
 
     private void OnPlayerJoin(CustomPlayer player)

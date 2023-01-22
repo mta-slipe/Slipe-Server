@@ -9,7 +9,6 @@ using SlipeServer.Console.Proxy;
 using SlipeServer.Console.Services;
 using SlipeServer.Lua;
 using SlipeServer.LuaControllers;
-using SlipeServer.Net.Wrappers;
 using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Physics.Extensions;
 using SlipeServer.Server;
@@ -17,7 +16,6 @@ using SlipeServer.Server.Loggers;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.ServerBuilders;
 using System;
-using System.IO;
 using System.Threading;
 
 namespace SlipeServer.Console;

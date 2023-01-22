@@ -13,6 +13,10 @@ using System.Numerics;
 
 namespace SlipeServer.Server.Elements;
 
+/// <summary>
+/// A ped element
+/// A ped (short for pedestrian) is a non player character, that can be controlled by code.
+/// </summary>
 public class Ped : Element
 {
     public override ElementType ElementType => ElementType.Ped;

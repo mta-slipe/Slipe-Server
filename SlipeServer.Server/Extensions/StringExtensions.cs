@@ -6,6 +6,9 @@ public static class StringExtensions
 {
     private const string colorCodeRegex = "#[0-9a-fA-F]{6}";
 
+    /// <summary>
+    /// Removes color codes from a string
+    /// </summary>
     public static string StripColorCode(this string value)
     {
         string temp = value;

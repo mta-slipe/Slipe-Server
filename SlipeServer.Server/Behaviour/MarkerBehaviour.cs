@@ -8,6 +8,9 @@ using System.Numerics;
 
 namespace SlipeServer.Server.Behaviour;
 
+/// <summary>
+/// Behaviour responsible for relaying marker property changes
+/// </summary>
 public class MarkerBehaviour
 {
     private readonly MtaServer server;

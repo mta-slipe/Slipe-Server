@@ -4,7 +4,8 @@ using System.Collections.Generic;
 namespace SlipeServer.Server.AllSeeingEye;
 
 /// <summary>
-/// Behaviour responsible for replying to ASE queries
+/// Behaviour responsible for replying to ASE queries, these are the queries used to populate the master server list, this listen on the server port + 123
+/// If the server configuration's debug port is specified ASE queries will also be listened to on the debug port + 123
 /// </summary>
 public class AseBehaviour
 {

@@ -1,0 +1,350 @@
+/* Copyright (c) Microsoft Corporation. All Rights Reserved. Licensed under the MIT License. See License.txt in the project root for license information. */
+/* Colors */
+.navbar-inverse {
+  border-color: #000 !important;
+  background-color: #252525 !important;
+  background-image: -webkit-gradient(linear,left ,right ,color-stop(0%,#000),color-stop(100%,#252525)) !important;
+  background-image: -webkit-linear-gradient(90deg,#000 0,#252525 100%) !important;
+  background-image: -moz-linear-gradient(90deg,#000 0,#252525 100%) !important;
+  background-image: -ms-linear-gradient(90deg,#000 0,#252525 100%) !important;
+  background-image: -o-linear-gradient(90deg,#000 0,#252525 100%) !important;
+  background-image: linear-gradient(90deg,#000 0,#252525 100%) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#000', endColorstr='#252525', GradientType=1) !important;
+}
+
+
+  .hero {
+      color: #fff;
+      background-color: #252525;
+      background-image: -webkit-gradient(linear,left bottom ,right top ,color-stop(0%,#000),color-stop(100%,#252525));
+      background-image: -webkit-linear-gradient(45deg,#000 0,#252525 100%);
+      background-image: -moz-linear-gradient(45deg,#000 0,#252525 100%);
+      background-image: -ms-linear-gradient(45deg,#000 0,#252525 100%);
+      background-image: -o-linear-gradient(45deg,#000 0,#252525 100%);
+      background-image: linear-gradient(45deg,#000 0,#252525 100%);
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#000', endColorstr='#252525', GradientType=1);
+  
+  }
+
+  .buttons-unit .button {
+      color: #fff;
+      float: left;
+      font-weight: 400;
+  }
+
+  .b-1{
+    background-color: #6A95C1;
+    background-image: -webkit-gradient(linear,left bottom,right top,color-stop(0%,#6A95C1),color-stop(100%,#2F3A78));
+    background-image: -webkit-linear-gradient(45deg,#6A95C1 0,#2F3A78 100%);
+    background-image: -moz-linear-gradient(45deg,#6A95C1 0,#2F3A78 100%);
+    background-image: -ms-linear-gradient(45deg,#6A95C1 0,#2F3A78 100%);
+    background-image: -o-linear-gradient(45deg,#6A95C1 0,#2F3A78 100%);
+    background-image: linear-gradient(45deg,#6A95C1 0,#2F3A78 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#6A95C1', endColorstr='#2F3A78', GradientType=1);
+  }
+
+  .b-1:hover{
+    background-color: #3B4D87;
+    background-image: none;
+    filter: none;
+  }
+
+  .b-1:active{
+    background-color: #9D3645;
+    background-image: none;
+    filter: none;
+  }
+
+  .b-2{
+    background-color: #3B4D87;
+    background-image: -webkit-gradient(linear,left bottom,right top,color-stop(0%,#3B4D87),color-stop(100%,#9D3645));
+    background-image: -webkit-linear-gradient(45deg,#3B4D87 0,#9D3645 100%);
+    background-image: -moz-linear-gradient(45deg,#3B4D87 0,#9D3645 100%);
+    background-image: -ms-linear-gradient(45deg,#3B4D87 0,#9D3645 100%);
+    background-image: -o-linear-gradient(45deg,#3B4D87 0,#9D3645 100%);
+    background-image: linear-gradient(45deg,#3B4D87 0,#9D3645 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#3B4D87', endColorstr='#9D3645', GradientType=1);
+  }
+
+  .b-2:hover{
+    background-color: #3B4D87;
+    background-image: none;
+    filter: none;
+  }  
+
+  .b-2:active{
+    background-color: #9D3645;
+    background-image: none;
+    filter: none;
+  }  
+
+  
+  /* End Colors */
+
+  .title{
+    color: #F3FFFF;
+    text-align: left;
+  }
+  .main-title{
+    margin-top: 60px;
+    font-weight: 800;
+    font-size: 50px;
+    font-family: Rubik,Lato,"Lucida Grande","Lucida Sans Unicode",Tahoma,sans-serif;
+  }
+  .sub-title{
+    font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif;
+    font-weight: 200;
+  }
+  
+  .hero {
+      height: 480px;
+      margin-top: 50px;
+      padding-top: 50px;
+      font-weight: 300;
+      text-align: center;
+  }
+
+  .hero-image{
+    max-height: 200px;
+  }
+
+  .glyphicon {
+    margin-right: 10px;
+    font-size: 16px;
+  }
+  
+  .buttons-unit {
+      margin-top: 40px;
+      text-align: center;
+  }
+  .media-icons{
+    text-align: right;
+    font-size: 24px;
+  }
+  .media-icons i{
+    color: white;
+    margin: 0 2px;
+  }
+  .media-icons i:hover{
+    color: #337ab7;
+  }
+  .hero .button {
+      padding: 8px 16px;
+      margin-bottom: 20px;
+      margin-right: 12px;
+      box-shadow: 1px 3px 3px rgba(0,0,0,0.3);
+  }
+  .buttons-unit .button {
+      font-size: 24px;
+  }
+
+  .navbar-brand > img {
+    width: 50px;
+    height: 50px;
+    padding: 3px;
+  }
+
+  .main-info{
+    margin-top: 75px;
+    margin-bottom: 100px;
+    font-size: 16px;
+  }
+
+  .section-contributions {
+    font-size: 16px;
+    margin-top: 50px;
+    margin-bottom: 50px;
+  }
+
+  .section-contributions h4 {
+    margin-top: 25px;
+  }
+
+  .section-contributions ul{
+    list-style-type: square;
+  }
+
+  .section-contributions i {
+    color: #1E1E1E;
+    font-size: 40px;
+    margin-right: 5px;
+    margin-top: 25px;
+  }
+
+  .section-contributions i:hover{
+    color: #337ab7;
+  }
+
+  footer, .footer {
+    display: block !important;
+    opacity: 1 !important;
+    background-color: #1E1E1E;
+    color: #C8C8C8;
+    border: 0;
+  }
+
+  .side-info{
+    font-size: 16px;
+    list-style-type: square;
+  }
+
+  .side-info li {
+    line-height: 28px;
+    padding-left: 8px;
+  }
+
+  .example-section i {
+    font-style: normal;
+  }
+
+  .example-section{
+    padding-bottom: 50px;
+    background-color: #1E1E1E;
+    color: #C8C8C8;
+  }
+
+  .example-section h3{
+    color: white;
+  }
+
+  .example-block-container {
+    position: relative;
+    margin-top: 50px;
+  }
+
+  .example-section pre {
+    background-color: inherit;
+    border: 0;
+  }
+
+  .example-section .hljs {
+    color: #C8C8C8;
+    word-wrap: break-word;
+  }
+
+  .example-section .hljs-keyword {
+    color: #569CD6;
+  }
+
+  .example-section .hljs-title {
+    color: #3CBFA9;
+  }
+
+  .example-section .hljs-comment {
+    color: #608B4E;
+  }
+
+  .example-section .hljs-variable {
+    color: #9CDCFE;
+  }
+  
+  .example-section .hljs-struct {
+    color: #61BB91;
+  }
+
+  .example-section .hljs-enum {
+    color: #B8D7A3;
+  }
+
+  .example-section .hljs-method, .example-section .hljs-method  span  span {
+    color: #DCDCAA !important;
+  }
+
+  .example-section .hljs-number {
+    color: #B5CEA8;
+  }
+
+  .side-info .forceHover, 
+  .side-info li:hover, 
+  .example-section code i:hover, 
+  .example-section code .forceHover,
+  i:hover span, .forceHover span{
+    background-color: #C8C8C8;
+    color: #1E1E1E !important;
+    cursor: default;
+  }
+
+  @media only screen and (max-width: 631px) {
+    .example-section pre {
+      font-size: 12px;
+    }
+  }
+
+  @media only screen and (max-width: 587px) {
+    .example-section pre {
+      font-size: 11px;
+    }
+  }
+
+  @media only screen and (max-width: 543px) {
+    .example-section pre {
+      font-size: 10px;
+    }
+  }
+
+  @media only screen and (max-width: 501px) {
+    .example-section pre {
+      font-size: 9px;
+    }
+  }
+
+  @media only screen and (max-width: 457px) {
+    .example-section pre {
+      font-size: 8px;
+    }
+  }
+
+  @media only screen and (max-width: 768px) {
+    .hero {
+      height: 600px;
+      margin-top: 0px;
+      padding-top: 20px;
+    }
+    .title{
+      text-align: center;
+    }
+    .media-icons{
+      font-size: 35px;
+      text-align: center;
+      margin-top: 10px;
+    }
+    .main-title{
+      margin-top: 30px;
+    }
+    .buttons-unit{
+      display: inline-block;
+    }
+  }
+
+  @media only screen and (max-width: 524px) {
+    .hero {
+      height: 625px;
+    }
+    .buttons-unit{
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  @media only screen and (min-width: 768px) {
+    .hero-image{
+      max-height: 200px;
+      margin-top: 100px;
+    }
+  }
+
+  @media only screen and (min-width: 992px) {
+    .hero-image{
+      max-height: 300px;
+      margin-top: 50px;
+    }
+  }
+
+  @media only screen and (min-width: 1200px) {
+    .hero-image{
+      max-height: 400px;
+      margin-top: 0;
+    }
+  }
+
+

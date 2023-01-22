@@ -6,6 +6,9 @@ using SlipeServer.Server.Extensions;
 
 namespace SlipeServer.Server.Behaviour;
 
+/// <summary>
+/// Handles relaying player property changes
+/// </summary>
 public class PlayerBehaviour
 {
     private readonly MtaServer server;

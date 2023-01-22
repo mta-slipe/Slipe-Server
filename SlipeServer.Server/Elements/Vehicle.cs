@@ -15,6 +15,12 @@ using System.Numerics;
 
 namespace SlipeServer.Server.Elements;
 
+/// <summary>
+/// A vehicle element
+/// Vehicle elements represent ingame vehicles such as cars, bikes, airplanes, etc.
+/// Vechicles are synchronised by clients, usually by the driver, but when unoccupied by a player in close vincinity.
+/// </summary>
+
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
 public class Vehicle : Element
 {

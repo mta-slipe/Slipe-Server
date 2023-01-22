@@ -7,7 +7,6 @@ using SlipeServer.Server.PacketHandling.Factories;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using System.Threading;
@@ -16,6 +15,9 @@ using System.Xml.Linq;
 
 namespace SlipeServer.Server.Elements;
 
+/// <summary>
+/// The base class for any and all elements
+/// </summary>
 public class Element
 {
     public virtual ElementType ElementType => ElementType.Unknown;
@@ -413,6 +415,14 @@ public class Element
     internal void AddElementAttachment(ElementAttachment attachment) => this.attachedElements.Add(attachment);
     internal void RemoveElementAttachment(ElementAttachment attachment) => this.attachedElements.Remove(attachment);
 
+    /// <summary>
+    /// Attaches the element to a target element
+    /// </summary>
+    /// <param name="element">Target element to attach to</param>
+    /// <param name="positionOffset">position offset between the element, and the target element</param>
+    /// <param name="rotationOffset">rotation offset between the element, and the target element</param>
+    /// <returns></returns>
+    /// <exception cref="Exception">Throws an exception when the target element does not have an ID</exception>
     public ElementAttachment AttachTo(Element element, Vector3? positionOffset = null, Vector3? rotationOffset = null)
     {
         if (element.Id == 0)
@@ -447,6 +457,10 @@ public class Element
         this.AttachedOffsetChanged?.Invoke(this, new ElementAttachOffsetsChangedArgs(this, this.Attachment!.Target, this.Attachment.PositionOffset, newRotation));
     }
 
+    /// <summary>
+    /// Detaches the element from a target element
+    /// </summary>
+    /// <param name="element">Target element to detach from</param>
     public virtual void DetachFrom(Element? element = null)
     {
         if (this.Attachment != null && (element == null || this.Attachment.Target == element))
@@ -461,15 +475,31 @@ public class Element
         }
     }
 
+    /// <summary>
+    /// Sends packets to create an elementto a set of players
+    /// Do note that the element will be required to have an id assigned for this to work properly
+    /// </summary>
     public void CreateFor(IEnumerable<Player> players)
         => AddEntityPacketFactory.CreateAddEntityPacket(new Element[] { this }).SendTo(players);
 
+    /// <summary>
+    /// Sends packets to create an elementto a set of players
+    /// Do note that the element will be required to have an id assigned for this to work properly
+    /// </summary>
     public void CreateFor(Player player)
         => this.CreateFor(new Player[] { player });
 
+    /// <summary>
+    /// Sends packets to destroy an elementto a set of players
+    /// Do note that the element will be required to have an id assigned for this to work properly
+    /// </summary>
     public void DestroyFor(IEnumerable<Player> players)
         => RemoveEntityPacketFactory.CreateRemoveEntityPacket(new Element[] { this }).SendTo(players);
 
+    /// <summary>
+    /// Sends packets to destroy an elementto a set of players
+    /// Do note that the element will be required to have an id assigned for this to work properly
+    /// </summary>
     public void DestroyFor(Player player)
         => this.DestroyFor(new Player[] { player });
 
@@ -491,6 +521,9 @@ public class Element
     public event ElementEventHandler<Element, ElementAttachOffsetsChangedArgs>? AttachedOffsetChanged;
     public event Action<Element>? Destroyed;
 
-
+    /// <summary>
+    /// Returns a Lua value for the element, this is used for any lua event communication.
+    /// </summary>
+    /// <param name="value"></param>
     public static implicit operator LuaValue(Element value) => new(value.Id);
 }

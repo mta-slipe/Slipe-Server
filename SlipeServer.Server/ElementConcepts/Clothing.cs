@@ -8,6 +8,9 @@ using System.Collections.Generic;
 
 namespace SlipeServer.Server.ElementConcepts;
 
+/// <summary>
+/// Represents a player's clothing, only used when the player has the CJ model.
+/// </summary>
 public class Clothing
 {
     private readonly Ped ped;
@@ -17,6 +20,10 @@ public class Clothing
         this.ped = ped;
     }
 
+    /// <summary>
+    /// Returns an enumerable of the player's clothing. This will not include any slots that do not have a value.
+    /// </summary>
+    /// <returns></returns>
     public IEnumerable<PedClothing> GetClothing()
     {
         yield return ClothingConstants.ClothesTextureModel[Enums.ClothingType.Shirt][this.Shirt];
@@ -54,6 +61,9 @@ public class Clothing
             yield return ClothingConstants.ClothesTextureModel[Enums.ClothingType.Extra][this.Extra.Value];
     }
 
+    /// <summary>
+    /// Adds an article of clothing to the player
+    /// </summary>
     public void AddClothing(PedClothing clothing)
     {
         var type = (ClothingType)clothing.Type;
@@ -117,6 +127,10 @@ public class Clothing
         }
     }
 
+    /// <summary>
+    /// Removes an article of clothing from the player based on the clothing type
+    /// </summary>
+    /// <param name="type">The clothing type to remove</param>
     public void RemoveClothing(ClothingType type)
     {
         switch (type)
@@ -178,6 +192,9 @@ public class Clothing
         }
     }
 
+    /// <summary>
+    /// Resets the player clothing to the default values
+    /// </summary>
     public void Reset()
     {
         this.Shirt = ClothingConstants.Defaults[ClothingType.Shirt];

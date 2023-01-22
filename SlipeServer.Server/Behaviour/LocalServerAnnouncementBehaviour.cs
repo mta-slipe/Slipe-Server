@@ -9,6 +9,7 @@ namespace SlipeServer.Server.Behaviour;
 
 /// <summary>
 /// Behaviour responsible for responding to local server list queries
+/// If the request comes from a debug client, and the server's configuration contains a debug port, the debug port will be sent to the client.
 /// </summary>
 public class LocalServerAnnouncementBehaviour
 {

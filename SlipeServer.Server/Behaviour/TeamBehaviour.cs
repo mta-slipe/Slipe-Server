@@ -2,6 +2,9 @@
 
 namespace SlipeServer.Server.Behaviour;
 
+/// <summary>
+/// Handles the relaying of player team changes
+/// </summary>
 public class TeamBehaviour
 {
     public TeamBehaviour(MtaServer server)

@@ -13,6 +13,10 @@ using System.Timers;
 
 namespace SlipeServer.Server.Services;
 
+/// <summary>
+/// Represents the ingame game world.
+/// This contains properties such as sky color, time, weather, traffic lights and more
+/// </summary>
 public class GameWorld
 {
     private readonly MtaServer server;

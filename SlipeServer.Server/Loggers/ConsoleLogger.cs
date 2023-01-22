@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace SlipeServer.Server.Loggers;
 
+/// <summary>
+/// ILogger implementation which logs messages to the console
+/// </summary>
 public class ConsoleLogger : ILogger
 {
     private class ConsoleLoggerScope : IDisposable

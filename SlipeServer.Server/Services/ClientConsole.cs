@@ -3,6 +3,9 @@ using SlipeServer.Server.Elements;
 
 namespace SlipeServer.Server.Services;
 
+/// <summary>
+/// Represents the F8 console on clients. 
+/// </summary>
 public class ClientConsole
 {
     private readonly MtaServer server;

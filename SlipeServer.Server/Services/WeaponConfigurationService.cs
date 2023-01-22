@@ -9,6 +9,9 @@ using System.Collections.Generic;
 
 namespace SlipeServer.Server.Services;
 
+/// <summary>
+/// Service that allows you to get and change weapon configuration
+/// </summary>
 public class WeaponConfigurationService
 {
     private readonly Dictionary<WeaponId, Dictionary<WeaponSkillLevel, WeaponConfiguration>> weaponConfigurations;

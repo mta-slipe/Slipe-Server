@@ -7,6 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace SlipeServer.Server.Mappers;
+
+/// <summary>
+/// Maps Lua values to any arbitrary C# class.
+/// Support registring additional mappings for any specified type.
+/// </summary>
 public class FromLuaValueMapper
 {
     private readonly Dictionary<Type, Func<LuaValue, object>> strictlyDefinedMappers;

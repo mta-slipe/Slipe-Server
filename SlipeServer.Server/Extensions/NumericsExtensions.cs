@@ -5,21 +5,37 @@ namespace SlipeServer.Server.Extensions;
 
 public static class NumericsExtensions
 {
+    /// <summary>
+    /// Converts a value in degrees to the equivalent in radians
+    /// </summary>
     private static float ToRadians(float x)
     {
         return x * (float)(Math.PI / 180.0);
     }
 
+    /// <summary>
+    /// Converts a value in radians to its equivalent in degrees
+    /// </summary>
     private static float ToDegrees(float x)
     {
         return (float)(x * (180.0 / Math.PI));
     }
 
+    /// <summary>
+    /// Return the equivalent representation of a rotation, in euler angles, in quaternions
+    /// </summary>
+    /// <param name="rotation"></param>
+    /// <returns></returns>
     public static Quaternion ToQuaternion(this Vector3 rotation)
     {
         return Quaternion.CreateFromYawPitchRoll(ToRadians(rotation.X), ToRadians(rotation.Y), ToRadians(rotation.Z));
     }
 
+    /// <summary>
+    /// Returns the equivalent representation of a quaternion in euler angles
+    /// </summary>
+    /// <param name="quaternion"></param>
+    /// <returns></returns>
     public static Vector3 ToEuler(this Quaternion quaternion)
     {
         float v1 = quaternion.Z;

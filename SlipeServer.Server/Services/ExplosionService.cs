@@ -7,6 +7,9 @@ using System.Numerics;
 
 namespace SlipeServer.Server.Services;
 
+/// <summary>
+/// Allows for the creation of explosions
+/// </summary>
 public class ExplosionService
 {
     private readonly MtaServer server;

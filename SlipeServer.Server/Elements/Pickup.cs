@@ -8,6 +8,11 @@ using System.Numerics;
 
 namespace SlipeServer.Server.Elements;
 
+/// <summary>
+/// A pickup element
+/// Pickups are rotating objects that have logic when a player collides with them.
+/// Some default pickups are weapon, health and armor pickups. But you can also have custom pickups with custom logic when hit
+/// </summary>
 public class Pickup : Element
 {
     public override ElementType ElementType => ElementType.Pickup;
@@ -44,6 +49,8 @@ public class Pickup : Element
 
         this.CollisionShape = new CollisionSphere(position, 2);
         this.CollisionShape.ElementEntered += HandleCollisionHit;
+
+        this.PositionChanged += UpdatePosition;
     }
 
     public Pickup(Vector3 position, WeaponType type, ushort ammo)
@@ -149,6 +156,11 @@ public class Pickup : Element
     {
         this.CollisionShape.AssociateWith(server);
         return server.AssociateElement(this);
+    }
+
+    private void UpdatePosition(Element sender, ElementChangedEventArgs<Vector3> args)
+    {
+        this.CollisionShape.Position = args.NewValue;
     }
 
     public event ElementEventHandler<Pickup, PickupUsedEventArgs>? Used;

@@ -17,6 +17,11 @@ using SlipeServer.Server.Extensions;
 
 namespace SlipeServer.Server.Elements;
 
+/// <summary>
+/// A player element
+/// Players are the representation of any client that connects to the server.
+/// Players are synchronised using sync packets that are sent by the client.
+/// </summary>
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
 public class Player : Ped
 {
@@ -25,7 +30,7 @@ public class Player : Ped
     private IClient? client;
     public IClient Client
     {
-        get => this.client ?? new NullClient();
+        get => this.client ?? NullClient.Instance;
         set => this.client = value;
     }
 

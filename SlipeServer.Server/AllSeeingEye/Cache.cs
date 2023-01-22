@@ -2,6 +2,10 @@
 
 namespace SlipeServer.Server.AllSeeingEye;
 
+/// <summary>
+/// Cache to handle ASE query responses
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public class Cache<T>
 {
     private T? Data { get; set; }

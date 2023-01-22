@@ -3,6 +3,9 @@ using System.Timers;
 
 namespace SlipeServer.Server.Services;
 
+/// <summary>
+/// Interface that allows you to create arbitrary timers, this exists so time-based logic can be tested using mocking.
+/// </summary>
 public interface ITimerService
 {
     void CreateTimer(Action action, TimeSpan timespan);

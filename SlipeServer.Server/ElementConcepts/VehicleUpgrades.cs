@@ -5,6 +5,9 @@ using SlipeServer.Server.Elements.Events;
 
 namespace SlipeServer.Server.ElementConcepts;
 
+/// <summary>
+/// Represents a vehicle's upgrades
+/// </summary>
 public class VehicleUpgrades
 {
     private readonly Vehicle vehicle;

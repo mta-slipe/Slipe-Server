@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace SlipeServer.Server.Resources.Providers;
 
+/// <summary>
+/// Basic resource provider that provides resources based on the files within the resource directory (as configured in the server's configuration)
+/// </summary>
 public class FileSystemResourceProvider : IResourceProvider
 {
     private readonly MtaServer mtaServer;

@@ -8,6 +8,9 @@ using System;
 
 namespace SlipeServer.Server.Behaviour;
 
+/// <summary>
+/// Handles ped sync, assinging ped syncers based on their distance to the ped
+/// </summary>
 public class PedSyncBehaviour
 {
     private readonly IElementCollection elementCollection;

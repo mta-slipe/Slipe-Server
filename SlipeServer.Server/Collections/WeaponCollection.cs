@@ -9,6 +9,9 @@ using System.Collections.Generic;
 
 namespace SlipeServer.Server.Collections;
 
+/// <summary>
+/// Collection of weapons, triggering event when changes are made
+/// </summary>
 public class WeaponCollection : IEnumerable<Weapon>
 {
     private readonly Dictionary<WeaponSlot, Weapon> weapons;

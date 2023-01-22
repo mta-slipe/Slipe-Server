@@ -4,6 +4,9 @@ using SlipeServer.Server.Elements.Events;
 
 namespace SlipeServer.Server.Concepts;
 
+/// <summary>
+/// Represents the player's cotrols, containing properties for easy access to enabling / disabling a player's controls.
+/// </summary>
 public class Controls
 {
     private readonly Player player;

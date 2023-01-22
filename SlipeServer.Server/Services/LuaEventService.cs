@@ -12,6 +12,9 @@ using System.Linq;
 
 namespace SlipeServer.Server.Services;
 
+/// <summary>
+/// Allows you to trigger and handle lua events that are sent to, or received from clients.
+/// </summary>
 public class LuaEventService
 {
     private readonly MtaServer server;

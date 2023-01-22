@@ -8,6 +8,9 @@ using System.Numerics;
 
 namespace SlipeServer.Server.Behaviour;
 
+/// <summary>
+/// Handles relaying of radar area properties
+/// </summary>
 public class RadarAreaBehaviour
 {
     private readonly MtaServer server;

@@ -5,6 +5,9 @@ using SlipeServer.Server.Elements.Events;
 
 namespace SlipeServer.Server.Behaviour;
 
+/// <summary>
+/// Behaviour responsible for sending packets related to vehicle respawns
+/// </summary>
 public class VehicleRespawnBehaviour
 {
     private readonly MtaServer server;
