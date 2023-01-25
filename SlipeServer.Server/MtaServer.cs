@@ -49,14 +49,44 @@ public class MtaServer
 
     private readonly HashSet<object> persistentInstances;
 
+    /// <summary>
+    /// Game type, as shown in the server browser
+    /// </summary>
     public string GameType { get; set; } = "unknown";
+
+    /// <summary>
+    /// Map name, as shown in the server browser
+    /// </summary>
     public string MapName { get; set; } = "unknown";
+
+    /// <summary>
+    /// Current server password, to be entered when connecting
+    /// </summary>
     public string? Password { get; set; }
+
+    /// <summary>
+    /// Indicates whether a password is set
+    /// </summary>
     public bool HasPassword => this.Password != null;
 
+    /// <summary>
+    /// Indicates whether the server is currently accepting incoming packets
+    /// </summary>
     public bool IsRunning { get; private set; }
+
+    /// <summary>
+    /// The timestamp the server was started at
+    /// </summary>
     public DateTime StartDatetime { get; private set; }
+
+    /// <summary>
+    /// The amount of time since the server has been started
+    /// </summary>
     public TimeSpan Uptime => DateTime.Now - this.StartDatetime;
+
+    /// <summary>
+    /// Returns the service provider, which can be used to instantiate / inject services
+    /// </summary>
     public IServiceProvider Services => this.serviceProvider;
 
     public MtaServer(
@@ -369,7 +399,7 @@ public class MtaServer
     }
 
     /// <summary>
-    /// Execcutes an action for every single element of a specific type on the server. 
+    /// Executes an action for every single element of a specific type on the server. 
     /// This includes both currently existing elements, and elements to be created in the future.
     /// </summary>
     /// <typeparam name="TElement">The type of element to execute the action for</typeparam>
@@ -574,6 +604,11 @@ public class MtaServer
     public event Action<LuaEvent>? LuaEventTriggered;
 }
 
+/// <summary>
+/// Base class for any MtaServer that supports an alternative player class.
+/// This class can not be instantiated
+/// </summary>
+/// <typeparam name="TPlayer">The player type</typeparam>
 public abstract class MtaServer<TPlayer> : MtaServer where TPlayer : Player
 {
     public MtaServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
@@ -593,6 +628,11 @@ public abstract class MtaServer<TPlayer> : MtaServer where TPlayer : Player
     public new event Action<TPlayer>? PlayerJoined;
 }
 
+/// <summary>
+/// A highly configurable implementation of an MTA server, with a custom player class. This class is required to have a parameterless constructor.
+/// Instaces of this class can be created using `MtaServer.Create&lt;TPlayer&gt;`
+/// </summary>
+/// <typeparam name="TPlayer">The player type</typeparam>
 public class MtaNewPlayerServer<TPlayer> : MtaServer<TPlayer> where TPlayer : Player, new()
 {
     internal MtaNewPlayerServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
