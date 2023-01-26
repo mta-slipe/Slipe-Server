@@ -643,8 +643,8 @@ public class Vehicle : Element
     public void DetachFromTower(bool updateCounterpart = true) => AttachToTower(null, updateCounterpart);
 
 
-    public virtual bool CanEnter(Ped ped) => true;
-    public virtual bool CanExit(Ped ped) => true;
+    public Func<Ped, bool>? CanEnter;
+    public Func<Ped, bool>? CanExit;
 
     public event ElementEventHandler? Blown;
     public event ElementEventHandler<VehicleLeftEventArgs>? PedLeft;

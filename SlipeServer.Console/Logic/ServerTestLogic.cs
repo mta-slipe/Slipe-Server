@@ -32,6 +32,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using static SlipeServer.Packets.Constants.KeyConstants;
 
 namespace SlipeServer.Console.Logic;
 
@@ -53,6 +54,7 @@ public class ServerTestLogic
     private readonly CommandService commandService;
     private readonly WeaponConfigurationService weaponConfigurationService;
     private readonly GameWorld gameWorld;
+    private readonly IElementIdGenerator elementIdGenerator;
     private Resource? testResource;
     private Resource? secondTestResource;
     private Resource? thirdTestResource;
@@ -78,6 +80,7 @@ public class ServerTestLogic
     private Vehicle? Slamvan { get; set; }
     private Vehicle? Remmington { get; set; }
     private Vehicle? FrozenVehicle { get; set; }
+    private Vehicle? PrivateVehicle { get; set; }
     private Vehicle? Roadtrain { get; set; }
     private Vehicle? Trailer1 { get; set; }
     private Vehicle? Trailer2 { get; set; }
@@ -102,7 +105,8 @@ public class ServerTestLogic
         IResourceProvider resourceProvider,
         CommandService commandService,
         WeaponConfigurationService weaponConfigurationService,
-        GameWorld gameWorld
+        GameWorld gameWorld,
+        IElementIdGenerator elementIdGenerator
     )
     {
         this.server = server;
@@ -120,6 +124,7 @@ public class ServerTestLogic
         this.resourceProvider = resourceProvider;
         this.commandService = commandService;
         this.weaponConfigurationService = weaponConfigurationService;
+        this.elementIdGenerator = elementIdGenerator;
         this.gameWorld = gameWorld;
 
         this.slipeDevsTeam = new Team("Slipe devs", Color.FromArgb(255, 255, 81, 81));
@@ -204,6 +209,16 @@ public class ServerTestLogic
 
         this.FrozenVehicle = new Vehicle(602, new Vector3(0, 0, 10)).AssociateWith(this.server);
         this.FrozenVehicle.IsFrozen = true;
+        
+        this.PrivateVehicle = new Vehicle(602, new Vector3(-10.58f, -5.70f, 3.11f)).AssociateWith(this.server);
+        this.PrivateVehicle.CanEnter = (Ped ped) =>
+        {
+            if (ped is Player player)
+            {
+                this.chatBox.OutputTo(player, $"Sorry, this is private vehicle.");
+            }
+            return false;
+        };
 
         this.Roadtrain = new Vehicle(VehicleModel.Roadtrain, new Vector3(10, 30, 5)).AssociateWith(this.server);
         this.Trailer1 = new Vehicle(VehicleModel.Trailer1, new Vector3(15, 30, 3)).AssociateWith(this.server);
@@ -1069,6 +1084,39 @@ public class ServerTestLogic
             blip.CreateFor(args.Player);
         };
 
+        this.commandService.AddCommand("gp").Triggered += (source, args) =>
+        {
+            this.chatBox.Output($"{args.Player.Position}");
+        };
+
+        this.commandService.AddCommand("createelementsforme").Triggered += (source, args) =>
+        {
+            uint id = 10_000;
+            var create = (Element element) =>
+            {
+                element.Id = id++;
+                element.CreateFor(args.Player);
+            };
+
+            var origin = new Vector3(-13.200195f, 26.257812f, 3.1171875f);
+            args.Player.Position = origin;
+            create(new Ped(PedModel.Ballas1, origin));
+            create(new Vehicle(404, origin));
+            create(new WorldObject(1337, origin));
+            create(new Pickup(origin, 1274));
+
+            var marker = new Marker(origin, MarkerType.Arrow);
+            marker.Color = Color.Pink;
+            create(marker);
+            var collisionSphere = new CollisionSphere(origin, 3);
+            collisionSphere.ElementEntered += e =>
+            {
+                this.chatBox.Output("entered element created for me");
+            };
+            create(collisionSphere);
+            create(new Blip(origin, BlipIcon.Truth));
+        };
+
         this.commandService.AddCommand("hot").Triggered += (source, args) =>
         {
             // command for testing, use hot reload to write code and apply during a running debug session
@@ -1191,14 +1239,6 @@ public class ServerTestLogic
             var config = this.weaponConfigurationService.GetWeaponConfiguration(weapon);
             config.MaximumClipAmmo = ammoInClip;
             this.weaponConfigurationService.SetWeaponConfigurationFor(weapon, config, args.Player);
-        };
-
-        this.commandService.AddCommand("testShowChat").Triggered += (source, args) =>
-        {
-            bool show = false;
-            if (args.Arguments.FirstOrDefault() == "true")
-                show = true;
-            this.chatBox.SetVisibleFor(args.Player, show);
         };
     }
 

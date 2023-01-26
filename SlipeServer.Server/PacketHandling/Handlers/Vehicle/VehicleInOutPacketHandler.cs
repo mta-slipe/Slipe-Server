@@ -123,7 +123,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
         {
             if (vehicle.Driver == null)
             {
-                if (!vehicle.CanEnter(client.Player))
+                if (vehicle.CanEnter != null && !vehicle.CanEnter(client.Player))
                 {
                     SendInRequestFailResponse(client, vehicle, VehicleEnterFailReason.Script);
                     return;
@@ -151,7 +151,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
             } else
             {
 
-                if (!vehicle.CanEnter(client.Player))
+                if (vehicle.CanEnter != null && !vehicle.CanEnter(client.Player))
                 {
                     SendInRequestFailResponse(client, vehicle, VehicleEnterFailReason.Script);
                     return;
@@ -188,7 +188,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
                 SendInRequestFailResponse(client, vehicle, VehicleEnterFailReason.Seat);
                 return;
             }
-            if (!vehicle.CanEnter(client.Player))
+            if (vehicle.CanEnter != null && !vehicle.CanEnter(client.Player))
             {
                 SendInRequestFailResponse(client, vehicle, VehicleEnterFailReason.Script);
                 return;
@@ -287,7 +287,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
             return;
         }
 
-        if (!vehicle.CanExit(client.Player))
+        if (vehicle.CanExit != null && !vehicle.CanExit(client.Player))
         {
             var cancelReplyPacket = new VehicleInOutPacket()
             {
