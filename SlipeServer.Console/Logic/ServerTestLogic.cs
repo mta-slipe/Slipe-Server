@@ -32,6 +32,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using static SlipeServer.Packets.Constants.KeyConstants;
 
 namespace SlipeServer.Console.Logic;
 
@@ -79,6 +80,7 @@ public class ServerTestLogic
     private Vehicle? Slamvan { get; set; }
     private Vehicle? Remmington { get; set; }
     private Vehicle? FrozenVehicle { get; set; }
+    private Vehicle? PrivateVehicle { get; set; }
     private Vehicle? Roadtrain { get; set; }
     private Vehicle? Trailer1 { get; set; }
     private Vehicle? Trailer2 { get; set; }
@@ -207,6 +209,16 @@ public class ServerTestLogic
 
         this.FrozenVehicle = new Vehicle(602, new Vector3(0, 0, 10)).AssociateWith(this.server);
         this.FrozenVehicle.IsFrozen = true;
+        
+        this.PrivateVehicle = new Vehicle(602, new Vector3(-10.58f, -5.70f, 3.11f)).AssociateWith(this.server);
+        this.PrivateVehicle.CanEnter = (Ped ped, Vehicle vehicle) =>
+        {
+            if (ped is Player player)
+            {
+                this.chatBox.OutputTo(player, $"Sorry, this is private vehicle.");
+            }
+            return false;
+        };
 
         this.Roadtrain = new Vehicle(VehicleModel.Roadtrain, new Vector3(10, 30, 5)).AssociateWith(this.server);
         this.Trailer1 = new Vehicle(VehicleModel.Trailer1, new Vector3(15, 30, 3)).AssociateWith(this.server);
@@ -1227,14 +1239,6 @@ public class ServerTestLogic
             var config = this.weaponConfigurationService.GetWeaponConfiguration(weapon);
             config.MaximumClipAmmo = ammoInClip;
             this.weaponConfigurationService.SetWeaponConfigurationFor(weapon, config, args.Player);
-        };
-
-        this.commandService.AddCommand("testShowChat").Triggered += (source, args) =>
-        {
-            bool show = false;
-            if (args.Arguments.FirstOrDefault() == "true")
-                show = true;
-            this.chatBox.SetVisibleFor(args.Player, show);
         };
     }
 

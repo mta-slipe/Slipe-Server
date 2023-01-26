@@ -20,9 +20,15 @@ namespace SlipeServer.Server.Elements;
 /// </summary>
 public class Element
 {
+    /// <summary>
+    /// The element type as per MTA's specifications. Multiple C# types can share the same MTA element type.
+    /// </summary>
     public virtual ElementType ElementType => ElementType.Unknown;
 
     private Element? parent;
+    /// <summary>
+    /// The element's parent as in the element tree.
+    /// </summary>
     public Element? Parent
     {
         get => this.parent;
@@ -30,15 +36,16 @@ public class Element
         {
             this.parent = value;
 
-            if (this.parent != null)
-                this.parent.RemoveChild(this);
-
-            if (value != null)
-                value.AddChild(this);
+            this.parent?.RemoveChild(this);
+            value?.AddChild(this);
         }
     }
 
+    private readonly object childrenLock = new();
     private readonly List<Element> children;
+    /// <summary>
+    /// The element's children as in the element tree.
+    /// </summary>
     public IReadOnlyCollection<Element> Children => this.children.AsReadOnly();
 
     private uint id;
@@ -54,10 +61,16 @@ public class Element
     }
 
     private readonly object timeContextLock = new();
+    /// <summary>
+    /// The time sync context, this is a value used to verify whether synchronisation packets are to be applied or ignored.
+    /// </summary>
     public byte TimeContext { get; private set; }
 
 
     private string name = "";
+    /// <summary>
+    /// The element name, for Player's this is the nickname, for other elements it's mostly unused.
+    /// </summary>
     public string Name
     {
         get => this.name;
@@ -71,6 +84,9 @@ public class Element
 
 
     protected Vector3 position;
+    /// <summary>
+    /// The element's position
+    /// </summary>
     public Vector3 Position
     {
         get => this.position;
@@ -85,11 +101,25 @@ public class Element
         }
     }
 
+    /// <summary>
+    /// A vector representating the location 1 unit to the right of the element.
+    /// </summary>
     public Vector3 Right => Vector3.Transform(Vector3.UnitX, this.rotation.ToQuaternion());
+
+    /// <summary>
+    /// A vector representing the location 1 unit above the element.
+    /// </summary>
     public Vector3 Up => Vector3.Transform(Vector3.UnitZ, this.rotation.ToQuaternion());
+
+    /// <summary>
+    /// A vector representing 1 unit in front of the element.
+    /// </summary>
     public Vector3 Forward => Vector3.Transform(Vector3.UnitY, this.rotation.ToQuaternion());
 
     protected Vector3 rotation;
+    /// <summary>
+    /// The element's rotation, in euler angles
+    /// </summary>
     public Vector3 Rotation
     {
         get => this.rotation;
@@ -105,6 +135,9 @@ public class Element
     }
 
     protected Vector3 velocity;
+    /// <summary>
+    /// The element's current velocity.
+    /// </summary>
     public Vector3 Velocity
     {
         get => this.velocity;
@@ -117,6 +150,9 @@ public class Element
     }
 
     protected Vector3 turnVelocity;
+    /// <summary>
+    /// The element's turn velocity.
+    /// </summary>
     public Vector3 TurnVelocity
     {
         get => this.turnVelocity;
@@ -129,6 +165,9 @@ public class Element
     }
 
     protected byte interior;
+    /// <summary>
+    /// The element's interior, interiors are the mechanism the base game uses to not have the insides of buildings visible in the regular world.
+    /// </summary>
     public byte Interior
     {
         get => this.interior;
@@ -141,6 +180,9 @@ public class Element
     }
 
     protected ushort dimension;
+    /// <summary>
+    /// The element's dimension, elements are only visible in the dimension a player (or rather their camera) is in.
+    /// </summary>
     public ushort Dimension
     {
         get => this.dimension;
@@ -153,6 +195,9 @@ public class Element
     }
 
     protected byte alpha = 255;
+    /// <summary>
+    /// The element's alpha level, alpha of 0 means completely transparent, while 255 is completely opaque.
+    /// </summary>
     public byte Alpha
     {
         get => this.alpha;
@@ -166,6 +211,9 @@ public class Element
 
 
     protected bool areCollisionsEnabled = true;
+    /// <summary>
+    /// Indicates whether the element collides with anything else, this includes both world objects, and the default map.
+    /// </summary>
     public bool AreCollisionsEnabled
     {
         get => this.areCollisionsEnabled;
@@ -178,6 +226,12 @@ public class Element
     }
 
     protected bool isCallPropagationEnabled = false;
+    /// <summary>
+    /// Indicates whether a call on this element will be called on its children a well on clients.
+    /// </summary>
+    /// <remarks>
+    /// Note: This only affects clients, Slipe Server does not do call propagation.
+    /// </remarks>
     public bool IsCallPropagationEnabled
     {
         get => this.isCallPropagationEnabled;
@@ -190,6 +244,9 @@ public class Element
     }
 
     protected bool isFrozen = false;
+    /// <summary>
+    /// Indicates whether the element is frozen, frozen elements are unable to move or be moved.
+    /// </summary>
     public bool IsFrozen
     {
         get => this.isFrozen;
@@ -202,6 +259,10 @@ public class Element
     }
 
     private AsyncLocal<ElementUpdateContext> updateContext = new();
+    /// <summary>
+    /// The element's update context, this indicates the source of the current change that is being applied to an element.
+    /// This is primarily used to verify whether or not the current changes originate from a sync packet.
+    /// </summary>
     public ElementUpdateContext UpdateContext
     {
         get => this.updateContext?.Value ?? ElementUpdateContext.Default;
@@ -212,6 +273,9 @@ public class Element
         }
     }
 
+    /// <summary>
+    /// Indicates whether the current action originates from the handling of a sync packet
+    /// </summary>
     public bool IsSync
     {
         get => this.UpdateContext.HasFlag(ElementUpdateContext.Sync);
@@ -219,19 +283,39 @@ public class Element
     }
 
     private readonly HashSet<Player> subscribers;
+    /// <summary>
+    /// Indicates which elements are subscribed to this element
+    /// </summary>
     public IEnumerable<Player> Subscribers => this.subscribers;
 
     private Dictionary<string, ElementData> ElementData { get; set; }
+    /// <summary>
+    /// Lists all the players that are subscribed to one (or more) element data entries on this element.
+    /// </summary>
     public ConcurrentDictionary<Player, ConcurrentDictionary<string, bool>> ElementDataSubscriptions { get; set; }
 
+    /// <summary>
+    /// The element's current attachment. Representing this element being attached to a target element.
+    /// </summary>
     public ElementAttachment? Attachment { get; private set; }
 
     private readonly List<ElementAttachment> attachedElements;
+    /// <summary>
+    /// Elements that are attached to this element
+    /// </summary>
     public IReadOnlyCollection<ElementAttachment> AttachedElements => this.attachedElements.AsReadOnly();
+
+    /// <summary>
+    /// Indicates whether this element has been destroyed
+    /// </summary>
     public bool IsDestroyed { get; set; }
 
     private readonly object destroyLock = new();
 
+    /// <summary>
+    /// Indicates whether this element exists for all players.
+    /// When this is set to false some element creation packets won't be sent to everyone on the server.
+    /// </summary>
     public bool ExistsForAllPlayers { get; set; } = true;
 
     public Element()
@@ -250,6 +334,10 @@ public class Element
         this.Parent = parent;
     }
 
+    /// <summary>
+    /// Adds a subscriber to this element
+    /// </summary>
+    /// <param name="player">the subscriber to add to this element</param>
     public void AddSubscriber(Player player)
     {
         if (this.subscribers.Contains(player))
@@ -259,6 +347,10 @@ public class Element
         player.SubscribeTo(this);
     }
 
+    /// <summary>
+    /// Removes a subscriber from this element
+    /// </summary>
+    /// <param name="player">the subscriber to remove from this element</param>
     public void RemoveSubscriber(Player player)
     {
         if (!this.subscribers.Contains(player))
@@ -268,7 +360,10 @@ public class Element
         player.UnsubscribeFrom(this);
     }
 
-
+    /// <summary>
+    /// Returns a new time context, to be used when sync updates sent prior to this moment are meant to be invaldiated.
+    /// </summary>
+    /// <returns>The new time context</returns>
     public byte GetAndIncrementTimeContext()
     {
         lock (this.timeContextLock)
@@ -281,11 +376,19 @@ public class Element
         }
     }
 
+    /// <summary>
+    /// Indicates whether a specific time context is valid to update this element
+    /// </summary>
+    /// <param name="remoteContext">The time context to compare</param>
     public bool CanUpdateSync(byte remoteContext)
     {
         return (this.TimeContext == remoteContext || remoteContext == 0 || this.TimeContext == 0);
     }
 
+    /// <summary>
+    /// Destroys the element, triggering the Destroyed event.
+    /// </summary>
+    /// <returns>A bool indicating whether the element is destroyed, false if it was already destroyed prior to this call.</returns>
     public bool Destroy()
     {
         lock (this.destroyLock)
@@ -299,6 +402,11 @@ public class Element
         }
     }
 
+    /// <summary>
+    /// Runs an action with a specific context, this context can be fetched using `element.UpdateContext`
+    /// </summary>
+    /// <param name="action">the action to run</param>
+    /// <param name="context">the context to run with</param>
     public void RunWithContext(Action action, ElementUpdateContext context)
     {
         var oldValue = this.UpdateContext;
@@ -307,6 +415,12 @@ public class Element
         this.UpdateContext = oldValue;
     }
 
+    /// <summary>
+    /// Runs an asynchronous action with a specific context, this context can be fetched using `element.UpdateContext`
+    /// </summary>
+    /// <param name="action">the action to run</param>
+    /// <param name="context">the context to run with</param>
+    /// <returns></returns>
     public async Task RunWithContext(Func<Task> action, ElementUpdateContext context)
     {
         var oldValue = this.UpdateContext;
@@ -315,33 +429,72 @@ public class Element
         this.UpdateContext = oldValue;
     }
 
+    /// <summary>
+    /// Runs an action with the sync context
+    /// </summary>
+    /// <param name="action">the action to run</param>
+    /// <param name="value">Depending whether the context should be sync or not</param>
     public void RunAsSync(Action action, bool value = true)
         => RunWithContext(action, value ? ElementUpdateContext.Sync : ElementUpdateContext.NoRelay);
 
+    /// <summary>
+    /// Runs an asynchronous action with the sync context
+    /// </summary>
+    /// <param name="action">the action to run</param>
+    /// <param name="value">Depending whether the context should be sync or not</param>
     public Task RunAsSync(Func<Task> action, bool value = true)
         => RunWithContext(action, value ? ElementUpdateContext.Sync : ElementUpdateContext.NoRelay);
 
+    /// <summary>
+    /// Associates an element with the server, causing the element to be created for all players on the server
+    /// </summary>
+    /// <param name="server">The server to associate the element with</param>
     public Element AssociateWith(MtaServer server)
     {
         return server.AssociateElement(this);
     }
 
+    /// <summary>
+    /// Adds a child in the element tree to this element
+    /// </summary>
+    /// <param name="element">The child to add</param>
     public void AddChild(Element element)
     {
-        this.children.Add(element);
-        element.Destroyed += (element) => RemoveChild(element);
+        lock (this.childrenLock)
+        {
+            this.children.Add(element);
+            element.Destroyed += RemoveChild;
+        }
     }
 
+    /// <summary>
+    /// Removes a child from this tree in the element tree
+    /// </summary>
+    /// <param name="element">The child to remove</param>
     public void RemoveChild(Element element)
     {
-        this.children.Remove(element);
+        lock (this.childrenLock)
+        {
+            this.children.Remove(element);
+            element.Destroyed -= RemoveChild;
+        }
     }
 
+    /// <summary>
+    /// Indicates whether the element is an (indirect) child of another element, this includes grandchildren.
+    /// </summary>
+    /// <param name="element">The element to check against</param>
     public bool IsChildOf(Element element)
     {
         return element != null && (this.parent == element || (this.parent != null && this.parent.IsChildOf(element)));
     }
 
+    /// <summary>
+    /// Sets element data on this element
+    /// </summary>
+    /// <param name="key">The key to store the value under</param>
+    /// <param name="value">The value to store</param>
+    /// <param name="syncType">The type of synchronisation to do with this value</param>
     public void SetData(string key, LuaValue value, DataSyncType syncType = DataSyncType.Local)
     {
         LuaValue? oldValue = this.GetData(key);
@@ -354,6 +507,12 @@ public class Element
         this.DataChanged?.Invoke(this, new ElementDataChangedArgs(key, value, oldValue, syncType));
     }
 
+    /// <summary>
+    /// Gets element data on this element if it exists
+    /// </summary>
+    /// <param name="dataName">The key to retrieve the stored value from</param>
+    /// <param name="inherit">Whether the value should be attempted to be fetched from the element's parent(s) as well</param>
+    /// <returns>The value if it exists, null otherwise.</returns>
     public LuaValue? GetData(string dataName, bool inherit = false)
     {
         if (this.ElementData.TryGetValue(dataName, out var value))
@@ -365,6 +524,11 @@ public class Element
         return null;
     }
 
+    /// <summary>
+    /// Subscribes a player to changes to a specific element data value
+    /// </summary>
+    /// <param name="player">The player to subscribe</param>
+    /// <param name="key">The key of the data to subscribe to</param>
     public void SubscribeToData(Player player, string key)
     {
         if (!this.ElementDataSubscriptions.ContainsKey(player))
@@ -382,6 +546,11 @@ public class Element
             UnsubscribeFromAllData(player);
     }
 
+    /// <summary>
+    /// Unsubscribes a player from changes to a specific element data value
+    /// </summary>
+    /// <param name="player">The player to unsubscribe</param>
+    /// <param name="key">The key of the data to unsubscribe from</param>
     public void UnsubscribeFromData(Player player, string key)
     {
         if (this.ElementDataSubscriptions.TryGetValue(player, out var keys))
@@ -392,12 +561,22 @@ public class Element
         }
     }
 
+    /// <summary>
+    /// Unsubscribes an element from all element data on this element
+    /// </summary>
+    /// <param name="player"></param>
     public void UnsubscribeFromAllData(Player player)
     {
         player.Destroyed -= HandleElementDataSubscriberDestruction;
         this.ElementDataSubscriptions.Remove(player, out var keys);
     }
 
+    /// <summary>
+    /// Checks whether a player is subscribes to a specific data key on this element
+    /// </summary>
+    /// <param name="player">The player to check</param>
+    /// <param name="key">The key for the element data to check</param>
+    /// <returns></returns>
     public bool IsPlayerSubscribedToData(Player player, string key)
     {
         if (this.ElementDataSubscriptions.TryGetValue(player, out var keys))
@@ -406,6 +585,10 @@ public class Element
         return false;
     }
 
+    /// <summary>
+    /// Returns all players subscribes to a specific element data key on this element
+    /// </summary>
+    /// <param name="key">The element data key</param>
     public IEnumerable<Player> GetPlayersSubcribedToData(string key)
     {
         return this.ElementDataSubscriptions.Keys

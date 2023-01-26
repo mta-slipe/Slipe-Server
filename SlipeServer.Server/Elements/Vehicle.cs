@@ -39,7 +39,8 @@ public class Vehicle : Element
     }
 
     private float health = 1000;
-    public float Health {
+    public float Health
+    {
         get => this.health;
         set
         {
@@ -127,8 +128,7 @@ public class Vehicle : Element
                 for (int i = 0; i < this.doorRatios.Length; i++)
                     if (value.Length > i)
                         this.SetDoorOpenRatio((VehicleDoor)i, value[i]);
-            }
-            else
+            } else
             {
                 for (int i = 0; i < this.doorRatios.Length; i++)
                     if (value.Length > i)
@@ -643,8 +643,8 @@ public class Vehicle : Element
     public void DetachFromTower(bool updateCounterpart = true) => AttachToTower(null, updateCounterpart);
 
 
-    public virtual bool CanEnter(Ped ped) => true;
-    public virtual bool CanExit(Ped ped) => true;
+    public Func<Ped, Vehicle, bool>? CanEnter;
+    public Func<Ped, Vehicle, bool>? CanExit;
 
     public event ElementEventHandler? Blown;
     public event ElementEventHandler<VehicleLeftEventArgs>? PedLeft;
