@@ -18,7 +18,7 @@ public class ElementChangedEventArgs<TSource, TValue> : EventArgs
     }
 }
 
-public class ElementChangedEventArgs<T> : ElementChangedEventArgs<Element, T>
+public sealed class ElementChangedEventArgs<T> : ElementChangedEventArgs<Element, T>
 {
     public ElementChangedEventArgs(Element source, T oldValue, T newValue, bool isSync = false)
         : base(source, oldValue, newValue, isSync)

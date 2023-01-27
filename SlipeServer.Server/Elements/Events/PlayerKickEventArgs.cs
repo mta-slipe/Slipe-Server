@@ -3,10 +3,10 @@ using System;
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class PlayerKickEventArgs : EventArgs
+public sealed class PlayerKickEventArgs : EventArgs
 {
-    public string Reason { get; set; }
-    public PlayerDisconnectType Type { get; set; }
+    public string Reason { get; }
+    public PlayerDisconnectType Type { get; }
 
     public PlayerKickEventArgs(string reason, PlayerDisconnectType type)
     {

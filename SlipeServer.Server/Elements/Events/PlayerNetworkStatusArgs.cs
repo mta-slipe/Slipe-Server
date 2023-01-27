@@ -3,7 +3,7 @@ using System;
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class PlayerNetworkStatusArgs : EventArgs
+public sealed class PlayerNetworkStatusArgs : EventArgs
 {
     public PlayerNetworkStatusType PlayerNetworkStatus { get; }
     public uint Ticks { get; }

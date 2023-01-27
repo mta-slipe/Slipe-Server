@@ -3,7 +3,7 @@ using System;
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class PlayerDamagedEventArgs : EventArgs
+public sealed class PlayerDamagedEventArgs : EventArgs
 {
     public Player Source { get; }
     public Element? Damager { get; }

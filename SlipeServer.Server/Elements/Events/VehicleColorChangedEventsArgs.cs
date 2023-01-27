@@ -3,11 +3,11 @@ using System.Drawing;
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class VehicleColorChangedEventsArgs : EventArgs
+public sealed class VehicleColorChangedEventsArgs : EventArgs
 {
-    public Vehicle Vehicle { get; set; }
-    public byte Index { get; set; }
-    public Color NewColor { get; set; }
+    public Vehicle Vehicle { get; }
+    public byte Index { get; }
+    public Color NewColor { get; }
 
     public VehicleColorChangedEventsArgs(Vehicle vehicle, byte index, Color newColor)
     {

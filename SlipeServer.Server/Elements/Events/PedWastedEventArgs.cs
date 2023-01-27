@@ -3,7 +3,7 @@ using System;
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class PedWastedEventArgs : EventArgs
+public sealed class PedWastedEventArgs : EventArgs
 {
     public Ped Source { get; }
     public Element? Killer { get; }
@@ -11,7 +11,7 @@ public class PedWastedEventArgs : EventArgs
     public BodyPart BodyPart { get; }
     public ulong AnimationGroup { get; }
     public ulong AnimationId { get; }
-    public ushort Ammo { get; init; }
+    public ushort Ammo { get; }
 
     public PedWastedEventArgs(
         Ped source, Element? killer, WeaponType weaponType, BodyPart bodyPart,

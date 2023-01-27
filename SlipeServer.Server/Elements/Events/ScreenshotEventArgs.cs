@@ -3,11 +3,11 @@ using System.IO;
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class ScreenshotEventArgs : EventArgs
+public sealed class ScreenshotEventArgs : EventArgs
 {
     public Stream Stream { get; }
     public string? ErrorMessage { get; }
-    public string Tag { get; set; }
+    public string Tag { get; }
 
     public ScreenshotEventArgs(Stream stream, string? errorMessage, string tag)
     {

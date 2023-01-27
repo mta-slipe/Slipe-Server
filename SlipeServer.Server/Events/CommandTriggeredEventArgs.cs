@@ -3,10 +3,10 @@ using System;
 
 namespace SlipeServer.Server.Events;
 
-public class CommandTriggeredEventArgs : EventArgs
+public sealed class CommandTriggeredEventArgs : EventArgs
 {
-    public Player Player { get; init; }
-    public string[] Arguments { get; init; }
+    public Player Player { get; }
+    public string[] Arguments { get; }
 
     public CommandTriggeredEventArgs(Player player, string[] arguments)
     {

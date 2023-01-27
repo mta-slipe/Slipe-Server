@@ -3,7 +3,7 @@ using System;
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class AmmoUpdateEventArgs : EventArgs
+public sealed class AmmoUpdateEventArgs : EventArgs
 {
     public Ped Ped { get; set; }
     public WeaponId WeaponId { get; }

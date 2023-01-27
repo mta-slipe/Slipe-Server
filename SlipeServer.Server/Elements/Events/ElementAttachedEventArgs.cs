@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class ElementAttachedEventArgs : EventArgs
+public sealed class ElementAttachedEventArgs : EventArgs
 {
     public Element Source { get; }
     public Element AttachedTo { get; }

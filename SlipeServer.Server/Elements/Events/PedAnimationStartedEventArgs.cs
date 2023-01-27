@@ -3,9 +3,9 @@ using System;
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class PedAnimationStartedEventArgs : EventArgs
+public sealed class PedAnimationStartedEventArgs : EventArgs
 {
-    public Ped Ped { get; set; }
+    public Ped Ped { get; }
     public string Block { get; }
     public string Animation { get; }
     public TimeSpan Time { get; }

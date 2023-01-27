@@ -3,12 +3,12 @@ using System;
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class ClothingChangedEventArgs : EventArgs
+public sealed class ClothingChangedEventArgs : EventArgs
 {
-    public Ped Ped { get; set; }
-    public ClothingType ClothingType { get; set; }
-    public byte? Previous { get; set; }
-    public byte? Current { get; set; }
+    public Ped Ped { get; }
+    public ClothingType ClothingType { get; }
+    public byte? Previous { get; }
+    public byte? Current { get; }
 
     public ClothingChangedEventArgs(Ped ped, ClothingType clothes, byte? previous, byte? current)
     {

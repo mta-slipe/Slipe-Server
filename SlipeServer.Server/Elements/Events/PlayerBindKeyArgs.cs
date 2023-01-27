@@ -3,11 +3,11 @@ using System;
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class PlayerBindKeyArgs : EventArgs
+public sealed class PlayerBindKeyArgs : EventArgs
 {
-    public Player Player { get; set; }
-    public string Key { get; set; }
-    public KeyState KeyState { get; set; }
+    public Player Player { get; }
+    public string Key { get; }
+    public KeyState KeyState { get; }
 
     public PlayerBindKeyArgs(Player player, string key, KeyState keyState)
     {
