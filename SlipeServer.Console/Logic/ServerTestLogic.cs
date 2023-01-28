@@ -1240,6 +1240,20 @@ public class ServerTestLogic
             config.MaximumClipAmmo = ammoInClip;
             this.weaponConfigurationService.SetWeaponConfigurationFor(weapon, config, args.Player);
         };
+
+        this.commandService.AddCommand("areCollisionsEnabled").Triggered += (source, args) =>
+        {
+            var testobj = new WorldObject(1337, new Vector3(0, 5, 3));
+            testobj.AssociateWith(this.server);
+            testobj.AreCollisionsEnabled = false;
+            var testobj2 = new WorldObject(1337, new Vector3(0, 7, 3));
+            testobj2.AssociateWith(this.server);
+            testobj2.AreCollisionsEnabled = true;
+
+            // command for testing, use hot reload to write code and apply during a running debug session
+            var x = this;
+        };
+
     }
 
     private void OnPlayerJoin(CustomPlayer player)
