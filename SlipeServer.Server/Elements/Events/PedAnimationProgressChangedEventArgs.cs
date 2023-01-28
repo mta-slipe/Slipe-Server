@@ -2,11 +2,11 @@
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class PedAnimationProgressChangedEventArgs : EventArgs
+public sealed class PedAnimationProgressChangedEventArgs : EventArgs
 {
-    public Ped Ped { get; set; }
+    public Ped Ped { get; }
     public string Animation { get; }
-    public float Progress { get; set; }
+    public float Progress { get; }
 
     public PedAnimationProgressChangedEventArgs(Ped ped, string animation, float progress)
     {

@@ -2,11 +2,11 @@
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class PedAnimationSpeedChangedEventArgs : EventArgs
+public sealed class PedAnimationSpeedChangedEventArgs : EventArgs
 {
-    public Ped Ped { get; set; }
+    public Ped Ped { get; }
     public string Animation { get; }
-    public float Speed { get; set; }
+    public float Speed { get; }
 
     public PedAnimationSpeedChangedEventArgs(Ped ped, string animation, float speed)
     {

@@ -3,7 +3,7 @@ using System;
 
 namespace SlipeServer.Server.Collections.Events;
 
-public class AmmoUpdateEventArgs : EventArgs
+public sealed class AmmoUpdateEventArgs : EventArgs
 {
     public Weapon Weapon { get; }
     public ushort AmmoCount { get; }

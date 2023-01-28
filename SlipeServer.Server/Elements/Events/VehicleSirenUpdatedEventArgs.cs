@@ -3,10 +3,10 @@ using System;
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class VehicleSirenUpdatedEventArgs : EventArgs
+public sealed class VehicleSirenUpdatedEventArgs : EventArgs
 {
-    public Vehicle Vehicle { get; set; }
-    public VehicleSiren Siren { get; set; }
+    public Vehicle Vehicle { get; }
+    public VehicleSiren Siren { get; }
 
     public VehicleSirenUpdatedEventArgs(Vehicle vehicle, VehicleSiren siren)
     {

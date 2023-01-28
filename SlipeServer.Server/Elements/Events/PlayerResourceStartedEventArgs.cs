@@ -2,7 +2,7 @@
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class PlayerResourceStartedEventArgs : EventArgs
+public sealed class PlayerResourceStartedEventArgs : EventArgs
 {
     public Player Source { get; }
     public ushort NetId { get; }

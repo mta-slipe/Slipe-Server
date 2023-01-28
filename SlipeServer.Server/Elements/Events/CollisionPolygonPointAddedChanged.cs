@@ -4,11 +4,11 @@ using System.Numerics;
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class CollisionPolygonPointAddedChangedArgs : EventArgs
+public sealed class CollisionPolygonPointAddedChangedArgs : EventArgs
 {
-    public CollisionPolygon Polygon { get; set; }
-    public int Index { get; set; }
-    public Vector2 Position { get; set; }
+    public CollisionPolygon Polygon { get; }
+    public int Index { get; }
+    public Vector2 Position { get; }
 
     public CollisionPolygonPointAddedChangedArgs(CollisionPolygon polygon, int index, Vector2 position)
     {

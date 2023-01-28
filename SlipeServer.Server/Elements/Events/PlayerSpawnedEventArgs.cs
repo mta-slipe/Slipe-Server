@@ -2,7 +2,7 @@
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class PlayerSpawnedEventArgs : EventArgs
+public sealed class PlayerSpawnedEventArgs : EventArgs
 {
     public Player Source { get; }
 

@@ -3,11 +3,11 @@ using System;
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class VehicleDoorOpenRatioChangedArgs : EventArgs
+public sealed class VehicleDoorOpenRatioChangedArgs : EventArgs
 {
-    public Vehicle Vehicle { get; set; }
-    public VehicleDoor Door { get; set; }
-    public float Ratio { get; set; }
+    public Vehicle Vehicle { get; }
+    public VehicleDoor Door { get; }
+    public float Ratio { get; }
     public uint Time { get; }
 
     public VehicleDoorOpenRatioChangedArgs(Vehicle vehicle, VehicleDoor door, float ratio, uint time)

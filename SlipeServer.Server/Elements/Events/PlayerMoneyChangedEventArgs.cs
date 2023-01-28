@@ -2,11 +2,11 @@
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class PlayerMoneyChangedEventArgs : EventArgs
+public sealed class PlayerMoneyChangedEventArgs : EventArgs
 {
     public Player Source { get; }
-    public int Money { get; set; }
-    public bool Instant { get; set; }
+    public int Money { get; }
+    public bool Instant { get; }
 
     public PlayerMoneyChangedEventArgs(
         Player source, int money, bool instant

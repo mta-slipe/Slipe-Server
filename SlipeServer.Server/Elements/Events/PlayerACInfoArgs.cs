@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class PlayerACInfoArgs : EventArgs
+public sealed class PlayerACInfoArgs : EventArgs
 {
-    public IEnumerable<byte> DetectedACList { get; set; }
-    public uint D3D9Size { get; set; }
-    public string D3D9MD5 { get; set; }
-    public string D3D9SHA256 { get; set; }
+    public IEnumerable<byte> DetectedACList { get; }
+    public uint D3D9Size { get; }
+    public string D3D9MD5 { get; }
+    public string D3D9SHA256 { get; }
 
     public PlayerACInfoArgs(IEnumerable<byte> detectedACList, uint d3d9Size, string d3d9MD5, string d3d9SHA256)
     {

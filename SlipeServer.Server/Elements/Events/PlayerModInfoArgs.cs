@@ -4,10 +4,10 @@ using System.Collections.Generic;
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class PlayerModInfoArgs : EventArgs
+public sealed class PlayerModInfoArgs : EventArgs
 {
-    public string InfoType { get; set; }
-    public IEnumerable<ModInfoItem> ModInfoItems { get; set; }
+    public string InfoType { get; }
+    public IEnumerable<ModInfoItem> ModInfoItems { get; }
 
     public PlayerModInfoArgs(string infoType, IEnumerable<ModInfoItem> modInfoItems)
     {
