@@ -554,8 +554,8 @@ public class Element
         player.AssociateElement(this);
 
         this.associations.Add(new ElementAssociation(this, player));
-        this.AssociatedWith?.Invoke(this, new ElementAssociatedWithEventArgs(this, player));
         this.UpdateAssociatedPlayers();
+        this.AssociatedWith?.Invoke(this, new ElementAssociatedWithEventArgs(this, player));
 
         return this;
     }
