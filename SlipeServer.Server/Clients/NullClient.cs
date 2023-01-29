@@ -3,19 +3,20 @@ using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using System;
+using System.Collections.Generic;
 using System.Net;
 
-namespace SlipeServer.Server;
+namespace SlipeServer.Server.Clients;
 
 /// <summary>
 /// Class indicating the lack of a client.
 /// An instance of this class is only ever used very briefly when a player has been instantiated, but the client has not yet been created.
 /// </summary>
-public class NullClient : IClient
+public class TemporaryClient : IClient
 {
-    public static NullClient Instance { get; } = new();
+    public Queue<QueuedClientPacket> PacketQueue { get; } = new();
 
-    private NullClient() { }
+    public TemporaryClient() { }
 
     public Player Player
     {
@@ -39,9 +40,29 @@ public class NullClient : IClient
     public void FetchSerial() => throw new NullReferenceException("Attempt to access client of player without client.");
     public void ResendModPackets() => throw new NullReferenceException("Attempt to access client of player without client.");
     public void ResendPlayerACInfo() => throw new NullReferenceException("Attempt to access client of player without client.");
-    public void SendPacket(Packet packet) => throw new NullReferenceException("Attempt to access client of player without client.");
-    public void SendPacket(PacketId packetId, byte[] data, PacketPriority priority = PacketPriority.Medium, PacketReliability reliability = PacketReliability.Unreliable) => throw new NullReferenceException("Attempt to access client of player without client.");
     public void SetVersion(ushort version) => throw new NullReferenceException("Attempt to access client of player without client.");
     public void SetDisconnected() => throw new NullReferenceException("Attempt to access client of player without client.");
     public void ResetConnectionState() => throw new NullReferenceException("Attempt to access client of player without client.");
+
+    public void SendPacket(Packet packet)
+    {
+        this.PacketQueue.Enqueue(new QueuedClientPacket()
+        {
+            PacketId = packet.PacketId,
+            Data = packet.Write(),
+            priority = packet.Priority,
+            reliability = packet.Reliability,
+        });
+    }
+
+    public void SendPacket(PacketId packetId, byte[] data, PacketPriority priority = PacketPriority.Medium, PacketReliability reliability = PacketReliability.Unreliable)
+    {
+        this.PacketQueue.Enqueue(new QueuedClientPacket()
+        {
+            PacketId = packetId,
+            Data = data,
+            priority = priority,
+            reliability = reliability,
+        });
+    }
 }

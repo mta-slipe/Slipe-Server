@@ -509,6 +509,9 @@ public class Vehicle : Element
 
         this.Name = $"vehicle{this.Id}";
         this.Occupants = new Dictionary<byte, Ped>();
+
+        this.Colors.ColorChanged += (source, args) => this.ColorChanged?.Invoke(this, args);
+        this.Upgrades.UpgradeChanged+= (source, args) => this.UpgradeChanged?.Invoke(this, args);
     }
 
     public Vehicle(VehicleModel model, Vector3 position) : this((ushort)model, position)
@@ -518,7 +521,8 @@ public class Vehicle : Element
 
     public new Vehicle AssociateWith(MtaServer server)
     {
-        return server.AssociateElement(this);
+        base.AssociateWith(server);
+        return this;
     }
 
     public Ped? GetOccupantInSeat(byte seat)
@@ -710,6 +714,7 @@ public class Vehicle : Element
     public event ElementEventHandler<VehicleLeftEventArgs>? PedLeft;
     public event ElementEventHandler<VehicleEnteredEventsArgs>? PedEntered;
     public event ElementChangedEventHandler<Vehicle, ushort>? ModelChanged;
+    public event ElementEventHandler<Vehicle, VehicleColorChangedEventsArgs>? ColorChanged;
     public event ElementChangedEventHandler<Vehicle, bool>? LandingGearChanged;
     public event ElementChangedEventHandler<Vehicle, bool>? TaxiLightStateChanged;
     public event ElementChangedEventHandler<Vehicle, Vector2?>? TurretRotationChanged;
@@ -741,4 +746,5 @@ public class Vehicle : Element
     public event ElementEventHandler<VehicleLightStateChangedArgs>? LightStateChanged;
     public event ElementEventHandler<VehicleDoorOpenRatioChangedArgs>? DoorOpenRatioChanged;
     public event ElementEventHandler<Vehicle, VehiclePushedEventArgs>? Pushed;
+    public event ElementEventHandler<Vehicle, VehicleUpgradeChanged>? UpgradeChanged;
 }

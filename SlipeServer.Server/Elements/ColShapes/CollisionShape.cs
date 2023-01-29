@@ -57,7 +57,8 @@ public abstract class CollisionShape : Element
 
     public new CollisionShape AssociateWith(MtaServer server)
     {
-        return server.AssociateElement(this);
+        base.AssociateWith(server);
+        return this;
     }
 
     public event Action<Element>? ElementEntered;

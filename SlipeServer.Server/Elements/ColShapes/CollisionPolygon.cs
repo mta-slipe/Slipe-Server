@@ -91,7 +91,8 @@ public class CollisionPolygon : CollisionShape
 
     public new CollisionPolygon AssociateWith(MtaServer server)
     {
-        return server.AssociateElement(this);
+        base.AssociateWith(server);
+        return this;
     }
 
     private bool IsOnSegment(Vector2 p, Vector2 q, Vector2 r)

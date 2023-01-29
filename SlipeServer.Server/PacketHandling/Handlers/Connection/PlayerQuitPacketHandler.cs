@@ -6,6 +6,7 @@ using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Factories;
 using SlipeServer.Server.ElementCollections;
 using System.Linq;
+using SlipeServer.Server.Clients;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Connection;
 

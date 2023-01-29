@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlipeServer.Packets.Definitions.Transgression;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Server.Clients;
 using System.Linq;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.AntiCheat;

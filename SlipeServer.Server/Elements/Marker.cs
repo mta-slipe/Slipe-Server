@@ -97,7 +97,8 @@ public class Marker : Element
 
     public new Marker AssociateWith(MtaServer server)
     {
-        return server.AssociateElement(this);
+        base.AssociateWith(server);
+        return this;
     }
 
     public event ElementChangedEventHandler<Marker, MarkerType>? MarkerTypeChanged;

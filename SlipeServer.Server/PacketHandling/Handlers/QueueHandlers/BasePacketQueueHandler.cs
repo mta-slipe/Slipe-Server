@@ -1,4 +1,5 @@
 ﻿using SlipeServer.Packets;
+using SlipeServer.Server.Clients;
 using System;
 using System.Collections.Concurrent;
 

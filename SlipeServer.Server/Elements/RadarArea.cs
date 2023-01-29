@@ -94,7 +94,8 @@ public class RadarArea : Element
 
     public new RadarArea AssociateWith(MtaServer server)
     {
-        return server.AssociateElement(this);
+        base.AssociateWith(server);
+        return this;
     }
 
     public event ElementChangedEventHandler<RadarArea, Vector2>? SizeChanged;

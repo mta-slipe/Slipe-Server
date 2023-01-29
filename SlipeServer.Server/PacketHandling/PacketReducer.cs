@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlipeServer.Packets;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Server.Clients;
 using SlipeServer.Server.PacketHandling.Handlers;
 using System;
 using System.Collections.Generic;

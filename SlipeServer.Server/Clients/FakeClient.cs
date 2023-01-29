@@ -4,7 +4,7 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using System.Net;
 
-namespace SlipeServer.Server;
+namespace SlipeServer.Server.Clients;
 
 /// <summary>
 /// A stub implementation for a client, you can use this to implement fake players for testing purposes

@@ -12,6 +12,7 @@ using SlipeServer.Server.ElementCollections;
 using System;
 using System.Linq;
 using System.Numerics;
+using SlipeServer.Server.Clients;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Rpc;
 
@@ -109,8 +110,7 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
         client.SendPacket(existingPlayersListPacket);
 
         var elements = this.elementCollection
-            .GetAll()
-            .Where(x => x.ExistsForAllPlayers);
+            .GetAll();
         var packet = AddEntityPacketFactory.CreateAddEntityPacket(elements);
         client.SendPacket(packet);
 

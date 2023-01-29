@@ -7,6 +7,7 @@ using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.ElementCollections;
 using System.Numerics;
+using SlipeServer.Server.Clients;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle;
 

@@ -36,7 +36,8 @@ public class CollisionCuboid : CollisionShape
 
     public new CollisionCuboid AssociateWith(MtaServer server)
     {
-        return server.AssociateElement(this);
+        base.AssociateWith(server);
+        return this;
     }
 
     public event ElementChangedEventHandler<Vector3>? DimensionsChanged;

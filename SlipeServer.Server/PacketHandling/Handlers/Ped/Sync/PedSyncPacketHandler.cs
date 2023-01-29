@@ -8,6 +8,7 @@ using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.ElementCollections;
 using System;
 using System.Collections.Generic;
+using SlipeServer.Server.Clients;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers;
 

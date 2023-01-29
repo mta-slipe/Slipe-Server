@@ -1095,7 +1095,7 @@ public class ServerTestLogic
             var create = (Element element) =>
             {
                 element.Id = id++;
-                element.CreateFor(args.Player);
+                element.AssociateWith(args.Player);
             };
 
             var origin = new Vector3(-13.200195f, 26.257812f, 3.1171875f);

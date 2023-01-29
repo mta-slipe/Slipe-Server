@@ -4,6 +4,7 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.PacketHandling.Handlers;
 using SlipeServer.Server.ElementCollections;
+using SlipeServer.Server.Clients;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers;
 

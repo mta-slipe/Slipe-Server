@@ -22,6 +22,7 @@ public class Water : Element
 
     public new Water AssociateWith(MtaServer server)
     {
-        return server.AssociateElement(this);
+        base.AssociateWith(server);
+        return this;
     }
 }

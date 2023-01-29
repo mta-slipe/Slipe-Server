@@ -27,7 +27,8 @@ public class Team : Element, IEnumerable
 
     public new Team AssociateWith(MtaServer server)
     {
-        return server.AssociateElement(this);
+        base.AssociateWith(server);
+        return this;
     }
 
     public IEnumerator GetEnumerator() => this.Players.GetEnumerator();

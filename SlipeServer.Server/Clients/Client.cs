@@ -8,15 +8,15 @@ using SlipeServer.Server.PacketHandling;
 using System;
 using System.Net;
 
-namespace SlipeServer.Server;
+namespace SlipeServer.Server.Clients;
 
 /// <summary>
 /// Representation of a client connected to the server
 /// </summary>
 /// <typeparam name="TPlayer"></typeparam>
-public class Client<TPlayer> 
+public class Client<TPlayer>
     : IClient, IClient<TPlayer>
-    where TPlayer: Player
+    where TPlayer : Player
 {
     private readonly INetWrapper netWrapper;
     private readonly uint binaryAddress;
@@ -117,14 +117,14 @@ public class Client<TPlayer>
 
     private bool CanSendPacket(PacketId packet)
     {
-        return 
-            this.IsConnected && 
+        return
+            this.IsConnected &&
             (
-                ClientPacketScope.Current == null || 
+                ClientPacketScope.Current == null ||
                 ClientPacketScope.Current.ContainsClient(this)
             ) &&
             (
-                this.ConnectionState == ClientConnectionState.Joined || 
+                this.ConnectionState == ClientConnectionState.Joined ||
                 PacketSendingConstants.AlwaysAllowedPackets.Contains(packet)
             );
     }
@@ -185,7 +185,7 @@ public class Client<TPlayer>
     /// </summary>
     public void FetchSerial()
     {
-        Tuple<string, string, string> serialExtraAndVersion = this.netWrapper.GetClientSerialExtraAndVersion(this.binaryAddress);
+        var serialExtraAndVersion = this.netWrapper.GetClientSerialExtraAndVersion(this.binaryAddress);
         this.Serial = serialExtraAndVersion.Item1;
         this.Extra = serialExtraAndVersion.Item2;
         this.Version = serialExtraAndVersion.Item3;
@@ -197,7 +197,7 @@ public class Client<TPlayer>
 /// </summary>
 public class Client : Client<Player>
 {
-    public Client(uint binaryAddress, INetWrapper netWrapper, Player player) 
+    public Client(uint binaryAddress, INetWrapper netWrapper, Player player)
         : base(binaryAddress, netWrapper, player)
     {
 

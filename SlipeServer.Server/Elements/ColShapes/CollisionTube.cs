@@ -45,7 +45,8 @@ public class CollisionTube : CollisionShape
 
     public new CollisionTube AssociateWith(MtaServer server)
     {
-        return server.AssociateElement(this);
+        base.AssociateWith(server);
+        return this;
     }
 
     public event ElementChangedEventHandler<float>? RadiusChanged;

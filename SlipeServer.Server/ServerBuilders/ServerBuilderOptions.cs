@@ -74,26 +74,13 @@ public enum ServerBuilderDefaultBehaviours : ulong
 
     PlayerJoinElementBehaviour = 0x100,
 
-    ElementPacketBehaviour = 0x200,
-    PedPacketBehaviour = 0x400,
-    PlayerPacketBehaviour = 0x800,
-    VehicleWarpBehaviour = 0x1000,
-    VehicleRespawnBehaviour = 0x2000,
-    VehicleBehaviour = 0x4000,
-    VoiceBehaviour = 0x8000,
-    LightSyncBehaviour = 0x10000,
-    TeamBehaviour = 0x20000,
-    RadarAreaBehaviour = 0x40000,
-    BlipBehaviour = 0x80000,
-    ObjectPacketBehaviour = 0x100000,
-    PickupBehaviour = 0x200000,
-    MarkerBehaviour = 0x400000,
-    MapInfoBehaviour = 0x800000,
-    PedSyncBehaviour = 0x1000000,
-    UnoccupiedVehicleSyncBehaviour = 0x2000000,
-    CustomDataBehaviour = 0x4000000,
-    PlayerBehaviour = 0x8000000,
-    VehicleHandlingBehaviour = 0x10000000,
+    VoiceBehaviour = 0x200,
+    LightSyncBehaviour = 0x400,
+    PickupBehaviour = 0x800,
+    MapInfoBehaviour = 0x1000,
+    PedSyncBehaviour = 0x2000,
+    UnoccupiedVehicleSyncBehaviour = 0x4000,
+    CustomDataBehaviour = 0x8000,
 }
 
 [Flags]

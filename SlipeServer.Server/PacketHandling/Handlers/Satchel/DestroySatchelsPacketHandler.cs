@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Definitions.Satchels;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Server.Clients;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 

@@ -159,34 +159,13 @@ public static class DefaultServerBuilderExtensions
         if ((except & ServerBuilderDefaultBehaviours.PlayerJoinElementBehaviour) == 0)
             builder.AddBehaviour<PlayerJoinElementBehaviour>();
 
-        if ((except & ServerBuilderDefaultBehaviours.ElementPacketBehaviour) == 0)
-            builder.AddBehaviour<ElementPacketBehaviour>();
-        if ((except & ServerBuilderDefaultBehaviours.PedPacketBehaviour) == 0)
-            builder.AddBehaviour<PedPacketBehaviour>();
-        if ((except & ServerBuilderDefaultBehaviours.PlayerPacketBehaviour) == 0)
-            builder.AddBehaviour<PlayerPacketBehaviour>();
-        if ((except & ServerBuilderDefaultBehaviours.VehicleWarpBehaviour) == 0)
-            builder.AddBehaviour<VehicleWarpBehaviour>();
-        if ((except & ServerBuilderDefaultBehaviours.VehicleRespawnBehaviour) == 0)
-            builder.AddBehaviour<VehicleRespawnBehaviour>();
-        if ((except & ServerBuilderDefaultBehaviours.VehicleBehaviour) == 0)
-            builder.AddBehaviour<VehicleBehaviour>();
         if ((except & ServerBuilderDefaultBehaviours.VoiceBehaviour) == 0)
             builder.AddBehaviour<VoiceBehaviour>();
         if ((except & ServerBuilderDefaultBehaviours.LightSyncBehaviour) == 0)
             builder.AddBehaviour<LightSyncBehaviour>();
-        if ((except & ServerBuilderDefaultBehaviours.TeamBehaviour) == 0)
-            builder.AddBehaviour<TeamBehaviour>();
-        if ((except & ServerBuilderDefaultBehaviours.RadarAreaBehaviour) == 0)
-            builder.AddBehaviour<RadarAreaBehaviour>();
-        if ((except & ServerBuilderDefaultBehaviours.BlipBehaviour) == 0)
-            builder.AddBehaviour<BlipBehaviour>();
-        if ((except & ServerBuilderDefaultBehaviours.ObjectPacketBehaviour) == 0)
-            builder.AddBehaviour<ObjectPacketBehaviour>();
+
         if ((except & ServerBuilderDefaultBehaviours.PickupBehaviour) == 0)
             builder.AddBehaviour<PickupBehaviour>();
-        if ((except & ServerBuilderDefaultBehaviours.MarkerBehaviour) == 0)
-            builder.AddBehaviour<MarkerBehaviour>();
         if ((except & ServerBuilderDefaultBehaviours.MapInfoBehaviour) == 0)
             builder.AddBehaviour<MapInfoBehaviour>();
         if ((except & ServerBuilderDefaultBehaviours.PedSyncBehaviour) == 0)
@@ -195,10 +174,6 @@ public static class DefaultServerBuilderExtensions
             builder.AddBehaviour<UnoccupiedVehicleSyncBehaviour>();
         if ((except & ServerBuilderDefaultBehaviours.CustomDataBehaviour) == 0)
             builder.AddBehaviour<CustomDataBehaviour>();
-        if ((except & ServerBuilderDefaultBehaviours.PlayerBehaviour) == 0)
-            builder.AddBehaviour<PlayerBehaviour>();
-        if ((except & ServerBuilderDefaultBehaviours.VehicleHandlingBehaviour) == 0)
-            builder.AddBehaviour<VehicleHandlingBehaviour>();
     }
 
     public static void AddDefaultServices(

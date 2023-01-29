@@ -231,11 +231,13 @@ public class Ped : Element
         this.Weapons.WeaponAdded += (sender, args) => this.WeaponReceived?.Invoke(this, new WeaponReceivedEventArgs(this, args.Type, args.Ammo, false));
         this.Weapons.WeaponRemoved += (sender, args) => this.WeaponRemoved?.Invoke(this, new WeaponRemovedEventArgs(this, args.Type, args.Ammo));
         this.Weapons.WeaponAmmoUpdated += (sender, args) => this.AmmoUpdated?.Invoke(this, new AmmoUpdateEventArgs(this, args.Type, args.Ammo, args.AmmoInClip));
+        this.Clothing.Changed += (sender, args) => this.ClothingChanged?.Invoke(this, args);
     }
 
     public new Ped AssociateWith(MtaServer server)
     {
-        return server.AssociateElement(this);
+        base.AssociateWith(server);
+        return this;
     }
 
     public void RemoveFromVehicle(bool warpOut = true)
@@ -420,4 +422,5 @@ public class Ped : Element
     public event ElementEventHandler<Ped, PedAnimationProgressChangedEventArgs>? AnimationProgressChanged;
     public event ElementEventHandler<Ped, PedAnimationSpeedChangedEventArgs>? AnimationSpeedChanged;
     public event ElementEventHandler<Ped, EventArgs>? WeaponReloaded;
+    public event ElementEventHandler<Ped, ClothingChangedEventArgs>? ClothingChanged;
 }

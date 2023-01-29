@@ -6,7 +6,7 @@ using SlipeServer.Server.ElementCollections;
 namespace SlipeServer.Server.Behaviour;
 
 /// <summary>
-/// Handles relaying pickup use and reset events
+/// Handles pickup use and reset events
 /// </summary>
 public class PickupBehaviour
 {

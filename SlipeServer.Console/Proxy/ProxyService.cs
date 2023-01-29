@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server;
+using SlipeServer.Server.Clients;
 using SlipeServer.Server.Proxy;
 using System;
 using System.IO.Pipes;

@@ -18,7 +18,6 @@ public class ElementTests
     {
         var server = new TestingServer();
         var player = server.AddFakePlayer();
-        server.Instantiate<ElementPacketBehaviour>();
 
         var element = new Element().AssociateWith(server);
 
@@ -39,7 +38,6 @@ public class ElementTests
     {
         var server = new TestingServer();
         var player = server.AddFakePlayer();
-        server.Instantiate<ElementPacketBehaviour>();
 
         new Element().AssociateWith(server);
 
@@ -51,7 +49,6 @@ public class ElementTests
     {
         var server = new TestingServer();
         var player = server.AddFakePlayer();
-        server.Instantiate<ElementPacketBehaviour>();
 
         var element = new Element().AssociateWith(server);
         element.Destroy();

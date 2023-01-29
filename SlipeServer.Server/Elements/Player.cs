@@ -14,6 +14,8 @@ using SlipeServer.Packets.Constants;
 using System.Drawing;
 using SlipeServer.Packets.Lua.Event;
 using SlipeServer.Server.Extensions;
+using SlipeServer.Server.ElementCollections;
+using SlipeServer.Server.Clients;
 
 namespace SlipeServer.Server.Elements;
 
@@ -27,11 +29,19 @@ public class Player : Ped
 {
     public override ElementType ElementType => ElementType.Player;
 
-    private IClient? client;
+    private IClient client = new TemporaryClient();
     public IClient Client
     {
-        get => this.client ?? NullClient.Instance;
-        set => this.client = value;
+        get => this.client;
+        set
+        {
+            if (this.client is TemporaryClient temporaryClient)
+            {
+                while (temporaryClient.PacketQueue.TryDequeue(out var queuedPacket))
+                    value.SendPacket(queuedPacket.PacketId, queuedPacket.Data, queuedPacket.priority, queuedPacket.reliability);
+            }
+            this.client = value;
+        }
     }
 
     public Camera Camera { get; }
@@ -50,6 +60,11 @@ public class Player : Ped
             WantedLevelChanged?.Invoke(this, args);
         }
     }
+
+    /// <summary>
+    /// Any elements that are specifically associated with this player. This does not include elements that are associated with the server as a whole.
+    /// </summary>
+    public IElementCollection AssociatedElements { get; } = new RTreeCompoundElementCollection(); 
 
     public Element? ContactElement { get; set; }
 
@@ -167,6 +182,7 @@ public class Player : Ped
         this.SyncingVehicles = new();
         this.BoundKeys = new();
         this.Controls = new(this);
+        this.UpdateAssociatedPlayers();
 
         this.Disconnected += HandleDisconnect;
     }
@@ -179,7 +195,8 @@ public class Player : Ped
 
     public new Player AssociateWith(MtaServer server)
     {
-        return server.AssociateElement(this);
+        base.AssociateWith(server);
+        return this;
     }
 
     public void SubscribeTo(Element element)
@@ -442,6 +459,29 @@ public class Player : Ped
             blip.AttachTo(this);
 
         return blip;
+    }
+
+    /// <summary>
+    /// Associates an element with the player. Meaning the element will be created for the player
+    /// and changes to the element will be relayed to the player.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="element"></param>
+    /// <returns>Returns the element, allowing for method chaining</returns>
+    public T AssociateElement<T>(T element) where T : Element
+    {
+        this.AssociatedElements.Add(element);
+
+        return element;
+    }
+
+    /// <summary>
+    /// Removes an element from being associated with the player, meaning the element will no longer be sync'd to the player
+    /// </summary>
+    /// <param name="element"></param>
+    public void RemoveElement(Element element)
+    {
+        this.AssociatedElements.Remove(element);
     }
 
     public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;

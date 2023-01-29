@@ -12,6 +12,7 @@ public class DummyElement : Element
 
     public new DummyElement AssociateWith(MtaServer server)
     {
-        return server.AssociateElement(this);
+        base.AssociateWith(server);
+        return this;
     }
 }

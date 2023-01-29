@@ -36,7 +36,8 @@ public class CollisionCircle : CollisionShape
 
     public new CollisionCircle AssociateWith(MtaServer server)
     {
-        return server.AssociateElement(this);
+        base.AssociateWith(server);
+        return this;
     }
 
     public event ElementChangedEventHandler<float>? RadiusChanged;
