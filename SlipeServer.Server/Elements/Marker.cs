@@ -20,6 +20,9 @@ public class Marker : Element
         get => this.markerType;
         set
         {
+            if (this.markerType == value)
+                return;
+
             var args = new ElementChangedEventArgs<Marker, MarkerType>(this, this.markerType, value, this.IsSync);
             this.markerType = value;
             MarkerTypeChanged?.Invoke(this, args);
@@ -32,6 +35,9 @@ public class Marker : Element
         get => this.markerIcon;
         set
         {
+            if (this.markerIcon == value)
+                return;
+
             var args = new ElementChangedEventArgs<Marker, MarkerIcon>(this, this.markerIcon, value, this.IsSync);
             this.markerIcon = value;
             MarkerIconChanged?.Invoke(this, args);
@@ -44,6 +50,9 @@ public class Marker : Element
         get => this.size;
         set
         {
+            if (this.size == value)
+                return;
+
             var args = new ElementChangedEventArgs<Marker, float>(this, this.size, value, this.IsSync);
             this.size = value;
             SizeChanged?.Invoke(this, args);
@@ -56,6 +65,9 @@ public class Marker : Element
         get => this.color;
         set
         {
+            if (this.color == value)
+                return;
+
             var args = new ElementChangedEventArgs<Marker, Color>(this, this.color, value, this.IsSync);
             this.color = value;
             ColorChanged?.Invoke(this, args);
@@ -68,6 +80,9 @@ public class Marker : Element
         get => this.targetPosition;
         set
         {
+            if (this.targetPosition == value)
+                return;
+
             var args = new ElementChangedEventArgs<Marker, Vector3?>(this, this.targetPosition, value, this.IsSync);
             this.targetPosition = value;
             TargetPositionChanged?.Invoke(this, args);

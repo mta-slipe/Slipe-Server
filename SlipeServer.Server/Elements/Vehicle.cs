@@ -32,6 +32,9 @@ public class Vehicle : Element
         get => this.model;
         set
         {
+            if (this.model == value)
+                return;
+
             var args = new ElementChangedEventArgs<Vehicle, ushort>(this, this.Model, value, this.IsSync);
             this.model = value;
             ModelChanged?.Invoke(this, args);
@@ -44,6 +47,9 @@ public class Vehicle : Element
         get => this.health;
         set
         {
+            if (this.health == value)
+                return;
+
             var args = new ElementChangedEventArgs<Vehicle, float>(this, this.health, value, this.IsSync);
             this.health = value;
             HealthChanged?.Invoke(this, args);
@@ -58,6 +64,9 @@ public class Vehicle : Element
         get => this.paintJob;
         set
         {
+            if (this.paintJob == value)
+                return;
+
             var args = new ElementChangedEventArgs<Vehicle, byte>(this, this.PaintJob, value, this.IsSync);
             this.paintJob = value;
             PaintJobChanged?.Invoke(this, args);
@@ -104,6 +113,9 @@ public class Vehicle : Element
         get => VehicleConstants.TurretModels.Contains((VehicleModel)this.Model) ? this.turretRotation ?? Vector2.Zero : null;
         set
         {
+            if (this.turretRotation == value)
+                return;
+
             var args = new ElementChangedEventArgs<Vehicle, Vector2?>(this, this.turretRotation, value, this.IsSync);
             this.turretRotation = value;
             TurretRotationChanged?.Invoke(this, args);
@@ -150,6 +162,9 @@ public class Vehicle : Element
         get => this.plateText;
         set
         {
+            if (this.plateText == value)
+                return;
+
             var text = value.Substring(0, Math.Min(value.Length, 8));
             var args = new ElementChangedEventArgs<Vehicle, string>(this, this.PlateText, text, this.IsSync);
             this.plateText = text;
@@ -163,6 +178,9 @@ public class Vehicle : Element
         get => this.overrideLights;
         set
         {
+            if (this.overrideLights == value)
+                return;
+
             var args = new ElementChangedEventArgs<Vehicle, VehicleOverrideLights>(this, this.overrideLights, value, this.IsSync);
             this.overrideLights = value;
             OverrideLightsChanged?.Invoke(this, args);
@@ -175,6 +193,9 @@ public class Vehicle : Element
         get => this.isLandingGearDown;
         set
         {
+            if (this.isLandingGearDown == value)
+                return;
+
             var args = new ElementChangedEventArgs<Vehicle, bool>(this, this.IsLandingGearDown, value, this.IsSync);
             this.isLandingGearDown = value;
             LandingGearChanged?.Invoke(this, args);
@@ -187,6 +208,9 @@ public class Vehicle : Element
         get => this.isEngineOn;
         set
         {
+            if (this.isEngineOn == value)
+                return;
+
             var args = new ElementChangedEventArgs<Vehicle, bool>(this, this.isEngineOn, value, this.IsSync);
             this.isEngineOn = value;
             EngineStateChanged?.Invoke(this, args);
@@ -199,6 +223,9 @@ public class Vehicle : Element
         get => this.isLocked;
         set
         {
+            if (this.isLocked == value)
+                return;
+
             var args = new ElementChangedEventArgs<Vehicle, bool>(this, this.isLocked, value, this.IsSync);
             this.isLocked = value;
             LockedStateChanged?.Invoke(this, args);
@@ -212,6 +239,9 @@ public class Vehicle : Element
         get => this.areDoorsDamageProof;
         set
         {
+            if (this.areDoorsDamageProof == value)
+                return;
+
             var args = new ElementChangedEventArgs<Vehicle, bool>(this, this.areDoorsDamageProof, value, this.IsSync);
             this.areDoorsDamageProof = value;
             AreDoorsDamageProofChanged?.Invoke(this, args);
@@ -224,6 +254,9 @@ public class Vehicle : Element
         get => this.isDamageProof;
         set
         {
+            if (this.isDamageProof == value)
+                return;
+
             var args = new ElementChangedEventArgs<Vehicle, bool>(this, this.isDamageProof, value, this.IsSync);
             this.isDamageProof = value;
             IsDamageProofChanged?.Invoke(this, args);
@@ -236,6 +269,9 @@ public class Vehicle : Element
         get => this.isDerailed;
         set
         {
+            if (this.isDerailed == value)
+                return;
+
             var args = new ElementChangedEventArgs<Vehicle, bool>(this, this.isDerailed, value, this.IsSync);
             this.isDerailed = value;
             IsDerailedChanged?.Invoke(this, args);
@@ -248,6 +284,9 @@ public class Vehicle : Element
         get => this.isDerailable;
         set
         {
+            if (this.isDerailable == value)
+                return;
+
             var args = new ElementChangedEventArgs<Vehicle, bool>(this, this.isDerailable, value, this.IsSync);
             this.isDerailable = value;
             IsDerailableChanged?.Invoke(this, args);
@@ -260,6 +299,9 @@ public class Vehicle : Element
         get => this.trainDirection;
         set
         {
+            if (this.trainDirection == value)
+                return;
+
             var args = new ElementChangedEventArgs<Vehicle, TrainDirection>(this, this.trainDirection, value, this.IsSync);
             this.trainDirection = value;
             TrainDirectionChanged?.Invoke(this, args);
@@ -273,6 +315,9 @@ public class Vehicle : Element
         get => this.isTaxiLightOn;
         set
         {
+            if (this.isTaxiLightOn == value)
+                return;
+
             var args = new ElementChangedEventArgs<Vehicle, bool>(this, this.isTaxiLightOn, value, this.IsSync);
             this.isTaxiLightOn = value;
             TaxiLightStateChanged?.Invoke(this, args);
@@ -285,6 +330,9 @@ public class Vehicle : Element
         get => this.headlightColor;
         set
         {
+            if (this.headlightColor == value)
+                return;
+
             var args = new ElementChangedEventArgs<Vehicle, Color>(this, this.headlightColor, value, this.IsSync);
             this.headlightColor = value;
             HeadlightColorChanged?.Invoke(this, args);
@@ -339,6 +387,9 @@ public class Vehicle : Element
         get => this.isSirenActive;
         set
         {
+            if (this.isSirenActive == value)
+                return;
+
             var args = new ElementChangedEventArgs<Vehicle, bool>(this, this.isSirenActive, value, this.IsSync);
             this.isSirenActive = value;
             AreSirensOnChanged?.Invoke(this, args);
@@ -366,8 +417,8 @@ public class Vehicle : Element
     {
         get
         {
-            if (this.Occupants.ContainsKey(0))
-                return this.Occupants[0];
+            if (this.Occupants.TryGetValue(0, out var value))
+                return value;
             return null;
         }
         set
@@ -386,6 +437,9 @@ public class Vehicle : Element
         get => this.syncer;
         set
         {
+            if (this.Syncer == value)
+                return;
+
             var args = new ElementChangedEventArgs<Vehicle, Player?>(this, this.Syncer, value, this.IsSync);
             this.syncer = value;
             SyncerChanged?.Invoke(this, args);
@@ -399,6 +453,9 @@ public class Vehicle : Element
     /// </summary>
     public Vehicle? TowingVehicle { get; private set; }
 
+    /// <summary>
+    /// Vehicle at the very front of a chain of towing vehicles
+    /// </summary>
     public Vehicle? TowingChainHead
     {
         get
@@ -424,6 +481,9 @@ public class Vehicle : Element
         get => this.isFuelTankExplodable;
         set
         {
+            if (this.isFuelTankExplodable == value)
+                return;
+
             var args = new ElementChangedEventArgs<Vehicle, bool>(this, this.isFuelTankExplodable, value, this.IsSync);
             this.isFuelTankExplodable = value;
             FuelTankExplodableChanged?.Invoke(this, args);
@@ -463,8 +523,8 @@ public class Vehicle : Element
 
     public Ped? GetOccupantInSeat(byte seat)
     {
-        if (this.Occupants.ContainsKey(seat))
-            return this.Occupants[seat];
+        if (this.Occupants.TryGetValue(seat, out var value))
+            return value;
         return null;
     }
 
@@ -497,8 +557,8 @@ public class Vehicle : Element
 
     public byte GetMaxPassengers()
     {
-        if (VehicleConstants.SeatsPerVehicle.ContainsKey((VehicleModel)this.Model))
-            return VehicleConstants.SeatsPerVehicle[(VehicleModel)this.Model];
+        if (VehicleConstants.SeatsPerVehicle.TryGetValue((VehicleModel)this.Model, out byte value))
+            return value;
         return 4;
     }
 

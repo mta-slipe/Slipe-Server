@@ -27,6 +27,9 @@ public class Ped : Element
         get => this.model;
         set
         {
+            if (this.model == value)
+                return;
+
             var args = new ElementChangedEventArgs<Ped, ushort>(this, this.Model, value, this.IsSync);
             this.model = value;
             ModelChanged?.Invoke(this, args);
@@ -39,6 +42,9 @@ public class Ped : Element
         get => this.health;
         set
         {
+            if (this.health == value)
+                return;
+
             var args = new ElementChangedEventArgs<Ped, float>(this, this.Health, value, this.IsSync);
             this.health = value;
             HealthChanged?.Invoke(this, args);
@@ -51,6 +57,9 @@ public class Ped : Element
         get => this.armor;
         set
         {
+            if (this.armor == value)
+                return;
+
             var args = new ElementChangedEventArgs<Ped, float>(this, this.Armor, value, this.IsSync);
             this.armor = value;
             ArmourChanged?.Invoke(this, args);
@@ -63,6 +72,9 @@ public class Ped : Element
         get => this.currentWeaponSlot;
         set
         {
+            if (this.currentWeaponSlot == value)
+                return;
+
             lock (this.CurrentWeaponLock)
             {
                 var args = new ElementChangedEventArgs<Ped, WeaponSlot>(this, this.CurrentWeaponSlot, value, this.IsSync);
@@ -78,6 +90,9 @@ public class Ped : Element
         get => this.fightingStyle;
         set
         {
+            if (this.fightingStyle == value)
+                return;
+
             var args = new ElementChangedEventArgs<Ped, FightingStyle>(this, this.fightingStyle, value, this.IsSync);
             this.fightingStyle = value;
             FightingStyleChanged?.Invoke(this, args);
@@ -90,6 +105,9 @@ public class Ped : Element
         get => this.gravity;
         set
         {
+            if (this.gravity == value)
+                return;
+
             var args = new ElementChangedEventArgs<Ped, float>(this, this.gravity, value, this.IsSync);
             this.gravity = value;
             GravityChanged?.Invoke(this, args);
@@ -146,6 +164,9 @@ public class Ped : Element
         get => this.hasJetpack;
         set
         {
+            if (this.hasJetpack == value)
+                return;
+
             if (this.Vehicle != null)
                 return;
 
@@ -167,6 +188,9 @@ public class Ped : Element
         get => this.syncer;
         set
         {
+            if (this.syncer == value)
+                return;
+
             var args = new ElementChangedEventArgs<Ped, Player?>(this, this.Syncer, value, this.IsSync);
             this.syncer = value;
             SyncerChanged?.Invoke(this, args);
@@ -182,6 +206,9 @@ public class Ped : Element
         get => this.target;
         set
         {
+            if (this.target == value)
+                return;
+
             var args = new ElementChangedEventArgs<Ped, Element?>(this, this.Target, value, this.IsSync);
             this.target = value;
             TargetChanged?.Invoke(this, args);

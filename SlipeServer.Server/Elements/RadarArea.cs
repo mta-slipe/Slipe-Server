@@ -24,6 +24,9 @@ public class RadarArea : Element
         get => this.size;
         set
         {
+            if (this.size == value)
+                return;
+
             var args = new ElementChangedEventArgs<RadarArea, Vector2>(this, this.size, value, this.IsSync);
             this.size = value;
             SizeChanged?.Invoke(this, args);
@@ -36,6 +39,9 @@ public class RadarArea : Element
         get => this.color;
         set
         {
+            if (this.color == value)
+                return;
+
             var args = new ElementChangedEventArgs<RadarArea, Color>(this, this.color, value, this.IsSync);
             this.color = value;
             ColorChanged?.Invoke(this, args);
@@ -48,6 +54,9 @@ public class RadarArea : Element
         get => this.isFlashing;
         set
         {
+            if (this.isFlashing == value)
+                return;
+
             var args = new ElementChangedEventArgs<RadarArea, bool>(this, this.isFlashing, value, this.IsSync);
             this.isFlashing = value;
             FlashingStateChanged?.Invoke(this, args);
