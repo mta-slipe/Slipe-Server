@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Lua.Event;
+using SlipeServer.Server.Clients;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,6 +1,6 @@
 ﻿using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Packets.Enums;
-using SlipeServer.Server;
+using SlipeServer.Server.Clients;
 using SlipeServer.Server.PacketHandling.Handlers;
 using System;
 

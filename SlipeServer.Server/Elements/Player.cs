@@ -15,6 +15,7 @@ using System.Drawing;
 using SlipeServer.Packets.Lua.Event;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.ElementCollections;
+using SlipeServer.Server.Clients;
 
 namespace SlipeServer.Server.Elements;
 
@@ -28,11 +29,19 @@ public class Player : Ped
 {
     public override ElementType ElementType => ElementType.Player;
 
-    private IClient? client;
+    private IClient client = new TemporaryClient();
     public IClient Client
     {
-        get => this.client ?? NullClient.Instance;
-        set => this.client = value;
+        get => this.client;
+        set
+        {
+            if (this.client is TemporaryClient temporaryClient)
+            {
+                while (temporaryClient.PacketQueue.TryDequeue(out var queuedPacket))
+                    value.SendPacket(queuedPacket.PacketId, queuedPacket.Data, queuedPacket.priority, queuedPacket.reliability);
+            }
+            this.client = value;
+        }
     }
 
     public Camera Camera { get; }

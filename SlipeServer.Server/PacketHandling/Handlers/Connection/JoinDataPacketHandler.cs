@@ -2,6 +2,7 @@
 using SlipeServer.Packets.Definitions.Join;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Server.Clients;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;

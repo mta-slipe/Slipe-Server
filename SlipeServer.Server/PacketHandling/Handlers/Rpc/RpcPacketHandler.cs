@@ -12,6 +12,7 @@ using SlipeServer.Server.ElementCollections;
 using System;
 using System.Linq;
 using System.Numerics;
+using SlipeServer.Server.Clients;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Rpc;
 

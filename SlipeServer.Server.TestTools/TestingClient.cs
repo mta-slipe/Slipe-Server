@@ -1,4 +1,5 @@
 ﻿using SlipeServer.Net.Wrappers;
+using SlipeServer.Server.Clients;
 
 namespace SlipeServer.Server.TestTools;
 

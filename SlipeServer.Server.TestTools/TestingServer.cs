@@ -5,6 +5,7 @@ using SlipeServer.Net.Wrappers;
 using SlipeServer.Packets;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Server.Clients;
 using SlipeServer.Server.Resources.Serving;
 using SlipeServer.Server.ServerBuilders;
 using System;

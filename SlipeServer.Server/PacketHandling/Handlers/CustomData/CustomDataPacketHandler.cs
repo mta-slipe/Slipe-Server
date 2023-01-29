@@ -2,6 +2,7 @@
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.ElementCollections;
+using SlipeServer.Server.Clients;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.CustomData;
 public class CustomDataPacketHandler : IPacketHandler<CustomDataPacket>

@@ -4,7 +4,7 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using System.Net;
 
-namespace SlipeServer.Server;
+namespace SlipeServer.Server.Clients;
 
 public interface IClient
 {

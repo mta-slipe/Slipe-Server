@@ -5,6 +5,7 @@ using SlipeServer.Packets;
 using SlipeServer.Packets.Definitions.Player;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.AllSeeingEye;
+using SlipeServer.Server.Clients;
 using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.IdGeneration;

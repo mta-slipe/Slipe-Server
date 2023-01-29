@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements.ColShapes;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.PacketHandling.Factories;
 using System.Numerics;
@@ -11,6 +12,35 @@ public static class ElementPropertyRelayingExtensions
     public static void AddRelayers(this Element element)
     {
         AddElementRelayers(element);
+
+
+        switch (element)
+        {
+            case Blip blip:
+                blip.AddBlipRelayers();
+                break;
+            case CollisionShape collisionShape:
+                collisionShape.AddCollisionShapeRelayers();
+                break;
+            case Marker marker:
+                marker.AddMarkerRelayers();
+                break;
+            case Player player:
+                player.AddPedRelayers();
+                player.AddPlayerRelayers();
+                break;
+            case Ped ped:
+                ped.AddPedRelayers();
+                break;
+            case RadarArea radarArea:
+                radarArea.AddRadarAreaRelayers();
+                break;
+            case Vehicle vehicle:
+                vehicle.AddVehicleRelayers();
+                vehicle.AddVehicleHandlingRelayers();
+                break;
+
+        }
     }
 
     private static void AddElementRelayers(Element element)
