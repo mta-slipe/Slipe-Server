@@ -3,11 +3,11 @@ using System;
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class VehiclePanelStateChangedArgs : EventArgs
+public sealed class VehiclePanelStateChangedArgs : EventArgs
 {
-    public Vehicle Vehicle { get; set; }
-    public VehiclePanel Panel { get; set; }
-    public VehiclePanelState State { get; set; }
+    public Vehicle Vehicle { get; }
+    public VehiclePanel Panel { get; }
+    public VehiclePanelState State { get; }
 
     public VehiclePanelStateChangedArgs(Vehicle vehicle, VehiclePanel panel, VehiclePanelState state)
     {

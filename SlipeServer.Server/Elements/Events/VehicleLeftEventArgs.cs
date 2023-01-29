@@ -2,12 +2,12 @@
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class VehicleLeftEventArgs : EventArgs
+public sealed class VehicleLeftEventArgs : EventArgs
 {
-    public Ped Ped { get; set; }
-    public Vehicle Vehicle { get; set; }
-    public byte Seat { get; set; }
-    public bool WarpsOut { get; set; }
+    public Ped Ped { get; }
+    public Vehicle Vehicle { get; }
+    public byte Seat { get; }
+    public bool WarpsOut { get; }
 
     public VehicleLeftEventArgs(Ped ped, Vehicle vehicle, byte seat, bool warpsOut)
     {

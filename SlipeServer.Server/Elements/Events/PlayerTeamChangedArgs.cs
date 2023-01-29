@@ -2,11 +2,11 @@
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class PlayerTeamChangedArgs : EventArgs
+public sealed class PlayerTeamChangedArgs : EventArgs
 {
-    public Player SourcePlayer { get; set; }
-    public Team? PreviousTeam { get; set; }
-    public Team? NewTeam { get; set; }
+    public Player SourcePlayer { get; }
+    public Team? PreviousTeam { get; }
+    public Team? NewTeam { get; }
 
     public PlayerTeamChangedArgs(Player sourcePlayer, Team? newTeam, Team? previousTeam = null)
     {

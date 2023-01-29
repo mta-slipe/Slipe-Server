@@ -2,7 +2,7 @@
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class PickupUsedEventArgs : EventArgs
+public sealed class PickupUsedEventArgs : EventArgs
 {
     public Player Player { get; }
     public bool IsPickupVisible { get; }

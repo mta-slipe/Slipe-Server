@@ -4,14 +4,14 @@ using System;
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class VehicleUpgradeChanged : EventArgs
+public sealed class VehicleUpgradeChanged : EventArgs
 {
-    public Vehicle Vehicle { get; set; }
-    public VehicleUpgradeSlot Slot { get; set; }
-    public ushort PreviousUpgrade { get; set; }
-    public ushort NewUpgrade { get; set; }
-    public ushort? PreviousUpgradeId { get; set; } = null;
-    public ushort? NewUpgradeId { get; set; } = null;
+    public Vehicle Vehicle { get; }
+    public VehicleUpgradeSlot Slot { get; }
+    public ushort PreviousUpgrade { get; }
+    public ushort NewUpgrade { get; }
+    public ushort? PreviousUpgradeId { get; } = null;
+    public ushort? NewUpgradeId { get; } = null;
 
     public VehicleUpgradeChanged(Vehicle vehicle, VehicleUpgradeSlot slot, ushort previousUpgrade, ushort newUpgrade)
     {

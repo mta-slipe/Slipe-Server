@@ -2,10 +2,10 @@
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class PlayerSubscriptionEventArgs : EventArgs
+public sealed class PlayerSubscriptionEventArgs : EventArgs
 {
-    public Player Player { get; set; }
-    public Element Element { get; set; }
+    public Player Player { get; }
+    public Element Element { get; }
 
     public PlayerSubscriptionEventArgs(Player player, Element element)
     {

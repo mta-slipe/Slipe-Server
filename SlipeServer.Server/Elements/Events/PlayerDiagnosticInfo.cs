@@ -2,10 +2,10 @@
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class PlayerDiagnosticInfo : EventArgs
+public sealed class PlayerDiagnosticInfo : EventArgs
 {
-    public uint Level { get; set; }
-    public string Message { get; set; }
+    public uint Level { get; }
+    public string Message { get; }
 
     public PlayerDiagnosticInfo(uint level, string message)
     {

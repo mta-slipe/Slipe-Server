@@ -2,7 +2,7 @@
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class PlayerVoiceStartArgs : EventArgs
+public sealed class PlayerVoiceStartArgs : EventArgs
 {
     public Player Source { get; }
     public byte[] DataBuffer { get; }

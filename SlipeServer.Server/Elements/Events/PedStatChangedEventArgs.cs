@@ -3,11 +3,11 @@ using System;
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class PedStatChangedEventArgs : EventArgs
+public sealed class PedStatChangedEventArgs : EventArgs
 {
-    public PedStat Stat { get; set; }
-    public float? OldValue { get; set; }
-    public float? NewValue { get; set; }
+    public PedStat Stat { get; }
+    public float? OldValue { get; }
+    public float? NewValue { get; }
 
     public PedStatChangedEventArgs(PedStat stat, float? oldValue, float? newValue)
     {

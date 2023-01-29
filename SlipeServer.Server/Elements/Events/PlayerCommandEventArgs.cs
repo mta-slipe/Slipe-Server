@@ -2,11 +2,11 @@
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class PlayerCommandEventArgs : EventArgs
+public sealed class PlayerCommandEventArgs : EventArgs
 {
     public Player Source { get; }
-    public string Command { get; set; }
-    public string[] Arguments { get; set; }
+    public string Command { get; }
+    public string[] Arguments { get; }
 
     public PlayerCommandEventArgs(Player source, string command, string[] arguments)
     {

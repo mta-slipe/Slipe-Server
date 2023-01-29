@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class PlayerCursorClickedEventArgs : EventArgs
+public sealed class PlayerCursorClickedEventArgs : EventArgs
 {
     public byte Button { get; }
     public Point Position { get; }
