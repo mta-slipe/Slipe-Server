@@ -348,3 +348,6 @@
   }
 
 
+.expand-stub, .expand-stub + a {
+  font-weight: bold
+}

@@ -49,7 +49,6 @@ public class PlayerPureSyncPacketHandler : IPacketHandler<PlayerPureSyncPacket>
         var player = client.Player;
         player.RunAsSync(() =>
         {
-            player.Position = packet.Position;
             player.PedRotation = packet.Rotation * (180 / MathF.PI);
             player.Velocity = packet.Velocity;
             player.Health = packet.Health;
@@ -59,9 +58,9 @@ public class PlayerPureSyncPacketHandler : IPacketHandler<PlayerPureSyncPacket>
 
             player.ContactElement = this.elementCollection.Get(packet.ContactElementId);
             if (player.ContactElement != null)
-            {
                 player.Position = player.ContactElement.Position + packet.Position;
-            }
+            else
+                player.Position = packet.Position;
 
             player.CurrentWeaponSlot = (WeaponSlot)packet.WeaponSlot;
             if (player.CurrentWeapon != null && player.CurrentWeapon.Type == (WeaponId)packet.WeaponType)
