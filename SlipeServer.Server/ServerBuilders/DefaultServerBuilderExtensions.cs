@@ -159,8 +159,8 @@ public static class DefaultServerBuilderExtensions
         if ((except & ServerBuilderDefaultBehaviours.PlayerJoinElementBehaviour) == 0)
             builder.AddBehaviour<PlayerJoinElementBehaviour>();
 
-        if ((except & ServerBuilderDefaultBehaviours.ElementPacketBehaviour) == 0)
-            builder.AddBehaviour<ElementPacketBehaviour>();
+        //if ((except & ServerBuilderDefaultBehaviours.ElementPacketBehaviour) == 0)
+        //    builder.AddBehaviour<ElementPacketBehaviour>();
         if ((except & ServerBuilderDefaultBehaviours.PedPacketBehaviour) == 0)
             builder.AddBehaviour<PedPacketBehaviour>();
         if ((except & ServerBuilderDefaultBehaviours.PlayerPacketBehaviour) == 0)

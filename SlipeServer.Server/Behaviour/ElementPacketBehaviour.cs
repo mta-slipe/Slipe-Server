@@ -39,7 +39,7 @@ public class ElementPacketBehaviour
         element.Detached += RelayDetached;
         element.AttachedOffsetChanged += RelayAttachedOffsetChanged;
 
-        if (element.ExistsForAllPlayers)
+        //if (element.ExistsForAllPlayers)
             this.server.BroadcastPacket(AddEntityPacketFactory.CreateAddEntityPacket(new Element[] { element }));
     }
 

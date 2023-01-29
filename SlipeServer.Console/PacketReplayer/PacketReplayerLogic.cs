@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Services;
+using System.Xml.Linq;
 
 namespace SlipeServer.Console.PacketReplayer;
 
@@ -13,15 +14,7 @@ public class PacketReplayerLogic
     {
         this.packetReplayerService = packetReplayerService;
 
-        this.replayer = new Player()
-        {
-            Name = "Replayer",
-            Position = new System.Numerics.Vector3(0, 0.5f, 3),
-            Model = 9,
-            NametagText = "Fake(Re)Player",
-            IsNametagShowing = true,
-            NametagColor = System.Drawing.Color.BlueViolet
-        };
+        this.replayer = new Player();
         var client = new FakeClient(this.replayer)
         {
             Serial = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
@@ -31,6 +24,13 @@ public class PacketReplayerLogic
         this.replayer.AssociateWith(server);
         this.replayer.AddWeapon(Server.Enums.WeaponId.Deagle, 500);
         this.replayer.AddWeapon(Server.Enums.WeaponId.Golfclub, 1);
+
+        this.replayer.Name = "Replayer";
+        this.replayer.Position = new System.Numerics.Vector3(0, 0.5f, 3);
+        this.replayer.Model = 9;
+        this.replayer.NametagText = "Fake(Re)Player";
+        this.replayer.IsNametagShowing = true;
+        this.replayer.NametagColor = System.Drawing.Color.BlueViolet;
 
         commandService.AddCommand("replaypuresync").Triggered += ReplayPackets;
         commandService.AddCommand("replaykeysync").Triggered += ReplayKeySyncPackets;

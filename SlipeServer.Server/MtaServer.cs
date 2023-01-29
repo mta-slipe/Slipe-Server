@@ -89,6 +89,8 @@ public class MtaServer
     /// </summary>
     public IServiceProvider Services => this.serviceProvider;
 
+    public IEnumerable<Player> Players => this.elementCollection.GetByType<Player>();
+
     public MtaServer(
         Action<ServerBuilder> builderAction,
         Func<uint, INetWrapper, IClient>? clientCreationMethod = null
@@ -351,9 +353,19 @@ public class MtaServer
         this.ElementCreated?.Invoke(element);
 
         this.elementCollection.Add(element);
-        element.Destroyed += (element) => this.elementCollection.Remove(element);
+        element.Destroyed += this.elementCollection.Remove;
 
         return element;
+    }
+
+    /// <summary>
+    /// Removes an element from being associated with the entire server, meaning the element will no longer be sync'd to all players
+    /// </summary>
+    /// <param name="element"></param>
+    public void RemoveElement(Element element)
+    {
+        element.Destroy();
+        element.Destroyed -= this.elementCollection.Remove;
     }
 
     /// <summary>

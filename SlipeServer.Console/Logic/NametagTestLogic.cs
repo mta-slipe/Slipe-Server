@@ -5,6 +5,7 @@ using SlipeServer.Server.Services;
 using System;
 using System.Drawing;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace SlipeServer.Console.Logic;
 
@@ -14,14 +15,7 @@ public class NametagTestLogic
 
     public NametagTestLogic(MtaServer server, CommandService commandService)
     {
-        this.nametagPlayer = new CustomPlayer(server.GetRequiredService<ExplosionService>(), server)
-        {
-            Name = "NametagTester",
-            Position = new System.Numerics.Vector3(-2, 0.5f, 3),
-            Model = 9,
-            IsNametagShowing = true,
-            NametagColor = Color.White
-        };
+        this.nametagPlayer = new CustomPlayer(server.GetRequiredService<ExplosionService>(), server);
         var client = new FakeClient(this.nametagPlayer)
         {
             Serial = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB",
@@ -29,6 +23,13 @@ public class NametagTestLogic
         };
         this.nametagPlayer.Client = client;
         this.nametagPlayer.AssociateWith(server);
+
+        this.nametagPlayer.Name = "NametagTester";
+        this.nametagPlayer.Position = new System.Numerics.Vector3(-2, 0.5f, 3);
+        this.nametagPlayer.Model = 9;
+        this.nametagPlayer.IsNametagShowing = true;
+        this.nametagPlayer.NametagColor = Color.White;
+
         server.HandlePlayerJoin(this.nametagPlayer);
 
         commandService.AddCommand("togglenametag").Triggered += ToggleNametag;

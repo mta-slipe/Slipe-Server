@@ -3,8 +3,10 @@ using SlipeServer.Server.Concepts;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Extensions;
+using SlipeServer.Server.Extensions.Relaying;
 using SlipeServer.Server.PacketHandling.Factories;
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,6 +49,15 @@ public class Element
     /// The element's children as in the element tree.
     /// </summary>
     public IReadOnlyCollection<Element> Children => this.children.AsReadOnly();
+
+    private readonly List<ElementAssociation> associations;
+    public IReadOnlyCollection<ElementAssociation> Associations => this.associations.AsReadOnly();
+
+    private readonly HashSet<Player> associatedPlayers;
+    /// <summary>
+    /// Players the element is associated with. These are players that are aware of the existence of this element.
+    /// </summary>
+    public IEnumerable<Player> AssociatedPlayers => this.associatedPlayers.AsEnumerable();
 
     private uint id;
     public uint Id
@@ -348,21 +359,19 @@ public class Element
 
     private readonly object destroyLock = new();
 
-    /// <summary>
-    /// Indicates whether this element exists for all players.
-    /// When this is set to false some element creation packets won't be sent to everyone on the server.
-    /// </summary>
-    public bool ExistsForAllPlayers { get; set; } = true;
-
     public Element()
     {
         this.children = new();
+        this.associations = new();
+        this.associatedPlayers = new();
         this.subscribers = new();
         this.attachedElements = new();
         this.TimeContext = 1;
 
         this.ElementData = new();
         this.ElementDataSubscriptions = new();
+
+        this.AddRelayers();
     }
 
     public Element(Element parent) : this()
@@ -487,7 +496,73 @@ public class Element
     /// <param name="server">The server to associate the element with</param>
     public Element AssociateWith(MtaServer server)
     {
+        this.associations.Add(new ElementAssociation(this, server));
+        this.AssociatedWith?.Invoke(this, new ElementAssociatedWithEventArgs(this, server));
+        this.UpdateAssociatedPlayers();
+
         return server.AssociateElement(this);
+    }
+
+    /// <summary>
+    /// Removes an element from being associated with the server, causing the elements to no longer be created for all players
+    /// </summary>
+    /// <param name="server"></param>
+    public void RemoveFrom(MtaServer server)
+    {
+        var associations = this.associations.Where(x => x.Element == this && x.Server == server);
+
+        foreach (var association in associations)
+            this.associations.Remove(association);
+
+        server.RemoveElement(this);
+        this.RemovedFrom?.Invoke(this, new ElementAssociatedWithEventArgs(this, server));
+        this.UpdateAssociatedPlayers();
+    }
+
+    /// <summary>
+    /// Associates an element with a player, causing the element to be created for this player
+    /// </summary>
+    /// <param name="server">The server to associate the element with</param>
+    public Element AssociateWith(Player player)
+    {
+        this.associations.Add(new ElementAssociation(this, player));
+        this.AssociatedWith?.Invoke(this, new ElementAssociatedWithEventArgs(this, player));
+        this.UpdateAssociatedPlayers();
+
+        return player.AssociateElement(this);
+    }
+
+    /// <summary>
+    /// Removes an element from being associated with the server, causing the elements to no longer be created for all players
+    /// </summary>
+    /// <param name="server"></param>
+    public void RemoveFrom(Player player)
+    {
+        var associations = this.associations.Where(x => x.Element == this && x.Player == player);
+
+        foreach (var association in associations)
+            this.associations.Remove(association);
+
+        player.RemoveElement(this);
+        this.RemovedFrom?.Invoke(this, new ElementAssociatedWithEventArgs(this, player));
+        this.UpdateAssociatedPlayers();
+    }
+
+    protected void UpdateAssociatedPlayers()
+    {
+        this.associatedPlayers.Clear();
+
+        if (this is Player thisPlayer)
+            this.associatedPlayers.Add(thisPlayer);
+
+        foreach (var association in this.associations)
+        {
+            if (association.Player != null)
+                this.associatedPlayers.Add(association.Player);
+            else if (association.Server != null)
+                foreach (var player in association.Server.Players)
+                    this.associatedPlayers.Add(player);
+        }
     }
 
     /// <summary>
@@ -734,6 +809,8 @@ public class Element
     public event ElementChangedEventHandler<bool>? CollisionEnabledhanged;
     public event ElementChangedEventHandler<bool>? FrozenChanged;
     public event ElementChangedEventHandler<Element, uint>? IdChanged;
+    public event ElementEventHandler<Element, ElementAssociatedWithEventArgs>? AssociatedWith;
+    public event ElementEventHandler<Element, ElementAssociatedWithEventArgs>? RemovedFrom;
     public event ElementEventHandler<Element, ElementDataChangedArgs>? DataChanged;
     public event ElementEventHandler<Element, ElementAttachedEventArgs>? Attached;
     public event ElementEventHandler<Element, ElementDetachedEventArgs>? Detached;
