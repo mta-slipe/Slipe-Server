@@ -1,0 +1,33 @@
+﻿namespace SlipeServer.Packets.Enums;
+
+public enum BoneId : byte
+{
+    Pelvis1 = 1,
+    Pelvis = 2,
+    Spine1 = 3,
+    UpperTorso = 4,
+    Neck = 5,
+    Head2 = 6,
+    Head1 = 7,
+    Head = 8,
+    RightUpperTorso = 21,
+    RightShoulder = 22,
+    RightElbow = 23,
+    RightWrist = 24,
+    RightHand = 25,
+    RightThumb = 26,
+    LeftUpperTorso = 31,
+    LeftShoulder = 32,
+    LeftElbow = 33,
+    LeftWrist = 34,
+    LeftHand = 35,
+    LeftThumb = 36,
+    LeftHip = 41,
+    LeftKnee = 42,
+    LeftAnkle = 43,
+    LeftFoot = 44,
+    RightHip = 51,
+    RightKnee = 52,
+    RightAnkle = 53,
+    RightFoot = 54,
+}
