@@ -13,7 +13,6 @@ public static class ElementPropertyRelayingExtensions
     {
         AddElementRelayers(element);
 
-
         switch (element)
         {
             case Blip blip:

@@ -497,11 +497,18 @@ public class Element
     public Element AssociateWith(MtaServer server)
     {
         this.associations.Add(new ElementAssociation(this, server));
+        server.AssociateElement(this);
+
         this.AssociatedWith?.Invoke(this, new ElementAssociatedWithEventArgs(this, server));
+
         this.UpdateAssociatedPlayers();
 
-        return server.AssociateElement(this);
+        server.PlayerJoined += HandlePlayerJoin;
+        server.ElementCreated += HandleElementCreation;
+
+        return this; 
     }
+
 
     /// <summary>
     /// Removes an element from being associated with the server, causing the elements to no longer be created for all players
@@ -514,9 +521,28 @@ public class Element
         foreach (var association in associations)
             this.associations.Remove(association);
 
+        server.PlayerJoined -= HandlePlayerJoin;
+
         server.RemoveElement(this);
         this.RemovedFrom?.Invoke(this, new ElementAssociatedWithEventArgs(this, server));
         this.UpdateAssociatedPlayers();
+    }
+
+    private void HandlePlayerJoin(Player player)
+    {
+        this.associatedPlayers.Add(player);
+
+        player.Disconnected += HandlePlayerDisconnect;
+    }
+
+    private void HandlePlayerDisconnect(Player player, PlayerQuitEventArgs args)
+    {
+        this.associatedPlayers.Remove(player);
+    }
+
+    private void HandleElementCreation(Element obj) 
+    {
+        obj.UpdateAssociatedPlayers();
     }
 
     /// <summary>
@@ -525,11 +551,13 @@ public class Element
     /// <param name="server">The server to associate the element with</param>
     public Element AssociateWith(Player player)
     {
+        player.AssociateElement(this);
+
         this.associations.Add(new ElementAssociation(this, player));
         this.AssociatedWith?.Invoke(this, new ElementAssociatedWithEventArgs(this, player));
         this.UpdateAssociatedPlayers();
 
-        return player.AssociateElement(this);
+        return this;
     }
 
     /// <summary>

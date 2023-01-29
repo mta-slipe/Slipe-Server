@@ -30,7 +30,8 @@ public class CollisionSphere : CollisionShape
 
     public new CollisionSphere AssociateWith(MtaServer server)
     {
-        return server.AssociateElement(this);
+        base.AssociateWith(server);
+        return this;
     }
 
     public event ElementChangedEventHandler<float>? RadiusChanged;

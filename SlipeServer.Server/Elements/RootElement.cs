@@ -11,6 +11,7 @@ public class RootElement : Element
 
     public new RootElement AssociateWith(MtaServer server)
     {
-        return server.AssociateElement(this);
+        base.AssociateWith(server);
+        return this;
     }
 }

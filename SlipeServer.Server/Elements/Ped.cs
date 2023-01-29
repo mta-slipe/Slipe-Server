@@ -236,7 +236,8 @@ public class Ped : Element
 
     public new Ped AssociateWith(MtaServer server)
     {
-        return server.AssociateElement(this);
+        base.AssociateWith(server);
+        return this;
     }
 
     public void RemoveFromVehicle(bool warpOut = true)

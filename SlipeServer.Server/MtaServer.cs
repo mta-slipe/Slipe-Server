@@ -488,7 +488,7 @@ public class MtaServer
         if (!this.clients[netWrapper].ContainsKey(binaryAddress))
         {
             var client = CreateClient(binaryAddress, netWrapper);
-            AssociateElement(client.Player);
+            client.Player.AssociateWith(this);
 
             this.clients[netWrapper][binaryAddress] = client;
             ClientConnected?.Invoke(client);

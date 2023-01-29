@@ -195,7 +195,8 @@ public class Player : Ped
 
     public new Player AssociateWith(MtaServer server)
     {
-        return server.AssociateElement(this);
+        base.AssociateWith(server);
+        return this;
     }
 
     public void SubscribeTo(Element element)

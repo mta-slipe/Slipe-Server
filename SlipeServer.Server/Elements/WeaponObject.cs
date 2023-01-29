@@ -45,6 +45,7 @@ public class WeaponObject : WorldObject
 
     public new WeaponObject AssociateWith(MtaServer server)
     {
-        return server.AssociateElement(this);
+        base.AssociateWith(server);
+        return this;
     }
 }

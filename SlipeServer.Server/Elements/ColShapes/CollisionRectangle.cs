@@ -40,7 +40,8 @@ public class CollisionRectangle : CollisionShape
 
     public new CollisionRectangle AssociateWith(MtaServer server)
     {
-        return server.AssociateElement(this);
+        base.AssociateWith(server);
+        return this;
     }
 
     public event ElementChangedEventHandler<Vector2>? DimensionsChanged;

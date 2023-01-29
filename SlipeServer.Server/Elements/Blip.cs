@@ -98,7 +98,8 @@ public class Blip : Element
 
     public new Blip AssociateWith(MtaServer server)
     {
-        return server.AssociateElement(this);
+        base.AssociateWith(server);
+        return this;
     }
 
     public event ElementChangedEventHandler<Blip, short>? OrderingChanged;
