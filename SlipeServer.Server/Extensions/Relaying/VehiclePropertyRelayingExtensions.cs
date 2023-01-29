@@ -91,7 +91,7 @@ public static class VehiclePropertyRelayingExtensions
     {
         sender.RelayChange(VehiclePacketFactory.CreateSetModelPacket(args.Source));
     }
-    private static void HandleDoorStateChanged(Element? sender, VehicleDoorStateChangedArgs args)
+    private static void HandleDoorStateChanged(Element sender, VehicleDoorStateChangedArgs args)
     {
         if (args.Vehicle.IsSync)
             return;
@@ -276,7 +276,7 @@ public static class VehiclePropertyRelayingExtensions
                 } }));
     }
 
-    private static void HandleEnter(Element? sender, VehicleEnteredEventsArgs eventArgs)
+    private static void HandleEnter(Element sender, VehicleEnteredEventsArgs eventArgs)
     {
         if (eventArgs.WarpsIn)
         {
@@ -289,7 +289,7 @@ public static class VehiclePropertyRelayingExtensions
         }
     }
 
-    private static void HandleLeft(Element? sender, VehicleLeftEventArgs eventArgs)
+    private static void HandleLeft(Element sender, VehicleLeftEventArgs eventArgs)
     {
         if (eventArgs.WarpsOut)
         {
