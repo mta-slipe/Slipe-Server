@@ -19,6 +19,9 @@ public class WorldObject : Element
         get => this.model;
         set
         {
+            if (this.model == value)
+                return;
+
             var args = new ElementChangedEventArgs<WorldObject, ushort>(this, this.Model, value, this.IsSync);
             this.model = value;
             ModelChanged?.Invoke(this, args);
@@ -36,6 +39,9 @@ public class WorldObject : Element
         get => this.scale;
         set
         {
+            if (this.scale == value)
+                return;
+
             var args = new ElementChangedEventArgs<WorldObject, Vector3>(this, this.Scale, value, this.IsSync);
             this.scale = value;
             ScaleChanged?.Invoke(this, args);
@@ -50,6 +56,9 @@ public class WorldObject : Element
         get => this.isVisibleInAllDimensions;
         set
         {
+            if (this.isVisibleInAllDimensions == value)
+                return;
+
             var args = new ElementChangedEventArgs<WorldObject, bool>(this, this.isVisibleInAllDimensions, value, this.IsSync);
             this.isVisibleInAllDimensions = value;
             IsVisibleInAllDimensionsChanged?.Invoke(this, args);

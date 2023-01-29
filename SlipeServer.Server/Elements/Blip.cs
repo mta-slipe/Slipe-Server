@@ -18,6 +18,9 @@ public class Blip : Element
         get => this.ordering;
         set
         {
+            if (this.ordering == value)
+                return;
+
             var args = new ElementChangedEventArgs<Blip, short>(this, this.ordering, value, this.IsSync);
             this.ordering = value;
             this.OrderingChanged?.Invoke(this, args);
@@ -30,6 +33,9 @@ public class Blip : Element
         get => this.visibleDistance;
         set
         {
+            if (this.visibleDistance == value)
+                return;
+
             var args = new ElementChangedEventArgs<Blip, ushort>(this, this.visibleDistance, value, this.IsSync);
             this.visibleDistance = value;
             this.VisibleDistanceChanged?.Invoke(this, args);
@@ -42,6 +48,9 @@ public class Blip : Element
         get => this.icon;
         set
         {
+            if (this.icon == value)
+                return;
+
             var args = new ElementChangedEventArgs<Blip, BlipIcon>(this, this.icon, value, this.IsSync);
             this.icon = value;
             this.IconChanged?.Invoke(this, args);
@@ -54,6 +63,9 @@ public class Blip : Element
         get => this.size;
         set
         {
+            if (this.size == value)
+                return;
+
             var args = new ElementChangedEventArgs<Blip, byte>(this, this.size, value, this.IsSync);
             this.size = value;
             this.SizeChanged?.Invoke(this, args);
@@ -67,6 +79,9 @@ public class Blip : Element
         get => this.color;
         set
         {
+            if (this.color == value)
+                return;
+
             var args = new ElementChangedEventArgs<Blip, Color>(this, this.color, value, this.IsSync);
             this.color = value;
             this.ColorChanged?.Invoke(this, args);

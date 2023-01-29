@@ -54,6 +54,9 @@ public class Element
         get => this.id;
         set
         {
+            if (this.id == value)
+                return;
+
             var args = new ElementChangedEventArgs<uint>(this, this.id, value, this.IsSync);
             this.id = value;
             IdChanged?.Invoke(this, args);
@@ -76,6 +79,9 @@ public class Element
         get => this.name;
         set
         {
+            if (this.name == value)
+                return;
+
             var args = new ElementChangedEventArgs<string>(this, this.Name, value, this.IsSync);
             this.name = value;
             NameChanged?.Invoke(this, args);
@@ -92,6 +98,9 @@ public class Element
         get => this.position;
         set
         {
+            if (this.position == value)
+                return;
+
             var args = new ElementChangedEventArgs<Vector3>(this, this.Position, value, this.IsSync);
             this.position = value;
             PositionChanged?.Invoke(this, args);
@@ -125,6 +134,9 @@ public class Element
         get => this.rotation;
         set
         {
+            if (this.rotation == value)
+                return;
+
             var args = new ElementChangedEventArgs<Vector3>(this, this.Rotation, value, this.IsSync);
             this.rotation = value;
             RotationChanged?.Invoke(this, args);
@@ -143,6 +155,9 @@ public class Element
         get => this.velocity;
         set
         {
+            if (this.velocity == value)
+                return;
+
             var args = new ElementChangedEventArgs<Vector3>(this, this.Velocity, value, this.IsSync);
             this.velocity = value;
             VelocityChanged?.Invoke(this, args);
@@ -158,6 +173,9 @@ public class Element
         get => this.turnVelocity;
         set
         {
+            if (this.turnVelocity == value)
+                return;
+
             var args = new ElementChangedEventArgs<Vector3>(this, this.TurnVelocity, value, this.IsSync);
             this.turnVelocity = value;
             TurnVelocityChanged?.Invoke(this, args);
@@ -173,6 +191,9 @@ public class Element
         get => this.interior;
         set
         {
+            if (this.interior == value)
+                return;
+
             var args = new ElementChangedEventArgs<byte>(this, this.Interior, value, this.IsSync);
             this.interior = value;
             InteriorChanged?.Invoke(this, args);
@@ -188,6 +209,9 @@ public class Element
         get => this.dimension;
         set
         {
+            if (this.dimension == value)
+                return;
+
             var args = new ElementChangedEventArgs<ushort>(this, this.Dimension, value, this.IsSync);
             this.dimension = value;
             DimensionChanged?.Invoke(this, args);
@@ -203,6 +227,9 @@ public class Element
         get => this.alpha;
         set
         {
+            if (this.alpha == value)
+                return;
+
             var args = new ElementChangedEventArgs<byte>(this, this.Alpha, value, this.IsSync);
             this.alpha = value;
             AlphaChanged?.Invoke(this, args);
@@ -219,6 +246,9 @@ public class Element
         get => this.areCollisionsEnabled;
         set
         {
+            if (this.areCollisionsEnabled == value)
+                return;
+
             var args = new ElementChangedEventArgs<bool>(this, this.areCollisionsEnabled, value, this.IsSync);
             this.areCollisionsEnabled = value;
             CollisionEnabledhanged?.Invoke(this, args);
@@ -237,6 +267,9 @@ public class Element
         get => this.isCallPropagationEnabled;
         set
         {
+            if (this.isCallPropagationEnabled == value)
+                return;
+
             var args = new ElementChangedEventArgs<bool>(this, this.isCallPropagationEnabled, value, this.IsSync);
             this.isCallPropagationEnabled = value;
             CallPropagationChanged?.Invoke(this, args);
@@ -252,6 +285,9 @@ public class Element
         get => this.isFrozen;
         set
         {
+            if (this.isFrozen == value)
+                return;
+
             var args = new ElementChangedEventArgs<bool>(this, this.isFrozen, value, this.IsSync);
             this.isFrozen = value;
             FrozenChanged?.Invoke(this, args);

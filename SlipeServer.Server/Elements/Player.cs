@@ -42,6 +42,9 @@ public class Player : Ped
         get => this.wantedLevel;
         set
         {
+            if (this.wantedLevel == value)
+                return;
+
             var args = new ElementChangedEventArgs<Player, byte>(this, this.WantedLevel, value, this.IsSync);
             this.wantedLevel = value;
             WantedLevelChanged?.Invoke(this, args);
@@ -77,6 +80,9 @@ public class Player : Ped
         get => this.team;
         set
         {
+            if (this.team == value)
+                return;
+
             var previousTeam = this.team;
             this.team = value;
             this.TeamChanged?.Invoke(this, new PlayerTeamChangedArgs(this, value, previousTeam));
@@ -95,6 +101,9 @@ public class Player : Ped
         get => this.money;
         set
         {
+            if (this.money == value)
+                return;
+
             int clampedMoney = Math.Clamp(value, -99999999, 99999999);
             var previousTeam = this.money;
             this.money = clampedMoney;
@@ -108,6 +117,9 @@ public class Player : Ped
         get => this.nametagText ?? this.Name;
         set
         {
+            if (this.nametagText == value)
+                return;
+
             var args = new ElementChangedEventArgs<Player, string>(this, this.NametagText, value, this.IsSync);
             this.nametagText = value;
             NametagTextChanged?.Invoke(this, args);
@@ -120,6 +132,9 @@ public class Player : Ped
         get => this.isNametagShowing;
         set
         {
+            if (this.isNametagShowing == value)
+                return;
+
             var args = new ElementChangedEventArgs<Player, bool>(this, this.IsNametagShowing, value, this.IsSync);
             this.isNametagShowing = value;
             IsNametagShowingChanged?.Invoke(this, args);
@@ -132,6 +147,9 @@ public class Player : Ped
         get => this.nametagColor;
         set
         {
+            if (this.nametagColor == value)
+                return;
+
             var args = new ElementChangedEventArgs<Player, Color?>(this, this.NametagColor, value, this.IsSync);
             this.nametagColor = value;
             NametagColorChanged?.Invoke(this, args);
