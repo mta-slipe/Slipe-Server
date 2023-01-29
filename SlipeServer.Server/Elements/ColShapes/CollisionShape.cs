@@ -6,6 +6,10 @@ using System.Numerics;
 
 namespace SlipeServer.Server.Elements.ColShapes;
 
+/// <summary>
+/// Collision shape element base class.
+/// Collision shapes are invisible elements, that trigger an event when a player enters the shape.
+/// </summary>
 public abstract class CollisionShape : Element
 {
     public override ElementType ElementType => ElementType.Colshape;

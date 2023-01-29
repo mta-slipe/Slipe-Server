@@ -9,7 +9,7 @@ namespace SlipeServer.Server;
 
 /// <summary>
 /// Class indicating the lack of a client.
-/// An instance of this class is only ever used 
+/// An instance of this class is only ever used very briefly when a player has been instantiated, but the client has not yet been created.
 /// </summary>
 public class NullClient : IClient
 {
