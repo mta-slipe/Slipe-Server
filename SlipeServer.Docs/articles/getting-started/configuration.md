@@ -14,7 +14,7 @@ var server = MtaServer.Create(builder =>
 };
 ```
 
-It's important that the `UseConfiguration` class is the first call you do on the server builder.  
+It's important that the `UseConfiguration` call is the first call you do on the server builder.  
 
 This configuration is used for many different server config values, such as the port, HTTP port, resource directory, bullet sync config, anticheat, etc.
 

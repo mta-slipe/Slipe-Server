@@ -3,7 +3,7 @@
 As stated before, there are several services that can be injected into your Logics (or other classes). These offer various ways of interacting with the server. At the end of the article is a list of these services, the list contains links to the individual docs for every one of these classes.
 
 ## Injecting
-You can inject these classes into any class that is created by the dependency injection container. This includes logics created by `.AddLogic()` and any of its dependencies.  
+You can inject these services into any class that is created by the dependency injection container. This includes logics created by `.AddLogic()` and any of its dependencies.  
 
 ## Setting up additional dependencies
 You can also register additional classes and/or services with the server's dependency injection container, you do this in your Program.cs like so:
