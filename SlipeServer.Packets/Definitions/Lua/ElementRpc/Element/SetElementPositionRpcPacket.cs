@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 using System.Numerics;
 
@@ -11,7 +12,7 @@ public class SetElementPositionRpcPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public byte TimeContext { get; set; }
     public Vector3 Position { get; set; }
     public bool IsWarp { get; }
@@ -21,7 +22,7 @@ public class SetElementPositionRpcPacket : Packet
 
     }
 
-    public SetElementPositionRpcPacket(uint elementId, byte timeContext, Vector3 position, bool isWarp = false)
+    public SetElementPositionRpcPacket(ElementId elementId, byte timeContext, Vector3 position, bool isWarp = false)
     {
         this.ElementId = elementId;
         this.TimeContext = timeContext;
@@ -39,7 +40,7 @@ public class SetElementPositionRpcPacket : Packet
         var builder = new PacketBuilder();
 
         builder.Write((byte)ElementRpcFunction.SET_ELEMENT_POSITION);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
 
         builder.Write(this.Position);
 

@@ -1,6 +1,7 @@
 using FluentAssertions;
 using SlipeServer.Packets.Definitions.Entities.Structs;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
+using SlipeServer.Packets.Structs;
 using System;
 using System.Drawing;
 using System.Numerics;
@@ -33,43 +34,43 @@ public class AddEntityPacketTests
     public void WritePacket_MatchesExpectedByteArray()
     {
         var packet = new AddEntityPacket();
-        packet.AddWater(667, (byte)17, null, 0, 0,
+        packet.AddWater((ElementId)667, (byte)17, null, 0, 0,
             null, true, true, new CustomData(), "Test water",
             0, new Vector3[] {
                         new Vector3(-6, 0, 4), new Vector3(-3, 0, 4),
                         new Vector3(-6, 3, 4), new Vector3(-3, 3, 4)
             }, false);
         packet.AddObject(
-            668, (byte)3, null, 0, 0,
+            (ElementId)668, (byte)3, null, 0, 0,
             null, true, false, new CustomData(), "Test object",
             0, new Vector3(0, -5, 3), Vector3.Zero, 321,
             255, false, null, true, true, null, Vector3.One * 3,
             false, 1000f
         );
-        packet.AddBlip(669, (byte)5, null, 0, 0,
+        packet.AddBlip((ElementId)669, (byte)5, null, 0, 0,
             null, true, true, new CustomData(), "Test blip",
             0, new Vector3(20, 0, 0), 0, 2500, 56, 1, Color.White);
-        packet.AddRadarArea(670, (byte)7, null, 0, 0,
+        packet.AddRadarArea((ElementId)670, (byte)7, null, 0, 0,
             null, true, true, new CustomData(), "Test radar area",
             0, new Vector2(0, 0), new Vector2(250, 250), Color.FromArgb(100, Color.DarkGoldenrod), true);
-        packet.AddMarker(671, (byte)4, null, 0, 0,
+        packet.AddMarker((ElementId)671, (byte)4, null, 0, 0,
             null, true, true, new CustomData(), "Test marker",
             0, new Vector3(5, 0, 2), (byte)2, 2, Color.FromArgb(100, Color.DarkCyan), null);
-        packet.AddPickup(672, (byte)6, null, 0, 0,
+        packet.AddPickup((ElementId)672, (byte)6, null, 0, 0,
             null, true, true, new CustomData(), "Test pickup",
             0, new Vector3(0, 5, 3), 349, true, (byte)2, null, null, 25, 0);
-        packet.AddPed(673, (byte)14, null, 0, 0,
+        packet.AddPed((ElementId)673, (byte)14, null, 0, 0,
             null, true, true, new CustomData(), "Test ped",
             0, new Vector3(10, 0, 3), 181, 45, 100, 50, null, null,
             true, true, true, false, 200, 0, Array.Empty<PedClothing>(), Array.Empty<PedWeapon>(), 0);
-        packet.AddWeapon(674, (byte)18, null, 0, 0,
+        packet.AddWeapon((ElementId)674, (byte)18, null, 0, 0,
             null, true, true, new CustomData(), "Test weapon",
             0, new Vector3(5, 5, 5), Vector3.Zero, 355, 255, false, null,
             true, true, null, Vector3.One, false, 100, (byte)0,
             null, null, null, new Vector3(10, 10, 5), true, 10, 1, 100, 200,
             false, false, true, true, true, true, true, true, true, true,
-            true, true, true, (byte)0, 1000, 50, 666);
-        packet.AddVehicle(675, (byte)2, null, 0, 0,
+            true, true, true, (byte)0, 1000, 50, (ElementId)666);
+        packet.AddVehicle((ElementId)675, (byte)2, null, 0, 0,
             null, true, true, new CustomData(), "Test vehicle",
             0, new Vector3(-10, 5, 3), Vector3.Zero, 602, 1000, 0, new Color[] {
                         Color.Red, Color.Blue

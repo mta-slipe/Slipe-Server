@@ -6,7 +6,7 @@ namespace SlipeServer.Packets.Structs;
 
 public struct PedSyncData
 {
-    public uint SourceElementId { get; set; }
+    public ElementId SourceElementId { get; set; }
     public PedSyncFlags Flags { get; set; }
     public byte TimeSyncContext { get; set; }
     public Vector3? Position { get; set; }

@@ -2,6 +2,7 @@
 using System.Numerics;
 using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Reader;
+using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Sync;
 
@@ -15,14 +16,14 @@ public class CameraSyncPacket : Packet
     public bool IsFixed { get; private set; }
     public Vector3 Position { get; private set; }
     public Vector3 LookAt { get; private set; }
-    public uint TargetId { get; private set; }
+    public ElementId TargetId { get; private set; }
 
     public CameraSyncPacket()
     {
 
     }
 
-    public CameraSyncPacket(byte timeContext, bool isFixed, Vector3 position, Vector3 lookAt, uint targetId)
+    public CameraSyncPacket(byte timeContext, bool isFixed, Vector3 position, Vector3 lookAt, ElementId targetId)
     {
         this.TimeContext = timeContext;
         this.IsFixed = isFixed;
@@ -32,9 +33,9 @@ public class CameraSyncPacket : Packet
     }
 
     public CameraSyncPacket(byte timeContext, Vector3 position, Vector3 lookAt)
-        : this(timeContext, true, position, lookAt, 0) { }
+        : this(timeContext, true, position, lookAt, ElementId.Zero) { }
 
-    public CameraSyncPacket(byte timeContext, uint targetId)
+    public CameraSyncPacket(byte timeContext, ElementId targetId)
         : this(timeContext, false, Vector3.Zero, Vector3.Zero, targetId) { }
 
     public override void Read(byte[] bytes)
@@ -50,7 +51,7 @@ public class CameraSyncPacket : Packet
                 this.Position = reader.GetVector3WithZAsFloat(14, 10);
             if (reader.Size - reader.Counter > 3 * 24)
                 this.LookAt = reader.GetVector3WithZAsFloat(14, 10);
-            this.TargetId = 0;
+            this.TargetId = ElementId.Zero;
         } else
         {
             this.TargetId = reader.GetElementId();
@@ -70,7 +71,7 @@ public class CameraSyncPacket : Packet
             builder.WriteVector3WithZAsFloat(this.LookAt, 14, 10);
         } else
         {
-            builder.WriteElementId(this.TargetId);
+            builder.Write(this.TargetId);
         }
 
         return builder.Build();

@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
@@ -10,10 +11,10 @@ public class SetVehicleTaxiLightOnRpcPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public bool State { get; set; }
 
-    public SetVehicleTaxiLightOnRpcPacket(uint elementId, bool state)
+    public SetVehicleTaxiLightOnRpcPacket(ElementId elementId, bool state)
     {
         this.ElementId = elementId;
         this.State = state;
@@ -28,7 +29,7 @@ public class SetVehicleTaxiLightOnRpcPacket : Packet
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRpcFunction.SET_TAXI_LIGHT_ON);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.Write((byte)(this.State ? 1 : 0));
         return builder.Build();
     }

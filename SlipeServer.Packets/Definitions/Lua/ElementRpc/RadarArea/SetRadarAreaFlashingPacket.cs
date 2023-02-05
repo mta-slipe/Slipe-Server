@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
@@ -12,10 +13,10 @@ public class SetRadarAreaFlashingPacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; }
+    public ElementId ElementId { get; }
     public bool Flashing { get; }
 
-    public SetRadarAreaFlashingPacket(uint elementId, bool flashing)
+    public SetRadarAreaFlashingPacket(ElementId elementId, bool flashing)
     {
         this.ElementId = elementId;
         this.Flashing = flashing;
@@ -30,7 +31,7 @@ public class SetRadarAreaFlashingPacket : Packet
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRpcFunction.SET_RADAR_AREA_FLASHING);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.Write(this.Flashing);
 
         return builder.Build();

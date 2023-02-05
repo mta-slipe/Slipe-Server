@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Satchels;
 
@@ -9,9 +10,9 @@ public class DestroySatchelsPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
 
-    public DestroySatchelsPacket(uint elementId)
+    public DestroySatchelsPacket(ElementId elementId)
     {
         this.ElementId = elementId;
     }
@@ -30,7 +31,7 @@ public class DestroySatchelsPacket : Packet
     {
         var builder = new PacketBuilder();
 
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
 
         return builder.Build();
     }

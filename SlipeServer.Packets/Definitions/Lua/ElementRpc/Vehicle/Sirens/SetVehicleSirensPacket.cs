@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 using System.Drawing;
 using System.Numerics;
@@ -12,7 +13,7 @@ public class SetVehicleSirensPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public bool IsOverride { get; }
     public byte SirenId { get; }
     public Vector3 Position { get; }
@@ -24,7 +25,7 @@ public class SetVehicleSirensPacket : Packet
     public bool EnableSilent { get; }
 
     public SetVehicleSirensPacket(
-        uint elementId,
+        ElementId elementId,
         bool isOverride,
         byte sirenId,
         Vector3 position,
@@ -57,7 +58,7 @@ public class SetVehicleSirensPacket : Packet
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRpcFunction.SET_VEHICLE_SIRENS);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
 
         builder.Write(this.IsOverride);
         if (this.IsOverride)

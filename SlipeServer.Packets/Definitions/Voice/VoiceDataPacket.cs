@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
+using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Voice;
 
@@ -11,9 +12,9 @@ public class VoiceDataPacket : Packet
     public override PacketPriority Priority { get; } = PacketPriority.Low;
 
     public byte[] Buffer { get; set; } = new byte[0];
-    public uint SourceElementId { get; set; }
+    public ElementId SourceElementId { get; set; }
 
-    public VoiceDataPacket(uint sourceElementId, byte[] buffer)
+    public VoiceDataPacket(ElementId sourceElementId, byte[] buffer)
     {
         this.Buffer = buffer;
         this.SourceElementId = sourceElementId;
@@ -28,7 +29,7 @@ public class VoiceDataPacket : Packet
     {
         var builder = new PacketBuilder();
 
-        builder.WriteElementId(this.SourceElementId);
+        builder.Write(this.SourceElementId);
         builder.Write((ushort)this.Buffer.Length);
         builder.Write(this.Buffer);
 

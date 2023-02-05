@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 using System.Drawing;
 
@@ -11,7 +12,7 @@ public class ChatEchoPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.Low;
 
-    public uint SourceId { get; set; }
+    public ElementId SourceId { get; set; }
     public string Message { get; set; } = string.Empty;
     public Color Color { get; set; }
     public byte MessageType { get; set; }
@@ -22,7 +23,7 @@ public class ChatEchoPacket : Packet
 
     }
 
-    public ChatEchoPacket(uint sourceId, string message, Color color, ChatEchoType messageType, bool isColorCoded = false)
+    public ChatEchoPacket(ElementId sourceId, string message, Color color, ChatEchoType messageType, bool isColorCoded = false)
     {
         this.SourceId = sourceId;
         this.Message = message;
@@ -42,7 +43,7 @@ public class ChatEchoPacket : Packet
 
         builder.Write(this.Color);
         builder.Write(this.IsColorCoded);
-        builder.WriteElementId(this.SourceId);
+        builder.Write(this.SourceId);
         builder.Write(this.MessageType);
         builder.WriteStringWithoutLength(this.Message);
 

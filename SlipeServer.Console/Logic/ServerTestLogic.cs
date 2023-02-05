@@ -7,6 +7,7 @@ using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Enums.VehicleUpgrades;
 using SlipeServer.Packets.Lua.Camera;
+using SlipeServer.Packets.Structs;
 using SlipeServer.Server;
 using SlipeServer.Server.Constants;
 using SlipeServer.Server.ElementCollections;
@@ -1094,7 +1095,7 @@ public class ServerTestLogic
             uint id = 10_000;
             var create = (Element element) =>
             {
-                element.Id = id++;
+                element.Id = (ElementId)(id++);
                 element.AssociateWith(args.Player);
             };
 

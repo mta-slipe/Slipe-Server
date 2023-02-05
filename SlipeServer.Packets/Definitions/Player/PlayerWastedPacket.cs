@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
+using SlipeServer.Packets.Structs;
 using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Player;
@@ -11,14 +12,14 @@ public class PlayerWastedPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint PlayerId { get; set; }
+    public ElementId PlayerId { get; set; }
     public bool IsStealth { get; set; }
     public byte TimeContext { get; set; }
 
 
     public ulong AnimationGroup { get; set; }
     public ulong AnimationId { get; set; }
-    public uint KillerId { get; set; }
+    public ElementId KillerId { get; set; }
     public byte WeaponType { get; set; }
     public byte BodyPart { get; set; }
     public bool Stealth { get; }
@@ -31,8 +32,8 @@ public class PlayerWastedPacket : Packet
     }
 
     public PlayerWastedPacket(
-        uint playerId,
-        uint killerId,
+        ElementId playerId,
+        ElementId killerId,
         byte weaponType,
         byte bodyPart,
         bool stealth,
@@ -68,8 +69,8 @@ public class PlayerWastedPacket : Packet
     {
         var builder = new PacketBuilder();
 
-        builder.WriteElementId(this.PlayerId);
-        builder.WriteElementId(this.KillerId);
+        builder.Write(this.PlayerId);
+        builder.Write(this.KillerId);
         builder.WriteCapped(this.WeaponType, 6);
         builder.WriteCapped(this.BodyPart, 3);
         builder.Write(this.IsStealth);

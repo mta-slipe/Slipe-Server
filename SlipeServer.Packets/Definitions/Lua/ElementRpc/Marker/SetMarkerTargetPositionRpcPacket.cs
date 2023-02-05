@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 using System.Numerics;
 
@@ -11,9 +12,9 @@ public class SetMarkerTargetPositionRpcPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public Vector3? Target { get; set; }
-    public SetMarkerTargetPositionRpcPacket(uint elementId, Vector3? target = null)
+    public SetMarkerTargetPositionRpcPacket(ElementId elementId, Vector3? target = null)
     {
         this.ElementId = elementId;
         this.Target = target;
@@ -29,7 +30,7 @@ public class SetMarkerTargetPositionRpcPacket : Packet
         var builder = new PacketBuilder();
 
         builder.Write((byte)ElementRpcFunction.SET_MARKER_TARGET);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         if (this.Target.HasValue)
         {
             builder.Write((byte)1);

@@ -33,7 +33,7 @@ public class PedSyncPacket : Packet
 
         foreach (var data in this.Syncs)
         {
-            builder.WriteElementId(data.SourceElementId);
+            builder.Write(data.SourceElementId);
             builder.Write(data.TimeSyncContext);
             builder.Write((byte)data.Flags);
 

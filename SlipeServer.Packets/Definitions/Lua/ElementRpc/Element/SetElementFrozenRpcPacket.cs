@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
@@ -10,7 +11,7 @@ public class SetElementFrozenRpcPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public bool IsFrozen { get; set; }
 
     public SetElementFrozenRpcPacket()
@@ -18,7 +19,7 @@ public class SetElementFrozenRpcPacket : Packet
 
     }
 
-    public SetElementFrozenRpcPacket(uint elementId, bool isFrozen)
+    public SetElementFrozenRpcPacket(ElementId elementId, bool isFrozen)
     {
         this.ElementId = elementId;
         this.IsFrozen = isFrozen;
@@ -34,7 +35,7 @@ public class SetElementFrozenRpcPacket : Packet
         var builder = new PacketBuilder();
 
         builder.Write((byte)ElementRpcFunction.SET_ELEMENT_FROZEN);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
 
         builder.Write(this.IsFrozen);
 

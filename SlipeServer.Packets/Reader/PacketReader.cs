@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SlipeServer.Packets.Structs;
+using System;
 using System.Linq;
 using System.Text;
 
@@ -145,17 +146,17 @@ public class PacketReader
         return GetStringCharacters(length);
     }
 
-    public uint GetElementId()
+    public ElementId GetElementId()
     {
         var id = BitConverter.ToUInt32(GetBytesCapped(17).Concat(new byte[] { 0 }).ToArray(), 0);
 
         uint maxValue = (1 << 17) - 1;
         if (id == maxValue)
         {
-            return PacketConstants.InvalidElementId;
+            return (ElementId)PacketConstants.InvalidElementId;
         }
 
-        return id;
+        return (ElementId)id;
     }
 
 

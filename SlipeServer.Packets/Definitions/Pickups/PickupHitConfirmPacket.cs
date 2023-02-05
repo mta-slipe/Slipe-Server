@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Pickups;
 
@@ -9,11 +10,11 @@ public class PickupHitConfirmPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public bool IsVisible { get; }
     public bool PlaysSounds { get; }
 
-    public PickupHitConfirmPacket(uint elementId, bool isVisible, bool playsSounds)
+    public PickupHitConfirmPacket(ElementId elementId, bool isVisible, bool playsSounds)
     {
         this.ElementId = elementId;
         this.IsVisible = isVisible;
@@ -34,7 +35,7 @@ public class PickupHitConfirmPacket : Packet
     {
         var builder = new PacketBuilder();
 
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.Write(this.IsVisible);
         builder.Write(this.PlaysSounds);
 

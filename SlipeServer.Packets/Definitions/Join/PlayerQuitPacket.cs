@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets;
 using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 
 namespace MTAServerWrapper.Packets.Outgoing.Connection;
 
@@ -10,7 +11,7 @@ public class PlayerQuitPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint PlayerId { get; }
+    public ElementId PlayerId { get; }
     public byte QuitReason { get; }
 
     public PlayerQuitPacket()
@@ -18,7 +19,7 @@ public class PlayerQuitPacket : Packet
 
     }
 
-    public PlayerQuitPacket(uint playerId, byte quitReason)
+    public PlayerQuitPacket(ElementId playerId, byte quitReason)
     {
         this.PlayerId = playerId;
         this.QuitReason = quitReason;
@@ -28,7 +29,7 @@ public class PlayerQuitPacket : Packet
     {
         var builder = new PacketBuilder();
 
-        builder.WriteElementId(this.PlayerId);
+        builder.Write(this.PlayerId);
         builder.WriteCapped(this.QuitReason, 3);
 
         return builder.Build();

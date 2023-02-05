@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 
@@ -11,9 +12,9 @@ public class GivePedJetpackRpcPacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; }
+    public ElementId ElementId { get; }
 
-    public GivePedJetpackRpcPacket(uint elementId)
+    public GivePedJetpackRpcPacket(ElementId elementId)
     {
         this.ElementId = elementId;
     }
@@ -27,7 +28,7 @@ public class GivePedJetpackRpcPacket : Packet
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRpcFunction.GIVE_PED_JETPACK);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
 
         return builder.Build();
     }

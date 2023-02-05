@@ -65,7 +65,7 @@ public class UnoccupiedVehicleSyncPacket : Packet
                 (vehicle.TurnVelocity != null ? UnoccupiedVehicleSyncFlags.TurnVelocity : 0) |
                 (vehicle.Health != null ? UnoccupiedVehicleSyncFlags.Health : 0) |
                 (vehicle.Trailer != null ? UnoccupiedVehicleSyncFlags.Trailer : 0);
-            builder.WriteElementId(vehicle.Id);
+            builder.Write(vehicle.Id);
             builder.Write(vehicle.TimeContext);
             builder.WriteCapped((ushort)flags, 9);
 
@@ -80,7 +80,7 @@ public class UnoccupiedVehicleSyncPacket : Packet
             if (vehicle.Health != null)
                 builder.WriteVehicleHealth(vehicle.Health.Value);
             if (vehicle.Trailer != null)
-                builder.WriteElementId(vehicle.Trailer.Value);
+                builder.Write(vehicle.Trailer.Value);
 
         }
 

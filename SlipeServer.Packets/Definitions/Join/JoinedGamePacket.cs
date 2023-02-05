@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Join;
 
@@ -9,9 +10,9 @@ public class JoinedGamePacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ClientId { get; }
+    public ElementId ClientId { get; }
     public int PlayerCount { get; }
-    public uint RootId { get; }
+    public ElementId RootId { get; }
     public HttpDownloadType HttpDownloadType { get; }
     public ushort HttpPort { get; }
     public string HttpUrl { get; } = string.Empty;
@@ -29,9 +30,9 @@ public class JoinedGamePacket : Packet
     }
 
     public JoinedGamePacket(
-        uint clientId,
+        ElementId clientId,
         int playerCount,
-        uint rootId,
+        ElementId rootId,
         HttpDownloadType httpDownloadType,
         ushort httpPort,
         string httpUrl,
@@ -62,9 +63,9 @@ public class JoinedGamePacket : Packet
     {
         var builder = new PacketBuilder();
 
-        builder.WriteElementId(this.ClientId);
+        builder.Write(this.ClientId);
         builder.Write((byte)this.PlayerCount);
-        builder.WriteElementId(this.RootId);
+        builder.Write(this.RootId);
 
         builder.Write(this.EnableClientChecks);
 

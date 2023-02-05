@@ -2,6 +2,7 @@
 using System.Numerics;
 using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Reader;
+using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Sync;
 
@@ -12,16 +13,16 @@ public class ProjectileSyncPacket : Packet
     public override PacketPriority Priority => PacketPriority.Medium;
 
     public byte WeaponType { get; set; }
-    public uint OriginId { get; set; }
+    public ElementId OriginId { get; set; }
     public Vector3 VecOrigin { get; set; }
     public float Force { get; set; }
     public byte HasTarget { get; set; }
-    public uint TargetId { get; set; }
+    public ElementId TargetId { get; set; }
     public Vector3 VecTarget { get; set; }
     public Vector3 Rotation { get; set; }
     public Vector3 MoveSpeed { get; set; }
     public ushort Model { get; set; }
-    public uint SourceElement { get; set; }
+    public ElementId SourceElement { get; set; }
     public ushort? Latency { get; }
 
 
@@ -30,7 +31,7 @@ public class ProjectileSyncPacket : Packet
 
     }
 
-    public ProjectileSyncPacket(Vector3 origin, Vector3 direction, uint sourceElement, byte weaponType, ushort model)
+    public ProjectileSyncPacket(Vector3 origin, Vector3 direction, ElementId sourceElement, byte weaponType, ushort model)
     {
         this.Model = model;
         this.SourceElement = sourceElement;
@@ -64,7 +65,7 @@ public class ProjectileSyncPacket : Packet
             case 20: // WEAPONTYPE_ROCKET_HS
                 bool hasTarget = reader.GetBit();
                 if (hasTarget)
-                    this.TargetId = reader.GetUint32();
+                    this.TargetId = (ElementId)reader.GetUint32();
 
                 this.MoveSpeed = reader.GetVelocityVector();
                 this.Rotation = reader.GetVector3();
@@ -77,17 +78,17 @@ public class ProjectileSyncPacket : Packet
     {
         var builder = new PacketBuilder();
 
-        builder.Write(this.SourceElement != 0);
-        if (this.SourceElement != 0)
+        builder.Write(this.SourceElement.Value != 0);
+        if (this.SourceElement.Value != 0)
         {
-            builder.WriteElementId(this.SourceElement);
+            builder.Write(this.SourceElement);
             builder.WriteCompressed(this.Latency ?? 0);
         }
 
-        builder.Write(this.OriginId != 0);
-        if (this.OriginId != 0)
+        builder.Write(this.OriginId.Value != 0);
+        if (this.OriginId.Value != 0)
         {
-            builder.WriteElementId(this.OriginId);
+            builder.Write(this.OriginId);
         }
 
         builder.WriteVector3WithZAsFloat(this.VecOrigin);
@@ -105,8 +106,8 @@ public class ProjectileSyncPacket : Packet
                 break;
             case 19:            // WEAPONTYPE_ROCKET
             case 20:            // WEAPONTYPE_ROCKET_HS
-                builder.Write(this.TargetId != 0);
-                if (this.TargetId != 0)
+                builder.Write(this.TargetId.Value != 0);
+                if (this.TargetId.Value != 0)
                 {
                     builder.Write(this.TargetId);
                 }
@@ -124,6 +125,6 @@ public class ProjectileSyncPacket : Packet
         this.Force = 0;
         this.MoveSpeed = Vector3.Zero;
         this.Rotation = Vector3.Zero;
-        this.TargetId = 0;
+        this.TargetId = ElementId.Zero;
     }
 }

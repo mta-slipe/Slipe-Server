@@ -10,13 +10,11 @@ public class UnbindKeyPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
     public string Key { get; set; }
     public bool HitState { get; set; }
 
-    public UnbindKeyPacket(uint elementId, string key, bool hitState)
+    public UnbindKeyPacket(string key, bool hitState)
     {
-        this.ElementId = elementId;
         this.Key = key;
         this.HitState = hitState;
     }

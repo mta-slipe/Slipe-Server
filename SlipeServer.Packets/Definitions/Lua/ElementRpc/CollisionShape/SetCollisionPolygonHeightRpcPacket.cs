@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 using System.Numerics;
 
@@ -11,10 +12,10 @@ public class SetCollisionPolygonHeightRpcPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public Vector2 Height { get; set; }
 
-    public SetCollisionPolygonHeightRpcPacket(uint elementId, Vector2 height)
+    public SetCollisionPolygonHeightRpcPacket(ElementId elementId, Vector2 height)
     {
         this.ElementId = elementId;
         this.Height = height;
@@ -30,7 +31,7 @@ public class SetCollisionPolygonHeightRpcPacket : Packet
         var builder = new PacketBuilder();
 
         builder.Write((byte)ElementRpcFunction.SET_COLPOLYGON_HEIGHT);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
 
         builder.Write(this.Height);
 

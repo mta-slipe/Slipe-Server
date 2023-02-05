@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
@@ -10,11 +11,11 @@ public class SetVehicleVariantPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public byte Variant1 { get; set; }
     public byte Variant2 { get; set; }
 
-    public SetVehicleVariantPacket(uint elementId, byte variant1, byte variant2)
+    public SetVehicleVariantPacket(ElementId elementId, byte variant1, byte variant2)
     {
         this.ElementId = elementId;
         this.Variant1 = variant1;
@@ -30,7 +31,7 @@ public class SetVehicleVariantPacket : Packet
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRpcFunction.SET_VEHICLE_VARIANT);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.Write(this.Variant1);
         builder.Write(this.Variant2);
         return builder.Build();

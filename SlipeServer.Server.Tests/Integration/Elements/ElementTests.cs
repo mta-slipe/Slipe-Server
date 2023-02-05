@@ -3,6 +3,7 @@ using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using SlipeServer.Server.Behaviour;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Enums;
@@ -25,7 +26,7 @@ public class ElementTests
 
         var expectedPacketBuilder = new PacketBuilder();
         expectedPacketBuilder.Write((byte)ElementRpcFunction.SET_ELEMENT_POSITION);
-        expectedPacketBuilder.WriteElementId(element.Id);
+        expectedPacketBuilder.Write(element.Id);
         expectedPacketBuilder.Write(Vector3.One);
         expectedPacketBuilder.Write(element.TimeContext);
         expectedPacketBuilder.Write((byte)0);
@@ -172,8 +173,8 @@ public class ElementTests
     [Fact]
     public void AttachElement_MovesElementToCorrectOffsetPosition()
     {
-        var element = new Element() { Id = 1, Position = new(1, 2, 3) };
-        var element2 = new Element() { Id = 2 };
+        var element = new Element() { Id = (ElementId)1, Position = new(1, 2, 3) };
+        var element2 = new Element() { Id = (ElementId)2 };
 
         element2.AttachTo(element, new Vector3(1, 2, 3));
 
@@ -183,8 +184,8 @@ public class ElementTests
     [Fact]
     public void AttachElement_MovesElementToCorrectPosition_WhenTargetIsMoved()
     {
-        var element = new Element() { Id = 1, Position = new(1, 2, 3) };
-        var element2 = new Element() { Id = 2 };
+        var element = new Element() { Id = (ElementId)1, Position = new(1, 2, 3) };
+        var element2 = new Element() { Id = (ElementId)2 };
 
         element2.AttachTo(element, new Vector3(1, 2, 3));
         element.Position = new(2, 4, 6);
@@ -195,8 +196,8 @@ public class ElementTests
     [Fact]
     public void DetachElement_LeavesElementInAttachedPosition()
     {
-        var element = new Element() { Id = 1, Position = new(1, 2, 3) };
-        var element2 = new Element() { Id = 2 };
+        var element = new Element() { Id = (ElementId)1, Position = new(1, 2, 3) };
+        var element2 = new Element() { Id = (ElementId)2 };
 
         element2.AttachTo(element, new Vector3(1, 2, 3));
         element2.DetachFrom();
@@ -207,8 +208,8 @@ public class ElementTests
     [Fact]
     public void DetachElement_DoesNotMoveElement_WhenTargetIsMoved()
     {
-        var element = new Element() { Id = 1, Position = new(1, 2, 3) };
-        var element2 = new Element() { Id = 2 };
+        var element = new Element() { Id = (ElementId)1, Position = new(1, 2, 3) };
+        var element2 = new Element() { Id = (ElementId)2 };
 
         element2.AttachTo(element, new Vector3(1, 2, 3));
         element2.DetachFrom();
@@ -220,8 +221,8 @@ public class ElementTests
     [Fact]
     public void AttachedElementModifyOffset_MovesToCorrectPosition()
     {
-        var element = new Element() { Id = 1, Position = new(1, 2, 3) };
-        var element2 = new Element() { Id = 2 };
+        var element = new Element() { Id = (ElementId)1, Position = new(1, 2, 3) };
+        var element2 = new Element() { Id = (ElementId)2 };
 
         var attachment = element2.AttachTo(element, new Vector3(1, 2, 3));
         attachment.PositionOffset = new(2, 3, 4);
@@ -232,8 +233,8 @@ public class ElementTests
     [Fact]
     public void AttachedElementModifyOffset_TriggersEvent()
     {
-        var element = new Element() { Id = 1, Position = new(1, 2, 3) };
-        var element2 = new Element() { Id = 2 };
+        var element = new Element() { Id = (ElementId)1, Position = new(1, 2, 3) };
+        var element2 = new Element() { Id = (ElementId)2 };
 
         var eventCount = 0;
         element2.AttachedOffsetChanged += (s, e) => eventCount++;
@@ -247,8 +248,8 @@ public class ElementTests
     [Fact]
     public void AttachedElementModifyOffset_AndReattach_TriggersEventOnce()
     {
-        var element = new Element() { Id = 1, Position = new(1, 2, 3) };
-        var element2 = new Element() { Id = 2 };
+        var element = new Element() { Id = (ElementId)1, Position = new(1, 2, 3) };
+        var element2 = new Element() { Id = (ElementId)2 };
 
         var eventCount = 0;
         element2.AttachedOffsetChanged += (s, e) => eventCount++;
@@ -264,8 +265,8 @@ public class ElementTests
     [Fact]
     public void AttachedElementModifyOffset_AndReattach_DoesNotTriggersEventOnOriginalAttachment()
     {
-        var element = new Element() { Id = 1, Position = new(1, 2, 3) };
-        var element2 = new Element() { Id = 2 };
+        var element = new Element() { Id = (ElementId)1, Position = new(1, 2, 3) };
+        var element2 = new Element() { Id = (ElementId)2 };
 
         var eventCount = 0;
         element2.AttachedOffsetChanged += (s, e) => eventCount++;

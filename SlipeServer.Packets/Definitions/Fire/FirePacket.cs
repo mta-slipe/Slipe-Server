@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Fire;
@@ -12,7 +13,7 @@ public class FirePacket : Packet
 
     public Vector3 Position { get; set; }
     public float Size { get; set; }
-    public uint? SourceElementId { get; set; }
+    public ElementId? SourceElementId { get; set; }
     public ushort? Latency { get; }
 
     public FirePacket()
@@ -20,7 +21,7 @@ public class FirePacket : Packet
 
     }
 
-    public FirePacket(Vector3 position, float size, uint? sourceElementId = null, ushort? latency = null)
+    public FirePacket(Vector3 position, float size, ElementId? sourceElementId = null, ushort? latency = null)
     {
         this.Position = position;
         this.Size = size;
@@ -34,11 +35,11 @@ public class FirePacket : Packet
 
         if (this.SourceElementId.HasValue)
         {
-            builder.WriteElementId(this.SourceElementId.Value);
+            builder.Write(this.SourceElementId.Value);
             builder.WriteCompressed(this.Latency ?? 0);
         } else
         {
-            builder.WriteElementId(0);
+            builder.Write(ElementId.Zero);
             builder.WriteCompressed((ushort)0);
         }
         builder.Write(this.Position);

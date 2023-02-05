@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using SlipeServer.Packets.Definitions.Sync;
+using SlipeServer.Packets.Structs;
 using System.Numerics;
 using Xunit;
 
@@ -26,9 +27,9 @@ public class ProjectilePacketTests
         packet.MoveSpeed.Should().Be(new Vector3(-0.3635011f, -0.112092786f, 0.12370186f));
         packet.VecOrigin.Should().Be(new Vector3(2.0458984f, -7.7402344f, 4.119508f));
         packet.Rotation.Should().Be(new Vector3(-0.3144375f, 7.450581E-09f, 1.2716883f));
-        packet.SourceElement.Should().Be(0);
-        packet.OriginId.Should().Be(0);
-        packet.TargetId.Should().Be(0);
+        packet.SourceElement.Should().Be(ElementId.Zero);
+        packet.OriginId.Should().Be(ElementId.Zero);
+        packet.TargetId.Should().Be(ElementId.Zero);
         packet.VecTarget.Should().Be(Vector3.Zero);
     }
 }

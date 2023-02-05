@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 using System.Collections.Generic;
 
@@ -7,10 +8,10 @@ namespace SlipeServer.Packets.Definitions.Pickups;
 
 public struct PickupIdAndModel
 {
-    public uint Id { get; set; }
+    public ElementId Id { get; set; }
     public ushort Model { get; set; }
 
-    public PickupIdAndModel(uint id, ushort model)
+    public PickupIdAndModel(ElementId id, ushort model)
     {
         this.Id = id;
         this.Model = model;
@@ -49,7 +50,7 @@ public class PickupHideShowPacket : Packet
         builder.Write(this.IsShowing);
         foreach (var pickup in this.Pickups)
         {
-            builder.WriteElementId(pickup.Id);
+            builder.Write(pickup.Id);
             builder.WriteCompressed(pickup.Model);
         }
 

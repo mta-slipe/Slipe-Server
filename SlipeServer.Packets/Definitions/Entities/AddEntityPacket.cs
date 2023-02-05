@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Definitions.Entities.Structs;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 using System.Drawing;
 using System.Numerics;
@@ -23,7 +24,7 @@ public class AddEntityPacket : Packet
     }
 
     public void AddEntity(
-        uint elementId, byte elementType, uint? parentId, byte interior,
+        ElementId elementId, byte elementType, ElementId? parentId, byte interior,
         ushort dimension, ElementAttachment? attachment, bool areCollisionsEnabled,
         bool isCallPropagationEnabled, CustomData customData, string name,
         byte timeContext
@@ -31,16 +32,16 @@ public class AddEntityPacket : Packet
     {
         this.entityCount++;
 
-        this.builder.WriteElementId(elementId);
+        this.builder.Write(elementId);
         this.builder.Write(elementType);
-        this.builder.WriteElementId(parentId ?? PacketConstants.InvalidElementId);
+        this.builder.Write(parentId ?? (ElementId)PacketConstants.InvalidElementId);
         this.builder.Write(interior);
         this.builder.WriteCompressed(dimension);
 
         this.builder.Write(attachment != null);
         if (attachment != null)
         {
-            this.builder.WriteElementId(attachment.Value.ElementId);
+            this.builder.Write(attachment.Value.ElementId);
             this.builder.WriteVector3WithZAsFloat(attachment.Value.AttachmentPosition);
             this.builder.WriteVectorAsUshorts(attachment.Value.AttachmentRotation);
         }
@@ -61,11 +62,11 @@ public class AddEntityPacket : Packet
     }
 
     public void AddObject(
-        uint elementId, byte elementType, uint? parentId, byte interior,
+        ElementId elementId, byte elementType, ElementId? parentId, byte interior,
         ushort dimension, ElementAttachment? attachment, bool areCollisionsEnabled,
         bool isCallPropagationEnabled, CustomData customData, string name,
         byte timeContext, Vector3 position, Vector3 rotation, ushort model,
-        byte alpha, bool isLowLod, uint? lowLodElementId, bool isDoubleSided,
+        byte alpha, bool isLowLod, ElementId? lowLodElementId, bool isDoubleSided,
         bool isVisibleInAllDimensions, PositionRotationAnimation? positionRotationAnimation,
         Vector3 scale, bool isFrozen, float health
     )
@@ -81,7 +82,7 @@ public class AddEntityPacket : Packet
         this.builder.WriteCompressed(model);
         this.builder.WriteCompressed((byte)(255 - alpha));
         this.builder.Write(isLowLod);
-        this.builder.WriteElementId(lowLodElementId ?? PacketConstants.InvalidElementId);
+        this.builder.Write(lowLodElementId ?? (ElementId)PacketConstants.InvalidElementId);
         this.builder.Write(isDoubleSided);
         this.builder.Write(isVisibleInAllDimensions);
 
@@ -150,19 +151,19 @@ public class AddEntityPacket : Packet
     }
 
     public void AddWeapon(
-        uint elementId, byte elementType, uint? parentId, byte interior,
+        ElementId elementId, byte elementType, ElementId? parentId, byte interior,
         ushort dimension, ElementAttachment? attachment, bool areCollisionsEnabled,
         bool isCallPropagationEnabled, CustomData customData, string name,
         byte timeContext, Vector3 position, Vector3 rotation, ushort model,
-        byte alpha, bool isLowLod, uint? lowLodElementId, bool isDoubleSided,
+        byte alpha, bool isLowLod, ElementId? lowLodElementId, bool isDoubleSided,
         bool isVisibleInAllDimensions, PositionRotationAnimation? positionRotationAnimation,
-        Vector3 scale, bool isFrozen, float health, byte targetType, uint? targetElementId,
+        Vector3 scale, bool isFrozen, float health, byte targetType, ElementId? targetElementId,
         byte? boneTarget, byte? wheelTarget, Vector3? targetPosition, bool isChanged, ushort? damagePerHit,
         float? accuracy, float? targetRange, float? weaponRange, bool disableWeaponModel,
         bool instantReload, bool shootIfTargetBlocked, bool shootIfTargetOutOfRange,
         bool checkBuildings, bool checkCarTires, bool checkDummies, bool checkObjects,
         bool checkPeds, bool checkVehicles, bool ignoreSomeObjectForCamera, bool seeThroughStuff,
-        bool shootThroughStuff, byte weaponState, ushort ammo, ushort clipAmmo, uint ownerId
+        bool shootThroughStuff, byte weaponState, ushort ammo, ushort clipAmmo, ElementId ownerId
     )
     {
         AddObject(
@@ -177,7 +178,7 @@ public class AddEntityPacket : Packet
         this.builder.WriteCapped(targetType, 3);
         if (targetType == 1 && targetElementId != null)
         {
-            this.builder.WriteElementId(targetElementId.Value);
+            this.builder.Write(targetElementId.Value);
             if (boneTarget != null)
             {
                 this.builder.Write(boneTarget.Value);
@@ -231,11 +232,11 @@ public class AddEntityPacket : Packet
         this.builder.WriteCapped(weaponState, 4);
         this.builder.Write(ammo);
         this.builder.Write(clipAmmo);
-        this.builder.WriteElementId(ownerId);
+        this.builder.Write(ownerId);
     }
 
     public void AddPickup(
-        uint elementId, byte elementType, uint? parentId, byte interior,
+        ElementId elementId, byte elementType, ElementId? parentId, byte interior,
         ushort dimension, ElementAttachment? attachment, bool areCollisionsEnabled,
         bool isCallPropagationEnabled, CustomData customData, string name,
         byte timeContext, Vector3 position, ushort model, bool isVisible,
@@ -270,7 +271,7 @@ public class AddEntityPacket : Packet
     }
 
     public void AddVehicle(
-        uint elementId, byte elementType, uint? parentId, byte interior,
+        ElementId elementId, byte elementType, ElementId? parentId, byte interior,
         ushort dimension, ElementAttachment? attachment, bool areCollisionsEnabled,
         bool isCallPropagationEnabled, CustomData customData, string name,
         byte timeContext, Vector3 position, Vector3 rotation, ushort model,
@@ -447,7 +448,7 @@ public class AddEntityPacket : Packet
     }
 
     public void AddMarker(
-        uint elementId, byte elementType, uint? parentId, byte interior,
+        ElementId elementId, byte elementType, ElementId? parentId, byte interior,
         ushort dimension, ElementAttachment? attachment, bool areCollisionsEnabled,
         bool isCallPropagationEnabled, CustomData customData, string name,
         byte timeContext, Vector3 position, byte markerType, float size,
@@ -476,7 +477,7 @@ public class AddEntityPacket : Packet
     }
 
     public void AddBlip(
-        uint elementId, byte elementType, uint? parentId, byte interior,
+        ElementId elementId, byte elementType, ElementId? parentId, byte interior,
         ushort dimension, ElementAttachment? attachment, bool areCollisionsEnabled,
         bool isCallPropagationEnabled, CustomData customData, string name,
         byte timeContext, Vector3 position, short ordering, ushort visibleDistance,
@@ -501,7 +502,7 @@ public class AddEntityPacket : Packet
     }
 
     public void AddRadarArea(
-        uint elementId, byte elementType, uint? parentId, byte interior,
+        ElementId elementId, byte elementType, ElementId? parentId, byte interior,
         ushort dimension, ElementAttachment? attachment, bool areCollisionsEnabled,
         bool isCallPropagationEnabled, CustomData customData, string name,
         byte timeContext, Vector2 position, Vector2 size, Color color,
@@ -521,11 +522,11 @@ public class AddEntityPacket : Packet
     }
 
     public void AddTeam(
-        uint elementId, byte elementType, uint? parentId, byte interior,
+        ElementId elementId, byte elementType, ElementId? parentId, byte interior,
         ushort dimension, ElementAttachment? attachment, bool areCollisionsEnabled,
         bool isCallPropagationEnabled, CustomData customData, string name,
         byte timeContext, string teamName, Color color, bool isFriendlyFireEnabled,
-        uint[] playerIds
+        ElementId[] playerIds
     )
     {
         AddEntity(
@@ -541,16 +542,16 @@ public class AddEntityPacket : Packet
         this.builder.Write((uint)playerIds.Length);
         foreach (var playerId in playerIds)
         {
-            this.builder.WriteElementId(playerId);
+            this.builder.Write(playerId);
         }
     }
 
     public void AddPed(
-        uint elementId, byte elementType, uint? parentId, byte interior,
+        ElementId elementId, byte elementType, ElementId? parentId, byte interior,
         ushort dimension, ElementAttachment? attachment, bool areCollisionsEnabled,
         bool isCallPropagationEnabled, CustomData customData, string name,
         byte timeContext, Vector3 position, ushort model, float rotation,
-        float health, float armor, uint? vehicleId, byte? seat,
+        float health, float armor, ElementId? vehicleId, byte? seat,
         bool hasJetpack, bool isSyncable, bool isHeadless, bool isFrozen,
         byte alpha, byte moveAnimation, PedClothing[] clothes,
         PedWeapon[] weapons, byte currentSlot
@@ -571,7 +572,7 @@ public class AddEntityPacket : Packet
         this.builder.Write(vehicleId != null && seat != null);
         if (vehicleId != null && seat != null)
         {
-            this.builder.WriteElementId(vehicleId.Value);
+            this.builder.Write(vehicleId.Value);
             this.builder.WriteCapped(seat.Value, 4);
         }
 
@@ -603,7 +604,7 @@ public class AddEntityPacket : Packet
     }
 
     public void AddDummy(
-        uint elementId, byte elementType, uint? parentId, byte interior,
+        ElementId elementId, byte elementType, ElementId? parentId, byte interior,
         ushort dimension, ElementAttachment? attachment, bool areCollisionsEnabled,
         bool isCallPropagationEnabled, CustomData customData, string name,
         byte timeContext, string type, Vector3 position
@@ -626,7 +627,7 @@ public class AddEntityPacket : Packet
     }
 
     public void AddColshape(
-        uint elementId, byte elementType, uint? parentId, byte interior,
+        ElementId elementId, byte elementType, ElementId? parentId, byte interior,
         ushort dimension, ElementAttachment? attachment, bool areCollisionsEnabled,
         bool isCallPropagationEnabled, CustomData customData, string name,
         byte timeContext, byte colShapeType, Vector3 position,
@@ -646,7 +647,7 @@ public class AddEntityPacket : Packet
     }
 
     public void AddColCircle(
-        uint elementId, byte elementType, uint? parentId, byte interior,
+        ElementId elementId, byte elementType, ElementId? parentId, byte interior,
         ushort dimension, ElementAttachment? attachment, bool areCollisionsEnabled,
         bool isCallPropagationEnabled, CustomData customData, string name,
         byte timeContext, byte colShapeType, Vector3 position, bool isEnabled,
@@ -663,7 +664,7 @@ public class AddEntityPacket : Packet
     }
 
     public void AddColSphere(
-        uint elementId, byte elementType, uint? parentId, byte interior,
+        ElementId elementId, byte elementType, ElementId? parentId, byte interior,
         ushort dimension, ElementAttachment? attachment, bool areCollisionsEnabled,
         bool isCallPropagationEnabled, CustomData customData, string name,
         byte timeContext, byte colShapeType, Vector3 position, bool isEnabled,
@@ -680,7 +681,7 @@ public class AddEntityPacket : Packet
     }
 
     public void AddColCuboid(
-        uint elementId, byte elementType, uint? parentId, byte interior,
+        ElementId elementId, byte elementType, ElementId? parentId, byte interior,
         ushort dimension, ElementAttachment? attachment, bool areCollisionsEnabled,
         bool isCallPropagationEnabled, CustomData customData, string name,
         byte timeContext, byte colShapeType, Vector3 position, bool isEnabled,
@@ -698,7 +699,7 @@ public class AddEntityPacket : Packet
     }
 
     public void AddColRectangle(
-        uint elementId, byte elementType, uint? parentId, byte interior,
+        ElementId elementId, byte elementType, ElementId? parentId, byte interior,
         ushort dimension, ElementAttachment? attachment, bool areCollisionsEnabled,
         bool isCallPropagationEnabled, CustomData customData, string name,
         byte timeContext, byte colShapeType, Vector3 position, bool isEnabled,
@@ -716,7 +717,7 @@ public class AddEntityPacket : Packet
     }
 
     public void AddColTube(
-        uint elementId, byte elementType, uint? parentId, byte interior,
+        ElementId elementId, byte elementType, ElementId? parentId, byte interior,
         ushort dimension, ElementAttachment? attachment, bool areCollisionsEnabled,
         bool isCallPropagationEnabled, CustomData customData, string name,
         byte timeContext, byte colShapeType, Vector3 position, bool isEnabled,
@@ -735,7 +736,7 @@ public class AddEntityPacket : Packet
     }
 
     public void AddColPolygon(
-        uint elementId, byte elementType, uint? parentId, byte interior,
+        ElementId elementId, byte elementType, ElementId? parentId, byte interior,
         ushort dimension, ElementAttachment? attachment, bool areCollisionsEnabled,
         bool isCallPropagationEnabled, CustomData customData, string name,
         byte timeContext, byte colShapeType, Vector3 position, bool isEnabled,
@@ -761,7 +762,7 @@ public class AddEntityPacket : Packet
 
 
     public void AddWater(
-        uint elementId, byte elementType, uint? parentId, byte interior,
+        ElementId elementId, byte elementType, ElementId? parentId, byte interior,
         ushort dimension, ElementAttachment? attachment, bool areCollisionsEnabled,
         bool isCallPropagationEnabled, CustomData customData, string name,
         byte timeContext, Vector3[] vertices, bool isShallow

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SlipeServer.Packets.Structs;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
@@ -60,13 +61,6 @@ public class LuaValue
         this.IsNil = value == null;
     }
 
-    public LuaValue(uint? value)
-    {
-        this.LuaType = LuaType.Userdata;
-        this.ElementId = value;
-        this.IsNil = value == null;
-    }
-
     public LuaValue(Dictionary<LuaValue, LuaValue>? value)
     {
         this.LuaType = LuaType.Table;
@@ -87,6 +81,20 @@ public class LuaValue
         }
 
         this.IsNil = value == null;
+    }
+
+    public LuaValue(ElementId? id) : this(id?.Value) { }
+
+    private LuaValue(uint? value)
+    {
+        this.LuaType = LuaType.Userdata;
+        this.ElementId = value;
+        this.IsNil = value == null;
+    }
+
+    public static LuaValue CreateElement(uint? value)
+    {
+        return new LuaValue(value);
     }
 
     public override bool Equals(object? obj)
@@ -138,6 +146,7 @@ public class LuaValue
     public static implicit operator LuaValue(int value) => new(value);
     public static implicit operator LuaValue(float value) => new(value);
     public static implicit operator LuaValue(double value) => new(value);
+    public static implicit operator LuaValue(ElementId value) => new(value);
     public static implicit operator LuaValue(Dictionary<LuaValue, LuaValue> value) => new(value);
     public static implicit operator LuaValue(LuaValue[] value) => new(value);
 

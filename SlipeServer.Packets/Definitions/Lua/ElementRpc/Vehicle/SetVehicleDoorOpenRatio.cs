@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
@@ -10,12 +11,12 @@ public class SetVehicleDoorOpenRatio : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public byte Door { get; set; }
     public float Ratio { get; set; }
     public uint Time { get; set; }
 
-    public SetVehicleDoorOpenRatio(uint elementId, byte door, float ratio, uint time)
+    public SetVehicleDoorOpenRatio(ElementId elementId, byte door, float ratio, uint time)
     {
         this.ElementId = elementId;
         this.Door = door;
@@ -32,7 +33,7 @@ public class SetVehicleDoorOpenRatio : Packet
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRpcFunction.SET_VEHICLE_DOOR_OPEN_RATIO);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.WriteCapped(this.Door, 3);
         if (this.Ratio == 0 || this.Ratio == 1)
         {

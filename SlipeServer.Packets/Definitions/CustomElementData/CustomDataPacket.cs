@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
+using SlipeServer.Packets.Structs;
 using System;
 
 namespace SlipeServer.Packets.Definitions.CustomElementData;
@@ -11,7 +12,7 @@ public class CustomDataPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public LuaValue Value { get; set; }
     public string Key { get; set; }
 
@@ -23,7 +24,7 @@ public class CustomDataPacket : Packet
         this.Key = "";
     }
 
-    public CustomDataPacket(uint elementId, string name, LuaValue value)
+    public CustomDataPacket(ElementId elementId, string name, LuaValue value)
     {
         this.ElementId = elementId;
         this.Key = name;

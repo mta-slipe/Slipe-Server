@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 
@@ -11,10 +12,10 @@ public class SetPedGravityRpcPacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; }
+    public ElementId ElementId { get; }
     public float Gravity { get; }
 
-    public SetPedGravityRpcPacket(uint elementId, float gravity)
+    public SetPedGravityRpcPacket(ElementId elementId, float gravity)
     {
         this.ElementId = elementId;
         this.Gravity = gravity;
@@ -29,7 +30,7 @@ public class SetPedGravityRpcPacket : Packet
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRpcFunction.SET_PED_GRAVITY);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.Write(this.Gravity);
 
         return builder.Build();

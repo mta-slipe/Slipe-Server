@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 using System.Collections.Generic;
 
@@ -13,7 +14,7 @@ public class PlayerStatsPacket : Packet
 
     public PlayerNetworkStatusType Type { get; set; }
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public Dictionary<ushort, float> Stats { get; set; }
 
     public PlayerStatsPacket()
@@ -30,7 +31,7 @@ public class PlayerStatsPacket : Packet
     {
         var builder = new PacketBuilder();
 
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.WriteCompressed((ushort)Stats.Count);
         foreach (var kvPair in this.Stats)
         {

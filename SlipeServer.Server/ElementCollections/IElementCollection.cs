@@ -1,4 +1,5 @@
-﻿using SlipeServer.Server.Elements;
+﻿using SlipeServer.Packets.Structs;
+using SlipeServer.Server.Elements;
 using System.Collections.Generic;
 using System.Numerics;
 
@@ -16,6 +17,7 @@ public interface IElementCollection
     void Remove(Element element);
 
     Element? Get(uint id);
+    Element? Get(ElementId id) => this.Get(id.Value);
     IEnumerable<Element> GetAll();
     IEnumerable<Element> GetWithinRange(Vector3 position, float range);
     IEnumerable<TElement> GetWithinRange<TElement>(Vector3 position, float range, ElementType elementType) where TElement : Element;

@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
@@ -10,7 +11,7 @@ public class SetElementHealthRpcPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public byte TimeContext { get; set; }
     public float Health { get; set; }
 
@@ -19,7 +20,7 @@ public class SetElementHealthRpcPacket : Packet
 
     }
 
-    public SetElementHealthRpcPacket(uint elementId, byte timeContext, float health)
+    public SetElementHealthRpcPacket(ElementId elementId, byte timeContext, float health)
     {
         this.ElementId = elementId;
         this.TimeContext = timeContext;
@@ -36,7 +37,7 @@ public class SetElementHealthRpcPacket : Packet
         var builder = new PacketBuilder();
 
         builder.Write((byte)ElementRpcFunction.SET_ELEMENT_HEALTH);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
 
         builder.Write(this.Health);
 

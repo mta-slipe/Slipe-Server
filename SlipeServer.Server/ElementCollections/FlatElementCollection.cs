@@ -29,7 +29,7 @@ public class FlatElementCollection : IElementCollection
     public Element? Get(uint id)
     {
         this.slimLock.EnterReadLock();
-        var value = this.elements.FirstOrDefault(element => element.Id == id);
+        var value = this.elements.FirstOrDefault(element => element.Id.Value == id);
         this.slimLock.ExitReadLock();
         return value;
     }

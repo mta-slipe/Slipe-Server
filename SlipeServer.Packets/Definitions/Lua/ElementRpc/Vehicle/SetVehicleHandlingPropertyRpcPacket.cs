@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 using System.Numerics;
 
@@ -11,7 +12,7 @@ public class SetVehicleHandlingPropertyRpcPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public byte Property { get; set; }
 
     public float? FloatValue { get; set; }
@@ -22,14 +23,14 @@ public class SetVehicleHandlingPropertyRpcPacket : Packet
     public bool? BoolValue { get; set; }
 
 
-    public SetVehicleHandlingPropertyRpcPacket(uint elementId, byte property, float value)
+    public SetVehicleHandlingPropertyRpcPacket(ElementId elementId, byte property, float value)
     {
         this.ElementId = elementId;
         this.Property = property;
         this.FloatValue = value;
     }
 
-    public SetVehicleHandlingPropertyRpcPacket(uint elementId, byte property, Vector3 value)
+    public SetVehicleHandlingPropertyRpcPacket(ElementId elementId, byte property, Vector3 value)
     {
         this.ElementId = elementId;
         this.Property = property;
@@ -37,7 +38,7 @@ public class SetVehicleHandlingPropertyRpcPacket : Packet
     }
 
 
-    public SetVehicleHandlingPropertyRpcPacket(uint elementId, byte property, uint value)
+    public SetVehicleHandlingPropertyRpcPacket(ElementId elementId, byte property, uint value)
     {
         this.ElementId = elementId;
         this.Property = property;
@@ -45,7 +46,7 @@ public class SetVehicleHandlingPropertyRpcPacket : Packet
     }
 
 
-    public SetVehicleHandlingPropertyRpcPacket(uint elementId, byte property, string value)
+    public SetVehicleHandlingPropertyRpcPacket(ElementId elementId, byte property, string value)
     {
         this.ElementId = elementId;
         this.Property = property;
@@ -53,7 +54,7 @@ public class SetVehicleHandlingPropertyRpcPacket : Packet
     }
 
 
-    public SetVehicleHandlingPropertyRpcPacket(uint elementId, byte property, byte value)
+    public SetVehicleHandlingPropertyRpcPacket(ElementId elementId, byte property, byte value)
     {
         this.ElementId = elementId;
         this.Property = property;
@@ -61,7 +62,7 @@ public class SetVehicleHandlingPropertyRpcPacket : Packet
     }
 
 
-    public SetVehicleHandlingPropertyRpcPacket(uint elementId, byte property, bool value)
+    public SetVehicleHandlingPropertyRpcPacket(ElementId elementId, byte property, bool value)
     {
         this.ElementId = elementId;
         this.Property = property;
@@ -77,7 +78,7 @@ public class SetVehicleHandlingPropertyRpcPacket : Packet
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRpcFunction.SET_VEHICLE_HANDLING_PROPERTY);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.Write(this.Property);
 
         if (this.FloatValue.HasValue)

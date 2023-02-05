@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 
@@ -11,11 +12,11 @@ public class TakeWeaponRpcPacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; }
+    public ElementId ElementId { get; }
     public byte WeaponType { get; }
     public ushort? Ammo { get; }
 
-    public TakeWeaponRpcPacket(uint elementId, byte weaponType, ushort? ammo)
+    public TakeWeaponRpcPacket(ElementId elementId, byte weaponType, ushort? ammo)
     {
         this.ElementId = elementId;
         this.WeaponType = weaponType;
@@ -31,7 +32,7 @@ public class TakeWeaponRpcPacket : Packet
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRpcFunction.TAKE_WEAPON);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.WriteWeaponType(this.WeaponType);
         if (this.Ammo != null)
             builder.WriteAmmo(this.Ammo.Value);

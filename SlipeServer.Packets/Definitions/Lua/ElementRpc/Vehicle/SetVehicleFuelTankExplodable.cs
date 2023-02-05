@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
@@ -10,10 +11,10 @@ public class SetVehicleFuelTankExplodable : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public bool Enabled { get; set; }
 
-    public SetVehicleFuelTankExplodable(uint elementId, bool enabled)
+    public SetVehicleFuelTankExplodable(ElementId elementId, bool enabled)
     {
         this.ElementId = elementId;
         this.Enabled = enabled;
@@ -28,7 +29,7 @@ public class SetVehicleFuelTankExplodable : Packet
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRpcFunction.SET_VEHICLE_FUEL_TANK_EXPLODABLE);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.Write(this.Enabled);
         return builder.Build();
     }

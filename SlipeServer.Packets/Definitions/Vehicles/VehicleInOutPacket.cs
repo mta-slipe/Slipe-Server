@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
+using SlipeServer.Packets.Structs;
 using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Vehicles;
@@ -13,8 +14,8 @@ public class VehicleInOutPacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint PedId { get; set; }
-    public uint VehicleId { get; set; }
+    public ElementId PedId { get; set; }
+    public ElementId VehicleId { get; set; }
     public VehicleInOutAction ActionId { get; set; }
     public VehicleInOutActionReturns OutActionId { get; set; }
     public byte Seat { get; set; }
@@ -24,8 +25,8 @@ public class VehicleInOutPacket : Packet
     public bool StartedJacking { get; set; }
     public VehicleEnterFailReason FailReason { get; set; }
     public Vector3 CorrectPosition { get; set; }
-    public uint PlayerInId { get; set; }
-    public uint PlayerOutId { get; set; }
+    public ElementId PlayerInId { get; set; }
+    public ElementId PlayerOutId { get; set; }
 
 
     public VehicleInOutPacket()
@@ -84,8 +85,8 @@ public class VehicleInOutPacket : Packet
     {
         var builder = new PacketBuilder();
 
-        builder.WriteElementId(this.PedId);
-        builder.WriteElementId(this.VehicleId);
+        builder.Write(this.PedId);
+        builder.Write(this.VehicleId);
         builder.WriteCapped(this.Seat, 4);
         builder.WriteCapped((byte)this.OutActionId, 4);
 
@@ -96,8 +97,8 @@ public class VehicleInOutPacket : Packet
                 builder.WriteCapped(this.Door, 3);
                 break;
             case VehicleInOutActionReturns.NotifyJackReturn:
-                builder.WriteElementId(this.PlayerInId);
-                builder.WriteElementId(this.PlayerOutId);
+                builder.Write(this.PlayerInId);
+                builder.Write(this.PlayerOutId);
                 break;
             case VehicleInOutActionReturns.VehicleAttemptFailed:
                 builder.Write((byte)this.FailReason);

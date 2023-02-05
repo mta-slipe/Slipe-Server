@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
@@ -10,7 +11,7 @@ public class SetElementCollisionsEnabledRpcPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public bool Enabled { get; set; }
 
     public SetElementCollisionsEnabledRpcPacket()
@@ -18,7 +19,7 @@ public class SetElementCollisionsEnabledRpcPacket : Packet
 
     }
 
-    public SetElementCollisionsEnabledRpcPacket(uint elementId, bool enabled)
+    public SetElementCollisionsEnabledRpcPacket(ElementId elementId, bool enabled)
     {
         this.ElementId = elementId;
         this.Enabled = enabled;
@@ -34,7 +35,7 @@ public class SetElementCollisionsEnabledRpcPacket : Packet
         var builder = new PacketBuilder();
 
         builder.Write((byte)ElementRpcFunction.SET_ELEMENT_COLLISIONS_ENABLED);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
 
         builder.Write(this.Enabled);
 

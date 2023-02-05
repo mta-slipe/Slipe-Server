@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
@@ -10,10 +11,10 @@ public class SetVehiclePaintjobRpcPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public byte Paintjob { get; set; }
 
-    public SetVehiclePaintjobRpcPacket(uint elementId, byte paintjob)
+    public SetVehiclePaintjobRpcPacket(ElementId elementId, byte paintjob)
     {
         this.ElementId = elementId;
         this.Paintjob = paintjob;
@@ -28,7 +29,7 @@ public class SetVehiclePaintjobRpcPacket : Packet
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRpcFunction.SET_VEHICLE_PAINTJOB);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.Write(this.Paintjob);
         return builder.Build();
     }

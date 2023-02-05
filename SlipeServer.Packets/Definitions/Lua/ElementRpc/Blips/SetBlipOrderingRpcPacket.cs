@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
@@ -10,7 +11,7 @@ public class SetBlipOrderingRpcPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public short Ordering { get; set; }
 
     public SetBlipOrderingRpcPacket()
@@ -18,7 +19,7 @@ public class SetBlipOrderingRpcPacket : Packet
 
     }
 
-    public SetBlipOrderingRpcPacket(uint elementId, short ordering)
+    public SetBlipOrderingRpcPacket(ElementId elementId, short ordering)
     {
         this.ElementId = elementId;
         this.Ordering = ordering;
@@ -34,7 +35,7 @@ public class SetBlipOrderingRpcPacket : Packet
         var builder = new PacketBuilder();
 
         builder.Write((byte)ElementRpcFunction.SET_BLIP_ORDERING);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.WriteCompressed(this.Ordering);
 
         return builder.Build();

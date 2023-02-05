@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 using System.Linq;
 using System.Numerics;
@@ -14,7 +15,7 @@ public class VehicleResyncPacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public Vector3 Position { get; set; }
     public Vector3 Rotation { get; set; }
     public Vector3 Velocity { get; set; }
@@ -41,7 +42,7 @@ public class VehicleResyncPacket : Packet
     {
         var builder = new PacketBuilder();
 
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.WriteVector3WithZAsFloat(this.Position);
         builder.WriteVehicleRotation(this.Rotation);
         builder.WriteVelocityVector(this.Velocity);

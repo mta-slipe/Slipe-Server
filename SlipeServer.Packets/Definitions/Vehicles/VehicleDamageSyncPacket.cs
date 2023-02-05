@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
+using SlipeServer.Packets.Structs;
 using System;
 
 namespace SlipeServer.Packets.Definitions.Vehicles;
@@ -13,7 +14,7 @@ public class VehicleDamageSyncPacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint VehicleId { get; set; }
+    public ElementId VehicleId { get; set; }
     public byte?[] DoorStates { get; set; } = Array.Empty<byte?>();
     public byte?[] WheelStates { get; set; } = Array.Empty<byte?>();
     public byte?[] PanelStates { get; set; } = Array.Empty<byte?>();
@@ -52,7 +53,7 @@ public class VehicleDamageSyncPacket : Packet
     {
         var builder = new PacketBuilder();
 
-        builder.WriteElementId(this.VehicleId);
+        builder.Write(this.VehicleId);
 
         WriteComponentStates(builder, this.DoorStates, 3);
         WriteComponentStates(builder, this.WheelStates, 2);

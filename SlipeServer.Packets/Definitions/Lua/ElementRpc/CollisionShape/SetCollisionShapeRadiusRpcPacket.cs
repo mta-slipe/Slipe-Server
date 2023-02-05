@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.CollisionShape;
@@ -10,7 +11,7 @@ public class SetCollisionShapeRadiusRpcPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public float Radius { get; set; }
 
     public SetCollisionShapeRadiusRpcPacket()
@@ -18,7 +19,7 @@ public class SetCollisionShapeRadiusRpcPacket : Packet
 
     }
 
-    public SetCollisionShapeRadiusRpcPacket(uint elementId, float radius)
+    public SetCollisionShapeRadiusRpcPacket(ElementId elementId, float radius)
     {
         this.ElementId = elementId;
         this.Radius = radius;
@@ -34,7 +35,7 @@ public class SetCollisionShapeRadiusRpcPacket : Packet
         var builder = new PacketBuilder();
 
         builder.Write((byte)ElementRpcFunction.SET_COLSHAPE_RADIUS);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
 
         builder.Write(this.Radius);
 

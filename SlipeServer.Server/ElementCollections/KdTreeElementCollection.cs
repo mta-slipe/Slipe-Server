@@ -47,7 +47,7 @@ public class KdTreeElementCollection : IElementCollection
         this.slimLock.EnterReadLock();
         var value = this.elements
             .SelectMany(x => x.Value)
-            .FirstOrDefault(element => element.Id == id);
+            .FirstOrDefault(element => element.Id.Value == id);
         this.slimLock.ExitReadLock();
         return value;
     }

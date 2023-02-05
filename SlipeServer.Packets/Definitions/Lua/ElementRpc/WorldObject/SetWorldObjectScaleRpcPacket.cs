@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 using System.Numerics;
 
@@ -13,10 +14,10 @@ public class SetWorldObjectScaleRpcPacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; }
+    public ElementId ElementId { get; }
     public Vector3 Scale { get; }
 
-    public SetWorldObjectScaleRpcPacket(uint elementId, Vector3 scale)
+    public SetWorldObjectScaleRpcPacket(ElementId elementId, Vector3 scale)
     {
         this.ElementId = elementId;
         this.Scale = scale;
@@ -31,7 +32,7 @@ public class SetWorldObjectScaleRpcPacket : Packet
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRpcFunction.SET_OBJECT_SCALE);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.Write(this.Scale);
 
         return builder.Build();

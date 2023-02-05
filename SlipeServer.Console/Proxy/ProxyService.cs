@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using SlipeServer.Server;
 using SlipeServer.Server.Clients;
 using SlipeServer.Server.Proxy;
@@ -43,7 +44,7 @@ public class ProxyService
     {
         client.FetchSerial();
         if (uint.TryParse(client.Extra, out var preferedId))
-            client.Player.Id = preferedId;
+            client.Player.Id = (ElementId)preferedId;
     }
 
     public async void Init()

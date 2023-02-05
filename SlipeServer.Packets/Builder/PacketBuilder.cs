@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SlipeServer.Packets.Structs;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
@@ -105,6 +106,7 @@ public class PacketBuilder
     public void WriteCapped(ulong integer, int bitCap) => WriteBytesCapped(BitConverter.GetBytes(integer), bitCap);
     public void WriteCapped(byte integer, int bitCap) => WriteBytesCapped(new byte[] { integer }, bitCap);
 
+    public void Write(ElementId id) => WriteElementId(id.Value);
     public void WriteElementId(uint integer) => WriteBytesCapped(BitConverter.GetBytes(integer), 17);
 
     public void Write(float @float) => WriteBytes(BitConverter.GetBytes(@float));

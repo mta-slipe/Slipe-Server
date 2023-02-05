@@ -2,6 +2,7 @@
 using SlipeServer.Packets.Constants;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
+using SlipeServer.Packets.Structs;
 using SlipeServer.Packets.Structures;
 using System;
 using System.Numerics;
@@ -41,7 +42,7 @@ public class KeySyncPacket : Packet
     public bool? PlaneLeftShoulder2 { get; set; }
     public bool? PlaneRightShoulder2 { get; set; }
 
-    public uint PlayerId { get; set; }
+    public ElementId PlayerId { get; set; }
 
     public KeySyncPacket()
     {
@@ -130,7 +131,7 @@ public class KeySyncPacket : Packet
     {
         var builder = new PacketBuilder();
 
-        builder.WriteElementId(this.PlayerId);
+        builder.Write(this.PlayerId);
 
         this.SmallKeySyncStructure.Write(builder);
 

@@ -1,5 +1,6 @@
 using FluentAssertions;
 using SlipeServer.Packets.Definitions.Vehicles;
+using SlipeServer.Packets.Structs;
 using Xunit;
 
 namespace SlipeServer.Packets.Tests.Packets;
@@ -22,7 +23,7 @@ public class VehicleDamageSyncPacketTests
 
         packet.Read(this.testPacket);
 
-        packet.VehicleId.Should().Be(44);
+        packet.VehicleId.Should().Be((ElementId)44);
         packet.DoorStates.Should().BeEquivalentTo(new byte?[] { 2, null, null, null, null, null });
         packet.WheelStates.Should().BeEquivalentTo(new byte?[] { null, null, null, null });
         packet.PanelStates.Should().BeEquivalentTo(new byte?[] { null, null, null, null, null, 1, null });
@@ -36,7 +37,7 @@ public class VehicleDamageSyncPacketTests
 
         packet.Read(this.testPacket2);
 
-        packet.VehicleId.Should().Be(44);
+        packet.VehicleId.Should().Be((ElementId)44);
         packet.DoorStates.Should().BeEquivalentTo(new byte?[] { null, 2, null, null, null, null });
         packet.WheelStates.Should().BeEquivalentTo(new byte?[] { null, null, null, null });
         packet.PanelStates.Should().BeEquivalentTo(new byte?[] { null, null, null, null, null, null, 1 });

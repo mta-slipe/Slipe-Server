@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.WorldObject;
@@ -12,10 +13,10 @@ public class SetWorldObjectVisibileInAllDimensionsPacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; }
+    public ElementId ElementId { get; }
     public bool IsVisibleInAllDimensions { get; }
 
-    public SetWorldObjectVisibileInAllDimensionsPacket(uint elementId, bool isVisibleInAllDimensions)
+    public SetWorldObjectVisibileInAllDimensionsPacket(ElementId elementId, bool isVisibleInAllDimensions)
     {
         this.ElementId = elementId;
         this.IsVisibleInAllDimensions = isVisibleInAllDimensions;
@@ -30,7 +31,7 @@ public class SetWorldObjectVisibileInAllDimensionsPacket : Packet
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRpcFunction.SET_OBJECT_VISIBLE_IN_ALL_DIMENSIONS);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.Write(this.IsVisibleInAllDimensions);
 
         return builder.Build();

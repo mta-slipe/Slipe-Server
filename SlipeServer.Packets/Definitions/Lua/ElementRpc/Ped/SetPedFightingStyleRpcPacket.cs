@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
@@ -12,10 +13,10 @@ public class SetPedFightingStyleRpcPacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; }
+    public ElementId ElementId { get; }
     public byte FightingStyle { get; }
 
-    public SetPedFightingStyleRpcPacket(uint elementId, byte fightingStyle)
+    public SetPedFightingStyleRpcPacket(ElementId elementId, byte fightingStyle)
     {
         this.ElementId = elementId;
         this.FightingStyle = fightingStyle;
@@ -30,7 +31,7 @@ public class SetPedFightingStyleRpcPacket : Packet
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRpcFunction.SET_PED_FIGHTING_STYLE);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.Write(this.FightingStyle);
 
         return builder.Build();

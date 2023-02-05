@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 using System.Numerics;
 
@@ -11,11 +12,11 @@ public class SetCollisionPolygonPointPosition : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public uint Index { get; set; }
     public Vector2 Position { get; set; }
 
-    public SetCollisionPolygonPointPosition(uint elementId, uint index, Vector2 position)
+    public SetCollisionPolygonPointPosition(ElementId elementId, uint index, Vector2 position)
     {
         this.ElementId = elementId;
         this.Index = index;
@@ -32,7 +33,7 @@ public class SetCollisionPolygonPointPosition : Packet
         var builder = new PacketBuilder();
 
         builder.Write((byte)ElementRpcFunction.UPDATE_COLPOLYGON_POINT);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
 
         builder.WriteVector2(this.Position);
         builder.Write(this.Index);

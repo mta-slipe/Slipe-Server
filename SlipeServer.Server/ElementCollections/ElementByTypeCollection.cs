@@ -36,7 +36,7 @@ public class ElementByTypeCollection : IElementCollection
         this.slimLock.EnterReadLock();
         foreach (var list in this.elements.Values)
         {
-            var element = list.FirstOrDefault(element => element.Id == id);
+            var element = list.FirstOrDefault(element => element.Id.Value == id);
             if (element != null)
             {
                 this.slimLock.ExitReadLock();

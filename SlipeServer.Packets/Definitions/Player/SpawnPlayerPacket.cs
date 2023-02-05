@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
+using SlipeServer.Packets.Structs;
 using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Player;
@@ -11,12 +12,12 @@ public class SpawnPlayerPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint PlayerId { get; set; }
+    public ElementId PlayerId { get; set; }
     public Vector3 Position { get; set; }
     public byte SpawnFlags { get; set; }
     public float Rotation { get; set; }
     public ushort Skin { get; set; }
-    public uint TeamId { get; set; }
+    public ElementId TeamId { get; set; }
     public byte Interior { get; set; }
     public ushort Dimension { get; set; }
     public byte TimeContext { get; set; }
@@ -26,7 +27,7 @@ public class SpawnPlayerPacket : Packet
 
     }
 
-    public SpawnPlayerPacket(uint playerId, byte flags, Vector3 position, float rotation, ushort skin, uint teamId, byte interior, ushort dimension, byte timeContext)
+    public SpawnPlayerPacket(ElementId playerId, byte flags, Vector3 position, float rotation, ushort skin, ElementId teamId, byte interior, ushort dimension, byte timeContext)
     {
         this.PlayerId = playerId;
         this.Position = position;
@@ -60,7 +61,7 @@ public class SpawnPlayerPacket : Packet
     {
         var builder = new PacketBuilder();
 
-        builder.WriteElementId(this.PlayerId);
+        builder.Write(this.PlayerId);
 
         builder.Write(this.SpawnFlags);
 
@@ -69,7 +70,7 @@ public class SpawnPlayerPacket : Packet
         builder.Write(this.Skin);
         builder.Write(this.Interior);
         builder.Write(this.Dimension);
-        builder.WriteElementId(this.TeamId);
+        builder.Write(this.TeamId);
         builder.Write(this.TimeContext);
 
         return builder.Build();

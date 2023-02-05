@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 using System.Numerics;
 
@@ -11,12 +12,12 @@ public class AttachElementRpcPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
-    public uint AttachedToElementId { get; set; }
+    public ElementId ElementId { get; set; }
+    public ElementId AttachedToElementId { get; set; }
     public Vector3 OffsetPosition { get; set; }
     public Vector3 OffsetRotation { get; set; }
 
-    public AttachElementRpcPacket(uint elementId, uint attachedToElementId, Vector3 offsetPosition, Vector3 offsetRotation)
+    public AttachElementRpcPacket(ElementId elementId, ElementId attachedToElementId, Vector3 offsetPosition, Vector3 offsetRotation)
     {
         this.ElementId = elementId;
         this.AttachedToElementId = attachedToElementId;
@@ -34,8 +35,8 @@ public class AttachElementRpcPacket : Packet
         var builder = new PacketBuilder();
 
         builder.Write((byte)ElementRpcFunction.ATTACH_ELEMENTS);
-        builder.WriteElementId(this.ElementId);
-        builder.WriteElementId(this.AttachedToElementId);
+        builder.Write(this.ElementId);
+        builder.Write(this.AttachedToElementId);
         builder.Write(this.OffsetPosition);
         builder.Write(this.OffsetRotation);
 

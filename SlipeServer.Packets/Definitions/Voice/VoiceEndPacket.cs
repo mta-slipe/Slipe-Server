@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Voice;
 
@@ -9,9 +10,9 @@ public class VoiceEndPacket : Packet
     public override PacketReliability Reliability { get; } = PacketReliability.ReliableSequenced;
     public override PacketPriority Priority { get; } = PacketPriority.Low;
 
-    public uint SourceElementId { get; set; }
+    public ElementId SourceElementId { get; set; }
 
-    public VoiceEndPacket(uint sourceElementId)
+    public VoiceEndPacket(ElementId sourceElementId)
     {
         this.SourceElementId = sourceElementId;
     }
@@ -24,7 +25,7 @@ public class VoiceEndPacket : Packet
     public override byte[] Write()
     {
         var builder = new PacketBuilder();
-        builder.WriteElementId(this.SourceElementId);
+        builder.Write(this.SourceElementId);
         return builder.Build();
     }
 

@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
+using SlipeServer.Packets.Structs;
 using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Sync;
@@ -18,9 +19,9 @@ public class PlayerBulletSyncPacket : Packet
 
     public float? Damage { get; set; }
     public byte? BodyPart { get; set; }
-    public uint? DamagedElementId { get; set; }
+    public ElementId? DamagedElementId { get; set; }
 
-    public uint SourceElementId { get; set; }
+    public ElementId SourceElementId { get; set; }
 
     public PlayerBulletSyncPacket()
     {
@@ -48,7 +49,7 @@ public class PlayerBulletSyncPacket : Packet
     {
         var builder = new PacketBuilder();
 
-        builder.WriteElementId(this.SourceElementId);
+        builder.Write(this.SourceElementId);
         builder.Write(this.WeaponType);
         builder.Write(this.Start);
         builder.Write(this.End);
@@ -60,7 +61,7 @@ public class PlayerBulletSyncPacket : Packet
         {
             builder.Write(this.Damage!.Value);
             builder.Write(this.BodyPart!.Value);
-            builder.WriteElementId(this.DamagedElementId!.Value);
+            builder.Write(this.DamagedElementId!.Value);
         }
 
         return builder.Build();
@@ -71,6 +72,6 @@ public class PlayerBulletSyncPacket : Packet
         this.Damage = null;
         this.BodyPart = null;
         this.DamagedElementId = null;
-        this.SourceElementId = 0;
+        this.SourceElementId = ElementId.Zero;
     }
 }

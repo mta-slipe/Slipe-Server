@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using SlipeServer.Packets.Structs;
 using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
 using System;
@@ -56,8 +57,8 @@ public class ElementCollectionTests
     {
         var collection = (IElementCollection)Activator.CreateInstance(type)!;
 
-        collection.Add(new Element() { Id = 1 });
-        collection.Add(new Element() { Id = 2 });
+        collection.Add(new Element() { Id = (ElementId)1 });
+        collection.Add(new Element() { Id = (ElementId)2 });
 
         collection.Count.Should().Be(2);
     }
@@ -77,7 +78,7 @@ public class ElementCollectionTests
 
         var element = new Element()
         {
-            Id = 7
+            Id = (ElementId)7
         };
 
         collection.Add(element);
@@ -102,12 +103,12 @@ public class ElementCollectionTests
 
         var objects = new WorldObject[]
         {
-            new WorldObject(321, new(0, 0, 3)) { Id = 1 },
-            new WorldObject(321, new(0, 0, 3)) { Id = 2 }
+            new WorldObject(321, new(0, 0, 3)) { Id = (ElementId) 1 },
+            new WorldObject(321, new(0, 0, 3)) { Id = (ElementId) 2 }
         };
 
-        collection.Add(new Element() { Id = 3 });
-        collection.Add(new Marker(new(0, 0, 3), MarkerType.Arrow) { Id = 4 });
+        collection.Add(new Element() { Id = (ElementId)3 });
+        collection.Add(new Marker(new(0, 0, 3), MarkerType.Arrow) { Id = (ElementId)4 });
         foreach (var worldObject in objects)
             collection.Add(worldObject);
 
@@ -133,10 +134,10 @@ public class ElementCollectionTests
 
         var elements = new Element[]
         {
-            new WorldObject(321, new(0, 0, 3)) { Id = 1 },
-            new WorldObject(321, new(0, 0, 3)) { Id = 2 },
-            new Element() { Id = 3 },
-            new Marker(new(0, 0, 3), MarkerType.Arrow) { Id = 4 }
+            new WorldObject(321, new(0, 0, 3)) { Id = (ElementId)1 },
+            new WorldObject(321, new(0, 0, 3)) { Id = (ElementId)2 },
+            new Element() { Id = (ElementId)3 },
+            new Marker(new(0, 0, 3), MarkerType.Arrow) { Id = (ElementId)4 }
         };
 
         foreach (var element in elements)
@@ -163,10 +164,10 @@ public class ElementCollectionTests
 
         var elements = new Element[]
         {
-            new WorldObject(321, new(0, 0, 3)) { Id = 1 },
-            new WorldObject(321, new(0, 0, 3)) { Id = 2 },
-            new Element() { Id = 3, Position = new(5, 0, 3) },
-            new Marker(new(5, 0, 3), MarkerType.Arrow) { Id = 4 }
+            new WorldObject(321, new(0, 0, 3)) { Id = (ElementId)1 },
+            new WorldObject(321, new(0, 0, 3)) { Id = (ElementId)2 },
+            new Element() { Id = (ElementId)3, Position = new(5, 0, 3) },
+            new Marker(new(5, 0, 3), MarkerType.Arrow) { Id = (ElementId)4 }
         };
 
         foreach (var element in elements)
@@ -193,11 +194,11 @@ public class ElementCollectionTests
 
         var elements = new Element[]
         {
-            new WorldObject(321, new(0, 0, 3)) { Id = 1 },
-            new WorldObject(321, new(0, 0, 3)) { Id = 2 },
-            new WorldObject(321, new(5, 0, 3)) { Id = 3 },
-            new Element() { Id = 4, Position = new(0, 0, 3) },
-            new Marker(new(5, 0, 3), MarkerType.Arrow) { Id = 5 }
+            new WorldObject(321, new(0, 0, 3)) { Id = (ElementId)1 },
+            new WorldObject(321, new(0, 0, 3)) { Id = (ElementId)2 },
+            new WorldObject(321, new(5, 0, 3)) { Id = (ElementId)3 },
+            new Element() { Id = (ElementId)4, Position = new(0, 0, 3) },
+            new Marker(new(5, 0, 3), MarkerType.Arrow) { Id = (ElementId)5 }
         };
 
         foreach (var element in elements)

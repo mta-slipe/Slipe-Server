@@ -5,6 +5,7 @@ using System.Numerics;
 using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Reader;
 using SlipeServer.Packets.Constants;
+using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Sync;
 
@@ -14,12 +15,12 @@ public class PlayerPureSyncPacket : Packet
     public override PacketReliability Reliability => PacketReliability.UnreliableSequenced;
     public override PacketPriority Priority => PacketPriority.Medium;
 
-    public uint PlayerId { get; set; }
+    public ElementId PlayerId { get; set; }
     public byte TimeContext { get; set; }
     public ushort Latency { get; set; }
     public FullKeySyncStructure KeySync { get; set; } = new FullKeySyncStructure();
     public PlayerPureSyncFlagsStructure SyncFlags { get; set; } = new PlayerPureSyncFlagsStructure();
-    public uint ContactElementId { get; set; }
+    public ElementId ContactElementId { get; set; }
     public Vector3 Position { get; set; }
     public float Rotation { get; set; }
     public Vector3 Velocity { get; set; }
@@ -36,7 +37,7 @@ public class PlayerPureSyncPacket : Packet
     public Vector3 AimDirection { get; set; }
 
     public bool IsDamageChanged { get; set; }
-    public uint DamagerId { get; set; }
+    public ElementId DamagerId { get; set; }
     public byte DamageType { get; set; }
     public byte DamageBodypart { get; set; }
 
@@ -112,7 +113,7 @@ public class PlayerPureSyncPacket : Packet
     {
         var builder = new PacketBuilder();
 
-        builder.WriteElementId(this.PlayerId);
+        builder.Write(this.PlayerId);
         builder.Write(this.TimeContext);
         builder.WriteCompressed(this.Latency);
 
@@ -120,7 +121,7 @@ public class PlayerPureSyncPacket : Packet
         this.SyncFlags.Write(builder);
         if (this.SyncFlags.HasContact)
         {
-            builder.WriteElementId(this.ContactElementId);
+            builder.Write(this.ContactElementId);
         }
 
         builder.WriteVector3WithZAsFloat(this.Position);
@@ -160,7 +161,7 @@ public class PlayerPureSyncPacket : Packet
 
     public override void Reset()
     {
-        this.ContactElementId = 0;
+        this.ContactElementId = ElementId.Zero;
         this.Velocity = Vector3.Zero;
 
         this.WeaponType = 0;
@@ -173,7 +174,7 @@ public class PlayerPureSyncPacket : Packet
         this.AimOrigin = Vector3.Zero;
         this.AimDirection = Vector3.Zero;
 
-        this.DamagerId = 0;
+        this.DamagerId = ElementId.Zero;
         this.DamageType = 0;
         this.DamageBodypart = 0;
     }

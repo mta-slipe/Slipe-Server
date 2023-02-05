@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
@@ -10,13 +11,11 @@ public class BindKeyPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
     public string Key { get; set; }
     public bool HitState { get; set; }
 
-    public BindKeyPacket(uint elementId, string key, bool hitState)
+    public BindKeyPacket(string key, bool hitState)
     {
-        this.ElementId = elementId;
         this.Key = key;
         this.HitState = hitState;
     }

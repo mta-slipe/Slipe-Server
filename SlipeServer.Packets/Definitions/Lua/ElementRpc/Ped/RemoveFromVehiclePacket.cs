@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 
@@ -11,10 +12,10 @@ public class RemoveFromVehiclePacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; }
+    public ElementId ElementId { get; }
     public byte TimeContext { get; }
 
-    public RemoveFromVehiclePacket(uint elementId, byte timeContext)
+    public RemoveFromVehiclePacket(ElementId elementId, byte timeContext)
     {
         this.ElementId = elementId;
         this.TimeContext = timeContext;
@@ -29,7 +30,7 @@ public class RemoveFromVehiclePacket : Packet
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRpcFunction.REMOVE_PED_FROM_VEHICLE);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.Write(this.TimeContext);
 
         return builder.Build();

@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
@@ -10,9 +11,9 @@ public class RemovePlayerNametagColorPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
 
-    public RemovePlayerNametagColorPacket(uint elementId)
+    public RemovePlayerNametagColorPacket(ElementId elementId)
     {
         this.ElementId = elementId;
     }
@@ -26,7 +27,7 @@ public class RemovePlayerNametagColorPacket : Packet
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRpcFunction.REMOVE_PLAYER_NAMETAG_COLOR);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         return builder.Build();
     }
 }
