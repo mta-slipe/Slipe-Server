@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets.Enums;
 using System.Numerics;
 using SlipeServer.Packets.Builder;
+using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Sync;
 
@@ -19,7 +20,7 @@ public class LightSyncPacket : Packet
     }
 
     public LightSyncPacket(
-        uint elementId,
+        ElementId elementId,
         byte timeContext,
         ushort latency,
         float? health,
@@ -32,7 +33,7 @@ public class LightSyncPacket : Packet
     }
 
     public void AddPlayer(
-        uint elementId,
+        ElementId elementId,
         byte timeContext,
         ushort latency,
         float? health,
@@ -42,7 +43,7 @@ public class LightSyncPacket : Packet
     )
     {
 
-        this.builder.WriteElementId(elementId);
+        this.builder.Write(elementId);
         this.builder.Write(timeContext);
         this.builder.WriteCompressed(latency);
 

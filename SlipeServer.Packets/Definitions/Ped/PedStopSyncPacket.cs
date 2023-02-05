@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Ped;
 
@@ -9,9 +10,9 @@ public class PedStopSyncPacket : Packet
     public override PacketReliability Reliability { get; } = PacketReliability.ReliableSequenced;
     public override PacketPriority Priority { get; } = PacketPriority.High;
 
-    public uint SourceElementId { get; set; }
+    public ElementId SourceElementId { get; set; }
 
-    public PedStopSyncPacket(uint sourceElementId)
+    public PedStopSyncPacket(ElementId sourceElementId)
     {
         this.SourceElementId = sourceElementId;
     }
@@ -21,7 +22,7 @@ public class PedStopSyncPacket : Packet
     {
         var builder = new PacketBuilder();
 
-        builder.WriteElementId(this.SourceElementId);
+        builder.Write(this.SourceElementId);
 
         return builder.Build();
     }

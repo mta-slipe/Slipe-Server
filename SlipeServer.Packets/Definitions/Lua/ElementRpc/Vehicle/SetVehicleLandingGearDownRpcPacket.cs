@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
@@ -10,10 +11,10 @@ public class SetVehicleLandingGearDownRpcPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public bool Down { get; set; }
 
-    public SetVehicleLandingGearDownRpcPacket(uint elementId, bool down)
+    public SetVehicleLandingGearDownRpcPacket(ElementId elementId, bool down)
     {
         this.ElementId = elementId;
         this.Down = down;
@@ -28,7 +29,7 @@ public class SetVehicleLandingGearDownRpcPacket : Packet
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRpcFunction.SET_VEHICLE_LANDING_GEAR_DOWN);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.Write((byte)(this.Down ? 1 : 0));
         return builder.Build();
     }

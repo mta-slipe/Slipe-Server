@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 using System.Drawing;
 using System.Numerics;
@@ -23,7 +24,7 @@ public class PlayerListPacket : Packet
     }
 
     public void AddPlayer(
-        uint playerId,
+        ElementId playerId,
         byte timeContext,
         string nickname,
         ushort bitsreamVersion,
@@ -41,9 +42,9 @@ public class PlayerListPacket : Packet
         byte moveAnimation,
 
         ushort model,
-        uint? teamId,
+        ElementId? teamId,
 
-        uint? vehicleId,
+        ElementId? vehicleId,
         byte? seat,
 
         Vector3? position,
@@ -57,7 +58,7 @@ public class PlayerListPacket : Packet
         byte[] weapons
     )
     {
-        this.builder.WriteElementId(playerId);
+        this.builder.Write(playerId);
         this.builder.Write(timeContext);
         this.builder.WriteStringWithByteAsLength(nickname);
 
@@ -84,7 +85,7 @@ public class PlayerListPacket : Packet
         if (teamId != null)
         {
             this.builder.Write(true);
-            this.builder.WriteElementId(teamId.Value);
+            this.builder.Write(teamId.Value);
         } else
         {
             this.builder.Write(false);
@@ -96,7 +97,7 @@ public class PlayerListPacket : Packet
             {
                 throw new Exception($"Can not write player list packet. {nameof(isInVehicle)} is true, but required data is null");
             }
-            this.builder.WriteElementId(vehicleId.Value);
+            this.builder.Write(vehicleId.Value);
             this.builder.WriteCapped(seat.Value, 4);
         } else
         {

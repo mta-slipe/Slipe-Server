@@ -14,7 +14,7 @@ public class ResourceStartPacket : Packet
 
     public string Name { get; set; }
     public ushort NetId { get; }
-    public uint ResourceDynamicElementId { get; set; }
+    public ElementId ResourceDynamicElementId { get; set; }
     public ushort UncachedScriptCount { get; }
     public string MinServerVersion { get; }
     public string MinClientVersion { get; }
@@ -22,13 +22,13 @@ public class ResourceStartPacket : Packet
     public int DownloadPriorityGroup { get; }
     public IEnumerable<ResourceFile> Files { get; }
     public IEnumerable<string> ExportedFunctions { get; }
-    public uint ResourceElementId { get; }
+    public ElementId ResourceElementId { get; }
 
     public ResourceStartPacket(
         string name,
         ushort netId,
-        uint resourceElementId,
-        uint resourceDynamicElementId,
+        ElementId resourceElementId,
+        ElementId resourceDynamicElementId,
         ushort uncachedScriptCount,
         string? minServerVersion,
         string? minClientVersion,
@@ -61,8 +61,8 @@ public class ResourceStartPacket : Packet
 
         builder.WriteStringWithByteAsLength(this.Name);
         builder.Write(this.NetId);
-        builder.WriteElementId(this.ResourceElementId);
-        builder.WriteElementId(this.ResourceDynamicElementId);
+        builder.Write(this.ResourceElementId);
+        builder.Write(this.ResourceDynamicElementId);
 
         builder.Write(this.UncachedScriptCount);
         builder.Write(this.MinServerVersion);

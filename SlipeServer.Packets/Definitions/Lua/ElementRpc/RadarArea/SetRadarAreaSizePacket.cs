@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 using System.Numerics;
 
@@ -13,10 +14,10 @@ public class SetRadarAreaSizePacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; }
+    public ElementId ElementId { get; }
     public Vector2 Size { get; }
 
-    public SetRadarAreaSizePacket(uint elementId, Vector2 size)
+    public SetRadarAreaSizePacket(ElementId elementId, Vector2 size)
     {
         this.ElementId = elementId;
         this.Size = size;
@@ -31,7 +32,7 @@ public class SetRadarAreaSizePacket : Packet
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRpcFunction.SET_RADAR_AREA_SIZE);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.Write(this.Size);
 
         return builder.Build();

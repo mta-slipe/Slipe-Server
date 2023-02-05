@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Vehicles;
@@ -12,7 +13,7 @@ public class UnoccupiedVehicleSyncStartPacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public Vector3 Position { get; set; }
     public Vector3 Rotation { get; set; }
     public Vector3 Velocity { get; set; }
@@ -34,7 +35,7 @@ public class UnoccupiedVehicleSyncStartPacket : Packet
     {
         var builder = new PacketBuilder();
 
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.Write(this.Position);
         builder.Write(this.Rotation);
         builder.Write(this.Velocity);

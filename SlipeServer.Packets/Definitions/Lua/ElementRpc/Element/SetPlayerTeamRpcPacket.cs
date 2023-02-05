@@ -1,6 +1,7 @@
 ﻿using System;
 using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 
@@ -10,8 +11,8 @@ public class SetPlayerTeamRpcPacket : Packet
     public override PacketReliability Reliability { get; } = PacketReliability.ReliableSequenced;
     public override PacketPriority Priority { get; } = PacketPriority.High;
 
-    public uint SourceElementId { get; set; }
-    public uint TeamId { get; set; }
+    public ElementId SourceElementId { get; set; }
+    public ElementId TeamId { get; set; }
 
 
     public override byte[] Write()
@@ -19,8 +20,8 @@ public class SetPlayerTeamRpcPacket : Packet
         var builder = new PacketBuilder();
 
         builder.Write((byte)ElementRPCFunction.SET_PLAYER_TEAM);
-        builder.WriteElementId(this.SourceElementId);
-        builder.WriteElementId(this.TeamId);
+        builder.Write(this.SourceElementId);
+        builder.Write(this.TeamId);
 
         return builder.Build();
     }

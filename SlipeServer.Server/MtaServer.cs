@@ -4,6 +4,7 @@ using SlipeServer.Net.Wrappers;
 using SlipeServer.Packets;
 using SlipeServer.Packets.Definitions.Player;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using SlipeServer.Server.AllSeeingEye;
 using SlipeServer.Server.Clients;
 using SlipeServer.Server.ElementCollections;
@@ -349,7 +350,7 @@ public class MtaServer
             element.Parent = this.root;
 
         if (this.elementIdGenerator != null && element.Id == default)
-            element.Id = this.elementIdGenerator.GetId();
+            element.Id = (ElementId)this.elementIdGenerator.GetId();
 
         this.ElementCreated?.Invoke(element);
 

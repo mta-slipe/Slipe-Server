@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
@@ -10,10 +11,10 @@ public class SetTrainDerailedPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public bool IsDerailed { get; set; }
 
-    public SetTrainDerailedPacket(uint elementId, bool isDerailed)
+    public SetTrainDerailedPacket(ElementId elementId, bool isDerailed)
     {
         this.ElementId = elementId;
         this.IsDerailed = isDerailed;
@@ -28,7 +29,7 @@ public class SetTrainDerailedPacket : Packet
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRpcFunction.SET_TRAIN_DERAILED);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.Write(this.IsDerailed);
         return builder.Build();
     }

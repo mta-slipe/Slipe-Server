@@ -2,6 +2,7 @@
 using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
+using SlipeServer.Packets.Structs;
 using System;
 using System.Collections.Generic;
 
@@ -14,7 +15,7 @@ public class LuaEventPacket : Packet
     public override PacketPriority Priority => PacketPriority.High;
 
     public string Name { get; set; } = string.Empty;
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public IEnumerable<LuaValue> LuaValues { get; set; } = Array.Empty<LuaValue>();
 
     public LuaEventPacket()
@@ -22,7 +23,7 @@ public class LuaEventPacket : Packet
 
     }
 
-    public LuaEventPacket(string name, uint elementId, IEnumerable<LuaValue> luaValues)
+    public LuaEventPacket(string name, ElementId elementId, IEnumerable<LuaValue> luaValues)
     {
         this.Name = name;
         this.ElementId = elementId;
@@ -35,7 +36,7 @@ public class LuaEventPacket : Packet
 
         builder.WriteCompressed((ushort)this.Name.Length);
         builder.WriteStringWithoutLength(this.Name);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
 
         builder.Write(this.LuaValues);
 

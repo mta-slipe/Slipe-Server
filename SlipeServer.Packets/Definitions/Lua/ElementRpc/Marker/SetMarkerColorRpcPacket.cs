@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 using System.Drawing;
 
@@ -11,9 +12,9 @@ public class SetMarkerColorRpcPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public Color Color { get; set; }
-    public SetMarkerColorRpcPacket(uint elementId, Color color)
+    public SetMarkerColorRpcPacket(ElementId elementId, Color color)
     {
         this.ElementId = elementId;
         this.Color = color;
@@ -29,7 +30,7 @@ public class SetMarkerColorRpcPacket : Packet
         var builder = new PacketBuilder();
 
         builder.Write((byte)ElementRpcFunction.SET_MARKER_COLOR);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.Write(this.Color, true);
 
         return builder.Build();

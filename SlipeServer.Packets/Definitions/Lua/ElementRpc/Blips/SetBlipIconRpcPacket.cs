@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
@@ -10,7 +11,7 @@ public class SetBlipIconRpcPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public byte Icon { get; set; }
 
     public SetBlipIconRpcPacket()
@@ -18,7 +19,7 @@ public class SetBlipIconRpcPacket : Packet
 
     }
 
-    public SetBlipIconRpcPacket(uint elementId, byte icon)
+    public SetBlipIconRpcPacket(ElementId elementId, byte icon)
     {
         this.ElementId = elementId;
         this.Icon = icon;
@@ -34,7 +35,7 @@ public class SetBlipIconRpcPacket : Packet
         var builder = new PacketBuilder();
 
         builder.Write((byte)ElementRpcFunction.SET_BLIP_ICON);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.WriteCapped(this.Icon, 6);
 
         return builder.Build();

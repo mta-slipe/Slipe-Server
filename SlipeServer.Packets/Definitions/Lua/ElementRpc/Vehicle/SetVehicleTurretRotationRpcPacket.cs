@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 using System.Numerics;
 
@@ -11,10 +12,10 @@ public class SetVehicleTurretRotationRpcPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public Vector2 Rotation { get; set; }
 
-    public SetVehicleTurretRotationRpcPacket(uint elementId, Vector2 rotation)
+    public SetVehicleTurretRotationRpcPacket(ElementId elementId, Vector2 rotation)
     {
         this.ElementId = elementId;
         this.Rotation = rotation;
@@ -29,7 +30,7 @@ public class SetVehicleTurretRotationRpcPacket : Packet
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRpcFunction.SET_VEHICLE_TURRET_POSITION);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.Write(this.Rotation);
         return builder.Build();
     }

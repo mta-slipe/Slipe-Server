@@ -2,6 +2,7 @@
 using SlipeServer.Packets.Constants;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
+using SlipeServer.Packets.Structs;
 using SlipeServer.Packets.Structures;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ public class VehiclePureSyncPacket : Packet
     public override PacketPriority Priority => PacketPriority.Medium;
 
 
-    public uint PlayerId { get; set; }
+    public ElementId PlayerId { get; set; }
     public ushort Latency { get; set; }
     public byte TimeContext { get; set; }
     public int RemoteModel { get; set; }
@@ -39,7 +40,7 @@ public class VehiclePureSyncPacket : Packet
     public Vector3 TurnVelocity { get; set; }
     public float Health { get; set; }
     public bool HasTrailer { get; set; }
-    public uint? DamagerId { get; set; }
+    public ElementId? DamagerId { get; set; }
     public byte? DamageWeaponType { get; set; }
     public byte? DamageBodyPart { get; set; }
     public float PlayerHealth { get; set; }
@@ -185,7 +186,7 @@ public class VehiclePureSyncPacket : Packet
     {
         var builder = new PacketBuilder();
 
-        builder.WriteElementId(this.PlayerId);
+        builder.Write(this.PlayerId);
         builder.Write(this.TimeContext);
         builder.WriteCompressed(this.Latency);
         this.KeySync.Write(builder);
@@ -213,7 +214,7 @@ public class VehiclePureSyncPacket : Packet
             {
                 builder.Write(true);
                 var trailer = trailers.Dequeue();
-                builder.WriteElementId(trailer.Id);
+                builder.Write(trailer.Id);
                 builder.WriteVector3WithZAsFloat(trailer.Position);
                 builder.WriteVehicleRotation(trailer.Rotation);
             }
@@ -345,7 +346,7 @@ public class VehiclePureSyncPacket : Packet
 
 public struct TrailerSync
 {
-    public uint Id { get; set; }
+    public ElementId Id { get; set; }
     public Vector3 Position { get; set; }
     public Vector3 Rotation { get; set; }
 }

@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
+using SlipeServer.Packets.Structs;
 using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Sync;
@@ -11,12 +12,12 @@ public class WeaponBulletSyncPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint WeaponElementId { get; set; }
+    public ElementId WeaponElementId { get; set; }
     public Vector3 Start { get; set; }
     public Vector3 End { get; set; }
     public byte Counter { get; set; }
 
-    public uint SourceElementId { get; set; }
+    public ElementId SourceElementId { get; set; }
 
     public WeaponBulletSyncPacket()
     {
@@ -37,8 +38,8 @@ public class WeaponBulletSyncPacket : Packet
     {
         var builder = new PacketBuilder();
 
-        builder.WriteElementId(this.SourceElementId);
-        builder.WriteElementId(this.WeaponElementId);
+        builder.Write(this.SourceElementId);
+        builder.Write(this.WeaponElementId);
         builder.Write(this.Start);
         builder.Write(this.End);
         builder.Write(this.Counter);

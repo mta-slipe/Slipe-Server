@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SlipeServer.Packets.Structs;
+using System;
 using System.Drawing;
 using System.Numerics;
 
@@ -6,7 +7,7 @@ namespace SlipeServer.Packets.Definitions.Lua;
 
 public class VehicleSpawnInfo
 {
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public byte TimeContext { get; set; }
     public ushort VehicleId { get; set; }
     public Vector3 Position { get; set; }

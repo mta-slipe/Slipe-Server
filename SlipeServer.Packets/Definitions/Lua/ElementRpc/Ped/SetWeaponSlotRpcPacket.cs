@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 
@@ -11,10 +12,10 @@ public class SetWeaponSlotRpcPacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; }
+    public ElementId ElementId { get; }
     public byte WeaponSlot { get; }
 
-    public SetWeaponSlotRpcPacket(uint elementId, byte weaponSlot)
+    public SetWeaponSlotRpcPacket(ElementId elementId, byte weaponSlot)
     {
         this.ElementId = elementId;
         this.WeaponSlot = weaponSlot;
@@ -29,7 +30,7 @@ public class SetWeaponSlotRpcPacket : Packet
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRpcFunction.SET_WEAPON_SLOT);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.WriteWeaponSlot(this.WeaponSlot);
 
         return builder.Build();

@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
+using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Ped;
 
@@ -10,15 +11,15 @@ public class PedTaskPacket : Packet
     public override PacketReliability Reliability { get; } = PacketReliability.Reliable;
     public override PacketPriority Priority { get; } = PacketPriority.High;
 
-    public uint SourceElementId { get; set; }
+    public ElementId SourceElementId { get; set; }
     public ushort TaskType { get; set; }
-    public uint AttackerId { get; set; }
+    public ElementId AttackerId { get; set; }
     public byte HitBodyPart { get; set; }
     public byte HitBodySize { get; set; }
     public byte WeaponId { get; set; }
 
 
-    public PedTaskPacket(uint sourceElementId, byte weaponId, byte hitBodySize, byte hitBodyPart, uint attackerId, ushort taskType)
+    public PedTaskPacket(ElementId sourceElementId, byte weaponId, byte hitBodySize, byte hitBodyPart, ElementId attackerId, ushort taskType)
     {
         this.SourceElementId = sourceElementId;
         this.WeaponId = weaponId;
@@ -37,7 +38,7 @@ public class PedTaskPacket : Packet
     {
         var builder = new PacketBuilder();
 
-        builder.WriteElementId(this.SourceElementId);
+        builder.Write(this.SourceElementId);
 
         builder.Write(this.TaskType);
         builder.Write(this.AttackerId);

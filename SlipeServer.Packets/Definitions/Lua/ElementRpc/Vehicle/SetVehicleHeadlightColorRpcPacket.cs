@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 using System.Drawing;
 
@@ -11,10 +12,10 @@ public class SetVehicleHeadlightColorRpcPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public Color Color { get; set; }
 
-    public SetVehicleHeadlightColorRpcPacket(uint elementId, Color color)
+    public SetVehicleHeadlightColorRpcPacket(ElementId elementId, Color color)
     {
         this.ElementId = elementId;
         this.Color = color;
@@ -29,8 +30,8 @@ public class SetVehicleHeadlightColorRpcPacket : Packet
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRPCFunction.SET_VEHICLE_HEADLIGHT_COLOR);
-        builder.WriteElementId(this.ElementId);
-        builder.Write(Color);
+        builder.Write(this.ElementId);
+        builder.Write(this.Color);
         return builder.Build();
     }
 }

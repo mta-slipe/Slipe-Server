@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Lua.Camera;
 
@@ -9,9 +10,9 @@ public class SetCameraTargetPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
 
-    public SetCameraTargetPacket(uint elementId)
+    public SetCameraTargetPacket(ElementId elementId)
     {
         this.ElementId = elementId;
     }
@@ -25,7 +26,7 @@ public class SetCameraTargetPacket : Packet
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRPCFunction.SET_CAMERA_TARGET);
         builder.Write((byte)1);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
 
         return builder.Build();
     }

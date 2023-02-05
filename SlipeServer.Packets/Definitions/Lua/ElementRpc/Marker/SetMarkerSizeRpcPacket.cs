@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Marker;
@@ -10,9 +11,9 @@ public class SetMarkerSizeRpcPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public float Size { get; set; }
-    public SetMarkerSizeRpcPacket(uint elementId, float size)
+    public SetMarkerSizeRpcPacket(ElementId elementId, float size)
     {
         this.ElementId = elementId;
         this.Size = size;
@@ -28,7 +29,7 @@ public class SetMarkerSizeRpcPacket : Packet
         var builder = new PacketBuilder();
 
         builder.Write((byte)ElementRpcFunction.SET_MARKER_SIZE);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.Write(this.Size);
 
         return builder.Build();

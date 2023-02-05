@@ -1,4 +1,5 @@
 ﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
+using SlipeServer.Packets.Structs;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.ColShapes;
 using SlipeServer.Server.PacketHandling.Builders;
@@ -14,7 +15,7 @@ public static class AddEntityPacketFactory
 
         foreach (var element in elements)
         {
-            if (element.Id == 0)
+            if (element.Id == ElementId.Zero)
                 throw new System.Exception(string.Format("Element {0} can not be created with id 0", element.ElementType));
 
             switch (element.ElementType)

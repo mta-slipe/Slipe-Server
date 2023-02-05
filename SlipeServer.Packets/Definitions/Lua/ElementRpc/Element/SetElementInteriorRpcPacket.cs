@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 using System.Numerics;
 
@@ -12,7 +13,7 @@ public class SetElementInteriorRpcPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public byte Interior { get; set; }
 
     public Vector3? Position { get; set; }
@@ -22,7 +23,7 @@ public class SetElementInteriorRpcPacket : Packet
 
     }
 
-    public SetElementInteriorRpcPacket(uint elementId, byte interior, Vector3? position = null)
+    public SetElementInteriorRpcPacket(ElementId elementId, byte interior, Vector3? position = null)
     {
         this.ElementId = elementId;
         this.Interior = interior;
@@ -39,7 +40,7 @@ public class SetElementInteriorRpcPacket : Packet
         var builder = new PacketBuilder();
 
         builder.Write((byte)ElementRpcFunction.SET_ELEMENT_INTERIOR);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
 
         builder.Write(this.Interior);
         builder.Write((byte)(this.Position.HasValue ? 1 : 0));

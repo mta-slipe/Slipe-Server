@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
@@ -10,7 +11,7 @@ public class SetBlipVisibleDistanceRpcPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public ushort Distance { get; set; }
 
     public SetBlipVisibleDistanceRpcPacket()
@@ -18,7 +19,7 @@ public class SetBlipVisibleDistanceRpcPacket : Packet
 
     }
 
-    public SetBlipVisibleDistanceRpcPacket(uint elementId, ushort distance)
+    public SetBlipVisibleDistanceRpcPacket(ElementId elementId, ushort distance)
     {
         this.ElementId = elementId;
         this.Distance = distance;
@@ -34,7 +35,7 @@ public class SetBlipVisibleDistanceRpcPacket : Packet
         var builder = new PacketBuilder();
 
         builder.Write((byte)ElementRpcFunction.SET_BLIP_VISIBLE_DISTANCE);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.WriteCapped(this.Distance, 14);
 
         return builder.Build();

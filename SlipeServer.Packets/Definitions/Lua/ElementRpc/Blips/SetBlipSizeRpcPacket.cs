@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
@@ -10,7 +11,7 @@ public class SetBlipSizeRpcPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public byte Size { get; set; }
 
     public SetBlipSizeRpcPacket()
@@ -18,7 +19,7 @@ public class SetBlipSizeRpcPacket : Packet
 
     }
 
-    public SetBlipSizeRpcPacket(uint elementId, byte size)
+    public SetBlipSizeRpcPacket(ElementId elementId, byte size)
     {
         this.ElementId = elementId;
         this.Size = size;
@@ -34,7 +35,7 @@ public class SetBlipSizeRpcPacket : Packet
         var builder = new PacketBuilder();
 
         builder.Write((byte)ElementRpcFunction.SET_BLIP_SIZE);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.WriteCapped(this.Size, 5);
 
         return builder.Build();

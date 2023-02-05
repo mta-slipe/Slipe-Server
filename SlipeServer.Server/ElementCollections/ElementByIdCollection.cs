@@ -1,4 +1,5 @@
-﻿using SlipeServer.Server.Elements;
+﻿using SlipeServer.Packets.Structs;
+using SlipeServer.Server.Elements;
 using SlipeServer.Server.Helpers;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,12 +12,12 @@ public class ElementByIdCollection : IElementCollection
 {
     public int Count => this.elements.Count;
 
-    private readonly Dictionary<uint, Element> elements;
+    private readonly Dictionary<ElementId, Element> elements;
     private readonly ReaderWriterLockSlim slimLock = new();
 
     public ElementByIdCollection()
     {
-        this.elements = new Dictionary<uint, Element>();
+        this.elements = new();
     }
 
     public void Add(Element element)
@@ -29,7 +30,7 @@ public class ElementByIdCollection : IElementCollection
     public Element? Get(uint id)
     {
         this.slimLock.EnterReadLock();
-        var value = this.elements.ContainsKey(id) ? this.elements[id] : null;
+        var value = this.elements.ContainsKey((ElementId)id) ? this.elements[(ElementId)id] : null;
         this.slimLock.ExitReadLock();
         return value;
     }

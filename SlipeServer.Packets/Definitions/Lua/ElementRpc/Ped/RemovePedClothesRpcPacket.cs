@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 
 namespace SlipeServer.Packets.Definitions.Ped;
@@ -13,10 +14,10 @@ public class RemovePedClothesRpcPacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public byte Type { get; }
 
-    public RemovePedClothesRpcPacket(uint elementId, byte type)
+    public RemovePedClothesRpcPacket(ElementId elementId, byte type)
     {
         this.ElementId = elementId;
         this.Type = type;
@@ -31,7 +32,7 @@ public class RemovePedClothesRpcPacket : Packet
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRpcFunction.REMOVE_PED_CLOTHES);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.Write(this.Type);
 
         return builder.Build();

@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Ped;
@@ -10,14 +11,14 @@ public class PedStartSyncPacket : Packet
     public override PacketReliability Reliability { get; } = PacketReliability.ReliableSequenced;
     public override PacketPriority Priority { get; } = PacketPriority.High;
 
-    public uint SourceElementId { get; set; }
+    public ElementId SourceElementId { get; set; }
     public Vector3 Position { get; set; }
     public float Rotation { get; set; }
     public Vector3 Velocity { get; set; }
     public float Health { get; set; }
     public float Armor { get; set; }
 
-    public PedStartSyncPacket(uint sourceElementId, Vector3 position, float rotation, Vector3 velocity, float health, float armor)
+    public PedStartSyncPacket(ElementId sourceElementId, Vector3 position, float rotation, Vector3 velocity, float health, float armor)
     {
         this.SourceElementId = sourceElementId;
         this.Position = position;
@@ -27,7 +28,7 @@ public class PedStartSyncPacket : Packet
         this.Armor = armor;
     }
 
-    public PedStartSyncPacket(uint sourceElementId)
+    public PedStartSyncPacket(ElementId sourceElementId)
     {
         this.SourceElementId = sourceElementId;
     }
@@ -41,7 +42,7 @@ public class PedStartSyncPacket : Packet
     {
         var builder = new PacketBuilder();
 
-        builder.WriteElementId(this.SourceElementId);
+        builder.Write(this.SourceElementId);
         builder.Write(this.Position);
         builder.Write(this.Rotation);
         builder.Write(this.Velocity);

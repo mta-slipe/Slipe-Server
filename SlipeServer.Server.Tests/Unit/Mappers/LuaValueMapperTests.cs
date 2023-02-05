@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using SlipeServer.Packets.Definitions.Lua;
+using SlipeServer.Packets.Structs;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Mappers;
 using System.Collections.Generic;
@@ -71,12 +72,12 @@ public class LuaValueMapperTests
     [Fact]
     public void ElementMapsToLuaValue()
     {
-        var value = new Element() { Id = 36 };
+        var value = new Element() { Id = (ElementId)36 };
 
         var mapper = new LuaValueMapper();
         var result = mapper.Map(value);
 
-        result.Should().BeEquivalentTo(new LuaValue(36u));
+        result.Should().BeEquivalentTo(new LuaValue((ElementId)36u));
     }
 
     [Fact]
@@ -87,7 +88,7 @@ public class LuaValueMapperTests
         var mapper = new LuaValueMapper();
         var result = mapper.Map(value);
 
-        result.Should().BeEquivalentTo(new LuaValue(36u));
+        result.Should().BeEquivalentTo(new LuaValue((ElementId)36u));
     }
 
     [Fact]

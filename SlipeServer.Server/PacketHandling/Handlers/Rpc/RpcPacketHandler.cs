@@ -13,6 +13,7 @@ using System;
 using System.Linq;
 using System.Numerics;
 using SlipeServer.Server.Clients;
+using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Rpc;
 
@@ -168,8 +169,8 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
 
     private void HandlePlayerTarget(IClient client, RpcPacket packet)
     {
-        uint id = packet.Reader.GetElementId();
-        Element? element = this.elementCollection.Get(id);
+        var id = packet.Reader.GetElementId();
+        var element = this.elementCollection.Get(id);
         client.Player.Target = element;
     }
 

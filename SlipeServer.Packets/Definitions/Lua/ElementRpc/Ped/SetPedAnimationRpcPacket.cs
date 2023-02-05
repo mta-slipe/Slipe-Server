@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 
@@ -11,7 +12,7 @@ public class SetPedAnimationRpcPacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; }
+    public ElementId ElementId { get; }
     public string Block { get; set; }
     public string Animation { get; set; }
     public int Time { get; set; }
@@ -23,7 +24,7 @@ public class SetPedAnimationRpcPacket : Packet
     public bool RestoresTaskOnAnimationEnd { get; set; }
 
     public SetPedAnimationRpcPacket(
-        uint elementId,
+        ElementId elementId,
         string block,
         string animation,
         int time,
@@ -55,7 +56,7 @@ public class SetPedAnimationRpcPacket : Packet
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRpcFunction.SET_PED_ANIMATION);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.WriteStringWithByteAsLength(this.Block);
         builder.WriteStringWithByteAsLength(this.Animation);
         builder.Write(this.Time);

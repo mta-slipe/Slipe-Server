@@ -9,6 +9,7 @@ using System;
 using System.Drawing;
 using SlipeServer.Packets.Definitions.Player;
 using System.Linq;
+using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Server.PacketHandling.Factories;
 
@@ -124,7 +125,7 @@ public static class PlayerPacketFactory
 
     public static SpawnPlayerPacket CreateSpawnPacket(Player player)
     {
-        return new SpawnPlayerPacket(player.Id, 0, player.Position, player.PedRotation, player.Model, 0, player.Interior, player.Dimension, player.GetAndIncrementTimeContext());
+        return new SpawnPlayerPacket(player.Id, 0, player.Position, player.PedRotation, player.Model, ElementId.Zero, player.Interior, player.Dimension, player.GetAndIncrementTimeContext());
     }
 
     public static PlayerWastedPacket CreateWastedPacket(
@@ -132,7 +133,7 @@ public static class PlayerPacketFactory
         ulong animationGroup, ulong animationId
     )
     {
-        return new PlayerWastedPacket(player.Id, killer?.Id ?? 0, (byte)weaponType, (byte)bodyPart, isStealth,
+        return new PlayerWastedPacket(player.Id, killer?.Id ?? ElementId.Zero, (byte)weaponType, (byte)bodyPart, isStealth,
             player.GetAndIncrementTimeContext(), animationGroup, animationId);
     }
 

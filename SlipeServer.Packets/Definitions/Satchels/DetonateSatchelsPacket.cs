@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Satchels;
 
@@ -9,10 +10,10 @@ public class DetonateSatchelsPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public ushort Latency { get; set; }
 
-    public DetonateSatchelsPacket(uint elementId, ushort latency)
+    public DetonateSatchelsPacket(ElementId elementId, ushort latency)
     {
         this.ElementId = elementId;
         this.Latency = latency;
@@ -32,7 +33,7 @@ public class DetonateSatchelsPacket : Packet
     {
         var builder = new PacketBuilder();
 
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.Write(this.Latency);
 
         return builder.Build();

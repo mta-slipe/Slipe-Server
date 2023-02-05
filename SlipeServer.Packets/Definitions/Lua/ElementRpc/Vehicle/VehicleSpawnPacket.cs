@@ -28,7 +28,7 @@ public class VehicleSpawnPacket : Packet
         var builder = new PacketBuilder();
         foreach (var vehicleToSpawn in this.VehiclesToSpawn)
         {
-            builder.WriteElementId(vehicleToSpawn.ElementId);
+            builder.Write(vehicleToSpawn.ElementId);
             builder.Write(vehicleToSpawn.TimeContext);
             builder.Write(vehicleToSpawn.Position);
             builder.Write(vehicleToSpawn.Rotation);

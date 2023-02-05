@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Definitions.Entities.Structs;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 
 namespace SlipeServer.Packets.Definitions.Ped;
@@ -13,10 +14,10 @@ public class PedClothesPacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public PedClothing[] Clothing { get; set; }
 
-    public PedClothesPacket(uint elementId, PedClothing[] clothing)
+    public PedClothesPacket(ElementId elementId, PedClothing[] clothing)
     {
         this.ElementId = elementId;
         this.Clothing = clothing;
@@ -30,7 +31,7 @@ public class PedClothesPacket : Packet
     public override byte[] Write()
     {
         var builder = new PacketBuilder();
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.Write((ushort)this.Clothing.Length);
         foreach (var item in this.Clothing)
         {

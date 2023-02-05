@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 
 namespace SlipeServer.Packets.Definitions.Player;
@@ -10,11 +11,11 @@ public class ChangeNicknamePacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint PlayerId { get; set; }
+    public ElementId PlayerId { get; set; }
     public string Name { get; set; }
 
     public ChangeNicknamePacket(
-        uint playerId,
+        ElementId playerId,
         string name
     )
     {
@@ -31,7 +32,7 @@ public class ChangeNicknamePacket : Packet
     {
         var builder = new PacketBuilder();
 
-        builder.WriteElementId(this.PlayerId);
+        builder.Write(this.PlayerId);
         builder.WriteStringWithoutLength(this.Name);
 
         return builder.Build();

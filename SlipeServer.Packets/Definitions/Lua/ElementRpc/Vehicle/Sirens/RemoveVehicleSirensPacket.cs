@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle.Sirens;
@@ -10,9 +11,9 @@ public class RemoveVehicleSirensPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
 
-    public RemoveVehicleSirensPacket(uint elementId)
+    public RemoveVehicleSirensPacket(ElementId elementId)
     {
         this.ElementId = elementId;
     }
@@ -26,7 +27,7 @@ public class RemoveVehicleSirensPacket : Packet
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRpcFunction.REMOVE_VEHICLE_SIRENS);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         return builder.Build();
     }
 }

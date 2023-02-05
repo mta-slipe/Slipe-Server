@@ -172,7 +172,7 @@ public class FromLuaValueMapperTests
     public void LuaValueMapsToElement()
     {
         var id = 1u;
-        var luaValue = new LuaValue(id);
+        var luaValue = LuaValue.CreateElement(id);
         var element = new Element();
 
         var elementCollectionMock = new Mock<IElementCollection>();
@@ -190,7 +190,7 @@ public class FromLuaValueMapperTests
     public void LuaValueMapsToElementSubClass()
     {
         var id = 1u;
-        var luaValue = new LuaValue(id);
+        var luaValue = LuaValue.CreateElement(id);
         var element = new Vehicle(0u, Vector3.Zero);
 
         var elementCollectionMock = new Mock<IElementCollection>();

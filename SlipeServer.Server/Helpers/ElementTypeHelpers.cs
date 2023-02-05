@@ -1,13 +1,13 @@
 ﻿using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.ColShapes;
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 namespace SlipeServer.Server.Helpers;
 
 public static class ElementTypeHelpers
 {
-    private readonly static Dictionary<Type, ElementType> elementTypeCache = new();
+    private readonly static ConcurrentDictionary<Type, ElementType> elementTypeCache = new();
 
     private static ElementType DeterineElementType(Type type)
     {

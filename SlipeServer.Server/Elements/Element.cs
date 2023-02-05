@@ -1,4 +1,5 @@
 ﻿using SlipeServer.Packets.Definitions.Lua;
+using SlipeServer.Packets.Structs;
 using SlipeServer.Server.Concepts;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
@@ -6,7 +7,6 @@ using SlipeServer.Server.Extensions;
 using SlipeServer.Server.Extensions.Relaying;
 using SlipeServer.Server.PacketHandling.Factories;
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,8 +59,8 @@ public class Element
     /// </summary>
     public IEnumerable<Player> AssociatedPlayers => this.associatedPlayers.AsEnumerable();
 
-    private uint id;
-    public uint Id
+    private ElementId id;
+    public ElementId Id
     {
         get => this.id;
         set
@@ -68,7 +68,7 @@ public class Element
             if (this.id == value)
                 return;
 
-            var args = new ElementChangedEventArgs<uint>(this, this.id, value, this.IsSync);
+            var args = new ElementChangedEventArgs<ElementId>(this, this.id, value, this.IsSync);
             this.id = value;
             IdChanged?.Invoke(this, args);
         }
@@ -506,7 +506,7 @@ public class Element
         server.PlayerJoined += HandlePlayerJoin;
         server.ElementCreated += HandleElementCreation;
 
-        return this; 
+        return this;
     }
 
 
@@ -540,7 +540,7 @@ public class Element
         this.associatedPlayers.Remove(player);
     }
 
-    private void HandleElementCreation(Element obj) 
+    private void HandleElementCreation(Element obj)
     {
         obj.UpdateAssociatedPlayers();
     }
@@ -747,8 +747,8 @@ public class Element
     /// <exception cref="Exception">Throws an exception when the target element does not have an ID</exception>
     public ElementAttachment AttachTo(Element element, Vector3? positionOffset = null, Vector3? rotationOffset = null)
     {
-        if (element.Id == 0)
-            throw new Exception(string.Format("Can not attach {0} to {1} because {1} has no id", this, element, element));
+        if (element.Id.Value == 0)
+            throw new Exception($"Can not attach {this} to {element} because {element} has no id");
 
         var position = positionOffset ?? Vector3.Zero;
         var rotation = rotationOffset ?? Vector3.Zero;
@@ -836,7 +836,7 @@ public class Element
     public event ElementChangedEventHandler<bool>? CallPropagationChanged;
     public event ElementChangedEventHandler<bool>? CollisionEnabledhanged;
     public event ElementChangedEventHandler<bool>? FrozenChanged;
-    public event ElementChangedEventHandler<Element, uint>? IdChanged;
+    public event ElementChangedEventHandler<Element, ElementId>? IdChanged;
     public event ElementEventHandler<Element, ElementAssociatedWithEventArgs>? AssociatedWith;
     public event ElementEventHandler<Element, ElementAssociatedWithEventArgs>? RemovedFrom;
     public event ElementEventHandler<Element, ElementDataChangedArgs>? DataChanged;
@@ -849,5 +849,5 @@ public class Element
     /// Returns a Lua value for the element, this is used for any lua event communication.
     /// </summary>
     /// <param name="value"></param>
-    public static implicit operator LuaValue(Element value) => new(value.Id);
+    public static implicit operator LuaValue(Element value) => LuaValue.CreateElement((uint)value.Id);
 }

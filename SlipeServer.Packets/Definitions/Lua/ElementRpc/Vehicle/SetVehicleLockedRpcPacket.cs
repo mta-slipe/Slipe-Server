@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
@@ -10,10 +11,10 @@ public class SetVehicleLockedRpcPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public bool Locked { get; set; }
 
-    public SetVehicleLockedRpcPacket(uint elementId, bool locked)
+    public SetVehicleLockedRpcPacket(ElementId elementId, bool locked)
     {
         this.ElementId = elementId;
         this.Locked = locked;
@@ -28,7 +29,7 @@ public class SetVehicleLockedRpcPacket : Packet
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRPCFunction.SET_VEHICLE_LOCKED);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.Write((byte)(this.Locked ? 1 : 0));
 
         return builder.Build();

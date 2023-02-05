@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
+using SlipeServer.Packets.Structs;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
@@ -29,11 +30,11 @@ public static class PlayerPropertyRelayingExtensions
     {
         if (e.KeyState == KeyState.Down || e.KeyState == KeyState.Both)
         {
-            new BindKeyPacket(e.Player.Id, e.Key, true).SendTo(player);
+            new BindKeyPacket(e.Key, true).SendTo(player);
         }
         if (e.KeyState == KeyState.Up || e.KeyState == KeyState.Both)
         {
-            new BindKeyPacket(e.Player.Id, e.Key, false).SendTo(player);
+            new BindKeyPacket(e.Key, false).SendTo(player);
         }
     }
 
@@ -41,11 +42,11 @@ public static class PlayerPropertyRelayingExtensions
     {
         if (e.KeyState == KeyState.Down || e.KeyState == KeyState.Both)
         {
-            new UnbindKeyPacket(e.Player.Id, e.Key, true).SendTo(player);
+            new UnbindKeyPacket(e.Key, true).SendTo(player);
         }
         if (e.KeyState == KeyState.Up || e.KeyState == KeyState.Both)
         {
-            new UnbindKeyPacket(e.Player.Id, e.Key, false).SendTo(player);
+            new UnbindKeyPacket(e.Key, false).SendTo(player);
         }
     }
 
@@ -72,7 +73,7 @@ public static class PlayerPropertyRelayingExtensions
         sender.RelayChange(new SetPlayerTeamRpcPacket()
         {
             SourceElementId = sender.Id,
-            TeamId = e.NewTeam?.Id ?? 0
+            TeamId = e.NewTeam?.Id ?? ElementId.Zero
         });
     }
 

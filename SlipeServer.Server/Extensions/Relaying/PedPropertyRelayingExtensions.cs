@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 using SlipeServer.Packets.Definitions.Ped;
+using SlipeServer.Packets.Structs;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
@@ -38,7 +39,7 @@ public static class PedPropertyRelayingExtensions
     private static void RelayPedWasted(Ped sender, PedWastedEventArgs e)
     {
         var packet = new PedWastedPacket(
-            e.Source.Id, e.Killer?.Id ?? 0, (byte)e.WeaponType, (byte)e.BodyPart, e.Ammo, false, sender.GetAndIncrementTimeContext(), e.AnimationGroup, e.AnimationId
+            e.Source.Id, e.Killer?.Id ?? ElementId.Zero, (byte)e.WeaponType, (byte)e.BodyPart, e.Ammo, false, sender.GetAndIncrementTimeContext(), e.AnimationGroup, e.AnimationId
         )
         {
             Ammo = e.Ammo

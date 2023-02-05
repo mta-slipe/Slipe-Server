@@ -4,6 +4,7 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.IdGeneration;
 using SlipeServer.Server.ElementCollections;
 using Xunit;
+using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Server.Tests.Unit.Elements.IdGeneration;
 
@@ -16,10 +17,10 @@ public class CollectionBasedElementIdGeneratorTests
         var generator = new CollectionBasedElementIdGenerator(collection);
 
         var first = generator.GetId();
-        collection.Add(new DummyElement() { Id = first });
+        collection.Add(new DummyElement() { Id = (ElementId)first });
 
         var second = generator.GetId();
-        collection.Add(new DummyElement() { Id = second });
+        collection.Add(new DummyElement() { Id = (ElementId)second });
 
         first.Should().NotBe(second);
     }
@@ -30,14 +31,14 @@ public class CollectionBasedElementIdGeneratorTests
         var collection = new ElementByIdCollection();
         var dummyElement = new DummyElement()
         {
-            Id = 0
+            Id = ElementId.Zero
         };
         collection.Add(dummyElement);
         var generator = new CollectionBasedElementIdGenerator(collection);
 
         var id = generator.GetId();
 
-        id.Should().NotBe(dummyElement.Id);
+        id.Should().NotBe(dummyElement.Id.Value);
     }
 
     [Fact]
@@ -47,13 +48,13 @@ public class CollectionBasedElementIdGeneratorTests
         var generator = new CollectionBasedElementIdGenerator(collection);
 
         var first = generator.GetId();
-        var firstElement = new DummyElement() { Id = first };
+        var firstElement = new DummyElement() { Id = (ElementId)first };
         collection.Add(firstElement);
 
         for (int i = 0; i < ElementConstants.MaxElementId - 2; i++)
         {
             var id = generator.GetId();
-            collection.Add(new DummyElement() { Id = id });
+            collection.Add(new DummyElement() { Id = (ElementId)id });
         }
 
         collection.Remove(firstElement);
@@ -71,7 +72,7 @@ public class CollectionBasedElementIdGeneratorTests
         for (int i = 0; i < ElementConstants.MaxElementId - 1; i++)
         {
             var second = generator.GetId();
-            collection.Add(new DummyElement() { Id = second });
+            collection.Add(new DummyElement() { Id = (ElementId)second });
         }
 
         bool exceptionThrown = false;

@@ -1,6 +1,7 @@
 ﻿using System;
 using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 
@@ -17,9 +18,9 @@ public class RemoveEntityPacket : Packet
         this.builder = new PacketBuilder();
     }
 
-    public void AddEntity(uint elementId)
+    public void AddEntity(ElementId elementId)
     {
-        this.builder.WriteElementId(elementId);
+        this.builder.Write(elementId);
     }
 
     public override void Read(byte[] bytes)

@@ -453,7 +453,7 @@ public class Player : Ped
             this.Joined -= attachBlip;
         }
 
-        if (this.Id == 0)
+        if (this.Id.Value == 0)
             this.Joined += attachBlip;
         else
             blip.AttachTo(this);

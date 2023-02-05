@@ -65,7 +65,7 @@ public class RTreeElementCollection : IElementCollection
         var results = this.elements
             .Search()
             .Select(x => x.Element)
-            .FirstOrDefault(element => element.Id == id);
+            .FirstOrDefault(element => element.Id.Value == id);
 
         this.slimLock.ExitReadLock();
 

@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
+using SlipeServer.Packets.Structs;
 using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Ped;
@@ -11,8 +12,8 @@ public class PedWastedPacket : Packet
     public override PacketReliability Reliability { get; } = PacketReliability.ReliableSequenced;
     public override PacketPriority Priority { get; } = PacketPriority.High;
 
-    public uint SourceElementId { get; set; }
-    public uint KillerId { get; set; }
+    public ElementId SourceElementId { get; set; }
+    public ElementId KillerId { get; set; }
     public byte KillerWeapon { get; set; }
     public byte BodyPart { get; set; }
     public Vector3 Position { get; set; }
@@ -22,7 +23,7 @@ public class PedWastedPacket : Packet
     public ulong AnimGroup { get; set; }
     public ulong AnimId { get; set; }
 
-    public PedWastedPacket(uint sourceElementId, uint killerId, byte killerWeapon, byte bodyPart, ushort ammo, bool stealth, byte timeContext, ulong animGroup, ulong animId)
+    public PedWastedPacket(ElementId sourceElementId, ElementId killerId, byte killerWeapon, byte bodyPart, ushort ammo, bool stealth, byte timeContext, ulong animGroup, ulong animId)
     {
         this.SourceElementId = sourceElementId;
         this.KillerId = killerId;
@@ -44,8 +45,8 @@ public class PedWastedPacket : Packet
     {
         var builder = new PacketBuilder();
 
-        builder.WriteElementId(this.SourceElementId);
-        builder.WriteElementId(this.KillerId);
+        builder.Write(this.SourceElementId);
+        builder.Write(this.KillerId);
 
         builder.WriteWeaponType(this.KillerWeapon);
         builder.WriteBodyPart(this.BodyPart);

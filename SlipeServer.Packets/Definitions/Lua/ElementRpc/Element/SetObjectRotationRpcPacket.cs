@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 using System.Numerics;
 
@@ -11,7 +12,7 @@ public class SetObjectRotationRpcPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public Vector3 Rotation { get; set; }
 
     public SetObjectRotationRpcPacket()
@@ -19,7 +20,7 @@ public class SetObjectRotationRpcPacket : Packet
 
     }
 
-    public SetObjectRotationRpcPacket(uint elementId, Vector3 rotation)
+    public SetObjectRotationRpcPacket(ElementId elementId, Vector3 rotation)
     {
         this.ElementId = elementId;
         this.Rotation = rotation;
@@ -35,7 +36,7 @@ public class SetObjectRotationRpcPacket : Packet
         var builder = new PacketBuilder();
 
         builder.Write((byte)ElementRpcFunction.SET_OBJECT_ROTATION);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
 
         builder.Write(this.Rotation);
 

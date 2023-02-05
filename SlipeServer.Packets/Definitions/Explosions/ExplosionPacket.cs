@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
+using SlipeServer.Packets.Structs;
 using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Explosions;
@@ -13,8 +14,8 @@ public class ExplosionPacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint? PlayerSource { get; set; }
-    public uint? OriginId { get; set; }
+    public ElementId? PlayerSource { get; set; }
+    public ElementId? OriginId { get; set; }
     public Vector3 Position { get; set; }
     public bool IsVehicleResponsible { get; set; }
     public bool BlowVehicleWithoutExplosion { get; set; }
@@ -26,7 +27,7 @@ public class ExplosionPacket : Packet
 
     }
 
-    public ExplosionPacket(uint? playerSource, uint? originId, Vector3 position, byte explosionType, ushort latency)
+    public ExplosionPacket(ElementId? playerSource, ElementId? originId, Vector3 position, byte explosionType, ushort latency)
     {
         this.PlayerSource = playerSource;
         this.OriginId = originId;
@@ -61,14 +62,14 @@ public class ExplosionPacket : Packet
         builder.Write(this.PlayerSource.HasValue);
         if (this.PlayerSource.HasValue)
         {
-            builder.WriteElementId(this.PlayerSource.Value);
+            builder.Write(this.PlayerSource.Value);
             builder.WriteCompressed(this.Latency ?? 0);
         }
 
         builder.Write(this.OriginId.HasValue);
         if (this.OriginId.HasValue)
         {
-            builder.WriteElementId(this.OriginId.Value);
+            builder.Write(this.OriginId.Value);
             builder.Write(this.IsVehicleResponsible);
             if (this.IsVehicleResponsible)
                 builder.Write(this.BlowVehicleWithoutExplosion);

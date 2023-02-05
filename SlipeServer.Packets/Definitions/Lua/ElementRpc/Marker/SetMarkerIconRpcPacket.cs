@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Marker;
@@ -10,9 +11,9 @@ public class SetMarkerIconRpcPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public byte MarkerType { get; set; }
-    public SetMarkerIconRpcPacket(uint elementId, byte markerType)
+    public SetMarkerIconRpcPacket(ElementId elementId, byte markerType)
     {
         this.ElementId = elementId;
         this.MarkerType = markerType;
@@ -28,7 +29,7 @@ public class SetMarkerIconRpcPacket : Packet
         var builder = new PacketBuilder();
 
         builder.Write((byte)ElementRpcFunction.SET_MARKER_ICON);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.Write(this.MarkerType);
 
         return builder.Build();

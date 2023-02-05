@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle.Sirens;
@@ -10,7 +11,7 @@ public class GiveVehicleSirensPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
+    public ElementId ElementId { get; set; }
     public bool IsOverride { get; }
     public byte SirenType { get; }
     public byte SirenCount { get; }
@@ -20,7 +21,7 @@ public class GiveVehicleSirensPacket : Packet
     public bool EnableSilent { get; }
 
     public GiveVehicleSirensPacket(
-        uint elementId,
+        ElementId elementId,
         bool isOverride,
         VehicleSirenType sirenType,
         byte sirenCount,
@@ -49,7 +50,7 @@ public class GiveVehicleSirensPacket : Packet
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRpcFunction.GIVE_VEHICLE_SIRENS);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
 
         builder.Write(this.IsOverride);
         if (this.IsOverride)

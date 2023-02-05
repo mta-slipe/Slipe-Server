@@ -1,5 +1,6 @@
 using FluentAssertions;
 using SlipeServer.Packets.Definitions.Sync;
+using SlipeServer.Packets.Structs;
 using System.Numerics;
 using Xunit;
 
@@ -20,7 +21,7 @@ public class CameraSyncPacketTest
         packet.Read(this.testPacket);
 
         packet.IsFixed.Should().BeTrue();
-        packet.TargetId.Should().Be(0);
+        packet.TargetId.Should().Be(ElementId.Zero);
         packet.Position.Should().Be(new Vector3(-2377, -1636, 700));
         packet.LookAt.Should().Be(new Vector3(0, 0, 720));
     }

@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 
@@ -11,12 +12,12 @@ public class SetAmmoCountRpcPacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; }
+    public ElementId ElementId { get; }
     public byte WeaponType { get; }
     public ushort Ammo { get; }
     public ushort? AmmoInClip { get; }
 
-    public SetAmmoCountRpcPacket(uint elementId, byte weaponType, ushort ammo, ushort? ammoInClip)
+    public SetAmmoCountRpcPacket(ElementId elementId, byte weaponType, ushort ammo, ushort? ammoInClip)
     {
         this.ElementId = elementId;
         this.WeaponType = weaponType;
@@ -33,7 +34,7 @@ public class SetAmmoCountRpcPacket : Packet
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRpcFunction.SET_WEAPON_AMMO);
-        builder.WriteElementId(this.ElementId);
+        builder.Write(this.ElementId);
         builder.WriteWeaponType(this.WeaponType);
         builder.WriteAmmo(this.Ammo, this.AmmoInClip);
 
