@@ -13,7 +13,7 @@
       "dest": "api/networking",
       "disableGitFeatures": false,
       "disableDefaultFilter": false,
-      "tocNamespaceStyle": "compactnested"
+      "tocNamespaceStyle": "nested"
     },
     {
       "src": [
@@ -27,7 +27,7 @@
       "dest": "api/server",
       "disableGitFeatures": false,
       "disableDefaultFilter": false,
-      "tocNamespaceStyle": "compactnested"
+      "tocNamespaceStyle": "nested"
     },
     {
       "src": [
@@ -42,7 +42,7 @@
       "dest": "api/optionals/scripting",
       "disableGitFeatures": false,
       "disableDefaultFilter": false,
-      "tocNamespaceStyle": "compactnested"
+      "tocNamespaceStyle": "nested"
     },
     {
       "src": [
@@ -55,7 +55,8 @@
       ],
       "dest": "api/optionals/physics",
       "disableGitFeatures": false,
-      "disableDefaultFilter": false
+      "disableDefaultFilter": false,
+      "tocNamespaceStyle": "nested"
     },
     {
       "src": [
@@ -69,7 +70,7 @@
       "dest": "api/optionals/lua-controllers",
       "disableGitFeatures": false,
       "disableDefaultFilter": false,
-      "tocNamespaceStyle": "compactnested"
+      "tocNamespaceStyle": "nested"
     }
   ],
   "build": {
