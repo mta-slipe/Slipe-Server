@@ -1118,6 +1118,29 @@ public class ServerTestLogic
             create(new Blip(origin, BlipIcon.Truth));
         };
 
+        this.commandService.AddCommand("setvehicledata").Triggered += (source, args) =>
+        {
+            var vehicle = args.Player.Vehicle;
+            if (vehicle == null || args.Arguments.Length < 2)
+                return;
+
+            var key = args.Arguments[0];
+            var value = args.Arguments[1];
+            this.chatBox.OutputTo(args.Player, $"Setting vehicle data {key} to {value}");
+            vehicle.SetData(key, value, DataSyncType.Broadcast);
+        };
+
+        this.commandService.AddCommand("getvehicledata").Triggered += (source, args) =>
+        {
+            var vehicle = args.Player.Vehicle;
+            if (vehicle == null || args.Arguments.Length < 1)
+                return;
+
+            var key = args.Arguments[0];
+            var value = vehicle.GetData(key);
+            this.chatBox.OutputTo(args.Player, $"Vehicle data {key} = {value}");
+        };
+
         this.commandService.AddCommand("hot").Triggered += (source, args) =>
         {
             // command for testing, use hot reload to write code and apply during a running debug session

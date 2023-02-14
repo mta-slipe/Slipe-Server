@@ -342,6 +342,20 @@ public class Element
     public ConcurrentDictionary<Player, ConcurrentDictionary<string, bool>> ElementDataSubscriptions { get; set; }
 
     /// <summary>
+    /// A read-only representation of all element data that is broadcastable
+    /// </summary>
+    public Packets.Definitions.Entities.Structs.CustomData BroadcastableElementData => new()
+    {
+        Items = this.ElementData
+            .Where(x => x.Value.SyncType == DataSyncType.Broadcast)
+            .Select(x => new Packets.Definitions.Entities.Structs.CustomDataItem()
+            {
+                Name = x.Key,
+                Data = x.Value.Value
+            })
+    };
+
+    /// <summary>
     /// The element's current attachment. Representing this element being attached to a target element.
     /// </summary>
     public ElementAttachment? Attachment { get; private set; }

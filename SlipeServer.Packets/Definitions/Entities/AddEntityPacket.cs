@@ -4,6 +4,7 @@ using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Structs;
 using System;
 using System.Drawing;
+using System.Linq;
 using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
@@ -49,10 +50,10 @@ public class AddEntityPacket : Packet
         this.builder.Write(areCollisionsEnabled);
         this.builder.Write(isCallPropagationEnabled);
 
-        this.builder.WriteCompressed((ushort)customData.Items.Length);
+        this.builder.WriteCompressed((ushort)customData.Items.Count());
         foreach (var item in customData.Items)
         {
-            this.builder.Write(item.Name);
+            this.builder.WriteStringWithByteAsLength(item.Name);
             this.builder.Write(item.Data);
         }
 
