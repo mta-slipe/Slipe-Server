@@ -8,6 +8,7 @@ using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.ElementCollections;
 using System;
 using SlipeServer.Server.Clients;
+using SlipeServer.Server.Elements.Enums;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync;
 
@@ -69,7 +70,7 @@ public class VehiclePureSyncPacketHandler : IPacketHandler<VehiclePureSyncPacket
             if (packet.DamagerId != null)
             {
                 var damager = this.elementCollection.Get(packet.DamagerId.Value);
-                player.TriggerDamaged(damager, (WeaponType)(packet.DamageWeaponType ?? (byte?)WeaponType.WEAPONTYPE_UNIDENTIFIED), (BodyPart)(packet.DamageBodyPart ?? (byte?)BodyPart.Torso));
+                player.TriggerDamaged(damager, (DamageType)(packet.DamageWeaponType ?? (byte?)DamageType.WEAPONTYPE_UNIDENTIFIED), (BodyPart)(packet.DamageBodyPart ?? (byte?)BodyPart.Torso));
             }
         });
 

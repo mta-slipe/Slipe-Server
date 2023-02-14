@@ -276,12 +276,12 @@ public class Player : Ped
         this.CommandEntered?.Invoke(this, new PlayerCommandEventArgs(this, command, arguments));
     }
 
-    public void TriggerDamaged(Element? damager, WeaponType damageType, BodyPart bodyPart)
+    public void TriggerDamaged(Element? damager, DamageType damageType, BodyPart bodyPart)
     {
         this.Damaged?.Invoke(this, new PlayerDamagedEventArgs(this, damager, damageType, bodyPart));
     }
 
-    public override void Kill(Element? damager, WeaponType damageType, BodyPart bodyPart, ulong animationGroup = 0, ulong animationId = 15)
+    public override void Kill(Element? damager, DamageType damageType, BodyPart bodyPart, ulong animationGroup = 0, ulong animationId = 15)
     {
         this.RunAsSync(() =>
         {

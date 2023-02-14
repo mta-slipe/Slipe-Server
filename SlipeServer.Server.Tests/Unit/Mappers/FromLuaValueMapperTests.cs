@@ -3,6 +3,8 @@ using Moq;
 using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements.Enums;
+using SlipeServer.Server.Enums;
 using SlipeServer.Server.Mappers;
 using System;
 using System.Collections.Generic;
@@ -163,9 +165,9 @@ public class FromLuaValueMapperTests
 
         var elementCollectionMock = new Mock<IElementCollection>();
         var mapper = new FromLuaValueMapper(elementCollectionMock.Object);
-        var result = mapper.Map(typeof(WeaponType), luaValue);
+        var result = mapper.Map(typeof(WeaponId), luaValue);
 
-        result.Should().BeEquivalentTo(WeaponType.WEAPONTYPE_AK47);
+        result.Should().BeEquivalentTo(WeaponId.Ak47);
     }
 
     [Fact]

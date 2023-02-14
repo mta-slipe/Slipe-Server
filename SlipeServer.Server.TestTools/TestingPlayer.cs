@@ -15,7 +15,8 @@ public class TestingPlayer : Player
 
     public new TestingPlayer AssociateWith(MtaServer server)
     {
-        return server.AssociateElement(this);
+        base.AssociateWith(server);
+        return this;
     }
 
     public static TestingPlayer CreateStandalone()

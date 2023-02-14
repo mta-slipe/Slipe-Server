@@ -303,7 +303,7 @@ public class Ped : Element
 
     protected void InvokeWasted(PedWastedEventArgs args) => this.Wasted?.Invoke(this, args);
 
-    public virtual void Kill(Element? damager, WeaponType damageType, BodyPart bodyPart, ulong animationGroup = 0, ulong animationId = 15)
+    public virtual void Kill(Element? damager, DamageType damageType, BodyPart bodyPart, ulong animationGroup = 0, ulong animationId = 15)
     {
         this.RunAsSync(() =>
         {
@@ -316,7 +316,7 @@ public class Ped : Element
         });
     }
 
-    public void Kill(WeaponType damageType = WeaponType.WEAPONTYPE_UNARMED, BodyPart bodyPart = BodyPart.Torso)
+    public void Kill(DamageType damageType = DamageType.WEAPONTYPE_UNARMED, BodyPart bodyPart = BodyPart.Torso)
     {
         this.Kill(null, damageType, bodyPart);
     }

@@ -3,6 +3,7 @@ using SlipeServer.Packets.Definitions.Lua.Rpc.World;
 using SlipeServer.Packets.Definitions.Map.Structs;
 using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Structs;
 using System;
@@ -499,7 +500,7 @@ public class GameWorld
         return new Tuple<byte, byte>(this.hour, this.minute);
     }
 
-    public void CreateProjectile(Vector3 from, Vector3 direction, Element sourceElement, WeaponType weaponType = WeaponType.WEAPONTYPE_ROCKET, ushort model = 345)
+    public void CreateProjectile(Vector3 from, Vector3 direction, Element sourceElement, DamageType weaponType = DamageType.WEAPONTYPE_ROCKET, ushort model = 345)
     {
         this.server.BroadcastPacket(new ProjectileSyncPacket(from, direction, sourceElement.Id, (byte)weaponType, model));
     }

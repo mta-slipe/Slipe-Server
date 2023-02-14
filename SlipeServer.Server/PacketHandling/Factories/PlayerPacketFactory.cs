@@ -129,7 +129,7 @@ public static class PlayerPacketFactory
     }
 
     public static PlayerWastedPacket CreateWastedPacket(
-        Player player, Element? killer, WeaponType weaponType, BodyPart bodyPart, bool isStealth,
+        Player player, Element? killer, DamageType weaponType, BodyPart bodyPart, bool isStealth,
         ulong animationGroup, ulong animationId
     )
     {

@@ -89,6 +89,9 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
         this.clients[this.NetWrapperMock.Object].Add(address, client);
 
         player.AssociateWith(this);
+
+        this.HandlePlayerJoin(player);
+
         return player;
     }
 
@@ -126,6 +129,8 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
             && (data == null || x.Data.SequenceEqual(data))
         ).Should().Be(count);
     }
+
+    public void ResetPacketCountVerification() => this.sendPacketCalls.Clear();
 
     public uint GenerateBinaryAddress() => ++this.binaryAddressCounter;
 }

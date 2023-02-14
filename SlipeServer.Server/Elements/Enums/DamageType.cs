@@ -1,6 +1,6 @@
-﻿namespace SlipeServer.Server.Elements;
+﻿namespace SlipeServer.Server.Elements.Enums;
 
-public enum WeaponType
+public enum DamageType
 {
     WEAPONTYPE_UNARMED = 0,
     WEAPONTYPE_BRASSKNUCKLE,

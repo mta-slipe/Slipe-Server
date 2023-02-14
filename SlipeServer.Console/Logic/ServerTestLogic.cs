@@ -182,7 +182,7 @@ public class ServerTestLogic
         {
             RespawnTime = 5000
         }.AssociateWith(this.server);
-        new Pickup(new Vector3(5, -5, 3), WeaponType.WEAPONTYPE_AK47, 100)
+        new Pickup(new Vector3(5, -5, 3), WeaponId.Ak47, 100)
         {
             RespawnTime = 5000
         }.AssociateWith(this.server);

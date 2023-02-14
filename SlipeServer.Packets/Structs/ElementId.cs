@@ -26,4 +26,6 @@ public readonly struct ElementId
     public static explicit operator uint(ElementId id) => id.Value;
 
     public static ElementId Zero { get; } = ElementId.Zero;
+
+    public override string ToString() => this.Value.ToString();
 }

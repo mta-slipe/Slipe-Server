@@ -40,6 +40,8 @@ public class ElementTests
         var server = new TestingServer();
         var player = server.AddFakePlayer();
 
+        server.ResetPacketCountVerification();
+
         new Element().AssociateWith(server);
 
         server.VerifyPacketSent(PacketId.PACKET_ID_ENTITY_ADD, player);

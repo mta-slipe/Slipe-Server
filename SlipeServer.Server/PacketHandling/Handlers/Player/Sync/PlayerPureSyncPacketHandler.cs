@@ -4,6 +4,7 @@ using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Clients;
 using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
@@ -88,7 +89,7 @@ public class PlayerPureSyncPacketHandler : IPacketHandler<PlayerPureSyncPacket>
             if (packet.IsDamageChanged)
             {
                 var damager = this.elementCollection.Get(packet.DamagerId);
-                player.TriggerDamaged(damager, (WeaponType)packet.DamageType, (BodyPart)packet.DamageBodypart);
+                player.TriggerDamaged(damager, (DamageType)packet.DamageType, (BodyPart)packet.DamageBodypart);
             }
         });
 

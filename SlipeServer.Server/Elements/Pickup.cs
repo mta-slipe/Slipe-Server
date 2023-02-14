@@ -22,7 +22,7 @@ public class Pickup : Element
     public PickupType PickupType { get; set; }
     public float? Armor { get; set; }
     public float? Health { get; set; }
-    public WeaponType? WeaponType { get; set; }
+    public WeaponId? WeaponType { get; set; }
     public ushort? Ammo { get; set; }
     public CollisionShape CollisionShape { get; init; }
     public bool OnFootOnly { get; set; } = true;
@@ -53,7 +53,7 @@ public class Pickup : Element
         this.PositionChanged += UpdatePosition;
     }
 
-    public Pickup(Vector3 position, WeaponType type, ushort ammo)
+    public Pickup(Vector3 position, WeaponId type, ushort ammo)
     {
         this.Position = position;
         this.Ammo = ammo;
@@ -111,7 +111,7 @@ public class Pickup : Element
                 break;
 
             case PickupType.Weapon:
-                player.AddWeapon((WeaponId)(this.WeaponType ?? Elements.WeaponType.WEAPONTYPE_AK47), this.Ammo ?? 1, false);
+                player.AddWeapon(this.WeaponType ?? WeaponId.Ak47, this.Ammo ?? 1, false);
                 break;
             default:
                 break;

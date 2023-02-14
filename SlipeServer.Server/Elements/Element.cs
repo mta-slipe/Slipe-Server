@@ -566,7 +566,9 @@ public class Element
     /// <param name="server"></param>
     public void RemoveFrom(Player player)
     {
-        var associations = this.associations.Where(x => x.Element == this && x.Player == player);
+        var associations = this.associations
+            .Where(x => x.Element == this && x.Player == player)
+            .ToArray();
 
         foreach (var association in associations)
             this.associations.Remove(association);

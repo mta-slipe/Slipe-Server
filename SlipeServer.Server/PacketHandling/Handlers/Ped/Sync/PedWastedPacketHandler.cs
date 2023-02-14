@@ -5,6 +5,7 @@ using SlipeServer.Server.Enums;
 using SlipeServer.Server.PacketHandling.Handlers;
 using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Clients;
+using SlipeServer.Server.Elements.Enums;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers;
 
@@ -26,7 +27,7 @@ public class PedWastedPacketHandler : IPacketHandler<PedWastedPacket>
 
         ped.RunAsSync(() =>
         {
-            ped.Kill(this.elementCollection.Get(packet.KillerId), (WeaponType)packet.KillerWeapon, (BodyPart)packet.BodyPart, packet.AnimGroup, packet.AnimId);
+            ped.Kill(this.elementCollection.Get(packet.KillerId), (DamageType)packet.KillerWeapon, (BodyPart)packet.BodyPart, packet.AnimGroup, packet.AnimId);
         });
     }
 }
