@@ -111,17 +111,18 @@ public static class LuaBuilderExtensions
     {
         if (value.StringValue != null)
         {
-            if (value.StringValue.Length < ushort.MaxValue)
+            var bytes = System.Text.Encoding.UTF8.GetBytes(value.StringValue);
+            if (bytes.Length < ushort.MaxValue)
             {
                 builder.WriteCapped((byte)LuaType.String, 4);
-                builder.WriteCompressed((ushort)value.StringValue.Length);
-                builder.WriteStringWithoutLength(value.StringValue);
+                builder.WriteCompressed((ushort)bytes.Length);
+                builder.Write(bytes);
             } else
             {
                 builder.WriteCapped((byte)LuaType.LongString, 4);
-                builder.WriteCompressed((uint)value.StringValue.Length);
+                builder.WriteCompressed((uint)bytes.Length);
                 builder.AlignToByteBoundary();
-                builder.WriteStringWithoutLength(value.StringValue);
+                builder.Write(bytes);
             }
         }
     }

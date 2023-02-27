@@ -1465,10 +1465,11 @@ public class ServerTestLogic
         var table = new LuaValue(new Dictionary<LuaValue, LuaValue>()
         {
             ["x"] = 5.5f,
-            ["y"] = "string",
+            ["y"] = "ążćźółń",
             ["z"] = new LuaValue(new Dictionary<LuaValue, LuaValue>() { }),
             ["w"] = false,
-            ["player"] = player.Id
+            ["player"] = player.Id,
+
         });
         table.TableValue?.Add("self", table);
 
