@@ -110,10 +110,16 @@ jobs:
     vmImage: 'windows-2022'
   steps:
   - task: DotNetCoreCLI@2
+    displayName: 'Install docfx'
     inputs:
       command: 'custom'
       custom: 'tool'
       arguments: 'update -g docfx'
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet restore'
+    inputs:
+      command: 'restore'
+      feedsToUse: 'select'
   - task: CmdLine@2
     displayName: 'docfx build'
     inputs:
