@@ -27,6 +27,7 @@
     <None Remove="AdditionalResources\Parachute\Lua\parachute_cl.lua" />
     <None Remove="AdditionalResources\Parachute\Lua\skydiving_cl.lua" />
     <None Remove="AdditionalResources\Parachute\Lua\utility.lua" />
+    <None Remove="AdditionalResources\ResourceWithFeatures\Lua\Test.lua" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,6 +41,7 @@
     <EmbeddedResource Include="AdditionalResources\Parachute\Lua\parachute_cl.lua" />
     <EmbeddedResource Include="AdditionalResources\Parachute\Lua\skydiving_cl.lua" />
     <EmbeddedResource Include="AdditionalResources\Parachute\Lua\utility.lua" />
+    <EmbeddedResource Include="AdditionalResources\ResourceWithFeatures\Lua\Test.lua" />
   </ItemGroup>
 
   <ItemGroup>

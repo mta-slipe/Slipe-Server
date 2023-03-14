@@ -327,6 +327,12 @@ public class MtaServer
     /// </summary>
     /// <returns></returns>
     public T GetRequiredService<T>() where T: notnull => this.serviceProvider.GetRequiredService<T>();
+    
+    /// <summary>
+    /// Gets a registered service from the dependency injection conatiner, throwing an exception if there is no registered service for the specified type
+    /// </summary>
+    /// <returns></returns>
+    public object GetRequiredService(Type type) => this.serviceProvider.GetRequiredService(type);
 
     /// <summary>
     /// Sends a packet to all players on the server.

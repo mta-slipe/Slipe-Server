@@ -2,16 +2,19 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SlipeServer.ConfigurationProviders;
 using SlipeServer.Console.AdditionalResources;
+using SlipeServer.Console.AdditionalResources.ResourceWithFeatures;
 using SlipeServer.Console.Elements;
 using SlipeServer.Console.Logic;
 using SlipeServer.Console.PacketReplayer;
 using SlipeServer.Console.Proxy;
+using SlipeServer.Console.ResourceFeatures;
 using SlipeServer.Console.Services;
 using SlipeServer.Lua;
 using SlipeServer.LuaControllers;
 using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Physics.Extensions;
 using SlipeServer.Server;
+using SlipeServer.Server.Extensions;
 using SlipeServer.Server.Loggers;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.ServerBuilders;
@@ -87,10 +90,13 @@ public partial class Program
 
                     services.AddScoped<TestService>();
                     services.AddSingleton<PacketReplayerService>();
+
+                    services.AddResourceFeature<IAddAuthorFeature, AddAuthorFeature>();
                 });
                 builder.AddLua();
                 builder.AddPhysics();
                 builder.AddParachuteResource();
+                builder.AddResourceWithFeatures();
                 builder.AddLuaControllers();
 
                 builder.AddLogic<ServerTestLogic>();
