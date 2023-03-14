@@ -92,6 +92,7 @@ public partial class Program
                     services.AddSingleton<PacketReplayerService>();
 
                     services.AddResourceFeature<IAddAuthorFeature, AddAuthorFeature>();
+                    services.AddResourceFeature<IVerifySourceCodeFeature, VerifySourceCodeFeature>();
                 });
                 builder.AddLua();
                 builder.AddPhysics();

@@ -10,6 +10,9 @@ using SlipeServer.Console.ResourceFeatures;
 namespace SlipeServer.Console.AdditionalResources.ResourceWithFeatures;
 
 public class ResourceWithFeaturesResource : Resource, IAddAuthorFeature
+#if DEBUG
+    , IVerifySourceCodeFeature
+#endif
 {
     public Dictionary<string, byte[]> AdditionalFiles { get; } = new Dictionary<string, byte[]>()
     {

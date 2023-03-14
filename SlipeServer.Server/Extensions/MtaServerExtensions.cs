@@ -21,7 +21,7 @@ public static class MtaServerExtensions
 
         foreach (var featureType in implementedFeatures)
         {
-            var featureApplierType = ServiceCollectionExtensions._featureApplier[featureType];
+            var featureApplierType = ResourceFeatures.resourceFeatureAppliers[featureType];
 
             var featureApplierInstance = server.GetRequiredService(featureApplierType);
             featureApplierInstance.GetType().GetMethod("Apply").Invoke(featureApplierInstance, new object[] { resource, resource, files });

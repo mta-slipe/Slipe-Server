@@ -36,7 +36,8 @@ internal class AddAuthorFeature : IResourceFeatureApplier<IAddAuthorFeature>
         foreach (var item in files)
         {
             files[item.Key] = Combine(authorComment, item.Value);
-            resource.Files[0] = ResourceFileFactory.FromBytes(files[item.Key], item.Key);
+            var index = resource.Files.IndexOf(resource.Files.Where(x => x.Name == item.Key).First());
+            resource.Files[index] = ResourceFileFactory.FromBytes(files[item.Key], item.Key);
         }
     }
 }
