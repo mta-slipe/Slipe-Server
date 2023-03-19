@@ -65,10 +65,10 @@ public class Colors
     public Colors(Vehicle vehicle, Color? primary = null, Color? secondary = null, Color? color3 = null, Color? color4 = null)
     {
         this.vehicle = vehicle;
-        this.primary = primary ?? Color.White;
-        this.secondary = secondary ?? Color.White;
-        this.color3 = color3 ?? Color.White;
-        this.color4 = color4 ?? Color.White;
+        this.primary = primary ?? Color.Black;
+        this.secondary = secondary ?? Color.Black;
+        this.color3 = color3 ?? Color.Black;
+        this.color4 = color4 ?? Color.Black;
     }
 
     public event ElementEventHandler<Vehicle, VehicleColorChangedEventsArgs>? ColorChanged;

@@ -31,7 +31,7 @@ public class SetVehicleColorRpcPacket : Packet
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRPCFunction.SET_VEHICLE_COLOR);
         builder.Write(this.ElementId);
-        builder.WriteCapped((byte)this.Colors.Length, 2);
+        builder.WriteCapped((byte)Array.IndexOf(this.Colors, Color.Black), 2);
         foreach (var color in this.Colors)
             builder.Write(color);
 

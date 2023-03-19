@@ -1275,6 +1275,27 @@ public class ServerTestLogic
             testobj2.AreCollisionsEnabled = true;
         };
 
+        this.commandService.AddCommand("perennial").Triggered += (source, args) =>
+        {
+            new Vehicle(404, args.Player.Position).AssociateWith(server);
+        };
+
+        this.commandService.AddCommand("randomizecolor").Triggered += (source, args) =>
+        {
+            var rnd = new Random();
+            var veh = args.Player.Vehicle;
+            veh.Colors.Primary = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
+            veh.Colors.Secondary = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
+            veh.Colors.Color3 = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
+            veh.Colors.Color4 = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
+        };
+
+        this.commandService.AddCommand("vehgreen").Triggered += (source, args) =>
+        {
+            var veh = args.Player.Vehicle;
+            veh.Colors.Primary = Color.GreenYellow;
+            veh.Colors.Secondary = Color.GreenYellow;
+        };
     }
 
     private void OnPlayerJoin(CustomPlayer player)
