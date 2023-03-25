@@ -103,6 +103,17 @@ public class ServerBuilder
     {
         AddBuildStep(server => server.InstantiatePersistent<T>(parameters));
     }
+    
+    /// <summary>
+    /// Will instantiate a certain type using the dependency injection container
+    /// Will also keep a reference to the instantiated type to prevent it from being garbage collected
+    /// </summary>
+    /// <param name="type">The type to instiantiate</param>
+    /// <param name="parameters">parameters to pass to the constructor that cannot be supplied by the dependency injection container</param>
+    public void InstantiatePersistent(Type type, params object[] parameters)
+    {
+        AddBuildStep(server => server.InstantiatePersistent(type, parameters));
+    }
 
     /// <summary>
     /// Adds a behaviour class to the server, purely for semantics otherwise identical to `InstiantiatePersistent` 
@@ -118,6 +129,14 @@ public class ServerBuilder
     public void AddLogic<T>(params object[] parameters)
     {
         InstantiatePersistent<T>(parameters);
+    }
+    
+    /// <summary>
+    /// Adds a game logic class to the server, purely for semantics otherwise identical to `InstiantiatePersistent` 
+    /// </summary>
+    public void AddLogic(Type type, params object[] parameters)
+    {
+        InstantiatePersistent(type, parameters);
     }
 
     /// <summary>
