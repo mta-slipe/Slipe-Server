@@ -37,6 +37,14 @@ using static SlipeServer.Packets.Constants.KeyConstants;
 
 namespace SlipeServer.Console.Logic;
 
+public class TestLogic
+{
+    public TestLogic()
+    {
+        System.Console.WriteLine("TestLogic started");
+    }
+}
+
 public class ServerTestLogic
 {
     private readonly MtaServer<CustomPlayer> server;

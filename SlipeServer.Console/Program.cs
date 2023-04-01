@@ -105,6 +105,7 @@ public partial class Program
                 builder.AddLogic<ClothingTestLogic>();
                 builder.AddLogic<PedTestLogic>();
                 builder.AddLogic<ProxyService>();
+                builder.AddLogic(typeof(TestLogic));
                 //builder.AddBehaviour<VelocityBehaviour>();
                 //builder.AddBehaviour<EventLoggingBehaviour>();
 
