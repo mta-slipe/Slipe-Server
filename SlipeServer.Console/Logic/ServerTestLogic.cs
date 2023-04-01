@@ -37,6 +37,14 @@ using static SlipeServer.Packets.Constants.KeyConstants;
 
 namespace SlipeServer.Console.Logic;
 
+public class TestLogic
+{
+    public TestLogic()
+    {
+        System.Console.WriteLine("TestLogic started");
+    }
+}
+
 public class ServerTestLogic
 {
     private readonly MtaServer<CustomPlayer> server;
@@ -897,7 +905,14 @@ public class ServerTestLogic
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            await this.resourceProvider.GetResource("SlipeTestResource").StartForAsync(args.Player);
+            try
+            {
+                await this.resourceProvider.GetResource("SlipeTestResource").StartForAsync(args.Player);
+            }
+            catch(Exception ex)
+            {
+                this.logger.LogError(ex, "Failed to start Slipe Lua test resource for {playerName}, {ex}", args.Player.Name, ex.ToString());
+            }
             stopwatch.Stop();
             this.logger.LogInformation("Starting Slipe Lua test resource for {playerName} took {milliseconds}ms", args.Player.Name, stopwatch.ElapsedMilliseconds);
         };

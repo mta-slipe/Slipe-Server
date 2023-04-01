@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets.Definitions.Resources;
 using SlipeServer.Packets.Structs;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Extensions;
 using System.Collections.Generic;
 using System.Linq;
@@ -84,24 +85,32 @@ public class Resource
     {
         var source = new TaskCompletionSource();
 
-        void HandleResourceStart(Player sender, Elements.Events.PlayerResourceStartedEventArgs e)
+        void HandleResourceStart(Player sender, PlayerResourceStartedEventArgs e)
         {
             if (e.NetId != this.NetId)
                 return;
 
             player.ResourceStarted -= HandleResourceStart;
+            player.Disconnected -= HandlePlayerDisconnected;
+
             source.SetResult();
         }
 
+        void HandlePlayerDisconnected(Player disconnectingPlayer, PlayerQuitEventArgs e)
+        {
+            if(player != disconnectingPlayer)
+                return;
+
+            player.ResourceStarted -= HandleResourceStart;
+            player.Disconnected -= HandlePlayerDisconnected;
+
+            source.SetException(new System.Exception("Player disconnected."));
+        }
+
         player.ResourceStarted += HandleResourceStart;
+        player.Disconnected += HandlePlayerDisconnected;
 
-
-        new ResourceStartPacket(this.Name, this.NetId, this.Root.Id, this.DynamicRoot.Id, (ushort)this.NoClientScripts.Count, null, null, this.IsOopEnabled, this.PriorityGroup, this.Files, this.Exports)
-            .SendTo(player);
-
-        if (this.NoClientScripts.Any())
-            new ResourceClientScriptsPacket(this.NetId, this.NoClientScripts.ToDictionary(x => x.Key, x => CompressFile(x.Value)))
-                .SendTo(player);
+        StartFor(player);
 
         return source.Task;
     }
