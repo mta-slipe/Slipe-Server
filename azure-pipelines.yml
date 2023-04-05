@@ -120,6 +120,10 @@ jobs:
     inputs:
       command: 'restore'
       feedsToUse: 'select'
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet build'
+    inputs:
+      command: 'build'
   - task: CmdLine@2
     displayName: 'docfx build'
     inputs:
