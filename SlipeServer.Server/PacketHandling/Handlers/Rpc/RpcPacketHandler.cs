@@ -111,7 +111,8 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
         client.SendPacket(existingPlayersListPacket);
 
         var elements = this.elementCollection
-            .GetAll();
+            .GetAll()
+            .Where(x => x.Associations.Any(y => y.IsGlobal));
         var packet = AddEntityPacketFactory.CreateAddEntityPacket(elements);
         client.SendPacket(packet);
 

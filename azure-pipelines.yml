@@ -114,7 +114,7 @@ jobs:
     inputs:
       command: 'custom'
       custom: 'tool'
-      arguments: 'update -g docfx'
+      arguments: 'update --version 2.62.1 -g docfx'
   - task: DotNetCoreCLI@2
     displayName: 'dotnet restore'
     inputs:
