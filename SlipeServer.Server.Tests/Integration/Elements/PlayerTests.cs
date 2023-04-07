@@ -93,25 +93,21 @@ public class PlayerTests
         var player = server.AddFakePlayer();
         var resource = server.GetAdditionalResource<TestResource>();
 
-        var wait = new TaskCompletionSource();
+        var waitForStartPacket = new TaskCompletionSource();
         server.PacketSent += (uint address, ushort version, Packet packet) =>
         {
-            if(packet is ResourceStartPacket startPacket)
+            if(packet is ResourceStartPacket)
             {
-                wait.SetResult();
+                waitForStartPacket.SetResult();
             }
             else
             {
-                wait.SetException(new System.Exception());
+                waitForStartPacket.SetException(new System.Exception());
             }
         };
 
-        _ = Task.Run(async () =>
-        {
-            await resource.StartForAsync(player);
-        });
-
-        await wait.Task;
+        _ = resource.StartForAsync(player);
+        await waitForStartPacket.Task;
 
         server.VerifyPacketSent(PacketId.PACKET_ID_RESOURCE_START, player, count: 1);
     }
