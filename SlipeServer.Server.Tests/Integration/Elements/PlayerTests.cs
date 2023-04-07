@@ -1,12 +1,27 @@
-﻿using SlipeServer.Packets.Definitions.Player;
+﻿using SlipeServer.Packets;
+using SlipeServer.Packets.Definitions.Player;
+using SlipeServer.Packets.Definitions.Resources;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Server.Elements;
 using SlipeServer.Server.Loggers;
 using SlipeServer.Server.PacketHandling.Handlers.Player;
 using SlipeServer.Server.PacketHandling.Handlers.QueueHandlers;
+using SlipeServer.Server.Resources;
 using SlipeServer.Server.TestTools;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SlipeServer.Server.Tests.Integration.Elements;
+
+public class TestResource : Resource
+{
+    public TestResource(MtaServer server)
+        : base(server, server.GetRequiredService<RootElement>(), "Test")
+    {
+    }
+}
+
 public class PlayerTests
 {
     [Fact]
@@ -41,5 +56,63 @@ public class PlayerTests
 
         server.VerifyPacketSent(PacketId.PACKET_ID_PLAYER_WASTED, player1, count: 1);
         server.VerifyPacketSent(PacketId.PACKET_ID_PLAYER_WASTED, player2, count: 1);
+    }
+
+    [Fact]
+    public void StartForMethod_Relays_startfor_packet()
+    {
+        var server = new TestingServer(null, builder =>
+        {
+            builder.AddBuildStep(server =>
+            {
+                var resource = new TestResource(server);
+                server.AddAdditionalResource(resource, new Dictionary<string, byte[]>());
+            });
+        });
+
+        var player = server.AddFakePlayer();
+        var resource = server.GetAdditionalResource<TestResource>();
+
+        resource.StartFor(player);
+
+        server.VerifyPacketSent(PacketId.PACKET_ID_RESOURCE_START, player, count: 1);
+    }
+
+    [Fact]
+    public async Task StartForAsyncMethod_Relays_startfor_packet()
+    {
+        var server = new TestingServer(null, builder =>
+        {
+            builder.AddBuildStep(server =>
+            {
+                var resource = new TestResource(server);
+                server.AddAdditionalResource(resource, new Dictionary<string, byte[]>());
+            });
+        });
+
+        var player = server.AddFakePlayer();
+        var resource = server.GetAdditionalResource<TestResource>();
+
+        var wait = new TaskCompletionSource();
+        server.PacketSent += (uint address, ushort version, Packet packet) =>
+        {
+            if(packet is ResourceStartPacket startPacket)
+            {
+                wait.SetResult();
+            }
+            else
+            {
+                wait.SetException(new System.Exception());
+            }
+        };
+
+        _ = Task.Run(async () =>
+        {
+            await resource.StartForAsync(player);
+        });
+
+        await wait.Task;
+
+        server.VerifyPacketSent(PacketId.PACKET_ID_RESOURCE_START, player, count: 1);
     }
 }
