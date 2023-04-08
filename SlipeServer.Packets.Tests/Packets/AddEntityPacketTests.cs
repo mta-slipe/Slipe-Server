@@ -72,7 +72,7 @@ public class AddEntityPacketTests
             true, true, true, (byte)0, 1000, 50, (ElementId)666);
         packet.AddVehicle((ElementId)675, (byte)2, null, 0, 0,
             null, true, true, new CustomData(), "Test vehicle",
-            0, new Vector3(-10, 5, 3), Vector3.Zero, 602, 1000, 0, new Color[] {
+            0, new Vector3(-10, 5, 3), Vector3.Zero, 602, 1000, 0, new Color?[] {
                         Color.Red, Color.Blue
             }, 0, new VehicleDamage()
             {

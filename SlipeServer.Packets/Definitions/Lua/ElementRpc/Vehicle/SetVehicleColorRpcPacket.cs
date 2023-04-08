@@ -13,9 +13,9 @@ public class SetVehicleColorRpcPacket : Packet
     public override PacketPriority Priority => PacketPriority.High;
 
     public ElementId ElementId { get; set; }
-    public Color[] Colors { get; set; }
+    public Color?[] Colors { get; set; }
 
-    public SetVehicleColorRpcPacket(ElementId elementId, Color[] colors)
+    public SetVehicleColorRpcPacket(ElementId elementId, Color?[] colors)
     {
         this.ElementId = elementId;
         this.Colors = colors;
@@ -31,9 +31,10 @@ public class SetVehicleColorRpcPacket : Packet
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRPCFunction.SET_VEHICLE_COLOR);
         builder.Write(this.ElementId);
-        builder.WriteCapped((byte)this.Colors.Length, 2);
+        var number = Math.Min((byte)Array.IndexOf(this.Colors, null), this.Colors.Length);
+        builder.WriteCapped(number, 2);
         foreach (var color in this.Colors)
-            builder.Write(color);
+            builder.Write(color ?? Color.Black);
 
         return builder.Build();
     }

@@ -34,7 +34,7 @@ public class VehicleSpawnPacket : Packet
             builder.Write(vehicleToSpawn.Rotation);
             builder.WriteCapped(vehicleToSpawn.Colors.Length, 2);
             foreach (var color in vehicleToSpawn.Colors)
-                builder.Write(color);
+                builder.Write(color ?? System.Drawing.Color.White);
         }
         return builder.Build();
     }
