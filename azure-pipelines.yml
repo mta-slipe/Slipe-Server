@@ -106,6 +106,7 @@ jobs:
         publishLocation: 'Container'
     
 - job: 'docfx_build'
+  continueOnError: true
   pool:
     vmImage: 'windows-2022'
   steps:
