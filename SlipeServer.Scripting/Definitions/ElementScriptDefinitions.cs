@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Server.Elements;
 using System.Numerics;
+using MoonSharp.Interpreter;
 
 namespace SlipeServer.Scripting.Definitions;
 
@@ -25,4 +26,11 @@ public class ElementScriptDefinitions
 
     [ScriptFunctionDefinition("getElementType")]
     public string GetElementType(Element element) => element.ElementType.ToString().ToLower();
+
+    [ScriptFunctionDefinition("createElement")]
+    public Element CreateElement(string type)
+    {
+
+        return new object() as Element;
+    }
 }
