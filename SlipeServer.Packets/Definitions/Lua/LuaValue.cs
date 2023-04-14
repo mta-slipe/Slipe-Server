@@ -104,7 +104,7 @@ public class LuaValue
         {
             [1] = vector.X,
             [2] = vector.Y,
-            [3] = vector.Y,
+            [3] = vector.Z,
         });
 
     public static LuaValue CreateElement(uint? value)
