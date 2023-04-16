@@ -1290,6 +1290,61 @@ public class ServerTestLogic
             testobj2.AreCollisionsEnabled = true;
         };
 
+        var table = new LuaValue(new Dictionary<LuaValue, LuaValue>()
+        {
+            ["x"] = 5.5f,
+            ["y"] = "ążćźółń",
+            ["z"] = new LuaValue(new Dictionary<LuaValue, LuaValue>()
+            {
+                ["x"] = 5.5f,
+                ["y"] = "ążćźółń",
+                ["z"] = new LuaValue(new Dictionary<LuaValue, LuaValue>()
+                {
+                    ["x"] = 5.5f,
+                    ["y"] = "ążćźółń",
+                    ["z"] = new LuaValue(new Dictionary<LuaValue, LuaValue>() { }),
+                    ["w"] = false,
+                    ["player"] = (uint)123,
+                    ["vector2array"] = LuaValue.ArrayFromVector(new Vector2(1, 3)),
+                }),
+                ["w"] = false,
+                ["player"] = (uint)123,
+                ["vector2array"] = LuaValue.ArrayFromVector(new Vector2(1, 3)),
+                ["vector2"] = new Vector2(1, 3),
+                ["vector3"] = new Vector3(1, 3, 3),
+            }),
+            ["w"] = false,
+            ["player"] = (uint)123,
+            ["vector2array"] = LuaValue.ArrayFromVector(new Vector2(1, 3)),
+        });
+
+        var integer = new LuaValue(123);
+        var doublev = new LuaValue(123.45d);
+        var floatv = new LuaValue(123.45f);
+        var stringv = new LuaValue("i'm string");
+        var debugView = table.DebugView;
+
+        var sequentialTableValue = LuaValue.IsSequentialTableValue(new Dictionary<LuaValue, LuaValue>
+        {
+            [3] = true,
+            [1] = true,
+            [2] = true,
+        });
+
+        var nonSequentialTableValue1 = LuaValue.IsSequentialTableValue(new Dictionary<LuaValue, LuaValue>
+        {
+            [1] = true,
+            [2] = true,
+            [3] = true,
+            [5] = true,
+        });
+
+        var nonSequentialTableValue2 = LuaValue.IsSequentialTableValue(new Dictionary<LuaValue, LuaValue>
+        {
+            [2] = true,
+            [3] = true,
+            [4] = true,
+        });
     }
 
     private void OnPlayerJoin(CustomPlayer player)
