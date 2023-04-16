@@ -92,6 +92,21 @@ public class LuaValue
         this.IsNil = value == null;
     }
 
+    public static LuaValue ArrayFromVector(Vector2 vector) =>
+        new(new Dictionary<LuaValue, LuaValue>()
+        {
+            [1] = vector.X,
+            [2] = vector.Y,
+        });
+
+    public static LuaValue ArrayFromVector(Vector3 vector) =>
+        new(new Dictionary<LuaValue, LuaValue>()
+        {
+            [1] = vector.X,
+            [2] = vector.Y,
+            [3] = vector.Z,
+        });
+
     public static LuaValue CreateElement(uint? value)
     {
         return new LuaValue(value);

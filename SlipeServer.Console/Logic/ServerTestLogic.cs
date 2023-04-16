@@ -1484,7 +1484,7 @@ public class ServerTestLogic
             ["z"] = new LuaValue(new Dictionary<LuaValue, LuaValue>() { }),
             ["w"] = false,
             ["player"] = player.Id,
-
+            ["vector2array"] = LuaValue.ArrayFromVector(new Vector2(1,3)),
         });
         table.TableValue?.Add("self", table);
 
