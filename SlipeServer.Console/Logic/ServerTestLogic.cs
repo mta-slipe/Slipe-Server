@@ -1290,6 +1290,16 @@ public class ServerTestLogic
             testobj2.AreCollisionsEnabled = true;
         };
 
+
+        this.commandService.AddCommand("spawndetect").Triggered += (source, args) =>
+        {
+            var shape = new CollisionSphere(new Vector3(112.10254f, 16.243164f, 0.609375f), 2).AssociateWith(server);
+            shape.ElementEntered += e =>
+            {
+                this.chatBox.OutputTo(args.Player, $"Spawned entered {e}", Color.YellowGreen);
+            };
+            args.Player.Spawn(new Vector3(112.10254f, 16.243164f, 0.609375f), 0, 0, 0, 0);
+        };
     }
 
     private void OnPlayerJoin(CustomPlayer player)

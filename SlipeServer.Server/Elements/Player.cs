@@ -223,19 +223,19 @@ public class Player : Ped
 
     public void Spawn(Vector3 position, float rotation, ushort model, byte interior, ushort dimension)
     {
-        this.position = position;
+        this.Position = position;
         this.PedRotation = rotation;
-        this.model = model;
-        this.interior = interior;
-        this.dimension = dimension;
+        this.Model = model;
+        this.Interior = interior;
+        this.Dimension = dimension;
 
         this.Weapons.Clear(false);
         this.Vehicle = null;
         this.Seat = null;
         this.VehicleAction = VehicleAction.None;
         this.HasJetpack = false;
-        this.health = 100;
-        this.armor = 0;
+        this.Health = 100;
+        this.Armor = 0;
 
         this.Spawned?.Invoke(this, new PlayerSpawnedEventArgs(this));
     }
