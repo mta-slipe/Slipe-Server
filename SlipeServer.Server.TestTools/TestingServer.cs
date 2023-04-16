@@ -26,8 +26,7 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
     {
         x.UseConfiguration(configuration ?? new());
         x.ConfigureServices(ConfigureOverrides);
-        if (configure != null)
-            configure(x);
+        configure?.Invoke(x);
     })
     {
         this.NetWrapperMock = new Mock<INetWrapper>();
