@@ -1,12 +1,41 @@
 ﻿using SlipeServer.Packets.Structs;
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
+using System.Reflection;
+using System.Text;
 
 namespace SlipeServer.Packets.Definitions.Lua;
 
-[DebuggerDisplay("LuaValue")]
+internal class LuaValueDebuggingView
+{
+    private LuaValue luaValue { get; set; }
+
+    public LuaValueDebuggingView(LuaValue luaValue)
+    {
+        this.luaValue = luaValue;
+    }
+    public LuaType Type => this.luaValue.LuaType;
+
+    public object? Value => this.luaValue.LuaType switch
+    {
+        LuaType.None => "none",
+        LuaType.Nil => "nil",
+        LuaType.Boolean => this.luaValue.BoolValue,
+        LuaType.Number => this.luaValue.IntegerValue ?? this.luaValue.FloatValue ?? this.luaValue.DoubleValue,
+        LuaType.Userdata => this.luaValue.ElementId,
+        LuaType.String or LuaType.LongString => this.luaValue.StringValue,
+        LuaType.Table => this.luaValue.TableValue,
+        _ => $"Unsupported Lua value type: {this.luaValue.LuaType}.",
+    };
+}
+
+[DebuggerTypeProxy(typeof(LuaValueDebuggingView))]
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
 public class LuaValue
 {
     public LuaType LuaType { get; set; }
@@ -140,6 +169,8 @@ public class LuaValue
             base.GetHashCode();
     }
 
+    public string DebugView => Serialize(this);
+
     public override string ToString()
     {
         if (this.TableValue != null)
@@ -205,4 +236,99 @@ public class LuaValue
         var stringKeyedDictionary = value.TableValue.ToDictionary(x => x.Key.StringValue!, x => x.Value);
         return new ((float)stringKeyedDictionary["X"], (float)stringKeyedDictionary["Y"], (float)stringKeyedDictionary["Z"]);
     }
+
+    public static string Serialize(LuaValue value, int maxDepth = 10, int currentDepth = 0)
+    {
+        if (currentDepth > maxDepth)
+        {
+            return "<max recursion depth reached>";
+        }
+
+        switch (value.LuaType)
+        {
+            case LuaType.None:
+                return "none";
+            case LuaType.Nil:
+                return "nil";
+            case LuaType.Boolean:
+                return value.BoolValue?.ToString().ToLower() ?? "<null boolean value>";
+            case LuaType.Number:
+                return (value.IntegerValue ?? value.FloatValue ?? value.DoubleValue).ToString() ?? "<null integer/float/double value>";
+            case LuaType.Userdata:
+                return $"{value.ElementId} -- Element";
+            case LuaType.String:
+                return $"\"{value.StringValue}\"";
+            case LuaType.Table:
+                var tableIndentation = new string(' ', currentDepth * 2);
+                var sb = new StringBuilder();
+
+                if (value.TableValue == null)
+                    return "<null table value>";
+
+                if ( !value.TableValue.Any())
+                {
+                    sb.AppendLine("{ },");
+                    return sb.ToString();
+                }
+
+                if (IsSequentialTableValue(value.TableValue))
+                {
+                    sb.Append('{');
+                    sb.Append(string.Join(", ", value.TableValue.Select(sequentialValue => Serialize(sequentialValue.Value, maxDepth, currentDepth + 1))));
+                    sb.Append('}');
+                }
+                else
+                {
+                    sb.AppendLine("{");
+                    foreach (var pair in value.TableValue)
+                    {
+                        sb.Append($"{tableIndentation}  ");
+                        sb.Append($"[\"{pair.Key}\"] = ");
+                        if (pair.Value.LuaType == LuaType.Table && pair.Value.TableValue != null && !pair.Value.TableValue.Any())
+                            sb.AppendLine("{ },");
+                        else
+                            sb.AppendLine(Serialize(pair.Value, maxDepth, currentDepth + 1) + ",");
+                    }
+                    sb.Append($"{tableIndentation}}}");
+                }
+
+                return sb.ToString();
+            case LuaType.LongString:
+                return $"[==[{value.StringValue}]==]";
+            default:
+                throw new ArgumentException($"Unsupported Lua value type: {value.LuaType}.", nameof(value));
+        }
+    }
+
+    public static bool IsSequentialTableValue(Dictionary<LuaValue, LuaValue> table)
+    {
+        if (!table.Any())
+            return false;
+
+        int expectedIndex = 1;
+        foreach (var kvp in table)
+        {
+            if (kvp.Key.LuaType != LuaType.Number || kvp.Key.IntegerValue != expectedIndex)
+                return false;
+
+            expectedIndex++;
+        }
+
+        return true;
+    }
+
+    private string DebuggerDisplay =>
+        this.LuaType switch
+        {
+            LuaType.None => "none",
+            LuaType.Nil => "nil",
+            LuaType.Boolean => this.BoolValue.ToString()?.ToLower() ?? "<null boolean value>",
+            LuaType.Number => (this.IntegerValue ?? this.FloatValue ?? this.DoubleValue).ToString() ?? "<null integer/float/double value>",
+            LuaType.Userdata => $"{this.ElementId} -- Element",
+            LuaType.String or LuaType.LongString => this.StringValue == null ? "<null string value>" : $"\"{this.StringValue}\"",
+            LuaType.Table when this.TableValue == null => "<null table value>",
+            LuaType.Table when IsSequentialTableValue(this.TableValue) => $"List Length={this.TableValue.Count}",
+            LuaType.Table => $"Table Length={this.TableValue.Count}",
+            _ => $"Unsupported Lua value type: {this.LuaType}.",
+        };
 }

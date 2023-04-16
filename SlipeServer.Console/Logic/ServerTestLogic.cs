@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Numerics;
@@ -1290,6 +1291,50 @@ public class ServerTestLogic
             testobj2.AreCollisionsEnabled = true;
         };
 
+
+        this.commandService.AddCommand("spawndetect").Triggered += (source, args) =>
+        {
+            var shape = new CollisionSphere(new Vector3(112.10254f, 16.243164f, 0.609375f), 2).AssociateWith(server);
+            shape.ElementEntered += e =>
+            {
+                this.chatBox.OutputTo(args.Player, $"Spawned entered {e}", Color.YellowGreen);
+            };
+            args.Player.Spawn(new Vector3(112.10254f, 16.243164f, 0.609375f), 0, 0, 0, 0);
+        };
+
+        var table = new LuaValue(new Dictionary<LuaValue, LuaValue>()
+        {
+            ["x"] = 5.5f,
+            ["y"] = "ążćźółń",
+            ["z"] = new LuaValue(new Dictionary<LuaValue, LuaValue>()
+            {
+                ["x"] = 5.5f,
+                ["y"] = "ążćźółń",
+                ["z"] = new LuaValue(new Dictionary<LuaValue, LuaValue>()
+                {
+                    ["x"] = 5.5f,
+                    ["y"] = "ążćźółń",
+                    ["z"] = new LuaValue(new Dictionary<LuaValue, LuaValue>() { }),
+                    ["w"] = false,
+                    ["player"] = (uint)123,
+                    ["vector2array"] = LuaValue.ArrayFromVector(new Vector2(1, 3)),
+                }),
+                ["w"] = false,
+                ["player"] = (uint)123,
+                ["vector2array"] = LuaValue.ArrayFromVector(new Vector2(1, 3)),
+                ["vector2"] = new Vector2(1, 3),
+                ["vector3"] = new Vector3(1, 3, 3),
+            }),
+            ["w"] = false,
+            ["player"] = (uint)123,
+            ["vector2array"] = LuaValue.ArrayFromVector(new Vector2(1, 3)),
+        });
+
+        var integer = new LuaValue(123);
+        var doublev = new LuaValue(123.45d);
+        var floatv = new LuaValue(123.45f);
+        var stringv = new LuaValue("i'm string");
+        var debugView = table.DebugView;
     }
 
     private void OnPlayerJoin(CustomPlayer player)
