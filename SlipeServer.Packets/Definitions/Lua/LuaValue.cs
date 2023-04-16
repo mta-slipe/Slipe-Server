@@ -285,11 +285,7 @@ public class LuaValue
 
         var keyValues = keys.Select(x => x.IntegerValue).Order().ToList();
 
-        for (int i = 0; i < keyValues.Count; i++)
-            if (keyValues[i] != i + 1)
-                return false;
-
-        return true;
+        return keyValues.First() == 1 && keyValues.Last() == keyValues.Count;
     }
 
     private string DebuggerDisplay =>
