@@ -24,4 +24,5 @@ public enum ElementType
     DatabaseConnection,
     Root,
     Unknown,
+    Custom,
 }
