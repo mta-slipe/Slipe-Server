@@ -18,10 +18,12 @@ public class ElementScriptDefinitions
 {
     private readonly MtaServer server;
     private readonly IDictionary<ElementType, object> elementsForVariants;
+    private readonly IElementCollection elementCollection;
 
-    public ElementScriptDefinitions(MtaServer _server)
+    public ElementScriptDefinitions(MtaServer _server, IElementCollection elementCollection)
     {
         this.server = _server;
+        this.elementCollection = (RTreeCompoundElementCollection)elementCollection;
         this.elementsForVariants = new Dictionary<ElementType, object>(Enum.GetNames(typeof(ElementType)).Length)
         {
             [ElementType.Player] = typeof(Player),
@@ -68,9 +70,7 @@ public class ElementScriptDefinitions
     [ScriptFunctionDefinition("createElement")]
     public Element CreateElement(string type, int? elementID = null)
     {
-        BasicCompoundElementCollection elementCollection = (BasicCompoundElementCollection)this.server.GetRequiredService<IElementCollection>();
-
-        IEnumerable<Element> allElements= elementCollection.GetAll();
+        //BasicCompoundElementCollection elementCollection = (BasicCompoundElementCollection)this.server.GetRequiredService<IElementCollection>();
 
         Element newElement;
 
@@ -85,6 +85,8 @@ public class ElementScriptDefinitions
         {
             newElement = new CustomElement(type);
         }
+
+        elementCollection.Add(newElement);
 
         return newElement;
     }

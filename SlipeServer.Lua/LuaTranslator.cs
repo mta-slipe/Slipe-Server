@@ -77,6 +77,7 @@ public class LuaTranslator
         if (obj is IEnumerable<object> enumerable)
             return enumerable.Select(x => ToDynValues(x)).SelectMany(x => x).ToArray();
 
+
         throw new NotImplementedException($"Conversion to Lua for {obj.GetType()} not implemented");
     }
 
@@ -133,6 +134,39 @@ public class LuaTranslator
             return GetTableFromDynValue(dynValues.Dequeue());
         if (typeof(Element).IsAssignableFrom(targetType))
             return dynValues.Dequeue().UserData.Object;
+        if (targetType == typeof(IEnumerable<string>))
+        {
+            List<string> args = new List<string> { };
+
+            foreach (DynValue arg in dynValues)
+            {
+                args.Add(GetStringFromDynValue(arg));
+            }
+            return args;
+        }
+        if (targetType == typeof(IEnumerable<object>))
+        {
+            List<object> args = new List<object>();
+
+            foreach (DynValue arg in dynValues)
+            {
+                switch (arg.Type)
+                {
+                    case DataType.String:
+                        args.Add(GetStringFromDynValue(arg));
+                        break;
+                    case DataType.UserData:
+                        var obj = (Element)arg.UserData.Object;
+                        args.Add(obj.Name + ":" + obj.GetHashCode());
+                        break;
+                    case DataType.Number:
+                        // TODO: This may result in data loss [Add more cases of number conversion]
+                        args.Add(GetInt32FromDynValue(arg));
+                        break;
+                }
+            }
+            return args;
+        }
         if (targetType == typeof(ScriptCallbackDelegateWrapper))
         {
             var callback = dynValues.Dequeue().Function;
@@ -143,6 +177,7 @@ public class LuaTranslator
             var callback = dynValues.Dequeue().Function;
             return (EventDelegate)((element, parameters) => callback.Call(new DynValue[] { UserData.Create(element) }.Concat(ToDynValues(parameters))));
         }
+
 
         throw new NotImplementedException($"Conversion from Lua for {targetType} not implemented");
     }
