@@ -90,4 +90,10 @@ public class ElementScriptDefinitions
 
         return newElement;
     }
+
+    [ScriptFunctionDefinition("detachElements")]
+    public void DeatchElements(Element childElement, Element? detachFrom = null)
+    {
+        childElement.DetachFrom(detachFrom ?? null);
+    }
 }
