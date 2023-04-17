@@ -1,4 +1,5 @@
-﻿using SlipeServer.Server;
+﻿using MoonSharp.Interpreter;
+using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using System.Numerics;
 
@@ -8,7 +9,7 @@ public class ObjectScriptDefinitions
 {
     private readonly MtaServer server;
 
-    public ObjectScriptDefinitions(MtaServer server)
+    public ObjectScriptDefinitions(MtaServer server, Script _)
     {
         this.server = server;
     }

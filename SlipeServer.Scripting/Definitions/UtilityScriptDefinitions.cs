@@ -1,4 +1,5 @@
-﻿using SlipeServer.Server;
+﻿using MoonSharp.Interpreter;
+using SlipeServer.Server;
 using System;
 using System.Drawing;
 using System.Security.Cryptography;
@@ -10,7 +11,7 @@ public class UtilityScriptDefinitions
 {
     private readonly MtaServer server;
 
-    public UtilityScriptDefinitions(MtaServer server)
+    public UtilityScriptDefinitions(MtaServer server, Script _)
     {
         this.server = server;
     }

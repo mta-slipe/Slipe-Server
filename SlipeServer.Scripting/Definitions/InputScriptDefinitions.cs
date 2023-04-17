@@ -1,10 +1,12 @@
-﻿namespace SlipeServer.Scripting.Definitions;
+﻿using MoonSharp.Interpreter;
+
+namespace SlipeServer.Scripting.Definitions;
 
 public class InputScriptDefinitions
 {
     private readonly IScriptInputRuntime inputRuntime;
 
-    public InputScriptDefinitions(IScriptInputRuntime inputRuntime)
+    public InputScriptDefinitions(IScriptInputRuntime inputRuntime, Script _)
     {
         this.inputRuntime = inputRuntime;
     }

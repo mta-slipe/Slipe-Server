@@ -1,4 +1,5 @@
-﻿using SlipeServer.Server.Elements;
+﻿using MoonSharp.Interpreter;
+using SlipeServer.Server.Elements;
 
 namespace SlipeServer.Scripting.Definitions;
 
@@ -6,7 +7,7 @@ public class EventScriptDefinitions
 {
     private readonly IScriptEventRuntime eventRuntime;
 
-    public EventScriptDefinitions(IScriptEventRuntime eventRuntime)
+    public EventScriptDefinitions(IScriptEventRuntime eventRuntime, Script _)
     {
         this.eventRuntime = eventRuntime;
     }

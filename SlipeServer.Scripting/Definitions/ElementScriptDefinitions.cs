@@ -3,17 +3,12 @@ using System.Numerics;
 using MoonSharp.Interpreter;
 using SlipeServer.Server.ElementCollections;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Linq;
 using SlipeServer.Server;
-using System.Text.RegularExpressions;
 using System;
-using System.Collections;
 using SlipeServer.Server.Elements.ColShapes;
-using System.Runtime.InteropServices;
-using Microsoft.Extensions.Primitives;
 using SlipeServer.Server.Elements.Enums;
-using System.ComponentModel;
+using SlipeServer.Packets.Definitions.Lua;
+using System.Linq;
 
 namespace SlipeServer.Scripting.Definitions;
 
@@ -126,5 +121,14 @@ public class ElementScriptDefinitions
             [false] = DataSyncType.Local,
         };
         element.SetData(key, dynValue.String, syncTypes[synchronizeType]);
+    }
+
+    [ScriptFunctionDefinition("getElementData")]
+    public DynValue GetElementData(Element element, string key, bool inherit = true)
+    {
+        LuaValue? data = element.GetData(key);
+        var result = LuaTranslatorUtility.ToDynValues(data).First();
+
+        return result ?? DynValue.NewBoolean(false);
     }
 }

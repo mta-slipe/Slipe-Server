@@ -1,4 +1,5 @@
-﻿using SlipeServer.Server.Elements;
+﻿using MoonSharp.Interpreter;
+using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Services;
 using System;
@@ -10,7 +11,7 @@ public class ExplosionScriptDefinitions
 {
     private readonly ExplosionService explosionService;
 
-    public ExplosionScriptDefinitions(ExplosionService explosionService)
+    public ExplosionScriptDefinitions(ExplosionService explosionService, Script _)
     {
         this.explosionService = explosionService;
     }

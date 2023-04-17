@@ -13,7 +13,7 @@ public class DebugScriptDefinitions
     private readonly DebugLog debugLog;
     private readonly ILogger logger;
 
-    public DebugScriptDefinitions(DebugLog debugLog, ILogger logger)
+    public DebugScriptDefinitions(DebugLog debugLog, ILogger logger, Script _)
     {
         this.debugLog = debugLog;
         this.logger = logger;

@@ -4,6 +4,12 @@
 
 	iprint("This is a message on server printed using iprint", "This is the second Argument from iprint")
 
+	setElementData(customElement, "dummyKey", "dummyValue")
+
+	local elementData = getElementData(customElement, "dummyKey")
+
+	iprint("Element Data Is ", elementData)
+
 	local object = createObject(321, 5, 5, 5)
 	setElementPosition(object, 50, 50, 250)
 	setElementRotation(object, 180, 180, 90)

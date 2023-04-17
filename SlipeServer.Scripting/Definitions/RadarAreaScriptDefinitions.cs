@@ -1,4 +1,5 @@
-﻿using SlipeServer.Server;
+﻿using MoonSharp.Interpreter;
+using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using System.Drawing;
 using System.Numerics;
@@ -9,7 +10,7 @@ public class RadarAreaScriptDefinitions
 {
     private readonly MtaServer server;
 
-    public RadarAreaScriptDefinitions(MtaServer server)
+    public RadarAreaScriptDefinitions(MtaServer server, Script _)
     {
         this.server = server;
     }
