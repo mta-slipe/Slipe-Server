@@ -2,7 +2,7 @@
 using SlipeServer.Server.ServerBuilders;
 
 namespace SlipeServer.Console.AdditionalResources;
-public static class ServerBuilderExtensions
+public static partial class ServerBuilderExtensions
 {
     public static void AddParachuteResource(this ServerBuilder builder)
     {
