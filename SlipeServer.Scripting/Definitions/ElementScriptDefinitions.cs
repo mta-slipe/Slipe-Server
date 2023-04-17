@@ -11,6 +11,9 @@ using System;
 using System.Collections;
 using SlipeServer.Server.Elements.ColShapes;
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.Primitives;
+using SlipeServer.Server.Elements.Enums;
+using System.ComponentModel;
 
 namespace SlipeServer.Scripting.Definitions;
 
@@ -112,5 +115,16 @@ public class ElementScriptDefinitions
 
 
         return theTable.Table;
+    }
+
+    [ScriptFunctionDefinition("setElementData")]
+    public void SetElementData(Element element, string key, DynValue dynValue, bool synchronizeType = true)
+    {
+        Dictionary<bool, DataSyncType> syncTypes = new()
+        {
+            [true] = DataSyncType.Broadcast,
+            [false] = DataSyncType.Local,
+        };
+        element.SetData(key, dynValue.String, syncTypes[synchronizeType]);
     }
 }
