@@ -32,7 +32,7 @@ public class LuaTestLogic
     {
         this.eventRuntime.LoadDefaultEvents();
 
-        this.luaService.LoadDefaultDefinitions();
+        //this.luaService.LoadDefaultDefinitions();
 
         this.luaService.LoadDefinitions<CustomMathDefinition>();
         this.luaService.LoadDefinitions<TestDefinition>();

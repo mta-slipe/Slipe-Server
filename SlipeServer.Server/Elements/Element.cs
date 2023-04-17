@@ -679,6 +679,11 @@ public class Element
         return null;
     }
 
+    public IDictionary<string, ElementData> GetAllElementData()
+    {
+        return this.ElementData;
+    }
+
     /// <summary>
     /// Subscribes a player to changes to a specific element data value
     /// </summary>
