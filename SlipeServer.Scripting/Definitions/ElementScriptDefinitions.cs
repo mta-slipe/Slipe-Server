@@ -17,13 +17,11 @@ public class ElementScriptDefinitions
     private readonly MtaServer server;
     private readonly IDictionary<ElementType, object> elementsForVariants;
     private readonly IElementCollection elementCollection;
-    //private readonly Script ownerScript;
 
-    public ElementScriptDefinitions(MtaServer _server, IElementCollection elementCollection /*Script ownerScript*/)
+    public ElementScriptDefinitions(MtaServer _server, IElementCollection elementCollection)
     {
         this.server = _server;
         this.elementCollection = (RTreeCompoundElementCollection)elementCollection;
-        //this.ownerScript = ownerScript;
         this.elementsForVariants = new Dictionary<ElementType, object>(Enum.GetNames(typeof(ElementType)).Length)
         {
             [ElementType.Player] = typeof(Player),
