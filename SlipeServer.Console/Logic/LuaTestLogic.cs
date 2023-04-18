@@ -32,16 +32,16 @@ public class LuaTestLogic
     {
         this.eventRuntime.LoadDefaultEvents();
 
-        this.luaService.LoadDefaultDefinitions();
-
-        this.luaService.LoadDefinitions<CustomMathDefinition>();
-        this.luaService.LoadDefinitions<TestDefinition>();
-
         using FileStream testLua = File.OpenRead("test.lua");
         using StreamReader reader = new StreamReader(testLua);
         try
         {
-            this.luaService.LoadScript("test.lua", reader.ReadToEnd());
+            Script createdScript = this.luaService.LoadScript("test.lua", reader.ReadToEnd());
+
+            this.luaService.LoadDefaultDefinitions(createdScript);
+            this.luaService.LoadDefinitions<CustomMathDefinition>(createdScript);
+            this.luaService.LoadDefinitions<TestDefinition>(createdScript);
+
         }
         catch (InterpreterException ex)
         {

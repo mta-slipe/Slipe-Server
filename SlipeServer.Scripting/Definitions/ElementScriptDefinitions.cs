@@ -9,6 +9,7 @@ using SlipeServer.Server.Elements.ColShapes;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Packets.Definitions.Lua;
 using System.Linq;
+using SlipeServer.Server.Concepts;
 
 namespace SlipeServer.Scripting.Definitions;
 
@@ -96,7 +97,7 @@ public class ElementScriptDefinitions
     }
 
     [ScriptFunctionDefinition("getAllElementData")]
-    public Table GetAllElementData(Element element)
+    public IDictionary<string, ElementData> GetAllElementData(Element element)
     {
         /*var elementDatas = element.GetAllElementData();
         DynValue theTable = DynValue.NewTable();
@@ -107,7 +108,7 @@ public class ElementScriptDefinitions
         }
 
         */
-        return new object() as Table;
+        return new object() as Dictionary<string, ElementData>;
     }
 
     [ScriptFunctionDefinition("setElementData")]
