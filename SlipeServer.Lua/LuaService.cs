@@ -84,14 +84,14 @@ public class LuaService
         LoadDefinitions(this.server.Instantiate<T>()!);
     }
 
-    public void LoadDefaultDefinitions(Script script)
+    public void LoadDefaultDefinitions()
     {
         foreach (var type in typeof(ScriptFunctionDefinitionAttribute).Assembly.DefinedTypes
             .Where(type => type.GetMethods()
                 .Any(method => method.CustomAttributes
                     .Any(attribute => attribute.AttributeType == typeof(ScriptFunctionDefinitionAttribute)))))
         {
-            LoadDefinitions(this.server.Instantiate(type, script));
+            LoadDefinitions(this.server.Instantiate(type));
         }
     }
 
@@ -145,7 +145,7 @@ public class LuaService
             script.Globals["real" + definition.Key] = definition.Value;
             stringBuilder.AppendLine($"function {definition.Key}(...) return table.unpack(real{definition.Key}({{...}})) end");
         }
-        LoadDefaultDefinitions(script);
+        //LoadDefaultDefinitions(script);
 
         script.DoString(stringBuilder.ToString(), codeFriendlyName: "SlipeDefinitions");
     }

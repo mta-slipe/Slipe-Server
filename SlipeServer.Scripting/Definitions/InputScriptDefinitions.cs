@@ -6,7 +6,7 @@ public class InputScriptDefinitions
 {
     private readonly IScriptInputRuntime inputRuntime;
 
-    public InputScriptDefinitions(IScriptInputRuntime inputRuntime, Script _)
+    public InputScriptDefinitions(IScriptInputRuntime inputRuntime)
     {
         this.inputRuntime = inputRuntime;
     }

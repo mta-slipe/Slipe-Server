@@ -11,7 +11,7 @@ public class UtilityScriptDefinitions
 {
     private readonly MtaServer server;
 
-    public UtilityScriptDefinitions(MtaServer server, Script _)
+    public UtilityScriptDefinitions(MtaServer server)
     {
         this.server = server;
     }

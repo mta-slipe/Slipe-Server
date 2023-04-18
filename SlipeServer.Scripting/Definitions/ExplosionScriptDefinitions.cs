@@ -11,7 +11,7 @@ public class ExplosionScriptDefinitions
 {
     private readonly ExplosionService explosionService;
 
-    public ExplosionScriptDefinitions(ExplosionService explosionService, Script _)
+    public ExplosionScriptDefinitions(ExplosionService explosionService)
     {
         this.explosionService = explosionService;
     }

@@ -1,14 +1,15 @@
 ﻿if(isSlipeServer)then
-	local customElement = createElement("MyCustomType")
-	iprint("Custom Element ", customElement)
 
 	iprint("This is a message on server printed using iprint", "This is the second Argument from iprint")
 
-	setElementData(customElement, "dummyKey", "dummyValue")
+	local customElement = createElement("MyCustomType")
+	iprint("Custom Element ", customElement)
 
-	local elementData = getElementData(customElement, "dummyKey")
+	--setElementData(customElement, "dummyKey", "dummyValue")
 
-	iprint("Element Data Is ", elementData)
+	--local elementData = getElementData(customElement, "dummyKey")
+
+	--iprint("Element Data Is ", elementData)
 
 	local object = createObject(321, 5, 5, 5)
 	setElementPosition(object, 50, 50, 250)

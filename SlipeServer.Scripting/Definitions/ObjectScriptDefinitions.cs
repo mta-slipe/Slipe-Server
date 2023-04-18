@@ -9,7 +9,7 @@ public class ObjectScriptDefinitions
 {
     private readonly MtaServer server;
 
-    public ObjectScriptDefinitions(MtaServer server, Script _)
+    public ObjectScriptDefinitions(MtaServer server)
     {
         this.server = server;
     }

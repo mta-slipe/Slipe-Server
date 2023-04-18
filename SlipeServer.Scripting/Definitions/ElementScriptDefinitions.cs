@@ -17,13 +17,13 @@ public class ElementScriptDefinitions
     private readonly MtaServer server;
     private readonly IDictionary<ElementType, object> elementsForVariants;
     private readonly IElementCollection elementCollection;
-    private readonly Script ownerScript;
+    //private readonly Script ownerScript;
 
-    public ElementScriptDefinitions(MtaServer _server, IElementCollection elementCollection, Script ownerScript)
+    public ElementScriptDefinitions(MtaServer _server, IElementCollection elementCollection /*Script ownerScript*/)
     {
         this.server = _server;
         this.elementCollection = (RTreeCompoundElementCollection)elementCollection;
-        this.ownerScript = ownerScript;
+        //this.ownerScript = ownerScript;
         this.elementsForVariants = new Dictionary<ElementType, object>(Enum.GetNames(typeof(ElementType)).Length)
         {
             [ElementType.Player] = typeof(Player),
@@ -100,16 +100,16 @@ public class ElementScriptDefinitions
     [ScriptFunctionDefinition("getAllElementData")]
     public Table GetAllElementData(Element element)
     {
-        var elementDatas = element.GetAllElementData();
-        DynValue theTable = DynValue.NewTable(ownerScript);
+        /*var elementDatas = element.GetAllElementData();
+        DynValue theTable = DynValue.NewTable();
         
         foreach ( var elementData in elementDatas )
         {
-            theTable.Table.Set(elementData.Key, DynValue.FromObject(ownerScript, elementData.Value));
+            theTable.Table.Set(elementData.Key, DynValue.FromObject(, elementData.Value));
         }
 
-
-        return theTable.Table;
+        */
+        return new object() as Table;
     }
 
     [ScriptFunctionDefinition("setElementData")]

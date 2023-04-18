@@ -7,7 +7,7 @@ public class EventScriptDefinitions
 {
     private readonly IScriptEventRuntime eventRuntime;
 
-    public EventScriptDefinitions(IScriptEventRuntime eventRuntime, Script _)
+    public EventScriptDefinitions(IScriptEventRuntime eventRuntime)
     {
         this.eventRuntime = eventRuntime;
     }

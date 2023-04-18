@@ -10,7 +10,7 @@ public class RadarAreaScriptDefinitions
 {
     private readonly MtaServer server;
 
-    public RadarAreaScriptDefinitions(MtaServer server, Script _)
+    public RadarAreaScriptDefinitions(MtaServer server)
     {
         this.server = server;
     }
