@@ -30,6 +30,18 @@ public class WeaponCollection : IEnumerable<Weapon>
         weapon.AmmoInClipUpdated += AmmoInClipUpdated;
     }
 
+    /// <summary>
+    /// Adds a weapon without triggering the WeaponAdded event
+    /// </summary>
+    /// <param name="weapon"></param>
+    public void SilentAdd(Weapon weapon)
+    {
+        this.weapons[weapon.Slot] = weapon;
+
+        weapon.AmmoUpdated += AmmoUpdated;
+        weapon.AmmoInClipUpdated += AmmoInClipUpdated;
+    }
+
     public void Remove(Weapon weapon)
     {
         Remove(weapon.Slot);

@@ -230,7 +230,7 @@ public class Ped : Element
 
         this.Weapons.WeaponAdded += (sender, args) => this.WeaponReceived?.Invoke(this, new WeaponReceivedEventArgs(this, args.Type, args.Ammo, false));
         this.Weapons.WeaponRemoved += (sender, args) => this.WeaponRemoved?.Invoke(this, new WeaponRemovedEventArgs(this, args.Type, args.Ammo));
-        this.Weapons.WeaponAmmoUpdated += (sender, args) => this.AmmoUpdated?.Invoke(this, new AmmoUpdateEventArgs(this, args.Type, args.Ammo, args.AmmoInClip));
+        this.Weapons.WeaponAmmoUpdated += (sender, args) => this.AmmoUpdated?.Invoke(this, new AmmoUpdateEventArgs(this, args.Type, args.Ammo, args.AmmoInClip, this.IsSync));
         this.Clothing.Changed += (sender, args) => this.ClothingChanged?.Invoke(this, args);
     }
 
@@ -259,7 +259,7 @@ public class Ped : Element
 
     public void AddWeapon(WeaponId weaponId, ushort ammoCount, bool setAsCurrent = false)
     {
-        this.Weapons.Add(new Weapon(weaponId, ammoCount, null));
+        this.Weapons.SilentAdd(new Weapon(weaponId, ammoCount, null));
         this.WeaponReceived?.Invoke(this, new WeaponReceivedEventArgs(this, weaponId, ammoCount, setAsCurrent));
     }
 
@@ -290,7 +290,6 @@ public class Ped : Element
             {
                 weapon.AmmoInClip = Math.Min(inClip.Value, count);
             }
-            this.AmmoUpdated?.Invoke(this, new AmmoUpdateEventArgs(this, weaponId, count, inClip));
         }
     }
 
