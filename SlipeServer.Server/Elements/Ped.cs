@@ -255,6 +255,7 @@ public class Ped : Element
 
         vehicle.AddPassenger(seat, this, true);
         this.HasJetpack = false;
+        this.VehicleAction = VehicleAction.None;
     }
 
     public void AddWeapon(WeaponId weaponId, ushort ammoCount, bool setAsCurrent = false)

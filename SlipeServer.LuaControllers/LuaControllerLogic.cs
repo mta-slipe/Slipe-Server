@@ -72,11 +72,12 @@ public class LuaControllerLogic
     private void AddHandler(string name, Type type, MethodInfo method, BaseLuaController? controller)
     {
         if (!this.handlers.ContainsKey(name))
+        {
             this.handlers[name] = new();
+            this.luaEventService.AddEventHandler(name, HandleLuaEvent);
+        }
 
         this.handlers[name].Add(new BoundEvent(this.server.Services, name, type, method, controller));
-
-        this.luaEventService.AddEventHandler(name, HandleLuaEvent);
     }
 
     private object?[] MapParameters(LuaValue[] values, MethodInfo method)
