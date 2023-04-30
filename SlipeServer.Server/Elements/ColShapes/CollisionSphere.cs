@@ -5,6 +5,7 @@ namespace SlipeServer.Server.Elements.ColShapes;
 
 public class CollisionSphere : CollisionShape
 {
+    private float radiusSquared;
     private float radius;
     public float Radius
     {
@@ -13,6 +14,7 @@ public class CollisionSphere : CollisionShape
         {
             var args = new ElementChangedEventArgs<float>(this, this.radius, value, this.IsSync);
             this.radius = value;
+            this.radiusSquared = value * value;
             RadiusChanged?.Invoke(this, args);
         }
     }
@@ -25,7 +27,7 @@ public class CollisionSphere : CollisionShape
 
     public override bool IsWithin(Vector3 position)
     {
-        return Vector3.Distance(this.Position, position) < this.Radius;
+        return Vector3.DistanceSquared(this.Position, position) <= this.radiusSquared;
     }
 
     public new CollisionSphere AssociateWith(MtaServer server)
