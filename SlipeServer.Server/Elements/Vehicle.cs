@@ -429,7 +429,21 @@ public class Vehicle : Element
                 this.AddPassenger(0, value, true);
         }
     }
-    public bool IsInWater { get; set; }
+
+    private bool isInWater = false;
+    public bool IsInWater
+    {
+        get => this.isInWater;
+        set
+        {
+            if (this.isInWater == value)
+                return;
+
+            var args = new ElementChangedEventArgs<Vehicle, bool>(this, this.isInWater, value, this.IsSync);
+            this.isInWater = value;
+            IsInWaterChanged?.Invoke(this, args);
+        }
+    }
 
     private Player? syncer = null;
     public Player? Syncer
@@ -747,4 +761,5 @@ public class Vehicle : Element
     public event ElementEventHandler<VehicleDoorOpenRatioChangedArgs>? DoorOpenRatioChanged;
     public event ElementEventHandler<Vehicle, VehiclePushedEventArgs>? Pushed;
     public event ElementEventHandler<Vehicle, VehicleUpgradeChanged>? UpgradeChanged;
+    public event ElementChangedEventHandler<Vehicle, bool>? IsInWaterChanged;
 }
