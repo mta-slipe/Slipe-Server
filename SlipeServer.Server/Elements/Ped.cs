@@ -473,6 +473,9 @@ public class Ped : Element
     public void SetAnimationSpeed(string animation, float speed) 
         => this.AnimationSpeedChanged?.Invoke(this, new(this, animation, speed));
 
+    public void TriggerWeaponAmmoUpdate(WeaponId weapon, ushort ammo, ushort ammoInClip)
+        => this.WeaponOrAmmoChanged?.Invoke(this, new(this, weapon, ammo, ammoInClip));
+
     public event ElementEventHandler<Ped, PedWastedEventArgs>? Wasted;
     public event ElementChangedEventHandler<Ped, ushort>? ModelChanged;
     public event ElementChangedEventHandler<Ped, float>? HealthChanged;
@@ -497,5 +500,6 @@ public class Ped : Element
     public event ElementEventHandler<Ped, PedAnimationProgressChangedEventArgs>? AnimationProgressChanged;
     public event ElementEventHandler<Ped, PedAnimationSpeedChangedEventArgs>? AnimationSpeedChanged;
     public event ElementEventHandler<Ped, EventArgs>? WeaponReloaded;
+    public event ElementEventHandler<Ped, PedWeaponOrAmmoChangedEventArgs>? WeaponOrAmmoChanged;
     public event ElementEventHandler<Ped, ClothingChangedEventArgs>? ClothingChanged;
 }

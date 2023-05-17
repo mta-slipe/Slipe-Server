@@ -164,6 +164,7 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
                 (var ammo, var inClip) = packet.Reader.GetAmmoTuple(true);
                 client.Player.CurrentWeapon.Ammo = ammo;
                 client.Player.CurrentWeapon.AmmoInClip = inClip;
+                client.Player.TriggerWeaponAmmoUpdate(client.Player.CurrentWeapon.Type, ammo, inClip);
             }
         }
     }
