@@ -1,1 +1,1 @@
-outputChatBox("I am a second resource")
+outputChatBox("This is the second resource")

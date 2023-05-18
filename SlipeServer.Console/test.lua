@@ -1,4 +1,16 @@
 ﻿if(isSlipeServer)then
+
+	iprint("This is a message on server printed using iprint", "This is the second Argument from iprint")
+
+	local customElement = createElement("MyCustomType")
+	iprint("Custom Element ", customElement)
+
+	--setElementData(customElement, "dummyKey", "dummyValue")
+
+	--local elementData = getElementData(customElement, "dummyKey")
+
+	--iprint("Element Data Is ", elementData)
+
 	local object = createObject(321, 5, 5, 5)
 	setElementPosition(object, 50, 50, 250)
 	setElementRotation(object, 180, 180, 90)
@@ -19,6 +31,8 @@
 	destroyElement(object)
 
 	outputDebugString("Debug message, elapsed time: "..getTickCount())
+
+	print("iprint is ", iprint)
 
 	print("base64 test:", base64Encode("sample text"), base64Decode(base64Encode("sample text")))
 	print("Some color: ", tocolor(235,23,77,159), tocolor(235,23,77,159) == -1611983027)
@@ -82,3 +96,4 @@ addCommandHandler("foo4", commandHandler2)
 addCommandHandler("foo4", commandHandler3)
 removeCommandHandler("foo3", commandHandler2)
 removeCommandHandler("foo4")
+

@@ -1,4 +1,6 @@
-﻿namespace SlipeServer.Scripting.Definitions;
+﻿using MoonSharp.Interpreter;
+
+namespace SlipeServer.Scripting.Definitions;
 
 public class InputScriptDefinitions
 {

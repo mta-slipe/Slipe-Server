@@ -83,7 +83,7 @@ public class Element
 
     private string name = "";
     /// <summary>
-    /// The element name, for Player's this is the nickname, for other elements it's mostly unused.
+    /// The element name, for Player's this is the nickname, for custom elements this will be used as type
     /// </summary>
     public string Name
     {
@@ -677,6 +677,11 @@ public class Element
             return this.parent?.GetData(dataName, inherit);
 
         return null;
+    }
+
+    public IDictionary<string, ElementData> GetAllElementData()
+    {
+        return this.ElementData;
     }
 
     /// <summary>

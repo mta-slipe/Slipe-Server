@@ -23,5 +23,6 @@ public enum ElementType
     Weapon,
     DatabaseConnection,
     Root,
-    Unknown
+    Unknown,
+    Custom,
 }

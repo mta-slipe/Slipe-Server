@@ -19,7 +19,7 @@ public class LuaService
     private readonly ILogger logger;
     private readonly RootElement root;
     private readonly Dictionary<string, Script> scripts;
-    private readonly Dictionary<string, LuaMethod> methods;
+    private readonly Dictionary<Script, Dictionary<string, LuaMethod>> methods;
     private readonly LuaTranslator translator;
 
     public LuaService(MtaServer server, ILogger logger, RootElement root)
@@ -28,11 +28,11 @@ public class LuaService
         this.logger = logger;
         this.root = root;
         this.scripts = new Dictionary<string, Script>();
-        this.methods = new Dictionary<string, LuaMethod>();
+        this.methods = new Dictionary<Script, Dictionary<string, LuaMethod>>();
         this.translator = new LuaTranslator();
     }
 
-    public void LoadDefinitions(object methodSet)
+    public void LoadDefinitions(object methodSet, Script owner)
     {
         foreach (var method in methodSet.GetType().GetMethods()
                 .Where(method => method.CustomAttributes
@@ -40,11 +40,12 @@ public class LuaService
         {
             var attribute = method.GetCustomAttribute<ScriptFunctionDefinitionAttribute>();
 
-            if (this.methods.ContainsKey(attribute!.NiceName))
+            if (methods.TryGetValue(owner, out Dictionary<string, LuaMethod>? _) && this.methods[owner].ContainsKey(attribute!.NiceName))
                 throw new Exception($"Lua name conflict for '{attribute.NiceName}'");
 
             var methodParameters = method.GetParameters();
-            this.methods[attribute.NiceName] = (values) =>
+            this.methods.TryAdd(owner, new Dictionary<string, LuaMethod>());
+            this.methods[owner][attribute.NiceName] = (values) =>
             {
                 var valueQueue = new Queue<DynValue>(values.AsEnumerable());
 
@@ -55,7 +56,7 @@ public class LuaService
                     {
                         if (valueQueue.Any())
                         {
-                            parameters[i] = this.translator.FromDynValue(methodParameters[i].ParameterType, valueQueue);
+                            parameters[i] = this.translator.FromDynValue(methodParameters[i].ParameterType, valueQueue, owner);
                         } else
                         {
                             if (!methodParameters[i].IsOptional)
@@ -74,40 +75,43 @@ public class LuaService
                 }
                 var result = method.Invoke(methodSet, parameters);
 
-                return this.translator.ToDynValues(result).ToArray();
+                return this.translator.ToDynValues(result, owner).ToArray();
             };
         }
     }
 
-    public void LoadDefinitions<T>()
+    public void LoadDefinitions<T>(Script script)
     {
-        LoadDefinitions(this.server.Instantiate<T>()!);
+        LoadDefinitions(this.server.Instantiate<T>()!, script);
     }
 
-    public void LoadDefaultDefinitions()
+    public void LoadDefaultDefinitions(Script script)
     {
         foreach (var type in typeof(ScriptFunctionDefinitionAttribute).Assembly.DefinedTypes
             .Where(type => type.GetMethods()
                 .Any(method => method.CustomAttributes
                     .Any(attribute => attribute.AttributeType == typeof(ScriptFunctionDefinitionAttribute)))))
         {
-            LoadDefinitions(this.server.Instantiate(type));
+            LoadDefinitions(this.server.Instantiate(type), script);
         }
     }
 
-    public void LoadScript(string identifier, string code)
+    public Script LoadScript(string identifier, string code)
     {
         var script = new Script(CoreModules.Preset_SoftSandbox);
         script.Options.DebugPrint = (value) => this.logger.LogInformation(value);
         this.scripts[identifier] = script;
 
         LoadGlobals(script);
+        LoadDefaultDefinitions(script);
         LoadDefinitions(script);
 
         script.DoString(code, codeFriendlyName: identifier);
+
+        return script;
     }
 
-    public void LoadScript(string identifier, string[] codes)
+    public Script LoadScript(string identifier, string[] codes)
     {
         var script = new Script(CoreModules.Preset_SoftSandbox);
         script.Options.DebugPrint = (value) =>
@@ -118,18 +122,22 @@ public class LuaService
         this.scripts[identifier] = script;
 
         LoadGlobals(script);
+        LoadDefaultDefinitions(script);
         LoadDefinitions(script);
 
         foreach (var code in codes)
             script.DoString(code, codeFriendlyName: identifier);
+
+        return script;
     }
 
-    public async Task LoadScriptFromPath(string path) => LoadScript(path, await File.ReadAllTextAsync(path));
-    public async Task LoadScriptFromPaths(string identifier, string[] paths)
+    public async Task<Script> LoadScriptFromPath(string path) => LoadScript(path, await File.ReadAllTextAsync(path));
+    public async Task<Script> LoadScriptFromPaths(string identifier, string[] paths)
     {
         var codeTasks = paths.Select(path => File.ReadAllTextAsync(path));
         await Task.WhenAll(codeTasks);
-        LoadScript(identifier, codeTasks.Select(task => task.Result).ToArray());
+        var script = LoadScript(identifier, codeTasks.Select(task => task.Result).ToArray());
+        return script;
     }
 
     public void UnloadScript(string identifier)
@@ -140,18 +148,20 @@ public class LuaService
     private void LoadDefinitions(Script script)
     {
         StringBuilder stringBuilder = new StringBuilder();
-        foreach (var definition in this.methods)
+        foreach (var definition in this.methods[script])
         {
             script.Globals["real" + definition.Key] = definition.Value;
             stringBuilder.AppendLine($"function {definition.Key}(...) return table.unpack(real{definition.Key}({{...}})) end");
         }
+        //LoadDefaultDefinitions(script);
+
         script.DoString(stringBuilder.ToString(), codeFriendlyName: "SlipeDefinitions");
     }
 
     private void LoadGlobals(Script script)
     {
-        script.Globals["root"] = this.translator.ToDynValues(this.root).First();
-        script.Globals["isSlipeServer"] = this.translator.ToDynValues(true).First();
+        script.Globals["root"] = this.translator.ToDynValues(this.root, script).First();
+        script.Globals["isSlipeServer"] = this.translator.ToDynValues(true, script).First();
     }
 
     public delegate DynValue[] LuaMethod(params DynValue[] values);

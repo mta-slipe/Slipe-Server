@@ -1,5 +1,4 @@
 ﻿using MoonSharp.Interpreter;
-using SlipeServer.Scripting;
 using SlipeServer.Server.Elements;
 using System;
 using System.Collections.Generic;
@@ -7,16 +6,10 @@ using System.Drawing;
 using System.Linq;
 using System.Numerics;
 
-namespace SlipeServer.Lua;
-
-public class LuaTranslator
+namespace SlipeServer.Scripting;
+public static class LuaTranslatorUtility
 {
-    public LuaTranslator()
-    {
-        UserData.RegisterType<Element>(InteropAccessMode.Hardwired);
-    }
-
-    public IEnumerable<DynValue> ToDynValues(object? obj, Script owner)
+    public static IEnumerable<DynValue> ToDynValues(object? obj)
     {
         if (obj == null)
             return new DynValue[] { DynValue.Nil };
@@ -66,7 +59,7 @@ public class LuaTranslator
                     DynValue.NewNumber(vector3.Z)
             };
         if (obj is Delegate del)
-            return new DynValue[] { DynValue.NewCallback((context, arguments) => ToDynValues(del.DynamicInvoke(arguments.GetArray())!, owner).First()) };
+            return new DynValue[] { DynValue.NewCallback((context, arguments) => ToDynValues(del.DynamicInvoke(arguments.GetArray())!).First()) };
         if (obj is Table table)
             return new DynValue[] { DynValue.NewTable(table) };
         if (obj is DynValue dynValue)
@@ -75,26 +68,26 @@ public class LuaTranslator
         if (obj is IEnumerable<string> stringEnumerable)
             return stringEnumerable.Select(x => DynValue.NewString(x)).ToArray();
         if (obj is IEnumerable<object> enumerable)
-            return enumerable.Select(x => ToDynValues(x, owner)).SelectMany(x => x).ToArray();
+            return enumerable.Select(x => ToDynValues(x)).SelectMany(x => x).ToArray();
 
 
         throw new NotImplementedException($"Conversion to Lua for {obj.GetType()} not implemented");
     }
 
-    public float GetSingleFromDynValue(DynValue dynValue) => (float)dynValue.Number;
-    public double GetDoubleFromDynValue(DynValue dynValue) => dynValue.Number;
-    public byte GetByteFromDynValue(DynValue dynValue) => (byte)dynValue.Number;
-    public short GetInt16FromDynValue(DynValue dynValue) => (short)dynValue.Number;
-    public int GetInt32FromDynValue(DynValue dynValue) => (int)dynValue.Number;
-    public long GetInt64FromDynValue(DynValue dynValue) => (long)dynValue.Number;
-    public ushort GetUInt16FromDynValue(DynValue dynValue) => (ushort)dynValue.Number;
-    public uint GetUInt32FromDynValue(DynValue dynValue) => (uint)dynValue.Number;
-    public ulong GetUInt64FromDynValue(DynValue dynValue) => (ulong)dynValue.Number;
-    public string GetStringFromDynValue(DynValue dynValue) => dynValue.String;
-    public bool GetBooleanFromDynValue(DynValue dynValue) => dynValue.Boolean;
-    public Table GetTableFromDynValue(DynValue dynValue) => dynValue.Table;
+    public static float GetSingleFromDynValue(DynValue dynValue) => (float)dynValue.Number;
+    public static double GetDoubleFromDynValue(DynValue dynValue) => dynValue.Number;
+    public static byte GetByteFromDynValue(DynValue dynValue) => (byte)dynValue.Number;
+    public static short GetInt16FromDynValue(DynValue dynValue) => (short)dynValue.Number;
+    public static int GetInt32FromDynValue(DynValue dynValue) => (int)dynValue.Number;
+    public static long GetInt64FromDynValue(DynValue dynValue) => (long)dynValue.Number;
+    public static ushort GetUInt16FromDynValue(DynValue dynValue) => (ushort)dynValue.Number;
+    public static uint GetUInt32FromDynValue(DynValue dynValue) => (uint)dynValue.Number;
+    public static ulong GetUInt64FromDynValue(DynValue dynValue) => (ulong)dynValue.Number;
+    public static string GetStringFromDynValue(DynValue dynValue) => dynValue.String;
+    public static bool GetBooleanFromDynValue(DynValue dynValue) => dynValue.Boolean;
+    public static Table GetTableFromDynValue(DynValue dynValue) => dynValue.Table;
 
-    public object FromDynValue(Type targetType, Queue<DynValue> dynValues, Script owner)
+    public static object FromDynValue(Type targetType, Queue<DynValue> dynValues)
     {
         if (targetType == typeof(Color) || targetType == typeof(Color?))
         {
@@ -170,12 +163,12 @@ public class LuaTranslator
         if (targetType == typeof(ScriptCallbackDelegateWrapper))
         {
             var callback = dynValues.Dequeue().Function;
-            return new ScriptCallbackDelegateWrapper(parameters => callback.Call(ToDynValues(parameters, owner)), callback);
+            return new ScriptCallbackDelegateWrapper(parameters => callback.Call(ToDynValues(parameters)), callback);
         }
         if (targetType == typeof(EventDelegate))
         {
             var callback = dynValues.Dequeue().Function;
-            return (EventDelegate)((element, parameters) => callback.Call(new DynValue[] { UserData.Create(element) }.Concat(ToDynValues(parameters, owner))));
+            return (EventDelegate)((element, parameters) => callback.Call(new DynValue[] { UserData.Create(element) }.Concat(ToDynValues(parameters))));
         }
 
 
