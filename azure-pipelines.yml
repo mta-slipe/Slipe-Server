@@ -124,7 +124,7 @@ jobs:
   - task: CmdLine@2
     displayName: 'docfx build'
     inputs:
-      script: 'docfx SlipeServer.Docs/docfx.json --build'
+      script: 'docfx build SlipeServer.Docs/docfx.json'
   - task: CopyFiles@2
     displayName: 'Copy DocFx output'
     inputs:
