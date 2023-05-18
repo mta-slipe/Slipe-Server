@@ -1507,6 +1507,22 @@ public class ServerTestLogic
                     break;
             }
         };
+
+        player.IsOnFireChanged += (o, args) =>
+        {
+            if (o is Player player)
+            {
+                chatBox.OutputTo(player, $"In on fire: {args.NewValue}");
+            }
+        };
+
+        player.IsInWaterChanged += (o, args) =>
+        {
+            if (o is Player player)
+            {
+                chatBox.OutputTo(player, $"In water: {args.NewValue}");
+            }
+        };
     }
 
     private void HandlePlayerScreenshot(object? o, ScreenshotEventArgs e)
