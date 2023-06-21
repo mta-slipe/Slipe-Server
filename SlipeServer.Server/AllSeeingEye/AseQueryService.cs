@@ -27,7 +27,7 @@ public class AseQueryService : IAseQueryService
         this.configuration = configuration;
         this.elementCollection = elementCollection;
 
-        this.aseVersion = AseVersion.v1_5;
+        this.aseVersion = AseVersion.v1_6;
 
         this.rules = new Dictionary<string, string>();
     }
@@ -130,7 +130,7 @@ public class AseQueryService : IAseQueryService
             .Select(o => o.Name.StripColorCode())
             .ToList();
 
-        string aseVersion = GetVersion(version == VersionType.Release ? this.aseVersion : AseVersion.v1_5n);
+        string aseVersion = GetVersion(version == VersionType.Release ? this.aseVersion : AseVersion.v1_6n);
         int playerCount = playerNames.Count;
         string strPlayerCount = playerCount + "/" + this.configuration.MaxPlayerCount;
         string buildType = $"{(byte)version} ";
@@ -190,12 +190,12 @@ public class AseQueryService : IAseQueryService
         return stream.ToArray();
     }
 
-    public string GetVersion(AseVersion version = AseVersion.v1_5)
+    public string GetVersion(AseVersion version = AseVersion.v1_6)
     {
         return version switch
         {
-            AseVersion.v1_5 => "1.5",
-            AseVersion.v1_5n => "1.5n",
+            AseVersion.v1_6 => "1.6",
+            AseVersion.v1_6n => "1.6n",
             _ => throw new NotImplementedException(this.aseVersion.ToString()),
         };
     }
