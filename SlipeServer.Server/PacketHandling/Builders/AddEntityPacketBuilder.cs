@@ -34,7 +34,7 @@ public class AddEntityPacketBuilder
         this.packet.AddObject(element.Id, (byte)element.ElementType, element.Parent?.Id ?? ElementId.Zero, element.Interior, element.Dimension,
             element.Attachment, element.AreCollisionsEnabled, element.IsCallPropagationEnabled, element.BroadcastableElementData, element.Name, element.TimeContext,
             element.Position, element.Rotation, element.Model, element.Alpha, element.IsLowLod, element.LowLodElement?.Id,
-            element.DoubleSided, element.IsVisibleInAllDimensions, element.Movement, element.Scale, element.IsFrozen, element.Health
+            element.DoubleSided, element.IsBreakable, element.IsVisibleInAllDimensions, element.Movement, element.Scale, element.IsFrozen, element.Health
         );
     }
 
@@ -219,7 +219,7 @@ public class AddEntityPacketBuilder
         this.packet.AddWeapon(element.Id, (byte)element.ElementType, element.Parent?.Id ?? ElementId.Zero, element.Interior, element.Dimension,
             null, element.AreCollisionsEnabled, element.IsCallPropagationEnabled, element.BroadcastableElementData, element.Name, element.TimeContext,
             element.Position, element.Rotation, element.Model, element.Alpha, element.IsLowLod, element.LowLodElement?.Id,
-            element.DoubleSided, element.IsVisibleInAllDimensions, element.Movement, element.Scale, element.IsFrozen, element.Health,
+            element.DoubleSided, element.IsBreakable, element.IsVisibleInAllDimensions, element.Movement, element.Scale, element.IsFrozen, element.Health,
             (byte)element.TargetType, element.TargetElement?.Id, element.BoneTarget, element.WheelTarget, element.TargetPosition, element.IsChanged,
             element.DamagePerHit, element.Accuracy, element.TargetRange, element.WeaponRange, element.DisableWeaponModel, element.InstantReload,
             element.ShootIfTargetBlocked, element.ShootIfTargetOutOfRange, element.CheckBuildings, element.CheckCarTires, element.CheckDummies,

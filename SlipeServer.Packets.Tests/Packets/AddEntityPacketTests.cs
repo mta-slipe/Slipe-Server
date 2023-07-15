@@ -44,7 +44,7 @@ public class AddEntityPacketTests
             (ElementId)668, (byte)3, null, 0, 0,
             null, true, false, new CustomData(), "Test object",
             0, new Vector3(0, -5, 3), Vector3.Zero, 321,
-            255, false, null, true, true, null, Vector3.One * 3,
+            255, false, null, true, false, true, null, Vector3.One * 3,
             false, 1000f
         );
         packet.AddBlip((ElementId)669, (byte)5, null, 0, 0,
@@ -66,7 +66,7 @@ public class AddEntityPacketTests
         packet.AddWeapon((ElementId)674, (byte)18, null, 0, 0,
             null, true, true, new CustomData(), "Test weapon",
             0, new Vector3(5, 5, 5), Vector3.Zero, 355, 255, false, null,
-            true, true, null, Vector3.One, false, 100, (byte)0,
+            true, false, true, null, Vector3.One, false, 100, (byte)0,
             null, null, null, new Vector3(10, 10, 5), true, 10, 1, 100, 200,
             false, false, true, true, true, true, true, true, true, true,
             true, true, true, (byte)0, 1000, 50, (ElementId)666);
