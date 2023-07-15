@@ -164,6 +164,8 @@ public class ServerTestLogic
         this.secondTestResource = this.resourceProvider.GetResource("SecondTestResource");
         this.secondTestResource.NoClientScripts[$"{this.secondTestResource!.Name}/testfile.lua"] =
             Encoding.UTF8.GetBytes("outputChatBox(\"I AM A NOT CACHED MESSAGE\")");
+        this.secondTestResource.NoClientScripts[$"blabla.lua"] = new byte[] { };
+
         this.thirdTestResource = this.resourceProvider.GetResource("MetaXmlTestResource");
 
         new WorldObject(321, new Vector3(5, 0, 3)).AssociateWith(this.server);
