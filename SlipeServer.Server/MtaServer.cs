@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using SlipeServer.Net.Wrappers;
 using SlipeServer.Packets;
@@ -439,10 +440,15 @@ public class MtaServer
         this.serviceCollection.AddSingleton<IAseQueryService, AseQueryService>();
         this.serviceCollection.AddSingleton(typeof(ISyncHandlerMiddleware<>), typeof(BasicSyncHandlerMiddleware<>));
 
-        if (Environment.UserInteractive)
-            this.serviceCollection.AddSingleton<ILogger, ConsoleLogger>();
-        else
-            this.serviceCollection.AddSingleton<ILogger, NullLogger>();
+        this.serviceCollection.AddLogging(x =>
+        {
+            if (Environment.UserInteractive)
+                this.serviceCollection.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, ConsoleLoggerProvider>());
+            else
+                this.serviceCollection.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, NullLoggerProvider>());
+        });
+        this.serviceCollection.AddSingleton<ILogger>(x => x.GetRequiredService<ILogger<MtaServer>>());
+
 
         this.serviceCollection.AddSingleton<GameWorld>();
         this.serviceCollection.AddSingleton<ChatBox>();
