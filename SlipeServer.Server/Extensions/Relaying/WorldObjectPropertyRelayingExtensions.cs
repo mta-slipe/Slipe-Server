@@ -1,10 +1,6 @@
-﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
-using SlipeServer.Packets.Definitions.Lua.ElementRpc.Marker;
-using SlipeServer.Server.Elements;
-using SlipeServer.Server.Elements.Enums;
+﻿using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.PacketHandling.Factories;
-using System.Drawing;
 using System.Numerics;
 
 namespace SlipeServer.Server.Extensions.Relaying;

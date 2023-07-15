@@ -496,11 +496,8 @@ public class AddEntityPacket : Packet
         this.builder.WriteCompressed(ordering);
         this.builder.WriteCapped(visibleDistance, 14);
         this.builder.WriteCapped(icon, 6);
-        if (icon == 0)
-        {
-            this.builder.WriteCapped(size, 5);
-            this.builder.Write(color, true);
-        }
+        this.builder.WriteCapped(size, 5);
+        this.builder.Write(color, true);
     }
 
     public void AddRadarArea(
