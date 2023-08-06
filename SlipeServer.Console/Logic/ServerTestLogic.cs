@@ -33,15 +33,14 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
-using static SlipeServer.Packets.Constants.KeyConstants;
 
 namespace SlipeServer.Console.Logic;
 
 public class TestLogic
 {
-    public TestLogic()
+    public TestLogic(ILogger<TestLogic> logger)
     {
-        System.Console.WriteLine("TestLogic started");
+        logger.LogInformation("TestLogic started");
     }
 }
 
@@ -164,6 +163,8 @@ public class ServerTestLogic
         this.secondTestResource = this.resourceProvider.GetResource("SecondTestResource");
         this.secondTestResource.NoClientScripts[$"{this.secondTestResource!.Name}/testfile.lua"] =
             Encoding.UTF8.GetBytes("outputChatBox(\"I AM A NOT CACHED MESSAGE\")");
+        this.secondTestResource.NoClientScripts[$"blabla.lua"] = new byte[] { };
+
         this.thirdTestResource = this.resourceProvider.GetResource("MetaXmlTestResource");
 
         new WorldObject(321, new Vector3(5, 0, 3)).AssociateWith(this.server);
@@ -218,7 +219,7 @@ public class ServerTestLogic
 
         this.FrozenVehicle = new Vehicle(602, new Vector3(0, 0, 10)).AssociateWith(this.server);
         this.FrozenVehicle.IsFrozen = true;
-        
+
         this.PrivateVehicle = new Vehicle(602, new Vector3(-10.58f, -5.70f, 3.11f)).AssociateWith(this.server);
         this.PrivateVehicle.CanEnter = (Ped ped, Vehicle vehicle) =>
         {
@@ -909,7 +910,7 @@ public class ServerTestLogic
             {
                 await this.resourceProvider.GetResource("SlipeTestResource").StartForAsync(args.Player);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 this.logger.LogError(ex, "Failed to start Slipe Lua test resource for {playerName}, {ex}", args.Player.Name, ex.ToString());
             }
@@ -1555,7 +1556,7 @@ public class ServerTestLogic
             ["z"] = new LuaValue(new Dictionary<LuaValue, LuaValue>() { }),
             ["w"] = false,
             ["player"] = player.Id,
-            ["vector2array"] = LuaValue.ArrayFromVector(new Vector2(1,3)),
+            ["vector2array"] = LuaValue.ArrayFromVector(new Vector2(1, 3)),
         });
         table.TableValue?.Add("self", table);
 

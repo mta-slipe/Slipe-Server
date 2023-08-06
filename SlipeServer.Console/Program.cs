@@ -81,7 +81,6 @@ public partial class Program
 
                 builder.ConfigureServices(services =>
                 {
-                    services.AddSingleton<ILogger, ConsoleLogger>();
                     services.AddSingleton<ISyncHandlerMiddleware<PlayerPureSyncPacket>, SubscriptionSyncHandlerMiddleware<PlayerPureSyncPacket>>();
                     services.AddSingleton<ISyncHandlerMiddleware<KeySyncPacket>, SubscriptionSyncHandlerMiddleware<KeySyncPacket>>();
 

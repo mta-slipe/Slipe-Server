@@ -67,7 +67,7 @@ public class AddEntityPacket : Packet
         ushort dimension, ElementAttachment? attachment, bool areCollisionsEnabled,
         bool isCallPropagationEnabled, CustomData customData, string name,
         byte timeContext, Vector3 position, Vector3 rotation, ushort model,
-        byte alpha, bool isLowLod, ElementId? lowLodElementId, bool isDoubleSided,
+        byte alpha, bool isLowLod, ElementId? lowLodElementId, bool isDoubleSided, bool isBreakable,
         bool isVisibleInAllDimensions, PositionRotationAnimation? positionRotationAnimation,
         Vector3 scale, bool isFrozen, float health
     )
@@ -85,6 +85,7 @@ public class AddEntityPacket : Packet
         this.builder.Write(isLowLod);
         this.builder.Write(lowLodElementId ?? (ElementId)PacketConstants.InvalidElementId);
         this.builder.Write(isDoubleSided);
+        this.builder.Write(isBreakable);
         this.builder.Write(isVisibleInAllDimensions);
 
         this.builder.Write(positionRotationAnimation != null);
@@ -156,7 +157,7 @@ public class AddEntityPacket : Packet
         ushort dimension, ElementAttachment? attachment, bool areCollisionsEnabled,
         bool isCallPropagationEnabled, CustomData customData, string name,
         byte timeContext, Vector3 position, Vector3 rotation, ushort model,
-        byte alpha, bool isLowLod, ElementId? lowLodElementId, bool isDoubleSided,
+        byte alpha, bool isLowLod, ElementId? lowLodElementId, bool isDoubleSided, bool isBreakable,
         bool isVisibleInAllDimensions, PositionRotationAnimation? positionRotationAnimation,
         Vector3 scale, bool isFrozen, float health, byte targetType, ElementId? targetElementId,
         byte? boneTarget, byte? wheelTarget, Vector3? targetPosition, bool isChanged, ushort? damagePerHit,
@@ -172,7 +173,7 @@ public class AddEntityPacket : Packet
             dimension, attachment, areCollisionsEnabled,
             isCallPropagationEnabled, customData, name, timeContext,
             position, rotation, model, alpha, isLowLod,
-            lowLodElementId, isDoubleSided, isVisibleInAllDimensions,
+            lowLodElementId, isDoubleSided, isBreakable, isVisibleInAllDimensions,
             positionRotationAnimation, scale, isFrozen, health
         );
 
@@ -495,11 +496,8 @@ public class AddEntityPacket : Packet
         this.builder.WriteCompressed(ordering);
         this.builder.WriteCapped(visibleDistance, 14);
         this.builder.WriteCapped(icon, 6);
-        if (icon == 0)
-        {
-            this.builder.WriteCapped(size, 5);
-            this.builder.Write(color, true);
-        }
+        this.builder.WriteCapped(size, 5);
+        this.builder.Write(color, true);
     }
 
     public void AddRadarArea(

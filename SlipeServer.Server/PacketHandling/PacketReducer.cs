@@ -30,9 +30,9 @@ public class PacketReducer
 
     public void UnregisterQueueHandler(PacketId packetId, IQueueHandler queueHandler)
     {
-        if (this.registeredQueueHandlers.ContainsKey(packetId))
+        if (this.registeredQueueHandlers.TryGetValue(packetId, out var value))
         {
-            this.registeredQueueHandlers[packetId].Remove(queueHandler);
+            value.Remove(queueHandler);
         }
         this.queueHandlers.Add(queueHandler);
     }
@@ -48,19 +48,19 @@ public class PacketReducer
                 }
                 catch (Exception e)
                 {
-                    this.logger.LogError($"Enqueueing packet ({packetId}) failed.\n{e.Message}\n{e.StackTrace}");
+                    this.logger.LogError("Enqueueing packet ({packetId}) failed.\n{message}\n{stackTrace}", packetId, e.Message, e.StackTrace);
                 }
-        } else
+        } else if (packetId != PacketId.PACKET_ID_PLAYER_NO_SOCKET)
         {
-            this.logger.LogWarning($"Received unregistered packet {packetId}");
+            this.logger.LogWarning("Received unregistered packet {packetId}", packetId);
         }
 
-        if (this.registeredQueueHandlers.ContainsKey(packetId))
+        if (this.registeredQueueHandlers.TryGetValue(packetId, out var value))
         {
-            foreach (IQueueHandler queueHandler in this.registeredQueueHandlers[packetId])
+            foreach (IQueueHandler queueHandler in value)
             {
                 queueHandler.EnqueuePacket(client, packetId, data);
-                this.logger.LogWarning($"Use of deprecated queue handler {packetId} {queueHandler}");
+                this.logger.LogWarning("Use of deprecated queue handler {packetId} {queueHandler}", packetId, queueHandler);
             }
         }
     }

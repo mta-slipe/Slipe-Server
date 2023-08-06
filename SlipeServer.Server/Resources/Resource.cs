@@ -23,6 +23,7 @@ public class Resource
     public List<string> Exports { get; init; }
     public List<ResourceFile> Files { get; init; }
     public Dictionary<string, byte[]> NoClientScripts { get; init; }
+    private Dictionary<string, byte[]> SanitisedNoClientScripts => this.NoClientScripts.Where(x => x.Value.Length > 0).ToDictionary(x => x.Key, x => x.Value);
     public string Name { get; }
     public string Path { get; }
     public bool IsOopEnabled { get; set; }
@@ -58,11 +59,11 @@ public class Resource
     public void Start()
     {
         this.server.BroadcastPacket(new ResourceStartPacket(
-            this.Name, this.NetId, this.Root.Id, this.DynamicRoot.Id, 0, null, null, this.IsOopEnabled, this.PriorityGroup, this.Files, this.Exports)
+            this.Name, this.NetId, this.Root.Id, this.DynamicRoot.Id, (ushort)this.SanitisedNoClientScripts.Count, null, null, this.IsOopEnabled, this.PriorityGroup, this.Files, this.Exports)
         );
 
         this.server.BroadcastPacket(new ResourceClientScriptsPacket(
-            this.NetId, this.NoClientScripts.ToDictionary(x => x.Key, x => CompressFile(x.Value)))
+            this.NetId, this.SanitisedNoClientScripts.ToDictionary(x => x.Key, x => CompressFile(x.Value)))
         );
     }
 
@@ -73,11 +74,11 @@ public class Resource
 
     public void StartFor(Player player)
     {
-        new ResourceStartPacket(this.Name, this.NetId, this.Root.Id, this.DynamicRoot.Id, (ushort)this.NoClientScripts.Count, null, null, this.IsOopEnabled, this.PriorityGroup, this.Files, this.Exports)
+        new ResourceStartPacket(this.Name, this.NetId, this.Root.Id, this.DynamicRoot.Id, (ushort)this.SanitisedNoClientScripts.Count, null, null, this.IsOopEnabled, this.PriorityGroup, this.Files, this.Exports)
             .SendTo(player);
 
-        if (this.NoClientScripts.Any())
-            new ResourceClientScriptsPacket(this.NetId, this.NoClientScripts.ToDictionary(x => x.Key, x => CompressFile(x.Value)))
+        if (this.SanitisedNoClientScripts.Any())
+            new ResourceClientScriptsPacket(this.NetId, this.SanitisedNoClientScripts.ToDictionary(x => x.Key, x => CompressFile(x.Value)))
                 .SendTo(player);
     }
 

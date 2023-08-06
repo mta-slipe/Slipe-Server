@@ -38,6 +38,12 @@ public static class ElementPropertyRelayingExtensions
                 vehicle.AddVehicleRelayers();
                 vehicle.AddVehicleHandlingRelayers();
                 break;
+            case WeaponObject weaponObject:
+                weaponObject.AddWorldObjectRelayers();
+                break;
+            case WorldObject worldObject:
+                worldObject.AddWorldObjectRelayers();
+                break;
 
         }
     }
