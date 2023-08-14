@@ -32,7 +32,9 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using static SlipeServer.Packets.Constants.KeyConstants;
 
 namespace SlipeServer.Console.Logic;
 
@@ -916,6 +918,18 @@ public class ServerTestLogic
             }
             stopwatch.Stop();
             this.logger.LogInformation("Starting Slipe Lua test resource for {playerName} took {milliseconds}ms", args.Player.Name, stopwatch.ElapsedMilliseconds);
+        };
+        
+        this.commandService.AddCommand("fixmyveh").Triggered += async (source, args) =>
+        {
+            args.Player.Vehicle.Fix();
+            this.chatBox.OutputTo(args.Player, "Vehicle fixed");
+        };
+        
+        this.commandService.AddCommand("blowup").Triggered += async (source, args) =>
+        {
+            args.Player.Vehicle.BlowUp();
+            this.chatBox.OutputTo(args.Player, "Vehicle blown up");
         };
 
         this.commandService.AddCommand("variant").Triggered += (source, args) =>

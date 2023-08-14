@@ -5,6 +5,7 @@ using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Extensions;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SlipeServer.Server.Resources;
@@ -82,9 +83,20 @@ public class Resource
                 .SendTo(player);
     }
 
-    public Task StartForAsync(Player player)
+    public Task StartForAsync(Player player, CancellationToken cancelationToken = default)
     {
+        cancelationToken.ThrowIfCancellationRequested();
+
         var source = new TaskCompletionSource();
+
+        cancelationToken.Register(() =>
+        {
+            player.ResourceStarted -= HandleResourceStart;
+            player.Disconnected -= HandlePlayerDisconnected;
+        });
+
+        player.ResourceStarted += HandleResourceStart;
+        player.Disconnected += HandlePlayerDisconnected;
 
         void HandleResourceStart(Player sender, PlayerResourceStartedEventArgs e)
         {
@@ -107,9 +119,6 @@ public class Resource
 
             source.SetException(new System.Exception("Player disconnected."));
         }
-
-        player.ResourceStarted += HandleResourceStart;
-        player.Disconnected += HandlePlayerDisconnected;
 
         StartFor(player);
 
