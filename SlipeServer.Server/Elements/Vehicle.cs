@@ -592,12 +592,20 @@ public class Vehicle : Element
         return null;
     }
 
-    public void BlowUp()
+    public void BlowUp(bool createExplosion = true)
     {
         this.Health = 0;
         this.IsEngineOn = false;
         this.BlownState = VehicleBlownState.BlownUp;
-        this.Blown?.Invoke(this);
+        this.Blown?.Invoke(this, new VehicleBlownEventArgs(this, createExplosion));
+    }
+
+    public void Fix()
+    {
+        this.BlownState = VehicleBlownState.Intact;
+        this.Health = 1000;
+        ResetDoorsWheelsPanelsLights();
+        this.Fixed?.Invoke(this, new VehicleFixedEventArgs(this));
     }
 
     public void SetDoorState(VehicleDoor door, VehicleDoorState state, bool spawnFlyingComponent = false)
@@ -724,7 +732,7 @@ public class Vehicle : Element
     public Func<Ped, Vehicle, bool>? CanEnter;
     public Func<Ped, Vehicle, bool>? CanExit;
 
-    public event ElementEventHandler? Blown;
+    public event ElementEventHandler<VehicleBlownEventArgs>? Blown;
     public event ElementEventHandler<VehicleLeftEventArgs>? PedLeft;
     public event ElementEventHandler<VehicleEnteredEventsArgs>? PedEntered;
     public event ElementChangedEventHandler<Vehicle, ushort>? ModelChanged;
@@ -762,4 +770,5 @@ public class Vehicle : Element
     public event ElementEventHandler<Vehicle, VehiclePushedEventArgs>? Pushed;
     public event ElementEventHandler<Vehicle, VehicleUpgradeChanged>? UpgradeChanged;
     public event ElementChangedEventHandler<Vehicle, bool>? IsInWaterChanged;
+    public event ElementEventHandler<VehicleFixedEventArgs>? Fixed;
 }
