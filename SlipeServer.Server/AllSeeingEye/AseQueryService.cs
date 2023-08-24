@@ -20,6 +20,7 @@ public class AseQueryService : IAseQueryService
     private readonly IElementCollection elementCollection;
     private readonly AseVersion aseVersion;
     private readonly Dictionary<string, string> rules;
+    public bool ShowPlayers { get; set; } = true;
 
     public AseQueryService(MtaServer mtaServer, Configuration configuration, IElementCollection elementCollection)
     {
@@ -45,12 +46,19 @@ public class AseQueryService : IAseQueryService
         return value;
     }
 
+    private IEnumerable<Player> GetPlayers()
+    {
+        if (this.ShowPlayers)
+            return this.elementCollection.GetByType<Player>(ElementType.Player);
+        return Enumerable.Empty<Player>();
+    }
+
 
     public byte[] QueryFull(ushort port)
     {
         using MemoryStream stream = new MemoryStream();
         using BinaryWriter bw = new BinaryWriter(stream);
-        IEnumerable<Player> players = this.elementCollection.GetByType<Player>(ElementType.Player);
+        IEnumerable<Player> players = GetPlayers();
 
         string aseVersion = GetVersion(this.aseVersion);
 
@@ -98,7 +106,7 @@ public class AseQueryService : IAseQueryService
     {
         using MemoryStream stream = new MemoryStream();
         using BinaryWriter bw = new BinaryWriter(stream);
-        int playerCount = this.elementCollection.GetByType<Player>(ElementType.Player).Count();
+        int playerCount = GetPlayers().Count();
         string strPlayerCount = playerCount + "/" + this.configuration.MaxPlayerCount;
 
         bw.Write("EYE3".AsSpan());
