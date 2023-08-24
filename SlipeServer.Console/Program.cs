@@ -12,6 +12,7 @@ using SlipeServer.Lua;
 using SlipeServer.LuaControllers;
 using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Physics.Extensions;
+using SlipeServer.Physics.Services;
 using SlipeServer.Server;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.Loggers;
@@ -70,7 +71,7 @@ public partial class Program
 #endif
         };
 
-#if false
+#if true
         this.server = MtaServer.CreateWithDiSupport<CustomPlayer>(x => BuildServer(x, false));
 #else
         var serviceCollection = new ServiceCollection();
@@ -100,6 +101,9 @@ public partial class Program
 
         services.AddScoped<TestService>();
         services.AddSingleton<PacketReplayerService>();
+
+        services.AddLua();
+        services.AddSingleton<PhysicsService>();
     }
 
     private void BuildServer(ServerBuilder builder, bool usingExternalServiceCollection)
@@ -113,10 +117,13 @@ public partial class Program
 #endif
 
         if(!usingExternalServiceCollection)
+        {
             builder.ConfigureServices(ConfigureServices);
-
-        builder.AddLua();
-        builder.AddPhysics();
+            builder.ConfigureServices(services =>
+            {
+                services.AddSingleton<Func<string>>(() => "Internal service collection.");
+            });
+        }
         builder.AddParachuteResource();
         builder.AddLuaControllers();
 

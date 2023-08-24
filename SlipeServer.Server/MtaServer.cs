@@ -122,7 +122,9 @@ public class MtaServer
 
         this.configuration = serverBuilder.Configuration;
         
-        if (!this.useExternalServiceCollection)
+        if (this.useExternalServiceCollection)
+            this.SetupDependencies();
+        else
             this.Init();
     }
 
@@ -132,6 +134,7 @@ public class MtaServer
 
         if(!useExternalServiceCollection)
             this.SetupDependencies(serverBuilder.LoadDependencies);
+
         this.serviceProvider = this.serviceCollection.BuildServiceProvider();
         this.packetReducer = new(this.serviceProvider.GetRequiredService<ILogger>());
 
@@ -450,7 +453,7 @@ public class MtaServer
         };
     }
 
-    protected virtual void SetupDependencies(Action<ServiceCollection>? dependencyCallback)
+    protected virtual void SetupDependencies(Action<ServiceCollection>? dependencyCallback = null)
     {
         this.serviceCollection.AddSingleton<IElementCollection, RTreeCompoundElementCollection>();
         this.serviceCollection.AddSingleton<IResourceProvider, FileSystemResourceProvider>();
