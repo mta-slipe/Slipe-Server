@@ -17,4 +17,9 @@ public static partial class StringExtensions
             temp = ColorCodeRegex().Replace(temp, "");
         return temp;
     }
+
+    /// <summary>
+    /// Checks if string contain color code
+    /// </summary>
+    public static bool ContainsColorCode(this string value) => ColorCodeRegex().IsMatch(value);
 }
