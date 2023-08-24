@@ -14,12 +14,14 @@ namespace SlipeServer.Server.ServerBuilders;
 
 public class ServerBuilder
 {
+    private readonly bool usingExternalServiceCollection;
     private readonly List<ServerBuildStep> buildSteps;
     public Configuration Configuration { get; private set; }
     private readonly List<Action<ServiceCollection>> dependecyLoaders;
 
-    public ServerBuilder()
+    public ServerBuilder(bool usingExternalServiceCollection = false)
     {
+        this.usingExternalServiceCollection = usingExternalServiceCollection;
         this.Configuration = new();
         this.buildSteps = new();
         this.dependecyLoaders = new();
@@ -145,6 +147,8 @@ public class ServerBuilder
     /// <param name="action"></param>
     public void ConfigureServices(Action<ServiceCollection> action)
     {
+        if (this.usingExternalServiceCollection)
+            throw new InvalidOperationException("You can not use ConfigureServices if you are using external service collection.");
         this.dependecyLoaders.Add(action);
     }
 

@@ -38,17 +38,18 @@ public class MtaServer
     private readonly List<INetWrapper> netWrappers;
     private readonly List<IResourceServer> resourceServers;
     private readonly List<Resource> additionalResources;
-    protected readonly PacketReducer packetReducer;
+    protected PacketReducer packetReducer;
     protected readonly Dictionary<INetWrapper, Dictionary<uint, IClient>> clients;
     protected readonly ServiceCollection serviceCollection;
-    protected readonly ServiceProvider serviceProvider;
-    private readonly IElementCollection elementCollection;
-    private readonly IElementIdGenerator? elementIdGenerator;
-    private readonly IResourceProvider resourceProvider;
+    protected ServiceProvider serviceProvider;
+    private IElementCollection elementCollection;
+    private IElementIdGenerator? elementIdGenerator;
+    private IResourceProvider resourceProvider;
     private readonly RootElement root;
-    private readonly Configuration configuration;
-
+    private Configuration configuration;
+    private readonly Action<ServerBuilder> builderAction;
     private readonly Func<uint, INetWrapper, IClient>? clientCreationMethod;
+    private readonly bool useExternalServiceCollection = false;
 
     private readonly HashSet<object> persistentInstances;
 
@@ -93,29 +94,44 @@ public class MtaServer
     public IServiceProvider Services => this.serviceProvider;
 
     public IEnumerable<Player> Players => this.elementCollection.GetByType<Player>();
-
+    private readonly ServerBuilder serverBuilder;
     public MtaServer(
         Action<ServerBuilder> builderAction,
-        Func<uint, INetWrapper, IClient>? clientCreationMethod = null
+        Func<uint, INetWrapper, IClient>? clientCreationMethod = null,
+        ServiceCollection? serviceCollection = null, Configuration? configuration = null
     )
     {
         this.netWrappers = new();
         this.clients = new();
+        this.builderAction = builderAction;
         this.clientCreationMethod = clientCreationMethod;
         this.resourceServers = new();
         this.additionalResources = new();
         this.persistentInstances = new();
 
         this.root = new();
-        this.serviceCollection = new();
+        this.useExternalServiceCollection = serviceCollection != null;
+        this.serviceCollection = serviceCollection ?? new();
+        this.serverBuilder = new ServerBuilder(this.useExternalServiceCollection);
+        if(configuration != null)
+        {
+            this.configuration = serverBuilder.Configuration;
+            serverBuilder.UseConfiguration(configuration);
+            this.Password = this.configuration.Password;
+        }
 
-        var builder = new ServerBuilder();
-        builderAction(builder);
+        this.configuration = serverBuilder.Configuration;
+        
+        if (!this.useExternalServiceCollection)
+            this.Init();
+    }
 
-        this.configuration = builder.Configuration;
-        this.Password = this.configuration.Password;
-        this.SetupDependencies(services => builder.LoadDependencies(services));
+    internal virtual MtaServer Init()
+    {
+        this.builderAction(serverBuilder);
 
+        if(!useExternalServiceCollection)
+            this.SetupDependencies(serverBuilder.LoadDependencies);
         this.serviceProvider = this.serviceCollection.BuildServiceProvider();
         this.packetReducer = new(this.serviceProvider.GetRequiredService<ILogger>());
 
@@ -128,9 +144,11 @@ public class MtaServer
 
         this.root.AssociateWith(this);
 
-        builder.ApplyTo(this);
+        serverBuilder.ApplyTo(this);
 
         this.resourceProvider.Refresh();
+
+        return this;
     }
 
     /// <summary>
@@ -600,8 +618,8 @@ public class MtaServer
     /// <typeparam name="TPlayer"></typeparam>
     /// <param name="builderAction"></param>
     /// <returns></returns>
-    public static MtaServer<TPlayer> CreateWithDiSupport<TPlayer>(Action<ServerBuilder> builderAction) where TPlayer: Player
-        => new MtaDiPlayerServer<TPlayer>(builderAction);
+    public static MtaServer<TPlayer> CreateWithDiSupport<TPlayer>(Action<ServerBuilder> builderAction, ServiceCollection? serviceCollection = null, Configuration? configuration = null) where TPlayer: Player
+        => new MtaDiPlayerServer<TPlayer>(builderAction, serviceCollection, configuration);
 
     /// <summary>
     /// Triggered when any element is created on the server through the .AssociateElement method
@@ -631,7 +649,7 @@ public class MtaServer
 /// <typeparam name="TPlayer">The player type</typeparam>
 public abstract class MtaServer<TPlayer> : MtaServer where TPlayer : Player
 {
-    public MtaServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
+    public MtaServer(Action<ServerBuilder> builderAction, ServiceCollection? serviceCollection = null, Configuration? configuration = null) : base(builderAction, serviceCollection: serviceCollection, configuration: configuration) { }
 
     protected override void SetupDependencies(Action<ServiceCollection>? dependencyCallback)
     {
@@ -645,6 +663,12 @@ public abstract class MtaServer<TPlayer> : MtaServer where TPlayer : Player
         this.PlayerJoined?.Invoke((TPlayer)player);
     }
 
+    internal override MtaServer<TPlayer> Init()
+    {
+        base.Init();
+        return this;
+    }
+
     public new event Action<TPlayer>? PlayerJoined;
 }
 
@@ -655,7 +679,7 @@ public abstract class MtaServer<TPlayer> : MtaServer where TPlayer : Player
 /// <typeparam name="TPlayer">The player type</typeparam>
 public class MtaNewPlayerServer<TPlayer> : MtaServer<TPlayer> where TPlayer : Player, new()
 {
-    internal MtaNewPlayerServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
+    internal MtaNewPlayerServer(Action<ServerBuilder> builderAction, ServiceCollection? serviceCollection = null) : base(builderAction, serviceCollection: serviceCollection) { }
 
     protected override IClient CreateClient(uint binaryAddress, INetWrapper netWrapper)
     {
@@ -671,7 +695,7 @@ public class MtaNewPlayerServer<TPlayer> : MtaServer<TPlayer> where TPlayer : Pl
 /// </summary>
 public class MtaDiPlayerServer<TPlayer> : MtaServer<TPlayer> where TPlayer : Player
 {
-    internal MtaDiPlayerServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
+    internal MtaDiPlayerServer(Action<ServerBuilder> builderAction, ServiceCollection? serviceCollection = null, Configuration? configuration = null) : base(builderAction, serviceCollection, configuration) { }
 
     protected override IClient CreateClient(uint binaryAddress, INetWrapper netWrapper)
     {

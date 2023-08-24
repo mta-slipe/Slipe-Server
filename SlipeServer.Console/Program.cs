@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using SlipeServer.ConfigurationProviders;
 using SlipeServer.Console.AdditionalResources;
@@ -12,6 +13,7 @@ using SlipeServer.LuaControllers;
 using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Physics.Extensions;
 using SlipeServer.Server;
+using SlipeServer.Server.Extensions;
 using SlipeServer.Server.Loggers;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.ServerBuilders;
@@ -68,51 +70,16 @@ public partial class Program
 #endif
         };
 
-        this.server = MtaServer.CreateWithDiSupport<CustomPlayer>(
-            (builder) =>
-            {
-                builder.UseConfiguration(this.configuration);
-
-#if DEBUG
-                builder.AddDefaults(exceptBehaviours: ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour);
+#if false
+        this.server = MtaServer.CreateWithDiSupport<CustomPlayer>(x => BuildServer(x, false));
 #else
-                builder.AddDefaults();
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddMtaServer<CustomPlayer>(x => BuildServer(x, true), this.configuration);
+        ConfigureServices(serviceCollection);
+        serviceCollection.AddSingleton<Func<string>>(() => "External service collection.");
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        this.server = serviceProvider.GetRequiredService<MtaServer<CustomPlayer>>();
 #endif
-
-                builder.ConfigureServices(services =>
-                {
-                    services.AddSingleton<ISyncHandlerMiddleware<PlayerPureSyncPacket>, SubscriptionSyncHandlerMiddleware<PlayerPureSyncPacket>>();
-                    services.AddSingleton<ISyncHandlerMiddleware<KeySyncPacket>, SubscriptionSyncHandlerMiddleware<KeySyncPacket>>();
-
-                    services.AddScoped<TestService>();
-                    services.AddSingleton<PacketReplayerService>();
-                });
-                builder.AddLua();
-                builder.AddPhysics();
-                builder.AddParachuteResource();
-                builder.AddLuaControllers();
-
-                builder.AddLogic<ServerTestLogic>();
-                builder.AddLogic<LuaTestLogic>();
-                builder.AddLogic<PhysicsTestLogic>();
-                builder.AddLogic<ElementPoolingTestLogic>();
-                builder.AddLogic<WarpIntoVehicleLogic>();
-                builder.AddLogic<LuaEventTestLogic>();
-                builder.AddLogic<ServiceUsageTestLogic>();
-                builder.AddLogic<NametagTestLogic>();
-                builder.AddLogic<VehicleTestLogic>();
-                builder.AddLogic<ClothingTestLogic>();
-                builder.AddLogic<PedTestLogic>();
-                builder.AddLogic<ProxyService>();
-                builder.AddLogic(typeof(TestLogic));
-                //builder.AddBehaviour<VelocityBehaviour>();
-                //builder.AddBehaviour<EventLoggingBehaviour>();
-
-                builder.AddPacketHandler<KeySyncReplayerPacketHandler, KeySyncPacket>();
-                builder.AddPacketHandler<PureSyncReplayerPacketHandler, PlayerPureSyncPacket>();
-                builder.AddLogic<PacketReplayerLogic>();
-            }
-        );
 
         this.server.GameType = "Slipe Server";
         this.server.MapName = "N/A";
@@ -124,6 +91,54 @@ public partial class Program
             this.server.Stop();
             this.waitHandle.Set();
         };
+    }
+
+    private void ConfigureServices(ServiceCollection services)
+    {
+        services.AddSingleton<ISyncHandlerMiddleware<PlayerPureSyncPacket>, SubscriptionSyncHandlerMiddleware<PlayerPureSyncPacket>>();
+        services.AddSingleton<ISyncHandlerMiddleware<KeySyncPacket>, SubscriptionSyncHandlerMiddleware<KeySyncPacket>>();
+
+        services.AddScoped<TestService>();
+        services.AddSingleton<PacketReplayerService>();
+    }
+
+    private void BuildServer(ServerBuilder builder, bool usingExternalServiceCollection)
+    {
+        builder.UseConfiguration(this.configuration);
+
+#if DEBUG
+        builder.AddDefaults(exceptBehaviours: ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour);
+#else
+        builder.AddDefaults();
+#endif
+
+        if(!usingExternalServiceCollection)
+            builder.ConfigureServices(ConfigureServices);
+
+        builder.AddLua();
+        builder.AddPhysics();
+        builder.AddParachuteResource();
+        builder.AddLuaControllers();
+
+        builder.AddLogic<ServerTestLogic>();
+        builder.AddLogic<LuaTestLogic>();
+        builder.AddLogic<PhysicsTestLogic>();
+        builder.AddLogic<ElementPoolingTestLogic>();
+        builder.AddLogic<WarpIntoVehicleLogic>();
+        builder.AddLogic<LuaEventTestLogic>();
+        builder.AddLogic<ServiceUsageTestLogic>();
+        builder.AddLogic<NametagTestLogic>();
+        builder.AddLogic<VehicleTestLogic>();
+        builder.AddLogic<ClothingTestLogic>();
+        builder.AddLogic<PedTestLogic>();
+        builder.AddLogic<ProxyService>();
+        builder.AddLogic(typeof(TestLogic));
+        //builder.AddBehaviour<VelocityBehaviour>();
+        //builder.AddBehaviour<EventLoggingBehaviour>();
+
+        builder.AddPacketHandler<KeySyncReplayerPacketHandler, KeySyncPacket>();
+        builder.AddPacketHandler<PureSyncReplayerPacketHandler, PlayerPureSyncPacket>();
+        builder.AddLogic<PacketReplayerLogic>();
     }
 
     public void Start()
