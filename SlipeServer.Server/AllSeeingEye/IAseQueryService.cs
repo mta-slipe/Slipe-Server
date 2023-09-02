@@ -4,6 +4,8 @@ namespace SlipeServer.Server.AllSeeingEye;
 
 public interface IAseQueryService
 {
+    bool ShowPlayers { get; set; }
+
     string? GetRule(string key);
     bool RemoveRule(string key);
     void SetRule(string key, string value);
