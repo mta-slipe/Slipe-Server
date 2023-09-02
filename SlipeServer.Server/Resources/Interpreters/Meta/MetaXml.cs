@@ -19,6 +19,9 @@ public struct MetaXml
 
     [XmlElement("oop")]
     public MetaXmlOop[] oops;
+
+    [XmlElement("download_priority_group")]
+    public MetaXmlDownloadPriorityGroup[] downloadPriorityGroup;
 }
 
 public struct MetaXmlFile
@@ -40,6 +43,12 @@ public struct MetaXmlOop
 {
     [XmlText()]
     public string Data { get; set; }
+}
+
+public struct MetaXmlDownloadPriorityGroup
+{
+    [XmlText()]
+    public int Data { get; set; }
 }
 
 public struct MetaXmlScript
