@@ -53,7 +53,7 @@ public class SpawningLogic
         this.mtaServer = mtaServer;
         this.logger = logger;
         
-        this.server.PlayerJoined += OnPlayerJoin;
+        this.mtaServer.PlayerJoined += OnPlayerJoin;
     }
 
     private void OnPlayerJoin(Player player) { }
@@ -68,6 +68,7 @@ private void OnPlayerJoin(Player player)
 {
     player.Spawn(new Vector3(0, 0, 3), 0, 7, 0, 0);
     player.Camera.Fade(CameraFade.In);
+    player.Camera.Target = player;
 
     this.logger.LogInformation("{name} has joined the game", player.Name);
 }
