@@ -1360,6 +1360,62 @@ public class ServerTestLogic
             [3] = true,
             [4] = true,
         });
+
+        this.commandService.AddCommand("collisionshapetest").Triggered += async (source, args) =>
+        {
+            var p1 = args.Player.Position + new Vector3(8, 0, 0);
+            var p2 = args.Player.Position + new Vector3(-8, 0, 0);
+            var col1 = new CollisionSphere(p1, 3).AssociateWith(this.server);
+            var col2 = new CollisionSphere(p2, 3).AssociateWith(this.server);
+            int insideRefCounter = 0;
+            col1.ElementEntered += e =>
+            {
+                if (e is Player)
+                {
+                    insideRefCounter++;
+                    this.chatBox.Output($"Entered 1, counter: {insideRefCounter}");
+                }
+            };
+            col2.ElementEntered += e =>
+            {
+                if (e is Player)
+                {
+                    insideRefCounter++;
+                    this.chatBox.Output($"Entered 2, counter: {insideRefCounter}");
+                }
+            };
+            col1.ElementLeft += e =>
+            {
+                if (e is Player)
+                {
+                    insideRefCounter--;
+                    this.chatBox.Output($"Left 1, counter: {insideRefCounter}");
+                }
+            };
+            col2.ElementLeft += e =>
+            {
+                if (e is Player)
+                {
+                    insideRefCounter--;
+                    this.chatBox.Output($"Left 2, counter: {insideRefCounter}");
+                }
+            };
+
+            int counter = 20;
+            while (true)
+            {
+                if (counter-- % 2 == 0)
+                {
+                    args.Player.Position = p1;
+                } else
+                {
+                    args.Player.Position = p2;
+                }
+                await Task.Delay(500);
+                if (counter == 0)
+                    break;
+            }
+        };
     }
 
     private void OnPlayerJoin(CustomPlayer player)
