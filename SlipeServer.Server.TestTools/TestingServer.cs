@@ -5,6 +5,7 @@ using SlipeServer.Net.Wrappers;
 using SlipeServer.Packets;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Lua.Event;
 using SlipeServer.Server.Clients;
 using SlipeServer.Server.Resources.Serving;
 using SlipeServer.Server.ServerBuilders;
@@ -34,6 +35,25 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
         this.sendPacketCalls = new();
         RegisterNetWrapper(this.NetWrapperMock.Object);
         SetupSendPacketMocks();
+    }
+
+    public IEnumerable<SendLuaEvent> GetSendLuaEvents()
+    {
+        foreach (var sendPacketCall in this.sendPacketCalls)
+        {
+            if(sendPacketCall.PacketId == PacketId.PACKET_ID_LUA_EVENT)
+            {
+                var luaEventPacket = new LuaEventPacket();
+                luaEventPacket.Read(sendPacketCall.Data);
+                yield return new SendLuaEvent
+                {
+                    Address = sendPacketCall.Address,
+                    Name = luaEventPacket.Name,
+                    Arguments = luaEventPacket.LuaValues.ToArray(),
+                    Source = luaEventPacket.ElementId
+                };
+            }
+        }
     }
 
     private void SetupSendPacketMocks()
