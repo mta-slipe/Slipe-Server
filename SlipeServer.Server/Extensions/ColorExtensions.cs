@@ -18,5 +18,5 @@ public static class ColorExtensions
     /// <summary>
     /// Returns the retrieves the hex number of a specified color, useful for the dx functions. Equivalent of lua tocolor function
     /// </summary>
-    public static double ToLuaColor(this Color color) => color.B + color.G * 256 + color.R * 256 * 256 + color.A * 256 * 256 * 256;
+    public static double ToLuaColor(this Color color) => color.B + color.G * 255 + color.R * 255 * 255 + color.A * 255 * 255 * 255;
 }
