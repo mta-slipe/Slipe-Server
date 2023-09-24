@@ -19,10 +19,10 @@ internal class RTreeRef : ISpatialData
     {
         this.Element = element;
         this.envelope = new Envelope(
-            minX: position.X,
-            minY: position.Y,
-            maxX: position.X,
-            maxY: position.Y);
+            MinX: position.X,
+            MinY: position.Y,
+            MaxX: position.X,
+            MaxY: position.Y);
     }
 
     public RTreeRef(Element element) : this(element, element.Position)
@@ -146,18 +146,23 @@ public class RTreeElementCollection : IElementCollection
 
     private void ReInsertElement(Element element, ElementChangedEventArgs<Vector3> args)
     {
-        this.slimLock.EnterWriteLock();
         try
         {
-            this.elements.Delete(this.elementRefs[element]);
+            var reference = this.elementRefs[element];
+            try
+            {
+                this.slimLock.EnterWriteLock();
+                this.elements.Delete(reference);
 
-            var elementRef = new RTreeRef(element);
-            this.elements.Insert(elementRef);
-            this.elementRefs[element] = elementRef;
+                var elementRef = new RTreeRef(element);
+                this.elements.Insert(elementRef);
+                this.elementRefs[element] = elementRef;
+            }
+            finally
+            {
+                this.slimLock.ExitWriteLock();
+            }
         }
-        finally
-        {
-            this.slimLock.ExitWriteLock();
-        }
+        finally { }
     }
 }

@@ -54,7 +54,7 @@ public class Configuration
     /// <summary>
     /// HTTP port to listen to for built-in HTTP server for serving resource files
     /// </summary>
-    public ushort HttpPort { get; set; } = 40680;
+    public ushort HttpPort { get; set; } = 22005;
 
     /// <summary>
     /// HTTP URL for an external HTTP server for serving resource files
@@ -95,7 +95,7 @@ public class Configuration
     /// Bitstream version used by the server.
     /// Only needs editing if you implement additional packet handling / packet changes that were implemented in a newer version of MTA
     /// </summary>
-    public ushort BitStreamVersion { get; set; } = 117;
+    public ushort BitStreamVersion { get; set; } = 119;
 
     /// <summary>
     /// Sets whether voice chat is enabled

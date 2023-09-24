@@ -64,11 +64,18 @@ public class PlayerPureSyncPacketHandler : IPacketHandler<PlayerPureSyncPacket>
             else
                 player.Position = packet.Position;
 
+            var weaponChanged = player.CurrentWeaponSlot != (WeaponSlot)packet.WeaponSlot;
             player.CurrentWeaponSlot = (WeaponSlot)packet.WeaponSlot;
             if (player.CurrentWeapon != null && player.CurrentWeapon.Type == (WeaponId)packet.WeaponType)
             {
-                player.CurrentWeapon.UpdateAmmoCountWithoutTriggerEvent(packet.TotalAmmo, packet.AmmoInClip);
+                var ammoChanged = player.CurrentWeapon.Ammo != packet.TotalAmmo || player.CurrentWeapon.AmmoInClip != packet.AmmoInClip;
+                player.CurrentWeapon.Ammo = packet.TotalAmmo;
+                player.CurrentWeapon.AmmoInClip = packet.AmmoInClip;
+
+                if (weaponChanged || ammoChanged)
+                    player.TriggerWeaponAmmoUpdate((WeaponId)packet.WeaponType, packet.TotalAmmo, packet.AmmoInClip);
             }
+
 
             player.IsInWater = packet.SyncFlags.IsInWater;
             player.IsOnGround = packet.SyncFlags.IsOnGround;

@@ -115,7 +115,7 @@ jobs:
     inputs:
       command: 'custom'
       custom: 'tool'
-      arguments: 'update --version 2.62.1 -g docfx'
+      arguments: 'update -g docfx'
   - task: DotNetCoreCLI@2
     displayName: 'dotnet restore'
     inputs:
@@ -124,7 +124,7 @@ jobs:
   - task: CmdLine@2
     displayName: 'docfx build'
     inputs:
-      script: 'docfx SlipeServer.Docs/docfx.json --build'
+      script: 'docfx build SlipeServer.Docs/docfx.json'
   - task: CopyFiles@2
     displayName: 'Copy DocFx output'
     inputs:

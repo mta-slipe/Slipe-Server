@@ -52,10 +52,11 @@ public class MetaXmlResourceInterpreter : IResourceInterpreter
 
         var resource = new Resource(mtaServer, rootElement, name, path)
         {
+            PriorityGroup = (meta.Value.downloadPriorityGroup != null && meta.Value.downloadPriorityGroup.Length > 0) ? meta.Value.downloadPriorityGroup.First().Data : 0,
             Files = GetFilesForMetaXmlResource(meta.Value, files),
             Exports = GetExportsForMetaXmlResource(meta.Value).ToList(),
             NoClientScripts = GetNoCacheFiles(meta.Value, files),
-            IsOopEnabled = meta.Value.oops.Any(x => x.Data.ToLower() == "true")
+            IsOopEnabled = meta.Value.oops != null && meta.Value.oops.Any(x => x.Data.ToLower() == "true")
         };
         return resource;
     }
@@ -100,8 +101,11 @@ public class MetaXmlResourceInterpreter : IResourceInterpreter
 
     private IEnumerable<string> GetExportsForMetaXmlResource(MetaXml meta)
     {
+        if(meta.exports == null)
+            return Enumerable.Empty<string>();
+
         return meta.exports
-            .Where(x => x.Type == "client")
+            .Where(x => x.Type == "client" || x.Type == "shared")
             .Select(x => x.Function);
     }
 }

@@ -2,9 +2,10 @@
 
 namespace SlipeServer.Server.Extensions;
 
-public static class StringExtensions
+public static partial class StringExtensions
 {
-    private const string colorCodeRegex = "#[0-9a-fA-F]{6}";
+    [GeneratedRegex("#[0-9a-fA-F]{6}")]
+    private static partial Regex ColorCodeRegex();
 
     /// <summary>
     /// Removes color codes from a string
@@ -12,8 +13,13 @@ public static class StringExtensions
     public static string StripColorCode(this string value)
     {
         string temp = value;
-        while (Regex.IsMatch(temp, colorCodeRegex))
-            temp = Regex.Replace(temp, colorCodeRegex, "");
+        while (ColorCodeRegex().IsMatch(temp))
+            temp = ColorCodeRegex().Replace(temp, "");
         return temp;
     }
+
+    /// <summary>
+    /// Checks if string contain color code
+    /// </summary>
+    public static bool ContainsColorCode(this string value) => ColorCodeRegex().IsMatch(value);
 }

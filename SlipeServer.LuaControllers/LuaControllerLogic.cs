@@ -1,4 +1,6 @@
-﻿using SlipeServer.LuaControllers.Attributes;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using SlipeServer.LuaControllers.Attributes;
 using SlipeServer.LuaControllers.Results;
 using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Server;
@@ -17,21 +19,30 @@ public class LuaControllerLogic
     private readonly IElementCollection elementCollection;
     private readonly LuaValueMapper luaValueMapper;
     private readonly FromLuaValueMapper fromLuaValueMapper;
-    private readonly Dictionary<string, List<BoundEvent>> handlers;
+    private readonly ITimerService timerService;
+    private readonly IServiceProvider serviceProvider;
+    private readonly ILogger logger;
+    private readonly Dictionary<string, List<BoundEvent>> handlers = new();
+    private readonly HashSet<object> timers = new();
 
     public LuaControllerLogic(
         MtaServer server,
         LuaEventService luaEventService,
         IElementCollection elementCollection,
         LuaValueMapper luaValueMapper,
-        FromLuaValueMapper fromLuaValueMapper)
+        FromLuaValueMapper fromLuaValueMapper,
+        ITimerService timerService,
+        IServiceProvider serviceProvider,
+        ILogger logger)
     {
         this.server = server;
         this.luaEventService = luaEventService;
         this.elementCollection = elementCollection;
         this.luaValueMapper = luaValueMapper;
         this.fromLuaValueMapper = fromLuaValueMapper;
-        this.handlers = new();
+        this.timerService = timerService;
+        this.serviceProvider = serviceProvider;
+        this.logger = logger;
 
         IndexControllers();
     }
@@ -58,11 +69,16 @@ public class LuaControllerLogic
             {
                 if (!method.GetCustomAttributes<NoLuaEventAttribute>().Any())
                 {
-                    var attributes = method.GetCustomAttributes<LuaEventAttribute>();
-                    foreach (var attribute in attributes)
+                    var eventAttributes = method.GetCustomAttributes<LuaEventAttribute>();
+                    var timedAttributes = method.GetCustomAttributes<TimedAttribute>();
+
+                    foreach (var attribute in eventAttributes)
                         AddHandler(prefix + attribute.EventName, controllerType, method, controller);
 
-                    if (!attributes.Any())
+                    foreach (var attribute in timedAttributes)
+                        AddTimedHandler(attribute.Interval, controllerType, method, controller);
+
+                    if (!eventAttributes.Any() && !timedAttributes.Any())
                         AddHandler(prefix + method.Name, controllerType, method, controller);
                 }
             }
@@ -72,11 +88,33 @@ public class LuaControllerLogic
     private void AddHandler(string name, Type type, MethodInfo method, BaseLuaController? controller)
     {
         if (!this.handlers.ContainsKey(name))
+        {
             this.handlers[name] = new();
+            this.luaEventService.AddEventHandler(name, HandleLuaEvent);
+        }
 
         this.handlers[name].Add(new BoundEvent(this.server.Services, name, type, method, controller));
+    }
 
-        this.luaEventService.AddEventHandler(name, HandleLuaEvent);
+    private void AddTimedHandler(TimeSpan interval, Type type, MethodInfo method, BaseLuaController? controller)
+    {
+        this.timerService.CreateTimer(() =>
+        {
+            try
+            {
+                var instance = controller;
+                if (instance == null)
+                {
+                    var scope = this.serviceProvider.CreateScope();
+                    instance = (BaseLuaController)ActivatorUtilities.CreateInstance(scope.ServiceProvider, type);
+                }
+
+                method.Invoke(instance, Array.Empty<object>());
+            } catch (Exception e)
+            {
+                this.logger.LogError(e, "An error occured while handling a timed event");
+            }
+        }, interval);
     }
 
     private object?[] MapParameters(LuaValue[] values, MethodInfo method)
@@ -111,9 +149,10 @@ public class LuaControllerLogic
                     else
                         this.luaEventService.TriggerEventFor(luaEvent.Player, luaEvent.Name + result.EventSuffix, luaEvent.Player);
             }
-            catch (Exception)
+            catch (Exception exception)
             {
                 this.luaEventService.TriggerEventFor(luaEvent.Player, luaEvent.Name + ".Error", luaEvent.Player);
+                this.logger.LogError(exception, "An error occured while handling the event {event}", luaEvent.Name);
             }
         }
     }

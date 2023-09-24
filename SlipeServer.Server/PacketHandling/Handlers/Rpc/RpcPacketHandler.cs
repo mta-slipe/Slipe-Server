@@ -4,16 +4,14 @@ using SlipeServer.Packets.Definitions.Join;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
 using SlipeServer.Packets.Rpc;
+using SlipeServer.Server.Clients;
+using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Factories;
-using SlipeServer.Server.ElementCollections;
 using System;
 using System.Linq;
-using System.Numerics;
-using SlipeServer.Server.Clients;
-using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Rpc;
 
@@ -26,7 +24,6 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
     private readonly ILogger logger;
     private readonly MtaServer server;
     private readonly RootElement root;
-
 
     public RpcPacketHandler(
         ILogger logger,
@@ -47,6 +44,10 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
     {
         switch (packet.FunctionId)
         {
+            case RpcFunctions.INITIAL_DATA_STREAM:
+                HandleDataStream(client);
+                break;
+
             case RpcFunctions.PLAYER_INGAME_NOTICE:
                 HandleIngameNotice(client);
                 break;
@@ -73,35 +74,9 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
         }
     }
 
-    private void HandleIngameNotice(IClient client)
+    private void HandleDataStream(IClient client)
     {
         var players = this.elementCollection.GetByType<Elements.Player>(ElementType.Player);
-
-        var isVersionValid = Version.TryParse(string.Join(".", client.Version!.Replace("-", ".").Split(".").Take(4)), out Version? result);
-        if (!isVersionValid)
-        {
-            client.Player.Kick(PlayerDisconnectType.BAD_VERSION);
-            return;
-        }
-
-        if (result < this.configuration.MinVersion)
-        {
-            client.SendPacket(PlayerPacketFactory.CreateUpdateInfoPacket(this.configuration.MinVersion));
-            client.Player.Kick($"Disconnected: Minimum mta version required: {this.configuration.MinVersion}");
-            return;
-        }
-
-        client.SendPacket(new JoinedGamePacket(
-            client.Player.Id,
-            players.Count() + 1,
-            this.root.Id,
-            this.configuration.HttpUrl != null ? HttpDownloadType.HTTP_DOWNLOAD_ENABLED_URL : HttpDownloadType.HTTP_DOWNLOAD_ENABLED_PORT,
-            this.configuration.HttpPort,
-            this.configuration.HttpUrl ?? "",
-            this.configuration.HttpConnectionsPerClient,
-            1,
-            isVoiceEnabled: this.configuration.IsVoiceEnabled
-        ));
 
         var otherPlayers = players
             .Except(new Elements.Player[] { client.Player })
@@ -141,6 +116,37 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
         this.server.HandlePlayerJoin(client.Player);
     }
 
+    private void HandleIngameNotice(IClient client)
+    {
+        var players = this.elementCollection.GetByType<Elements.Player>(ElementType.Player);
+
+        var isVersionValid = Version.TryParse(string.Join(".", client.Version!.Replace("-", ".").Split(".").Take(4)), out Version? result);
+        if (!isVersionValid)
+        {
+            client.Player.Kick(PlayerDisconnectType.BAD_VERSION);
+            return;
+        }
+
+        if (result < this.configuration.MinVersion)
+        {
+            client.SendPacket(PlayerPacketFactory.CreateUpdateInfoPacket(this.configuration.MinVersion));
+            client.Player.Kick($"Disconnected: Minimum mta version required: {this.configuration.MinVersion}");
+            return;
+        }
+
+        client.SendPacket(new JoinedGamePacket(
+            client.Player.Id,
+            players.Count() + 1,
+            this.root.Id,
+            this.configuration.HttpUrl != null ? HttpDownloadType.HTTP_DOWNLOAD_ENABLED_URL : HttpDownloadType.HTTP_DOWNLOAD_ENABLED_PORT,
+            this.configuration.HttpPort,
+            this.configuration.HttpUrl ?? "",
+            this.configuration.HttpConnectionsPerClient,
+            1,
+            isVoiceEnabled: this.configuration.IsVoiceEnabled
+        ));
+    }
+
     private void HandlePlayerWeapon(IClient client, RpcPacket packet)
     {
         lock (client.Player.CurrentWeaponLock)
@@ -164,6 +170,7 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
                 (var ammo, var inClip) = packet.Reader.GetAmmoTuple(true);
                 client.Player.CurrentWeapon.Ammo = ammo;
                 client.Player.CurrentWeapon.AmmoInClip = inClip;
+                client.Player.TriggerWeaponAmmoUpdate(client.Player.CurrentWeapon.Type, ammo, inClip);
             }
         }
     }

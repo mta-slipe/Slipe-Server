@@ -11,4 +11,10 @@ public class LuaControllerAttribute : Attribute
         this.EventPrefix = eventPrefix;
         this.UsesScopedEvents = usesScopedEvents;
     }
+
+    public LuaControllerAttribute(bool usesScopedEvents = true)
+    {
+        this.EventPrefix = "";
+        this.UsesScopedEvents = usesScopedEvents;
+    }
 }

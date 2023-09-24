@@ -25,8 +25,7 @@ public class JoinDataPacketHandler : IPacketHandler<PlayerJoinDataPacket>
     {
         if (this.configuration.Password != null)
         {
-            using var md5 = MD5.Create();
-            var hash = md5.ComputeHash(Encoding.ASCII.GetBytes(this.configuration.Password));
+            var hash = MD5.HashData(Encoding.ASCII.GetBytes(this.configuration.Password));
             if (!hash.SequenceEqual(packet.Password))
             {
                 client.SendPacket(new PlayerDisconnectPacket(PlayerDisconnectType.INVALID_PASSWORD, "Incorrect password"));

@@ -9,6 +9,7 @@ using SlipeServer.Packets.Enums.VehicleUpgrades;
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Packets.Structs;
 using SlipeServer.Server;
+using SlipeServer.Server.Clients;
 using SlipeServer.Server.Constants;
 using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
@@ -32,6 +33,7 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using static SlipeServer.Packets.Constants.KeyConstants;
 
@@ -39,9 +41,9 @@ namespace SlipeServer.Console.Logic;
 
 public class TestLogic
 {
-    public TestLogic()
+    public TestLogic(ILogger<TestLogic> logger)
     {
-        System.Console.WriteLine("TestLogic started");
+        logger.LogInformation("TestLogic started");
     }
 }
 
@@ -164,6 +166,8 @@ public class ServerTestLogic
         this.secondTestResource = this.resourceProvider.GetResource("SecondTestResource");
         this.secondTestResource.NoClientScripts[$"{this.secondTestResource!.Name}/testfile.lua"] =
             Encoding.UTF8.GetBytes("outputChatBox(\"I AM A NOT CACHED MESSAGE\")");
+        this.secondTestResource.NoClientScripts[$"blabla.lua"] = new byte[] { };
+
         this.thirdTestResource = this.resourceProvider.GetResource("MetaXmlTestResource");
 
         new WorldObject(321, new Vector3(5, 0, 3)).AssociateWith(this.server);
@@ -218,7 +222,7 @@ public class ServerTestLogic
 
         this.FrozenVehicle = new Vehicle(602, new Vector3(0, 0, 10)).AssociateWith(this.server);
         this.FrozenVehicle.IsFrozen = true;
-        
+
         this.PrivateVehicle = new Vehicle(602, new Vector3(-10.58f, -5.70f, 3.11f)).AssociateWith(this.server);
         this.PrivateVehicle.CanEnter = (Ped ped, Vehicle vehicle) =>
         {
@@ -909,12 +913,24 @@ public class ServerTestLogic
             {
                 await this.resourceProvider.GetResource("SlipeTestResource").StartForAsync(args.Player);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 this.logger.LogError(ex, "Failed to start Slipe Lua test resource for {playerName}, {ex}", args.Player.Name, ex.ToString());
             }
             stopwatch.Stop();
             this.logger.LogInformation("Starting Slipe Lua test resource for {playerName} took {milliseconds}ms", args.Player.Name, stopwatch.ElapsedMilliseconds);
+        };
+        
+        this.commandService.AddCommand("fixmyveh").Triggered += async (source, args) =>
+        {
+            args.Player.Vehicle.Fix();
+            this.chatBox.OutputTo(args.Player, "Vehicle fixed");
+        };
+        
+        this.commandService.AddCommand("blowup").Triggered += async (source, args) =>
+        {
+            args.Player.Vehicle.BlowUp();
+            this.chatBox.OutputTo(args.Player, "Vehicle blown up");
         };
 
         this.commandService.AddCommand("variant").Triggered += (source, args) =>
@@ -1290,6 +1306,73 @@ public class ServerTestLogic
             testobj2.AreCollisionsEnabled = true;
         };
 
+        var table = new LuaValue(new Dictionary<LuaValue, LuaValue>()
+        {
+            ["x"] = 5.5f,
+            ["y"] = "ążćźółń",
+            ["z"] = new LuaValue(new Dictionary<LuaValue, LuaValue>()
+            {
+                ["x"] = 5.5f,
+                ["y"] = "ążćźółń",
+                ["z"] = new LuaValue(new Dictionary<LuaValue, LuaValue>()
+                {
+                    ["x"] = 5.5f,
+                    ["y"] = "ążćźółń",
+                    ["z"] = new LuaValue(new Dictionary<LuaValue, LuaValue>() { }),
+                    ["w"] = false,
+                    ["player"] = (uint)123,
+                    ["vector2array"] = LuaValue.ArrayFromVector(new Vector2(1, 3)),
+                }),
+                ["w"] = false,
+                ["player"] = (uint)123,
+                ["vector2array"] = LuaValue.ArrayFromVector(new Vector2(1, 3)),
+                ["vector2"] = new Vector2(1, 3),
+                ["vector3"] = new Vector3(1, 3, 3),
+            }),
+            ["w"] = false,
+            ["player"] = (uint)123,
+            ["vector2array"] = LuaValue.ArrayFromVector(new Vector2(1, 3)),
+        });
+
+        var integer = new LuaValue(123);
+        var doublev = new LuaValue(123.45d);
+        var floatv = new LuaValue(123.45f);
+        var stringv = new LuaValue("i'm string");
+        var debugView = table.DebugView;
+
+        var sequentialTableValue = LuaValue.IsSequentialTableValue(new Dictionary<LuaValue, LuaValue>
+        {
+            [3] = true,
+            [1] = true,
+            [2] = true,
+        });
+
+        var nonSequentialTableValue1 = LuaValue.IsSequentialTableValue(new Dictionary<LuaValue, LuaValue>
+        {
+            [1] = true,
+            [2] = true,
+            [3] = true,
+            [5] = true,
+        });
+
+        var nonSequentialTableValue2 = LuaValue.IsSequentialTableValue(new Dictionary<LuaValue, LuaValue>
+        {
+            [2] = true,
+            [3] = true,
+            [4] = true,
+        });
+
+        this.commandService.AddCommand("triggernullevent").Triggered += (source, args) =>
+        {
+            var t = new LuaTable(1, 2, 3);
+            args.Player.TriggerLuaEvent("foo", args.Player, 1, new LuaTable
+            {
+                ["asd"] = null,
+                ["dsa"] = 123,
+                ["table"] = t,
+            }, 2);
+            this.chatBox.Output("sent");
+        };
 
         this.commandService.AddCommand("spawndetect").Triggered += (source, args) =>
         {
@@ -1462,6 +1545,22 @@ public class ServerTestLogic
                     break;
             }
         };
+
+        player.IsOnFireChanged += (o, args) =>
+        {
+            if (o is Player player)
+            {
+                chatBox.OutputTo(player, $"In on fire: {args.NewValue}");
+            }
+        };
+
+        player.IsInWaterChanged += (o, args) =>
+        {
+            if (o is Player player)
+            {
+                chatBox.OutputTo(player, $"In water: {args.NewValue}");
+            }
+        };
     }
 
     private void HandlePlayerScreenshot(object? o, ScreenshotEventArgs e)
@@ -1494,7 +1593,7 @@ public class ServerTestLogic
             ["z"] = new LuaValue(new Dictionary<LuaValue, LuaValue>() { }),
             ["w"] = false,
             ["player"] = player.Id,
-            ["vector2array"] = LuaValue.ArrayFromVector(new Vector2(1,3)),
+            ["vector2array"] = LuaValue.ArrayFromVector(new Vector2(1, 3)),
         });
         table.TableValue?.Add("self", table);
 

@@ -2,6 +2,6 @@
 
 public enum AseVersion
 {
-    v1_5, // release build
-    v1_5n, // debug build
+    v1_6, // release build
+    v1_6n, // debug build
 }

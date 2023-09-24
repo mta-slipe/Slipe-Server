@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using SlipeServer.Net.Wrappers;
 using SlipeServer.Packets;
@@ -135,7 +136,7 @@ public class MtaServer
     /// <summary>
     /// Starts the networking interfaces, allowing clients to connect and packets to be sent out to clients.
     /// </summary>
-    public void Start()
+    public virtual void Start()
     {
         this.StartDatetime = DateTime.Now;
 
@@ -150,7 +151,7 @@ public class MtaServer
     /// <summary>
     /// Stops the networking interfaces.
     /// </summary>
-    public void Stop()
+    public virtual void Stop()
     {
         foreach (var netWrapper in this.netWrappers)
         {
@@ -439,10 +440,15 @@ public class MtaServer
         this.serviceCollection.AddSingleton<IAseQueryService, AseQueryService>();
         this.serviceCollection.AddSingleton(typeof(ISyncHandlerMiddleware<>), typeof(BasicSyncHandlerMiddleware<>));
 
-        if (Environment.UserInteractive)
-            this.serviceCollection.AddSingleton<ILogger, ConsoleLogger>();
-        else
-            this.serviceCollection.AddSingleton<ILogger, NullLogger>();
+        this.serviceCollection.AddLogging(x =>
+        {
+            if (Environment.UserInteractive)
+                this.serviceCollection.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, ConsoleLoggerProvider>());
+            else
+                this.serviceCollection.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, NullLoggerProvider>());
+        });
+        this.serviceCollection.TryAddSingleton<ILogger>(x => x.GetRequiredService<ILogger<MtaServer>>());
+
 
         this.serviceCollection.AddSingleton<GameWorld>();
         this.serviceCollection.AddSingleton<ChatBox>();
@@ -506,9 +512,8 @@ public class MtaServer
             packetId == PacketId.PACKET_ID_PLAYER_NO_SOCKET
         )
         {
-            if (this.clients[netWrapper].ContainsKey(binaryAddress))
+            if (this.clients[netWrapper].TryGetValue(binaryAddress, out var client))
             {
-                var client = this.clients[netWrapper][binaryAddress];
                 client.IsConnected = false;
                 var quitReason = packetId switch
                 {
@@ -568,6 +573,7 @@ public class MtaServer
     {
         this.configuration.MaxPlayerCount = slots;
         BroadcastPacket(new ServerInfoSyncPacket(slots));
+        this.MaxPlayerCountChanged?.Invoke(slots);
     }
 
     /// <summary>
@@ -616,6 +622,11 @@ public class MtaServer
     /// Triggered when a lua event has been triggered by a client
     /// </summary>
     public event Action<LuaEvent>? LuaEventTriggered;
+
+    /// <summary>
+    /// Triggered when max player count changes
+    /// </summary>
+    public event Action<ushort>? MaxPlayerCountChanged;
 }
 
 /// <summary>

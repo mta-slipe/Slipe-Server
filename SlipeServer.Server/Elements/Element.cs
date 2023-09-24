@@ -262,7 +262,7 @@ public class Element
 
             var args = new ElementChangedEventArgs<bool>(this, this.areCollisionsEnabled, value, this.IsSync);
             this.areCollisionsEnabled = value;
-            CollisionEnabledhanged?.Invoke(this, args);
+            CollisionEnabledChanged?.Invoke(this, args);
         }
     }
 
@@ -850,7 +850,7 @@ public class Element
     public event ElementChangedEventHandler<byte>? AlphaChanged;
     public event ElementChangedEventHandler<string>? NameChanged;
     public event ElementChangedEventHandler<bool>? CallPropagationChanged;
-    public event ElementChangedEventHandler<bool>? CollisionEnabledhanged;
+    public event ElementChangedEventHandler<bool>? CollisionEnabledChanged;
     public event ElementChangedEventHandler<bool>? FrozenChanged;
     public event ElementChangedEventHandler<Element, ElementId>? IdChanged;
     public event ElementEventHandler<Element, ElementAssociatedWithEventArgs>? AssociatedWith;

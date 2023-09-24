@@ -59,9 +59,15 @@ public class VehiclePureSyncPacketHandler : IPacketHandler<VehiclePureSyncPacket
             if (packet.WeaponSlot != null)
                 player.CurrentWeaponSlot = (WeaponSlot)packet.WeaponSlot;
 
+            var weaponChanged = player.CurrentWeaponSlot != (WeaponSlot?)packet.WeaponSlot;
             if (player.CurrentWeapon != null && packet.WeaponAmmo != null && packet.WeaponAmmoInClip != null)
             {
-                player.CurrentWeapon.UpdateAmmoCountWithoutTriggerEvent(packet.WeaponAmmo.Value, packet.WeaponAmmoInClip.Value);
+                var ammoChanged = player.CurrentWeapon.Ammo != packet.WeaponAmmo.Value || player.CurrentWeapon.AmmoInClip != packet.WeaponAmmoInClip.Value;
+                player.CurrentWeapon.Ammo = packet.WeaponAmmo.Value;
+                player.CurrentWeapon.AmmoInClip = packet.WeaponAmmoInClip.Value;
+
+                if (weaponChanged || ammoChanged)
+                    player.TriggerWeaponAmmoUpdate(player.CurrentWeapon.Type, packet.WeaponAmmo.Value, packet.WeaponAmmoInClip.Value);
             }
 
             player.IsInWater = packet.VehiclePureSyncFlags.IsInWater;

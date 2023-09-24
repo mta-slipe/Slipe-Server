@@ -39,6 +39,7 @@ public class ElementPool<TElement>
         if (this.elements.TryDequeue(out var element))
         {
             cleanupCall?.Invoke(element);
+            element.IsDestroyed = false;
             return element;
         }
 

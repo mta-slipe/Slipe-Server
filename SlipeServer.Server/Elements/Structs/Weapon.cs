@@ -17,6 +17,9 @@ public class Weapon
         get => this.ammo;
         set
         {
+            if (value == this.ammo)
+                return;
+
             this.ammo = value;
             this.AmmoUpdated?.Invoke(this, new AmmoUpdateEventArgs(this, this.ammo, this.ammoInClip));
         }
@@ -28,6 +31,9 @@ public class Weapon
         get => this.ammoInClip;
         set
         {
+            if (value == this.ammoInClip)
+                return;
+
             this.ammoInClip = value;
             this.AmmoInClipUpdated?.Invoke(this, new AmmoUpdateEventArgs(this, this.ammo, this.ammoInClip));
         }

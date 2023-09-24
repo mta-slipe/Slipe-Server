@@ -30,8 +30,25 @@ public class CollisionShapeBehaviour
     {
         if (element is CollisionShape collisionShape)
             AddCollisionShape(collisionShape);
+        else if(element is Player player)
+        {
+            player.Spawned += OnPlayerSpawned;
+            player.Destroyed += OnPlayerDestroyed;
+        }
         else
             element.PositionChanged += OnElementPositionChange;
+    }
+
+    private void OnPlayerDestroyed(Element element)
+    {
+        var player = (Player)element;
+        player.Spawned -= OnPlayerSpawned;
+        player.Destroyed -= OnPlayerDestroyed;
+    }
+
+    private void OnPlayerSpawned(Player sender, PlayerSpawnedEventArgs e)
+    {
+        RefreshColliders(sender);
     }
 
     private void AddCollisionShape(CollisionShape collisionShape)
