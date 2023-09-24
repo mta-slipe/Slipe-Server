@@ -9,6 +9,7 @@ using SlipeServer.Packets.Enums.VehicleUpgrades;
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Packets.Structs;
 using SlipeServer.Server;
+using SlipeServer.Server.Clients;
 using SlipeServer.Server.Constants;
 using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
@@ -1360,6 +1361,18 @@ public class ServerTestLogic
             [3] = true,
             [4] = true,
         });
+
+        this.commandService.AddCommand("triggernullevent").Triggered += (source, args) =>
+        {
+            var t = new LuaTable(1, 2, 3);
+            args.Player.TriggerLuaEvent("foo", args.Player, 1, new LuaTable
+            {
+                ["asd"] = null,
+                ["dsa"] = 123,
+                ["table"] = t,
+            }, 2);
+            this.chatBox.Output("sent");
+        };
     }
 
     private void OnPlayerJoin(CustomPlayer player)

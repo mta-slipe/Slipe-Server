@@ -1,4 +1,5 @@
 ﻿using SlipeServer.Packets.Enums;
+using System;
 
 namespace SlipeServer.Packets;
 
@@ -8,8 +9,12 @@ public abstract class Packet
     public abstract PacketReliability Reliability { get; }
     public abstract PacketPriority Priority { get; }
 
-    public abstract byte[] Write();
-    public abstract void Read(byte[] bytes);
+    public virtual byte[] Write() => Array.Empty<byte>();
+
+    public virtual void Read(byte[] bytes)
+    {
+        throw new NotSupportedException();
+    }
 
     public virtual void Reset() { }
 }
