@@ -3,9 +3,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using SlipeServer.Net.Wrappers;
 using SlipeServer.Packets;
+using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Lua.Event;
 using SlipeServer.Server.Clients;
+using SlipeServer.Server.Elements;
 using SlipeServer.Server.Resources.Serving;
 using SlipeServer.Server.ServerBuilders;
 using System;
@@ -34,6 +37,25 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
         this.sendPacketCalls = new();
         RegisterNetWrapper(this.NetWrapperMock.Object);
         SetupSendPacketMocks();
+    }
+
+    public IEnumerable<SendLuaEvent> GetSendLuaEvents()
+    {
+        foreach (var sendPacketCall in this.sendPacketCalls)
+        {
+            if(sendPacketCall.PacketId == PacketId.PACKET_ID_LUA_EVENT)
+            {
+                var luaEventPacket = new LuaEventPacket();
+                luaEventPacket.Read(sendPacketCall.Data);
+                yield return new SendLuaEvent
+                {
+                    Address = sendPacketCall.Address,
+                    Name = luaEventPacket.Name,
+                    Arguments = luaEventPacket.LuaValues.ToArray(),
+                    Source = luaEventPacket.ElementId
+                };
+            }
+        }
     }
 
     private void SetupSendPacketMocks()
@@ -127,6 +149,35 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
             x.Data[0] == (byte)packetId 
             && (data == null || x.Data.SequenceEqual(data))
         ).Should().Be(count);
+    }
+
+    public void VerifyLuaEventTriggered(string eventName, TPlayer to, Element source, LuaValue[] luaValues, int expectedCount = 1)
+    {
+        var luaEventPacket = new LuaEventPacket();
+        int count = 0;
+        foreach (var sendPacketCall in this.sendPacketCalls)
+        {
+            if (sendPacketCall.PacketId == PacketId.PACKET_ID_LUA_EVENT)
+            {
+                luaEventPacket.Read(sendPacketCall.Data);
+                if(luaEventPacket.Name == eventName && luaEventPacket.ElementId == source.Id && sendPacketCall.Address == to.Address)
+                {
+                    var packetLuaValues = luaEventPacket.LuaValues.ToArray();
+                    if (packetLuaValues.Length != luaValues.Length)
+                        break;
+
+                    for(int i = 0; i < luaValues.Length; i++)
+                    {
+                        if (packetLuaValues[i] != luaValues[i])
+                            break;
+                    }
+
+                    count++;
+                }
+            }
+        }
+
+        count.Should().Be(expectedCount);
     }
 
     public void ResetPacketCountVerification() => this.sendPacketCalls.Clear();
