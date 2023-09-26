@@ -33,10 +33,10 @@ public class NetWrapper : IDisposable, INetWrapper
     private static extern void StopNetWrapper(ushort id);
 
     [DllImport(wrapperDllpath, EntryPoint = "sendPacket")]
-    private static extern bool SendPacket(ushort id, uint binaryAddress, byte packetId, ushort bitStreamVersion, IntPtr payload, uint payloadSize, byte priority, byte ordering);
+    private static extern void SendPacket(ushort id, uint binaryAddress, byte packetId, ushort bitStreamVersion, IntPtr payload, uint payloadSize, byte priority, byte ordering);
 
     [DllImport(wrapperDllpath, EntryPoint = "setSocketVersion")]
-    private static extern bool SetSocketVersion(ushort id, uint binaryAddress, ushort version);
+    private static extern void SetSocketVersion(ushort id, uint binaryAddress, ushort version);
 
     [DllImport(wrapperDllpath, EntryPoint = "getClientSerialAndVersion", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
     private static extern void GetClientSerialAndVersion(ushort id, uint binaryAddress, StringBuilder serial, StringBuilder extra, StringBuilder version);
