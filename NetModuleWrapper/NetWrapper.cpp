@@ -48,7 +48,7 @@ bool NetWrapper::packetHandler(unsigned char ucPacketID, const NetServerPlayerID
         }
 
         registeredCallback(ucPacketID, Socket.GetBinaryAddress(), buffer, byteCount, hasPing, ping);
-        delete buffer;
+        delete[] buffer;
     }
 
     return true;

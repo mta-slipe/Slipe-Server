@@ -13,7 +13,7 @@ public class PlayerDisconnectPacket : Packet
 
     public PlayerDisconnectType Type { get; set; }
     public long Duration { get; set; }
-    public string Reason { get; set; }
+    public string? Reason { get; set; }
 
     public PlayerDisconnectPacket(string reason)
     {
@@ -22,7 +22,7 @@ public class PlayerDisconnectPacket : Packet
         this.Duration = 0;
     }
 
-    public PlayerDisconnectPacket(PlayerDisconnectType type, string reason, int duration = 0)
+    public PlayerDisconnectPacket(PlayerDisconnectType type, string? reason = null, int duration = 0)
     {
         this.Type = type;
         this.Reason = reason;
