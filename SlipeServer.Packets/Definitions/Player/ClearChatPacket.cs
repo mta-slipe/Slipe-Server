@@ -9,14 +9,13 @@ public class ClearChatPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ClearChatPacket()
+    private ClearChatPacket()
     {
 
-    }
-
-    public override void Read(byte[] bytes)
-    {
     }
 
     public override byte[] Write() => Array.Empty<byte>();
+    public override void Read(byte[] bytes) => throw new NotSupportedException();
+
+    public static ClearChatPacket Instance { get; } = new();
 }

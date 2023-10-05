@@ -127,4 +127,28 @@ public class CollisionShapeBehaviourTest
 
         isEventCalled.Should().BeFalse();
     }
+
+    [InlineData(100, 100, 100, true)]
+    [InlineData(111, 100, 100, false)]
+    [Theory]
+    public void ColShapeEnteredBySpawning(float spawnX, float spawnY, float spawnZ, bool shouldEventBeCalled)
+    {
+        var server = new TestingServer();
+        var behaviour = server.Instantiate<CollisionShapeBehaviour>();
+
+        var collisionShape = new CollisionSphere(new Vector3(100, 100, 100), 10).AssociateWith(server);
+        var player = server.AddFakePlayer();
+        var isEventCalled = false;
+        collisionShape.ElementEntered += (element) =>
+        {
+            if (element == player)
+            {
+                isEventCalled = true;
+            }
+        };
+
+        player.Spawn(new Vector3(spawnX, spawnY, spawnZ), 0, 0, 0, 0);
+        isEventCalled.Should().Be(shouldEventBeCalled);
+    }
+
 }
