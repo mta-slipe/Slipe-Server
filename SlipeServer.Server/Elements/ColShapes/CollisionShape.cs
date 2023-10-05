@@ -29,6 +29,30 @@ public abstract class CollisionShape : Element
 
     public bool IsWithin(Element element) => IsWithin(element.Position);
 
+    public bool CheckElementEntered(Element element)
+    {
+        if (!this.elementsWithin.ContainsKey(element) && IsWithin(element))
+        {
+            this.elementsWithin[element] = 0;
+            this.ElementEntered?.Invoke(element);
+            element.Destroyed += OnElementDestroyed;
+            return true;
+        }
+        return false;
+    }
+
+    public bool CheckElementLeft(Element element)
+    {
+        if (this.elementsWithin.ContainsKey(element) && !IsWithin(element))
+        {
+            this.elementsWithin.Remove(element, out var _);
+            this.ElementLeft?.Invoke(element);
+            element.Destroyed -= OnElementDestroyed;
+            return true;
+        }
+        return false;
+    }
+    
     public void CheckElementWithin(Element element)
     {
         if (IsWithin(element))

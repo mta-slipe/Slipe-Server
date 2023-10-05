@@ -49,7 +49,12 @@ public class CollisionShapeBehaviour
     {
         foreach (var shape in this.collisionShapes)
         {
-            shape.Key.CheckElementWithin(element);
+            shape.Key.CheckElementLeft(element);
+        }
+
+        foreach (var shape in this.collisionShapes)
+        {
+            shape.Key.CheckElementEntered(element);
         }
     }
 
