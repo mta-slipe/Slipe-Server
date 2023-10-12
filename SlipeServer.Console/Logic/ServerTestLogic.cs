@@ -116,9 +116,11 @@ public class ServerTestLogic
         CommandService commandService,
         WeaponConfigurationService weaponConfigurationService,
         GameWorld gameWorld,
-        IElementIdGenerator elementIdGenerator
+        IElementIdGenerator elementIdGenerator,
+        Func<string> serverServiceUsedCollectionTypeProvider
     )
     {
+        logger.LogInformation($"Using: {serverServiceUsedCollectionTypeProvider()}");
         this.server = server;
         this.elementCollection = elementCollection;
         this.root = root;
