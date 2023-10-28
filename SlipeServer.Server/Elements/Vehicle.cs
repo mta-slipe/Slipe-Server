@@ -555,6 +555,7 @@ public class Vehicle : Element
         }
         this.Occupants[seat] = ped;
         ped.Vehicle = this;
+        ped.EnteringVehicle = null;
         ped.Seat = seat;
 
         this.PedEntered?.Invoke(this, new VehicleEnteredEventsArgs(ped, this, seat, warpsIn));
@@ -568,6 +569,7 @@ public class Vehicle : Element
 
             this.Occupants.Remove(item.Key);
             ped.Vehicle = null;
+            ped.EnteringVehicle = null;
 
             this.PedLeft?.Invoke(this, new VehicleLeftEventArgs(ped, this, item.Key, warpsOut));
         }
