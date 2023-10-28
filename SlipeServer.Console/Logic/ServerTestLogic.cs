@@ -925,11 +925,31 @@ public class ServerTestLogic
             args.Player.Vehicle.Fix();
             this.chatBox.OutputTo(args.Player, "Vehicle fixed");
         };
-        
+
         this.commandService.AddCommand("blowup").Triggered += async (source, args) =>
         {
             args.Player.Vehicle.BlowUp();
             this.chatBox.OutputTo(args.Player, "Vehicle blown up");
+        };
+
+        this.commandService.AddCommand("elementcancellationtoken").Triggered += async (source, args) =>
+        {
+            var vehicle = new Vehicle(VehicleModel.Perennial, args.Player.Position).AssociateWith(this.server);
+            var _ = Task.Run(async () =>
+            {
+                await Task.Delay(2000);
+                vehicle.Destroy();
+            });
+            this.chatBox.Output("Waiting for vehicle to be destroyed...");
+            try
+            {
+                await Task.Delay(-1, Element.CreateCancellationToken(vehicle));
+            }
+            catch(Exception ex)
+            {
+
+            }
+            this.chatBox.Output("Vehicle destroyed");
         };
 
         this.commandService.AddCommand("variant").Triggered += (source, args) =>

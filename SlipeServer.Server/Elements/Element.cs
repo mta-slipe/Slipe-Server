@@ -866,4 +866,34 @@ public class Element
     /// </summary>
     /// <param name="value"></param>
     public static implicit operator LuaValue(Element value) => LuaValue.CreateElement((uint)value.Id);
+
+    /// <summary>
+    /// Return CancellationToken cancelled when element gets destroyed
+    /// </summary>
+    /// <param name="element"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    public static CancellationToken CreateCancellationToken(Element element)
+    {
+        if (element.IsDestroyed)
+            throw new InvalidOperationException();
+
+        var cancelationTokenSource = new CancellationTokenSource();
+
+        void handleDestroyed(Element element)
+        {
+            cancelationTokenSource.Cancel();
+            element.Destroyed -= handleDestroyed;
+        }
+
+        element.Destroyed += handleDestroyed;
+
+        if (element.IsDestroyed)
+        {
+            cancelationTokenSource.Cancel();
+            element.Destroyed -= handleDestroyed;
+        }
+
+        return cancelationTokenSource.Token;
+    }
 }
