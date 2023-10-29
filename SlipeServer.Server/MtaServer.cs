@@ -660,7 +660,7 @@ public abstract class MtaServer<TPlayer> : MtaServer where TPlayer : Player
 /// <typeparam name="TPlayer">The player type</typeparam>
 public class MtaNewPlayerServer<TPlayer> : MtaServer<TPlayer> where TPlayer : Player, new()
 {
-    internal MtaNewPlayerServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
+    public MtaNewPlayerServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
 
     protected override IClient CreateClient(uint binaryAddress, INetWrapper netWrapper)
     {
@@ -676,7 +676,7 @@ public class MtaNewPlayerServer<TPlayer> : MtaServer<TPlayer> where TPlayer : Pl
 /// </summary>
 public class MtaDiPlayerServer<TPlayer> : MtaServer<TPlayer> where TPlayer : Player
 {
-    internal MtaDiPlayerServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
+    public MtaDiPlayerServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
 
     protected override IClient CreateClient(uint binaryAddress, INetWrapper netWrapper)
     {
