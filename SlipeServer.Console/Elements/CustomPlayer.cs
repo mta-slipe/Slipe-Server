@@ -53,4 +53,9 @@ public class CustomPlayer : Player
         var random = new Random();
         return Color.FromArgb(255, random.Next(1, 255), random.Next(1, 255), random.Next(1, 255));
     }
+
+    public override bool Destroy()
+    {
+        return base.Destroy();
+    }
 }
