@@ -191,6 +191,7 @@ public class Player : Ped
     {
         if (this.Vehicle != null)
             this.Vehicle.RunAsSync(() => this.Vehicle.RemovePassenger(this));
+        EnteringVehicle = null;
     }
 
     public new Player AssociateWith(MtaServer server)
@@ -230,10 +231,7 @@ public class Player : Ped
         this.dimension = dimension;
 
         this.Weapons.Clear(false);
-        this.Vehicle = null;
-        this.Seat = null;
-        this.VehicleAction = VehicleAction.None;
-        this.HasJetpack = false;
+        this.Reset();
         this.health = 100;
         this.armor = 0;
 
@@ -285,10 +283,7 @@ public class Player : Ped
     {
         this.RunAsSync(() =>
         {
-            this.health = 0;
-            this.Vehicle = null;
-            this.Seat = null;
-            this.VehicleAction = VehicleAction.None;
+            Reset();
             InvokeWasted(new PedWastedEventArgs(this, damager, damageType, bodyPart, animationGroup, animationId));
         });
     }
