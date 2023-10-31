@@ -27,7 +27,7 @@ public class ChatBox
 
     public void Clear()
     {
-        this.server.BroadcastPacket(new ClearChatPacket());
+        this.server.BroadcastPacket(ClearChatPacket.Instance);
     }
 
     public void OutputTo(Player player, string message, Color? color = null, bool isColorCoded = false, ChatEchoType type = ChatEchoType.Player, Element? source = null)
@@ -37,7 +37,7 @@ public class ChatBox
 
     public void ClearFor(Player player)
     {
-        player.Client.SendPacket(new ClearChatPacket());
+        player.Client.SendPacket(ClearChatPacket.Instance);
     }
 
     public void SetVisible(bool visible, bool? inputBlocked = null)
