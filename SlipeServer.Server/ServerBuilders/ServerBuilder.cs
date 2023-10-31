@@ -103,6 +103,17 @@ public class ServerBuilder
     {
         AddBuildStep(server => server.InstantiatePersistent<T>(parameters));
     }
+
+    /// <summary>
+    /// Will instantiate a certain type using the dependency injection container with scoped lifetime
+    /// Will also keep a reference to the instantiated type to prevent it from being garbage collected
+    /// </summary>
+    /// <typeparam name="T">Type to instantiate</typeparam>
+    /// <param name="parameters">parameters to pass to the constructor that cannot be supplied by the dependency injection container</param>
+    public void InstantiateScopedPersistent<T>(params object[] parameters)
+    {
+        AddBuildStep(server => server.InstantiateScopedPersistent<T>(parameters));
+    }
     
     /// <summary>
     /// Will instantiate a certain type using the dependency injection container
@@ -130,7 +141,15 @@ public class ServerBuilder
     {
         InstantiatePersistent<T>(parameters);
     }
-    
+
+    /// <summary>
+    /// Adds a game scoped logic class to the server, purely for semantics otherwise identical to `InstantiateScopedPersistent` 
+    /// </summary>
+    public void AddScopedLogic<T>(params object[] parameters)
+    {
+        InstantiateScopedPersistent<T>(parameters);
+    }
+
     /// <summary>
     /// Adds a game logic class to the server, purely for semantics otherwise identical to `InstiantiatePersistent` 
     /// </summary>

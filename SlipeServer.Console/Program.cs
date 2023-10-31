@@ -86,6 +86,7 @@ public partial class Program
 
                     services.AddScoped<TestService>();
                     services.AddSingleton<PacketReplayerService>();
+                    services.AddScoped<SampleScopedService>();
                 });
                 builder.AddLua();
                 builder.AddPhysics();
@@ -104,6 +105,8 @@ public partial class Program
                 builder.AddLogic<ClothingTestLogic>();
                 builder.AddLogic<PedTestLogic>();
                 builder.AddLogic<ProxyService>();
+                builder.AddScopedLogic<ScopedTestLogic1>();
+                builder.AddScopedLogic<ScopedTestLogic2>();
                 builder.AddLogic(typeof(TestLogic));
                 //builder.AddBehaviour<VelocityBehaviour>();
                 //builder.AddBehaviour<EventLoggingBehaviour>();
