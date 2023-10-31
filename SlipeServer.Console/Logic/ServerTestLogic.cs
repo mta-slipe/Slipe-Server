@@ -224,7 +224,7 @@ public class ServerTestLogic
         this.FrozenVehicle.IsFrozen = true;
 
         this.PrivateVehicle = new Vehicle(602, new Vector3(-10.58f, -5.70f, 3.11f)).AssociateWith(this.server);
-        this.PrivateVehicle.CanEnter = (Ped ped, Vehicle vehicle) =>
+        this.PrivateVehicle.CanEnter = (Ped ped, Vehicle vehicle, byte seat) =>
         {
             if (ped is Player player)
             {

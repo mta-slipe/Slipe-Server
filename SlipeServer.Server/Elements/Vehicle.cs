@@ -731,8 +731,8 @@ public class Vehicle : Element
     public void DetachFromTower(bool updateCounterpart = true) => AttachToTower(null, updateCounterpart);
 
 
-    public Func<Ped, Vehicle, bool>? CanEnter;
-    public Func<Ped, Vehicle, bool>? CanExit;
+    public Func<Ped, Vehicle, byte, bool>? CanEnter;
+    public Func<Ped, Vehicle, byte, bool>? CanExit;
 
     public event ElementEventHandler<VehicleBlownEventArgs>? Blown;
     public event ElementEventHandler<VehicleLeftEventArgs>? PedLeft;
