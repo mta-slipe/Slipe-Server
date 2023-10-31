@@ -155,6 +155,32 @@ public class Ped : Element
         set => this.Rotation = new Vector3(this.rotation.X, this.rotation.Y, value);
     }
 
+    private Vehicle? enteringVehicle;
+    public Vehicle? EnteringVehicle
+    {
+        get => this.enteringVehicle;
+        set
+        {
+            if (this.enteringVehicle == value)
+                return;
+
+            var args = new ElementChangedEventArgs<Ped, Vehicle?>(this, this.vehicle, value, this.IsSync);
+            if(this.enteringVehicle != null)
+                this.enteringVehicle.Destroyed -= HandleEnteringVehicleDestroyed;
+            this.enteringVehicle = value;
+            if(value != null)
+                value.Destroyed += HandleEnteringVehicleDestroyed;
+            EnteringVehicleChanged?.Invoke(this, args);
+        }
+    }
+
+    private void HandleEnteringVehicleDestroyed(Element destroyedVehicle)
+    {
+        this.VehicleAction = VehicleAction.None;
+        this.EnteringVehicle = null;
+    }
+
+
     private Vehicle? vehicle;
     public Vehicle? Vehicle
     {
@@ -325,6 +351,8 @@ public class Ped : Element
 
         vehicle.AddPassenger(seat, this, true);
         this.HasJetpack = false;
+        this.Vehicle = vehicle;
+        this.EnteringVehicle = null;
         this.VehicleAction = VehicleAction.None;
     }
 
@@ -377,13 +405,20 @@ public class Ped : Element
     {
         this.RunAsSync(() =>
         {
-            this.health = 0;
-            this.Vehicle = null;
-            this.Seat = null;
-            this.VehicleAction = VehicleAction.None;
-            this.HasJetpack = false;
+            Reset();
             InvokeWasted(new PedWastedEventArgs(this, damager, damageType, bodyPart, animationGroup, animationId));
         });
+    }
+
+    protected void Reset()
+    {
+        this.health = 0;
+        this.JackingVehicle = null;
+        this.EnteringVehicle = null;
+        this.Vehicle = null;
+        this.Seat = null;
+        this.VehicleAction = VehicleAction.None;
+        this.HasJetpack = false;
     }
 
     public void Kill(DamageType damageType = DamageType.WEAPONTYPE_UNARMED, BodyPart bodyPart = BodyPart.Torso)
@@ -491,6 +526,7 @@ public class Ped : Element
     public event ElementChangedEventHandler<Ped, VehicleAction>? VehicleActionChanged;
     public event ElementChangedEventHandler<Ped, Vehicle?>? JackingVehicleChanged;
     public event ElementChangedEventHandler<Ped, Vehicle?>? VehicleChanged;
+    public event ElementChangedEventHandler<Ped, Vehicle?>? EnteringVehicleChanged;
     public event ElementEventHandler<Ped, PedStatChangedEventArgs>? StatChanged;
     public event ElementEventHandler<Ped, WeaponReceivedEventArgs>? WeaponReceived;
     public event ElementEventHandler<Ped, WeaponRemovedEventArgs>? WeaponRemoved;
