@@ -294,6 +294,22 @@ public class MtaServer
     }
 
     /// <summary>
+    /// Instantiates a type using the dependency injection container with scoped lifetime, and keeps a reference to it on the MTA server, making sure it does not get garbage collected
+    /// </summary>
+    /// <typeparam name="T">The type to instiantiate</typeparam>
+    /// <param name="parameters">Any constructor parameters that are not supplied by the dependency injection container</param>
+    /// <returns></returns>
+    public T InstantiateScopedPersistent<T>(params object[] parameters)
+    {
+        var instance = this.InstantiateScoped<T>(parameters);
+        if (instance == null)
+            throw new Exception($"Unable to instantiate {typeof(T)}");
+
+        this.persistentInstances.Add(instance);
+        return instance;
+    }
+
+    /// <summary>
     /// Instantiates a type using the dependency injection container, in a newly created scope.
     /// </summary>
     /// <param name="type">The type to instiantiate</param>

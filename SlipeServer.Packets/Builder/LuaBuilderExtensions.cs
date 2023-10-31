@@ -6,9 +6,15 @@ namespace SlipeServer.Packets.Builder;
 
 public static class LuaBuilderExtensions
 {
-    public static void Write(this PacketBuilder builder, LuaValue luaValue, Dictionary<LuaValue, ulong>? knownTables = null)
+    public static void Write(this PacketBuilder builder, LuaValue? luaValue, Dictionary<LuaValue, ulong>? knownTables = null)
     {
         knownTables ??= new Dictionary<LuaValue, ulong>();
+
+        if(luaValue is null)
+        {
+            WriteLuaNil(builder);
+            return;
+        }
 
         switch (luaValue.LuaType)
         {

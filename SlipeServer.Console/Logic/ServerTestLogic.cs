@@ -9,6 +9,7 @@ using SlipeServer.Packets.Enums.VehicleUpgrades;
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Packets.Structs;
 using SlipeServer.Server;
+using SlipeServer.Server.Clients;
 using SlipeServer.Server.Constants;
 using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
@@ -903,6 +904,46 @@ public class ServerTestLogic
             this.server.BroadcastPacket(PickupPacketFactory.CreateDestroyAllPacket());
         };
 
+        this.commandService.AddCommand("addmyvehevent").Triggered += (source, args) =>
+        {
+            args.Player.VehicleChanged += (sender, args) =>
+            {
+                this.chatBox.Output($"vehicle changed {args.NewValue}");
+            };
+            args.Player.EnteringVehicleChanged += (sender, args) =>
+            {
+                this.chatBox.Output($"entering vehicle changed {args.NewValue}");
+            };
+            args.Player.JackingVehicleChanged += (sender, args) =>
+            {
+                this.chatBox.Output($"jacking vehicle changed {args.NewValue}");
+            };
+            args.Player.VehicleActionChanged += (sender, args) =>
+            {
+                this.chatBox.Output($"VehicleActionChanged {args.NewValue}");
+
+            };
+        };
+        this.commandService.AddCommand("destroymyveh").Triggered += (source, args) =>
+        {
+            if (args.Player.Vehicle != null)
+            {
+                args.Player.Vehicle.Destroy();
+                this.chatBox.Output($"destroyed... veh={args.Player.Vehicle} {args.Player.Vehicle.IsDestroyed}");
+            }
+        };
+        this.commandService.AddCommand("destroyenteredvehicle").Triggered += (source, args) =>
+        {
+            if (args.Player.EnteringVehicle != null)
+            {
+                args.Player.EnteringVehicle.Destroy();
+                this.chatBox.Output($"destroyed EnteringVehicle");
+            }
+        };
+        this.commandService.AddCommand("myveh").Triggered += (source, args) =>
+        {
+            this.chatBox.Output($"your veh: Vehicle={args.Player.Vehicle != null} EnteringVehicle={args.Player.EnteringVehicle != null} VehicleAction={args.Player.VehicleAction}");
+        };
         this.commandService.AddCommand("slipelua").Triggered += async (source, args) =>
         {
             var stopwatch = new Stopwatch();
@@ -1360,6 +1401,18 @@ public class ServerTestLogic
             [3] = true,
             [4] = true,
         });
+
+        this.commandService.AddCommand("triggernullevent").Triggered += (source, args) =>
+        {
+            var t = new LuaTable(1, 2, 3);
+            args.Player.TriggerLuaEvent("foo", args.Player, 1, new LuaTable
+            {
+                ["asd"] = null,
+                ["dsa"] = 123,
+                ["table"] = t,
+            }, 2);
+            this.chatBox.Output("sent");
+        };
     }
 
     private void OnPlayerJoin(CustomPlayer player)
