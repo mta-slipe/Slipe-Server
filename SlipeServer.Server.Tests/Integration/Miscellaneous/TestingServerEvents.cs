@@ -18,7 +18,7 @@ public class TestingServerEvents
         var sendEvents = testingServer.GetSendLuaEvents().ToList();
         var sendEvent = sendEvents.First();
 
-        sendEvent.Address.Should().Be(testingPlayer.Address);
+        sendEvent.Address.Should().Be(testingPlayer.GetAddress());
         sendEvent.Name.Should().Be("test event");
         sendEvent.Source.Should().Be(testingPlayer.Id);
         sendEvent.Arguments.Should().BeEquivalentTo(new LuaValue[] { 1, "two" });
