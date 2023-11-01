@@ -36,7 +36,7 @@ public abstract class CollisionShape : Element
             if (!this.elementsWithin.ContainsKey(element))
             {
                 this.elementsWithin[element] = 0;
-                this.ElementEntered?.Invoke(element);
+                this.ElementEntered?.Invoke(this, element);
                 element.Destroyed += OnElementDestroyed;
             }
         } else
@@ -44,7 +44,7 @@ public abstract class CollisionShape : Element
             if (this.elementsWithin.ContainsKey(element))
             {
                 this.elementsWithin.Remove(element, out var _);
-                this.ElementLeft?.Invoke(element);
+                this.ElementLeft?.Invoke(this, element);
                 element.Destroyed -= OnElementDestroyed;
             }
         }
@@ -52,7 +52,7 @@ public abstract class CollisionShape : Element
 
     private void OnElementDestroyed(Element element)
     {
-        this.ElementLeft?.Invoke(element);
+        this.ElementLeft?.Invoke(this, element);
     }
 
     public new CollisionShape AssociateWith(MtaServer server)
@@ -61,6 +61,6 @@ public abstract class CollisionShape : Element
         return this;
     }
 
-    public event Action<Element>? ElementEntered;
-    public event Action<Element>? ElementLeft;
+    public event Action<CollisionShape, Element>? ElementEntered;
+    public event Action<CollisionShape, Element>? ElementLeft;
 }
