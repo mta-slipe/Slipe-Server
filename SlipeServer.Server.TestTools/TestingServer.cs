@@ -18,7 +18,7 @@ using System.Linq;
 namespace SlipeServer.Server.TestTools;
 
 public class TestingServer<TPlayer> : MtaServer<TPlayer> 
-    where TPlayer : TestingPlayer, new()
+    where TPlayer : Player
 {
     public Mock<INetWrapper> NetWrapperMock { get; }
     private uint binaryAddressCounter;
@@ -137,7 +137,7 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
     public void VerifyPacketSent(PacketId packetId, TPlayer to, byte[] data = null, int count = 1)
     {
         this.sendPacketCalls.Count(x =>
-            x.PacketId == packetId && x.Address == to.Address && (data == null || x.Data.SequenceEqual(data))
+            x.PacketId == packetId && x.Address == to.GetAddress() && (data == null || x.Data.SequenceEqual(data))
         ).Should().Be(count);
     }
 
@@ -145,7 +145,7 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
     {
         this.sendPacketCalls.Count(x =>
             x.PacketId == PacketId.PACKET_ID_LUA_ELEMENT_RPC && 
-            x.Address == to.Address && 
+            x.Address == to.GetAddress() && 
             x.Data[0] == (byte)packetId 
             && (data == null || x.Data.SequenceEqual(data))
         ).Should().Be(count);
@@ -160,7 +160,7 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
             if (sendPacketCall.PacketId == PacketId.PACKET_ID_LUA_EVENT)
             {
                 luaEventPacket.Read(sendPacketCall.Data);
-                if(luaEventPacket.Name == eventName && luaEventPacket.ElementId == source.Id && sendPacketCall.Address == to.Address)
+                if(luaEventPacket.Name == eventName && luaEventPacket.ElementId == source.Id && sendPacketCall.Address == to.GetAddress())
                 {
                     var packetLuaValues = luaEventPacket.LuaValues.ToArray();
                     if (packetLuaValues.Length != luaValues.Length)
