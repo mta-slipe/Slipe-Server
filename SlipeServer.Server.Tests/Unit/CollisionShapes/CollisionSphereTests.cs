@@ -32,4 +32,17 @@ public class CollisionSphereTests
 
         result.Should().BeFalse();
     }
+
+    [Theory]
+    [InlineData(0, 0, true)]
+    [InlineData(1, 0, false)]
+    [InlineData(0, 1, false)]
+    public void PointInOtherInteriorOrDimension(byte interior, ushort dimension, bool isInside)
+    {
+        var shape = new CollisionSphere(Vector3.Zero, 5);
+
+        var result = shape.IsWithin(Vector3.Zero, interior, dimension);
+
+        result.Should().Be(isInside);
+    }
 }

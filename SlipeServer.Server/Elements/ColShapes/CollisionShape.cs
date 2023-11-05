@@ -25,13 +25,14 @@ public abstract class CollisionShape : Element
         this.elementsWithin = new();
     }
 
-    public abstract bool IsWithin(Vector3 position);
+    public abstract bool IsWithin(Vector3 position, byte? interior = null, ushort? dimension = null);
 
-    public bool IsWithin(Element element) => IsWithin(element.Position);
+    public bool IsWithin(Element element, bool matchInterior = true, bool matchDimension = true)
+        => IsWithin(element.Position, matchInterior ? element.Interior : null, matchDimension ? element.Dimension : null);
 
-    public void CheckElementWithin(Element element)
+    public void CheckElementWithin(Element element, bool matchInterior = true, bool matchDimension = true)
     {
-        if (IsWithin(element))
+        if (IsWithin(element, matchInterior, matchDimension))
         {
             if (!this.elementsWithin.ContainsKey(element))
             {
