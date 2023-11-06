@@ -72,8 +72,11 @@ public class CollisionPolygon : CollisionShape
         PointRemoved?.Invoke(this, args);
     }
 
-    public override bool IsWithin(Vector3 position)
+    public override bool IsWithin(Vector3 position, byte? interior = null, ushort? dimension = null)
     {
+        if ((interior != null && this.Interior != interior) || (dimension != null && this.Dimension != dimension))
+            return false;
+
         Vector2 point = new Vector2(position.X, position.Y);
 
         uint intersections = 0;

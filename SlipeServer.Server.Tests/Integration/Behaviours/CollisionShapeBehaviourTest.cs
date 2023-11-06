@@ -127,4 +127,29 @@ public class CollisionShapeBehaviourTest
 
         isEventCalled.Should().BeFalse();
     }
+
+    [Fact]
+    public void ColShapeWhenInteriorChanged()
+    {
+        var server = new TestingServer();
+        var behaviour = server.Instantiate<CollisionShapeBehaviour>();
+
+        var collisionShape = new CollisionSphere(new Vector3(100, 100, 100), 10).AssociateWith(server);
+        var dummy = new DummyElement().AssociateWith(server);
+
+        var isEventCalled = false;
+        collisionShape.ElementEntered += (element) =>
+        {
+            if (element == dummy)
+            {
+                isEventCalled = true;
+            }
+        };
+
+        dummy.Interior = 42;
+        dummy.Position = new Vector3(100, 100, 100);
+        isEventCalled.Should().BeFalse();
+        dummy.Interior = collisionShape.Interior;
+        isEventCalled.Should().BeTrue();
+    }
 }

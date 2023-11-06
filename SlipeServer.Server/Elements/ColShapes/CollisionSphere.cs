@@ -25,8 +25,11 @@ public class CollisionSphere : CollisionShape
         this.Radius = Radius;
     }
 
-    public override bool IsWithin(Vector3 position)
+    public override bool IsWithin(Vector3 position, byte? interior = null, ushort? dimension = null)
     {
+        if ((interior != null && this.Interior != interior) || (dimension != null && this.Dimension != dimension))
+            return false;
+
         return Vector3.DistanceSquared(this.Position, position) <= this.radiusSquared;
     }
 

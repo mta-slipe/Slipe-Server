@@ -2,8 +2,10 @@
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.ColShapes;
 using SlipeServer.Server.Elements.Events;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Numerics;
 
 namespace SlipeServer.Server.Behaviour;
@@ -31,7 +33,11 @@ public class CollisionShapeBehaviour
         if (element is CollisionShape collisionShape)
             AddCollisionShape(collisionShape);
         else
+        {
             element.PositionChanged += OnElementPositionChange;
+            element.InteriorChanged += OnElementInteriorChanged;
+            element.DimensionChanged += HandleElementDimensionChanged;
+        }
     }
 
     private void AddCollisionShape(CollisionShape collisionShape)
@@ -54,6 +60,22 @@ public class CollisionShapeBehaviour
     }
 
     private void OnElementPositionChange(object sender, ElementChangedEventArgs<Vector3> eventArgs)
+    {
+        eventArgs.Source.RunWithContext(
+            () => RefreshColliders(eventArgs.Source),
+            Elements.Enums.ElementUpdateContext.PostEvent
+        );
+    }
+
+    private void OnElementInteriorChanged(Element sender, ElementChangedEventArgs<byte> eventArgs)
+    {
+        eventArgs.Source.RunWithContext(
+            () => RefreshColliders(eventArgs.Source),
+            Elements.Enums.ElementUpdateContext.PostEvent
+        );
+    }
+
+    private void HandleElementDimensionChanged(Element sender, ElementChangedEventArgs<ushort> eventArgs)
     {
         eventArgs.Source.RunWithContext(
             () => RefreshColliders(eventArgs.Source),

@@ -29,8 +29,11 @@ public class CollisionRectangle : CollisionShape
         this.dimensions = dimensions;
     }
 
-    public override bool IsWithin(Vector3 position)
+    public override bool IsWithin(Vector3 position, byte? interior = null, ushort? dimension = null)
     {
+        if ((interior != null && this.Interior != interior) || (dimension != null && this.Dimension != dimension))
+            return false;
+
         Vector2 bounds = this.Position2 + this.Dimensions;
 
         return
