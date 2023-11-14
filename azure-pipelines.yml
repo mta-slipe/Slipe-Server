@@ -110,6 +110,10 @@ jobs:
   pool:
     vmImage: 'windows-2022'
   steps:
+  - task: UseDotNet@2
+    inputs:
+      packageType: 'sdk'
+      version: '8.x'
   - task: DotNetCoreCLI@2
     displayName: 'Install docfx'
     inputs:
@@ -198,7 +202,7 @@ jobs:
   - task: UseDotNet@2
     inputs:
       packageType: 'sdk'
-      version: '7.x'
+      version: '8.x'
 
   - task: DotNetCoreCLI@2
     displayName: 'dotnet restore'
