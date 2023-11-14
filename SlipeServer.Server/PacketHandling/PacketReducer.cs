@@ -79,6 +79,6 @@ public class PacketReducer
             packet.Read(data);
             handler.EnqueuePacket(client, packet);
         });
-        handler.PacketHandled += (packet) => pool.ReturnPacket(packet);
+        handler.PacketHandled += pool.ReturnPacket;
     }
 }
