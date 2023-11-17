@@ -58,7 +58,7 @@ public static class PlayerPacketFactory
                 alpha: player.Alpha,
                 interior: player.Interior,
 
-                weapons: (new byte[16]).Select((value, index) =>
+                weapons: Enumerable.Range(0, 15).Select((value, index) =>
                 {
                     return (byte)(player.Weapons.Get((WeaponSlot)index)?.Type ?? 0);
                 }).ToArray()

@@ -6,6 +6,6 @@ public static class RadarAreaPacketFactory
 {
     public static DestroyAllRadarAreasRpcPacket CreateDestroyAllPacket()
     {
-        return new DestroyAllRadarAreasRpcPacket();
+        return DestroyAllRadarAreasRpcPacket.Instance;
     }
 }

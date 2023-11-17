@@ -3,7 +3,6 @@ using Moq;
 using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
-using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Mappers;
 using System;

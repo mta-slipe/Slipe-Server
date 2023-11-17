@@ -6,6 +6,6 @@ public static class BlipPacketFactory
 {
     public static DestroyAllBlipsRpcPacket CreateDestroyAllPacket()
     {
-        return new DestroyAllBlipsRpcPacket();
+        return DestroyAllBlipsRpcPacket.Instance;
     }
 }

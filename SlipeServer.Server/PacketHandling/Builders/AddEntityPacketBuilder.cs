@@ -111,7 +111,7 @@ public class AddEntityPacketBuilder
             element.Attachment, element.AreCollisionsEnabled, element.IsCallPropagationEnabled, element.BroadcastableElementData, element.Name, element.TimeContext,
             element.Position, element.Model, element.PedRotation, element.Health, element.Armor, element.Vehicle?.Id, element.Seat,
             element.HasJetpack, element.IsSyncable, element.IsHeadless, element.IsFrozen, element.Alpha, (byte)element.MoveAnimation,
-            element.Clothing.GetClothing().ToArray(), element.Weapons.Cast<PedWeapon>().ToArray(), (byte)(element.CurrentWeapon?.Slot ?? 0)
+            element.Clothing.GetClothing().ToArray(), element.Weapons.Select(x => (PedWeapon)x).ToArray(), (byte)(element.CurrentWeapon?.Slot ?? 0)
         );
     }
 
@@ -152,66 +152,62 @@ public class AddEntityPacketBuilder
         this.packet.AddVehicle(element.Id, (byte)element.ElementType, element.Parent?.Id ?? ElementId.Zero, element.Interior, element.Dimension,
             element.Attachment, element.AreCollisionsEnabled, element.IsCallPropagationEnabled, element.BroadcastableElementData, element.Name, element.TimeContext,
             element.Position, element.Rotation, element.Model, element.Health, (byte)element.BlownState, element.Colors.AsArray(), element.PaintJob, element.Damage, element.Variants.Variant1,
-            element.Variants.Variant2, element.TurretRotation, element.AdjustableProperty, VehicleConstants.DoorsPerVehicle[(VehicleModel)element.Model] > 0 ? element.DoorRatios.ToArray() : Array.Empty<float>(), MapVehicleUpgrades(element.Model, element.Upgrades), element.PlateText, 
+            element.Variants.Variant2, element.TurretRotation, element.AdjustableProperty, VehicleConstants.DoorsPerVehicle[(VehicleModel)element.Model] > 0 ? element.DoorRatios.ToArray() : Array.Empty<float>(), MapVehicleUpgrades(element.Model, element.Upgrades).ToArray(), element.PlateText, 
             (byte)element.OverrideLights, element.IsLandingGearDown, element.IsSirenActive, element.IsFuelTankExplodable, element.IsEngineOn, element.IsLocked, 
             element.AreDoorsDamageProof, element.IsDamageProof, element.IsFrozen, element.IsDerailed, element.IsDerailable, element.TrainDirection == Elements.Enums.TrainDirection.Clockwise, element.IsTaxiLightOn, 
             element.Alpha, element.HeadlightColor, element.Handling, element.Sirens
         );
     }
 
-    private byte[] MapVehicleUpgrades(ushort model, VehicleUpgrades upgrades)
+    private IEnumerable<byte> MapVehicleUpgrades(ushort model, VehicleUpgrades upgrades)
     {
-        var upgradeList = new List<byte>();
-
         if (upgrades.Hood != VehicleUpgradeHood.None)
-            upgradeList.Add((byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeHood>(model, (ushort)upgrades.Hood) - 1000)!);
+            yield return (byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeHood>(model, (ushort)upgrades.Hood) - 1000)!;
 
         if (upgrades.Vent != VehicleUpgradeVent.None)
-            upgradeList.Add((byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeVent>(model, (ushort)upgrades.Vent) - 1000)!);
+            yield return (byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeVent>(model, (ushort)upgrades.Vent) - 1000)!;
 
         if (upgrades.Spoiler != VehicleUpgradeSpoiler.None)
-            upgradeList.Add((byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeSpoiler>(model, (ushort)upgrades.Spoiler) - 1000)!);
+            yield return (byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeSpoiler>(model, (ushort)upgrades.Spoiler) - 1000)!;
 
         if (upgrades.Sideskirt != VehicleUpgradeSideskirt.None)
-            upgradeList.Add((byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeSideskirt>(model, (ushort)upgrades.Sideskirt) - 1000)!);
+            yield return (byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeSideskirt>(model, (ushort)upgrades.Sideskirt) - 1000)!;
 
         if (upgrades.FrontBullbar != VehicleUpgradeFrontBullbar.None)
-            upgradeList.Add((byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeFrontBullbar>(model, (ushort)upgrades.FrontBullbar) - 1000)!);
+            yield return (byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeFrontBullbar>(model, (ushort)upgrades.FrontBullbar) - 1000)!;
 
         if (upgrades.RearBullbar != VehicleUpgradeRearBullbar.None)
-            upgradeList.Add((byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeRearBullbar>(model, (ushort)upgrades.RearBullbar) - 1000)!);
+            yield return (byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeRearBullbar>(model, (ushort)upgrades.RearBullbar) - 1000)!;
 
         if (upgrades.Lamps != VehicleUpgradeLamp.None)
-            upgradeList.Add((byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeLamp>(model, (ushort)upgrades.Lamps) - 1000)!);
+            yield return (byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeLamp>(model, (ushort)upgrades.Lamps) - 1000)!;
 
         if (upgrades.Roof != VehicleUpgradeRoof.None)
-            upgradeList.Add((byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeRoof>(model, (ushort)upgrades.Roof) - 1000)!);
+            yield return (byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeRoof>(model, (ushort)upgrades.Roof) - 1000)!;
 
         if (upgrades.Nitro != VehicleUpgradeNitro.None)
-            upgradeList.Add((byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeNitro>(model, (ushort)upgrades.Nitro) - 1000)!);
+            yield return (byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeNitro>(model, (ushort)upgrades.Nitro) - 1000)!;
 
         if (upgrades.Wheels != VehicleUpgradeWheel.None)
-            upgradeList.Add((byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeWheel>(model, (ushort)upgrades.Wheels) - 1000)!);
+            yield return (byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeWheel>(model, (ushort)upgrades.Wheels) - 1000)!;
 
         if (upgrades.Exhaust != VehicleUpgradeExhaust.None)
-            upgradeList.Add((byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeExhaust>(model, (ushort)upgrades.Exhaust) - 1000)!);
+            yield return (byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeExhaust>(model, (ushort)upgrades.Exhaust) - 1000)!;
 
         if (upgrades.FrontBumper != VehicleUpgradeFrontBumper.None)
-            upgradeList.Add((byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeFrontBumper>(model, (ushort)upgrades.FrontBumper) - 1000)!);
+            yield return (byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeFrontBumper>(model, (ushort)upgrades.FrontBumper) - 1000)!;
 
         if (upgrades.RearBumper != VehicleUpgradeRearBumper.None)
-            upgradeList.Add((byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeRearBumper>(model, (ushort)upgrades.RearBumper) - 1000)!);
+            yield return (byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeRearBumper>(model, (ushort)upgrades.RearBumper) - 1000)!;
 
         if (upgrades.HasHydraulics)
-            upgradeList.Add((byte)(VehicleUpgradeConstants.HydraulicsId - 1000));
+            yield return (byte)(VehicleUpgradeConstants.HydraulicsId - 1000);
 
         if (upgrades.HasStereo)
-            upgradeList.Add((byte)(VehicleUpgradeConstants.StereoId - 1000));
+            yield return (byte)(VehicleUpgradeConstants.StereoId - 1000);
 
         if (upgrades.Misc != VehicleUpgradeMisc.None)
-            upgradeList.Add((byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeMisc>(model, (ushort)upgrades.Misc) - 1000)!);
-
-        return upgradeList.ToArray();
+            yield return (byte)(VehicleUpgradeConstants.GetUpgradeIdForVehicle<VehicleUpgradeMisc>(model, (ushort)upgrades.Misc) - 1000)!;
     }
 
     public void AddWeapon(WeaponObject element)
@@ -227,8 +223,6 @@ public class AddEntityPacketBuilder
             element.ShootThroughStuff, (byte)element.WeaponState, element.Ammo, element.ClipAmmo, element.Owner?.Id ?? (ElementId)PacketConstants.InvalidElementId
         );
     }
-
-
 
     public AddEntityPacket Build()
     {

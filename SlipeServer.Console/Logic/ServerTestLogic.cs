@@ -9,7 +9,6 @@ using SlipeServer.Packets.Enums.VehicleUpgrades;
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Packets.Structs;
 using SlipeServer.Server;
-using SlipeServer.Server.Clients;
 using SlipeServer.Server.Constants;
 using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
@@ -33,9 +32,7 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using static SlipeServer.Packets.Constants.KeyConstants;
 
 namespace SlipeServer.Console.Logic;
 
@@ -961,13 +958,13 @@ public class ServerTestLogic
             this.logger.LogInformation("Starting Slipe Lua test resource for {playerName} took {milliseconds}ms", args.Player.Name, stopwatch.ElapsedMilliseconds);
         };
         
-        this.commandService.AddCommand("fixmyveh").Triggered += async (source, args) =>
+        this.commandService.AddCommand("fixmyveh").Triggered += (source, args) =>
         {
             args.Player.Vehicle.Fix();
             this.chatBox.OutputTo(args.Player, "Vehicle fixed");
         };
         
-        this.commandService.AddCommand("blowup").Triggered += async (source, args) =>
+        this.commandService.AddCommand("blowup").Triggered += (source, args) =>
         {
             args.Player.Vehicle.BlowUp();
             this.chatBox.OutputTo(args.Player, "Vehicle blown up");

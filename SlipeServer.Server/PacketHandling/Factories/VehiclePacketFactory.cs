@@ -102,7 +102,7 @@ public static class VehiclePacketFactory
 
     public static DestroyAllVehiclesRpcPacket CreateDestroyAllPacket()
     {
-        return new DestroyAllVehiclesRpcPacket();
+        return DestroyAllVehiclesRpcPacket.Instance;
     }
 
     public static FixVehicleRpcPacket CreateFixVehiclePacket(Vehicle vehicle)

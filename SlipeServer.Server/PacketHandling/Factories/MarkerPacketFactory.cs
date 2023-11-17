@@ -6,6 +6,6 @@ public static class MarkerPacketFactory
 {
     public static DestroyAllMarkersRpcPacket CreateDestroyAllPacket()
     {
-        return new DestroyAllMarkersRpcPacket();
+        return DestroyAllMarkersRpcPacket.Instance;
     }
 }
