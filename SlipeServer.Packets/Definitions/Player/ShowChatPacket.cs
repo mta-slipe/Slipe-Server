@@ -1,6 +1,5 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
-using System;
 
 namespace SlipeServer.Packets.Definitions.Player;
 

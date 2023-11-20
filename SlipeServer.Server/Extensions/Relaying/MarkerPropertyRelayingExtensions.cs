@@ -1,5 +1,4 @@
-﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
-using SlipeServer.Packets.Definitions.Lua.ElementRpc.Marker;
+﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Marker;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;

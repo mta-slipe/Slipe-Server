@@ -11,6 +11,11 @@ public class DestroyAllVehiclesRpcPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
+    private DestroyAllVehiclesRpcPacket()
+    {
+
+    }
+
     public override void Read(byte[] bytes)
     {
         throw new NotSupportedException();
@@ -22,4 +27,6 @@ public class DestroyAllVehiclesRpcPacket : Packet
         builder.Write((byte)ElementRpcFunction.DESTROY_ALL_VEHICLES);
         return builder.Build();
     }
+
+    public static DestroyAllVehiclesRpcPacket Instance { get; } = new();
 }

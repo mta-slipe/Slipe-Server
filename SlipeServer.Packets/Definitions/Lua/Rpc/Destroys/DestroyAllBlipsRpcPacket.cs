@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc;
+using SlipeServer.Packets.Definitions.Player;
 using SlipeServer.Packets.Enums;
 using System;
 
@@ -10,6 +11,11 @@ public class DestroyAllBlipsRpcPacket : Packet
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
+
+    private DestroyAllBlipsRpcPacket()
+    {
+
+    }
 
     public override void Read(byte[] bytes)
     {
@@ -22,4 +28,5 @@ public class DestroyAllBlipsRpcPacket : Packet
         builder.Write((byte)ElementRpcFunction.DESTROY_ALL_BLIPS);
         return builder.Build();
     }
+    public static DestroyAllBlipsRpcPacket Instance { get; } = new();
 }

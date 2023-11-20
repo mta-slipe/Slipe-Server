@@ -11,6 +11,11 @@ public class DestroyAllPickupsRpcPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
+    private DestroyAllPickupsRpcPacket()
+    {
+
+    }
+
     public override void Read(byte[] bytes)
     {
         throw new NotSupportedException();
@@ -22,4 +27,6 @@ public class DestroyAllPickupsRpcPacket : Packet
         builder.Write((byte)ElementRpcFunction.DESTROY_ALL_PICKUPS);
         return builder.Build();
     }
+
+    public static DestroyAllPickupsRpcPacket Instance { get; } = new();
 }

@@ -11,6 +11,11 @@ public class DestroyAllRadarAreasRpcPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
+    private DestroyAllRadarAreasRpcPacket()
+    {
+
+    }
+
     public override void Read(byte[] bytes)
     {
         throw new NotSupportedException();
@@ -22,4 +27,6 @@ public class DestroyAllRadarAreasRpcPacket : Packet
         builder.Write((byte)ElementRpcFunction.DESTROY_ALL_RADAR_AREAS);
         return builder.Build();
     }
+
+    public static DestroyAllRadarAreasRpcPacket Instance { get; } = new();
 }

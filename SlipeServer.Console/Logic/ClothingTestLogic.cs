@@ -1,12 +1,8 @@
 ﻿using SlipeServer.Console.Elements;
-using SlipeServer.Packets.Enums;
 using SlipeServer.Server;
 using SlipeServer.Server.Constants;
-using SlipeServer.Server.Enums;
 using SlipeServer.Server.Services;
 using System;
-using System.Drawing;
-using System.Linq;
 
 namespace SlipeServer.Console.Logic;
 

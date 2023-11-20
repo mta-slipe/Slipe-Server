@@ -1,11 +1,7 @@
 ﻿using SlipeServer.Console.Elements;
-using SlipeServer.Packets.Enums;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Services;
-using System;
-using System.Drawing;
-using System.Linq;
 using System.Numerics;
 
 namespace SlipeServer.Console.Logic;

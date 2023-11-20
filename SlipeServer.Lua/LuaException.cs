@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.Serialization;
 
 namespace SlipeServer.Lua;
 
@@ -14,10 +13,6 @@ public class LuaException : Exception
     }
 
     public LuaException(string message, Exception innerException) : base(message, innerException)
-    {
-    }
-
-    protected LuaException(SerializationInfo info, StreamingContext context) : base(info, context)
     {
     }
 }
