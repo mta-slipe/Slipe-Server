@@ -12,6 +12,7 @@ using SlipeServer.LuaControllers;
 using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Physics.Extensions;
 using SlipeServer.Server;
+using SlipeServer.Server.Behaviour;
 using SlipeServer.Server.Loggers;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.ServerBuilders;
@@ -109,7 +110,7 @@ public partial class Program
                 builder.AddScopedLogic<ScopedTestLogic2>();
                 builder.AddLogic(typeof(TestLogic));
                 //builder.AddBehaviour<VelocityBehaviour>();
-                //builder.AddBehaviour<EventLoggingBehaviour>();
+                builder.AddBehaviour<EventLoggingBehaviour>();
 
                 builder.AddPacketHandler<KeySyncReplayerPacketHandler, KeySyncPacket>();
                 builder.AddPacketHandler<PureSyncReplayerPacketHandler, PlayerPureSyncPacket>();
