@@ -1,6 +1,4 @@
 ﻿using SlipeServer.Packets.Enums;
-using SlipeServer.Packets.Enums;
-using System;
 
 namespace SlipeServer.Packets;
 

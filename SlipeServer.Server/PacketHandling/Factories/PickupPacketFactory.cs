@@ -6,6 +6,6 @@ public static class PickupPacketFactory
 {
     public static DestroyAllPickupsRpcPacket CreateDestroyAllPacket()
     {
-        return new DestroyAllPickupsRpcPacket();
+        return DestroyAllPickupsRpcPacket.Instance;
     }
 }

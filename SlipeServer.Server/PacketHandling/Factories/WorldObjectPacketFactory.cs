@@ -19,7 +19,7 @@ public static class WorldObjectPacketFactory
 
     public static DestroyAllWorldObjectsRpcPacket CreateDestroyAllPacket()
     {
-        return new DestroyAllWorldObjectsRpcPacket();
+        return DestroyAllWorldObjectsRpcPacket.Instance;
     }
 
     public static SetWorldObjectVisibileInAllDimensionsPacket CreateSetVisibleInAllDimensionsPacket(WorldObject worldObject)
