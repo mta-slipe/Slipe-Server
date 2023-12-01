@@ -155,7 +155,47 @@ public class Ped : Element
         set => this.Rotation = new Vector3(this.rotation.X, this.rotation.Y, value);
     }
 
-    public Vehicle? Vehicle { get; set; }
+    private Vehicle? enteringVehicle;
+    public Vehicle? EnteringVehicle
+    {
+        get => this.enteringVehicle;
+        set
+        {
+            if (this.enteringVehicle == value)
+                return;
+
+            var args = new ElementChangedEventArgs<Ped, Vehicle?>(this, this.vehicle, value, this.IsSync);
+            if(this.enteringVehicle != null)
+                this.enteringVehicle.Destroyed -= HandleEnteringVehicleDestroyed;
+            this.enteringVehicle = value;
+            if(value != null)
+                value.Destroyed += HandleEnteringVehicleDestroyed;
+            EnteringVehicleChanged?.Invoke(this, args);
+        }
+    }
+
+    private void HandleEnteringVehicleDestroyed(Element destroyedVehicle)
+    {
+        this.VehicleAction = VehicleAction.None;
+        this.EnteringVehicle = null;
+    }
+
+
+    private Vehicle? vehicle;
+    public Vehicle? Vehicle
+    {
+        get => this.vehicle;
+        set
+        {
+            if (this.vehicle == value)
+                return;
+
+            var args = new ElementChangedEventArgs<Ped, Vehicle?>(this, this.vehicle, value, this.IsSync);
+            this.vehicle = value;
+            VehicleChanged?.Invoke(this, args);
+        }
+    }
+
     public byte? Seat { get; set; }
 
     private bool hasJetpack = false;
@@ -197,8 +237,35 @@ public class Ped : Element
         }
     }
 
-    public bool IsOnFire { get; set; }
-    public bool IsInWater { get; set; }
+    private bool isOnFire = false;
+    public bool IsOnFire
+    {
+        get => this.isOnFire;
+        set
+        {
+            if (this.isOnFire == value)
+                return;
+
+            var args = new ElementChangedEventArgs<Ped, bool>(this, this.isOnFire, value, this.IsSync);
+            this.isOnFire = value;
+            IsOnFireChanged?.Invoke(this, args);
+        }
+    }
+    
+    private bool isInWater = false;
+    public bool IsInWater
+    {
+        get => this.isInWater;
+        set
+        {
+            if (this.isInWater == value)
+                return;
+
+            var args = new ElementChangedEventArgs<Ped, bool>(this, this.isInWater, value, this.IsSync);
+            this.isInWater = value;
+            IsInWaterChanged?.Invoke(this, args);
+        }
+    }
 
     private Element? target = null;
     public Element? Target
@@ -214,8 +281,37 @@ public class Ped : Element
             TargetChanged?.Invoke(this, args);
         }
     }
-    public VehicleAction VehicleAction { get; set; } = VehicleAction.None;
-    public Vehicle? JackingVehicle { get; set; }
+
+    private VehicleAction vehicleAction = VehicleAction.None;
+    public VehicleAction VehicleAction
+    {
+        get => this.vehicleAction;
+        set
+        {
+            if (this.vehicleAction == value)
+                return;
+
+            var args = new ElementChangedEventArgs<Ped, VehicleAction>(this, this.vehicleAction, value, this.IsSync);
+            this.vehicleAction = value;
+            VehicleActionChanged?.Invoke(this, args);
+        }
+    }
+
+    private Vehicle? jackingVehicle;
+    public Vehicle? JackingVehicle
+    {
+        get => this.jackingVehicle;
+        set
+        {
+            if (this.jackingVehicle == value)
+                return;
+
+            var args = new ElementChangedEventArgs<Ped, Vehicle?>(this, this.jackingVehicle, value, this.IsSync);
+            this.jackingVehicle = value;
+            JackingVehicleChanged?.Invoke(this, args);
+        }
+    }
+
     private readonly Dictionary<PedStat, float> stats;
 
 
@@ -230,7 +326,7 @@ public class Ped : Element
 
         this.Weapons.WeaponAdded += (sender, args) => this.WeaponReceived?.Invoke(this, new WeaponReceivedEventArgs(this, args.Type, args.Ammo, false));
         this.Weapons.WeaponRemoved += (sender, args) => this.WeaponRemoved?.Invoke(this, new WeaponRemovedEventArgs(this, args.Type, args.Ammo));
-        this.Weapons.WeaponAmmoUpdated += (sender, args) => this.AmmoUpdated?.Invoke(this, new AmmoUpdateEventArgs(this, args.Type, args.Ammo, args.AmmoInClip));
+        this.Weapons.WeaponAmmoUpdated += (sender, args) => this.AmmoUpdated?.Invoke(this, new AmmoUpdateEventArgs(this, args.Type, args.Ammo, args.AmmoInClip, this.IsSync));
         this.Clothing.Changed += (sender, args) => this.ClothingChanged?.Invoke(this, args);
     }
 
@@ -255,11 +351,14 @@ public class Ped : Element
 
         vehicle.AddPassenger(seat, this, true);
         this.HasJetpack = false;
+        this.Vehicle = vehicle;
+        this.EnteringVehicle = null;
+        this.VehicleAction = VehicleAction.None;
     }
 
     public void AddWeapon(WeaponId weaponId, ushort ammoCount, bool setAsCurrent = false)
     {
-        this.Weapons.Add(new Weapon(weaponId, ammoCount, null));
+        this.Weapons.SilentAdd(new Weapon(weaponId, ammoCount, null));
         this.WeaponReceived?.Invoke(this, new WeaponReceivedEventArgs(this, weaponId, ammoCount, setAsCurrent));
     }
 
@@ -290,7 +389,6 @@ public class Ped : Element
             {
                 weapon.AmmoInClip = Math.Min(inClip.Value, count);
             }
-            this.AmmoUpdated?.Invoke(this, new AmmoUpdateEventArgs(this, weaponId, count, inClip));
         }
     }
 
@@ -307,13 +405,20 @@ public class Ped : Element
     {
         this.RunAsSync(() =>
         {
-            this.health = 0;
-            this.Vehicle = null;
-            this.Seat = null;
-            this.VehicleAction = VehicleAction.None;
-            this.HasJetpack = false;
+            Reset();
             InvokeWasted(new PedWastedEventArgs(this, damager, damageType, bodyPart, animationGroup, animationId));
         });
+    }
+
+    protected void Reset()
+    {
+        this.health = 0;
+        this.JackingVehicle = null;
+        this.EnteringVehicle = null;
+        this.Vehicle = null;
+        this.Seat = null;
+        this.VehicleAction = VehicleAction.None;
+        this.HasJetpack = false;
     }
 
     public void Kill(DamageType damageType = DamageType.WEAPONTYPE_UNARMED, BodyPart bodyPart = BodyPart.Torso)
@@ -403,6 +508,9 @@ public class Ped : Element
     public void SetAnimationSpeed(string animation, float speed) 
         => this.AnimationSpeedChanged?.Invoke(this, new(this, animation, speed));
 
+    public void TriggerWeaponAmmoUpdate(WeaponId weapon, ushort ammo, ushort ammoInClip)
+        => this.WeaponOrAmmoChanged?.Invoke(this, new(this, weapon, ammo, ammoInClip));
+
     public event ElementEventHandler<Ped, PedWastedEventArgs>? Wasted;
     public event ElementChangedEventHandler<Ped, ushort>? ModelChanged;
     public event ElementChangedEventHandler<Ped, float>? HealthChanged;
@@ -413,6 +521,12 @@ public class Ped : Element
     public event ElementChangedEventHandler<Ped, Element?>? TargetChanged;
     public event ElementChangedEventHandler<Ped, Player?>? SyncerChanged;
     public event ElementChangedEventHandler<Ped, float>? GravityChanged;
+    public event ElementChangedEventHandler<Ped, bool>? IsOnFireChanged;
+    public event ElementChangedEventHandler<Ped, bool>? IsInWaterChanged;
+    public event ElementChangedEventHandler<Ped, VehicleAction>? VehicleActionChanged;
+    public event ElementChangedEventHandler<Ped, Vehicle?>? JackingVehicleChanged;
+    public event ElementChangedEventHandler<Ped, Vehicle?>? VehicleChanged;
+    public event ElementChangedEventHandler<Ped, Vehicle?>? EnteringVehicleChanged;
     public event ElementEventHandler<Ped, PedStatChangedEventArgs>? StatChanged;
     public event ElementEventHandler<Ped, WeaponReceivedEventArgs>? WeaponReceived;
     public event ElementEventHandler<Ped, WeaponRemovedEventArgs>? WeaponRemoved;
@@ -422,5 +536,6 @@ public class Ped : Element
     public event ElementEventHandler<Ped, PedAnimationProgressChangedEventArgs>? AnimationProgressChanged;
     public event ElementEventHandler<Ped, PedAnimationSpeedChangedEventArgs>? AnimationSpeedChanged;
     public event ElementEventHandler<Ped, EventArgs>? WeaponReloaded;
+    public event ElementEventHandler<Ped, PedWeaponOrAmmoChangedEventArgs>? WeaponOrAmmoChanged;
     public event ElementEventHandler<Ped, ClothingChangedEventArgs>? ClothingChanged;
 }

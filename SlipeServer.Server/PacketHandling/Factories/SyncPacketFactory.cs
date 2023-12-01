@@ -15,6 +15,7 @@ public static class SyncPacketFactory
             configuration.AllowShotgunDamageFix
         );
     }
+
     public static SetSyncIntervalPacket CreateSyncIntervalPacket(Configuration configuration)
     {
         return new SetSyncIntervalPacket(

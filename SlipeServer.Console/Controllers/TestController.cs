@@ -1,9 +1,9 @@
-﻿using SlipeServer.Console.Elements;
+﻿using Microsoft.Extensions.Logging;
+using SlipeServer.Console.Elements;
 using SlipeServer.Console.LuaValues;
 using SlipeServer.Console.Services;
 using SlipeServer.LuaControllers;
 using SlipeServer.LuaControllers.Attributes;
-using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Services;
 using System;
@@ -11,7 +11,7 @@ using System.Numerics;
 
 namespace SlipeServer.Console.Controllers;
 
-public class GenericDto<T> where T: class
+public class GenericDto<T> where T : class
 {
     public T Value { get; set; } = null!;
 }
@@ -21,11 +21,14 @@ public class TestController : BaseLuaController<CustomPlayer>
 {
     private readonly ChatBox chatBox;
     private readonly TestService testService;
+    private readonly ILogger logger;
 
-    public TestController(ChatBox chatBox, TestService testService)
+    public TestController(ChatBox chatBox, TestService testService, ILogger logger)
     {
         this.chatBox = chatBox;
         this.testService = testService;
+        this.logger = logger;
+        this.logger.LogInformation("Instantiating {type}", typeof(TestController));
     }
 
     [LuaEvent("BlurLevel")]
@@ -44,6 +47,18 @@ public class TestController : BaseLuaController<CustomPlayer>
         this.chatBox.Output($"  IsMainMenuActive: {uiStates.IsMainMenuActive}");
         this.chatBox.Output($"  IsMTAWindowActive: {uiStates.IsMTAWindowActive}");
         this.chatBox.Output($"  IsTransferBoxActive: {uiStates.IsTransferBoxActive}");
+    }
+
+    [Timed(10_000)]
+    public void EveryTenSeconds()
+    {
+        this.logger.LogInformation("{name} method called on {type} at {time}", nameof(EveryTenSeconds), nameof(TestController), DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"));
+    }
+
+    [Timed(60_000)]
+    public void EveryMinute()
+    {
+        this.logger.LogInformation("{name} method called on {type} at {time}", nameof(EveryMinute), nameof(TestController), DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"));
     }
 
     public string GetServerTime()

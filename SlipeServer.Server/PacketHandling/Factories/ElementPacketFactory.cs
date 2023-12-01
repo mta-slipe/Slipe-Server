@@ -25,6 +25,11 @@ public static class ElementPacketFactory
         };
     }
 
+    public static FixVehicleRpcPacket CreateFixVehiclePacket(Element element)
+    {
+        return new FixVehicleRpcPacket(element.Id, element.GetAndIncrementTimeContext());
+    }
+    
     public static SetElementHealthRpcPacket CreateSetHealthPacket(Element element, float health)
     {
         return new SetElementHealthRpcPacket(element.Id, element.GetAndIncrementTimeContext(), health);

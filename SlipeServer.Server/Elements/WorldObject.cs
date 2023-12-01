@@ -31,6 +31,7 @@ public class WorldObject : Element
     public bool IsLowLod { get; set; } = false;
     public WorldObject? LowLodElement { get; set; }
     public bool DoubleSided { get; set; } = false;
+    public bool IsBreakable { get; set; } = false;
     public PositionRotationAnimation? Movement { get; set; }
 
     protected Vector3 scale = Vector3.One;

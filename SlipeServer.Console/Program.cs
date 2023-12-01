@@ -12,7 +12,7 @@ using SlipeServer.LuaControllers;
 using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Physics.Extensions;
 using SlipeServer.Server;
-using SlipeServer.Server.Loggers;
+using SlipeServer.Server.Behaviour;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.ServerBuilders;
 using System;
@@ -81,12 +81,12 @@ public partial class Program
 
                 builder.ConfigureServices(services =>
                 {
-                    services.AddSingleton<ILogger, ConsoleLogger>();
                     services.AddSingleton<ISyncHandlerMiddleware<PlayerPureSyncPacket>, SubscriptionSyncHandlerMiddleware<PlayerPureSyncPacket>>();
                     services.AddSingleton<ISyncHandlerMiddleware<KeySyncPacket>, SubscriptionSyncHandlerMiddleware<KeySyncPacket>>();
 
                     services.AddScoped<TestService>();
                     services.AddSingleton<PacketReplayerService>();
+                    services.AddScoped<SampleScopedService>();
                 });
                 builder.AddLua();
                 builder.AddPhysics();
@@ -105,9 +105,11 @@ public partial class Program
                 builder.AddLogic<ClothingTestLogic>();
                 builder.AddLogic<PedTestLogic>();
                 builder.AddLogic<ProxyService>();
+                builder.AddScopedLogic<ScopedTestLogic1>();
+                builder.AddScopedLogic<ScopedTestLogic2>();
                 builder.AddLogic(typeof(TestLogic));
                 //builder.AddBehaviour<VelocityBehaviour>();
-                //builder.AddBehaviour<EventLoggingBehaviour>();
+                builder.AddBehaviour<EventLoggingBehaviour>();
 
                 builder.AddPacketHandler<KeySyncReplayerPacketHandler, KeySyncPacket>();
                 builder.AddPacketHandler<PureSyncReplayerPacketHandler, PlayerPureSyncPacket>();

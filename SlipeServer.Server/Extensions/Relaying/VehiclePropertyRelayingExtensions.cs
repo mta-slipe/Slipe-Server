@@ -46,9 +46,11 @@ public static class VehiclePropertyRelayingExtensions
         vehicle.AreSirensOnChanged += RelayAreSirensOn;
         vehicle.OverrideLightsChanged += RelayOverrideLights;
         vehicle.HealthChanged += RelayHealthChange;
-        vehicle.Respawned += HandleRespawn;
-        vehicle.PedEntered += HandleEnter;
-        vehicle.PedLeft += HandleLeft;
+        vehicle.Respawned += RelayRespawn;
+        vehicle.PedEntered += RelayEnter;
+        vehicle.PedLeft += RelayeLeft;
+        vehicle.Blown += RelayBlown;
+        vehicle.Fixed += HandleFixed;
     }
 
     private static void RelayOverrideLights(Vehicle sender, ElementChangedEventArgs<Vehicle, VehicleOverrideLights> args)
@@ -263,7 +265,7 @@ public static class VehiclePropertyRelayingExtensions
             sender.RelayChange(new SetElementHealthRpcPacket(sender.Id, sender.GetAndIncrementTimeContext(), args.NewValue));
     }
 
-    private static void HandleRespawn(Element sender, VehicleRespawnEventArgs args)
+    private static void RelayRespawn(Element sender, VehicleRespawnEventArgs args)
     {
         sender.RelayChange(new VehicleSpawnPacket(new VehicleSpawnInfo[] { new VehicleSpawnInfo
                 {
@@ -276,7 +278,7 @@ public static class VehiclePropertyRelayingExtensions
                 } }));
     }
 
-    private static void HandleEnter(Element sender, VehicleEnteredEventsArgs eventArgs)
+    private static void RelayEnter(Element sender, VehicleEnteredEventsArgs eventArgs)
     {
         if (eventArgs.WarpsIn)
         {
@@ -289,7 +291,7 @@ public static class VehiclePropertyRelayingExtensions
         }
     }
 
-    private static void HandleLeft(Element sender, VehicleLeftEventArgs eventArgs)
+    private static void RelayeLeft(Element sender, VehicleLeftEventArgs eventArgs)
     {
         if (eventArgs.WarpsOut)
         {
@@ -299,4 +301,15 @@ public static class VehiclePropertyRelayingExtensions
             ));
         }
     }
+
+    private static void HandleFixed(Element sender, VehicleFixedEventArgs eventArgs)
+    {
+        eventArgs.Vehicle.RelayChange(VehiclePacketFactory.CreateFixVehiclePacket(eventArgs.Vehicle));
+    }
+
+    private static void RelayBlown(Element sender, VehicleBlownEventArgs eventArgs)
+    {
+        eventArgs.Vehicle.RelayChange(VehiclePacketFactory.CreateBlownVehiclePacket(eventArgs.Vehicle, eventArgs.CreateExplosion));
+    }
+
 }

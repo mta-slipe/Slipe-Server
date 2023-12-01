@@ -117,6 +117,9 @@ public class Client<TPlayer>
 
     private bool CanSendPacket(PacketId packet)
     {
+        if (packet == PacketId.PACKET_ID_SERVER_DISCONNECTED)
+            return true;
+
         return
             this.IsConnected &&
             (

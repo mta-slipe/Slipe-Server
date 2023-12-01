@@ -20,6 +20,7 @@ public class AseQueryService : IAseQueryService
     private readonly IElementCollection elementCollection;
     private readonly AseVersion aseVersion;
     private readonly Dictionary<string, string> rules;
+    public bool ShowPlayers { get; set; } = true;
 
     public AseQueryService(MtaServer mtaServer, Configuration configuration, IElementCollection elementCollection)
     {
@@ -27,7 +28,7 @@ public class AseQueryService : IAseQueryService
         this.configuration = configuration;
         this.elementCollection = elementCollection;
 
-        this.aseVersion = AseVersion.v1_5;
+        this.aseVersion = AseVersion.v1_6;
 
         this.rules = new Dictionary<string, string>();
     }
@@ -45,12 +46,19 @@ public class AseQueryService : IAseQueryService
         return value;
     }
 
+    private IEnumerable<Player> GetPlayers()
+    {
+        if (this.ShowPlayers)
+            return this.elementCollection.GetByType<Player>(ElementType.Player);
+        return Enumerable.Empty<Player>();
+    }
+
 
     public byte[] QueryFull(ushort port)
     {
         using MemoryStream stream = new MemoryStream();
         using BinaryWriter bw = new BinaryWriter(stream);
-        IEnumerable<Player> players = this.elementCollection.GetByType<Player>(ElementType.Player);
+        IEnumerable<Player> players = GetPlayers();
 
         string aseVersion = GetVersion(this.aseVersion);
 
@@ -98,7 +106,7 @@ public class AseQueryService : IAseQueryService
     {
         using MemoryStream stream = new MemoryStream();
         using BinaryWriter bw = new BinaryWriter(stream);
-        int playerCount = this.elementCollection.GetByType<Player>(ElementType.Player).Count();
+        int playerCount = GetPlayers().Count();
         string strPlayerCount = playerCount + "/" + this.configuration.MaxPlayerCount;
 
         bw.Write("EYE3".AsSpan());
@@ -130,7 +138,7 @@ public class AseQueryService : IAseQueryService
             .Select(o => o.Name.StripColorCode())
             .ToList();
 
-        string aseVersion = GetVersion(version == VersionType.Release ? this.aseVersion : AseVersion.v1_5n);
+        string aseVersion = GetVersion(version == VersionType.Release ? this.aseVersion : AseVersion.v1_6n);
         int playerCount = playerNames.Count;
         string strPlayerCount = playerCount + "/" + this.configuration.MaxPlayerCount;
         string buildType = $"{(byte)version} ";
@@ -190,12 +198,12 @@ public class AseQueryService : IAseQueryService
         return stream.ToArray();
     }
 
-    public string GetVersion(AseVersion version = AseVersion.v1_5)
+    public string GetVersion(AseVersion version = AseVersion.v1_6)
     {
         return version switch
         {
-            AseVersion.v1_5 => "1.5",
-            AseVersion.v1_5n => "1.5n",
+            AseVersion.v1_6 => "1.6",
+            AseVersion.v1_6n => "1.6n",
             _ => throw new NotImplementedException(this.aseVersion.ToString()),
         };
     }

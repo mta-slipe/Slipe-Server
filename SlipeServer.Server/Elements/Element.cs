@@ -262,7 +262,7 @@ public class Element
 
             var args = new ElementChangedEventArgs<bool>(this, this.areCollisionsEnabled, value, this.IsSync);
             this.areCollisionsEnabled = value;
-            CollisionEnabledhanged?.Invoke(this, args);
+            CollisionEnabledChanged?.Invoke(this, args);
         }
     }
 
@@ -448,7 +448,7 @@ public class Element
     /// Destroys the element, triggering the Destroyed event.
     /// </summary>
     /// <returns>A bool indicating whether the element is destroyed, false if it was already destroyed prior to this call.</returns>
-    public bool Destroy()
+    public virtual bool Destroy()
     {
         lock (this.destroyLock)
         {
@@ -817,28 +817,28 @@ public class Element
     /// Sends packets to create an elementto a set of players
     /// Do note that the element will be required to have an id assigned for this to work properly
     /// </summary>
-    public void CreateFor(IEnumerable<Player> players)
+    public virtual void CreateFor(IEnumerable<Player> players)
         => AddEntityPacketFactory.CreateAddEntityPacket(new Element[] { this }).SendTo(players);
 
     /// <summary>
     /// Sends packets to create an elementto a set of players
     /// Do note that the element will be required to have an id assigned for this to work properly
     /// </summary>
-    public void CreateFor(Player player)
+    public virtual void CreateFor(Player player)
         => this.CreateFor(new Player[] { player });
 
     /// <summary>
     /// Sends packets to destroy an elementto a set of players
     /// Do note that the element will be required to have an id assigned for this to work properly
     /// </summary>
-    public void DestroyFor(IEnumerable<Player> players)
+    public virtual void DestroyFor(IEnumerable<Player> players)
         => RemoveEntityPacketFactory.CreateRemoveEntityPacket(new Element[] { this }).SendTo(players);
 
     /// <summary>
     /// Sends packets to destroy an elementto a set of players
     /// Do note that the element will be required to have an id assigned for this to work properly
     /// </summary>
-    public void DestroyFor(Player player)
+    public virtual void DestroyFor(Player player)
         => this.DestroyFor(new Player[] { player });
 
     public event ElementChangedEventHandler<Vector3>? PositionChanged;
@@ -850,7 +850,7 @@ public class Element
     public event ElementChangedEventHandler<byte>? AlphaChanged;
     public event ElementChangedEventHandler<string>? NameChanged;
     public event ElementChangedEventHandler<bool>? CallPropagationChanged;
-    public event ElementChangedEventHandler<bool>? CollisionEnabledhanged;
+    public event ElementChangedEventHandler<bool>? CollisionEnabledChanged;
     public event ElementChangedEventHandler<bool>? FrozenChanged;
     public event ElementChangedEventHandler<Element, ElementId>? IdChanged;
     public event ElementEventHandler<Element, ElementAssociatedWithEventArgs>? AssociatedWith;

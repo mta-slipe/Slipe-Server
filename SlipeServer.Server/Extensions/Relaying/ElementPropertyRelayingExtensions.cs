@@ -38,6 +38,12 @@ public static class ElementPropertyRelayingExtensions
                 vehicle.AddVehicleRelayers();
                 vehicle.AddVehicleHandlingRelayers();
                 break;
+            case WeaponObject weaponObject:
+                weaponObject.AddWorldObjectRelayers();
+                break;
+            case WorldObject worldObject:
+                worldObject.AddWorldObjectRelayers();
+                break;
 
         }
     }
@@ -52,7 +58,7 @@ public static class ElementPropertyRelayingExtensions
         element.DimensionChanged += RelayDimensionChange;
         element.InteriorChanged += RelayInteriorChange;
         element.CallPropagationChanged += RelayCallPropagationChanged;
-        element.CollisionEnabledhanged += RelayCollisionEnabledhanged;
+        element.CollisionEnabledChanged += RelayCollisionEnabledChanged;
         element.FrozenChanged += RelayElementFrozenChanged;
         element.Destroyed += RelayElementDestroy;
         element.Attached += RelayAttached;
@@ -99,7 +105,7 @@ public static class ElementPropertyRelayingExtensions
     private static void RelayElementFrozenChanged(Element sender, ElementChangedEventArgs<bool> args)
         => RelayChange(sender, ElementPacketFactory.CreateSetElementFrozen(args.Source, args.NewValue));
 
-    private static void RelayCollisionEnabledhanged(Element sender, ElementChangedEventArgs<bool> args)
+    private static void RelayCollisionEnabledChanged(Element sender, ElementChangedEventArgs<bool> args)
         => RelayChange(sender, ElementPacketFactory.CreateSetCollisionsEnabledPacket(args.Source, args.NewValue));
 
     private static void RelayCallPropagationChanged(Element sender, ElementChangedEventArgs<bool> args)

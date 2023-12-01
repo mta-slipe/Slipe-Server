@@ -124,7 +124,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
         {
             if (vehicle.Driver == null)
             {
-                if (vehicle.CanEnter != null && !vehicle.CanEnter(client.Player, vehicle))
+                if (vehicle.CanEnter != null && !vehicle.CanEnter(client.Player, vehicle, packet.Seat))
                 {
                     SendInRequestFailResponse(client, vehicle, VehicleEnterFailReason.Script);
                     return;
@@ -136,7 +136,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
                     vehicle.AddPassenger(packet.Seat, client.Player, true);
                 } else
                 {
-                    client.Player.Vehicle = vehicle;
+                    client.Player.EnteringVehicle = vehicle;
                     client.Player.VehicleAction = VehicleAction.Entering;
 
                     var replyPacket = new VehicleInOutPacket()
@@ -152,7 +152,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
             } else
             {
 
-                if (vehicle.CanEnter != null && !vehicle.CanEnter(client.Player, vehicle))
+                if (vehicle.CanEnter != null && !vehicle.CanEnter(client.Player, vehicle, packet.Seat))
                 {
                     SendInRequestFailResponse(client, vehicle, VehicleEnterFailReason.Script);
                     return;
@@ -189,14 +189,14 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
                 SendInRequestFailResponse(client, vehicle, VehicleEnterFailReason.Seat);
                 return;
             }
-            if (vehicle.CanEnter != null && !vehicle.CanEnter(client.Player, vehicle))
+            if (vehicle.CanEnter != null && !vehicle.CanEnter(client.Player, vehicle, packet.Seat))
             {
                 SendInRequestFailResponse(client, vehicle, VehicleEnterFailReason.Script);
                 return;
             }
 
             client.Player.Seat = packet.Seat;
-            client.Player.Vehicle = vehicle;
+            client.Player.EnteringVehicle = vehicle;
             client.Player.VehicleAction = VehicleAction.Entering;
 
             if (warpIn)
@@ -236,9 +236,10 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
         if (client.Player.VehicleAction == VehicleAction.Entering)
         {
             client.Player.VehicleAction = VehicleAction.None;
-            if (client.Player.Vehicle != null)
+            if (client.Player.EnteringVehicle == vehicle)
             {
-                vehicle.IsEngineOn = true;
+                client.Player.Vehicle = client.Player.EnteringVehicle;
+                client.Player.EnteringVehicle = null;
                 vehicle.AddPassenger(client.Player.Seat ?? 0, client.Player, false);
 
                 var replyPacket = new VehicleInOutPacket()
@@ -258,6 +259,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
         if (client.Player.VehicleAction == VehicleAction.Entering)
         {
             client.Player.VehicleAction = VehicleAction.None;
+            client.Player.EnteringVehicle = null;
             client.Player.Vehicle = null;
             vehicle.RemovePassenger(client.Player, false);
 
@@ -288,7 +290,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
             return;
         }
 
-        if (vehicle.CanExit != null && !vehicle.CanExit(client.Player, vehicle))
+        if (vehicle.CanExit != null && !vehicle.CanExit(client.Player, vehicle, packet.Seat))
         {
             var cancelReplyPacket = new VehicleInOutPacket()
             {
@@ -318,6 +320,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
             return;
 
         client.Player.Vehicle = null;
+        client.Player.EnteringVehicle = null;
         client.Player.VehicleAction = VehicleAction.None;
 
         if (!vehicle.Occupants.ContainsValue(client.Player))
@@ -358,14 +361,13 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
 
     private void HandleNotifyFellOff(IClient client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
     {
-
         if (!vehicle.Occupants.ContainsValue(client.Player))
             return;
 
         client.Player.VehicleAction = VehicleAction.None;
         client.Player.Vehicle = null;
+        client.Player.EnteringVehicle = null;
         vehicle.RemovePassenger(client.Player, false);
-
 
         var replyPacket = new VehicleInOutPacket()
         {
@@ -393,6 +395,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
             vehicle.JackingPed = null;
 
             client.Player.Vehicle = vehicle;
+            client.Player.EnteringVehicle = null;
             client.Player.VehicleAction = VehicleAction.None;
             vehicle.AddPassenger(0, client.Player, false);
 

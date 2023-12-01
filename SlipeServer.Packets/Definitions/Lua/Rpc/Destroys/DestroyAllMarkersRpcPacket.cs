@@ -11,6 +11,11 @@ public class DestroyAllMarkersRpcPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
+    private DestroyAllMarkersRpcPacket()
+    {
+
+    }
+
     public override void Read(byte[] bytes)
     {
         throw new NotSupportedException();
@@ -22,4 +27,6 @@ public class DestroyAllMarkersRpcPacket : Packet
         builder.Write((byte)ElementRpcFunction.DESTROY_ALL_MARKERS);
         return builder.Build();
     }
+
+    public static DestroyAllMarkersRpcPacket Instance { get; } = new();
 }

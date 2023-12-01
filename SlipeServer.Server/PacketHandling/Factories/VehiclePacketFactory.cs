@@ -102,6 +102,16 @@ public static class VehiclePacketFactory
 
     public static DestroyAllVehiclesRpcPacket CreateDestroyAllPacket()
     {
-        return new DestroyAllVehiclesRpcPacket();
+        return DestroyAllVehiclesRpcPacket.Instance;
+    }
+
+    public static FixVehicleRpcPacket CreateFixVehiclePacket(Vehicle vehicle)
+    {
+        return new FixVehicleRpcPacket(vehicle.Id, vehicle.GetAndIncrementTimeContext());
+    }
+
+    public static VehicleBlownRpcPacket CreateBlownVehiclePacket(Vehicle vehicle, bool createExplosion)
+    {
+        return new VehicleBlownRpcPacket(vehicle.Id, vehicle.GetAndIncrementTimeContext(), createExplosion);
     }
 }

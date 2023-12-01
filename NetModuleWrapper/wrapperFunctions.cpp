@@ -9,7 +9,7 @@
 #define EXPORT extern "C" __declspec(dllexport)
 #pragma warning(disable:4996)
 #else
-#define EXPORT extern "C" 
+#define EXPORT extern "C" __attribute__ ((visibility ("default")))
 #endif
 
 EXPORT void __cdecl sendPacket(ushort id, unsigned long address, unsigned char packetId, unsigned short bitStreamVersion, unsigned char* payload, unsigned long payloadSize, unsigned char priority, unsigned char reliability)

@@ -9,6 +9,7 @@ public abstract class Packet
     public abstract PacketPriority Priority { get; }
 
     public abstract byte[] Write();
+
     public abstract void Read(byte[] bytes);
 
     public virtual void Reset() { }

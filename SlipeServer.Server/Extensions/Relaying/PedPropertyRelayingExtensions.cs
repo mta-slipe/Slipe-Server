@@ -103,7 +103,8 @@ public static class PedPropertyRelayingExtensions
 
     private static void RelayPedAmmoCountUpdate(Ped sender, AmmoUpdateEventArgs e)
     {
-        sender.RelayChange(new SetAmmoCountRpcPacket(e.Ped.Id, (byte)e.WeaponId, e.AmmoCount, e.AmmoInClipCount));
+        if (!e.IsSync)
+            sender.RelayChange(new SetAmmoCountRpcPacket(e.Ped.Id, (byte)e.WeaponId, e.AmmoCount, e.AmmoInClipCount));
     }
 
     private static void RelayStatChanged(Ped sender, PedStatChangedEventArgs e)

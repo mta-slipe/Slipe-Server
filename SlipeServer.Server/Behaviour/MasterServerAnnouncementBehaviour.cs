@@ -47,7 +47,7 @@ public class MasterServerAnnouncementBehaviour
         try
         {
             byte[] data = this.aseQueryService.QueryLight(this.configuration.Port);
-            string version = "1.5.8-1.0";
+            string version = "1.6.0-1.0";
             string extra = "0_0_0_0_0";
 
             string url = $"{this.masterServerUrl}?g={this.configuration.Port}&a={this.configuration.Port + 123}&h={this.configuration.HttpPort}&v={version}&x={extra}&ip=0.0.0.0";

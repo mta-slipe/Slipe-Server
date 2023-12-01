@@ -38,7 +38,7 @@ public class BoundEvent
 
         var result = controller.HandleEvent(luaEvent, (values) => this.Method.Invoke(controller, parameters));
 
-        if (this.Method.ReturnType == typeof(void))
+        if (this.Method.ReturnType == typeof(void) || this.Method.ReturnType == typeof(Task))
             return null;
 
         if (result is LuaResult luaResult)

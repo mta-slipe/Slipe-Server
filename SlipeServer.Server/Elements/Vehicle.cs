@@ -429,7 +429,21 @@ public class Vehicle : Element
                 this.AddPassenger(0, value, true);
         }
     }
-    public bool IsInWater { get; set; }
+
+    private bool isInWater = false;
+    public bool IsInWater
+    {
+        get => this.isInWater;
+        set
+        {
+            if (this.isInWater == value)
+                return;
+
+            var args = new ElementChangedEventArgs<Vehicle, bool>(this, this.isInWater, value, this.IsSync);
+            this.isInWater = value;
+            IsInWaterChanged?.Invoke(this, args);
+        }
+    }
 
     private Player? syncer = null;
     public Player? Syncer
@@ -541,6 +555,7 @@ public class Vehicle : Element
         }
         this.Occupants[seat] = ped;
         ped.Vehicle = this;
+        ped.EnteringVehicle = null;
         ped.Seat = seat;
 
         this.PedEntered?.Invoke(this, new VehicleEnteredEventsArgs(ped, this, seat, warpsIn));
@@ -554,6 +569,7 @@ public class Vehicle : Element
 
             this.Occupants.Remove(item.Key);
             ped.Vehicle = null;
+            ped.EnteringVehicle = null;
 
             this.PedLeft?.Invoke(this, new VehicleLeftEventArgs(ped, this, item.Key, warpsOut));
         }
@@ -578,12 +594,20 @@ public class Vehicle : Element
         return null;
     }
 
-    public void BlowUp()
+    public void BlowUp(bool createExplosion = true)
     {
         this.Health = 0;
         this.IsEngineOn = false;
         this.BlownState = VehicleBlownState.BlownUp;
-        this.Blown?.Invoke(this);
+        this.Blown?.Invoke(this, new VehicleBlownEventArgs(this, createExplosion));
+    }
+
+    public void Fix()
+    {
+        this.BlownState = VehicleBlownState.Intact;
+        this.Health = 1000;
+        ResetDoorsWheelsPanelsLights();
+        this.Fixed?.Invoke(this, new VehicleFixedEventArgs(this));
     }
 
     public void SetDoorState(VehicleDoor door, VehicleDoorState state, bool spawnFlyingComponent = false)
@@ -707,10 +731,10 @@ public class Vehicle : Element
     public void DetachFromTower(bool updateCounterpart = true) => AttachToTower(null, updateCounterpart);
 
 
-    public Func<Ped, Vehicle, bool>? CanEnter;
-    public Func<Ped, Vehicle, bool>? CanExit;
+    public Func<Ped, Vehicle, byte, bool>? CanEnter;
+    public Func<Ped, Vehicle, byte, bool>? CanExit;
 
-    public event ElementEventHandler? Blown;
+    public event ElementEventHandler<VehicleBlownEventArgs>? Blown;
     public event ElementEventHandler<VehicleLeftEventArgs>? PedLeft;
     public event ElementEventHandler<VehicleEnteredEventsArgs>? PedEntered;
     public event ElementChangedEventHandler<Vehicle, ushort>? ModelChanged;
@@ -747,4 +771,6 @@ public class Vehicle : Element
     public event ElementEventHandler<VehicleDoorOpenRatioChangedArgs>? DoorOpenRatioChanged;
     public event ElementEventHandler<Vehicle, VehiclePushedEventArgs>? Pushed;
     public event ElementEventHandler<Vehicle, VehicleUpgradeChanged>? UpgradeChanged;
+    public event ElementChangedEventHandler<Vehicle, bool>? IsInWaterChanged;
+    public event ElementEventHandler<VehicleFixedEventArgs>? Fixed;
 }

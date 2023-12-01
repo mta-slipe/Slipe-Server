@@ -36,8 +36,9 @@ bool NetWrapper::packetHandler(unsigned char ucPacketID, const NetServerPlayerID
         uint bitCount = pBitStream->GetNumberOfBitsUsed();
         uint byteCount = pBitStream->GetNumberOfBytesUsed();
 
-        char buffer[4096];
-        pBitStream->Read(buffer, byteCount);
+        char* buffer = new char[byteCount];
+        if (byteCount > 0)
+            pBitStream->Read(buffer, byteCount);
 
         bool hasPing = false;
         unsigned int ping = 0;
@@ -47,6 +48,7 @@ bool NetWrapper::packetHandler(unsigned char ucPacketID, const NetServerPlayerID
         }
 
         registeredCallback(ucPacketID, Socket.GetBinaryAddress(), buffer, byteCount, hasPing, ping);
+        delete[] buffer;
     }
 
     return true;

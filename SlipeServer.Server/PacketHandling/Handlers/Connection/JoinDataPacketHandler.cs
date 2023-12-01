@@ -12,24 +12,23 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Connection;
 
 public class JoinDataPacketHandler : IPacketHandler<PlayerJoinDataPacket>
 {
-    private readonly Configuration configuration;
+    private readonly MtaServer mtaServer;
 
     public PacketId PacketId => PacketId.PACKET_ID_PLAYER_JOINDATA;
 
-    public JoinDataPacketHandler(Configuration configuration)
+    public JoinDataPacketHandler(MtaServer mtaServer)
     {
-        this.configuration = configuration;
+        this.mtaServer = mtaServer;
     }
 
     public void HandlePacket(IClient client, PlayerJoinDataPacket packet)
     {
-        if (this.configuration.Password != null)
+        if (this.mtaServer.Password != null)
         {
-            using var md5 = MD5.Create();
-            var hash = md5.ComputeHash(Encoding.ASCII.GetBytes(this.configuration.Password));
+            var hash = MD5.HashData(Encoding.ASCII.GetBytes(this.mtaServer.Password));
             if (!hash.SequenceEqual(packet.Password))
             {
-                client.SendPacket(new PlayerDisconnectPacket(PlayerDisconnectType.INVALID_PASSWORD, "Incorrect password"));
+                client.SendPacket(new PlayerDisconnectPacket(PlayerDisconnectType.INVALID_PASSWORD));
                 return;
             }
         }

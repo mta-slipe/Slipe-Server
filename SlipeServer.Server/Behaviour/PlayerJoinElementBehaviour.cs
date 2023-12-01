@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using MTAServerWrapper.Packets.Outgoing.Connection;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Extensions;
-using SlipeServer.Server.PacketHandling.Factories;
 using SlipeServer.Server.ElementCollections;
 
 namespace SlipeServer.Server.Behaviour;
