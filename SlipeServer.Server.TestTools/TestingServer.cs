@@ -25,6 +25,8 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
 
     private readonly List<SendPacketCall> sendPacketCalls;
 
+    public event Action<uint, ushort, Packet> PacketSent;
+
     public TestingServer(Configuration configuration = null, Action<ServerBuilder> configure = null) : base(x =>
     {
         x.UseConfiguration(configuration ?? new());
@@ -72,6 +74,7 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
                     Priority = packet.Priority,
                     Reliability = packet.Reliability
                 });
+                PacketSent?.Invoke(address, version, packet);
             });
 
         this.NetWrapperMock.Setup(x => x.SendPacket(
