@@ -38,6 +38,7 @@ using SlipeServer.Packets.Definitions.Resources;
 using SlipeServer.Server.Resources.Serving;
 using SlipeServer.Server.Mappers;
 using SlipeServer.Server.Resources.Interpreters;
+using System;
 
 namespace SlipeServer.Server.ServerBuilders;
 
@@ -261,7 +262,7 @@ public static class DefaultServerBuilderExtensions
             builder.Configuration.Port,
             builder.Configuration.AntiCheat);
 
-        if (builder.Configuration.DebugPort.HasValue)
+        if (builder.Configuration.DebugPort.HasValue && !Environment.Is64BitProcess)
             builder.AddNetWrapper(dllPath: "net_d", port: builder.Configuration.DebugPort.Value);
 
     }

@@ -67,7 +67,7 @@
   </ItemGroup>
   
   <PropertyGroup>
-    <DockerfileRunArguments>-p 50666:50666/udp -p 50667:50667/udp -p 50789:50789/udp -p 40680:40680</DockerfileRunArguments>
+    <DockerfileRunArguments>-p 50666:50666/udp -p 50667:50667/udp -p 50789:50789/udp -p 40680:40680/tcp</DockerfileRunArguments>
     <ApplicationIcon>slipe-logo.ico</ApplicationIcon>
   </PropertyGroup>
 

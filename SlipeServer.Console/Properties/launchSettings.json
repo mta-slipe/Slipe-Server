@@ -6,6 +6,10 @@
     "Docker": {
       "commandName": "Docker",
       "DockerfileRunArguments": ""
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
     }
   }
 }

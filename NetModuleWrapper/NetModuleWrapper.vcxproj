@@ -111,6 +111,9 @@
         <Command>copy ..\x64\Debug\NetModuleWrapper.dll ..\SlipeServer.Net\Binaries\x64\NetModuleWrapper.dll /y</Command>
       </PostBuildEvent>
     </Link>
+    <PostBuildEvent>
+      <Command>copy ..\x64\Debug\NetModuleWrapper.dll ..\SlipeServer.Net\Binaries\x64\NetModuleWrapper.dll /y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
