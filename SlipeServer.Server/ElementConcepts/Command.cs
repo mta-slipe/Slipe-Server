@@ -10,10 +10,12 @@ namespace SlipeServer.Server.Concepts;
 public class Command
 {
     public string CommandText { get; set; }
+    public bool IsCaseSensitive { get; }
 
-    public Command(string commandText)
+    public Command(string commandText, bool isCaseSensitive)
     {
         this.CommandText = commandText;
+        this.IsCaseSensitive = isCaseSensitive;
     }
 
     public void Trigger(Player player, string[] arguments) => this.Triggered?.Invoke(this, new(player, arguments));

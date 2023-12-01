@@ -2,7 +2,6 @@
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace SlipeServer.Server.Services;
 
@@ -11,11 +10,11 @@ namespace SlipeServer.Server.Services;
 /// </summary>
 public class CommandService
 {
-    private readonly Dictionary<string, HashSet<Command>> commandHandlers;
+    private readonly Dictionary<string, HashSet<Command>> caseSensitiveHandlers = [];
+    private readonly Dictionary<string, HashSet<Command>> caseInsensitiveHandlers = [];
 
     public CommandService(MtaServer server)
     {
-        this.commandHandlers = new();
         server.PlayerJoined += HandlePlayerJoin;
     }
 
@@ -26,32 +25,38 @@ public class CommandService
 
     private void HandlePlayerCommand(Player sender, PlayerCommandEventArgs args)
     {
-        if (this.commandHandlers.ContainsKey(args.Command))
-        {
-            foreach (var handler in this.commandHandlers[args.Command])
-            {
+        if (this.caseSensitiveHandlers.TryGetValue(args.Command, out var handlers))
+            foreach (var handler in handlers)
                 handler.Trigger(args.Source, args.Arguments);
-            }
-        }
+
+        if (this.caseInsensitiveHandlers.TryGetValue(args.Command.ToLower(), out var insensitiveHandlers))
+            foreach (var handler in insensitiveHandlers)
+                handler.Trigger(args.Source, args.Arguments);
     }
 
-    public Command AddCommand(string command)
+    public Command AddCommand(string command, bool isCaseSensitive = true)
     {
-        var handler = new Command(command);
-        if (!this.commandHandlers.ContainsKey(command))
-            this.commandHandlers[command] = new();
+        var handlerSet = isCaseSensitive ? this.caseSensitiveHandlers : this.caseInsensitiveHandlers;
+        if (!isCaseSensitive)
+            command = command.ToLower();
 
-        this.commandHandlers[command].Add(handler);
+        var handler = new Command(command, isCaseSensitive);
+        if (!handlerSet.ContainsKey(command))
+            handlerSet[command] = [];
+
+        handlerSet[command].Add(handler);
         return handler;
     }
 
     public void RemoveCommand(Command command)
     {
-        if (this.commandHandlers.ContainsKey(command.CommandText))
+        var handlerSet = command.IsCaseSensitive ? this.caseSensitiveHandlers : this.caseInsensitiveHandlers;
+
+        if (handlerSet.TryGetValue(command.CommandText, out var handlers))
         {
-            this.commandHandlers[command.CommandText].Remove(command);
-            if (!this.commandHandlers[command.CommandText].Any())
-                this.commandHandlers.Remove(command.CommandText);
+            handlers.Remove(command);
+            if (handlers.Count == 0)
+                handlerSet.Remove(command.CommandText);
         }
     }
 }
