@@ -16,6 +16,7 @@ using SlipeServer.Server.Behaviour;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.ServerBuilders;
 using System;
+using System.IO;
 using System.Threading;
 
 namespace SlipeServer.Console;
@@ -24,6 +25,8 @@ public partial class Program
 {
     public static void Main(string[] args)
     {
+        Directory.SetCurrentDirectory(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()!.Location)!);
+
         Program? program = null;
         try
         {
