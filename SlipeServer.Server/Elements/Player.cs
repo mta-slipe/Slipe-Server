@@ -324,16 +324,16 @@ public class Player : Ped
         }
     }
 
-    public void Kick(string reason)
-    {
-        this.Kicked?.Invoke(this, new PlayerKickEventArgs(reason, PlayerDisconnectType.CUSTOM));
-        this.Client.SendPacket(new PlayerDisconnectPacket(PlayerDisconnectType.CUSTOM, reason));
-    }
-
     public void Kick(PlayerDisconnectType type = PlayerDisconnectType.CUSTOM)
     {
         this.Kicked?.Invoke(this, new PlayerKickEventArgs(string.Empty, type));
         this.Client.SendPacket(new PlayerDisconnectPacket(type, string.Empty));
+    }
+
+    public void Kick(string reason, PlayerDisconnectType type = PlayerDisconnectType.CUSTOM)
+    {
+        this.Kicked?.Invoke(this, new PlayerKickEventArgs(reason, type));
+        this.Client.SendPacket(new PlayerDisconnectPacket(type, reason));
     }
 
     public void TriggerSync()

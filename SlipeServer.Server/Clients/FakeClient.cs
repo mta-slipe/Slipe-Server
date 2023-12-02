@@ -34,6 +34,7 @@ public class FakeClient : IClient
     }
 
     public void FetchSerial() { }
+    public void FetchIp() { }
     public void ResendModPackets() { }
     public void ResendPlayerACInfo() { }
     public void SendPacket(Packet packet) { }

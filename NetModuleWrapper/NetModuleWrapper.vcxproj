@@ -263,6 +263,9 @@
     <ClInclude Include="mta\sdk\xml\CXMLNode.h" />
     <ClInclude Include="NetWrapper.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="compile.sh" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

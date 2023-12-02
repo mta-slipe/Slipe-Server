@@ -38,6 +38,7 @@ public class TemporaryClient : IClient
     public uint Ping { get => throw new NullReferenceException("Attempt to access client of player without client."); set => throw new NullReferenceException("Attempt to access client of player without client."); }
 
     public void FetchSerial() => throw new NullReferenceException("Attempt to access client of player without client.");
+    public void FetchIp() => throw new NullReferenceException("Attempt to access client of player without client.");
     public void ResendModPackets() => throw new NullReferenceException("Attempt to access client of player without client.");
     public void ResendPlayerACInfo() => throw new NullReferenceException("Attempt to access client of player without client.");
     public void SetVersion(ushort version) => throw new NullReferenceException("Attempt to access client of player without client.");

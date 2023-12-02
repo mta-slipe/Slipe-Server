@@ -2,6 +2,7 @@
 using SlipeServer.Packets.Definitions.Join;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Server.Bans;
 using SlipeServer.Server.Clients;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -13,12 +14,14 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Connection;
 public class JoinDataPacketHandler : IPacketHandler<PlayerJoinDataPacket>
 {
     private readonly MtaServer mtaServer;
+    private readonly IBanRepository banRepository;
 
     public PacketId PacketId => PacketId.PACKET_ID_PLAYER_JOINDATA;
 
-    public JoinDataPacketHandler(MtaServer mtaServer)
+    public JoinDataPacketHandler(MtaServer mtaServer, IBanRepository banRepository)
     {
         this.mtaServer = mtaServer;
+        this.banRepository = banRepository;
     }
 
     public void HandlePacket(IClient client, PlayerJoinDataPacket packet)
@@ -31,6 +34,15 @@ public class JoinDataPacketHandler : IPacketHandler<PlayerJoinDataPacket>
                 client.SendPacket(new PlayerDisconnectPacket(PlayerDisconnectType.INVALID_PASSWORD));
                 return;
             }
+        }
+
+        client.FetchSerial();
+        client.FetchIp();
+        if (this.banRepository.IsIpOrSerialBanned(client.Serial, client.IPAddress, out var ban))
+        {
+            var reason = ban?.Serial != null ? PlayerDisconnectType.BANNED_SERIAL : PlayerDisconnectType.BANNED_IP;
+            client.SendPacket(new PlayerDisconnectPacket(reason, $"{ban?.Reason ?? "Unknown"}"));
+            return;
         }
 
         client.SetVersion(packet.BitStreamVersion);
@@ -47,6 +59,5 @@ public class JoinDataPacketHandler : IPacketHandler<PlayerJoinDataPacket>
         {
             client.Player.Name = packet.Nickname;
         });
-        client.FetchSerial();
     }
 }
