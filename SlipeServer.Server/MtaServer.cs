@@ -7,6 +7,7 @@ using SlipeServer.Packets.Definitions.Player;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Structs;
 using SlipeServer.Server.AllSeeingEye;
+using SlipeServer.Server.Bans;
 using SlipeServer.Server.Clients;
 using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
@@ -252,7 +253,7 @@ public class MtaServer
     /// <param name="type">The type to instiantiate</param>
     /// <param name="parameters">Any constructor parameters that are not supplied by the dependency injection container</param>
     /// <returns></returns>
-    public object Instantiate(Type type, params object[] parameters) 
+    public object Instantiate(Type type, params object[] parameters)
         => ActivatorUtilities.CreateInstance(this.serviceProvider, type, parameters);
 
     /// <summary>
@@ -343,7 +344,7 @@ public class MtaServer
     /// Gets a registered service from the dependency injection conatiner, throwing an exception if there is no registered service for the specified type
     /// </summary>
     /// <returns></returns>
-    public T GetRequiredService<T>() where T: notnull => this.serviceProvider.GetRequiredService<T>();
+    public T GetRequiredService<T>() where T : notnull => this.serviceProvider.GetRequiredService<T>();
 
     /// <summary>
     /// Sends a packet to all players on the server.
@@ -479,7 +480,9 @@ public class MtaServer
         this.serviceCollection.AddSingleton<TextItemService>();
         this.serviceCollection.AddSingleton<WeaponConfigurationService>();
         this.serviceCollection.AddSingleton<CommandService>();
+        this.serviceCollection.AddSingleton<BanService>();
         this.serviceCollection.AddSingleton<ITimerService, TimerService>();
+        this.serviceCollection.TryAddSingleton<IBanRepository, JsonFileBanRepository>();
 
         this.serviceCollection.AddHttpClient();
         this.serviceCollection.AddSingleton<Configuration>(this.configuration);
@@ -597,7 +600,7 @@ public class MtaServer
     /// </summary>
     /// <param name="builderAction">Action that allows you to configure the server</param>
     /// <returns></returns>
-    public static MtaServer Create(Action<ServerBuilder> builderAction) 
+    public static MtaServer Create(Action<ServerBuilder> builderAction)
         => new(builderAction);
 
     /// <summary>
@@ -606,7 +609,7 @@ public class MtaServer
     /// <typeparam name="TPlayer">The type to use for connecting players</typeparam>
     /// <param name="builderAction">Action that allows you to configure the server</param>
     /// <returns></returns>
-    public static MtaServer<TPlayer> Create<TPlayer>(Action<ServerBuilder> builderAction) where TPlayer: Player, new() 
+    public static MtaServer<TPlayer> Create<TPlayer>(Action<ServerBuilder> builderAction) where TPlayer : Player, new()
         => new MtaNewPlayerServer<TPlayer>(builderAction);
 
     /// <summary>
@@ -616,7 +619,7 @@ public class MtaServer
     /// <typeparam name="TPlayer"></typeparam>
     /// <param name="builderAction"></param>
     /// <returns></returns>
-    public static MtaServer<TPlayer> CreateWithDiSupport<TPlayer>(Action<ServerBuilder> builderAction) where TPlayer: Player
+    public static MtaServer<TPlayer> CreateWithDiSupport<TPlayer>(Action<ServerBuilder> builderAction) where TPlayer : Player
         => new MtaDiPlayerServer<TPlayer>(builderAction);
 
     /// <summary>

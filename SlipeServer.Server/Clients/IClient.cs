@@ -29,6 +29,7 @@ public interface IClient
     public void ResendPlayerACInfo();
 
     public void FetchSerial();
+    public void FetchIp();
 
     public void SetDisconnected();
 

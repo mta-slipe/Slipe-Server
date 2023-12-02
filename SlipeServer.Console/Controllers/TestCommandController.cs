@@ -1,10 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlipeServer.Console.Elements;
-using SlipeServer.Console.Services;
 using SlipeServer.LuaControllers;
 using SlipeServer.LuaControllers.Attributes;
+using SlipeServer.Server.ElementCollections;
+using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Services;
+using System;
+using System.Linq;
 
 namespace SlipeServer.Console.Controllers;
 
@@ -12,13 +15,15 @@ namespace SlipeServer.Console.Controllers;
 public class TestCommandController : BaseCommandController<CustomPlayer>
 {
     private readonly ChatBox chatBox;
-    private readonly TestService testService;
+    private readonly IElementCollection elementCollection;
+    private readonly BanService banService;
     private readonly ILogger logger;
 
-    public TestCommandController(ChatBox chatBox, TestService testService, ILogger logger)
+    public TestCommandController(ChatBox chatBox, IElementCollection elementCollection, BanService banService, ILogger logger)
     {
         this.chatBox = chatBox;
-        this.testService = testService;
+        this.elementCollection = elementCollection;
+        this.banService = banService;
         this.logger = logger;
         this.logger.LogInformation("Instantiating {type}", typeof(TestController));
     }
@@ -49,5 +54,18 @@ public class TestCommandController : BaseCommandController<CustomPlayer>
     public void NoCommand()
     {
         this.chatBox.OutputTo(this.Context.Player, $"This should not run.");
+    }
+
+    public void BanPlayer(string name)
+    {
+        var matchingPlayers = this.elementCollection
+            .GetByType<Player>()
+            .Where(x => x.Name.Contains(name, StringComparison.InvariantCultureIgnoreCase));
+
+        if (matchingPlayers.Count() == 1)
+        {
+            var player = matchingPlayers.Single();
+            this.banService.AddBan(player.Client.Serial, null, DateTime.UtcNow + TimeSpan.FromSeconds(30), "Testing purposes.");
+        }
     }
 }

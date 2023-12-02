@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -40,6 +41,9 @@ public class NetWrapper : IDisposable, INetWrapper
 
     [DllImport(wrapperDllpath, EntryPoint = "getClientSerialAndVersion", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
     private static extern void GetClientSerialAndVersion(ushort id, uint binaryAddress, StringBuilder serial, StringBuilder extra, StringBuilder version);
+
+    [DllImport(wrapperDllpath, EntryPoint = "getPlayerIp", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
+    private static extern void GetPlayerIp(ushort id, uint binaryAddress, StringBuilder ip);
 
     [DllImport(wrapperDllpath, EntryPoint = "setChecks")]
     private static extern void SetChecks(ushort id, string szDisableComboACMap, string szDisableACMap, string szEnableSDMap, int iEnableClientChecks, bool bHideAC, string szImgMods);
@@ -116,6 +120,14 @@ public class NetWrapper : IDisposable, INetWrapper
         GetClientSerialAndVersion(this.id, binaryAddress, serial, extra, version);
 
         return new Tuple<string, string, string>(serial.ToString(), extra.ToString(), version.ToString());
+    }
+
+    public IPAddress GetPlayerIp(uint binaryAddress)
+    {
+        var ip = new StringBuilder(22);
+        GetPlayerIp(this.id, binaryAddress, ip);
+
+        return IPAddress.Parse(ip.ToString());
     }
 
     public void ResendModPackets(uint binaryAddress)

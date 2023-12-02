@@ -193,6 +193,14 @@ public class Client<TPlayer>
         this.Extra = serialExtraAndVersion.Item2;
         this.Version = serialExtraAndVersion.Item3;
     }
+
+    /// <summary>
+    /// Fetches the client's IP address
+    /// </summary>
+    public void FetchIp()
+    {
+        this.IPAddress = this.netWrapper.GetPlayerIp(this.binaryAddress);
+    }
 }
 
 /// <summary>

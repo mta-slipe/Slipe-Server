@@ -5,6 +5,7 @@ using SlipeServer.Packets;
 using SlipeServer.Packets.Enums;
 using System;
 using System.Collections.Generic;
+using System.Net;
 
 namespace SlipeServer.Server.Proxy;
 
@@ -44,6 +45,8 @@ public class ProxyNetWrapper : INetWrapper
             "1.6.0-001"
         );
     }
+
+    public IPAddress GetPlayerIp(uint binaryAddress) => IPAddress.Any;
 
     public void ResendModPackets(uint binaryAddress) { }
 

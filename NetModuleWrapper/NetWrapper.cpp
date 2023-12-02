@@ -99,6 +99,18 @@ SerialExtraAndVersion NetWrapper::getClientSerialAndVersion(unsigned long addres
     return result;
 }
 
+std::string NetWrapper::getIPAddress(unsigned long address) {
+    auto socket = sockets[address];
+
+    unsigned short port;
+    char ipBytes[22];
+
+    network->GetPlayerIP(socket, ipBytes, &port);
+    SString str = ipBytes;
+
+    return (std::string)str;
+}
+
 void NetWrapper::testMethod() {
     NetBitStreamInterface* bitStream = network->AllocateNetServerBitStream(0);
     if (bitStream)

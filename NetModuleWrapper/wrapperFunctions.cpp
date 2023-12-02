@@ -31,6 +31,12 @@ EXPORT void __cdecl getClientSerialAndVersion(ushort id, unsigned long address, 
     strcpy(version, result.version.c_str());
 }
 
+EXPORT void __cdecl getPlayerIp(ushort id, unsigned long address, char* result)
+{
+    std::string ip = NetWrapper::getNetWrapper(id)->getIPAddress(address);
+    strcpy(result, ip.c_str());
+}
+
 EXPORT void __cdecl resendModPackets(ushort id, unsigned long address)
 {
     NetWrapper::getNetWrapper(id)->resendModPackets(address);
