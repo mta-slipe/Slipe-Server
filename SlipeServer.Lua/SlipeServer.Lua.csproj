@@ -13,7 +13,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Description>Lua scripting layer C# Server for MTA San Andreas</Description>
-    <Platforms>AnyCPU;x86;x64</Platforms>
+    <Platforms>AnyCPU;x86;x64;ARM64;ARM32</Platforms>
   </PropertyGroup>
 
   <ItemGroup>

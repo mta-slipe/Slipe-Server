@@ -12,7 +12,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Description>Test tools for C# Server for MTA San Andreas</Description>
-    <Platforms>AnyCPU;x64;x86</Platforms>
+    <Platforms>AnyCPU;x64;x86;ARM64;ARM32</Platforms>
   </PropertyGroup>
 
   <ItemGroup>

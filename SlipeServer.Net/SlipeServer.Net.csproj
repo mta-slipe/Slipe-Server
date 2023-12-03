@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <Platforms>AnyCPU;x64;x86</Platforms>
+    <Platforms>AnyCPU;x64;x86;ARM64;ARM32</Platforms>
     <Nullable>enable</Nullable>
     <Version>0.1.0</Version>
     <Authors>Slipe</Authors>
