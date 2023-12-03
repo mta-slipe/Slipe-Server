@@ -1,5 +1,5 @@
 sudo apt-get install g++-multilib gcc-multilib -y
-sudo apt-get install linux-libc-dev linux-libc-dev:i386
+sudo apt-get install linux-libc-dev linux-libc-dev:i386 -y
 
 mkdir -p x64
 g++ -c -o x64/wrapperFunctions.o wrapperFunctions.cpp -fPIC

@@ -66,24 +66,8 @@ jobs:
     - task: CmdLine@2
       inputs:
         script: |
-          sudo apt-get update
-          sudo apt-get install g++-multilib gcc-multilib -y
-          sudo apt-get install linux-libc-dev linux-libc-dev:i386
           cd NetModuleWrapper
-
-          mkdir x64          
-          g++ -c -o x64/wrapperFunctions.o wrapperFunctions.cpp -fPIC
-          g++ -c -o x64/NetWrapper.o NetWrapper.cpp -fPIC
-          g++ -c -o x64/CDynamicLibrary.o mta/core/CDynamicLibrary.cpp -fPIC
-          gcc x64/wrapperFunctions.o x64/NetWrapper.o x64/CDynamicLibrary.o -shared -o x64/NetModuleWrapper.so
-          
-          mkdir x86
-          g++ -c -m32 -o x86/wrapperFunctions.o wrapperFunctions.cpp -fPIC
-          g++ -c -m32 -o x86/NetWrapper.o NetWrapper.cpp -fPIC
-          g++ -c -m32 -o x86/CDynamicLibrary.o mta/core/CDynamicLibrary.cpp -fPIC
-          gcc -m32 x86/wrapperFunctions.o x86/NetWrapper.o x86/CDynamicLibrary.o -shared -o x86/NetModuleWrapper.so
-          
-          ls
+          ./compile.sh
           
     - task: CopyFiles@2
       displayName: 'Copy x86 NetModuleWrapper.so'
@@ -98,6 +82,20 @@ jobs:
         SourceFolder: 'NetModuleWrapper/x64'
         Contents: 'NetModuleWrapper.so'
         TargetFolder: '$(Build.ArtifactStagingDirectory)/x64'
+
+    - task: CopyFiles@2
+      displayName: 'Copy arm32 NetModuleWrapper.so'
+      inputs:
+        SourceFolder: 'NetModuleWrapper/arm32'
+        Contents: 'NetModuleWrapper.so'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/arm32'
+
+    - task: CopyFiles@2
+      displayName: 'Copy arm64 NetModuleWrapper.so'
+      inputs:
+        SourceFolder: 'NetModuleWrapper/arm64'
+        Contents: 'NetModuleWrapper.so'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/arm64'
 
     - task: PublishBuildArtifacts@1
       displayName: 'publish artifacts to cpp_linux'
@@ -173,6 +171,22 @@ jobs:
       SourceFolder: '$(System.ArtifactsDirectory)/netmodulewrapper/linux/cpp_linux/x64'
       Contents: 'NetModuleWrapper.so'
       TargetFolder: 'SlipeServer.Net/Binaries/x64'
+      OverWrite: true
+
+  - task: CopyFiles@2
+    displayName: 'Copy arm32 NetModuleWrapper.so'
+    inputs:
+      SourceFolder: '$(System.ArtifactsDirectory)/netmodulewrapper/linux/cpp_linux/arm32'
+      Contents: 'NetModuleWrapper.so'
+      TargetFolder: 'SlipeServer.Net/Binaries/arm32'
+      OverWrite: true
+
+  - task: CopyFiles@2
+    displayName: 'Copy arm64 NetModuleWrapper.so'
+    inputs:
+      SourceFolder: '$(System.ArtifactsDirectory)/netmodulewrapper/linux/cpp_linux/arm64'
+      Contents: 'NetModuleWrapper.so'
+      TargetFolder: 'SlipeServer.Net/Binaries/arm64'
       OverWrite: true
 
   - task: DownloadBuildArtifacts@1

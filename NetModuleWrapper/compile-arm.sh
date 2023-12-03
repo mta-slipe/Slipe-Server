@@ -1,6 +1,6 @@
 sudo apt-get install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf -y
 sudo apt-get install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu -y
-sudo apt-get install libncurses5-dev libncursesw5-dev
+sudo apt-get install libncurses5-dev libncursesw5-dev -y
           
 mkdir -p arm64
 aarch64-linux-gnu-g++ -fPIC -shared wrapperFunctions.cpp NetWrapper.cpp mta/core/CDynamicLibrary.cpp -o arm64/NetModuleWrapper.so -shared
