@@ -63,11 +63,11 @@ jobs:
   pool:
     vmImage: 'ubuntu-latest'
   steps:
-    - task: CmdLine@2
+    - task: Bash@3
+      displayName: 'Run compile script'
       inputs:
-        script: |
-          cd NetModuleWrapper
-          sudo ./compile.sh
+        filePath: 'compile.sh'
+        workingDirectory: 'NetModuleWrapper'
           
     - task: CopyFiles@2
       displayName: 'Copy x86 NetModuleWrapper.so'
