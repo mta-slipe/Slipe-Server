@@ -67,7 +67,7 @@ jobs:
       inputs:
         script: |
           cd NetModuleWrapper
-          ./compile.sh
+          sudo ./compile.sh
           
     - task: CopyFiles@2
       displayName: 'Copy x86 NetModuleWrapper.so'
