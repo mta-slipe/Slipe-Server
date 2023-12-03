@@ -64,9 +64,15 @@ jobs:
     vmImage: 'ubuntu-latest'
   steps:
     - task: Bash@3
-      displayName: 'Run compile script'
+      displayName: 'Compile x86 / x64'
       inputs:
-        filePath: 'NetModuleWrapper/compile.sh'
+        filePath: 'NetModuleWrapper/compile-x86.sh'
+        workingDirectory: 'NetModuleWrapper'
+
+    - task: Bash@3
+      displayName: 'Compile ARM'
+      inputs:
+        filePath: 'NetModuleWrapper/compile-arm.sh'
         workingDirectory: 'NetModuleWrapper'
           
     - task: CopyFiles@2
