@@ -66,7 +66,7 @@ jobs:
     - task: Bash@3
       displayName: 'Run compile script'
       inputs:
-        filePath: 'compile.sh'
+        filePath: 'NetModuleWrapper/compile.sh'
         workingDirectory: 'NetModuleWrapper'
           
     - task: CopyFiles@2
