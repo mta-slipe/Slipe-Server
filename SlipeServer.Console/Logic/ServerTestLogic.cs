@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using SlipeServer.Console.Elements;
 using SlipeServer.Console.LuaValues;
@@ -44,6 +45,20 @@ public class TestLogic
     }
 }
 
+public class SampleResourceOptions
+{
+    public enum OptionsEnum
+    {
+        Zero,
+        One,
+        Two
+    }
+    public string String { get; set; }
+    public int Number { get; set; }
+    public OptionsEnum Enum { get; set; }
+    public List<int> List { get; set; }
+}
+
 public class ServerTestLogic
 {
     private readonly MtaServer<CustomPlayer> server;
@@ -63,6 +78,7 @@ public class ServerTestLogic
     private readonly WeaponConfigurationService weaponConfigurationService;
     private readonly GameWorld gameWorld;
     private readonly IElementIdGenerator elementIdGenerator;
+    private readonly IOptions<SampleResourceOptions> sampleResourceOptions;
     private Resource? testResource;
     private Resource? secondTestResource;
     private Resource? thirdTestResource;
@@ -114,7 +130,8 @@ public class ServerTestLogic
         CommandService commandService,
         WeaponConfigurationService weaponConfigurationService,
         GameWorld gameWorld,
-        IElementIdGenerator elementIdGenerator
+        IElementIdGenerator elementIdGenerator,
+        IOptions<SampleResourceOptions> sampleResourceOptions
     )
     {
         this.server = server;
@@ -133,6 +150,7 @@ public class ServerTestLogic
         this.commandService = commandService;
         this.weaponConfigurationService = weaponConfigurationService;
         this.elementIdGenerator = elementIdGenerator;
+        this.sampleResourceOptions = sampleResourceOptions;
         this.gameWorld = gameWorld;
 
         this.slipeDevsTeam = new Team("Slipe devs", Color.FromArgb(255, 255, 81, 81));
@@ -160,6 +178,8 @@ public class ServerTestLogic
     private void SetupTestElements()
     {
         this.testResource = this.resourceProvider.GetResource("TestResource");
+        this.testResource.AddOptions(sampleResourceOptions);
+
         this.secondTestResource = this.resourceProvider.GetResource("SecondTestResource");
         this.secondTestResource.NoClientScripts[$"{this.secondTestResource!.Name}/testfile.lua"] =
             Encoding.UTF8.GetBytes("outputChatBox(\"I AM A NOT CACHED MESSAGE\")");
