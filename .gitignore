@@ -357,3 +357,5 @@ MigrationBackup/
 
 !SlipeServer.Net/Binaries/x64/
 !SlipeServer.Net/Binaries/x86/
+!SlipeServer.Net/Binaries/arm64/
+!SlipeServer.Net/Binaries/arm32/

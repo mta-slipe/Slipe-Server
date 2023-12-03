@@ -49,7 +49,6 @@ private:
     static std::map<uint16_t, NetWrapper*> netWrappers;
     static std::map<NetServerPlayerID, NetWrapper*> netWrappersPerSocket;
 
-	CNetServer* network;
 	std::map<ulong, NetServerPlayerID> sockets;
 	bool running;
 	PacketCallback registeredCallback;
@@ -58,10 +57,14 @@ private:
     std::queue<QueuedPacket> packetQueue;
     std::mutex mutex;
 
+    CDynamicLibrary networkLibrary;
+
     void binPulseLoop();
     void runPulseLoop();
     void testMethod();
 public:
+    CNetServer* network;
+
     NetWrapper();
     uint16_t getId();
 

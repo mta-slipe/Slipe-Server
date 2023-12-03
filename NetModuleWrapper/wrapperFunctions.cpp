@@ -1,4 +1,5 @@
 ﻿#include "NetWrapper.h"
+#include <iostream>
 
 
 #ifndef WIN32
@@ -50,9 +51,11 @@ EXPORT void __cdecl resendPlayerACInfo(ushort id, unsigned long address)
 EXPORT int __cdecl initNetWrapper(const char* netDllFilePath, const char* idFile, const char* ip, unsigned short port,
     unsigned int playerCount, const char* serverName, PacketCallback callback)
 {
-    auto wrapper = new NetWrapper();
+    NetWrapper* wrapper = new NetWrapper();
     wrapper->init(netDllFilePath, idFile, ip, port, playerCount, serverName, callback);
-    return wrapper->getId();
+    uint16_t id = wrapper->getId();
+
+    return (int)id;
 }
 
 EXPORT void __cdecl destroyNetWrapper(ushort id)
