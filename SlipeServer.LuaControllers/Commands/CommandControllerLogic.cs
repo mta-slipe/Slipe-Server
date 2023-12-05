@@ -30,7 +30,7 @@ public class CommandControllerLogic
     private void IndexControllers()
     {
         var controllerTypes = AppDomain.CurrentDomain.GetAssemblies()
-            .SelectMany(x => x.GetTypes())
+            .SelectMany(x => x.GetExportedTypes())
             .Where(x => x.IsAssignableTo(typeof(BaseCommandController)))
             .Where(x => !x.IsAbstract);
 
