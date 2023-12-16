@@ -1,3 +1,4 @@
+sudo apt-get update
 sudo apt-get install g++-multilib gcc-multilib -y
 sudo apt-get install linux-libc-dev linux-libc-dev:i386 -y
 
