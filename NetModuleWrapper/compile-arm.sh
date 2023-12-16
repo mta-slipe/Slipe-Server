@@ -1,3 +1,4 @@
+sudo apt-get update
 sudo apt-get install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf -y
 sudo apt-get install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu -y
 sudo apt-get install libncurses5-dev libncursesw5-dev -y

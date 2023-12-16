@@ -44,10 +44,6 @@ public class PlayerPureSyncPacketHandler : IPacketHandler<PlayerPureSyncPacket>
         packet.PlayerId = client.Player.Id;
         packet.Latency = (ushort)client.Ping;
 
-        var otherPlayers = this.pureSyncMiddleware.GetPlayersToSyncTo(client.Player, packet);
-        if (otherPlayers.Any())
-            packet.SendTo(otherPlayers);
-
         var player = client.Player;
         player.RunAsSync(() =>
         {
@@ -74,6 +70,10 @@ public class PlayerPureSyncPacketHandler : IPacketHandler<PlayerPureSyncPacket>
 
                 if (weaponChanged || ammoChanged)
                     player.TriggerWeaponAmmoUpdate((WeaponId)packet.WeaponType, packet.TotalAmmo, packet.AmmoInClip);
+            } else if (packet.WeaponSlot != 0)
+            {
+                packet.WeaponSlot = 0;
+                packet.WeaponType = 0;
             }
 
 
@@ -101,5 +101,9 @@ public class PlayerPureSyncPacketHandler : IPacketHandler<PlayerPureSyncPacket>
         });
 
         player.TriggerSync();
+
+        var otherPlayers = this.pureSyncMiddleware.GetPlayersToSyncTo(client.Player, packet);
+        if (otherPlayers.Any())
+            packet.SendTo(otherPlayers);
     }
 }

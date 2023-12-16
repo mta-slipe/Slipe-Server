@@ -2,7 +2,7 @@
   "profiles": {
     "SlipeServer.Console": {
       "commandName": "Project",
-      "nativeDebugging": true
+      "nativeDebugging": false
     },
     "Docker": {
       "commandName": "Docker",
