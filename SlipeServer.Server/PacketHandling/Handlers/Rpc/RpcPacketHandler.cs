@@ -87,7 +87,7 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
 
         var elements = this.elementCollection
             .GetAll()
-            .Where(x => x.Associations.Any(y => y.IsGlobal))
+            .Where(x => x.Associations.ToArray().Any(y => y.IsGlobal))
             .ToArray();
         var packet = AddEntityPacketFactory.CreateAddEntityPacket(elements);
         client.SendPacket(packet);
@@ -99,7 +99,7 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
                     player.WarpIntoVehicle(player.Vehicle, player.Seat.Value);
         }
 
-        var newPlayerListPacket = PlayerPacketFactory.CreatePlayerListPacket(new Elements.Player[] { client.Player }, false);
+        var newPlayerListPacket = PlayerPacketFactory.CreatePlayerListPacket([client.Player], false);
         newPlayerListPacket.SendTo(otherPlayers);
 
         SyncPacketFactory.CreateSyncSettingsPacket(this.configuration).SendTo(client.Player);
