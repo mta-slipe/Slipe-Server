@@ -328,6 +328,7 @@ public class Player : Ped
     {
         this.Kicked?.Invoke(this, new PlayerKickEventArgs(string.Empty, type));
         this.Client.SendPacket(new PlayerDisconnectPacket(type, string.Empty));
+        this.Client.IsConnected = false;
         this.Client.SetDisconnected();
         this.Destroy();
     }
@@ -336,6 +337,7 @@ public class Player : Ped
     {
         this.Kicked?.Invoke(this, new PlayerKickEventArgs(reason, type));
         this.Client.SendPacket(new PlayerDisconnectPacket(type, reason));
+        this.Client.IsConnected = false;
         this.Client.SetDisconnected();
         this.Destroy();
     }

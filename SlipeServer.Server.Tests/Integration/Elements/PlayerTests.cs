@@ -53,6 +53,6 @@ public class PlayerTests
         player.Kick();
 
         player.IsDestroyed.Should().BeTrue();
-        player.Client.IsConnected.Should().BeTrue();
+        player.Client.IsConnected.Should().BeFalse();
     }
 }
