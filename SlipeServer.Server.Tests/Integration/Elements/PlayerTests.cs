@@ -1,4 +1,5 @@
-﻿using SlipeServer.Packets.Definitions.Player;
+﻿using FluentAssertions;
+using SlipeServer.Packets.Definitions.Player;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Loggers;
 using SlipeServer.Server.PacketHandling.Handlers.Player;
@@ -41,5 +42,17 @@ public class PlayerTests
 
         server.VerifyPacketSent(PacketId.PACKET_ID_PLAYER_WASTED, player1, count: 1);
         server.VerifyPacketSent(PacketId.PACKET_ID_PLAYER_WASTED, player2, count: 1);
+    }
+
+    [Fact]
+    public void KickingPlayerShouldDestroyAndDisconnectPlayer()
+    {
+        var server = new TestingServer();
+        var player = server.AddFakePlayer();
+
+        player.Kick();
+
+        player.IsDestroyed.Should().BeTrue();
+        player.Client.IsConnected.Should().BeTrue();
     }
 }
