@@ -1,10 +1,18 @@
-﻿using SlipeServer.Packets.Definitions.Resources;
+﻿using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using SlipeServer.Packets.Definitions.Resources;
 using SlipeServer.Packets.Structs;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Extensions;
+using SlipeServer.Server.Mappers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
+using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -142,5 +150,19 @@ public class Resource
             }.Concat(compressed).ToArray();
 
         return result;
+    }
+
+    public void AddOptions<T>(IOptions<T> options, string? optionsFunctionName = null) where T : class
+    {
+        var optionsTableName = "_" + Guid.NewGuid().ToString().Replace("-", "");
+        var luaCode = new StringBuilder();
+        var optionsValue = options.Value;
+        var json = JsonConvert.SerializeObject(optionsValue, Formatting.None);
+        luaCode.AppendLine($"local {optionsTableName} = fromJSON(base64Decode(\"{Convert.ToBase64String(Encoding.UTF8.GetBytes(json))}\"))");
+        luaCode.AppendLine($"function {optionsFunctionName ?? $"get{typeof(T).Name}"}(key)");
+        luaCode.AppendLine($"\treturn {optionsTableName}[key];");
+        luaCode.AppendLine($"end");
+        var code = luaCode.ToString();
+        NoClientScripts[$"{optionsTableName}.lua"] = Encoding.UTF8.GetBytes(code);
     }
 }

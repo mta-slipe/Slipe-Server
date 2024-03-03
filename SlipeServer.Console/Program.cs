@@ -90,6 +90,13 @@ public partial class Program
                     services.AddScoped<TestService>();
                     services.AddSingleton<PacketReplayerService>();
                     services.AddScoped<SampleScopedService>();
+
+                    services.Configure<SampleResourceOptions>(x =>
+                    {
+                        x.Number = 1337;
+                        x.String = "sample string";
+                        x.List = new System.Collections.Generic.List<int> { 1, 2, 3 };
+                    });
                 });
                 builder.AddLua();
                 builder.AddPhysics();
