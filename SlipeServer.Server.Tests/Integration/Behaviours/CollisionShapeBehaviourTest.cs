@@ -20,7 +20,7 @@ public class CollisionShapeBehaviourTest
         var dummy = new DummyElement().AssociateWith(server);
 
         var isEventCalled = false;
-        collisionShape.ElementEntered += (element) =>
+        collisionShape.ElementEntered += (collisionShape, element) =>
         {
             if (element == dummy)
             {
@@ -43,7 +43,7 @@ public class CollisionShapeBehaviourTest
         var dummy = new DummyElement().AssociateWith(server);
 
         int callCount = 0;
-        collisionShape.ElementEntered += (element) =>
+        collisionShape.ElementEntered += (collisionShape, element) =>
         {
             if (element == dummy)
             {
@@ -67,7 +67,7 @@ public class CollisionShapeBehaviourTest
         var dummy = new DummyElement().AssociateWith(server);
 
         var isEventCalled = false;
-        collisionShape.ElementLeft += (element) =>
+        collisionShape.ElementLeft += (collisionShape, element) =>
         {
             if (element == dummy)
             {
@@ -91,7 +91,7 @@ public class CollisionShapeBehaviourTest
         var dummy = new DummyElement().AssociateWith(server);
 
         var isEventCalled = false;
-        collisionShape.ElementEntered += (element) =>
+        collisionShape.ElementEntered += (collisionShape, element) =>
         {
             if (element == dummy)
             {
@@ -114,7 +114,7 @@ public class CollisionShapeBehaviourTest
         var dummy = new DummyElement().AssociateWith(server);
 
         var isEventCalled = false;
-        collisionShape.ElementLeft += (element) =>
+        collisionShape.ElementLeft += (collisionShape, element) =>
         {
             if (element == dummy)
             {

@@ -1178,7 +1178,7 @@ public class ServerTestLogic
             marker.Color = Color.Pink;
             create(marker);
             var collisionSphere = new CollisionSphere(origin, 3);
-            collisionSphere.ElementEntered += e =>
+            collisionSphere.ElementEntered += (c, e) =>
             {
                 this.chatBox.Output("entered element created for me");
             };

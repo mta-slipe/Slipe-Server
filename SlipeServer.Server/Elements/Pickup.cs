@@ -86,7 +86,7 @@ public class Pickup : Element
         this.CollisionShape.ElementEntered += HandleCollisionHit;
     }
 
-    private void HandleCollisionHit(Element element)
+    private void HandleCollisionHit(CollisionShape collisionShape, Element element)
     {
         if (element is Player player)
         {
