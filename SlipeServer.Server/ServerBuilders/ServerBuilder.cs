@@ -16,7 +16,7 @@ public class ServerBuilder
 {
     private readonly List<ServerBuildStep> buildSteps;
     public Configuration Configuration { get; private set; }
-    private readonly List<Action<ServiceCollection>> dependecyLoaders;
+    private readonly List<Action<IServiceCollection>> dependecyLoaders;
 
     public ServerBuilder()
     {
@@ -162,7 +162,7 @@ public class ServerBuilder
     /// Configures additional dependencies for the dependecy injection container
     /// </summary>
     /// <param name="action"></param>
-    public void ConfigureServices(Action<ServiceCollection> action)
+    public void ConfigureServices(Action<IServiceCollection> action)
     {
         this.dependecyLoaders.Add(action);
     }
@@ -205,7 +205,7 @@ public class ServerBuilder
     /// Loads additional dependencies to the dependency injection service collection
     /// </summary>
     /// <param name="services"></param>
-    public void LoadDependencies(ServiceCollection services)
+    public void LoadDependencies(IServiceCollection services)
     {
         foreach (var loader in this.dependecyLoaders)
             loader(services);

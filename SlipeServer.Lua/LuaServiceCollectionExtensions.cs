@@ -5,14 +5,14 @@ namespace SlipeServer.Lua;
 
 public static class LuaServiceCollectionExtensions
 {
-    public static void AddLua(this ServiceCollection services)
+    public static void AddLua(this IServiceCollection services)
     {
         services.AddSingleton<IScriptEventRuntime, ScriptEventRuntime>();
         services.AddSingleton<IScriptInputRuntime, ScriptInputRuntime>();
         services.AddSingleton<LuaService>();
     }
 
-    public static void AddLua<T>(this ServiceCollection services) where T : class, IScriptEventRuntime
+    public static void AddLua<T>(this IServiceCollection services) where T : class, IScriptEventRuntime
     {
         services.AddSingleton<IScriptEventRuntime, T>();
         services.AddSingleton<LuaService>();
