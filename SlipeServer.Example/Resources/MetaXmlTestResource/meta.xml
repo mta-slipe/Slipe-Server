@@ -1,0 +1,13 @@
+<meta>
+	<script src="test.lua" type="client"></script>
+	<script src="nocache.lua" type="client" cache="false"></script>
+	<script src="servertest.lua" type="server"></script>
+	
+	<file src="file.txt"></file>
+	<file src="directory/file.txt"></file>
+
+	<export type="client" function="exportMeBaby"></export>
+	<export type="server" function="doNotExportMeBecauseIAmServerSided"></export>
+	
+	<oop>false</oop>
+</meta>

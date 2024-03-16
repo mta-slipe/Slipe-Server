@@ -1,0 +1,1 @@
+outputChatBox("Meta.xml resource not is loaded properly, this file should not be run client sided")

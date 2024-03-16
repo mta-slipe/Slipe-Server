@@ -95,7 +95,7 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
             });
     }
 
-    public static void ConfigureOverrides(ServiceCollection services)
+    public static void ConfigureOverrides(IServiceCollection services)
     {
         var httpServerMock = new Mock<IResourceServer>();
         services.AddSingleton<IResourceServer>(httpServerMock.Object);

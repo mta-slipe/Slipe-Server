@@ -1,0 +1,1 @@
+outputChatBox("This file should not be found in the client resource cache")

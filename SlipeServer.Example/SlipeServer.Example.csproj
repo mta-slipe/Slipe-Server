@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="AdditionalResources\Parachute\Lua\client_anim.lua" />
+		<EmbeddedResource Include="AdditionalResources\Parachute\Lua\openChute.lua" />
+		<EmbeddedResource Include="AdditionalResources\Parachute\Lua\parachuteopen.mp3" />
+		<EmbeddedResource Include="AdditionalResources\Parachute\Lua\parachute_cl.lua" />
+		<EmbeddedResource Include="AdditionalResources\Parachute\Lua\skydiving_cl.lua" />
+		<EmbeddedResource Include="AdditionalResources\Parachute\Lua\utility.lua" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="System.Drawing.Common" Version="8.0.3" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<ProjectReference Include="..\SlipeServer.ConfigurationProviders\SlipeServer.ConfigurationProviders.csproj" />
+		<ProjectReference Include="..\SlipeServer.LuaControllers\SlipeServer.LuaControllers.csproj" />
+		<ProjectReference Include="..\SlipeServer.Lua\SlipeServer.Lua.csproj" />
+		<ProjectReference Include="..\SlipeServer.Physics\SlipeServer.Physics.csproj" />
+		<ProjectReference Include="..\SlipeServer.Server\SlipeServer.Server.csproj" />
+		<ProjectReference Include="..\SlipeServer.SourceGenerators\SlipeServer.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+	</ItemGroup>
+</Project>

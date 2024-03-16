@@ -1,0 +1,6 @@
+@SlipeServer.Web_HostAddress = http://localhost:5194
+
+GET {{SlipeServer.Web_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

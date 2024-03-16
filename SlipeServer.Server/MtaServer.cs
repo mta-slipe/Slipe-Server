@@ -41,14 +41,15 @@ public class MtaServer
     private readonly List<Resource> additionalResources;
     protected readonly PacketReducer packetReducer;
     protected readonly Dictionary<INetWrapper, Dictionary<uint, IClient>> clients;
-    protected readonly ServiceCollection serviceCollection;
+    protected readonly IServiceCollection serviceCollection;
+    private readonly bool configureDefaultLogging;
     protected readonly ServiceProvider serviceProvider;
     private readonly IElementCollection elementCollection;
     private readonly IElementIdGenerator? elementIdGenerator;
     private readonly IResourceProvider resourceProvider;
     private readonly RootElement root;
     private readonly Configuration configuration;
-
+    private readonly Action<ServerBuilder> builderAction;
     private readonly Func<uint, INetWrapper, IClient>? clientCreationMethod;
 
     private readonly HashSet<object> persistentInstances;
@@ -97,19 +98,22 @@ public class MtaServer
 
     public MtaServer(
         Action<ServerBuilder> builderAction,
-        Func<uint, INetWrapper, IClient>? clientCreationMethod = null
+        Func<uint, INetWrapper, IClient>? clientCreationMethod = null,
+        IServiceCollection? externalServices = null,
+        bool configureDefaultLogging = true
     )
     {
         this.netWrappers = new();
         this.clients = new();
+        this.builderAction = builderAction;
         this.clientCreationMethod = clientCreationMethod;
         this.resourceServers = new();
         this.additionalResources = new();
         this.persistentInstances = new();
 
         this.root = new();
-        this.serviceCollection = new();
-
+        this.serviceCollection = externalServices ?? new ServiceCollection();
+        this.configureDefaultLogging = configureDefaultLogging;
         var builder = new ServerBuilder();
         builderAction(builder);
 
@@ -449,7 +453,7 @@ public class MtaServer
         };
     }
 
-    protected virtual void SetupDependencies(Action<ServiceCollection>? dependencyCallback)
+    protected virtual void SetupDependencies(Action<IServiceCollection>? dependencyCallback)
     {
         this.serviceCollection.AddSingleton<IElementCollection, RTreeCompoundElementCollection>();
         this.serviceCollection.AddSingleton<IResourceProvider, FileSystemResourceProvider>();
@@ -457,14 +461,17 @@ public class MtaServer
         this.serviceCollection.AddSingleton<IAseQueryService, AseQueryService>();
         this.serviceCollection.AddSingleton(typeof(ISyncHandlerMiddleware<>), typeof(BasicSyncHandlerMiddleware<>));
 
-        this.serviceCollection.AddLogging(x =>
+        if (this.configureDefaultLogging)
         {
-            if (Environment.UserInteractive)
-                this.serviceCollection.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, ConsoleLoggerProvider>());
-            else
-                this.serviceCollection.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, NullLoggerProvider>());
-        });
-        this.serviceCollection.TryAddSingleton<ILogger>(x => x.GetRequiredService<ILogger<MtaServer>>());
+            this.serviceCollection.AddLogging(x =>
+            {
+                if (Environment.UserInteractive)
+                    this.serviceCollection.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, ConsoleLoggerProvider>());
+                else
+                    this.serviceCollection.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, NullLoggerProvider>());
+            });
+            this.serviceCollection.TryAddSingleton<ILogger>(x => x.GetRequiredService<ILogger<MtaServer>>());
+        }
 
 
         this.serviceCollection.AddSingleton<GameWorld>();
@@ -600,8 +607,8 @@ public class MtaServer
     /// </summary>
     /// <param name="builderAction">Action that allows you to configure the server</param>
     /// <returns></returns>
-    public static MtaServer Create(Action<ServerBuilder> builderAction)
-        => new(builderAction);
+    public static MtaServer Create(Action<ServerBuilder> builderAction, IServiceCollection? externalServices = null, bool configureDefaultLogging = true)
+        => new(builderAction, null, externalServices, configureDefaultLogging);
 
     /// <summary>
     /// Creates an MTA server using a specific type for connecting players
@@ -609,8 +616,8 @@ public class MtaServer
     /// <typeparam name="TPlayer">The type to use for connecting players</typeparam>
     /// <param name="builderAction">Action that allows you to configure the server</param>
     /// <returns></returns>
-    public static MtaServer<TPlayer> Create<TPlayer>(Action<ServerBuilder> builderAction) where TPlayer : Player, new()
-        => new MtaNewPlayerServer<TPlayer>(builderAction);
+    public static MtaServer<TPlayer> Create<TPlayer>(Action<ServerBuilder> builderAction, IServiceCollection? externalServices = null, bool configureDefaultLogging = true) where TPlayer : Player, new()
+        => new MtaNewPlayerServer<TPlayer>(builderAction, externalServices, configureDefaultLogging);
 
     /// <summary>
     /// Creates an MTA server using a specific type for connecting players.
@@ -619,8 +626,8 @@ public class MtaServer
     /// <typeparam name="TPlayer"></typeparam>
     /// <param name="builderAction"></param>
     /// <returns></returns>
-    public static MtaServer<TPlayer> CreateWithDiSupport<TPlayer>(Action<ServerBuilder> builderAction) where TPlayer : Player
-        => new MtaDiPlayerServer<TPlayer>(builderAction);
+    public static MtaServer<TPlayer> CreateWithDiSupport<TPlayer>(Action<ServerBuilder> builderAction, IServiceCollection? externalServices = null, bool configureDefaultLogging = true) where TPlayer : Player
+        => new MtaDiPlayerServer<TPlayer>(builderAction, externalServices, configureDefaultLogging);
 
     /// <summary>
     /// Triggered when any element is created on the server through the .AssociateElement method
@@ -655,9 +662,9 @@ public class MtaServer
 /// <typeparam name="TPlayer">The player type</typeparam>
 public abstract class MtaServer<TPlayer> : MtaServer where TPlayer : Player
 {
-    public MtaServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
+    public MtaServer(Action<ServerBuilder> builderAction, IServiceCollection? externalServices = null, bool configureDefaultLogging = true) : base(builderAction, null, externalServices, configureDefaultLogging) { }
 
-    protected override void SetupDependencies(Action<ServiceCollection>? dependencyCallback)
+    protected override void SetupDependencies(Action<IServiceCollection>? dependencyCallback)
     {
         base.SetupDependencies(dependencyCallback);
         this.serviceCollection.AddSingleton<MtaServer<TPlayer>>(this);
@@ -679,7 +686,7 @@ public abstract class MtaServer<TPlayer> : MtaServer where TPlayer : Player
 /// <typeparam name="TPlayer">The player type</typeparam>
 public class MtaNewPlayerServer<TPlayer> : MtaServer<TPlayer> where TPlayer : Player, new()
 {
-    internal MtaNewPlayerServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
+    internal MtaNewPlayerServer(Action<ServerBuilder> builderAction, IServiceCollection? externalServices = null, bool configureDefaultLogging = true) : base(builderAction, externalServices, configureDefaultLogging) { }
 
     protected override IClient CreateClient(uint binaryAddress, INetWrapper netWrapper)
     {
@@ -695,7 +702,7 @@ public class MtaNewPlayerServer<TPlayer> : MtaServer<TPlayer> where TPlayer : Pl
 /// </summary>
 public class MtaDiPlayerServer<TPlayer> : MtaServer<TPlayer> where TPlayer : Player
 {
-    internal MtaDiPlayerServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
+    internal MtaDiPlayerServer(Action<ServerBuilder> builderAction, IServiceCollection? externalServices = null, bool configureDefaultLogging = true) : base(builderAction, externalServices, configureDefaultLogging) { }
 
     protected override IClient CreateClient(uint binaryAddress, INetWrapper netWrapper)
     {
