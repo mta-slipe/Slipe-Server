@@ -26,6 +26,27 @@ public class VehicleConstants
         VehicleModel.Vortex
     };
 
+    public static HashSet<VehicleModel> VehiclesWithoutDoors { get; } = new()
+    {
+        VehicleModel.BFInjection,
+        VehicleModel.RCBandit,
+        VehicleModel.Caddy,
+        VehicleModel.RCRaider,
+        VehicleModel.Baggage,
+        VehicleModel.Dozer,
+        VehicleModel.Forklift,
+        VehicleModel.Tractor,
+        VehicleModel.RCTiger,
+        VehicleModel.Bandito,
+        VehicleModel.Kart,
+        VehicleModel.Mower,
+        VehicleModel.RCCam,
+        VehicleModel.RCGoblin,
+        VehicleModel.BloodringBanger,
+    };
+
+
+
     public static Dictionary<VehicleModel, byte> DoorsPerVehicle { get; } = new()
     {
         [VehicleModel.Landstalker] = 4,
