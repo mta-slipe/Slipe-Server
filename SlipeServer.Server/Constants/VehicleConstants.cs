@@ -43,6 +43,37 @@ public class VehicleConstants
         VehicleModel.RCCam,
         VehicleModel.RCGoblin,
         VehicleModel.BloodringBanger,
+
+        VehicleModel.Coastguard,
+        VehicleModel.Dinghy,
+        VehicleModel.Jetmax,
+        VehicleModel.Launch,
+        VehicleModel.Marquis,
+        VehicleModel.Predator,
+        VehicleModel.Reefer,
+        VehicleModel.Speeder,
+        VehicleModel.Squalo,
+        VehicleModel.Tropic,
+
+        VehicleModel.BF400,
+        VehicleModel.Bike,
+        VehicleModel.BMX,
+        VehicleModel.Faggio,
+        VehicleModel.FCR900,
+        VehicleModel.Freeway,
+        VehicleModel.MountainBike,
+        VehicleModel.NRG500,
+        VehicleModel.PCJ600,
+        VehicleModel.Pizzaboy,
+        VehicleModel.Sanchez,
+        VehicleModel.Wayfarer,
+
+        VehicleModel.BoxFreight,
+        VehicleModel.Streak,
+        VehicleModel.StreakTrainTrailer,
+        VehicleModel.FreightTrainFlatbed,
+        VehicleModel.Freight,
+        VehicleModel.Tram,
     };
 
 
