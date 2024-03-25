@@ -155,7 +155,8 @@ public class Pickup : Element
     public new Pickup AssociateWith(MtaServer server)
     {
         this.CollisionShape.AssociateWith(server);
-        return server.AssociateElement(this);
+        base.AssociateWith(server);
+        return this;
     }
 
     private void UpdatePosition(Element sender, ElementChangedEventArgs<Vector3> args)
