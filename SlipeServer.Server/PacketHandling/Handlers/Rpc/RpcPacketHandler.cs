@@ -87,8 +87,7 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
 
         var elements = this.elementCollection
             .GetAll()
-            .Where(x => x.Associations.ToArray().Any(y => y.IsGlobal))
-            .ToArray();
+            .Where(x => x.Associations.ToArray().Any(y => y.IsGlobal));
         var packet = AddEntityPacketFactory.CreateAddEntityPacket(elements);
         client.SendPacket(packet);
 
