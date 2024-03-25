@@ -27,6 +27,7 @@ public class Pickup : Element
     public CollisionShape CollisionShape { get; init; }
     public bool OnFootOnly { get; set; } = true;
     public uint RespawnTime { get; set; }
+    public bool IsUsable { get; set; } = true;
 
     private readonly object useLock = new();
 
@@ -100,6 +101,9 @@ public class Pickup : Element
 
     public void Use(Player player)
     {
+        if (!this.IsUsable)
+            return;
+
         switch (this.PickupType)
         {
             case PickupType.Health:
