@@ -29,7 +29,7 @@ public class CollectionBasedElementIdGenerator : IElementIdGenerator
                     throw new ElementIdsExhaustedException();
             }
 
-            return this.idCounter;
+            return this.idCounter++;
         }
     }
 }
