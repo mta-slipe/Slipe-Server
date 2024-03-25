@@ -110,6 +110,7 @@ public partial class Program
                 builder.AddLogic<ProxyService>();
                 builder.AddScopedLogic<ScopedTestLogic1>();
                 builder.AddScopedLogic<ScopedTestLogic2>();
+                builder.AddLogic<VehicleEntityAddTestLogic>();
                 builder.AddLogic(typeof(TestLogic));
                 //builder.AddBehaviour<VelocityBehaviour>();
                 builder.AddBehaviour<EventLoggingBehaviour>();

@@ -67,6 +67,7 @@ public class VehicleConstants
         VehicleModel.Pizzaboy,
         VehicleModel.Sanchez,
         VehicleModel.Wayfarer,
+        VehicleModel.HPV1000,
 
         VehicleModel.BoxFreight,
         VehicleModel.Streak,
@@ -518,6 +519,7 @@ public class VehicleConstants
         VehicleModel.Forklift,
         VehicleModel.Tractor,
         VehicleModel.Andromada,
+        VehicleModel.CementTruck,
     };
 
     public static HashSet<VehicleModel> TurretModels { get; } = new()
