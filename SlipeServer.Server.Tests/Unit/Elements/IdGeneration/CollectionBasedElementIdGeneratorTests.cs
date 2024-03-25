@@ -31,7 +31,7 @@ public class CollectionBasedElementIdGeneratorTests
         var collection = new ElementByIdCollection();
         var dummyElement = new DummyElement()
         {
-            Id = ElementId.Zero
+            Id = (ElementId)1
         };
         collection.Add(dummyElement);
         var generator = new CollectionBasedElementIdGenerator(collection);
@@ -39,6 +39,17 @@ public class CollectionBasedElementIdGeneratorTests
         var id = generator.GetId();
 
         id.Should().NotBe(dummyElement.Id.Value);
+    }
+
+    [Fact]
+    public void GetId_ShouldReturnOneAsFirstId()
+    {
+        var collection = new ElementByIdCollection();
+        var generator = new CollectionBasedElementIdGenerator(collection);
+
+        var id = generator.GetId();
+
+        id.Should().Be(1);
     }
 
     [Fact]
@@ -51,7 +62,7 @@ public class CollectionBasedElementIdGeneratorTests
         var firstElement = new DummyElement() { Id = (ElementId)first };
         collection.Add(firstElement);
 
-        for (int i = 0; i < ElementConstants.MaxElementId - 2; i++)
+        for (int i = 0; i < ElementConstants.MaxElementId - 1; i++)
         {
             var id = generator.GetId();
             collection.Add(new DummyElement() { Id = (ElementId)id });
@@ -69,7 +80,7 @@ public class CollectionBasedElementIdGeneratorTests
         var collection = new ElementByIdCollection();
         var generator = new CollectionBasedElementIdGenerator(collection);
 
-        for (int i = 0; i < ElementConstants.MaxElementId - 1; i++)
+        for (int i = 0; i < ElementConstants.MaxElementId; i++)
         {
             var second = generator.GetId();
             collection.Add(new DummyElement() { Id = (ElementId)second });
