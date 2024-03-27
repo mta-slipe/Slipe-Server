@@ -17,13 +17,16 @@ public class Pickup : Element
 {
     public override ElementType ElementType => ElementType.Pickup;
 
-    public ushort Model { get; set; }
+    public ushort Model{ get; private set; }
+    public PickupType PickupType { get; private set; }
+
+
+    public float? Armor { get; private set; }
+    public float? Health { get; private set; }
+    public WeaponId? WeaponType { get; private set; }
+    public ushort? Ammo { get; private set; }
+
     public bool IsVisible { get; set; } = true;
-    public PickupType PickupType { get; set; }
-    public float? Armor { get; set; }
-    public float? Health { get; set; }
-    public WeaponId? WeaponType { get; set; }
-    public ushort? Ammo { get; set; }
     public CollisionShape CollisionShape { get; init; }
     public bool OnFootOnly { get; set; } = true;
     public uint RespawnTime { get; set; }
@@ -32,7 +35,7 @@ public class Pickup : Element
     private readonly object useLock = new();
 
 
-    public Pickup(Vector3 position, PickupType type, float amount)
+    public Pickup(Vector3 position, PickupType type, float amount) : base()
     {
         this.Position = position;
         this.PickupType = type;
@@ -54,7 +57,7 @@ public class Pickup : Element
         this.PositionChanged += UpdatePosition;
     }
 
-    public Pickup(Vector3 position, WeaponId type, ushort ammo)
+    public Pickup(Vector3 position, WeaponId type, ushort ammo) : base()
     {
         this.Position = position;
         this.Ammo = ammo;
@@ -67,7 +70,7 @@ public class Pickup : Element
         this.CollisionShape.ElementEntered += HandleCollisionHit;
     }
 
-    public Pickup(Vector3 position, ushort model)
+    public Pickup(Vector3 position, ushort model) : base()
     {
         this.Position = position;
         this.Model = model;
@@ -77,7 +80,7 @@ public class Pickup : Element
         this.CollisionShape.ElementEntered += HandleCollisionHit;
     }
 
-    public Pickup(Vector3 position, PickupModel model)
+    public Pickup(Vector3 position, PickupModel model) : base()
     {
         this.Position = position;
         this.Model = (ushort)model;
@@ -85,6 +88,45 @@ public class Pickup : Element
 
         this.CollisionShape = new CollisionSphere(position, 2);
         this.CollisionShape.ElementEntered += HandleCollisionHit;
+    }
+
+    public void ChangeToOrUpdateHealthPickup(float amount)
+    {
+        this.Health = amount;
+        this.Model = (ushort)ObjectModel.Health;
+        this.PickupType = PickupType.Health;
+        this.PickupTypeChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    public void ChangeToOrUpdateArmorPickup(float amount)
+    {
+        this.Armor = amount;
+        this.Model = (ushort)ObjectModel.Bodyarmour;
+        this.PickupType = PickupType.Armor;
+        this.PickupTypeChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    public void ChangeToOrUpdateWeaponPickup(WeaponId weapon, ushort ammo)
+    {
+        this.Position = position;
+        this.Ammo = ammo;
+        this.WeaponType = weapon;
+        this.Model = WeaponConstants.ModelsPerWeapon[weapon];
+        this.PickupTypeChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    public void ChangeToOrUpdateCustomPickup(ushort model)
+    {
+        this.Model = model;
+        this.PickupType = PickupType.Custom;
+        this.PickupTypeChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    public void ChangeToOrUpdateCustomPickup(PickupModel model)
+    {
+        this.Model = (ushort)model;
+        this.PickupType = PickupType.Custom;
+        this.PickupTypeChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private void HandleCollisionHit(Element element)
@@ -168,6 +210,7 @@ public class Pickup : Element
         this.CollisionShape.Position = args.NewValue;
     }
 
+    public event ElementEventHandler<Pickup, EventArgs>? PickupTypeChanged;
     public event ElementEventHandler<Pickup, PickupUsedEventArgs>? Used;
     public event ElementEventHandler<Pickup, EventArgs>? Reset;
 }

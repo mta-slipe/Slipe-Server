@@ -1158,6 +1158,16 @@ public class ServerTestLogic
             this.chatBox.Output($"{args.Player.Position}");
         };
 
+        this.commandService.AddCommand("pickuptest").Triggered += (source, args) =>
+        {
+            var pickup = new Pickup(args.Player.Position, 1337)
+            {
+                IsUsable = false
+            }.AssociateWith(server);
+            pickup.ChangeToOrUpdateCustomPickup(321);
+            pickup.Position += args.Player.Forward;
+        };
+
         this.commandService.AddCommand("createelementsforme").Triggered += (source, args) =>
         {
             uint id = 10_000;

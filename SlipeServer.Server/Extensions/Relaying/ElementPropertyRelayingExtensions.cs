@@ -44,6 +44,9 @@ public static class ElementPropertyRelayingExtensions
             case WorldObject worldObject:
                 worldObject.AddWorldObjectRelayers();
                 break;
+            case Pickup pickup:
+                pickup.AddPickupRelayers();
+                break;
 
         }
     }
