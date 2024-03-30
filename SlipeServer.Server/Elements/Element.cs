@@ -36,9 +36,10 @@ public class Element
         get => this.parent;
         set
         {
+            this.parent?.RemoveChild(this);
+
             this.parent = value;
 
-            this.parent?.RemoveChild(this);
             value?.AddChild(this);
         }
     }

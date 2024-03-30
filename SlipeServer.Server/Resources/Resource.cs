@@ -51,7 +51,7 @@ public class Resource
         this.DynamicRoot = new DummyElement()
         {
             Parent = this.Root,
-            ElementTypeName = name,
+            ElementTypeName = "map",
         }.AssociateWith(server);
 
         this.Exports = new List<string>();
