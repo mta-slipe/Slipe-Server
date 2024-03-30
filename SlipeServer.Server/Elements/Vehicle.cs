@@ -554,9 +554,9 @@ public class Vehicle : Element
             this.RemovePassenger(occupant, true);
         }
         this.Occupants[seat] = ped;
-        ped.Vehicle = this;
         ped.EnteringVehicle = null;
         ped.Seat = seat;
+        ped.Vehicle = this;
 
         this.PedEntered?.Invoke(this, new VehicleEnteredEventsArgs(ped, this, seat, warpsIn));
     }
