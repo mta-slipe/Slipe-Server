@@ -129,9 +129,9 @@ public class Pickup : Element
         this.PickupTypeChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    private void HandleCollisionHit(Element element)
+    private void HandleCollisionHit(CollisionShape collisionShape, CollisionShapeHitEventArgs args)
     {
-        if (element is Player player)
+        if (args.Element is Player player)
         {
             lock (this.useLock)
             {

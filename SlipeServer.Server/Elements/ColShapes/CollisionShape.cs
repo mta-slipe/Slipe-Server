@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SlipeServer.Server.Elements.Events;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,8 @@ public abstract class CollisionShape : Element
 
     public bool IsEnabled { get; set; } = true;
     public bool AutoCallEvent { get; set; } = true;
+    public bool DimensionsMustMatch { get; set; } = true;
+    public bool InteriorsMustMatch { get; set; } = true;
 
     private readonly ConcurrentDictionary<Element, byte> elementsWithin;
     public IEnumerable<Element> ElementsWithin => this.elementsWithin.Select(x => x.Key);
@@ -30,14 +33,14 @@ public abstract class CollisionShape : Element
     public bool IsWithin(Element element, bool matchInterior = true, bool matchDimension = true)
         => IsWithin(element.Position, matchInterior ? element.Interior : null, matchDimension ? element.Dimension : null);
 
-    public void CheckElementWithin(Element element, bool matchInterior = true, bool matchDimension = true)
+    public void CheckElementWithin(Element element)
     {
-        if (IsWithin(element, matchInterior, matchDimension))
+        if (IsWithin(element, this.InteriorsMustMatch, this.DimensionsMustMatch))
         {
             if (!this.elementsWithin.ContainsKey(element))
             {
                 this.elementsWithin[element] = 0;
-                this.ElementEntered?.Invoke(element);
+                this.ElementEntered?.Invoke(this, new(this, element));
                 element.Destroyed += OnElementDestroyed;
             }
         } else
@@ -45,7 +48,7 @@ public abstract class CollisionShape : Element
             if (this.elementsWithin.ContainsKey(element))
             {
                 this.elementsWithin.Remove(element, out var _);
-                this.ElementLeft?.Invoke(element);
+                this.ElementLeft?.Invoke(this, new(this, element));
                 element.Destroyed -= OnElementDestroyed;
             }
         }
@@ -53,7 +56,7 @@ public abstract class CollisionShape : Element
 
     private void OnElementDestroyed(Element element)
     {
-        this.ElementLeft?.Invoke(element);
+        this.ElementLeft?.Invoke(this, new(this, element));
     }
 
     public new CollisionShape AssociateWith(MtaServer server)
@@ -62,6 +65,6 @@ public abstract class CollisionShape : Element
         return this;
     }
 
-    public event Action<Element>? ElementEntered;
-    public event Action<Element>? ElementLeft;
+    public event ElementEventHandler<CollisionShape, CollisionShapeHitEventArgs>? ElementEntered;
+    public event ElementEventHandler<CollisionShape, CollisionShapeLeftEventArgs>? ElementLeft;
 }
