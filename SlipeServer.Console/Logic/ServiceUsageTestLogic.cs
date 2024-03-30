@@ -10,7 +10,7 @@ public class ServiceUsageTestLogic
     {
         server.ForAny<CustomPlayer>(player => 
         {
-            player.Disconnected += (_, _) => server.InstantiateScoped<TestService>().HandlePlayerQuit(player);
+            player.Disconnected += (_, _) => server.GetRequiredServiceScoped<TestService>().HandlePlayerQuit(player);
         });
     }
 }
