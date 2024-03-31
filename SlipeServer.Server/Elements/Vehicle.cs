@@ -504,6 +504,8 @@ public class Vehicle : Element
         }
     }
 
+    public VehicleType VehicleType => VehicleConstants.VehicleTypesPerModel[(VehicleModel)this.model];
+
     private string DebuggerDisplay => $"{(VehicleModel)this.model} ({this.Id})";
 
     public Vehicle(ushort model, Vector3 position) : base()
