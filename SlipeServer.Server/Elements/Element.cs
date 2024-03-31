@@ -471,8 +471,14 @@ public class Element
     {
         var oldValue = this.UpdateContext;
         this.UpdateContext = context;
-        action();
-        this.UpdateContext = oldValue;
+        try
+        {
+            action();
+        }
+        finally
+        {
+            this.UpdateContext = oldValue;
+        }
     }
 
     /// <summary>
