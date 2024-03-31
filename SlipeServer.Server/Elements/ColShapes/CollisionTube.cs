@@ -42,7 +42,7 @@ public class CollisionTube : CollisionShape
         if ((interior != null && this.Interior != interior) || (dimension != null && this.Dimension != dimension))
             return false;
 
-        return Vector3.Distance(this.Position, new Vector3(position.X, position.Y, 0)) < this.Radius &&
+        return Vector3.Distance(new Vector3(this.Position.X, this.position.Y, 0), new Vector3(position.X, position.Y, 0)) < this.Radius &&
             position.Z > this.Position.Z && position.Z < this.Position.Z + this.Height;
     }
 
