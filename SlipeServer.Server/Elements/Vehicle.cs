@@ -693,6 +693,11 @@ public class Vehicle : Element
         RespawnAt(this.RespawnPosition, this.RespawnRotation);
     }
 
+    public void Jack(Ped previousDriver, Ped newDriver)
+    {
+        this.Jacked?.Invoke(this, new(this, previousDriver, newDriver));
+    }
+
     public void AttachTrailer(Vehicle? trailer, bool updateCounterpart = true)
     {
         if (this.TowedVehicle == trailer)
@@ -773,6 +778,7 @@ public class Vehicle : Element
     public event ElementEventHandler<VehicleDoorOpenRatioChangedArgs>? DoorOpenRatioChanged;
     public event ElementEventHandler<Vehicle, VehiclePushedEventArgs>? Pushed;
     public event ElementEventHandler<Vehicle, VehicleUpgradeChanged>? UpgradeChanged;
+    public event ElementEventHandler<Vehicle, VehicleJackedEventArgs>? Jacked;
     public event ElementChangedEventHandler<Vehicle, bool>? IsInWaterChanged;
     public event ElementEventHandler<VehicleFixedEventArgs>? Fixed;
 }

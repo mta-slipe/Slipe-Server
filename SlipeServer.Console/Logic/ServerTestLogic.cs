@@ -241,6 +241,7 @@ public class ServerTestLogic
         this.Vehicle = new Vehicle(530, new Vector3(20, 5, 3)).AssociateWith(this.server);
         this.Taxi = new Vehicle((ushort)VehicleModel.Taxi, new Vector3(20, -5, 3)).AssociateWith(this.server);
         this.Rhino = new Vehicle((ushort)VehicleModel.Rhino, new Vector3(20, -25, 3)).AssociateWith(this.server);
+        this.Rhino.Jacked += (e, args) => this.logger.LogInformation($"Rhino has been jacked by {args.NewDriver.Name}, kicking out {args.PreviousDriver.Name}");
 
         this.Elegy = new Vehicle(562, new Vector3(30, -20, 3)).AssociateWith(this.server);
         this.Flash = new Vehicle(565, new Vector3(34, -20, 3)).AssociateWith(this.server);
