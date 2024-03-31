@@ -20,9 +20,9 @@ public class CollisionShapeBehaviourTest
         var dummy = new DummyElement().AssociateWith(server);
 
         var isEventCalled = false;
-        collisionShape.ElementEntered += (element) =>
+        collisionShape.ElementEntered += (_, args) =>
         {
-            if (element == dummy)
+            if (args.Element == dummy)
             {
                 isEventCalled = true;
             }
@@ -43,9 +43,9 @@ public class CollisionShapeBehaviourTest
         var dummy = new DummyElement().AssociateWith(server);
 
         int callCount = 0;
-        collisionShape.ElementEntered += (element) =>
+        collisionShape.ElementEntered += (_, args) =>
         {
-            if (element == dummy)
+            if (args.Element == dummy)
             {
                 callCount++;
             }
@@ -67,9 +67,9 @@ public class CollisionShapeBehaviourTest
         var dummy = new DummyElement().AssociateWith(server);
 
         var isEventCalled = false;
-        collisionShape.ElementLeft += (element) =>
+        collisionShape.ElementLeft += (_, args) =>
         {
-            if (element == dummy)
+            if (args.Element == dummy)
             {
                 isEventCalled = true;
             }
@@ -91,9 +91,9 @@ public class CollisionShapeBehaviourTest
         var dummy = new DummyElement().AssociateWith(server);
 
         var isEventCalled = false;
-        collisionShape.ElementEntered += (element) =>
+        collisionShape.ElementEntered += (_, args) =>
         {
-            if (element == dummy)
+            if (args.Element == dummy)
             {
                 isEventCalled = true;
             }
@@ -114,9 +114,9 @@ public class CollisionShapeBehaviourTest
         var dummy = new DummyElement().AssociateWith(server);
 
         var isEventCalled = false;
-        collisionShape.ElementLeft += (element) =>
+        collisionShape.ElementLeft += (_, args) =>
         {
-            if (element == dummy)
+            if (args.Element == dummy)
             {
                 isEventCalled = true;
             }
@@ -138,9 +138,9 @@ public class CollisionShapeBehaviourTest
         var dummy = new DummyElement().AssociateWith(server);
 
         var isEventCalled = false;
-        collisionShape.ElementEntered += (element) =>
+        collisionShape.ElementEntered += (_, args) =>
         {
-            if (element == dummy)
+            if (args.Element == dummy)
             {
                 isEventCalled = true;
             }
