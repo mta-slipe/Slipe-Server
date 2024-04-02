@@ -31,7 +31,9 @@ public static class ResourceFileFactory
         var hash = md5.ComputeHash(content);
         var checksum = Crc32Algorithm.Compute(content);
 
-        fileType ??= fileName.EndsWith(".lua") ? ResourceFileType.ClientScript : ResourceFileType.ClientFile;
+        var extension = Path.GetExtension(fileName).ToLower();
+        fileType ??= (extension is ".lua" or ".luac") ? ResourceFileType.ClientScript : ResourceFileType.ClientFile;
+
         return new ResourceFile()
         {
             Name = fileName,
