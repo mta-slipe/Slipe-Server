@@ -3,24 +3,17 @@ using SlipeServer.Server.ElementCollections;
 
 namespace SlipeServer.Server.Elements.IdGeneration;
 
-public class CollectionBasedElementIdGenerator : IElementIdGenerator
+public class CollectionBasedElementIdGenerator(IElementCollection elementCollection) : IElementIdGenerator
 {
-    private readonly IElementCollection elementCollection;
-    private uint idCounter;
+    private uint idCounter = 1;
     private readonly object idLock = new();
-
-    public CollectionBasedElementIdGenerator(IElementCollection elementCollection)
-    {
-        this.idCounter = 1;
-        this.elementCollection = elementCollection;
-    }
 
     public uint GetId()
     {
         lock (this.idLock)
         {
             var start = this.idCounter;
-            while (this.elementCollection.Get(this.idCounter) != null)
+            while (elementCollection.Get(this.idCounter) != null)
             {
                 this.idCounter = (this.idCounter + 1) % ElementConstants.MaxElementId;
                 if (this.idCounter == 0)
@@ -29,7 +22,9 @@ public class CollectionBasedElementIdGenerator : IElementIdGenerator
                     throw new ElementIdsExhaustedException();
             }
 
-            return this.idCounter;
+            var id = this.idCounter;
+            this.idCounter = (this.idCounter + 1) % ElementConstants.MaxElementId;
+            return id;
         }
     }
 }

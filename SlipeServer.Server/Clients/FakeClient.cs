@@ -40,6 +40,10 @@ public class FakeClient : IClient
     public void SendPacket(Packet packet) { }
     public void SendPacket(PacketId packetId, byte[] data, PacketPriority priority = PacketPriority.Medium, PacketReliability reliability = PacketReliability.Unreliable) { }
     public void SetVersion(ushort version) { }
-    public void SetDisconnected() { }
+    public void SetDisconnected()
+    {
+        this.ConnectionState = ClientConnectionState.Quit;
+    }
+
     public void ResetConnectionState() { }
 }

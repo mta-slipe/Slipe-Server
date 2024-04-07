@@ -399,6 +399,8 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
             client.Player.VehicleAction = VehicleAction.None;
             vehicle.AddPassenger(0, client.Player, false);
 
+            vehicle.Jack(jackedPlayer, client.Player);
+
             var replyPacket = new VehicleInOutPacket()
             {
                 PedId = client.Player.Id,

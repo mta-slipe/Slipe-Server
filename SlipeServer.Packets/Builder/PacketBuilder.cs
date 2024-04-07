@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Text;
 
 namespace SlipeServer.Packets.Builder;
@@ -140,6 +141,12 @@ public class PacketBuilder
     public void WriteStringWithoutLength(string value)
     {
         WriteBytes(Encoding.UTF8.GetBytes(value));
+    }
+
+    public void WriteStringWithoutLength(string value, int maxBytes)
+    {
+        var bytes = Encoding.UTF8.GetBytes(value);
+        WriteBytes(bytes.Take(maxBytes));
     }
 
     public void WriteStringWithByteAsLength(string value)

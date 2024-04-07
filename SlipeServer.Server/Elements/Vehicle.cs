@@ -504,6 +504,8 @@ public class Vehicle : Element
         }
     }
 
+    public VehicleType VehicleType => VehicleConstants.VehicleTypesPerModel[(VehicleModel)this.model];
+
     private string DebuggerDisplay => $"{(VehicleModel)this.model} ({this.Id})";
 
     public Vehicle(ushort model, Vector3 position) : base()
@@ -554,9 +556,9 @@ public class Vehicle : Element
             this.RemovePassenger(occupant, true);
         }
         this.Occupants[seat] = ped;
-        ped.Vehicle = this;
         ped.EnteringVehicle = null;
         ped.Seat = seat;
+        ped.Vehicle = this;
 
         this.PedEntered?.Invoke(this, new VehicleEnteredEventsArgs(ped, this, seat, warpsIn));
     }
@@ -691,6 +693,11 @@ public class Vehicle : Element
         RespawnAt(this.RespawnPosition, this.RespawnRotation);
     }
 
+    public void Jack(Ped previousDriver, Ped newDriver)
+    {
+        this.Jacked?.Invoke(this, new(this, previousDriver, newDriver));
+    }
+
     public void AttachTrailer(Vehicle? trailer, bool updateCounterpart = true)
     {
         if (this.TowedVehicle == trailer)
@@ -771,6 +778,7 @@ public class Vehicle : Element
     public event ElementEventHandler<VehicleDoorOpenRatioChangedArgs>? DoorOpenRatioChanged;
     public event ElementEventHandler<Vehicle, VehiclePushedEventArgs>? Pushed;
     public event ElementEventHandler<Vehicle, VehicleUpgradeChanged>? UpgradeChanged;
+    public event ElementEventHandler<Vehicle, VehicleJackedEventArgs>? Jacked;
     public event ElementChangedEventHandler<Vehicle, bool>? IsInWaterChanged;
     public event ElementEventHandler<VehicleFixedEventArgs>? Fixed;
 }

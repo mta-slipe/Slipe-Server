@@ -14,4 +14,15 @@ public class StringExtensionsTests
         input.ContainsColorCode().Should().Be(expectedInputContainsColorCode);
         input.StripColorCode().Should().Be(expectedOutput);
     }
+
+    [InlineData("#fF0000Nick", true)]
+    [InlineData("", false)]
+    [InlineData("aaaaaaaaaaaaaaaaaaaaaa", true)]
+    [InlineData("aaaaaaaaaaaaaaaaaaaaaa1", false)]
+    [InlineData("ą", false)]
+    [Theory]
+    public void TestValidNickNameExtensions(string input, bool isValid)
+    {
+        input.IsValidNickName().Should().Be(isValid);
+    }
 }

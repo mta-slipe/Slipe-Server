@@ -3,10 +3,17 @@ using SlipeServer.LuaControllers.Attributes;
 using SlipeServer.Server;
 using SlipeServer.Server.Events;
 using SlipeServer.Server.Services;
+using System.Collections;
 using System.Reflection;
 using System.Text.Json;
 
 namespace SlipeServer.LuaControllers.Commands;
+
+public class CommandArgumentList(IEnumerable<string> arguments) : IEnumerable<string>
+{
+    public IEnumerator<string> GetEnumerator() => arguments.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => arguments.GetEnumerator();
+}
 
 public class CommandControllerLogic
 {
@@ -30,7 +37,7 @@ public class CommandControllerLogic
     private void IndexControllers()
     {
         var controllerTypes = AppDomain.CurrentDomain.GetAssemblies()
-            .SelectMany(x => x.GetTypes())
+            .SelectMany(x => x.GetExportedTypes())
             .Where(x => x.IsAssignableTo(typeof(BaseCommandController)))
             .Where(x => !x.IsAbstract);
 
@@ -51,7 +58,7 @@ public class CommandControllerLogic
                     var commandAttributes = method.GetCustomAttributes<CommandAttribute>();
 
                     foreach (var attribute in commandAttributes)
-                        AddHandler(attribute.Command, controllerType, method, controller);
+                        AddHandler(attribute.Command, controllerType, method, controller, attribute.IsCaseSensitive);
 
                     if (!commandAttributes.Any())
                         AddHandler(method.Name, controllerType, method, controller);
@@ -60,12 +67,12 @@ public class CommandControllerLogic
         }
     }
 
-    private void AddHandler(string command, Type type, MethodInfo method, BaseCommandController? controller)
+    private void AddHandler(string command, Type type, MethodInfo method, BaseCommandController? controller, bool isCaseSensitive = false)
     {
         if (!this.handlers.ContainsKey(command))
         {
             this.handlers[command] = new();
-            this.commandService.AddCommand(command, false).Triggered += (_, args) => HandleCommand(command, args);
+            this.commandService.AddCommand(command, isCaseSensitive).Triggered += (_, args) => HandleCommand(command, args);
         }
 
         this.handlers[command].Add(new BoundCommand(this.server.Services, command, type, method, controller));
@@ -116,7 +123,7 @@ public class CommandControllerLogic
             return Array.Empty<object?>();
 
         if (parameters.Length == 1 && parameters[0].ParameterType.IsAssignableTo(typeof(IEnumerable<string>)))
-            return values;
+            return [ new CommandArgumentList(values) ];
 
         var objects = new List<object?>();
         for (var i = 0; i < parameters.Length; i++)

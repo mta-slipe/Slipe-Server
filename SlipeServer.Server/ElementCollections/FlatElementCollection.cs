@@ -44,7 +44,9 @@ public class FlatElementCollection : IElementCollection
     public IEnumerable<Element> GetAll()
     {
         this.slimLock.EnterReadLock();
-        var value = this.elements.Select(element => element);
+        var value = this.elements
+            .Select(element => element)
+            .ToArray();
         this.slimLock.ExitReadLock();
         return value;
     }
@@ -52,7 +54,10 @@ public class FlatElementCollection : IElementCollection
     public IEnumerable<TElement> GetByType<TElement>(ElementType elementType) where TElement : Element
     {
         this.slimLock.EnterReadLock();
-        var value = this.elements.Where(element => element.ElementType == elementType).Cast<TElement>();
+        var value = this.elements
+            .Where(element => element.ElementType == elementType)
+            .Cast<TElement>()
+            .ToArray();
         this.slimLock.ExitReadLock();
         return value;
     }
@@ -66,7 +71,9 @@ public class FlatElementCollection : IElementCollection
     public IEnumerable<Element> GetWithinRange(Vector3 position, float range)
     {
         this.slimLock.EnterReadLock();
-        var value = this.elements.Where(element => Vector3.Distance(element.Position, position) < range);
+        var value = this.elements
+            .Where(element => Vector3.Distance(element.Position, position) < range)
+            .ToArray();
         this.slimLock.ExitReadLock();
         return value;
     }
@@ -76,7 +83,8 @@ public class FlatElementCollection : IElementCollection
         this.slimLock.EnterReadLock();
         var value = this.elements
             .Where(element => Vector3.Distance(element.Position, position) < range && element.ElementType == elementType)
-            .Cast<TElement>();
+            .Cast<TElement>()
+            .ToArray();
         this.slimLock.ExitReadLock();
         return value;
     }

@@ -36,9 +36,10 @@ public class Element
         get => this.parent;
         set
         {
+            this.parent?.RemoveChild(this);
+
             this.parent = value;
 
-            this.parent?.RemoveChild(this);
             value?.AddChild(this);
         }
     }
@@ -470,8 +471,14 @@ public class Element
     {
         var oldValue = this.UpdateContext;
         this.UpdateContext = context;
-        action();
-        this.UpdateContext = oldValue;
+        try
+        {
+            action();
+        }
+        finally
+        {
+            this.UpdateContext = oldValue;
+        }
     }
 
     /// <summary>

@@ -346,7 +346,7 @@ public class AddEntityPacket : Packet
             this.builder.Write(upgrade);
         }
 
-        this.builder.WriteStringWithoutLength(plateText.PadRight(8).Substring(0, 8));
+        this.builder.WriteStringWithoutLength(plateText.PadRight(8).Substring(0, 8), 8);
         this.builder.WriteCapped(overrideLights, 2);
 
         this.builder.Write(isLandingGearDown);

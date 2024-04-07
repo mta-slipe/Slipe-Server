@@ -7,6 +7,8 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Services;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SlipeServer.Console.Controllers;
@@ -26,6 +28,11 @@ public class TestCommandController : BaseCommandController<CustomPlayer>
         this.banService = banService;
         this.logger = logger;
         this.logger.LogInformation("Instantiating {type}", typeof(TestController));
+    }
+
+    public void Chat(IEnumerable<string> words)
+    {
+        this.chatBox.OutputTo(this.Context.Player, string.Join(' ', words));
     }
 
     public void Ping()

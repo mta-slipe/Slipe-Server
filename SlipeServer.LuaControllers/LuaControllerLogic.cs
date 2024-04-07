@@ -50,7 +50,7 @@ public class LuaControllerLogic
     private void IndexControllers()
     {
         var controllerTypes = AppDomain.CurrentDomain.GetAssemblies()
-            .SelectMany(x => x.GetTypes())
+            .SelectMany(x => x.GetExportedTypes())
             .Where(x => x.IsAssignableTo(typeof(BaseLuaController)))
             .Where(x => !x.IsAbstract);
 

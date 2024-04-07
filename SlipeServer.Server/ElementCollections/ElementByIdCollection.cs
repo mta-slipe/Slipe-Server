@@ -53,7 +53,10 @@ public class ElementByIdCollection : IElementCollection
     public IEnumerable<TElement> GetByType<TElement>(ElementType elementType) where TElement : Element
     {
         this.slimLock.EnterReadLock();
-        var value = this.elements.Values.Where(element => element.ElementType == elementType).Cast<TElement>();
+        var value = this.elements.Values
+            .Where(element => element.ElementType == elementType)
+            .Cast<TElement>()
+            .ToArray();
         this.slimLock.ExitReadLock();
         return value;
     }
@@ -68,7 +71,8 @@ public class ElementByIdCollection : IElementCollection
         this.slimLock.EnterReadLock();
         var value = this.elements
             .Where(kvPair => Vector3.Distance(kvPair.Value.Position, position) < range)
-            .Select(kvPair => kvPair.Value);
+            .Select(kvPair => kvPair.Value)
+            .ToArray();
         this.slimLock.ExitReadLock();
         return value;
     }
@@ -79,7 +83,8 @@ public class ElementByIdCollection : IElementCollection
         var value = this.elements
             .Where(element => Vector3.Distance(element.Value.Position, position) < range && element.Value.ElementType == elementType)
             .Select(kvPair => kvPair.Value)
-            .Cast<TElement>();
+            .Cast<TElement>()
+            .ToArray();
         this.slimLock.ExitReadLock();
         return value;
     }

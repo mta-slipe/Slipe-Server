@@ -89,7 +89,8 @@ public class RTreeElementCollection : IElementCollection
 
         var results = this.elements
             .Search()
-            .Select(x => x.Element);
+            .Select(x => x.Element)
+            .ToArray();
 
         this.slimLock.ExitReadLock();
 
@@ -104,7 +105,8 @@ public class RTreeElementCollection : IElementCollection
             .Search()
             .Select(x => x.Element)
             .Where(element => element.ElementType == elementType)
-            .Cast<TElement>();
+            .Cast<TElement>()
+            .ToArray();
 
         this.slimLock.ExitReadLock();
 
@@ -134,7 +136,8 @@ public class RTreeElementCollection : IElementCollection
     {
         var results = this.GetWithinRange(position, range)
             .Where(element => element.ElementType == elementType)
-            .Cast<TElement>();
+            .Cast<TElement>()
+            .ToArray();
 
         return results;
     }

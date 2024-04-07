@@ -261,6 +261,7 @@ public class ServerTestLogic
         this.Vehicle = new Vehicle(530, new Vector3(20, 5, 3)).AssociateWith(this.server);
         this.Taxi = new Vehicle((ushort)VehicleModel.Taxi, new Vector3(20, -5, 3)).AssociateWith(this.server);
         this.Rhino = new Vehicle((ushort)VehicleModel.Rhino, new Vector3(20, -25, 3)).AssociateWith(this.server);
+        this.Rhino.Jacked += (e, args) => this.logger.LogInformation($"Rhino has been jacked by {args.NewDriver.Name}, kicking out {args.PreviousDriver.Name}");
 
         this.Elegy = new Vehicle(562, new Vector3(30, -20, 3)).AssociateWith(this.server);
         this.Flash = new Vehicle(565, new Vector3(34, -20, 3)).AssociateWith(this.server);
@@ -1178,6 +1179,16 @@ public class ServerTestLogic
             this.chatBox.Output($"{args.Player.Position}");
         };
 
+        this.commandService.AddCommand("pickuptest").Triggered += (source, args) =>
+        {
+            var pickup = new Pickup(args.Player.Position, 1337)
+            {
+                IsUsable = false
+            }.AssociateWith(server);
+            pickup.ChangeToOrUpdateCustomPickup(321);
+            pickup.Position += args.Player.Forward;
+        };
+
         this.commandService.AddCommand("createelementsforme").Triggered += (source, args) =>
         {
             uint id = 10_000;
@@ -1198,7 +1209,7 @@ public class ServerTestLogic
             marker.Color = Color.Pink;
             create(marker);
             var collisionSphere = new CollisionSphere(origin, 3);
-            collisionSphere.ElementEntered += e =>
+            collisionSphere.ElementEntered += (col, args) =>
             {
                 this.chatBox.Output("entered element created for me");
             };
@@ -1361,6 +1372,13 @@ public class ServerTestLogic
             var testobj2 = new WorldObject(1337, new Vector3(0, 7, 3));
             testobj2.AssociateWith(this.server);
             testobj2.AreCollisionsEnabled = true;
+        };
+
+        this.commandService.AddCommand("sprintme").Triggered += async (source, args) =>
+        {
+            args.Player.Controls.SetControlState(Server.Concepts.Control.Sprint, true);
+            await Task.Delay(5000);
+            args.Player.Controls.SetControlState(Server.Concepts.Control.Sprint, false);
         };
 
         var table = new LuaValue(new Dictionary<LuaValue, LuaValue>()

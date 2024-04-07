@@ -22,7 +22,7 @@ void NetWrapper::destroy()
 {
     NetWrapper::netWrappers.erase(this->id);
 
-    for (auto kvPair: sockets) {
+    for (auto kvPair : sockets) {
         NetWrapper::netWrappersPerSocket.erase(kvPair.second);
     }
 }
@@ -136,8 +136,8 @@ int NetWrapper::init(const char* netDllFilePath, const char* idFile, const char*
 {
     registeredCallback = callback;
 
-    CDynamicLibrary networkLibrary;
     bool loaded = networkLibrary.Load(netDllFilePath);
+
 
     if (!loaded) {
         return -1001;
@@ -165,20 +165,23 @@ int NetWrapper::init(const char* netDllFilePath, const char* idFile, const char*
     {
         return -1004;
     }
+    ;
 
-    network = pfnInitNetServerInterface();
+    this->network = pfnInitNetServerInterface();
 
-    if (!network->InitServerId("server-id.keys")) {
+
+    if (!this->network->InitServerId("server-id.keys")) {
         return -1005;
     }
-    network->RegisterPacketHandler(staticPacketHandler);
-    if (!network->StartNetwork(ip, port, playerCount, serverName)) {
+    this->network->RegisterPacketHandler(staticPacketHandler);
+    if (!this->network->StartNetwork(ip, port, playerCount, serverName)) {
         return -1006;
     }
 
     testMethod();
 
     binThread = std::thread(&NetWrapper::binPulseLoop, this);
+    SetChecks("12=&14=&15=&16=&20=&22=&23=&28=&31=&32=&33=&34=&35=&36=", "", "", 0, 0, "none");
     return 0;
 }
 
