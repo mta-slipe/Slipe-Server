@@ -1354,6 +1354,13 @@ public class ServerTestLogic
             testobj2.AreCollisionsEnabled = true;
         };
 
+        this.commandService.AddCommand("sprintme").Triggered += async (source, args) =>
+        {
+            args.Player.Controls.SetControlState(Server.Concepts.Control.Sprint, true);
+            await Task.Delay(5000);
+            args.Player.Controls.SetControlState(Server.Concepts.Control.Sprint, false);
+        };
+
         var table = new LuaValue(new Dictionary<LuaValue, LuaValue>()
         {
             ["x"] = 5.5f,

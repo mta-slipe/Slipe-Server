@@ -33,12 +33,12 @@ public class Camera
     }
 
     /// <summary>
-    /// The camera's position
+    /// The camera's position, use SetMatrix if you want to modify this for the client
     /// </summary>
     public Vector3? Position { get; set; }
 
     /// <summary>
-    /// The position the camera is looking at
+    /// The position the camera is looking at, use SetMatrix if you want to modify this for the client
     /// </summary>
     public Vector3? LookAt { get; set; }
 

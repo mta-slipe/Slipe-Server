@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
+using SlipeServer.Server.Extensions;
 
 namespace SlipeServer.Server.Concepts;
 
@@ -680,6 +681,17 @@ public class Controls
             this.radarAttachEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
+    }
+
+    public void SetControlState(string control, bool state)
+    {
+        new SetControlStatePacket(control, state)
+            .SendTo(this.player);
+    }
+
+    public void SetControlState(Control control, bool state)
+    {
+        SetControlState(control.ToString().ToLower(), state);
     }
 
     public void SetAllEnabled(bool newState)
