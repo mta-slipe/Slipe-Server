@@ -892,6 +892,26 @@ public class ServerTestLogic
             element.Destroy();
         };
 
+        this.commandService.AddCommand("movetome").Triggered += (source, args) =>
+        {
+            this.Bin?.Move(args.Player.Position, new Vector3(0, 0, 720), TimeSpan.FromMilliseconds(2500));
+        };
+
+        this.commandService.AddCommand("spin").Triggered += (source, args) =>
+        {
+            this.Bin?.Move(this.Bin.Position, new Vector3(0, 0, 3600), TimeSpan.FromMilliseconds(5000));
+        };
+
+        this.commandService.AddCommand("stopmovement").Triggered += (source, args) =>
+        {
+            this.Bin?.CancelMovement(true);
+        };
+
+        this.commandService.AddCommand("stopmovementhere").Triggered += (source, args) =>
+        {
+            this.Bin?.CancelMovement(false);
+        };
+
         this.commandService.AddCommand("deleteeverything").Triggered += (source, args) =>
         {
             this.server.BroadcastPacket(VehiclePacketFactory.CreateDestroyAllPacket());
@@ -961,13 +981,13 @@ public class ServerTestLogic
         
         this.commandService.AddCommand("fixmyveh").Triggered += (source, args) =>
         {
-            args.Player.Vehicle.Fix();
+            args.Player.Vehicle?.Fix();
             this.chatBox.OutputTo(args.Player, "Vehicle fixed");
         };
         
         this.commandService.AddCommand("blowup").Triggered += (source, args) =>
         {
-            args.Player.Vehicle.BlowUp();
+            args.Player.Vehicle?.BlowUp();
             this.chatBox.OutputTo(args.Player, "Vehicle blown up");
         };
 

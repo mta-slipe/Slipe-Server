@@ -1,4 +1,5 @@
-﻿using SlipeServer.Server.Elements;
+﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.WorldObject;
+using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.PacketHandling.Factories;
 using System.Numerics;
@@ -12,6 +13,8 @@ public static class WorldObjectPropertyRelayingExtensions
         worldObject.ModelChanged += RelayModelChange;
         worldObject.ScaleChanged += RelayScaleChange;
         worldObject.IsVisibleInAllDimensionsChanged += RelayIsVisibleInAllDimensionsChange;
+        worldObject.Moved += RelayMovement;
+        worldObject.MovementCancelled += RelayMovementCancel;
     }
 
     private static void RelayModelChange(WorldObject sender, ElementChangedEventArgs<WorldObject, ushort> args)
@@ -27,5 +30,15 @@ public static class WorldObjectPropertyRelayingExtensions
     private static void RelayIsVisibleInAllDimensionsChange(WorldObject sender, ElementChangedEventArgs<WorldObject, bool> args)
     {
         sender.RelayChange(WorldObjectPacketFactory.CreateSetVisibleInAllDimensionsPacket(args.Source));
+    }
+
+    private static void RelayMovement(WorldObject sender, WorldObjectMovedEventArgs e)
+    {
+        sender.RelayChange(new MoveObjectRpcPacket(sender.Id, e.Movement));
+    }
+
+    private static void RelayMovementCancel(WorldObject sender, WorldObjectMovementCancelledEventArgs e)
+    {
+        sender.RelayChange(new StopObjectRpcPacket(sender.Id, e.NewPosition, e.NewRotation));
     }
 }

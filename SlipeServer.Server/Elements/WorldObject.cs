@@ -1,7 +1,9 @@
 ﻿using SlipeServer.Packets.Definitions.Entities.Structs;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Enums;
+using System;
 using System.Numerics;
+using System.Threading.Tasks;
 
 namespace SlipeServer.Server.Elements;
 
@@ -32,7 +34,9 @@ public class WorldObject : Element
     public WorldObject? LowLodElement { get; set; }
     public bool DoubleSided { get; set; } = false;
     public bool IsBreakable { get; set; } = false;
-    public PositionRotationAnimation? Movement { get; set; }
+
+    private readonly object movementLock = new();
+    public PositionRotationAnimation? Movement { get; private set; }
 
     protected Vector3 scale = Vector3.One;
     public Vector3 Scale
@@ -46,6 +50,28 @@ public class WorldObject : Element
             var args = new ElementChangedEventArgs<WorldObject, Vector3>(this, this.Scale, value, this.IsSync);
             this.scale = value;
             ScaleChanged?.Invoke(this, args);
+        }
+    }
+
+    public Vector3 ApproximatedMidMovementPosition
+    {
+        get
+        {
+            if (this.Movement == null)
+                return this.Position;
+
+            return this.Position + (this.Movement.DeltaPosition * (float)this.Movement.Progress);
+        }
+    }
+
+    public Vector3 ApproximatedMidMovementRotation
+    {
+        get
+        {
+            if (this.Movement == null)
+                return this.Rotation;
+
+            return this.Rotation + (this.Movement.DeltaRotation * (float)this.Movement.Progress);
         }
     }
 
@@ -84,7 +110,73 @@ public class WorldObject : Element
         return this;
     }
 
+    public Task Move(Vector3 newPosition, Vector3 deltaRotation, TimeSpan moveTime)
+    {
+        PositionRotationAnimation movement;
+        lock (this.movementLock)
+        {
+            movement = new PositionRotationAnimation()
+            {
+                SourcePosition = this.position,
+                SourceRotation = this.rotation,
+                StartTime = DateTime.UtcNow,
+                EndTime = DateTime.UtcNow + moveTime,
+
+                EasingType = "linear",
+                TargetPosition = newPosition,
+                TargetRotation = this.rotation + deltaRotation,
+
+                DeltaRotation = deltaRotation,
+                DeltaRotationMode = true
+            };
+
+            this.Movement = movement;
+        }
+
+        this.Moved?.Invoke(this, new (this.Movement));
+
+        var task = Task.Delay(moveTime);
+
+        AwaitMovementAndUpdatePosition(task, movement);
+
+        return task;
+    }
+
+    public void CancelMovement(bool resetPosition = false)
+    {
+        lock (this.movementLock)
+        {
+            if (this.Movement == null)
+                return;
+
+            if (!resetPosition)
+            {
+                this.position = this.ApproximatedMidMovementPosition;
+                this.rotation = this.ApproximatedMidMovementRotation;
+            }
+
+            this.MovementCancelled?.Invoke(this, new (this.position, this.rotation));
+            this.Movement = null;
+        }
+    }
+
+    private async void AwaitMovementAndUpdatePosition(Task task, PositionRotationAnimation movement)
+    {
+        await task;
+        lock (this.movementLock)
+        {
+            if (this.Movement != movement)
+                return;
+
+            this.position = this.Movement.TargetPosition;
+            this.rotation = this.Movement.TargetRotation;
+            this.Movement = null;
+        }
+    }
+
     public event ElementChangedEventHandler<WorldObject, ushort>? ModelChanged;
     public event ElementChangedEventHandler<WorldObject, Vector3>? ScaleChanged;
     public event ElementChangedEventHandler<WorldObject, bool>? IsVisibleInAllDimensionsChanged;
+    public event ElementEventHandler<WorldObject, WorldObjectMovedEventArgs>? Moved;
+    public event ElementEventHandler<WorldObject, WorldObjectMovementCancelledEventArgs>? MovementCancelled;
 }

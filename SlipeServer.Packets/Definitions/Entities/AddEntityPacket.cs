@@ -91,7 +91,7 @@ public class AddEntityPacket : Packet
         this.builder.Write(positionRotationAnimation != null);
         if (positionRotationAnimation != null)
         {
-            WritePositionRotationAnimation(positionRotationAnimation.Value);
+            this.builder.Write(positionRotationAnimation);
         }
 
         if (scale.X == scale.Y && scale.Y == scale.Z)
