@@ -31,7 +31,7 @@ public class SetMarkerColorRpcPacket : Packet
 
         builder.Write((byte)ElementRpcFunction.SET_MARKER_COLOR);
         builder.Write(this.ElementId);
-        builder.Write(this.Color, true, true);
+        builder.WriteBgra(this.Color);
 
         return builder.Build();
     }
