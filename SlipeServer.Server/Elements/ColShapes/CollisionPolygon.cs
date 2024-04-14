@@ -10,7 +10,7 @@ public class CollisionPolygon : CollisionShape
 {
     private List<Vector2> Vertices { get; set; }
 
-    private Vector2 height;
+    private Vector2 height = new Vector2(float.MinValue, float.MaxValue);
     public Vector2 Height
     {
         get => this.height;
@@ -75,6 +75,9 @@ public class CollisionPolygon : CollisionShape
     public override bool IsWithin(Vector3 position, byte? interior = null, ushort? dimension = null)
     {
         if ((interior != null && this.Interior != interior) || (dimension != null && this.Dimension != dimension))
+            return false;
+
+        if (position.Z < this.height.X || position.Z > this.height.Y)
             return false;
 
         Vector2 point = new Vector2(position.X, position.Y);

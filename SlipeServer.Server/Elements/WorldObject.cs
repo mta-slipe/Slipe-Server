@@ -133,7 +133,7 @@ public class WorldObject : Element
             this.Movement = movement;
         }
 
-        this.Moved?.Invoke(this, new (this.Movement));
+        this.Moved?.Invoke(this, new (movement));
 
         var task = Task.Delay(moveTime);
 

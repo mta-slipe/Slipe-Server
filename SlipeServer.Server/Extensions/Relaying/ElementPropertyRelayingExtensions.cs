@@ -69,8 +69,13 @@ public static class ElementPropertyRelayingExtensions
         element.AttachedOffsetChanged += RelayAttachedOffsetChanged;
     }
 
-    private static void RelayAssociation(Element sender, ElementAssociatedWithEventArgs e) =>
+    private static void RelayAssociation(Element sender, ElementAssociatedWithEventArgs e)
+    {
+        if (e.Server != null && !sender.IsVisibleToEveryone)
+            return;
+
         sender.CreateFor(sender.AssociatedPlayers);
+    }
 
     private static void RelayRemoval(Element sender, ElementAssociatedWithEventArgs e) =>
         RelayElementDestroy(sender);

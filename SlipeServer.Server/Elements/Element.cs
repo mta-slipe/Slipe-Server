@@ -374,16 +374,21 @@ public class Element
 
     private readonly object destroyLock = new();
 
+    /// <summary>
+    /// When set to false will not create the element for new players that join, or any players when associated directly with the server
+    /// </summary>
+    public bool IsVisibleToEveryone { get; set; } = true;
+
     public Element()
     {
-        this.children = new();
-        this.associations = new();
-        this.associatedPlayers = new();
-        this.subscribers = new();
-        this.attachedElements = new();
+        this.children = [];
+        this.associations = [];
+        this.associatedPlayers = [];
+        this.subscribers = [];
+        this.attachedElements = [];
         this.TimeContext = 1;
 
-        this.ElementData = new();
+        this.ElementData = [];
         this.ElementDataSubscriptions = new();
 
         this.AddRelayers();
