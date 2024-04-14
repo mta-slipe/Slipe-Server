@@ -159,14 +159,22 @@ public class PacketBuilder
     public void Write(Color color, bool withAlpha = false, bool alphaFirst = false)
     {
         if (withAlpha && alphaFirst)
-            Write((byte)color.A);
+            Write(color.A);
 
-        Write((byte)color.R);
-        Write((byte)color.G);
-        Write((byte)color.B);
+        Write(color.R);
+        Write(color.G);
+        Write(color.B);
 
         if (withAlpha && !alphaFirst)
-            Write((byte)color.A);
+            Write(color.A);
+    }
+
+    public void WriteBgra(Color color)
+    {
+        Write(color.B);
+        Write(color.G);
+        Write(color.R);
+        Write(color.A);
     }
 
     private byte[] GetBytesFromInt(long value, int byteCount)
