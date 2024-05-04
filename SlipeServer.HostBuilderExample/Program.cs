@@ -17,6 +17,7 @@ builder.ConfigureServices(services =>
 #endif
     };
 
+    services.AddHttpClient();
     services.AddDefaultMtaServerServices();
     services.AddMtaServer<CustomPlayer>(configuration, builder =>
     {
@@ -34,8 +35,15 @@ builder.ConfigureServices(services =>
 
 builder.ConfigureMtaServers(configure =>
 {
+    var isDevelopment = configure.HostBuilderContext.HostingEnvironment.IsDevelopment();
+    var exceptBehaviours = isDevelopment ? ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour : ServerBuilderDefaultBehaviours.None;
+
+    configure.AddDefaultPacketHandlers();
+    configure.AddDefaultBehaviours(exceptBehaviours);
+    configure.StartResourceServers();
     configure.StartAllServers();
 });
+
 
 var app = builder.Build();
 

@@ -1,5 +1,4 @@
 ﻿using SlipeServer.Packets.Lua.Camera;
-using SlipeServer.Server.Resources.Serving;
 using SlipeServer.Server.Services;
 using System.Numerics;
 
@@ -16,23 +15,17 @@ public class SampleHostedService : IHostedService
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        this.mtaServer.AddDefaultPacketHandlers();
-#if DEBUG
-        this.mtaServer.AddDefaultBehaviours(ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour);
-#else
-        this.mtaServer.AddDefaultBehaviours();
-#endif
-        this.mtaServer.PlayerJoined += MtaServer_PlayerJoined;
+        this.mtaServer.PlayerJoined += HandlePlayerJoined;
         return Task.CompletedTask;
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        this.mtaServer.PlayerJoined -= MtaServer_PlayerJoined;
+        this.mtaServer.PlayerJoined -= HandlePlayerJoined;
         return Task.CompletedTask;
     }
 
-    private void MtaServer_PlayerJoined(Player player)
+    private void HandlePlayerJoined(Player player)
     {
         var client = player.Client;
 

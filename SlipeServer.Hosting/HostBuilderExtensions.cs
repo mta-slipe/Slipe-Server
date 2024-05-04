@@ -6,8 +6,12 @@ public static class HostBuilderExtensions
 {
     public static IHostBuilder ConfigureMtaServers(this IHostBuilder host, Action<IMtaServersConfiguration> configureAction)
     {
-        var configuration = new MtaServersConfiguration(host);
-        configureAction(configuration);
+        host.ConfigureServices((context, services) =>
+        {
+            var configuration = new MtaServersConfiguration(context, services);
+            configureAction(configuration);
+        });
+
         return host;
     }
 }
