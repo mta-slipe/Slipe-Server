@@ -20,11 +20,11 @@ public class FileSystemResourceProvider : IResourceProvider
     private readonly object netIdLock = new();
     private ushort netId = 0;
 
-    public FileSystemResourceProvider(MtaServer mtaServer, RootElement rootElement, Configuration configuration)
+    public FileSystemResourceProvider(MtaServer mtaServer)
     {
         this.mtaServer = mtaServer;
-        this.rootElement = rootElement;
-        this.configuration = configuration;
+        this.rootElement = mtaServer.RootElement;
+        this.configuration = mtaServer.Configuration;
         this.resources = new();
         this.resourceInterpreters = new();
     }

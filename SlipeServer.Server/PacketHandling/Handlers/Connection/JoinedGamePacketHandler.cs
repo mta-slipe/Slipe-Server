@@ -11,9 +11,7 @@ public class JoinedGamePacketHandler : IPacketHandler<JoinedGamePacket>
 
     private readonly ushort bitStreamVersion;
 
-    public JoinedGamePacketHandler(
-        Configuration configuration
-    )
+    public JoinedGamePacketHandler(Configuration configuration)
     {
         this.bitStreamVersion = configuration.BitStreamVersion;
     }
