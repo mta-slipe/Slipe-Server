@@ -2,20 +2,13 @@
 using Microsoft.Extensions.Logging;
 using SlipeServer.Server.Resources.Serving;
 using SlipeServer.Server.Mappers;
+using Microsoft.Extensions.Configuration;
 
 var builder = Host.CreateDefaultBuilder(args);
 
-builder.ConfigureServices(services =>
+builder.ConfigureServices((hostBuilderContext, services) =>
 {
-    var configurationProvider = args.Length > 0 ? ConfigurationLoader.GetConfigurationProvider(args[0]) : null;
-
-    var configuration = configurationProvider?.GetConfiguration() ?? new Configuration()
-    {
-        IsVoiceEnabled = true,
-#if DEBUG
-        DebugPort = 50667
-#endif
-    };
+    var configuration = hostBuilderContext.Configuration.GetRequiredSection("MtaServer").Get<Configuration>();
 
     services.AddHttpClient();
     services.AddDefaultMtaServerServices();
