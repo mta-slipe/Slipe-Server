@@ -173,8 +173,6 @@ public static class DefaultServerBuilderExtensions
             builder.AddBehaviour<PedSyncBehaviour>();
         if ((except & ServerBuilderDefaultBehaviours.UnoccupiedVehicleSyncBehaviour) == 0)
             builder.AddBehaviour<UnoccupiedVehicleSyncBehaviour>();
-        if ((except & ServerBuilderDefaultBehaviours.CustomDataBehaviour) == 0)
-            builder.AddBehaviour<CustomDataBehaviour>();
     }
 
     public static void AddDefaultServices(

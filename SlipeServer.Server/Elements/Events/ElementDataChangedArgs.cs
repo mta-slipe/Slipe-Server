@@ -4,6 +4,7 @@ using System;
 
 namespace SlipeServer.Server.Elements.Events;
 
+[Obsolete("It is highly not recommended to use element data!")]
 public sealed class ElementDataChangedArgs : EventArgs
 {
     public string Key { get; }

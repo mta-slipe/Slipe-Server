@@ -80,7 +80,6 @@ public enum ServerBuilderDefaultBehaviours : ulong
     MapInfoBehaviour = 0x1000,
     PedSyncBehaviour = 0x2000,
     UnoccupiedVehicleSyncBehaviour = 0x4000,
-    CustomDataBehaviour = 0x8000,
 }
 
 [Flags]

@@ -9,6 +9,7 @@ using SlipeServer.Packets.Enums.VehicleUpgrades;
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Packets.Structs;
 using SlipeServer.Server;
+using SlipeServer.Server.Concepts;
 using SlipeServer.Server.Constants;
 using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
@@ -636,41 +637,59 @@ public class ServerTestLogic
 
         this.commandService.AddCommand("setmydata").Triggered += (sender, args) =>
         {
+            if (args.Player is not ISupportsElementData playerWithCustomData)
+                return;
+
             string key = args.Arguments[0];
             string value = args.Arguments[1];
             this.chatBox.OutputTo(args.Player, $"This Is setmydata command Handler, key value -> {key}, {value}");
-            args.Player.SetData(key, value, DataSyncType.Broadcast);
+            playerWithCustomData.ElementData.SetData(key, value, DataSyncType.Broadcast);
         };
 
         this.commandService.AddCommand("setmysubbeddata").Triggered += (sender, args) =>
         {
+            if (args.Player is not ISupportsElementData playerWithCustomData)
+                return;
+
             string key = args.Arguments[0];
             string value = args.Arguments[1];
             this.chatBox.OutputTo(args.Player, $"This Is setmydata command Handler, key value -> {key}, {value}");
-            args.Player.SetData(key, value, DataSyncType.Subscribe);
+            playerWithCustomData.ElementData.SetData(key, value, DataSyncType.Subscribe);
         };
 
         this.commandService.AddCommand("subtodata").Triggered += (sender, args) =>
         {
+            if (args.Player is not ISupportsElementData playerWithCustomData)
+                return;
+
             string key = args.Arguments[0];
-            args.Player.SubscribeToData(args.Player, key);
+            playerWithCustomData.ElementData.SubscribeToData(args.Player, key);
         };
 
         this.commandService.AddCommand("unsubfromdata").Triggered += (sender, args) =>
         {
+            if (args.Player is not ISupportsElementData playerWithCustomData)
+                return;
+
             string key = args.Arguments[0];
-            args.Player.UnsubscribeFromData(args.Player, key);
+            playerWithCustomData.ElementData.UnsubscribeFromData(args.Player, key);
         };
 
         this.commandService.AddCommand("unsubfromalldata").Triggered += (sender, args) =>
         {
-            args.Player.UnsubscribeFromAllData(args.Player);
+            if (args.Player is not ISupportsElementData playerWithCustomData)
+                return;
+
+            playerWithCustomData.ElementData.UnsubscribeFromAllData(args.Player);
         };
 
         this.commandService.AddCommand("getmydata").Triggered += (sender, args) =>
         {
+            if (args.Player is not ISupportsElementData playerWithCustomData)
+                return;
+
             string key = args.Arguments[0];
-            this.chatBox.OutputTo(args.Player, $"Your Key, Value => {key} , {args.Player.GetData(key)?.StringValue}");
+            this.chatBox.OutputTo(args.Player, $"Your Key, Value => {key} , {playerWithCustomData.ElementData.GetData(key)?.StringValue}");
         };
 
         this.commandService.AddCommand("pedsync").Triggered += (source, args) =>
@@ -1223,10 +1242,13 @@ public class ServerTestLogic
             if (vehicle == null || args.Arguments.Length < 2)
                 return;
 
+            if (vehicle is not ISupportsElementData vehicleWithCustomData)
+                return;
+
             var key = args.Arguments[0];
             var value = args.Arguments[1];
             this.chatBox.OutputTo(args.Player, $"Setting vehicle data {key} to {value}");
-            vehicle.SetData(key, value, DataSyncType.Broadcast);
+            vehicleWithCustomData.ElementData.SetData(key, value, DataSyncType.Broadcast);
         };
 
         this.commandService.AddCommand("getvehicledata").Triggered += (source, args) =>
@@ -1235,8 +1257,11 @@ public class ServerTestLogic
             if (vehicle == null || args.Arguments.Length < 1)
                 return;
 
+            if (vehicle is not ISupportsElementData vehicleWithCustomData)
+                return;
+
             var key = args.Arguments[0];
-            var value = vehicle.GetData(key);
+            var value = vehicleWithCustomData.ElementData.GetData(key);
             this.chatBox.OutputTo(args.Player, $"Vehicle data {key} = {value}");
         };
 

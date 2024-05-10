@@ -5,6 +5,7 @@ using SlipeServer.Packets.Definitions.Lua.ElementRpc;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Structs;
 using SlipeServer.Server.Behaviour;
+using SlipeServer.Server.Concepts;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.TestTools;
@@ -12,6 +13,17 @@ using System.Numerics;
 using Xunit;
 
 namespace SlipeServer.Server.Tests.Integration.Elements;
+
+public class ElementWithElementData : Element, ISupportsElementData
+{
+    public ElementData ElementData { get; }
+
+    public ElementWithElementData()
+    {
+        this.ElementData = new(this);
+    }
+}
+
 public class ElementTests
 {
     [Fact]
@@ -66,10 +78,10 @@ public class ElementTests
         var player = server.AddFakePlayer();
         server.Instantiate<CustomDataBehaviour>();
 
-        var element = new Element().AssociateWith(server);
-        element.SetData("Foo", 5, DataSyncType.Subscribe);
+        var element = (ElementWithElementData)new ElementWithElementData().AssociateWith(server);
+        element.ElementData.SetData("Foo", 5, DataSyncType.Subscribe);
 
-        var result = element.GetData("Foo");
+        var result = element.ElementData.GetData("Foo");
 
         result.Should().Be((LuaValue)5);
     }
@@ -81,10 +93,10 @@ public class ElementTests
         var player = server.AddFakePlayer();
         server.Instantiate<CustomDataBehaviour>();
 
-        var element = new Element().AssociateWith(server);
-        element.SetData("Foo", new LuaValue(), DataSyncType.Subscribe);
+        var element = (ElementWithElementData)new ElementWithElementData().AssociateWith(server);
+        element.ElementData.SetData("Foo", new LuaValue(), DataSyncType.Subscribe);
 
-        var result = element.GetData("Foo");
+        var result = element.ElementData.GetData("Foo");
 
         result.Should().Be(null);
     }
@@ -96,8 +108,8 @@ public class ElementTests
         var player = server.AddFakePlayer();
         server.Instantiate<CustomDataBehaviour>();
 
-        var element = new Element().AssociateWith(server);
-        element.SetData("Foo", 5, DataSyncType.Local);
+        var element = (ElementWithElementData)new ElementWithElementData().AssociateWith(server);
+        element.ElementData.SetData("Foo", 5, DataSyncType.Local);
 
         server.VerifyLuaElementRpcPacketSent(ElementRpcFunction.SET_ELEMENT_DATA, player, count: 0);
     }
@@ -109,8 +121,8 @@ public class ElementTests
         var player = server.AddFakePlayer();
         server.Instantiate<CustomDataBehaviour>();
 
-        var element = new Element().AssociateWith(server);
-        element.SetData("Foo", 5, DataSyncType.Broadcast);
+        var element = (ElementWithElementData)new ElementWithElementData().AssociateWith(server);
+        element.ElementData.SetData("Foo", 5, DataSyncType.Broadcast);
 
         server.VerifyLuaElementRpcPacketSent(ElementRpcFunction.SET_ELEMENT_DATA, player);
     }
@@ -122,8 +134,8 @@ public class ElementTests
         var player = server.AddFakePlayer();
         server.Instantiate<CustomDataBehaviour>();
 
-        var element = new Element().AssociateWith(server);
-        element.SetData("Foo", 5, DataSyncType.Subscribe);
+        var element = (ElementWithElementData)new ElementWithElementData().AssociateWith(server);
+        element.ElementData.SetData("Foo", 5, DataSyncType.Subscribe);
 
         server.VerifyLuaElementRpcPacketSent(ElementRpcFunction.SET_ELEMENT_DATA, player, count: 0);
     }
@@ -135,9 +147,9 @@ public class ElementTests
         var player = server.AddFakePlayer();
         server.Instantiate<CustomDataBehaviour>();
 
-        var element = new Element().AssociateWith(server);
-        element.SubscribeToData(player, "Foo");
-        element.SetData("Foo", 5, DataSyncType.Subscribe);
+        var element = (ElementWithElementData)new ElementWithElementData().AssociateWith(server);
+        element.ElementData.SubscribeToData(player, "Foo");
+        element.ElementData.SetData("Foo", 5, DataSyncType.Subscribe);
 
         server.VerifyLuaElementRpcPacketSent(ElementRpcFunction.SET_ELEMENT_DATA, player);
     }
@@ -149,10 +161,10 @@ public class ElementTests
         var player = server.AddFakePlayer();
         server.Instantiate<CustomDataBehaviour>();
 
-        var element = new Element().AssociateWith(server);
-        element.SubscribeToData(player, "Foo");
-        element.UnsubscribeFromData(player, "Foo");
-        element.SetData("Foo", 5, DataSyncType.Subscribe);
+        var element = (ElementWithElementData)new ElementWithElementData().AssociateWith(server);
+        element.ElementData.SubscribeToData(player, "Foo");
+        element.ElementData.UnsubscribeFromData(player, "Foo");
+        element.ElementData.SetData("Foo", 5, DataSyncType.Subscribe);
 
         server.VerifyLuaElementRpcPacketSent(ElementRpcFunction.SET_ELEMENT_DATA, player, count: 0);
     }
@@ -164,10 +176,10 @@ public class ElementTests
         var player = server.AddFakePlayer();
         server.Instantiate<CustomDataBehaviour>();
 
-        var element = new Element().AssociateWith(server);
-        element.SubscribeToData(player, "Foo");
-        element.UnsubscribeFromAllData(player);
-        element.SetData("Foo", 5, DataSyncType.Subscribe);
+        var element = (ElementWithElementData)new ElementWithElementData().AssociateWith(server);
+        element.ElementData.SubscribeToData(player, "Foo");
+        element.ElementData.UnsubscribeFromAllData(player);
+        element.ElementData.SetData("Foo", 5, DataSyncType.Subscribe);
 
         server.VerifyLuaElementRpcPacketSent(ElementRpcFunction.SET_ELEMENT_DATA, player, count: 0);
     }
