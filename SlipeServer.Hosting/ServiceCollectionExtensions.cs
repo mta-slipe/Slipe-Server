@@ -13,6 +13,8 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddMtaServer<T>(this IServiceCollection services, Configuration configuration, Action<ServerBuilder>? builderAction = null)
         where T : Player
     {
+        Directory.SetCurrentDirectory(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()!.Location)!);
+
         services.AddSingleton((IServiceProvider services) => new MtaDiPlayerServer<T>(services, configure =>
         {
             configure.UseConfiguration(configuration);

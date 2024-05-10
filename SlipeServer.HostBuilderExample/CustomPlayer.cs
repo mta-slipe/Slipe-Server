@@ -1,8 +1,4 @@
-﻿
-
-
-
-public class CustomPlayer : Player
+﻿public class CustomPlayer : Player
 {
 
 }

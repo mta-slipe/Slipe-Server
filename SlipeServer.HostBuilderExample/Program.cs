@@ -26,9 +26,9 @@ builder.ConfigureServices((hostBuilderContext, services) =>
     services.TryAddSingleton<ILogger>(x => x.GetRequiredService<ILogger<MtaServer>>());
 });
 
-builder.ConfigureMtaServers(configure =>
+builder.ConfigureMtaServers((context, configure) =>
 {
-    var isDevelopment = configure.HostBuilderContext.HostingEnvironment.IsDevelopment();
+    var isDevelopment = context.HostingEnvironment.IsDevelopment();
     var exceptBehaviours = isDevelopment ? ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour : ServerBuilderDefaultBehaviours.None;
 
     configure.AddDefaultPacketHandlers();

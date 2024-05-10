@@ -2,8 +2,6 @@
 
 public interface IMtaServersConfiguration
 {
-    HostBuilderContext HostBuilderContext { get; }
-
     void AddDefaultPacketHandlers(ServerBuilderDefaultPacketHandlers except = ServerBuilderDefaultPacketHandlers.None);
     void AddDefaultBehaviours(ServerBuilderDefaultBehaviours except = ServerBuilderDefaultBehaviours.None);
 
@@ -16,14 +14,10 @@ public interface IMtaServersConfiguration
 
 internal sealed class MtaServersConfiguration : IMtaServersConfiguration
 {
-    private readonly HostBuilderContext builderContext;
     private readonly IServiceCollection services;
 
-    public HostBuilderContext HostBuilderContext => this.builderContext;
-
-    public MtaServersConfiguration(HostBuilderContext builderContext, IServiceCollection services)
+    public MtaServersConfiguration(IServiceCollection services)
     {
-        this.builderContext = builderContext;
         this.services = services;
     }
 
