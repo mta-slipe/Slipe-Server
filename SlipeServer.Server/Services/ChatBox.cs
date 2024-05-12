@@ -14,10 +14,10 @@ public class ChatBox
     private readonly MtaServer server;
     private readonly RootElement root;
 
-    public ChatBox(MtaServer server, RootElement root)
+    public ChatBox(MtaServer server)
     {
         this.server = server;
-        this.root = root;
+        this.root = server.RootElement;
     }
 
     public void Output(string message, Color? color = null, bool isColorCoded = false, ChatEchoType type = ChatEchoType.Player, Element? source = null)

@@ -1,5 +1,7 @@
-﻿using FluentAssertions;
+﻿using Castle.Core.Logging;
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Moq;
 using SlipeServer.Net.Wrappers;
 using SlipeServer.Packets;
@@ -14,6 +16,7 @@ using SlipeServer.Server.ServerBuilders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace SlipeServer.Server.TestTools;
 
@@ -95,10 +98,12 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
             });
     }
 
-    public static void ConfigureOverrides(ServiceCollection services)
+    public static void ConfigureOverrides(IServiceCollection services)
     {
         var httpServerMock = new Mock<IResourceServer>();
         services.AddSingleton<IResourceServer>(httpServerMock.Object);
+        services.AddLogging();
+        services.AddSingleton<ILogger>(x => x.GetRequiredService<ILogger<MtaServer>>());
     }
 
     public TPlayer AddFakePlayer()

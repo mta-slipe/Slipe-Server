@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using SlipeServer.Net.Wrappers;
 using SlipeServer.Packets;
+using SlipeServer.Packets.Definitions.Join;
 using SlipeServer.Packets.Definitions.Player;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Structs;
@@ -19,7 +20,9 @@ using SlipeServer.Server.Loggers;
 using SlipeServer.Server.Mappers;
 using SlipeServer.Server.PacketHandling;
 using SlipeServer.Server.PacketHandling.Handlers;
+using SlipeServer.Server.PacketHandling.Handlers.Connection;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
+using SlipeServer.Server.PacketHandling.Handlers.QueueHandlers;
 using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.Resources.Serving;
@@ -41,11 +44,11 @@ public class MtaServer
     private readonly List<Resource> additionalResources;
     protected readonly PacketReducer packetReducer;
     protected readonly Dictionary<INetWrapper, Dictionary<uint, IClient>> clients;
-    protected readonly ServiceCollection serviceCollection;
-    protected readonly ServiceProvider serviceProvider;
+    protected readonly IServiceCollection? serviceCollection;
+    protected readonly IServiceProvider serviceProvider;
     private readonly IElementCollection elementCollection;
     private readonly IElementIdGenerator? elementIdGenerator;
-    private readonly IResourceProvider resourceProvider;
+    private IResourceProvider? resourceProvider;
     private readonly RootElement root;
     private readonly Configuration configuration;
 
@@ -94,6 +97,8 @@ public class MtaServer
     public IServiceProvider Services => this.serviceProvider;
 
     public IEnumerable<Player> Players => this.elementCollection.GetByType<Player>();
+    public RootElement RootElement => this.root;
+    public Configuration Configuration => this.configuration;
 
     public MtaServer(
         Action<ServerBuilder> builderAction,
@@ -108,30 +113,52 @@ public class MtaServer
         this.persistentInstances = new();
 
         this.root = new();
-        this.serviceCollection = new();
+        this.serviceCollection = new ServiceCollection();
 
         var builder = new ServerBuilder();
         builderAction(builder);
 
         this.configuration = builder.Configuration;
         this.Password = this.configuration.Password;
-        this.SetupDependencies(services => builder.LoadDependencies(services));
+        this.SetupDependencies(builder.LoadDependencies);
 
         this.serviceProvider = this.serviceCollection.BuildServiceProvider();
         this.packetReducer = new(this.serviceProvider.GetRequiredService<ILogger>());
 
-        foreach (var server in this.resourceServers)
-            server.Start();
-
         this.elementCollection = this.serviceProvider.GetRequiredService<IElementCollection>();
         this.elementIdGenerator = this.serviceProvider.GetService<IElementIdGenerator>();
-        this.resourceProvider = this.serviceProvider.GetRequiredService<IResourceProvider>();
 
         this.root.AssociateWith(this);
 
         builder.ApplyTo(this);
+    }
 
-        this.resourceProvider.Refresh();
+    public MtaServer(IServiceProvider serviceProvider, Action<ServerBuilder> builderAction)
+    {
+        this.netWrappers = new();
+        this.clients = new();
+        this.clientCreationMethod = serviceProvider.GetService<Func<uint, INetWrapper, IClient>>();
+        this.resourceServers = new();
+        this.additionalResources = new();
+        this.persistentInstances = new();
+
+        this.root = new();
+
+        var builder = new ServerBuilder();
+        builderAction(builder);
+
+        this.configuration = builder.Configuration;
+        this.Password = this.configuration.Password;
+
+        this.serviceProvider = serviceProvider;
+        this.packetReducer = new(this.serviceProvider.GetRequiredService<ILogger>());
+
+        this.elementCollection = this.serviceProvider.GetRequiredService<IElementCollection>();
+        this.elementIdGenerator = this.serviceProvider.GetService<IElementIdGenerator>();
+
+        this.root.AssociateWith(this);
+
+        builder.ApplyTo(this);
     }
 
     /// <summary>
@@ -145,6 +172,11 @@ public class MtaServer
         {
             netWrapper.Start();
         }
+
+        this.resourceProvider?.Refresh();
+
+        foreach (var server in this.resourceServers)
+            server.Start();
 
         this.IsRunning = true;
     }
@@ -248,12 +280,24 @@ public class MtaServer
     }
 
     /// <summary>
-    /// Instantiates a type using the dependency injection container
+    /// Registers a packet handler, to handle incoming packets from clients using default ( ScalingPacketQueueHandler ) handler
     /// </summary>
-    /// <param name="type">The type to instiantiate</param>
-    /// <param name="parameters">Any constructor parameters that are not supplied by the dependency injection container</param>
-    /// <returns></returns>
-    public object Instantiate(Type type, params object[] parameters)
+    /// <typeparam name="TPacketHandler"></typeparam>
+    /// <typeparam name="TPacket"></typeparam>
+    /// <param name="parameters"></param>
+    public void RegisterPacketHandler<TPacketHandler, TPacket>(params object[] parameters)
+        where TPacket : Packet, new()
+        where TPacketHandler : IPacketHandler<TPacket>
+    {
+        RegisterPacketHandler<TPacket, ScalingPacketQueueHandler<TPacket>, TPacketHandler>();
+    }
+        /// <summary>
+        /// Instantiates a type using the dependency injection container
+        /// </summary>
+        /// <param name="type">The type to instiantiate</param>
+        /// <param name="parameters">Any constructor parameters that are not supplied by the dependency injection container</param>
+        /// <returns></returns>
+        public object Instantiate(Type type, params object[] parameters)
         => ActivatorUtilities.CreateInstance(this.serviceProvider, type, parameters);
 
     /// <summary>
@@ -412,6 +456,10 @@ public class MtaServer
     /// </summary>
     public void AddAdditionalResource(Resource resource, Dictionary<string, byte[]> files)
     {
+        if(this.resourceProvider == null)
+        {
+            this.resourceProvider = this.serviceProvider.GetRequiredService<IResourceProvider>();
+        }
         resource.NetId = this.resourceProvider.ReserveNetId();
         this.additionalResources.Add(resource);
         foreach (var server in this.resourceServers)
@@ -459,42 +507,12 @@ public class MtaServer
         };
     }
 
-    protected virtual void SetupDependencies(Action<ServiceCollection>? dependencyCallback)
+    protected virtual void SetupDependencies(Action<IServiceCollection>? dependencyCallback)
     {
-        this.serviceCollection.AddSingleton<IElementCollection, RTreeCompoundElementCollection>();
-        this.serviceCollection.AddSingleton<IResourceProvider, FileSystemResourceProvider>();
-        this.serviceCollection.AddSingleton<IElementIdGenerator, CollectionBasedElementIdGenerator>();
-        this.serviceCollection.AddSingleton<IAseQueryService, AseQueryService>();
-        this.serviceCollection.AddSingleton(typeof(ISyncHandlerMiddleware<>), typeof(BasicSyncHandlerMiddleware<>));
+        if (this.serviceCollection == null)
+            throw new NotSupportedException();
 
-        this.serviceCollection.AddLogging(x =>
-        {
-            if (Environment.UserInteractive)
-                this.serviceCollection.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, ConsoleLoggerProvider>());
-            else
-                this.serviceCollection.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, NullLoggerProvider>());
-        });
-        this.serviceCollection.TryAddSingleton<ILogger>(x => x.GetRequiredService<ILogger<MtaServer>>());
-
-
-        this.serviceCollection.AddSingleton<GameWorld>();
-        this.serviceCollection.AddSingleton<ChatBox>();
-        this.serviceCollection.AddSingleton<ClientConsole>();
-        this.serviceCollection.AddSingleton<DebugLog>();
-        this.serviceCollection.AddSingleton<FromLuaValueMapper>();
-        this.serviceCollection.AddSingleton<LuaValueMapper>();
-        this.serviceCollection.AddSingleton<LuaEventService>();
-        this.serviceCollection.AddSingleton<LatentPacketService>();
-        this.serviceCollection.AddSingleton<ExplosionService>();
-        this.serviceCollection.AddSingleton<FireService>();
-        this.serviceCollection.AddSingleton<TextItemService>();
-        this.serviceCollection.AddSingleton<WeaponConfigurationService>();
-        this.serviceCollection.AddSingleton<CommandService>();
-        this.serviceCollection.AddSingleton<BanService>();
-        this.serviceCollection.AddSingleton<ITimerService, TimerService>();
-        this.serviceCollection.TryAddSingleton<IBanRepository, JsonFileBanRepository>();
-
-        this.serviceCollection.AddHttpClient();
+        this.serviceCollection.AddDefaultMtaServerServices();
         this.serviceCollection.AddSingleton<Configuration>(this.configuration);
         this.serviceCollection.AddSingleton<RootElement>(this.root);
         this.serviceCollection.AddSingleton<MtaServer>(this);
@@ -610,8 +628,8 @@ public class MtaServer
     /// </summary>
     /// <param name="builderAction">Action that allows you to configure the server</param>
     /// <returns></returns>
-    public static MtaServer Create(Action<ServerBuilder> builderAction)
-        => new(builderAction);
+    public static MtaServer Create(IServiceProvider serviceProvider, Action<ServerBuilder> builderAction)
+        => new(serviceProvider, builderAction);
 
     /// <summary>
     /// Creates an MTA server using a specific type for connecting players
@@ -665,10 +683,15 @@ public class MtaServer
 /// <typeparam name="TPlayer">The player type</typeparam>
 public abstract class MtaServer<TPlayer> : MtaServer where TPlayer : Player
 {
+    public MtaServer(IServiceProvider serviceProvider, Action<ServerBuilder> builderAction) : base(serviceProvider, builderAction) { }
+
     public MtaServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
 
-    protected override void SetupDependencies(Action<ServiceCollection>? dependencyCallback)
+    protected override void SetupDependencies(Action<IServiceCollection>? dependencyCallback)
     {
+        if (this.serviceCollection == null)
+            throw new NotSupportedException();
+
         base.SetupDependencies(dependencyCallback);
         this.serviceCollection.AddSingleton<MtaServer<TPlayer>>(this);
     }
@@ -705,7 +728,9 @@ public class MtaNewPlayerServer<TPlayer> : MtaServer<TPlayer> where TPlayer : Pl
 /// </summary>
 public class MtaDiPlayerServer<TPlayer> : MtaServer<TPlayer> where TPlayer : Player
 {
-    internal MtaDiPlayerServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
+    public MtaDiPlayerServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
+
+    public MtaDiPlayerServer(IServiceProvider serviceProvider, Action<ServerBuilder> builderAction) : base(serviceProvider, builderAction) { }
 
     protected override IClient CreateClient(uint binaryAddress, INetWrapper netWrapper)
     {

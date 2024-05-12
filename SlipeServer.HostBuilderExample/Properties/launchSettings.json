@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "SlipeServer.HostBuilderExample": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

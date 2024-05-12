@@ -103,6 +103,11 @@ public class Configuration
     public bool IsVoiceEnabled { get; set; }
 
     /// <summary>
+    /// Sets whether fake lag is enabled
+    /// </summary>
+    public bool IsFakeLagCommandEnabled { get; set; } = true;
+
+    /// <summary>
     /// Minimum version for connecting clients
     /// </summary>
     public Version MinVersion { get; set; } = new Version(1, 5, 8);

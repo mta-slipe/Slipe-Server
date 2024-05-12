@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using SlipeServer.ConfigurationProviders;
 using SlipeServer.Console.AdditionalResources;
@@ -13,6 +14,7 @@ using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Physics.Extensions;
 using SlipeServer.Server;
 using SlipeServer.Server.Behaviour;
+using SlipeServer.Server.Loggers;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.ServerBuilders;
 using System;
@@ -90,6 +92,17 @@ public partial class Program
                     services.AddScoped<TestService>();
                     services.AddSingleton<PacketReplayerService>();
                     services.AddScoped<SampleScopedService>();
+
+                    services.AddLogging(x =>
+                    {
+                        if (Environment.UserInteractive)
+                            services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, ConsoleLoggerProvider>());
+                        else
+                            services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, NullLoggerProvider>());
+                    });
+                    services.AddHttpClient();
+                    services.TryAddSingleton<ILogger>(x => x.GetRequiredService<ILogger<MtaServer>>());
+
                 });
                 builder.AddLua();
                 builder.AddPhysics();
