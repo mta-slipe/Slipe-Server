@@ -19,7 +19,7 @@ public class ParachuteResource : Resource
     };
 
     public ParachuteResource(MtaServer server)
-        : base(server, server.GetRequiredService<RootElement>(), "Parachute")
+        : base(server, server.RootElement, "Parachute")
     {
         using var md5 = MD5.Create();
 

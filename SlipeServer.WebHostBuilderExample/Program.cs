@@ -4,6 +4,7 @@ using SlipeServer.Server.Resources.Serving;
 using SlipeServer.Server;
 using SlipeServer.Server.ServerBuilders;
 using SlipeServer.Server.Mappers;
+using SlipeServer.WebHostBuilderExample;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,7 @@ builder.Services.AddMtaServer<CustomPlayer>(configuration, builder =>
     builder.AddDefaultServices();
     builder.AddDefaultLuaMappings();
     builder.AddDefaultNetWrapper();
+    builder.AddSampleResource();
 });
 
 builder.Services.AddSingleton<IResourceServer, BasicHttpServer>();

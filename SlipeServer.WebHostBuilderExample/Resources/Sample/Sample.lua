@@ -1,0 +1,1 @@
+﻿outputChatBox("sample.lua file")
