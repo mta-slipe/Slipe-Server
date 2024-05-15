@@ -22,11 +22,11 @@ builder.Services.AddMtaServer<CustomPlayer>(configuration, builder =>
     builder.AddDefaultServices();
     builder.AddDefaultLuaMappings();
     builder.AddDefaultNetWrapper();
+    builder.AddResourceServer<BasicHttpServer>();
     builder.AddSampleResource();
 });
 
 builder.Services.AddSingleton<IResourceServer, BasicHttpServer>();
-builder.Services.AddHostedService<ResourcesServerHostedService>();
 
 builder.Services.AddHostedService<SampleHostedService>(); // Use instead of logics
 builder.Services.TryAddSingleton<ILogger>(x => x.GetRequiredService<ILogger<MtaServer>>());

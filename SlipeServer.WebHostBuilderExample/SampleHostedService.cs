@@ -3,6 +3,7 @@ using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.Services;
+using SlipeServer.WebHostBuilderExample;
 using System.Numerics;
 
 public class SampleHostedService : IHostedService
@@ -22,8 +23,9 @@ public class SampleHostedService : IHostedService
     private void HandleStartSample(object? sender, SlipeServer.Server.Events.CommandTriggeredEventArgs e)
     {
         this.chatBox.OutputTo(e.Player, "Starting sample resource");
-        var sample = this.resourceProvider.GetResource("Sample");
-        sample.StartFor(e.Player);
+        var resource = this.mtaServer.GetAdditionalResource<SampleResource>();
+        resource.StartFor(e.Player);
+        this.chatBox.OutputTo(e.Player, "Sample resource started");
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
