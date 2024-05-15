@@ -38,7 +38,6 @@ builder.ConfigureMtaServers(configure =>
 
     configure.AddDefaultPacketHandlers();
     configure.AddDefaultBehaviours(exceptBehaviours);
-    configure.StartResourceServers();
     configure.StartAllServers();
 });
 

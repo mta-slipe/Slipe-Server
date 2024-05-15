@@ -9,7 +9,6 @@ public interface IMtaServersConfiguration
     /// Configure that all mta servers will start on application startup
     /// </summary>
     void StartAllServers();
-    void StartResourceServers();
 }
 
 internal sealed class MtaServersConfiguration : IMtaServersConfiguration
@@ -34,10 +33,5 @@ internal sealed class MtaServersConfiguration : IMtaServersConfiguration
     public void AddDefaultBehaviours(ServerBuilderDefaultBehaviours except = ServerBuilderDefaultBehaviours.None)
     {
         this.services.AddHostedService(x => new AddDefaultBehavioursHostedService(x.GetRequiredService<IEnumerable<MtaServer>>(), except));
-    }
-
-    public void StartResourceServers()
-    {
-        this.services.AddHostedService<ResourcesServerHostedService>();
     }
 }

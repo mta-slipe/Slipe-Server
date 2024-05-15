@@ -20,7 +20,6 @@ builder.ConfigureServices((hostBuilderContext, services) =>
     });
 
     services.AddSingleton<IResourceServer, BasicHttpServer>();
-    services.AddHostedService<ResourcesServerHostedService>();
 
     services.AddHostedService<SampleHostedService>(); // Use instead of logics
     services.TryAddSingleton<ILogger>(x => x.GetRequiredService<ILogger<MtaServer>>());
@@ -33,7 +32,6 @@ builder.ConfigureMtaServers((context, configure) =>
 
     configure.AddDefaultPacketHandlers();
     configure.AddDefaultBehaviours(exceptBehaviours);
-    configure.StartResourceServers();
     configure.StartAllServers();
 });
 
