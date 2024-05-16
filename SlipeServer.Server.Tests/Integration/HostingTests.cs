@@ -5,6 +5,7 @@ using Xunit;
 using System.Threading.Tasks;
 using System.Threading;
 using FluentAssertions;
+using SlipeServer.Server.Elements;
 
 namespace SlipeServer.Server.Tests.Integration;
 
@@ -29,6 +30,19 @@ public class HostingTests
         player.Client.IsConnected.Should().BeFalse();
         sampleService.Started.Should().BeTrue();
         sampleService.Stopped.Should().BeTrue();
+    }
+
+    [Fact]
+    public void ClientInterfaceShouldWork()
+    {
+        using var hosting = new TestingServerHosting();
+
+        var player = hosting.Server.AddFakePlayer();
+        var clientInterface = new ClientEnvironment(player);
+
+        player.Position = new System.Numerics.Vector3(3, 3, 3);
+
+        clientInterface.Position.Should().Be(player.Position);
     }
 }
 

@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets.Structs;
 using System;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 
 namespace SlipeServer.Packets.Reader;

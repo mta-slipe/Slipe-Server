@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Reader;
 using SlipeServer.Packets.Structs;
 using System;
 using System.Numerics;
@@ -15,7 +16,7 @@ public class SetElementPositionRpcPacket : Packet
     public ElementId ElementId { get; set; }
     public byte TimeContext { get; set; }
     public Vector3 Position { get; set; }
-    public bool IsWarp { get; }
+    public bool IsWarp { get; set; }
 
     public SetElementPositionRpcPacket()
     {
@@ -32,7 +33,16 @@ public class SetElementPositionRpcPacket : Packet
 
     public override void Read(byte[] bytes)
     {
-        throw new NotSupportedException();
+        var reader = new PacketReader(bytes);
+
+        var rpcFunction = (ElementRpcFunction)reader.GetByte();
+        if (rpcFunction != ElementRpcFunction.SET_ELEMENT_POSITION)
+            throw new InvalidOperationException($"Invalid rpcFunction, expected SET_ELEMENT_POSITION, got: {rpcFunction}");
+
+        this.ElementId = reader.GetElementId();
+        this.Position = reader.GetVector3();
+        this.TimeContext = reader.GetByte();
+        this.IsWarp = reader.IsFinishedReading ? true : false;
     }
 
     public override byte[] Write()

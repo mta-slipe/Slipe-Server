@@ -92,7 +92,7 @@ public class Client<TPlayer>
     /// Sends a single packet to the client
     /// </summary>
     /// <param name="packet"></param>
-    public void SendPacket(Packet packet)
+    public virtual void SendPacket(Packet packet)
     {
         if (!CanSendPacket(packet.PacketId))
             return;
@@ -106,7 +106,7 @@ public class Client<TPlayer>
     /// Sends a single packet to the client
     /// </summary>
     /// <param name="packetId"></param>
-    public void SendPacket(PacketId packetId, byte[] data, PacketPriority priority = PacketPriority.Medium, PacketReliability reliability = PacketReliability.Unreliable)
+    public virtual void SendPacket(PacketId packetId, byte[] data, PacketPriority priority = PacketPriority.Medium, PacketReliability reliability = PacketReliability.Unreliable)
     {
         if (!CanSendPacket(packetId))
             return;
