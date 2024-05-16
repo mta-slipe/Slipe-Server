@@ -26,7 +26,7 @@ public class Configuration
     /// Server UDP port players connect to
     /// Note: A server's ASE port will be this value + 123
     /// </summary>
-    public ushort Port { get; set; } = 50666;
+    public ushort Port { get; set; } = 22003;
 
     /// <summary>
     /// Server UDP port for players to connect to using a debug build of MTA
@@ -54,7 +54,7 @@ public class Configuration
     /// <summary>
     /// HTTP port to listen to for built-in HTTP server for serving resource files
     /// </summary>
-    public ushort HttpPort { get; set; } = 40680;
+    public ushort HttpPort { get; set; } = 22005;
 
     /// <summary>
     /// HTTP URL for an external HTTP server for serving resource files
