@@ -19,6 +19,8 @@
 	destroyElement(object)
 
 	outputDebugString("Debug message, elapsed time: "..getTickCount())
+	outputServerLog("Server log")
+	clearChatBox()
 
 	print("base64 test:", base64Encode("sample text"), base64Decode(base64Encode("sample text")))
 	print("Some color: ", tocolor(235,23,77,159), tocolor(235,23,77,159) == -1611983027)
@@ -73,6 +75,10 @@ function commandHandler3(plr, cmd, ...)
 	print("commandHandler3:",plr, cmd, ...)
 end
 
+function outputChatBoxTest(plr, cmd, ...)
+	outputChatBox("example outputChatBox", plr)
+end
+
 addCommandHandler("foo1", commandHandler1)
 addCommandHandler("foo1", commandHandler2)
 addCommandHandler("foo2", commandHandler1)
@@ -82,3 +88,4 @@ addCommandHandler("foo4", commandHandler2)
 addCommandHandler("foo4", commandHandler3)
 removeCommandHandler("foo3", commandHandler2)
 removeCommandHandler("foo4")
+addCommandHandler("outputChatBoxTest", outputChatBoxTest)

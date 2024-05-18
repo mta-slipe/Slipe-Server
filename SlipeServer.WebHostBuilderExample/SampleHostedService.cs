@@ -1,4 +1,5 @@
-﻿using SlipeServer.Packets.Lua.Camera;
+﻿using SlipeServer.Console.Logic;
+using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Services;
@@ -17,6 +18,8 @@ public class SampleHostedService : IHostedService
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
+        this.mtaServer.InstantiatePersistent<LuaTestLogic>();
+
         this.mtaServer.PlayerJoined += HandlePlayerJoined;
         return Task.CompletedTask;
     }

@@ -4,6 +4,8 @@ using SlipeServer.Server.Resources.Serving;
 using SlipeServer.Server;
 using SlipeServer.Server.ServerBuilders;
 using SlipeServer.Server.Mappers;
+using SlipeServer.Console.Logic;
+using SlipeServer.Lua;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +18,7 @@ var configuration = builder.Configuration.GetRequiredSection("MtaServer").Get<Co
 
 builder.Services.AddHttpClient();
 builder.Services.AddDefaultMtaServerServices();
+builder.Services.AddLua();
 builder.Services.AddMtaServer<CustomPlayer>(configuration, builder =>
 {
     builder.AddDefaultServices();
