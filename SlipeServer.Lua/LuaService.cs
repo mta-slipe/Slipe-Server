@@ -44,16 +44,8 @@ public class LuaService
                 throw new Exception($"Lua name conflict for '{attribute.NiceName}'");
 
             var methodParameters = method.GetParameters();
-            if(attribute.NiceName == "outputChatBox")
-            {
-                ;
-            }
             this.methods[attribute.NiceName] = (values) =>
             {
-                if(attribute.NiceName == "outputChatBox")
-                {
-                    ;
-                }
                 var valueQueue = new Queue<DynValue>(values.AsEnumerable());
 
                 object?[] parameters = new object[methodParameters.Length];
