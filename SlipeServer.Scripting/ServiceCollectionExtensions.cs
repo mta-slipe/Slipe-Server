@@ -6,6 +6,6 @@ public static class ServiceCollectionExtensions
 {
     public static void AddScripting(this IServiceCollection services)
     {
-        services.AddSingleton<ServerResourcesService>();
+        services.AddSingleton<ServerResourceService>();
     }
 }

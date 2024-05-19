@@ -6,22 +6,20 @@ using System.Linq;
 namespace SlipeServer.Server.Resources;
 
 /// <summary>
-/// Service that allows simple ways to start and stop resources (for all players)
+/// Service that allows simple ways to start and stop client resources (for all players)
 /// </summary>
-public class ResourceService
+public class ClientResourceService
 {
     private readonly MtaServer server;
-    private readonly RootElement root;
     private readonly IResourceProvider resourceProvider;
 
     private readonly List<Resource> startedResources;
 
     public IReadOnlyCollection<Resource> StartedResources => this.startedResources.AsReadOnly();
 
-    public ResourceService(MtaServer server, RootElement root, IResourceProvider resourceProvider)
+    public ClientResourceService(MtaServer server, IResourceProvider resourceProvider)
     {
         this.server = server;
-        this.root = root;
         this.resourceProvider = resourceProvider;
 
         this.startedResources = new List<Resource>();
@@ -52,9 +50,12 @@ public class ResourceService
 
     public void StopResource(string name)
     {
-        var resource = this.startedResources.Single(r => r.Name == name);
-        this.startedResources.Remove(resource);
-        resource.Stop();
+        if (this.startedResources.Any(r => r.Name == name))
+        {
+            var resource = this.startedResources.Single(r => r.Name == name);
+            this.startedResources.Remove(resource);
+            resource.Stop();
+        }
     }
 
     public void StopResource(Resource resource)

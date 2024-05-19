@@ -1,2 +1,2 @@
-﻿print("hello server");
-outputDebugString("hello server");
+﻿print("hello server asdasd");
+outputDebugString("hello server asdasd");

@@ -36,7 +36,7 @@ public class FileSystemResourceProvider : IResourceProvider
         return this.resources[name];
     }
 
-    public ServerResourceFiles GetServerResource(string name)
+    public ServerResourceFiles GetServerResourceFiles(string name)
     {
         return this.serverResources[name];
     }
@@ -46,7 +46,7 @@ public class FileSystemResourceProvider : IResourceProvider
         return this.resources.Values;
     }
     
-    public IEnumerable<ServerResourceFiles> GetServerResources()
+    public IEnumerable<ServerResourceFiles> GetServerResourcesFiles()
     {
         return this.serverResources.Values;
     }

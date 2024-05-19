@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlipeServer.Lua;
 using SlipeServer.Scripting;
+using SlipeServer.Server;
 using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Interpreters;
 using SlipeServer.Server.Resources.Providers;
@@ -13,12 +14,12 @@ internal sealed class LegacyServerService : IHostedService
     private readonly IEnumerable<IResourceInterpreter> resourceInterpreters;
     private readonly ILogger<LegacyServerService> logger;
     private readonly MtaServer mtaServer;
-    private readonly ResourceService resourceService;
-    private readonly ServerResourcesService serverResourcesService;
+    private readonly ClientResourceService resourceService;
+    private readonly ServerResourceService serverResourcesService;
     private readonly IScriptEventRuntime scriptEventRuntime;
     private readonly LuaService luaService;
 
-    public LegacyServerService(IResourceProvider resourceProvider, IEnumerable<IResourceInterpreter> resourceInterpreters, ILogger<LegacyServerService> logger, MtaServer mtaServer, ResourceService resourceService, ServerResourcesService serverResourcesService, IScriptEventRuntime scriptEventRuntime, LuaService luaService)
+    public LegacyServerService(IResourceProvider resourceProvider, IEnumerable<IResourceInterpreter> resourceInterpreters, ILogger<LegacyServerService> logger, MtaServer mtaServer, ClientResourceService resourceService, ServerResourceService serverResourcesService, IScriptEventRuntime scriptEventRuntime, LuaService luaService)
     {
         foreach (var resourceInterpreter in resourceInterpreters)
             resourceProvider.AddResourceInterpreter(resourceInterpreter);
@@ -40,20 +41,26 @@ internal sealed class LegacyServerService : IHostedService
 
         this.resourceProvider.Refresh();
         var resources = this.resourceProvider.GetResources().ToArray();
+        var serverResourcesFiles = this.resourceProvider.GetServerResourcesFiles().ToArray();
+
+        foreach (var item in serverResourcesFiles)
+        {
+            this.serverResourcesService.Create(item);
+        }
+
         this.logger.LogInformation("Resources: {loadedResourcesCount} loaded, {failedResourcesCount} failed", resources.Length, 0);
         if (this.mtaServer.HasPassword)
         {
             this.logger.LogInformation("Server password set to '{serverPassword}'", mtaServer.Password);
         }
         this.logger.LogInformation("Starting resources...");
+
         foreach (var startupResource in this.mtaServer.Configuration.StartupResources)
         {
             var resource = resources.FirstOrDefault(x => x.Name == startupResource.Name);
             if(resource != null)
             {
                 this.resourceService.StartResource(startupResource.Name);
-                var serverResource = this.resourceProvider.GetServerResource(startupResource.Name);
-                serverResourcesService.Create(serverResource);
             } else
             {
                 this.logger.LogWarning("ERROR: Couldn't find resource {resourceName}. Check it exists.", startupResource.Name);

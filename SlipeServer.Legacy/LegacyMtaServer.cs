@@ -9,6 +9,7 @@ using SlipeServer.Server.Resources.Interpreters;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Logging.Abstractions;
 using SlipeServer.Server.Resources;
+using System.Reflection;
 
 namespace SlipeServer.Legacy;
 
@@ -51,10 +52,21 @@ public class LegacyMtaServer
         var mtaServerConfiguration = new XmlConfigurationProvider("mods/deathmatch/mtaserver.conf");
 
         this.configuration = mtaServerConfiguration.Configuration;
-        this.configuration.ResourceDirectory = "mods/deathmatch/resources";
+
 
         builder.ConfigureServices((hostBuilderContext, services) =>
         {
+            if (hostBuilderContext.HostingEnvironment.IsDevelopment())
+            {
+                var currentDirectory = Directory.GetCurrentDirectory();
+                var projectDirectory = Directory.GetParent(currentDirectory).Parent.Parent.FullName;
+
+                this.configuration.ResourceDirectory = Path.Join(projectDirectory, "mods/deathmatch/resources");
+                ;
+            } else
+            {
+                this.configuration.ResourceDirectory = "mods/deathmatch/resources";
+            }
             services.AddLogging(configure =>
             {
                 configure.AddConsole(options =>
@@ -64,7 +76,8 @@ public class LegacyMtaServer
                 configure.AddConsoleFormatter<CustomConsoleFormatter, SimpleConsoleFormatterOptions>();
             });
 
-            services.AddSingleton<ResourceService>();
+            services.AddSingleton<InteractiveServerConsole>();
+            services.AddSingleton<ClientResourceService>();
             services.AddLua();
             services.AddHttpClient();
             services.AddDefaultMtaServerServices();
@@ -78,6 +91,7 @@ public class LegacyMtaServer
 
             services.AddSingleton<IResourceServer, BasicHttpServer>();
             services.AddHostedService<LegacyServerService>();
+            services.AddHostedService<LegacyConsoleCommandsService>();
             services.AddHostedService<ResourcesServerHostedService>();
 
             services.TryAddSingleton<ILogger>(x => x.GetRequiredService<ILogger<MtaServer>>());
@@ -110,6 +124,34 @@ public class LegacyMtaServer
         Console.WriteLine("= Voice Chat       : {0}", this.configuration.IsVoiceEnabled ? "Enabled" : "Disabled");
         Console.WriteLine("= Bandwidth saving : {0}", "TODO");
         Console.WriteLine("==================================================================");
+
+        var serverConsole = this.app.Services.GetRequiredService<InteractiveServerConsole>();
+
+        var _ = Task.Run(() =>
+        {
+            try
+            {
+                while (true)
+                {
+                    try
+                    {
+                        var line = Console.ReadLine();
+                        if(line != null)
+                        {
+                            serverConsole.ExecuteCommand(line);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+
+            }
+        });
         await this.app.RunAsync();
     }
 }

@@ -19,7 +19,7 @@ public static class LuaServiceCollectionExtensions
     {
         services.AddSingleton<IScriptEventRuntime, ScriptEventRuntime>();
         services.AddSingleton<IScriptInputRuntime, ScriptInputRuntime>();
-        services.AddSingleton<ServerResourcesService>();
+        services.AddSingleton<ServerResourceService>();
         services.AddLuaCore();
     }
 
