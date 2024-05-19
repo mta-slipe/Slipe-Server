@@ -52,6 +52,8 @@ public class LuaTranslator
                     DynValue.NewNumber(color.B),
                     DynValue.NewNumber(color.A),
             };
+        if (obj is BlipIcon blipIcon)
+            return new DynValue[] { DynValue.NewNumber((int)blipIcon) };
         if (obj is Vector2 vector2)
             return new DynValue[]
             {
@@ -131,6 +133,8 @@ public class LuaTranslator
             return GetBooleanFromDynValue(dynValues.Dequeue());
         if (targetType == typeof(Table))
             return GetTableFromDynValue(dynValues.Dequeue());
+        if (targetType == typeof(BlipIcon))
+            return (BlipIcon)GetInt32FromDynValue(dynValues.Dequeue());
         if (typeof(Player).IsAssignableFrom(targetType))
             return dynValues.Dequeue()?.UserData?.Object;
         if (typeof(Element).IsAssignableFrom(targetType))
