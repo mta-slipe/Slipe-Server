@@ -14,4 +14,6 @@ public interface IResourceProvider
     public byte[] GetFileContent(string resource, string file);
 
     public void AddResourceInterpreter(IResourceInterpreter resourceInterpreter);
+    ServerResourceFiles GetServerResource(string name);
+    IEnumerable<ServerResourceFiles> GetServerResources();
 }

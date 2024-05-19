@@ -15,7 +15,8 @@ public class BasicResourceInterpreter : IResourceInterpreter
         string name,
         string path,
         IResourceProvider resourceProvider,
-        out Resource? resource
+        out Resource? resource,
+        out ServerResourceFiles? serverResource
     )
     {
         List<ResourceFile> resourceFiles = new List<ResourceFile>();
@@ -31,6 +32,7 @@ public class BasicResourceInterpreter : IResourceInterpreter
             Files = resourceFiles
         };
 
+        serverResource = null;
         return true;
     }
 }

@@ -142,7 +142,7 @@ public class LuaService
         this.scripts.Remove(identifier);
     }
 
-    private void LoadDefinitions(Script script)
+    internal void LoadDefinitions(Script script)
     {
         StringBuilder stringBuilder = new StringBuilder();
         foreach (var definition in this.methods)
@@ -153,7 +153,7 @@ public class LuaService
         script.DoString(stringBuilder.ToString(), codeFriendlyName: "SlipeDefinitions");
     }
 
-    private void LoadGlobals(Script script)
+    internal void LoadGlobals(Script script)
     {
         script.Globals["root"] = this.translator.ToDynValues(this.root).First();
         script.Globals["isSlipeServer"] = this.translator.ToDynValues(true).First();

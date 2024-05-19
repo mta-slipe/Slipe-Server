@@ -15,6 +15,7 @@ public class FileSystemResourceProvider : IResourceProvider
     private readonly RootElement rootElement;
     private readonly Configuration configuration;
     private readonly Dictionary<string, Resource> resources;
+    private readonly Dictionary<string, ServerResourceFiles> serverResources;
     private readonly List<IResourceInterpreter> resourceInterpreters;
 
     private readonly object netIdLock = new();
@@ -26,6 +27,7 @@ public class FileSystemResourceProvider : IResourceProvider
         this.rootElement = mtaServer.RootElement;
         this.configuration = mtaServer.Configuration;
         this.resources = new();
+        this.serverResources = new();
         this.resourceInterpreters = new();
     }
 
@@ -34,33 +36,52 @@ public class FileSystemResourceProvider : IResourceProvider
         return this.resources[name];
     }
 
+    public ServerResourceFiles GetServerResource(string name)
+    {
+        return this.serverResources[name];
+    }
+
     public IEnumerable<Resource> GetResources()
     {
         return this.resources.Values;
+    }
+    
+    public IEnumerable<ServerResourceFiles> GetServerResources()
+    {
+        return this.serverResources.Values;
     }
 
     public void Refresh()
     {
         this.resources.Clear();
-        var resources = IndexResourceDirectory(this.configuration.ResourceDirectory);
+        this.serverResources.Clear();
+        var (resources, serverResources) = IndexResourceDirectory(this.configuration.ResourceDirectory);
 
         foreach (var resource in resources)
             this.resources[resource.Name] = resource;
+        foreach (var serverResource in serverResources)
+            this.serverResources[serverResource.Name] = serverResource;
     }
 
-    private IEnumerable<Resource> IndexResourceDirectory(string directory)
+    private (IEnumerable<Resource>, IEnumerable<ServerResourceFiles>) IndexResourceDirectory(string directory)
     {
         List<Resource> resources = new();
+        List<ServerResourceFiles> serverResources = new();
 
         if (!Directory.Exists(directory))
-            return resources;
+            return (resources, serverResources);
 
         var directories = Directory.EnumerateDirectories(directory, "*", SearchOption.TopDirectoryOnly);
         foreach (var subDirectory in directories)
         {
             if (subDirectory.StartsWith("[") && subDirectory.EndsWith("]"))
-                foreach (var resource in IndexResourceDirectory(subDirectory))
+            {
+                var (subResource, subServerResource) = IndexResourceDirectory(subDirectory);
+                foreach (var resource in subResource)
                     resources.Add(resource);
+                foreach (var serverResource in subServerResource)
+                    serverResources.Add(serverResource);
+            }
 
             var name = Path.GetFileName(subDirectory)!;
             if (this.resources.ContainsKey(name))
@@ -71,10 +92,11 @@ public class FileSystemResourceProvider : IResourceProvider
                 Resource? resource = null;
                 foreach (var resourceInterpreter in this.resourceInterpreters)
                 {
-                    if (resourceInterpreter.TryInterpretResource(this.mtaServer, this.rootElement, name, subDirectory, this, out resource))
+                    if (resourceInterpreter.TryInterpretResource(this.mtaServer, this.rootElement, name, subDirectory, this, out resource, out var serverResource))
                     {
                         resource!.NetId = this.ReserveNetId();
                         resources.Add(resource);
+                        serverResources.Add(serverResource);
                         break;
                     }
                 }
@@ -86,7 +108,7 @@ public class FileSystemResourceProvider : IResourceProvider
             }
         }
 
-        return resources;
+        return (resources, serverResources);
     }
 
     public IEnumerable<string> GetFilesForResource(string name)

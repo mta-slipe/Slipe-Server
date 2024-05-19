@@ -74,7 +74,7 @@ public class MtaServer
     /// <summary>
     /// Indicates whether a password is set
     /// </summary>
-    public bool HasPassword => this.Password != null;
+    public bool HasPassword => !string.IsNullOrEmpty(this.Password);
 
     /// <summary>
     /// Indicates whether the server is currently accepting incoming packets

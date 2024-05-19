@@ -97,6 +97,8 @@ public class LuaTranslator
 
     public object? FromDynValue(Type targetType, Queue<DynValue> dynValues)
     {
+        if (targetType == typeof(object) || targetType == typeof(DynValue))
+            return dynValues.Dequeue();
         if (targetType == typeof(Color) || targetType == typeof(Color?))
         {
             byte red = GetByteFromDynValue(dynValues.Dequeue());

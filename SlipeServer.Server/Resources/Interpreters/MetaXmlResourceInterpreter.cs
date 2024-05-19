@@ -3,6 +3,7 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Resources.Interpreters.Meta;
 using SlipeServer.Server.Resources.Providers;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -21,31 +22,32 @@ public class MetaXmlResourceInterpreter : IResourceInterpreter
         string name,
         string path,
         IResourceProvider resourceProvider,
-        out Resource? resource
+        out Resource? resource,
+        out ServerResourceFiles? serverResource
     )
     {
         var files = resourceProvider.GetFilesForResource(name);
         if (!files.Contains("meta.xml"))
         {
             resource = null;
+            serverResource = null;
             return false;
         }
 
-        resource = GetResource(mtaServer, rootElement, resourceProvider, name, path, files);
+        (resource, serverResource) = GetResource(mtaServer, rootElement, resourceProvider, name, path, files);
 
         return true;
     }
 
-    private Resource GetResource(MtaServer mtaServer, RootElement rootElement, IResourceProvider resourceProvider, string name, string path, IEnumerable<string> fileNames)
+    private (Resource, ServerResourceFiles) GetResource(MtaServer mtaServer, RootElement rootElement, IResourceProvider resourceProvider, string name, string path, IEnumerable<string> fileNames)
     {
         var files = fileNames.ToDictionary(x => x.Replace(Path.DirectorySeparatorChar, '/'), file => resourceProvider.GetFileContent(name, file));
 
         List<ResourceFile> resourceFiles = new List<ResourceFile>();
 
-        var metaFile = files["meta.xml"];
-        var reader = new StringReader(Encoding.Default.GetString(metaFile));
-        var serializer = new XmlSerializer(typeof(MetaXml));
-        var meta = (MetaXml?)serializer.Deserialize(reader);
+        var metaFileContent = files["meta.xml"];
+
+        var meta = MetaXml.Create(metaFileContent);
 
         if (meta == null)
             throw new System.Exception($"Unable to parse meta file for resource {name}");
@@ -58,7 +60,21 @@ public class MetaXmlResourceInterpreter : IResourceInterpreter
             NoClientScripts = GetNoCacheFiles(meta.Value, files),
             IsOopEnabled = meta.Value.oops != null && meta.Value.oops.Any(x => x.Data.ToLower() == "true")
         };
-        return resource;
+
+        var chunks = new List<ScriptChunk>();
+        if (meta.Value.scripts != null)
+        {
+            foreach (var file in meta.Value.scripts.Where(x => x.Type == "server" && x.Cache != "false"))
+            {
+                chunks.Add(new ScriptChunk
+                {
+                    Name = file.Source,
+                    Content = files[file.Source],
+                    Language = "Lua"
+                });
+            }
+        }
+        return (resource, new ServerResourceFiles(name, chunks.ToArray()));
     }
 
     private List<ResourceFile> GetFilesForMetaXmlResource(MetaXml meta, Dictionary<string, byte[]> files)
@@ -75,7 +91,7 @@ public class MetaXmlResourceInterpreter : IResourceInterpreter
 
         if (meta.scripts != null)
         {
-            foreach (var file in meta.scripts.Where(x => x.Type == "client" && x.Cache != "false"))
+            foreach (var file in meta.scripts.Where(x => (x.Type == "client" || x.Type == "shared") && x.Cache != "false"))
             {
                 resourceFiles.Add(ResourceFileFactory.FromBytes(files[file.Source], file.Source, ResourceFileType.ClientScript));
             }
@@ -83,7 +99,7 @@ public class MetaXmlResourceInterpreter : IResourceInterpreter
 
         if (meta.configs != null)
         {
-            foreach (var file in meta.configs.Where(x => x.Type == "client"))
+            foreach (var file in meta.configs.Where(x => (x.Type == "client" || x.Type == "shared")))
             {
                 resourceFiles.Add(ResourceFileFactory.FromBytes(files[file.Source], file.Source, ResourceFileType.ClientConfig));
             }

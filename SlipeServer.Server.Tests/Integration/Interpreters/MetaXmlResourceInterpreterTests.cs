@@ -38,7 +38,7 @@ public class MetaXmlResourceInterpreterTests
         this.resourceProviderMock.Setup(x => x.GetFileContent("testResource", "meta.xml")).Returns(metaXmlContent);
         this.resourceProviderMock.Setup(x => x.GetFileContent("testResource", "script.lua")).Returns("420"u8.ToArray());
 
-        var result = this.metaXmlResourceInterpreter.TryInterpretResource(this.testingServer, null, "testResource", ".", this.resourceProviderMock.Object, out var resource);
+        var result = this.metaXmlResourceInterpreter.TryInterpretResource(this.testingServer, null, "testResource", ".", this.resourceProviderMock.Object, out var resource, out var serverResource);
 
         if (resource == null)
             throw new NullReferenceException();
@@ -83,7 +83,7 @@ public class MetaXmlResourceInterpreterTests
         this.resourceProviderMock.Setup(x => x.GetFileContent("testResource", "script2.lua")).Returns("1337"u8.ToArray());
         this.resourceProviderMock.Setup(x => x.GetFileContent("testResource", "logo.png")).Returns("69"u8.ToArray());
 
-        var result = this.metaXmlResourceInterpreter.TryInterpretResource(this.testingServer, null, "testResource", ".", this.resourceProviderMock.Object, out var resource);
+        var result = this.metaXmlResourceInterpreter.TryInterpretResource(this.testingServer, null, "testResource", ".", this.resourceProviderMock.Object, out var resource, out var serverResource);
 
         if (resource == null)
             throw new NullReferenceException();

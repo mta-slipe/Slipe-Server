@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Server;
 using SlipeServer.Server.Enums;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 
@@ -19,22 +20,30 @@ public class XmlConfigurationProvider : IConfigurationProvider
 
         ushort result;
 
+        var startupResources = new List<StartupResource>();
+
         foreach (XmlNode node in xmlConfig.FirstChild.ChildNodes)
         {
             switch (node.Name)
             {
-                case "serverName":
+                case "servername":
                     this.Configuration.ServerName = node.InnerText;
                     break;
-                case "host":
-                    this.Configuration.Host = node.InnerText;
+                case "serverip":
+                    if(node.InnerText == "auto" || node.InnerText == "any")
+                    {
+                        this.Configuration.Host = "";
+                    } else
+                    {
+                        this.Configuration.Host = node.InnerText;
+                    }
                     break;
-                case "port":
+                case "serverport":
                     if (ushort.TryParse(node.InnerText, out result))
                         this.Configuration.Port = result;
 
                     break;
-                case "maxPlayers":
+                case "maxplayers":
                     if (ushort.TryParse(node.InnerText, out result))
                         this.Configuration.MaxPlayerCount = result;
 
@@ -43,19 +52,19 @@ public class XmlConfigurationProvider : IConfigurationProvider
                     this.Configuration.Password = node.InnerText;
                     break;
 
-                case "httpPort":
+                case "httpport":
                     this.Configuration.HttpPort = ushort.Parse(node.InnerText);
                     break;
 
-                case "httpUrl":
+                case "httpurl":
                     this.Configuration.HttpUrl = node.InnerText;
                     break;
 
-                case "httpHost":
+                case "httphost":
                     this.Configuration.HttpHost = node.InnerText;
                     break;
 
-                case "httpConnectionsPerClient":
+                case "httpmaxconnectionsperclient":
                     this.Configuration.HttpConnectionsPerClient = int.Parse(node.InnerText);
                     break;
 
@@ -102,7 +111,29 @@ public class XmlConfigurationProvider : IConfigurationProvider
                 case "IsVoiceEnabled":
                     this.Configuration.IsVoiceEnabled = bool.Parse(node.InnerText);
                     break;
+
+                case "resource":
+                    var startupResource = new StartupResource();
+                    foreach (XmlAttribute item in node.Attributes)
+                    {
+                        switch (item.Name)
+                        {
+                            case "src":
+                                startupResource.Name = item.Value;
+                                break;
+                            case "startup":
+                                startupResource.Start = item.Value == "1" || item.Value == "true";
+                                break;
+                            case "protected":
+                                startupResource.Protected = item.Value == "1" || item.Value == "true";
+                                break;
+                        }
+                    }
+                    startupResources.Add(startupResource);
+                    break;
             }
         }
+        
+        this.Configuration.StartupResources = startupResources.ToArray();
     }
 }
