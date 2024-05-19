@@ -1,4 +1,7 @@
-﻿namespace SlipeServer.Hosting;
+﻿
+using SlipeServer.Server;
+
+namespace SlipeServer.Hosting;
 
 public static class ServiceCollectionExtensions
 {
@@ -15,15 +18,45 @@ public static class ServiceCollectionExtensions
     {
         Directory.SetCurrentDirectory(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()!.Location)!);
 
-        services.AddSingleton((IServiceProvider services) => new MtaDiPlayerServer<T>(services, configure =>
-        {
-            configure.UseConfiguration(configuration);
-            builderAction?.Invoke(configure);
-        }));
+        services.AddSingleton(services => new MtaDiPlayerServer<T>(services, configuration));
+
+        if(builderAction != null)
+            services.AddHostedService(x => new BuildServerHostedService(x.GetRequiredService<IEnumerable<MtaServer>>(), builderAction));
+
         services.AddSingleton<MtaServer<T>>(x => x.GetRequiredService<MtaDiPlayerServer<T>>());
         services.AddSingleton<MtaServer>(x => x.GetRequiredService<MtaDiPlayerServer<T>>());
         services.AddSingleton<Configuration>(x => x.GetRequiredService<MtaServer>().Configuration);
         services.AddSingleton<RootElement>(x => x.GetRequiredService<MtaServer>().RootElement);
         return services;
+    }
+}
+
+internal sealed class BuildServerHostedService : IHostedService
+{
+    private readonly IEnumerable<MtaServer> mtaServers;
+    private readonly Action<ServerBuilder> actionBuilder;
+
+    public BuildServerHostedService(IEnumerable<MtaServer> mtaServers, Action<ServerBuilder> actionBuilder)
+    {
+        this.mtaServers = mtaServers;
+        this.actionBuilder = actionBuilder;
+    }
+
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+        var builder = new ServerBuilder();
+        this.actionBuilder(builder);
+
+        foreach (var mtaServer in mtaServers)
+        {
+            builder.ApplyTo(mtaServer);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
     }
 }

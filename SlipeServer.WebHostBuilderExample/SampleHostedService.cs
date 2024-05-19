@@ -2,18 +2,31 @@
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.Services;
+using SlipeServer.WebHostBuilderExample;
 using System.Numerics;
 
 public class SampleHostedService : IHostedService
 {
     private readonly MtaServer mtaServer;
     private readonly ChatBox chatBox;
+    private readonly IResourceProvider resourceProvider;
 
-    public SampleHostedService(MtaServer mtaServer, ChatBox chatBox)
+    public SampleHostedService(MtaServer mtaServer, ChatBox chatBox, CommandService commandService, IResourceProvider resourceProvider)
     {
         this.mtaServer = mtaServer;
         this.chatBox = chatBox;
+        this.resourceProvider = resourceProvider;
+        commandService.AddCommand("startSample").Triggered += HandleStartSample;
+    }
+
+    private void HandleStartSample(object? sender, SlipeServer.Server.Events.CommandTriggeredEventArgs e)
+    {
+        this.chatBox.OutputTo(e.Player, "Starting sample resource");
+        var resource = this.mtaServer.GetAdditionalResource<SampleResource>();
+        resource.StartFor(e.Player);
+        this.chatBox.OutputTo(e.Player, "Sample resource started");
     }
 
     public Task StartAsync(CancellationToken cancellationToken)

@@ -27,6 +27,14 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\Sample\Sample.lua" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Resources\Sample\Sample.lua" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="..\SlipeServer.ConfigurationProviders\SlipeServer.ConfigurationProviders.csproj" />
 		<ProjectReference Include="..\SlipeServer.Console\SlipeServer.Console.csproj" />
 		<ProjectReference Include="..\SlipeServer.Hosting\SlipeServer.Hosting.csproj" />
