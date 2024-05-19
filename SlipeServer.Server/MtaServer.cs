@@ -133,7 +133,7 @@ public class MtaServer
         builder.ApplyTo(this);
     }
 
-    public MtaServer(IServiceProvider serviceProvider, Action<ServerBuilder> builderAction)
+    public MtaServer(IServiceProvider serviceProvider, Configuration configuration)
     {
         this.netWrappers = new();
         this.clients = new();
@@ -144,10 +144,7 @@ public class MtaServer
 
         this.root = new();
 
-        var builder = new ServerBuilder();
-        builderAction(builder);
-
-        this.configuration = builder.Configuration;
+        this.configuration = configuration;
         this.Password = this.configuration.Password;
 
         this.serviceProvider = serviceProvider;
@@ -157,8 +154,6 @@ public class MtaServer
         this.elementIdGenerator = this.serviceProvider.GetService<IElementIdGenerator>();
 
         this.root.AssociateWith(this);
-
-        builder.ApplyTo(this);
     }
 
     /// <summary>
@@ -628,8 +623,8 @@ public class MtaServer
     /// </summary>
     /// <param name="builderAction">Action that allows you to configure the server</param>
     /// <returns></returns>
-    public static MtaServer Create(IServiceProvider serviceProvider, Action<ServerBuilder> builderAction)
-        => new(serviceProvider, builderAction);
+    public static MtaServer Create(IServiceProvider serviceProvider, Configuration configuration)
+        => new(serviceProvider, configuration);
 
     /// <summary>
     /// Creates an MTA server using a specific type for connecting players
@@ -683,7 +678,7 @@ public class MtaServer
 /// <typeparam name="TPlayer">The player type</typeparam>
 public abstract class MtaServer<TPlayer> : MtaServer where TPlayer : Player
 {
-    public MtaServer(IServiceProvider serviceProvider, Action<ServerBuilder> builderAction) : base(serviceProvider, builderAction) { }
+    public MtaServer(IServiceProvider serviceProvider, Configuration configuration) : base(serviceProvider, configuration) { }
 
     public MtaServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
 
@@ -730,7 +725,7 @@ public class MtaDiPlayerServer<TPlayer> : MtaServer<TPlayer> where TPlayer : Pla
 {
     public MtaDiPlayerServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
 
-    public MtaDiPlayerServer(IServiceProvider serviceProvider, Action<ServerBuilder> builderAction) : base(serviceProvider, builderAction) { }
+    public MtaDiPlayerServer(IServiceProvider serviceProvider, Configuration configuration) : base(serviceProvider, configuration) { }
 
     protected override IClient CreateClient(uint binaryAddress, INetWrapper netWrapper)
     {
