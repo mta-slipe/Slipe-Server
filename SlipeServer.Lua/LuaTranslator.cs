@@ -93,7 +93,7 @@ public class LuaTranslator
     public bool GetBooleanFromDynValue(DynValue dynValue) => dynValue.Boolean;
     public Table GetTableFromDynValue(DynValue dynValue) => dynValue.Table;
 
-    public object FromDynValue(Type targetType, Queue<DynValue> dynValues)
+    public object? FromDynValue(Type targetType, Queue<DynValue> dynValues)
     {
         if (targetType == typeof(Color) || targetType == typeof(Color?))
         {
@@ -131,6 +131,8 @@ public class LuaTranslator
             return GetBooleanFromDynValue(dynValues.Dequeue());
         if (targetType == typeof(Table))
             return GetTableFromDynValue(dynValues.Dequeue());
+        if (typeof(Player).IsAssignableFrom(targetType))
+            return dynValues.Dequeue()?.UserData?.Object;
         if (typeof(Element).IsAssignableFrom(targetType))
             return dynValues.Dequeue().UserData.Object;
         if (targetType == typeof(ScriptCallbackDelegateWrapper))

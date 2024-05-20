@@ -48,7 +48,7 @@ public class LuaService
             {
                 var valueQueue = new Queue<DynValue>(values.AsEnumerable());
 
-                object[] parameters = new object[methodParameters.Length];
+                object?[] parameters = new object[methodParameters.Length];
                 for (int i = 0; i < parameters.Length; i++)
                 {
                     try
@@ -58,8 +58,13 @@ public class LuaService
                             parameters[i] = this.translator.FromDynValue(methodParameters[i].ParameterType, valueQueue);
                         } else
                         {
-                            if (!methodParameters[i].IsOptional)
+                            if (methodParameters[i].IsOptional)
+                            {
+                                parameters[i] = methodParameters[i].DefaultValue;
+                            } else
+                            {
                                 throw new LuaArgumentException(methodParameters[i].Name!, methodParameters[i].ParameterType, i, DataType.Nil);
+                            }
                         }
                     }
                     catch (NotImplementedException)

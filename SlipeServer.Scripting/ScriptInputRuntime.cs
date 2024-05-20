@@ -1,4 +1,5 @@
 ﻿using SlipeServer.Server;
+using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
 using System.Collections.Generic;
@@ -10,12 +11,17 @@ public class ScriptInputRuntime : IScriptInputRuntime
     private readonly List<RegisteredCommandHandler> registeredCommandHandlers;
     private readonly MtaServer server;
 
-    public ScriptInputRuntime(MtaServer server)
+    public ScriptInputRuntime(MtaServer server, IElementCollection elementCollection)
     {
         this.registeredCommandHandlers = new List<RegisteredCommandHandler>();
 
         this.server = server;
         this.server.PlayerJoined += HandlePlayerJoined;
+
+        foreach (var player in elementCollection.GetByType<Player>())
+        {
+            HandlePlayerJoined(player);
+        }
     }
 
     private void HandlePlayerJoined(Player player)
