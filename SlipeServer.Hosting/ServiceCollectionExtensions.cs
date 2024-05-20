@@ -44,11 +44,12 @@ internal sealed class BuildServerHostedService : IHostedService
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        var builder = new ServerBuilder();
-        this.actionBuilder(builder);
-
         foreach (var mtaServer in mtaServers)
         {
+            var builder = new ServerBuilder();
+            builder.UseConfiguration(mtaServer.Configuration);
+            this.actionBuilder(builder);
+
             builder.ApplyTo(mtaServer);
         }
 
