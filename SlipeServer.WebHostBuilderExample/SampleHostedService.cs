@@ -1,20 +1,4 @@
-﻿using BepuPhysics.Trees;
-using MTAServerWrapper.Packets.Outgoing.Connection;
-using Newtonsoft.Json;
-using SlipeServer.Console.Logic;
-using SlipeServer.Packets;
-using SlipeServer.Packets.Definitions.Commands;
-using SlipeServer.Packets.Definitions.CustomElementData;
-using SlipeServer.Packets.Definitions.Explosions;
-using SlipeServer.Packets.Definitions.Join;
-using SlipeServer.Packets.Definitions.Ped;
-using SlipeServer.Packets.Definitions.Player;
-using SlipeServer.Packets.Definitions.Resources;
-using SlipeServer.Packets.Definitions.Satchels;
-using SlipeServer.Packets.Definitions.Sync;
-using SlipeServer.Packets.Definitions.Transgression;
-using SlipeServer.Packets.Definitions.Vehicles;
-using SlipeServer.Packets.Definitions.Voice;
+﻿using SlipeServer.Console.Logic;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Server;
@@ -66,12 +50,12 @@ public class SampleHostedService : IHostedService
 
         var stopwatch = Stopwatch.StartNew();
         {
-            using var recorder = new StreamPacketRecorder(e.Player, this.mtaServer, fileStream, new HashSet<PacketId>
-            {
+            using var recorder = new StreamPacketRecorder(e.Player, this.mtaServer, fileStream,
+            [
                 PacketId.PACKET_ID_PLAYER_KEYSYNC,
                 PacketId.PACKET_ID_PLAYER_PURESYNC,
                 PacketId.PACKET_ID_CAMERA_SYNC,
-            });
+            ]);
             await Task.Delay(10000);
 
         }
