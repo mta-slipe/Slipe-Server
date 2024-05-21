@@ -1,11 +1,31 @@
-﻿using SlipeServer.Console.Logic;
+﻿using BepuPhysics.Trees;
+using MTAServerWrapper.Packets.Outgoing.Connection;
+using Newtonsoft.Json;
+using SlipeServer.Console.Logic;
+using SlipeServer.Packets;
+using SlipeServer.Packets.Definitions.Commands;
+using SlipeServer.Packets.Definitions.CustomElementData;
+using SlipeServer.Packets.Definitions.Explosions;
+using SlipeServer.Packets.Definitions.Join;
+using SlipeServer.Packets.Definitions.Ped;
+using SlipeServer.Packets.Definitions.Player;
+using SlipeServer.Packets.Definitions.Resources;
+using SlipeServer.Packets.Definitions.Satchels;
+using SlipeServer.Packets.Definitions.Sync;
+using SlipeServer.Packets.Definitions.Transgression;
+using SlipeServer.Packets.Definitions.Vehicles;
+using SlipeServer.Packets.Definitions.Voice;
+using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Server;
+using SlipeServer.Server.Debugging.PacketRecording;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.Services;
 using SlipeServer.WebHostBuilderExample;
+using System.Diagnostics;
 using System.Numerics;
+using System.Text;
 
 public class SampleHostedService : IHostedService
 {
@@ -19,6 +39,47 @@ public class SampleHostedService : IHostedService
         this.chatBox = chatBox;
         this.resourceProvider = resourceProvider;
         commandService.AddCommand("startSample").Triggered += HandleStartSample;
+        commandService.AddCommand("recordPackets").Triggered += HandleTriggered;
+        commandService.AddCommand("vehicleZero").Triggered += HandleVehicleZero;
+    }
+
+    private void HandleVehicleZero(object? sender, SlipeServer.Server.Events.CommandTriggeredEventArgs e)
+    {
+        new Vehicle(404, new Vector3(10, 0, 3))
+        {
+            Health = 0
+        }.AssociateWith(this.mtaServer);
+    }
+
+    private async void HandleTriggered(object? sender, SlipeServer.Server.Events.CommandTriggeredEventArgs e)
+    {
+        var fileName = DateTime.Now.ToString("yyyy-dd-M HH-mm-ss");
+
+        if (!Directory.Exists("packetRecordings"))
+            Directory.CreateDirectory("packetRecordings");
+
+        var path = Path.Join("packetRecordings", fileName);
+        path = Path.ChangeExtension(path, ".log");
+        using var fileStream = File.OpenWrite(path);
+
+        this.chatBox.OutputTo(e.Player, $"Started packets recording.");
+
+        var stopwatch = Stopwatch.StartNew();
+        {
+            using var recorder = new StreamPacketRecorder(e.Player, this.mtaServer, fileStream, new HashSet<PacketId>
+            {
+                PacketId.PACKET_ID_PLAYER_KEYSYNC,
+                PacketId.PACKET_ID_PLAYER_PURESYNC,
+                PacketId.PACKET_ID_CAMERA_SYNC,
+            });
+            await Task.Delay(10000);
+
+        }
+        this.chatBox.OutputTo(e.Player, $"Recorded packets saved to {fileName} file.");
+        fileStream.Write(Encoding.UTF8.GetBytes($"Recorded duration: {stopwatch.Elapsed}\n"));
+
+        var line = Encoding.UTF8.GetBytes("End of file\n");
+        fileStream.Write(line);
     }
 
     private void HandleStartSample(object? sender, SlipeServer.Server.Events.CommandTriggeredEventArgs e)
