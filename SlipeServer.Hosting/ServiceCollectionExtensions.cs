@@ -1,15 +1,19 @@
-﻿
-using SlipeServer.Server;
-
-namespace SlipeServer.Hosting;
+﻿namespace SlipeServer.Hosting;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddMtaServer<T>(this IServiceCollection services, T mtaServer)
+    public static IServiceCollection AddMtaServer<T>(this IServiceCollection services, T mtaServer, Action<ServerBuilder>? builderAction = null)
         where T : MtaServer
     {
+        Directory.SetCurrentDirectory(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()!.Location)!);
+
+        if (builderAction != null)
+            services.AddHostedService(x => new BuildServerHostedService(x.GetRequiredService<IEnumerable<MtaServer>>(), builderAction));
+
         services.AddSingleton(mtaServer);
         services.AddSingleton<MtaServer>(x => mtaServer);
+        services.AddSingleton<Configuration>(x => x.GetRequiredService<MtaServer>().Configuration);
+        services.AddSingleton<RootElement>(x => x.GetRequiredService<MtaServer>().RootElement);
         return services;
     }
 
@@ -31,7 +35,7 @@ public static class ServiceCollectionExtensions
     }
 }
 
-internal sealed class BuildServerHostedService : IHostedService
+public sealed class BuildServerHostedService : IHostedService
 {
     private readonly IEnumerable<MtaServer> mtaServers;
     private readonly Action<ServerBuilder> actionBuilder;

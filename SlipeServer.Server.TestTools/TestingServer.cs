@@ -27,6 +27,7 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
     private uint binaryAddressCounter;
 
     private readonly List<SendPacketCall> sendPacketCalls;
+    public event Action Stopped;
 
     public TestingServer(Configuration configuration = null, Action<ServerBuilder> configure = null) : base(x =>
     {
@@ -188,6 +189,34 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
     public void ResetPacketCountVerification() => this.sendPacketCalls.Clear();
 
     public uint GenerateBinaryAddress() => ++this.binaryAddressCounter;
+
+
+    /// <summary>
+    /// Starts the networking interfaces, allowing clients to connect and packets to be sent out to clients.
+    /// </summary>
+    public override void Start()
+    {
+        this.StartDatetime = DateTime.Now;
+
+        this.resourceProvider?.Refresh();
+
+        foreach (var server in this.resourceServers)
+            server.Start();
+
+        this.IsRunning = true;
+    }
+
+    public override void Stop()
+    {
+        foreach (var player in elementCollection.GetByType<Player>())
+        {
+            player.Kick(PlayerDisconnectType.SHUTDOWN);
+        }
+
+        this.IsRunning = false;
+
+        Stopped?.Invoke();
+    }
 }
 
 public class TestingServer : TestingServer<TestingPlayer>
