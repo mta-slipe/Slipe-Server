@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SlipeServer.Hosting\SlipeServer.Hosting.csproj" />
     <ProjectReference Include="..\SlipeServer.Server.TestTools\SlipeServer.Server.TestTools.csproj" />
     <ProjectReference Include="..\SlipeServer.Server\SlipeServer.Server.csproj" />
   </ItemGroup>

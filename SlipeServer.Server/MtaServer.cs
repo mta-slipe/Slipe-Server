@@ -40,15 +40,15 @@ namespace SlipeServer.Server;
 public class MtaServer
 {
     private readonly List<INetWrapper> netWrappers;
-    private readonly List<IResourceServer> resourceServers;
+    protected readonly List<IResourceServer> resourceServers;
     private readonly List<Resource> additionalResources;
     protected readonly PacketReducer packetReducer;
     protected readonly Dictionary<INetWrapper, Dictionary<uint, IClient>> clients;
     protected readonly IServiceCollection? serviceCollection;
     protected readonly IServiceProvider serviceProvider;
-    private readonly IElementCollection elementCollection;
+    protected readonly IElementCollection elementCollection;
     private readonly IElementIdGenerator? elementIdGenerator;
-    private IResourceProvider? resourceProvider;
+    protected IResourceProvider? resourceProvider;
     private readonly RootElement root;
     private readonly Configuration configuration;
 
@@ -79,12 +79,12 @@ public class MtaServer
     /// <summary>
     /// Indicates whether the server is currently accepting incoming packets
     /// </summary>
-    public bool IsRunning { get; private set; }
+    public bool IsRunning { get; protected set; }
 
     /// <summary>
     /// The timestamp the server was started at
     /// </summary>
-    public DateTime StartDatetime { get; private set; }
+    public DateTime StartDatetime { get; protected set; }
 
     /// <summary>
     /// The amount of time since the server has been started
@@ -181,6 +181,11 @@ public class MtaServer
     /// </summary>
     public virtual void Stop()
     {
+        foreach (var player in elementCollection.GetByType<Player>())
+        {
+            player.Kick(PlayerDisconnectType.SHUTDOWN);
+        }
+
         foreach (var netWrapper in this.netWrappers)
         {
             netWrapper.Stop();

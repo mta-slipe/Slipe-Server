@@ -25,6 +25,7 @@ builder.Services.AddMtaServer<CustomPlayer>(configuration, builder =>
     builder.AddDefaultServices();
     builder.AddDefaultLuaMappings();
     builder.AddDefaultNetWrapper();
+    builder.AddDefaultResourceInterpreters();
     builder.AddResourceServer<BasicHttpServer>();
     builder.AddSampleResource();
 });
