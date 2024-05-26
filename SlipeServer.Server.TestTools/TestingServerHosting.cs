@@ -1,13 +1,14 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SlipeServer.Hosting;
+using SlipeServer.Server.Elements;
 using SlipeServer.Server.ServerBuilders;
 using System;
 using System.Threading;
 
 namespace SlipeServer.Server.TestTools;
 
-public class TestingServerHosting<T> : IDisposable where T : TestingPlayer
+public class TestingServerHosting<T> : IDisposable where T : Player
 {
     private readonly TestingServer<T> server;
     private readonly IHost host;
