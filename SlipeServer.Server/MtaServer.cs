@@ -191,6 +191,8 @@ public class MtaServer
             netWrapper.Stop();
         }
 
+        this.packetReducer.Dispose();
+
         this.IsRunning = false;
     }
 

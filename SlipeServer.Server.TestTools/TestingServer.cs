@@ -42,6 +42,15 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
         RegisterNetWrapper(this.NetWrapperMock.Object);
         SetupSendPacketMocks();
     }
+    
+    public TestingServer(IServiceProvider serviceProvider, Configuration configuration = null) : base(serviceProvider, configuration)
+    {
+        this.NetWrapperMock = new Mock<INetWrapper>();
+        this.clients[this.NetWrapperMock.Object] = new();
+        this.sendPacketCalls = new();
+        RegisterNetWrapper(this.NetWrapperMock.Object);
+        SetupSendPacketMocks();
+    }
 
     public IEnumerable<SendLuaEvent> GetSendLuaEvents()
     {
@@ -208,12 +217,7 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
 
     public override void Stop()
     {
-        foreach (var player in elementCollection.GetByType<Player>())
-        {
-            player.Kick(PlayerDisconnectType.SHUTDOWN);
-        }
-
-        this.IsRunning = false;
+        base.Stop();
 
         Stopped?.Invoke();
     }
@@ -222,6 +226,11 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
 public class TestingServer : TestingServer<TestingPlayer>
 {
     public TestingServer(Configuration configuration = null, Action<ServerBuilder>? configure = null) : base(configuration, configure)
+    {
+
+    }
+
+    public TestingServer(IServiceProvider serviceProvider, Configuration configuration = null) : base(serviceProvider, configuration)
     {
 
     }

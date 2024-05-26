@@ -5,6 +5,10 @@ using Xunit;
 using System.Threading.Tasks;
 using System.Threading;
 using FluentAssertions;
+using SlipeServer.Hosting;
+using System.Net.Http;
+using Moq;
+using Microsoft.Extensions.Logging;
 
 namespace SlipeServer.Server.Tests.Integration;
 
@@ -13,19 +17,30 @@ public class HostingTests
     [Fact]
     public void HostingShouldWork()
     {
+        Mock<ILogger> loggerMock = new();
         var sampleService = new SampleHostedService();
+        var masterServer = new MtaSaMasterServerDelegateHandler();
 
         TestingPlayer player;
         {
-            using var hosting = new TestingServerHosting(hostBuilder =>
+            using var hosting = new TestingServerHosting(new Configuration(), hostBuilder =>
             {
+                hostBuilder.Services.AddSingleton(loggerMock.Object);
                 hostBuilder.Services.AddHostedService(x => sampleService);
+                hostBuilder.Services.AddSingleton(new HttpClient(masterServer));
+
+                hostBuilder.ConfigureMtaServers(configure =>
+                {
+                    configure.AddDefaultPacketHandlers();
+                    configure.AddDefaultBehaviours();
+                });
             }, null);
 
             player = hosting.Server.AddFakePlayer();
             player.Client.IsConnected.Should().BeTrue();
         }
 
+        masterServer.Servers.Should().HaveCount(1);
         player.Client.IsConnected.Should().BeFalse();
         sampleService.Started.Should().BeTrue();
         sampleService.Stopped.Should().BeTrue();

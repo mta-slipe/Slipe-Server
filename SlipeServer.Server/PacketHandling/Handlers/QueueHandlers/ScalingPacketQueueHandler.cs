@@ -18,6 +18,7 @@ public class ScalingPacketQueueHandler<T> : BasePacketQueueHandler<T> where T : 
     private readonly Timer timer;
     private readonly Stack<Worker> workers;
     protected TaskCompletionSource<int>? pulseTaskCompletionSource;
+    private readonly System.Threading.CancellationTokenSource stopCancellationTokenSource = new();
 
     protected struct Worker
     {
@@ -80,6 +81,16 @@ public class ScalingPacketQueueHandler<T> : BasePacketQueueHandler<T> where T : 
         var worker = this.workers.Pop();
         worker.Active = false;
     }
+    
+    private bool TryRemoveWorker()
+    {
+        if(this.workers.TryPop(out var worker))
+        {
+            worker.Active = false;
+            return true;
+        }
+        return false;
+    }
 
     private async void PulsePacketTask(Worker worker)
     {
@@ -107,7 +118,14 @@ public class ScalingPacketQueueHandler<T> : BasePacketQueueHandler<T> where T : 
                 this.pulseTaskCompletionSource = null;
             }
 
-            await Task.Delay(this.sleepTime);
+            try
+            {
+                await Task.Delay(this.sleepTime, this.stopCancellationTokenSource.Token);
+            }
+            catch (Exception)
+            {
+                break;
+            }
         }
     }
 
@@ -115,5 +133,13 @@ public class ScalingPacketQueueHandler<T> : BasePacketQueueHandler<T> where T : 
     {
         this.pulseTaskCompletionSource = new TaskCompletionSource<int>();
         return this.pulseTaskCompletionSource.Task;
+    }
+
+    public override void Dispose()
+    {
+        this.timer.Stop();
+        while (TryRemoveWorker()) { }
+        this.stopCancellationTokenSource.Cancel();
+        base.Dispose();
     }
 }
