@@ -24,6 +24,7 @@ public class HostingTests
 
         TestingPlayer player;
         Element element = new();
+        MtaServer server;
         {
             using var hosting = new TestingServerHosting(new Configuration(), hostBuilder =>
             {
@@ -38,10 +39,14 @@ public class HostingTests
                     configure.AddDefaultPacketHandlers();
                     configure.AddDefaultBehaviours();
                 });
+
             }, null);
+
+            server = hosting.Server;
 
             player = hosting.Server.AddFakePlayer();
             player.Client.IsConnected.Should().BeTrue();
+            server.IsRunning.Should().BeTrue();
 
             element.AssociateWith(hosting.Server);
         }
@@ -51,6 +56,7 @@ public class HostingTests
         player.Client.IsConnected.Should().BeFalse();
         sampleService.Started.Should().BeTrue();
         sampleService.Stopped.Should().BeTrue();
+        server.IsRunning.Should().BeFalse();
     }
 }
 

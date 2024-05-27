@@ -42,7 +42,7 @@ public class MtaServer
     private readonly List<INetWrapper> netWrappers;
     protected readonly List<IResourceServer> resourceServers;
     private readonly List<Resource> additionalResources;
-    protected readonly PacketReducer packetReducer;
+    protected PacketReducer? packetReducer;
     protected readonly Dictionary<INetWrapper, Dictionary<uint, IClient>> clients;
     protected readonly IServiceCollection? serviceCollection;
     protected readonly IServiceProvider serviceProvider;
@@ -123,7 +123,6 @@ public class MtaServer
         this.SetupDependencies(builder.LoadDependencies);
 
         this.serviceProvider = this.serviceCollection.BuildServiceProvider();
-        this.packetReducer = new(this.serviceProvider.GetRequiredService<ILogger>());
 
         this.elementCollection = this.serviceProvider.GetRequiredService<IElementCollection>();
         this.elementIdGenerator = this.serviceProvider.GetService<IElementIdGenerator>();
@@ -148,7 +147,6 @@ public class MtaServer
         this.Password = this.configuration.Password;
 
         this.serviceProvider = serviceProvider;
-        this.packetReducer = new(this.serviceProvider.GetRequiredService<ILogger>());
 
         this.elementCollection = this.serviceProvider.GetRequiredService<IElementCollection>();
         this.elementIdGenerator = this.serviceProvider.GetService<IElementIdGenerator>();
@@ -162,6 +160,8 @@ public class MtaServer
     public virtual void Start()
     {
         this.StartDatetime = DateTime.Now;
+
+        this.packetReducer = new(this.serviceProvider.GetRequiredService<ILogger>());
 
         foreach (var netWrapper in this.netWrappers)
         {
@@ -187,12 +187,19 @@ public class MtaServer
         foreach (var player in this.elementCollection.GetAll())
             player.Destroy();
 
+        foreach (var server in this.resourceServers)
+            server.Stop();
+
         foreach (var netWrapper in this.netWrappers)
         {
             netWrapper.Stop();
         }
 
-        this.packetReducer.Dispose();
+        if(this.packetReducer != null)
+        {
+            this.packetReducer.Dispose();
+            this.packetReducer = null;
+        }
 
         this.IsRunning = false;
     }

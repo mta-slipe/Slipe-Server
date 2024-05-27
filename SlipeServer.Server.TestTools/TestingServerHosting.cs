@@ -12,7 +12,7 @@ public class TestingServerHosting<T> : IDisposable where T : Player
 {
     private readonly IHost host;
 
-    public TestingServer<T> Server => this.host.Services.GetRequiredService<TestingServer<T>>();
+    public TestingServer<T> Server { get; }
     public IHost Host => this.host;
 
     public TestingServerHosting(Configuration configuration, Func<IServiceProvider, TestingServer<T>> serverFactory, Action<HostApplicationBuilder>? applicationBuilder = null, Action<ServerBuilder>? serverBuilder = null)
@@ -29,6 +29,8 @@ public class TestingServerHosting<T> : IDisposable where T : Player
         this.host = builder.Build();
 
         this.host.RunAsync();
+
+        this.Server = this.host.Services.GetRequiredService<TestingServer<T>>();
     }
 
     public void Dispose()

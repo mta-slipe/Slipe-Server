@@ -207,6 +207,8 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
     {
         this.StartDatetime = DateTime.Now;
 
+        this.packetReducer = new(this.serviceProvider.GetRequiredService<ILogger>());
+
         this.resourceProvider?.Refresh();
 
         foreach (var server in this.resourceServers)
@@ -217,9 +219,9 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
 
     public override void Stop()
     {
-        base.Stop();
-
         Stopped?.Invoke();
+
+        base.Stop();
     }
 }
 
