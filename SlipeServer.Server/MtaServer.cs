@@ -42,7 +42,7 @@ public class MtaServer
     private readonly List<INetWrapper> netWrappers;
     protected readonly List<IResourceServer> resourceServers;
     private readonly List<Resource> additionalResources;
-    protected PacketReducer? packetReducer;
+    protected PacketReducer packetReducer;
     protected readonly Dictionary<INetWrapper, Dictionary<uint, IClient>> clients;
     protected readonly IServiceCollection? serviceCollection;
     protected readonly IServiceProvider serviceProvider;
@@ -126,6 +126,7 @@ public class MtaServer
 
         this.elementCollection = this.serviceProvider.GetRequiredService<IElementCollection>();
         this.elementIdGenerator = this.serviceProvider.GetService<IElementIdGenerator>();
+        this.packetReducer = new(this.serviceProvider.GetRequiredService<ILogger>());
 
         this.root.AssociateWith(this);
 
@@ -150,6 +151,7 @@ public class MtaServer
 
         this.elementCollection = this.serviceProvider.GetRequiredService<IElementCollection>();
         this.elementIdGenerator = this.serviceProvider.GetService<IElementIdGenerator>();
+        this.packetReducer = new(this.serviceProvider.GetRequiredService<ILogger>());
 
         this.root.AssociateWith(this);
     }
