@@ -20,7 +20,7 @@ var configuration = builder.Configuration.GetRequiredSection("MtaServer").Get<Co
 builder.Services.AddHttpClient();
 builder.Services.AddDefaultMtaServerServices();
 builder.Services.AddLua();
-builder.Services.AddMtaServerWithDIPlaer<CustomPlayer>(configuration, builder =>
+builder.Services.AddMtaServerWithDIPlayer<CustomPlayer>(configuration, builder =>
 {
     builder.AddDefaultServices();
     builder.AddDefaultLuaMappings();

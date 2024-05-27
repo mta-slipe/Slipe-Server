@@ -19,10 +19,6 @@ public class TestingServerHosting<T> : IDisposable where T : Player
     {
         var builder = Microsoft.Extensions.Hosting.Host.CreateApplicationBuilder();
 
-        builder.Services.AddDefaultMtaServerServices();
-
-        builder.Services.AddHostedService<DefaultStartAllMtaServersHostedService>();
-
         builder.Services.AddMtaServer<TestingServer<T>>(configuration, serverFactory, builder =>
         {
             builder.AddDefaultServices();

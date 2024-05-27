@@ -181,10 +181,11 @@ public class MtaServer
     /// </summary>
     public virtual void Stop()
     {
-        foreach (var player in elementCollection.GetByType<Player>())
-        {
+        foreach (var player in this.elementCollection.GetByType<Player>())
             player.Kick(PlayerDisconnectType.SHUTDOWN);
-        }
+
+        foreach (var player in this.elementCollection.GetAll())
+            player.Destroy();
 
         foreach (var netWrapper in this.netWrappers)
         {
