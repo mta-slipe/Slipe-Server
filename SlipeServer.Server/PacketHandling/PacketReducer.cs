@@ -13,7 +13,7 @@ namespace SlipeServer.Server.PacketHandling;
 /// </summary>
 public class PacketReducer : IDisposable
 {
-    private readonly object _lock = new();
+    private readonly object @lock = new();
     private readonly List<IPacketQueueHandlerBase> packetQueueHandlers;
     private readonly List<IQueueHandler> queueHandlers;
     private readonly Dictionary<PacketId, List<IQueueHandler>> registeredQueueHandlers;
@@ -33,7 +33,7 @@ public class PacketReducer : IDisposable
 
     public void UnregisterQueueHandler(PacketId packetId, IQueueHandler queueHandler)
     {
-        lock (this._lock)
+        lock (this.@lock)
         {
             if (this.registeredQueueHandlers.TryGetValue(packetId, out var value))
             {
@@ -61,7 +61,7 @@ public class PacketReducer : IDisposable
             this.logger.LogWarning("Received unregistered packet {packetId}", packetId);
         }
 
-        lock (this._lock)
+        lock (this.@lock)
         {
             if (this.registeredQueueHandlers.TryGetValue(packetId, out var value))
             {
@@ -76,7 +76,7 @@ public class PacketReducer : IDisposable
 
     public void RegisterPacketHandler<TPacket>(PacketId packetId, IPacketQueueHandler<TPacket> handler) where TPacket : Packet, new()
     {
-        lock (this._lock)
+        lock (this.@lock)
         {
             if (!this.registeredPacketHandlerActions.ContainsKey(packetId))
             {
@@ -104,7 +104,7 @@ public class PacketReducer : IDisposable
 
     public void Dispose()
     {
-        lock (this._lock)
+        lock (this.@lock)
         {
             this.queueHandlers.Clear();
             this.registeredQueueHandlers.Clear();

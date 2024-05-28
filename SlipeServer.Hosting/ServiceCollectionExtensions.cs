@@ -35,7 +35,7 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddMtaServerWithDIPlayer<T>(this IServiceCollection services, Configuration configuration, Action<ServerBuilder>? builderAction = null)
+    public static IServiceCollection AddMtaServerWithDiPlayer<T>(this IServiceCollection services, Configuration configuration, Action<ServerBuilder>? builderAction = null)
         where T : Player
     {
         Directory.SetCurrentDirectory(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()!.Location)!);

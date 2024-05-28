@@ -12,7 +12,7 @@ builder.ConfigureServices((hostBuilderContext, services) =>
 
     services.AddHttpClient();
     services.AddDefaultMtaServerServices();
-    services.AddMtaServerWithDIPlayer<CustomPlayer>(configuration, builder =>
+    services.AddMtaServerWithDiPlayer<CustomPlayer>(configuration, builder =>
     {
         builder.AddDefaultServices();
         builder.AddDefaultLuaMappings();
