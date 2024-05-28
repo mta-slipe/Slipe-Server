@@ -1,4 +1,6 @@
-﻿namespace SlipeServer.Hosting;
+﻿using SlipeServer.Server;
+
+namespace SlipeServer.Hosting;
 
 public static class ServiceCollectionExtensions
 {
@@ -17,7 +19,23 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddMtaServer<T>(this IServiceCollection services, Configuration configuration, Action<ServerBuilder>? builderAction = null)
+    public static IServiceCollection AddMtaServer<T>(this IServiceCollection services, Configuration configuration, Func<IServiceProvider, T> serverFactory, Action<ServerBuilder>? builderAction = null)
+        where T : MtaServer
+    {
+        Directory.SetCurrentDirectory(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()!.Location)!);
+
+        if (builderAction != null)
+            services.AddHostedService(x => new BuildServerHostedService(x.GetRequiredService<IEnumerable<MtaServer>>(), builderAction));
+
+        services.AddSingleton(serverFactory);
+        services.AddSingleton<MtaServer>(x => x.GetRequiredService<T>());
+
+        services.AddSingleton<Configuration>(x => x.GetRequiredService<MtaServer>().Configuration);
+        services.AddSingleton<RootElement>(x => x.GetRequiredService<MtaServer>().RootElement);
+        return services;
+    }
+
+    public static IServiceCollection AddMtaServerWithDiPlayer<T>(this IServiceCollection services, Configuration configuration, Action<ServerBuilder>? builderAction = null)
         where T : Player
     {
         Directory.SetCurrentDirectory(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()!.Location)!);

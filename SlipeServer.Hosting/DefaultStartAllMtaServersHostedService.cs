@@ -28,7 +28,7 @@ public sealed class DefaultStartAllMtaServersHostedService : IHostedService
     }
 }
 
-public sealed class AddDefaultPacketHandlersHostedService : IHostedService
+public sealed class AddDefaultPacketHandlersHostedService : IHostedLifecycleService
 {
     private readonly IEnumerable<MtaServer> mtaServers;
     private readonly ServerBuilderDefaultPacketHandlers except;
@@ -41,6 +41,11 @@ public sealed class AddDefaultPacketHandlersHostedService : IHostedService
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
+        return Task.CompletedTask;
+    }
+
+    public Task StartedAsync(CancellationToken cancellationToken)
+    {
         foreach (var mtaServer in this.mtaServers)
         {
             mtaServer.AddDefaultPacketHandlers(this.except);
@@ -48,10 +53,27 @@ public sealed class AddDefaultPacketHandlersHostedService : IHostedService
         return Task.CompletedTask;
     }
 
+    public Task StartingAsync(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
+
+
     public Task StopAsync(CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }
+
+    public Task StoppedAsync(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
+
+    public Task StoppingAsync(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
+
 }
 
 public sealed class AddDefaultBehavioursHostedService : IHostedService
