@@ -98,9 +98,6 @@ public class Resource
             source.SetException(new TaskCanceledException());
         });
 
-        player.ResourceStarted += HandleResourceStart;
-        player.Disconnected += HandlePlayerDisconnected;
-
         void HandleResourceStart(Player sender, PlayerResourceStartedEventArgs e)
         {
             if (e.NetId != this.NetId || cts2.Token.IsCancellationRequested)
@@ -117,7 +114,19 @@ public class Resource
             source.SetException(new Exception("Player disconnected."));
         }
 
+        void HandleDestroed(Element destroyedElement)
+        {
+            if(player != destroyedElement || cts2.Token.IsCancellationRequested)
+                return;
+
+            source.SetException(new Exception("Player destroyed."));
+        }
+
         cts2.Token.ThrowIfCancellationRequested();
+
+        player.ResourceStarted += HandleResourceStart;
+        player.Disconnected += HandlePlayerDisconnected;
+        player.Destroyed += HandleDestroed;
 
         StartFor(player);
 
@@ -129,6 +138,7 @@ public class Resource
         {
             player.ResourceStarted -= HandleResourceStart;
             player.Disconnected -= HandlePlayerDisconnected;
+            player.Destroyed -= HandleDestroed;
         }
     }
 

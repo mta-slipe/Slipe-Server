@@ -73,7 +73,7 @@ public class PlayerTests
         
         var act = async () => await resource.StartForAsync(player, cts.Token);
 
-        await act.Should().ThrowAsync<TaskCanceledException>();
+        await act.Should().ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]
@@ -99,6 +99,33 @@ public class PlayerTests
 
         await Task.Delay(200); // Let StartForAsync execute for a while to block on "await source.Task"
         await cts.CancelAsync();
+        waitHandle.WaitOne(TimeSpan.FromSeconds(5));
+        cancelled.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ResourceShouldStopStartingWhenPlayerDisconnectFromTheServer()
+    {
+        var server = new TestingServer();
+        var player = server.AddFakePlayer();
+
+        var resource = new Resource(server, server.RootElement, "test");
+
+        var cts = new CancellationTokenSource();
+        
+        var act = async () => await resource.StartForAsync(player, cts.Token);
+
+        var waitHandle = new ManualResetEvent(false);
+        var cancelled = false;
+        var _ = Task.Run(async () =>
+        {
+            await act.Should().ThrowAsync<Exception>();
+            waitHandle.Set();
+            cancelled = true;
+        });
+
+        await Task.Delay(200); // Let StartForAsync execute for a while to block on "await source.Task"
+        player.Kick();
         waitHandle.WaitOne(TimeSpan.FromSeconds(5));
         cancelled.Should().BeTrue();
     }
