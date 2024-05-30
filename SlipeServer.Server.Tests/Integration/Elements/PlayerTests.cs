@@ -4,7 +4,11 @@ using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Loggers;
 using SlipeServer.Server.PacketHandling.Handlers.Player;
 using SlipeServer.Server.PacketHandling.Handlers.QueueHandlers;
+using SlipeServer.Server.Resources;
 using SlipeServer.Server.TestTools;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SlipeServer.Server.Tests.Integration.Elements;
@@ -54,5 +58,48 @@ public class PlayerTests
 
         player.IsDestroyed.Should().BeTrue();
         player.Client.IsConnected.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task StartForAsyncShouldBeCancellable()
+    {
+        var server = new TestingServer();
+        var player = server.AddFakePlayer();
+
+        var resource = new Resource(server, server.RootElement, "test");
+
+        var cts = new CancellationTokenSource();
+        cts.Cancel();
+        
+        var act = async () => await resource.StartForAsync(player, cts.Token);
+
+        await act.Should().ThrowAsync<TaskCanceledException>();
+    }
+
+    [Fact]
+    public async Task StartForAsyncShouldBeCancellable2()
+    {
+        var server = new TestingServer();
+        var player = server.AddFakePlayer();
+
+        var resource = new Resource(server, server.RootElement, "test");
+
+        var cts = new CancellationTokenSource();
+        
+        var act = async () => await resource.StartForAsync(player, cts.Token);
+
+        var waitHandle = new ManualResetEvent(false);
+        var cancelled = false;
+        var _ = Task.Run(async () =>
+        {
+            await act.Should().ThrowAsync<TaskCanceledException>();
+            waitHandle.Set();
+            cancelled = true;
+        });
+
+        await Task.Delay(200); // Let StartForAsync execute for a while to block on "await source.Task"
+        await cts.CancelAsync();
+        waitHandle.WaitOne(TimeSpan.FromSeconds(5));
+        cancelled.Should().BeTrue();
     }
 }
