@@ -22,9 +22,8 @@ public class BasicHttpServer : IResourceServer
 
     private bool isRunning;
 
-    public BasicHttpServer(MtaServer mtaServer, ILogger logger)
+    public BasicHttpServer(Configuration configuration, ILogger logger)
     {
-        var configuration = mtaServer.Configuration;
         this.httpAddress = $"http://{configuration.HttpHost}:{configuration.HttpPort}/";
         this.httpListener = new HttpListener();
         this.httpListener.Prefixes.Add(this.httpAddress);

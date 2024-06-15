@@ -43,7 +43,7 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
         SetupSendPacketMocks();
     }
     
-    public TestingServer(IServiceProvider serviceProvider, Configuration configuration = null) : base(serviceProvider, configuration)
+    public TestingServer(IServiceProvider serviceProvider, Action<ServerBuilder> builderAction) : base(serviceProvider, builderAction)
     {
         this.NetWrapperMock = new Mock<INetWrapper>();
         this.clients[this.NetWrapperMock.Object] = new();
@@ -207,8 +207,6 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
     {
         this.StartDatetime = DateTime.Now;
 
-        this.packetReducer = new(this.serviceProvider.GetRequiredService<ILogger>());
-
         this.resourceProvider?.Refresh();
 
         foreach (var server in this.resourceServers)
@@ -232,7 +230,7 @@ public class TestingServer : TestingServer<TestingPlayer>
 
     }
 
-    public TestingServer(IServiceProvider serviceProvider, Configuration configuration = null) : base(serviceProvider, configuration)
+    public TestingServer(IServiceProvider serviceProvider, Action<ServerBuilder> builderAction) : base(serviceProvider, builderAction)
     {
 
     }

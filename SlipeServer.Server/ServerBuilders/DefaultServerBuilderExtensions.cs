@@ -139,6 +139,32 @@ public static class DefaultServerBuilderExtensions
         builder.AddDefaultNetWrapper();
     }
 
+    /// <summary>
+    /// Registers all default packet handlers, behaviours, services, lua mappings, resource servers, resource interpreters, and networking interfaces
+    /// More information can be found on https://server.mta-slipe.com/articles/getting-started/configuration.html#building-your-server
+    /// </summary>
+    /// <param name="exceptPacketHandlers">Packet handlers to exclude</param>
+    /// <param name="exceptBehaviours">Behaviours to exclude</param>
+    /// <param name="exceptServices">Services to exclude</param>
+    /// <param name="exceptMiddleware">Middleware to exclude</param>
+    /// <param name="exceptResourceInterpreters">Resource interpreters to exclude</param>
+    public static void AddHostedDefaults(
+        this ServerBuilder builder,
+        ServerBuilderDefaultPacketHandlers exceptPacketHandlers = ServerBuilderDefaultPacketHandlers.None,
+        ServerBuilderDefaultBehaviours exceptBehaviours = ServerBuilderDefaultBehaviours.None,
+        ServerBuilderDefaultMiddleware exceptMiddleware = ServerBuilderDefaultMiddleware.None,
+        ServerBuilderDefaultResourceInterpreters exceptResourceInterpreters = ServerBuilderDefaultResourceInterpreters.None)
+    {
+        builder.AddDefaultPacketHandler(exceptPacketHandlers);
+        builder.AddDefaultBehaviours(exceptBehaviours);
+        builder.AddDefaultLuaMappings();
+
+        builder.AddResourceServer<BasicHttpServer>();
+        builder.AddDefaultResourceInterpreters(exceptResourceInterpreters);
+
+        builder.AddDefaultNetWrapper();
+    }
+
     public static void AddDefaultNetWrapper(this ServerBuilder builder)
     {
         builder.AddNetWrapper(

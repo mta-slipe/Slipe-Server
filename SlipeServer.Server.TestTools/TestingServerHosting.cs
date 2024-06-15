@@ -15,15 +15,17 @@ public class TestingServerHosting<T> : IDisposable where T : Player
     public TestingServer<T> Server { get; }
     public IHost Host => this.host;
 
-    public TestingServerHosting(Configuration configuration, Func<IServiceProvider, TestingServer<T>> serverFactory, Action<HostApplicationBuilder>? applicationBuilder = null, Action<ServerBuilder>? serverBuilder = null)
+    public TestingServerHosting(
+        Configuration configuration, 
+        Action<HostApplicationBuilder>? applicationBuilder = null, 
+        Action<ServerBuilder>? serverBuilder = null)
     {
         var builder = Microsoft.Extensions.Hosting.Host.CreateApplicationBuilder();
 
-        builder.Services.AddMtaServer<TestingServer<T>>(configuration, serverFactory, builder =>
+        builder.AddMtaServer<TestingServer<T>>(new TestingServer<T>(configuration, x =>
         {
-            builder.AddDefaultServices();
-            serverBuilder?.Invoke(builder);
-        });
+            serverBuilder?.Invoke(x);
+        }));
 
         applicationBuilder?.Invoke(builder);
         this.host = builder.Build();
@@ -47,7 +49,11 @@ public class TestingServerHosting<T> : IDisposable where T : Player
 
 public class TestingServerHosting : TestingServerHosting<TestingPlayer>
 {
-    public TestingServerHosting(Configuration configuration, Action<HostApplicationBuilder>? applicationBuilder = null, Action<ServerBuilder>? serverBuilder = null) : base(configuration, services => new TestingServer<TestingPlayer>(services, configuration), applicationBuilder, serverBuilder)
+    public TestingServerHosting(
+        Configuration configuration, 
+        Action<HostApplicationBuilder>? applicationBuilder = null, 
+        Action<ServerBuilder> serverBuilder = null
+    ) : base(configuration, applicationBuilder, serverBuilder)
     {
 
     }

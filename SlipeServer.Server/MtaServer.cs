@@ -133,7 +133,9 @@ public class MtaServer
         builder.ApplyTo(this);
     }
 
-    public MtaServer(IServiceProvider serviceProvider, Configuration configuration)
+    public Action? BuildFinalizer { get; }
+
+    public MtaServer(IServiceProvider serviceProvider, Action<ServerBuilder> builderAction)
     {
         this.netWrappers = new();
         this.clients = new();
@@ -144,7 +146,10 @@ public class MtaServer
 
         this.root = new();
 
-        this.configuration = configuration;
+        var builder = new ServerBuilder();
+        builderAction(builder);
+
+        this.configuration = builder.Configuration;
         this.Password = this.configuration.Password;
 
         this.serviceProvider = serviceProvider;
@@ -154,6 +159,8 @@ public class MtaServer
         this.packetReducer = new(this.serviceProvider.GetRequiredService<ILogger>());
 
         this.root.AssociateWith(this);
+
+        this.BuildFinalizer = () => builder.ApplyTo(this);
     }
 
     /// <summary>
@@ -162,8 +169,6 @@ public class MtaServer
     public virtual void Start()
     {
         this.StartDatetime = DateTime.Now;
-
-        this.packetReducer = new(this.serviceProvider.GetRequiredService<ILogger>());
 
         foreach (var netWrapper in this.netWrappers)
         {
@@ -195,12 +200,6 @@ public class MtaServer
         foreach (var netWrapper in this.netWrappers)
         {
             netWrapper.Stop();
-        }
-
-        if(this.packetReducer != null)
-        {
-            this.packetReducer.Dispose();
-            this.packetReducer = null;
         }
 
         this.IsRunning = false;
@@ -640,8 +639,8 @@ public class MtaServer
     /// </summary>
     /// <param name="builderAction">Action that allows you to configure the server</param>
     /// <returns></returns>
-    public static MtaServer Create(IServiceProvider serviceProvider, Configuration configuration)
-        => new(serviceProvider, configuration);
+    public static MtaServer Create(IServiceProvider serviceProvider, Action<ServerBuilder> builderAction)
+        => new(serviceProvider, builderAction);
 
     /// <summary>
     /// Creates an MTA server using a specific type for connecting players
@@ -695,7 +694,7 @@ public class MtaServer
 /// <typeparam name="TPlayer">The player type</typeparam>
 public abstract class MtaServer<TPlayer> : MtaServer where TPlayer : Player
 {
-    public MtaServer(IServiceProvider serviceProvider, Configuration configuration) : base(serviceProvider, configuration) { }
+    public MtaServer(IServiceProvider serviceProvider, Action<ServerBuilder> builderAction) : base(serviceProvider, builderAction) { }
 
     public MtaServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
 
@@ -724,6 +723,7 @@ public abstract class MtaServer<TPlayer> : MtaServer where TPlayer : Player
 /// <typeparam name="TPlayer">The player type</typeparam>
 public class MtaNewPlayerServer<TPlayer> : MtaServer<TPlayer> where TPlayer : Player, new()
 {
+    public MtaNewPlayerServer(IServiceProvider serviceProvider, Action<ServerBuilder> builderAction) : base(serviceProvider, builderAction) { }
     internal MtaNewPlayerServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
 
     protected override IClient CreateClient(uint binaryAddress, INetWrapper netWrapper)
@@ -742,7 +742,7 @@ public class MtaDiPlayerServer<TPlayer> : MtaServer<TPlayer> where TPlayer : Pla
 {
     public MtaDiPlayerServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
 
-    public MtaDiPlayerServer(IServiceProvider serviceProvider, Configuration configuration) : base(serviceProvider, configuration) { }
+    public MtaDiPlayerServer(IServiceProvider serviceProvider, Action<ServerBuilder> builderAction) : base(serviceProvider, builderAction) { }
 
     protected override IClient CreateClient(uint binaryAddress, INetWrapper netWrapper)
     {
