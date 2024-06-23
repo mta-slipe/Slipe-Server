@@ -46,14 +46,14 @@ public static class DefaultServerBuilderExtensions
 {
     public static void AddDefaultPacketHandler(
         this ServerBuilder builder,
-        ServerBuilderDefaultPacketHandlers except = ServerBuilderDefaultPacketHandlers.None)
+        ServerBuilderDefaultPacketHandlers except = ServerBuilderDefaultPacketHandlers.Default)
     {
         builder.AddBuildStep(server => server.AddDefaultPacketHandlers(except));
     }
 
     public static void AddDefaultBehaviours(
         this ServerBuilder builder,
-        ServerBuilderDefaultBehaviours except = ServerBuilderDefaultBehaviours.None)
+        ServerBuilderDefaultBehaviours except = ServerBuilderDefaultBehaviours.Default)
     {
         builder.AddBuildStep(server => server.AddDefaultBehaviours(except));
     }
@@ -122,8 +122,8 @@ public static class DefaultServerBuilderExtensions
     /// <param name="exceptResourceInterpreters">Resource interpreters to exclude</param>
     public static void AddDefaults(
         this ServerBuilder builder,
-        ServerBuilderDefaultPacketHandlers exceptPacketHandlers = ServerBuilderDefaultPacketHandlers.None,
-        ServerBuilderDefaultBehaviours exceptBehaviours = ServerBuilderDefaultBehaviours.None,
+        ServerBuilderDefaultPacketHandlers exceptPacketHandlers = ServerBuilderDefaultPacketHandlers.Default,
+        ServerBuilderDefaultBehaviours exceptBehaviours = ServerBuilderDefaultBehaviours.Default,
         ServerBuilderDefaultServices exceptServices = ServerBuilderDefaultServices.None,
         ServerBuilderDefaultMiddleware exceptMiddleware = ServerBuilderDefaultMiddleware.None,
         ServerBuilderDefaultResourceInterpreters exceptResourceInterpreters = ServerBuilderDefaultResourceInterpreters.None)
@@ -150,8 +150,8 @@ public static class DefaultServerBuilderExtensions
     /// <param name="exceptResourceInterpreters">Resource interpreters to exclude</param>
     public static void AddHostedDefaults(
         this ServerBuilder builder,
-        ServerBuilderDefaultPacketHandlers exceptPacketHandlers = ServerBuilderDefaultPacketHandlers.None,
-        ServerBuilderDefaultBehaviours exceptBehaviours = ServerBuilderDefaultBehaviours.None,
+        ServerBuilderDefaultPacketHandlers exceptPacketHandlers = ServerBuilderDefaultPacketHandlers.Default,
+        ServerBuilderDefaultBehaviours exceptBehaviours = ServerBuilderDefaultBehaviours.Default,
         ServerBuilderDefaultMiddleware exceptMiddleware = ServerBuilderDefaultMiddleware.None,
         ServerBuilderDefaultResourceInterpreters exceptResourceInterpreters = ServerBuilderDefaultResourceInterpreters.None)
     {

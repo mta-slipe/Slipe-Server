@@ -7,6 +7,9 @@ using SlipeServer.Server.Mappers;
 using SlipeServer.Console.Logic;
 using SlipeServer.Lua;
 using SlipeServer.WebHostBuilderExample;
+using SlipeServer.Server.Behaviour;
+
+Directory.SetCurrentDirectory(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()!.Location)!);
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,7 +32,10 @@ builder.Services.TryAddSingleton<ILogger>(x => x.GetRequiredService<ILogger<MtaS
 builder.AddMtaServer(serverBuilder =>
 {
     var isDevelopment = builder.Environment.IsDevelopment();
-    var exceptBehaviours = isDevelopment ? ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour : ServerBuilderDefaultBehaviours.None;
+    var exceptBehaviours = ServerBuilderDefaultBehaviours.Default;
+
+    if (isDevelopment)
+        exceptBehaviours |= ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour;
 
     serverBuilder.AddHostedDefaults(exceptBehaviours: exceptBehaviours);
     serverBuilder.AddSampleResource();
