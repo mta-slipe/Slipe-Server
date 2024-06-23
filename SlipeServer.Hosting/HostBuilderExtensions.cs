@@ -2,6 +2,13 @@
 
 public static class HostBuilderExtensions
 {
+    private static IServiceCollection AddMtaServerCore(this IServiceCollection services)
+    {
+        services.AddSingleton<Configuration>(x => x.GetRequiredService<MtaServer>().Configuration);
+        services.AddSingleton<RootElement>(x => x.GetRequiredService<MtaServer>().RootElement);
+        return services;
+    }
+
     public static IHostBuilder AddMtaServer(this IHostBuilder host, Action<ServerBuilder> buildAction)
     {
         host.ConfigureServices((context, services) =>
@@ -11,8 +18,7 @@ public static class HostBuilderExtensions
             services.AddSingleton<MtaServer>(x => new MtaServer(x, buildAction));
             services.AddHostedService<MtaServerHostedService<MtaServer>>();
 
-            services.AddSingleton<Configuration>(x => x.GetRequiredService<MtaServer>().Configuration);
-            services.AddSingleton<RootElement>(x => x.GetRequiredService<MtaServer>().RootElement);
+            services.AddMtaServerCore();
         });
 
         return host;
@@ -25,8 +31,7 @@ public static class HostBuilderExtensions
         host.Services.AddSingleton<MtaServer>(x => new MtaServer(x, buildAction));
         host.Services.AddHostedService<MtaServerHostedService<MtaServer>>();
 
-        host.Services.AddSingleton<Configuration>(x => x.GetRequiredService<MtaServer>().Configuration);
-        host.Services.AddSingleton<RootElement>(x => x.GetRequiredService<MtaServer>().RootElement);
+        host.Services.AddMtaServerCore();
 
         return host;
     }
@@ -42,8 +47,7 @@ public static class HostBuilderExtensions
             services.AddSingleton<MtaServer>(x => x.GetRequiredService<MtaServer<T>>());
             services.AddHostedService<MtaServerHostedService<MtaServer>>();
 
-            services.AddSingleton<Configuration>(x => x.GetRequiredService<MtaServer>().Configuration);
-            services.AddSingleton<RootElement>(x => x.GetRequiredService<MtaServer>().RootElement);
+            services.AddMtaServerCore();
         });
 
         return host;
@@ -57,8 +61,7 @@ public static class HostBuilderExtensions
         host.Services.AddSingleton<MtaServer>(x => x.GetRequiredService<MtaServer<T>>());
         host.Services.AddHostedService<MtaServerHostedService<MtaServer>>();
 
-        host.Services.AddSingleton<Configuration>(x => x.GetRequiredService<MtaServer>().Configuration);
-        host.Services.AddSingleton<RootElement>(x => x.GetRequiredService<MtaServer>().RootElement);
+        host.Services.AddMtaServerCore();
 
         return host;
     }
@@ -74,8 +77,7 @@ public static class HostBuilderExtensions
             services.AddSingleton<MtaServer>(x => x.GetRequiredService<MtaDiPlayerServer<T>>());
             services.AddHostedService<MtaServerHostedService<MtaServer>>();
 
-            services.AddSingleton<Configuration>(x => x.GetRequiredService<MtaServer>().Configuration);
-            services.AddSingleton<RootElement>(x => x.GetRequiredService<MtaServer>().RootElement);
+            services.AddMtaServerCore();
         });
 
         return host;
@@ -89,8 +91,20 @@ public static class HostBuilderExtensions
         host.Services.AddSingleton<MtaServer>(x => x.GetRequiredService<MtaDiPlayerServer<T>>());
         host.Services.AddHostedService<MtaServerHostedService<MtaServer>>();
 
-        host.Services.AddSingleton<Configuration>(x => x.GetRequiredService<MtaServer>().Configuration);
-        host.Services.AddSingleton<RootElement>(x => x.GetRequiredService<MtaServer>().RootElement);
+        host.Services.AddMtaServerCore();
+
+        return host;
+    }
+    
+    public static IHostApplicationBuilder AddCustomMtaServerWithDiSupport<T>(this IHostApplicationBuilder host, Func<IServiceProvider, T> factory) where T : MtaServer
+    {
+        host.Services.AddDefaultMtaServerServices();
+
+        host.Services.AddSingleton<T>(x => factory(x));
+        host.Services.AddSingleton<MtaServer>(x => x.GetRequiredService<T>());
+        host.Services.AddHostedService<MtaServerHostedService<MtaServer>>();
+
+        host.Services.AddMtaServerCore();
 
         return host;
     }
@@ -105,8 +119,7 @@ public static class HostBuilderExtensions
             services.AddSingleton<MtaServer>(server);
             services.AddHostedService<MtaServerHostedService<MtaServer>>();
 
-            services.AddSingleton<Configuration>(x => x.GetRequiredService<MtaServer>().Configuration);
-            services.AddSingleton<RootElement>(x => x.GetRequiredService<MtaServer>().RootElement);
+            services.AddMtaServerCore();
         });
 
         return host;
@@ -119,8 +132,7 @@ public static class HostBuilderExtensions
         host.Services.AddSingleton<MtaServer>(server);
         host.Services.AddHostedService<MtaServerHostedService<MtaServer>>();
 
-        host.Services.AddSingleton<Configuration>(x => x.GetRequiredService<MtaServer>().Configuration);
-        host.Services.AddSingleton<RootElement>(x => x.GetRequiredService<MtaServer>().RootElement);
+        host.Services.AddMtaServerCore();
 
         return host;
     }
@@ -136,8 +148,7 @@ public static class HostBuilderExtensions
             services.AddSingleton<T>(server);
             services.AddHostedService<MtaServerHostedService<MtaServer>>();
 
-            services.AddSingleton<Configuration>(x => x.GetRequiredService<MtaServer>().Configuration);
-            services.AddSingleton<RootElement>(x => x.GetRequiredService<MtaServer>().RootElement);
+            services.AddMtaServerCore();
         });
 
         return host;
@@ -147,12 +158,11 @@ public static class HostBuilderExtensions
     {
         host.Services.AddDefaultMtaServerServices();
 
-        host.Services.AddSingleton<MtaServer>(server);
         host.Services.AddSingleton<T>(server);
+        host.Services.AddSingleton<MtaServer>(x => x.GetRequiredService<T>());
         host.Services.AddHostedService<MtaServerHostedService<MtaServer>>();
 
-        host.Services.AddSingleton<Configuration>(x => x.GetRequiredService<MtaServer>().Configuration);
-        host.Services.AddSingleton<RootElement>(x => x.GetRequiredService<MtaServer>().RootElement);
+        host.Services.AddMtaServerCore();
 
         return host;
     }
