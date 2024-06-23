@@ -264,11 +264,6 @@ public class Player : Ped
         this.Client.SendPacket(PlayerPacketFactory.CreateTransferBoxVisiblePacket(isVisible));
     }
 
-    public void ToggleAllControls(bool isEnabled, bool gtaControls = true, bool mtaControls = true)
-    {
-        this.Client.SendPacket(PlayerPacketFactory.CreateToggleAllControlsPacket(isEnabled, gtaControls, mtaControls));
-    }
-
     public void TriggerCommand(string command, string[] arguments)
     {
         this.CommandEntered?.Invoke(this, new PlayerCommandEventArgs(this, command, arguments));

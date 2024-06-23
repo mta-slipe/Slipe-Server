@@ -19,6 +19,15 @@ public class SampleHostedService : IHostedService
         this.chatBox = chatBox;
         this.resourceProvider = resourceProvider;
         commandService.AddCommand("startSample").Triggered += HandleStartSample;
+        commandService.AddCommand("toggle").Triggered += HandleTriggered;
+    }
+
+    private void HandleTriggered(object? sender, SlipeServer.Server.Events.CommandTriggeredEventArgs e)
+    {
+        var controls = e.Player.Controls;
+        controls.ToggleAll(false);
+        controls.ForwardsEnabled = true;
+        this.chatBox.OutputTo(e.Player, "Toggle");
     }
 
     private void HandleStartSample(object? sender, SlipeServer.Server.Events.CommandTriggeredEventArgs e)

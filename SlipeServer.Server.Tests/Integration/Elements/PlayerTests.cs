@@ -55,4 +55,14 @@ public class PlayerTests
         player.IsDestroyed.Should().BeTrue();
         player.Client.IsConnected.Should().BeFalse();
     }
+
+    [Fact]
+    public void ControlsShouldWork()
+    {
+        var server = new TestingServer();
+        var player = server.AddFakePlayer();
+
+        player.Controls.ToggleAll(false);
+        player.Controls.ForwardsEnabled.Should().BeFalse();
+    }
 }
