@@ -8,6 +8,8 @@ using SlipeServer.Console.Logic;
 using SlipeServer.Lua;
 using SlipeServer.WebHostBuilderExample;
 
+Directory.SetCurrentDirectory(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()!.Location)!);
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
