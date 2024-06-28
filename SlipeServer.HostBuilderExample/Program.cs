@@ -1,40 +1,28 @@
-﻿using Microsoft.Extensions.DependencyInjection.Extensions;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using SlipeServer.Server.Resources.Serving;
-using SlipeServer.Server.Mappers;
-using Microsoft.Extensions.Configuration;
+
+
+Configuration? configuration = null;
 
 var builder = Host.CreateDefaultBuilder(args);
-
-builder.ConfigureServices((hostBuilderContext, services) =>
-{
-    var configuration = hostBuilderContext.Configuration.GetRequiredSection("MtaServer").Get<Configuration>();
-
-    services.AddHttpClient();
-    services.AddDefaultMtaServerServices();
-    services.AddMtaServerWithDiPlayer<CustomPlayer>(configuration, builder =>
+builder
+    .ConfigureServices((hostBuilderContext, services) =>
     {
-        builder.AddDefaultServices();
-        builder.AddDefaultLuaMappings();
-        builder.AddDefaultNetWrapper();
+        configuration = hostBuilderContext.Configuration.GetRequiredSection("MtaServer").Get<Configuration>();
+
+        services.AddHttpClient();
+        services.AddSingleton<IResourceServer, BasicHttpServer>();
+
+        services.AddHostedService<SampleHostedService>(); // Use instead of logics
+        services.TryAddSingleton<ILogger>(x => x.GetRequiredService<ILogger<MtaServer>>());
+    })
+    .AddMtaServer(builder =>
+    {
+        builder.UseConfiguration(configuration!);
+        builder.AddHostedDefaults(exceptBehaviours: ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour);
     });
-
-    services.AddSingleton<IResourceServer, BasicHttpServer>();
-
-    services.AddHostedService<SampleHostedService>(); // Use instead of logics
-    services.TryAddSingleton<ILogger>(x => x.GetRequiredService<ILogger<MtaServer>>());
-});
-
-builder.ConfigureMtaServers((context, configure) =>
-{
-    var isDevelopment = context.HostingEnvironment.IsDevelopment();
-    var exceptBehaviours = isDevelopment ? ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour : ServerBuilderDefaultBehaviours.None;
-
-    configure.AddDefaultPacketHandlers();
-    configure.AddDefaultBehaviours(exceptBehaviours);
-    configure.StartAllServers();
-});
-
 
 var app = builder.Build();
 
