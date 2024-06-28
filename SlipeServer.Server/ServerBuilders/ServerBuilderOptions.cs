@@ -7,6 +7,11 @@ public enum ServerBuilderDefaultPacketHandlers : ulong
 {
     None = 0x00,
 
+    /// <summary>
+    /// Default includes all except CustomDataPacketHandler
+    /// </summary>
+    Default = CustomDataPacketHandler,
+
     JoinedGamePacketHandler = 0x01,
     JoinDataPacketHandler = 0x02,
     PlayerQuitPacketHandler = 0x04,
@@ -61,6 +66,11 @@ public enum ServerBuilderDefaultPacketHandlers : ulong
 public enum ServerBuilderDefaultBehaviours : ulong
 {
     None = 0x00,
+
+    /// <summary>
+    /// Default includes all except CustomDataBehaviour
+    /// </summary>
+    Default = CustomDataBehaviour,
 
     AseBehaviour = 0x01,
     LocalServerAnnouncementBehaviour = 0x02,
