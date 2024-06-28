@@ -4,6 +4,7 @@ using SlipeServer.Packets.Lua.Event;
 using SlipeServer.Server.Clients;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Lua;
@@ -13,13 +14,23 @@ struct LatentTransfer
     public ushort Id { get; set; }
     public IClient Source { get; set; }
     public LatentEventCategory Category { get; set; }
-    public List<byte> Data { get; set; } = new();
+    public MemoryStream Data { get; set; }
 
-    public LatentTransfer(ushort id, IClient source, LatentEventCategory category)
+    public LatentTransfer(ushort id, IClient source, LatentEventCategory category, uint capacity)
     {
+        // If greater than 100MB
+        if(capacity > 1024 * 1024 * 100)
+        {
+            throw new ArgumentOutOfRangeException(nameof(capacity));
+        }
+        if(capacity <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(capacity));
+        }
         this.Id = id;
         this.Source = source;
         this.Category = category;
+        this.Data = new((int)capacity);
     }
 }
 
@@ -44,28 +55,30 @@ public class LatentLuaEventPacketHandler : IPacketHandler<LatentLuaEventPacket>
     public void HandlePacket(IClient client, LatentLuaEventPacket packet)
     {
         LatentTransfer transfer;
-        switch (packet.Flag)
+        if (packet.Header != null)
         {
-            case LatentEventFlag.Head:
-                if (packet.Header == null)
-                    throw new Exception("Latent transfer Head flag encountered without corresponding header");
+            transfer = new LatentTransfer(packet.Id, client, packet.Header.Value.Category, packet.Header.Value.FinalSize);
+            if(this.transfers.ContainsKey(client))
+                throw new Exception("Client already have pending transfer");
 
-                transfer = new LatentTransfer(packet.Id, client, packet.Header.Value.Category);
-                this.transfers[client] = transfer;
-                break;
-            case LatentEventFlag.Cancel:
-                this.transfers.Remove(client);
-                return;
-            default:
-                transfer = this.transfers[client];
-                break;
+            this.transfers[client] = transfer;
+        } else
+        {
+            switch (packet.Flag)
+            {
+                case LatentEventFlag.Cancel:
+                    this.transfers.Remove(client);
+                    return;
+                default:
+                    transfer = this.transfers[client];
+                    break;
+            }
         }
 
         if (transfer.Id != packet.Id)
             throw new Exception("Latent transfer mismatch");
 
-        foreach (var b in packet.Data)
-            transfer.Data.Add(b);
+        transfer.Data.Write(packet.Data.ToArray());
 
         if (packet.Flag == LatentEventFlag.Tail)
         {

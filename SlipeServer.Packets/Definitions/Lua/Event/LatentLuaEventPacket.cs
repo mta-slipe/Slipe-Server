@@ -44,6 +44,12 @@ public class LatentLuaEventPacket : Packet
 
     }
 
+    public override void Reset()
+    {
+        this.Header = null;
+        this.Flag = null;
+    }
+
     public override byte[] Write()
     {
         PacketBuilder builder = new PacketBuilder();
@@ -82,14 +88,19 @@ public class LatentLuaEventPacket : Packet
         if (reader.GetBit())
         {
             this.Flag = (LatentEventFlag)reader.GetByte();
-            if (this.Flag == LatentEventFlag.Head)
-                this.Header = new LatentEventHeader()
-                {
-                    Category = (LatentEventCategory)reader.GetUint16(),
-                    FinalSize = reader.GetUint32(),
-                    Rate = reader.GetUint32(),
-                    ResourceNetId = reader.GetUint16()
-                };
+            switch (this.Flag)
+            {
+                case LatentEventFlag.Head:
+                    this.Header = new LatentEventHeader()
+                    {
+                        Category = (LatentEventCategory)reader.GetUint16(),
+                        FinalSize = reader.GetUint32(),
+                        Rate = reader.GetUint32(),
+                        ResourceNetId = reader.GetUint16()
+                    };
+                    break;
+
+            }
         }
 
         reader.AlignToByteBoundary();
