@@ -146,6 +146,7 @@ public class ServerTestLogic
 
         this.luaService.AddEventHandler("Slipe.Test.Event", (e) => this.TriggerTestEvent(e.Player));
         this.luaService.AddEventHandler("Slipe.Test.SampleEvent", (e) => this.HandleSampleEvent(e));
+        this.luaService.AddEventHandler("exampleLatentTrigger", this.HandleLatentEvent);
 
         this.worldService.SetWeather(Weather.ExtraSunnyDesert);
         this.worldService.CloudsEnabled = false;
@@ -1647,6 +1648,11 @@ public class ServerTestLogic
         sampleValue.Parse(luaEvent.Parameters.First());
 
         this.logger.LogInformation("{event}", JsonConvert.SerializeObject(sampleValue));
+    }
+
+    private void HandleLatentEvent(LuaEvent luaEvent)
+    {
+        System.Console.WriteLine("exampleLatentTrigger received: {0}", luaEvent.Parameters[0].StringValue.Length);
     }
 
     private void TriggerTestEvent(Player player)
