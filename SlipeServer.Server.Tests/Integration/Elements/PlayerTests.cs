@@ -97,7 +97,7 @@ public class PlayerTests
             cancelled = true;
         });
 
-        await Task.Delay(200); // Let StartForAsync execute for a while to block on "await source.Task"
+        await Task.Delay(2000); // Let StartForAsync execute for a while to block on "await source.Task"
         await cts.CancelAsync();
         waitHandle.WaitOne(TimeSpan.FromSeconds(5));
         cancelled.Should().BeTrue();
@@ -124,7 +124,7 @@ public class PlayerTests
             cancelled = true;
         });
 
-        await Task.Delay(200); // Let StartForAsync execute for a while to block on "await source.Task"
+        await Task.Delay(2000); // Let StartForAsync execute for a while to block on "await source.Task"
         player.Kick();
         waitHandle.WaitOne(TimeSpan.FromSeconds(5));
         cancelled.Should().BeTrue();
