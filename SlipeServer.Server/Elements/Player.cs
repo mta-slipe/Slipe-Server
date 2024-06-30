@@ -327,6 +327,7 @@ public class Player : Ped
     public void Kick(PlayerDisconnectType type = PlayerDisconnectType.CUSTOM)
     {
         this.Kicked?.Invoke(this, new PlayerKickEventArgs(string.Empty, type));
+        this.TriggerDisconnected(QuitReason.Kick);
         this.Client.SendPacket(new PlayerDisconnectPacket(type, string.Empty));
         this.Client.IsConnected = false;
         this.Client.SetDisconnected();
@@ -336,6 +337,7 @@ public class Player : Ped
     public void Kick(string reason, PlayerDisconnectType type = PlayerDisconnectType.CUSTOM)
     {
         this.Kicked?.Invoke(this, new PlayerKickEventArgs(reason, type));
+        this.TriggerDisconnected(QuitReason.Kick);
         this.Client.SendPacket(new PlayerDisconnectPacket(type, reason));
         this.Client.IsConnected = false;
         this.Client.SetDisconnected();
