@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlipeServer.Server.AllSeeingEye;
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Timers;
@@ -39,31 +40,31 @@ public class MasterServerAnnouncementBehaviour
 
     private async void OnTimerElapsed(object? sender, ElapsedEventArgs e)
     {
-        await AnnounceToMasterServer();
+        try
+        {
+            await AnnounceToMasterServer();
+        }
+        catch(Exception ex)
+        {
+            this.logger.LogError("Failed to announce to master server list: {message}", ex.Message);
+        }
     }
 
     private async Task AnnounceToMasterServer()
     {
-        try
+        byte[] data = this.aseQueryService.QueryLight(this.configuration.Port);
+        string version = "1.6.0-1.0";
+        string extra = "0_0_0_0_0";
+
+        string url = $"{this.masterServerUrl}?g={this.configuration.Port}&a={this.configuration.Port + 123}&h={this.configuration.HttpPort}&v={version}&x={extra}&ip=0.0.0.0";
+        var response = await this.httpClient.PostAsync(url, new ByteArrayContent(data));
+
+        var keyValuePairCollection = HttpUtility.ParseQueryString(await response.Content.ReadAsStringAsync());
+        if (int.TryParse(keyValuePairCollection["interval"], out int interval))
         {
-            byte[] data = this.aseQueryService.QueryLight(this.configuration.Port);
-            string version = "1.6.0-1.0";
-            string extra = "0_0_0_0_0";
-
-            string url = $"{this.masterServerUrl}?g={this.configuration.Port}&a={this.configuration.Port + 123}&h={this.configuration.HttpPort}&v={version}&x={extra}&ip=0.0.0.0";
-            var response = await this.httpClient.PostAsync(url, new ByteArrayContent(data));
-
-            var keyValuePairCollection = HttpUtility.ParseQueryString(await response.Content.ReadAsStringAsync());
-            if (int.TryParse(keyValuePairCollection["interval"], out int interval))
-            {
-                this.timer.Interval = interval * 1000;
-            }
-
-            this.logger.LogInformation("Master server list announcement result: {result}", keyValuePairCollection["ok_message"]);
+            this.timer.Interval = interval * 1000;
         }
-        catch (HttpRequestException e)
-        {
-            this.logger.LogError("Failed to announce to master server list: {message}", e.Message);
-        }
+
+        this.logger.LogInformation("Master server list announcement result: {result}", keyValuePairCollection["ok_message"]);
     }
 }
