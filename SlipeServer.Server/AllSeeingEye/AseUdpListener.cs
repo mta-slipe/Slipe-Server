@@ -54,7 +54,7 @@ public class AseUdpListener
                 byte[] message = socket.EndReceive(result, ref source);
                 AseQueryType queryType = (AseQueryType)(message[0]);
 
-                this.logger.LogDebug("ASE request received for query type {queryType}", queryType);
+                this.logger.LogTrace("ASE request received for query type {aseQueryType}", queryType);
 
                 byte[] data = queryType switch
                 {
