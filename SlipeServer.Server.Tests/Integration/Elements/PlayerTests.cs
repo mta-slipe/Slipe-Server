@@ -67,4 +67,14 @@ public class PlayerTests
             .Select(x => x.EventName)
             .Should().BeEquivalentTo(["Kicked", "Disconnected", "Destroyed"]);
     }
+
+    [Fact]
+    public void ControlsShouldWork()
+    {
+        var server = new TestingServer();
+        var player = server.AddFakePlayer();
+
+        player.Controls.ToggleAll(false);
+        player.Controls.ForwardsEnabled.Should().BeFalse();
+    }
 }
