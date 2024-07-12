@@ -29,8 +29,10 @@ public struct PacketHandlerRegistration
 /// <summary>
 /// Class responsible for routing packets to the appropriate queues
 /// </summary>
-public class PacketReducer
+public class PacketReducer : IDisposable
 {
+    private readonly object @lock = new();
+    private readonly List<IPacketQueueHandlerBase> packetQueueHandlers;
     private readonly List<IQueueHandler> queueHandlers;
     private readonly Dictionary<PacketId, List<IQueueHandler>> registeredQueueHandlers;
     private readonly Dictionary<PacketId, List<Action<IClient, byte[]>>> registeredPacketHandlerActions;
@@ -40,6 +42,7 @@ public class PacketReducer
 
     public PacketReducer(ILogger logger)
     {
+        this.packetQueueHandlers = new();
         this.queueHandlers = new();
         this.registeredQueueHandlers = new();
         this.registeredPacketHandlerActions = new();
@@ -48,11 +51,14 @@ public class PacketReducer
 
     public void UnregisterQueueHandler(PacketId packetId, IQueueHandler queueHandler)
     {
-        if (this.registeredQueueHandlers.TryGetValue(packetId, out var value))
+        lock (this.@lock)
         {
-            value.Remove(queueHandler);
+            if (this.registeredQueueHandlers.TryGetValue(packetId, out var value))
+            {
+                value.Remove(queueHandler);
+            }
+            this.queueHandlers.Remove(queueHandler);
         }
-        this.queueHandlers.Add(queueHandler);
     }
 
     public void EnqueuePacket(IClient client, PacketId packetId, byte[] data)
@@ -73,43 +79,63 @@ public class PacketReducer
             this.logger.LogWarning("Received unregistered packet {packetId}", packetId);
         }
 
-        if (this.registeredQueueHandlers.TryGetValue(packetId, out var value))
+        lock (this.@lock)
         {
-            foreach (IQueueHandler queueHandler in value)
+            if (this.registeredQueueHandlers.TryGetValue(packetId, out var value))
             {
-                queueHandler.EnqueuePacket(client, packetId, data);
-                this.logger.LogWarning("Use of deprecated queue handler {packetId} {queueHandler}", packetId, queueHandler);
+                foreach (IQueueHandler queueHandler in value)
+                {
+                    queueHandler.EnqueuePacket(client, packetId, data);
+                    this.logger.LogWarning("Use of deprecated queue handler {packetId} {queueHandler}", packetId, queueHandler);
+                }
             }
         }
     }
 
     public PacketHandlerRegistration RegisterPacketHandler<TPacket>(PacketId packetId, IPacketQueueHandler<TPacket> handler) where TPacket : Packet, new()
     {
-        if (!this.registeredPacketHandlerActions.ContainsKey(packetId))
+        lock (this.@lock)
         {
-            this.registeredPacketHandlerActions[packetId] = new();
+            if (!this.registeredPacketHandlerActions.ContainsKey(packetId))
+            {
+                this.registeredPacketHandlerActions[packetId] = new();
+            }
+
+            var pool = new PacketPool<TPacket>();
+            void packetHandler(IClient client, byte[] data)
+            {
+                var packet = pool.GetPacket();
+                packet.Read(data);
+                handler.EnqueuePacket(client, packet);
+            }
+
+            this.registeredPacketHandlerActions[packetId].Add(packetHandler);
+            handler.PacketHandled += pool.ReturnPacket;
+
+            var cts = new CancellationTokenSource();
+
+            cts.Token.Register(() =>
+            {
+                this.registeredPacketHandlerActions[packetId].Remove(packetHandler);
+                handler.PacketHandled -= pool.ReturnPacket;
+            });
+
+            return new PacketHandlerRegistration(cts);
         }
+    }
 
-        var pool = new PacketPool<TPacket>();
-
-        void packetHandler(IClient client, byte[] data)
+    public void Dispose()
+    {
+        lock (this.@lock)
         {
-            var packet = pool.GetPacket();
-            packet.Read(data);
-            handler.EnqueuePacket(client, packet);
+            this.queueHandlers.Clear();
+            this.registeredQueueHandlers.Clear();
+            this.registeredPacketHandlerActions.Clear();
+            foreach (var handler in this.packetQueueHandlers)
+            {
+                handler.Dispose();
+            }
+            this.packetQueueHandlers.Clear();
         }
-
-        this.registeredPacketHandlerActions[packetId].Add(packetHandler);
-        handler.PacketHandled += pool.ReturnPacket;
-
-        var cts = new CancellationTokenSource();
-
-        cts.Token.Register(() =>
-        {
-            this.registeredPacketHandlerActions[packetId].Remove(packetHandler);
-            handler.PacketHandled -= pool.ReturnPacket;
-        });
-
-        return new PacketHandlerRegistration(cts);
     }
 }

@@ -17,6 +17,7 @@ public class PacketRecorderHandler<TPacket> : IPacketQueueHandler<TPacket> where
     }
 
     public event Action<TPacket>? PacketHandled;
+    public event Action? Disposed;
 
     public void EnqueuePacket(IClient client, TPacket packet)
     {
@@ -24,5 +25,10 @@ public class PacketRecorderHandler<TPacket> : IPacketQueueHandler<TPacket> where
         {
             this.handler(packet);
         }
+    }
+
+    public void Dispose()
+    {
+        Disposed?.Invoke();
     }
 }

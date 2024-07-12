@@ -121,6 +121,7 @@ public partial class Program
                 builder.AddLogic<ClothingTestLogic>();
                 builder.AddLogic<PedTestLogic>();
                 builder.AddLogic<ProxyService>();
+                builder.AddLogic<LatentPacketTestLogic>();
                 builder.AddScopedLogic<ScopedTestLogic1>();
                 builder.AddScopedLogic<ScopedTestLogic2>();
                 builder.AddLogic<VehicleEntityAddTestLogic>();

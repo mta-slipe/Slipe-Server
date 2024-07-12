@@ -20,29 +20,19 @@ var configuration = builder.Configuration.GetRequiredSection("MtaServer").Get<Co
 builder.Services.AddHttpClient();
 builder.Services.AddDefaultMtaServerServices();
 builder.Services.AddLua();
-builder.Services.AddMtaServer<CustomPlayer>(configuration, builder =>
-{
-    builder.AddDefaultServices();
-    builder.AddDefaultLuaMappings();
-    builder.AddDefaultNetWrapper();
-    builder.AddDefaultResourceInterpreters();
-    builder.AddResourceServer<BasicHttpServer>();
-    builder.AddSampleResource();
-});
 
 builder.Services.AddSingleton<IResourceServer, BasicHttpServer>();
 
 builder.Services.AddHostedService<SampleHostedService>(); // Use instead of logics
 builder.Services.TryAddSingleton<ILogger>(x => x.GetRequiredService<ILogger<MtaServer>>());
 
-builder.ConfigureMtaServers(configure =>
+builder.AddMtaServer(serverBuilder =>
 {
     var isDevelopment = builder.Environment.IsDevelopment();
     var exceptBehaviours = isDevelopment ? ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour : ServerBuilderDefaultBehaviours.None;
 
-    configure.AddDefaultPacketHandlers();
-    configure.AddDefaultBehaviours(exceptBehaviours);
-    configure.StartAllServers();
+    serverBuilder.AddHostedDefaults(exceptBehaviours: exceptBehaviours);
+    serverBuilder.AddSampleResource();
 });
 
 var app = builder.Build();

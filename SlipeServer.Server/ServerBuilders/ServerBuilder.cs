@@ -200,7 +200,11 @@ public class ServerBuilder
     /// <param name="server"></param>
     public void ApplyTo(MtaServer server)
     {
-        foreach (var step in this.buildSteps.OrderByDescending(x => (int)x.Priority))
+        var steps = this.buildSteps
+            .OrderByDescending(x => (int)x.Priority)
+            .ToArray();
+
+        foreach (var step in steps)
             step.Step(server);
     }
 
