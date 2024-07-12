@@ -5,8 +5,26 @@ using SlipeServer.Server.Clients;
 using SlipeServer.Server.PacketHandling.Handlers;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SlipeServer.Server.PacketHandling;
+
+public struct PacketHandlerRegistration
+{
+    private CancellationTokenSource cancellationTokenSource;
+
+    public PacketHandlerRegistration(CancellationTokenSource cancellationTokenSource)
+    {
+        this.cancellationTokenSource = cancellationTokenSource;
+    }
+
+    public void Unregister()
+    {
+        this.cancellationTokenSource.Token.ThrowIfCancellationRequested();
+        this.cancellationTokenSource.Cancel();
+    }
+}
 
 /// <summary>
 /// Class responsible for routing packets to the appropriate queues
@@ -74,7 +92,7 @@ public class PacketReducer : IDisposable
         }
     }
 
-    public void RegisterPacketHandler<TPacket>(PacketId packetId, IPacketQueueHandler<TPacket> handler) where TPacket : Packet, new()
+    public PacketHandlerRegistration RegisterPacketHandler<TPacket>(PacketId packetId, IPacketQueueHandler<TPacket> handler) where TPacket : Packet, new()
     {
         lock (this.@lock)
         {
@@ -84,21 +102,25 @@ public class PacketReducer : IDisposable
             }
 
             var pool = new PacketPool<TPacket>();
-            this.registeredPacketHandlerActions[packetId].Add((client, data) =>
+            void packetHandler(IClient client, byte[] data)
             {
                 var packet = pool.GetPacket();
                 packet.Read(data);
                 handler.EnqueuePacket(client, packet);
-            });
-            handler.PacketHandled += pool.ReturnPacket;
-
-            void handleDisposed()
-            {
-                handler.PacketHandled -= pool.ReturnPacket;
             }
 
-            handler.Disposed += handleDisposed;
-            this.packetQueueHandlers.Add(handler);
+            this.registeredPacketHandlerActions[packetId].Add(packetHandler);
+            handler.PacketHandled += pool.ReturnPacket;
+
+            var cts = new CancellationTokenSource();
+
+            cts.Token.Register(() =>
+            {
+                this.registeredPacketHandlerActions[packetId].Remove(packetHandler);
+                handler.PacketHandled -= pool.ReturnPacket;
+            });
+
+            return new PacketHandlerRegistration(cts);
         }
     }
 

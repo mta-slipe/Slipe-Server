@@ -31,6 +31,7 @@ using SlipeServer.Server.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace SlipeServer.Server;
 
@@ -264,9 +265,9 @@ public class MtaServer
     /// <typeparam name="T"></typeparam>
     /// <param name="packetId">The packet ID to handle, this identifies which packet types should be handled by this handler</param>
     /// <param name="queueHandler">The packet handler in question</param>
-    public void RegisterPacketHandler<T>(PacketId packetId, IPacketQueueHandler<T> queueHandler) where T : Packet, new()
+    public PacketHandlerRegistration RegisterPacketHandler<T>(PacketId packetId, IPacketQueueHandler<T> queueHandler) where T : Packet, new()
         => this.packetReducer.RegisterPacketHandler(packetId, queueHandler);
-
+    
     /// <summary>
     /// Registers a packet handler, to handle incoming packets from clients
     /// </summary>
