@@ -17,6 +17,15 @@ builder.Services.AddSwaggerGen();
 
 var configuration = builder.Configuration.GetRequiredSection("MtaServer").Get<Configuration>();
 
+IConfigurationRoot config = new ConfigurationBuilder()
+    .AddUserSecrets<Program>()
+    .Build();
+
+if (configuration != null && ushort.TryParse(config.GetSection("HttpPort").Value, out var httpPort))
+{
+    configuration.HttpPort = httpPort;
+}
+
 builder.Services.AddHttpClient();
 builder.Services.AddDefaultMtaServerServices();
 builder.Services.AddLua();
