@@ -65,7 +65,7 @@ public static class DefaultServerBuilderExtensions
     {
         builder.ConfigureServices(services =>
         {
-            services.AddDefaultMiddlewares(builder.Configuration, exceptMiddleware);
+            services.AddDefaultMiddlewares(exceptMiddleware);
         });
     }
 
