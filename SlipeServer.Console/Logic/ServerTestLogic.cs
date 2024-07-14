@@ -456,8 +456,16 @@ public class ServerTestLogic
         this.commandService.AddCommand("ping").Triggered += (source, args)
             => this.chatBox.OutputTo(args.Player, $"Your ping is {args.Player.Client.Ping}", Color.YellowGreen);
 
-        this.commandService.AddCommand("kickme").Triggered += (source, args)
-            => args.Player.Kick("You have been kicked by slipe");
+        this.commandService.AddCommand("kickme").Triggered += (source, args) =>
+        {
+            void Player_Disconnected(Player sender, PlayerQuitEventArgs e)
+            {
+                System.Console.WriteLine("Kickme disconnected");
+            }
+            args.Player.Disconnected += Player_Disconnected;
+            args.Player.Kick("You have been kicked by slipe");
+            args.Player.Disconnected -= Player_Disconnected;
+        };
 
         this.commandService.AddCommand("a51").Triggered += (source, args)
             => args.Player.Position = new Vector3(216.46f, 1895.05f, 17.28f);
