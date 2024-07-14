@@ -70,7 +70,7 @@ Build server using following commands:
 Then inside root directory of slipe server you can execute command to start server:
 
 `docker run -p 50666:50666/udp -p 50667:50667/udp -p 50789:50789/udp -p 40680:40680/tcp -v ./server-id.keys:/app/server-id.keys slipeserver` - remember to put your `server-id.keys` file into current directory.
-If you don't `supply server-id.keys` file then server will crash with message:
+If you don't supply `server-id.keys` file then server will crash with message:
 ```
 terminate called after throwing an instance of 'std::system_error'
   what():  Invalid argument
