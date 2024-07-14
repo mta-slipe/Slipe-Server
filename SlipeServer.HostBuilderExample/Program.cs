@@ -12,6 +12,15 @@ builder
     {
         configuration = hostBuilderContext.Configuration.GetRequiredSection("MtaServer").Get<Configuration>();
 
+        IConfigurationRoot config = new ConfigurationBuilder()
+            .AddUserSecrets<Program>()
+            .Build();
+
+        if (configuration != null && ushort.TryParse(config.GetSection("HttpPort").Value, out var httpPort))
+        {
+            configuration.HttpPort = httpPort;
+        }
+
         services.AddHttpClient();
         services.AddSingleton<IResourceServer, BasicHttpServer>();
 
