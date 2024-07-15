@@ -66,4 +66,9 @@ public:
 
     unsigned long  GetBinaryAddress() const { return m_uiBinaryAddress; };
     unsigned short GetPort() const { return m_usPort; };
+
+    uint64 GetIdentifier() const
+    {
+        return (((uint64)m_uiBinaryAddress) << 32) + m_usPort;
+    }
 };
