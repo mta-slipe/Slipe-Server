@@ -181,6 +181,8 @@ public class MtaServer
             server.Start();
 
         this.IsRunning = true;
+
+        this.Started?.Invoke(this);
     }
 
     /// <summary>
@@ -203,6 +205,8 @@ public class MtaServer
         }
 
         this.IsRunning = false;
+
+        this.Stopped?.Invoke(this);
     }
 
     /// <summary>
@@ -685,6 +689,16 @@ public class MtaServer
     /// Triggered when max player count changes
     /// </summary>
     public event Action<ushort>? MaxPlayerCountChanged;
+
+    /// <summary>
+    /// Triggered when the server started
+    /// </summary>
+    public event Action<MtaServer>? Started;
+
+    /// <summary>
+    /// Triggered when the server stopped
+    /// </summary>
+    public event Action<MtaServer>? Stopped;
 }
 
 /// <summary>
