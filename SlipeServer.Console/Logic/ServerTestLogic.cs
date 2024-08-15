@@ -4,6 +4,7 @@ using SlipeServer.Console.Elements;
 using SlipeServer.Console.LuaValues;
 using SlipeServer.Packets.Definitions.Entities.Structs;
 using SlipeServer.Packets.Definitions.Lua;
+using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Enums.VehicleUpgrades;
 using SlipeServer.Packets.Lua.Camera;
@@ -19,6 +20,7 @@ using SlipeServer.Server.Elements.IdGeneration;
 using SlipeServer.Server.Elements.Structs;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Events;
+using SlipeServer.Server.PacketHandling;
 using SlipeServer.Server.PacketHandling.Factories;
 using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Providers;
@@ -244,6 +246,27 @@ public class ServerTestLogic
         this.Rhino.Jacked += (e, args) => this.logger.LogInformation($"Rhino has been jacked by {args.NewDriver.Name}, kicking out {args.PreviousDriver.Name}");
 
         this.Elegy = new Vehicle(562, new Vector3(30, -20, 3)).AssociateWith(this.server);
+        this.Elegy.HealthChanged += (e, value) =>
+        {
+            if (ClientContext.Current != null)
+            {
+                this.chatBox.Output($"Elegy health changed to: {e.Health} by {ClientContext.Current.Player.Name}");
+
+            } else
+            {
+                this.chatBox.Output($"Elegy health changed to: {e.Health} by server");
+            }
+        };
+
+        Task.Run(async () =>
+        {
+            while (true)
+            {
+                await Task.Delay(5000);
+                this.Elegy.Health = Random.Shared.Next(700, 800);
+            }
+        });
+
         this.Flash = new Vehicle(565, new Vector3(34, -20, 3)).AssociateWith(this.server);
         this.Stratum = new Vehicle(561, new Vector3(38, -20, 3)).AssociateWith(this.server);
         this.Sultan = new Vehicle(560, new Vector3(42, -20, 3)).AssociateWith(this.server);
@@ -391,6 +414,11 @@ public class ServerTestLogic
 
     private void SetupTestCommands()
     {
+        this.commandService.AddCommand("elegysethealth").Triggered += (source, args) =>
+        {
+            this.Elegy.Health = Random.Shared.Next(700, 800);
+        };
+
         this.commandService.AddCommand("radararea").Triggered += (source, args) =>
         {
             this.RadarArea!.Color = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
