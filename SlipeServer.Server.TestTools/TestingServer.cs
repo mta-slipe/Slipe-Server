@@ -131,7 +131,7 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
         return player;
     }
 
-    protected override IClient CreateClient(uint binaryAddress, INetWrapper netWrapper)
+    protected override IClient CreateClient(ulong binaryAddress, INetWrapper netWrapper)
     {
         Player player;
         if (typeof(TPlayer) == typeof(Player) || typeof(TPlayer) == typeof(TestingPlayer))

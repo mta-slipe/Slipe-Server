@@ -21,7 +21,7 @@ public class TestingServerWithCustomPlayer : TestingServer<TestCustomPlayer>
 
     }
 
-    protected override IClient CreateClient(uint binaryAddress, INetWrapper netWrapper)
+    protected override IClient CreateClient(ulong binaryAddress, INetWrapper netWrapper)
     {
         var player = new TestCustomPlayer();
         player.Client = new TestingClient(binaryAddress, netWrapper, player);

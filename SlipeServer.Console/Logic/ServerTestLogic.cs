@@ -262,7 +262,7 @@ public class ServerTestLogic
         {
             while (true)
             {
-                await Task.Delay(5000);
+                await Task.Delay(15000);
                 this.Elegy.Health = Random.Shared.Next(700, 800);
             }
         });
