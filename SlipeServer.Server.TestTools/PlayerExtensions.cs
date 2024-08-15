@@ -4,5 +4,5 @@ namespace SlipeServer.Server.TestTools;
 
 public static class PlayerExtensions
 {
-    public static uint GetAddress(this Player player) => ((TestingClient)player.Client).Address;
+    public static ulong GetAddress(this Player player) => ((TestingClient)player.Client).Address;
 }

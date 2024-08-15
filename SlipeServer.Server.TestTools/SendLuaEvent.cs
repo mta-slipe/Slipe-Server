@@ -6,7 +6,7 @@ namespace SlipeServer.Server.TestTools;
 
 public struct SendLuaEvent
 {
-    public uint Address { get; set; }
+    public ulong Address { get; set; }
     public string Name { get; set; }
     public ElementId Source { get; set; }
     public LuaValue[] Arguments { get; set; }
