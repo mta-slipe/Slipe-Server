@@ -74,9 +74,9 @@ public class RadarArea : Element
     {
         if (right < left)
         {
-            return new float[] { right, left };
+            return [right, left];
         }
-        return new float[] { left, right };
+        return [left, right];
     }
 
     public bool IsInside(Vector2 position)

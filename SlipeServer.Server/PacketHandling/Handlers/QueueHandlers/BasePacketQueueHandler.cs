@@ -40,5 +40,5 @@ public abstract class BasePacketQueueHandler<T> : IPacketQueueHandler<T> where T
     }
 
     public event Action<T>? PacketHandled;
-    public event Action Disposed;
+    public event Action? Disposed;
 }

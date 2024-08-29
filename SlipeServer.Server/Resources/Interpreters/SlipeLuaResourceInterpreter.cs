@@ -50,7 +50,7 @@ public class SlipeLuaResourceInterpreter : IResourceInterpreter
     {
         var files = fileNames.ToDictionary(x => x, file => resourceProvider.GetFileContent(name, file));
 
-        List<ResourceFile> resourceFiles = new List<ResourceFile>();
+        List<ResourceFile> resourceFiles = [];
 
         var distLuaDirectory = Path.Join("Lua", "Dist");
 
@@ -86,7 +86,7 @@ public class SlipeLuaResourceInterpreter : IResourceInterpreter
         string distLuaDirectory,
         string baseDirectory)
     {
-        List<ResourceFile> resourceFiles = new List<ResourceFile>();
+        List<ResourceFile> resourceFiles = [];
 
         foreach (var assembly in manifest.RequiredAssemblies)
         {

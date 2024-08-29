@@ -42,6 +42,6 @@ public class PickupBehaviour
 
     private void HandlePickupReset(Pickup pickup, System.EventArgs e)
     {
-        this.server.BroadcastPacket(new PickupHideShowPacket(true, new PickupIdAndModel[] { new(pickup.Id, pickup.Model) }));
+        this.server.BroadcastPacket(new PickupHideShowPacket(true, [new(pickup.Id, pickup.Model)]));
     }
 }

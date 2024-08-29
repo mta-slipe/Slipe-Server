@@ -21,8 +21,8 @@ public class SimplifiedScriptEventRuntime : IScriptEventRuntime
         this.server = server;
         this.elementCollection = elementCollection;
 
-        this.registeredEventHandlers = new List<RegisteredEventHandler>();
-        this.registeredEvents = new Dictionary<string, RegisteredEvent>();
+        this.registeredEventHandlers = [];
+        this.registeredEvents = [];
 
         this.server.ElementCreated += HandleElementCreation;
 

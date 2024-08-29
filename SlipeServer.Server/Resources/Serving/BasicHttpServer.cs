@@ -27,7 +27,7 @@ public class BasicHttpServer : IResourceServer
         this.httpAddress = $"http://{configuration.HttpHost}:{configuration.HttpPort}/";
         this.httpListener = new HttpListener();
         this.httpListener.Prefixes.Add(this.httpAddress);
-        this.additionalFiles = new();
+        this.additionalFiles = [];
 
         this.isRunning = false;
         this.rootDirectory = configuration.ResourceDirectory;

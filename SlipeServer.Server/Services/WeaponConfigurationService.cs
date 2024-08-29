@@ -21,7 +21,7 @@ public class WeaponConfigurationService
     {
         this.server = server;
 
-        this.weaponConfigurations = new();
+        this.weaponConfigurations = [];
         this.LoadDefaults();
     }
 
@@ -41,7 +41,7 @@ public class WeaponConfigurationService
 
     public void SetWeaponConfigurationFor(WeaponId weapon, WeaponConfiguration weaponConfiguration, Player player, WeaponSkillLevel skill = WeaponSkillLevel.Poor)
     {
-        SetWeaponConfigurationFor(weapon, weaponConfiguration, new Player[] { player }, skill);
+        SetWeaponConfigurationFor(weapon, weaponConfiguration, [player], skill);
     }
 
     private IEnumerable<SetWeaponPropertyRpcPacket> CreateSetStatPackets(WeaponId weapon, WeaponConfiguration weaponConfiguration, WeaponSkillLevel skill)
@@ -96,7 +96,7 @@ public class WeaponConfigurationService
     {
         foreach (var weapon in Enum.GetValues<WeaponId>())
         {
-            this.weaponConfigurations[weapon] = new();
+            this.weaponConfigurations[weapon] = [];
             foreach (var skill in Enum.GetValues<WeaponSkillLevel>())
             {
                 this.weaponConfigurations[weapon][skill] = GetDefaultConfiguration(weapon, skill);

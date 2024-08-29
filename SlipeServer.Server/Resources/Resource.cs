@@ -40,8 +40,8 @@ public class Resource
         this.Name = name;
         this.Path = path ?? $"./{name}";
 
-        this.Files = new();
-        this.NoClientScripts = new();
+        this.Files = [];
+        this.NoClientScripts = [];
 
         this.Root = new DummyElement()
         {
@@ -54,7 +54,7 @@ public class Resource
             ElementTypeName = "map",
         }.AssociateWith(server);
 
-        this.Exports = new List<string>();
+        this.Exports = [];
     }
 
     public void Start()

@@ -67,7 +67,7 @@ public class VehiclePureSyncPacket : Packet
 
     public VehiclePureSyncPacket()
     {
-        this.Trailers = new List<TrailerSync>();
+        this.Trailers = [];
         this.DoorOpenRatios = new float[6];
     }
 

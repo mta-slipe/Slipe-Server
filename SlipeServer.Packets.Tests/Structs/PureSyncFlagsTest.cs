@@ -11,7 +11,7 @@ public class PureSyncFlagsTest
     [Fact]
     public void Read_ReturnsProperValues()
     {
-        var reader = new PacketReader(new byte[] { 0b10101111, 0b11000000 });
+        var reader = new PacketReader([0b10101111, 0b11000000]);
         var structure = new PlayerPureSyncFlagsStructure();
 
         structure.Read(reader);
@@ -33,7 +33,7 @@ public class PureSyncFlagsTest
     [Fact]
     public void ReadTwo_ReturnsProperValues()
     {
-        var reader = new PacketReader(new byte[] { 0b00111000, 0b11100000 });
+        var reader = new PacketReader([0b00111000, 0b11100000]);
         var structure = new PlayerPureSyncFlagsStructure();
 
         structure.Read(reader);
@@ -75,6 +75,6 @@ public class PureSyncFlagsTest
         structure.Write(builder);
         var data = builder.Build();
 
-        data.Should().Equal(new byte[] { 0b10101111, 0b11000000 });
+        data.Should().Equal([0b10101111, 0b11000000]);
     }
 }

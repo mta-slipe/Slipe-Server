@@ -20,7 +20,7 @@ public class CommandControllerLogic
     private readonly MtaServer server;
     private readonly CommandService commandService;
     private readonly ILogger logger;
-    private readonly Dictionary<string, List<BoundCommand>> handlers = new();
+    private readonly Dictionary<string, List<BoundCommand>> handlers = [];
 
     public CommandControllerLogic(
         MtaServer server,
@@ -71,7 +71,7 @@ public class CommandControllerLogic
     {
         if (!this.handlers.ContainsKey(command))
         {
-            this.handlers[command] = new();
+            this.handlers[command] = [];
             this.commandService.AddCommand(command, isCaseSensitive).Triggered += (_, args) => HandleCommand(command, args);
         }
 

@@ -21,7 +21,7 @@ public static class ElementCollectionExtensions
     /// </summary>
     public static void CreateFor(this IEnumerable<Element> elements, Player player)
     {
-        CreateFor(elements, new Player[] { player });
+        CreateFor(elements, [player]);
     }
 
     /// <summary>
@@ -39,7 +39,7 @@ public static class ElementCollectionExtensions
     /// </summary>
     public static void DestroyFor(this IEnumerable<Element> elements, Player player)
     {
-        DestroyFor(elements, new Player[] { player });
+        DestroyFor(elements, [player]);
     }
 
     /// <summary>

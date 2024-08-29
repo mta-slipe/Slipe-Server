@@ -17,8 +17,8 @@ public class ScriptEventRuntime : IScriptEventRuntime
 
     public ScriptEventRuntime(MtaServer server, IElementCollection elementCollection)
     {
-        this.registeredEventHandlers = new List<RegisteredEventHandler>();
-        this.registeredEvents = new Dictionary<string, RegisteredEvent>();
+        this.registeredEventHandlers = [];
+        this.registeredEvents = [];
 
         this.server = server;
         this.elementCollection = elementCollection;

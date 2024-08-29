@@ -19,7 +19,7 @@ public class AseUdpListener
     private readonly Cache<byte[]> fullCache;
     private readonly Cache<byte[]> lightCache;
     private readonly Cache<byte[]> xFireCache;
-    private readonly Dictionary<string, string> rules = new();
+    private readonly Dictionary<string, string> rules = [];
 
     public AseUdpListener(IAseQueryService aseQueryService, ILogger logger, ushort port, bool isDebug)
     {

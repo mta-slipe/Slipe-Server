@@ -14,7 +14,7 @@ internal struct MultiHitHandler : IRayHitHandler
 
     public MultiHitHandler()
     {
-        this.hits = new();
+        this.hits = [];
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

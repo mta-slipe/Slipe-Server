@@ -4,15 +4,15 @@ namespace SlipeServer.Packets.Constants;
 
 public static class VehicleConstants
 {
-    public static HashSet<int> VehiclesWithTurrets { get; } = new()
-    {
+    public static HashSet<int> VehiclesWithTurrets { get; } =
+    [
         407,
         432,
         601,
-    };
+    ];
 
-    public static HashSet<int> VehiclesWithAdjustableProperties { get; } = new()
-    {
+    public static HashSet<int> VehiclesWithAdjustableProperties { get; } =
+    [
         406,
         443,
         486,
@@ -22,10 +22,10 @@ public static class VehicleConstants
         530,
         531,
         592,
-    };
+    ];
 
-    public static HashSet<int> VehiclesWithDoors { get; } = new()
-    {
+    public static HashSet<int> VehiclesWithDoors { get; } =
+    [
         400,
         401,
         402,
@@ -193,15 +193,15 @@ public static class VehicleConstants
         609,
         610,
         611
-    };
+    ];
 
-    public static HashSet<int> Trains { get; } = new()
-    {
+    public static HashSet<int> Trains { get; } =
+    [
         449,
         537,
         538,
         569,
         570,
         590
-    };
+    ];
 }

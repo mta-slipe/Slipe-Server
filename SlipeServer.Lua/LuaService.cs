@@ -27,8 +27,8 @@ public class LuaService
         this.server = server;
         this.logger = logger;
         this.root = root;
-        this.scripts = new Dictionary<string, Script>();
-        this.methods = new Dictionary<string, LuaMethod>();
+        this.scripts = [];
+        this.methods = [];
         this.translator = new LuaTranslator();
     }
 

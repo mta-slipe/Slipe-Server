@@ -11,7 +11,7 @@ public class VoiceDataPacket : Packet
     public override PacketReliability Reliability { get; } = PacketReliability.ReliableSequenced;
     public override PacketPriority Priority { get; } = PacketPriority.Low;
 
-    public byte[] Buffer { get; set; } = new byte[0];
+    public byte[] Buffer { get; set; } = [];
     public ElementId SourceElementId { get; set; }
 
     public VoiceDataPacket(ElementId sourceElementId, byte[] buffer)

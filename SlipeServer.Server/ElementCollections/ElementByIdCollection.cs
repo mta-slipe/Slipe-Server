@@ -17,7 +17,7 @@ public class ElementByIdCollection : IElementCollection
 
     public ElementByIdCollection()
     {
-        this.elements = new();
+        this.elements = [];
     }
 
     public void Add(Element element)

@@ -22,6 +22,6 @@ public class TestingServerEvents
         sendEvent.Name.Should().Be("test event");
         sendEvent.Source.Should().Be(testingPlayer.Id);
         sendEvent.Arguments.Should().BeEquivalentTo(new LuaValue[] { 1, "two" });
-        testingServer.VerifyLuaEventTriggered("test event", testingPlayer, testingPlayer, new LuaValue[] { 1, "two" }, 1);
+        testingServer.VerifyLuaEventTriggered("test event", testingPlayer, testingPlayer, [1, "two"], 1);
     }
 }

@@ -18,7 +18,7 @@ public class WeaponCollection : IEnumerable<Weapon>
 
     public WeaponCollection()
     {
-        this.weapons = new Dictionary<WeaponSlot, Weapon>();
+        this.weapons = [];
     }
 
     public void Add(Weapon weapon)

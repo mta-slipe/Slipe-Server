@@ -62,7 +62,7 @@ public static class CompressionBuilderExtensions
         }
     }
 
-    public static void WriteCompressed(this PacketBuilder builder, byte @byte) => builder.WriteCompressed(new byte[] { @byte }, true);
+    public static void WriteCompressed(this PacketBuilder builder, byte @byte) => builder.WriteCompressed([@byte], true);
     public static void WriteCompressed(this PacketBuilder builder, ushort integer) => builder.WriteCompressed(BitConverter.GetBytes(integer), true);
     public static void WriteCompressed(this PacketBuilder builder, short integer) => builder.WriteCompressed(BitConverter.GetBytes(integer), false);
     public static void WriteCompressed(this PacketBuilder builder, uint integer) => builder.WriteCompressed(BitConverter.GetBytes(integer), true);

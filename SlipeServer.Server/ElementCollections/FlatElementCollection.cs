@@ -16,7 +16,7 @@ public class FlatElementCollection : IElementCollection
 
     public FlatElementCollection()
     {
-        this.elements = new List<Element>();
+        this.elements = [];
     }
 
     public void Add(Element element)
