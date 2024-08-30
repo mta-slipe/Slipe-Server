@@ -14,6 +14,7 @@ public static class HostBuilderExtensions
         host.ConfigureServices((context, services) =>
         {
             services.AddDefaultMtaServerServices();
+            services.AddDefaultMiddlewares();
 
             services.AddSingleton<MtaServer>(x => new MtaServer(x, buildAction));
             services.AddHostedService<MtaServerHostedService<MtaServer>>();
@@ -27,6 +28,7 @@ public static class HostBuilderExtensions
     public static IHostApplicationBuilder AddMtaServer(this IHostApplicationBuilder host, Action<ServerBuilder> buildAction)
     {
         host.Services.AddDefaultMtaServerServices();
+        host.Services.AddDefaultMiddlewares();
 
         host.Services.AddSingleton<MtaServer>(x => new MtaServer(x, buildAction));
         host.Services.AddHostedService<MtaServerHostedService<MtaServer>>();
@@ -42,6 +44,7 @@ public static class HostBuilderExtensions
         host.ConfigureServices((context, services) =>
         {
             services.AddDefaultMtaServerServices();
+            services.AddDefaultMiddlewares();
 
             services.AddSingleton<MtaServer<T>>(x => new MtaNewPlayerServer<T>(x, buildAction));
             services.AddSingleton<MtaServer>(x => x.GetRequiredService<MtaServer<T>>());
@@ -56,6 +59,7 @@ public static class HostBuilderExtensions
     public static IHostApplicationBuilder AddMtaServer<T>(this IHostApplicationBuilder host, Action<ServerBuilder> buildAction) where T : Player, new()
     {
         host.Services.AddDefaultMtaServerServices();
+        host.Services.AddDefaultMiddlewares();
 
         host.Services.AddSingleton<MtaServer<T>>(x => new MtaNewPlayerServer<T>(x, buildAction));
         host.Services.AddSingleton<MtaServer>(x => x.GetRequiredService<MtaServer<T>>());
@@ -72,6 +76,7 @@ public static class HostBuilderExtensions
         host.ConfigureServices((context, services) =>
         {
             services.AddDefaultMtaServerServices();
+            services.AddDefaultMiddlewares();
 
             services.AddSingleton<MtaDiPlayerServer<T>>(x => new MtaDiPlayerServer<T>(x, buildAction));
             services.AddSingleton<MtaServer>(x => x.GetRequiredService<MtaDiPlayerServer<T>>());
@@ -86,6 +91,7 @@ public static class HostBuilderExtensions
     public static IHostApplicationBuilder AddMtaServerWithDiSupport<T>(this IHostApplicationBuilder host, Action<ServerBuilder> buildAction) where T : Player
     {
         host.Services.AddDefaultMtaServerServices();
+        host.Services.AddDefaultMiddlewares();
 
         host.Services.AddSingleton<MtaDiPlayerServer<T>>(x => new MtaDiPlayerServer<T>(x, buildAction));
         host.Services.AddSingleton<MtaServer>(x => x.GetRequiredService<MtaDiPlayerServer<T>>());
@@ -99,6 +105,7 @@ public static class HostBuilderExtensions
     public static IHostApplicationBuilder AddCustomMtaServerWithDiSupport<T>(this IHostApplicationBuilder host, Func<IServiceProvider, T> factory) where T : MtaServer
     {
         host.Services.AddDefaultMtaServerServices();
+        host.Services.AddDefaultMiddlewares();
 
         host.Services.AddSingleton<T>(x => factory(x));
         host.Services.AddSingleton<MtaServer>(x => x.GetRequiredService<T>());
@@ -115,6 +122,7 @@ public static class HostBuilderExtensions
         host.ConfigureServices((context, services) =>
         {
             services.AddDefaultMtaServerServices();
+            services.AddDefaultMiddlewares();
 
             services.AddSingleton<MtaServer>(server);
             services.AddHostedService<MtaServerHostedService<MtaServer>>();
@@ -128,6 +136,7 @@ public static class HostBuilderExtensions
     public static IHostApplicationBuilder AddMtaServer(this IHostApplicationBuilder host, MtaServer server)
     {
         host.Services.AddDefaultMtaServerServices();
+        host.Services.AddDefaultMiddlewares();
 
         host.Services.AddSingleton<MtaServer>(server);
         host.Services.AddHostedService<MtaServerHostedService<MtaServer>>();
@@ -143,6 +152,7 @@ public static class HostBuilderExtensions
         host.ConfigureServices((context, services) =>
         {
             services.AddDefaultMtaServerServices();
+            services.AddDefaultMiddlewares();
 
             services.AddSingleton<MtaServer>(server);
             services.AddSingleton<T>(server);
@@ -157,6 +167,7 @@ public static class HostBuilderExtensions
     public static IHostApplicationBuilder AddMtaServer<T>(this IHostApplicationBuilder host, T server) where T : MtaServer
     {
         host.Services.AddDefaultMtaServerServices();
+        host.Services.AddDefaultMiddlewares();
 
         host.Services.AddSingleton<T>(server);
         host.Services.AddSingleton<MtaServer>(x => x.GetRequiredService<T>());

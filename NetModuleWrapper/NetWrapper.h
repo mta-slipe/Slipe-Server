@@ -15,7 +15,7 @@
 #ifndef WIN32
 #define __stdcall
 #endif
-typedef void(__stdcall* PacketCallback)(unsigned char, unsigned long, char[], unsigned long, bool, unsigned int);
+typedef void(__stdcall* PacketCallback)(unsigned char, uint64, char[], unsigned long, bool, unsigned int);
 
 struct QueuedPacket {
     NetServerPlayerID socket;
@@ -49,7 +49,7 @@ private:
     static std::map<uint16_t, NetWrapper*> netWrappers;
     static std::map<NetServerPlayerID, NetWrapper*> netWrappersPerSocket;
 
-	std::map<ulong, NetServerPlayerID> sockets;
+	std::map<uint64, NetServerPlayerID> sockets;
 	bool running;
 	PacketCallback registeredCallback;
 	std::thread runThread;
@@ -71,12 +71,12 @@ public:
     void destroy();
 
     bool packetHandler(unsigned char ucPacketID, const NetServerPlayerID& Socket, NetBitStreamInterface* pBitStream, SNetExtraInfo* pNetExtraInfo);
-    void sendPacket(unsigned long address, unsigned char packetId, unsigned short bitStreamVersion, unsigned char* payload, unsigned long payloadSize, unsigned char priority, unsigned char reliability);
-    void setSocketVersion(unsigned long address, unsigned short version);
-    void resendModPackets(unsigned long address);
-    void resendACPackets(unsigned long address);
-    SerialExtraAndVersion getClientSerialAndVersion(unsigned long address);
-    std::string getIPAddress(unsigned long address);
+    void sendPacket(uint64 address, unsigned char packetId, unsigned short bitStreamVersion, unsigned char* payload, unsigned long payloadSize, unsigned char priority, unsigned char reliability);
+    void setSocketVersion(uint64 address, unsigned short version);
+    void resendModPackets(uint64 address);
+    void resendACPackets(uint64 address);
+    SerialExtraAndVersion getClientSerialAndVersion(uint64 address);
+    std::string getIPAddress(uint64 address);
     int init(const char* netDllFilePath, const char* idFile, const char* ip, unsigned short port, unsigned int playerCount, const char* serverName, PacketCallback callback);
     void start();
     void stop();
