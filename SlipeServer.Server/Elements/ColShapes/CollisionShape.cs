@@ -37,7 +37,7 @@ public abstract class CollisionShape : Element
     {
         if (IsWithin(element, this.InteriorsMustMatch, this.DimensionsMustMatch))
         {
-            if (!this.elementsWithin.ContainsKey(element))
+            if (this.elementsWithin.TryAdd(element, 0))
             {
                 this.elementsWithin[element] = 0;
                 this.ElementEntered?.Invoke(this, new(this, element));
@@ -45,9 +45,8 @@ public abstract class CollisionShape : Element
             }
         } else
         {
-            if (this.elementsWithin.ContainsKey(element))
+            if (this.elementsWithin.Remove(element, out var _))
             {
-                this.elementsWithin.Remove(element, out var _);
                 this.ElementLeft?.Invoke(this, new(this, element));
                 element.Destroyed -= OnElementDestroyed;
             }
@@ -65,6 +64,22 @@ public abstract class CollisionShape : Element
         return this;
     }
 
+    public override bool Destroy()
+    {
+        if (base.Destroy())
+        {
+            foreach (var pair in this.elementsWithin)
+            {
+                if (this.elementsWithin.Remove(pair.Key, out var _))
+                {
+                    this.ElementLeft?.Invoke(this, new(this, pair.Key));
+                    pair.Key.Destroyed -= OnElementDestroyed;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
     public event ElementEventHandler<CollisionShape, CollisionShapeHitEventArgs>? ElementEntered;
     public event ElementEventHandler<CollisionShape, CollisionShapeLeftEventArgs>? ElementLeft;
 }

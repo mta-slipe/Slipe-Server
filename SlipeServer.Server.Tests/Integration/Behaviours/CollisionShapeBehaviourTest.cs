@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using FluentAssertions.Execution;
 using SlipeServer.Server.Behaviour;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.ColShapes;
@@ -150,6 +151,32 @@ public class CollisionShapeBehaviourTest
         dummy.Position = new Vector3(100, 100, 100);
         isEventCalled.Should().BeFalse();
         dummy.Interior = collisionShape.Interior;
+        isEventCalled.Should().BeTrue();
+    }
+
+    [Fact]
+    public void ElementShouldTriggerLeftColShapeOnDestroy()
+    {
+        var server = new TestingServer();
+        var behaviour = server.Instantiate<CollisionShapeBehaviour>();
+
+        var collisionShape = new CollisionSphere(new Vector3(100, 100, 100), 10).AssociateWith(server);
+        var dummy = new DummyElement().AssociateWith(server);
+        dummy.Position = new Vector3(100, 100, 100);
+
+        var isEventCalled = false;
+        collisionShape.ElementLeft += (_, args) =>
+        {
+            if (args.Element == dummy)
+            {
+                isEventCalled = true;
+            }
+        };
+
+        collisionShape.Destroy();
+
+        using var _ = new AssertionScope();
+        collisionShape.ElementsWithin.Should().BeEmpty();
         isEventCalled.Should().BeTrue();
     }
 }
