@@ -58,6 +58,9 @@ public class NetWrapper : IDisposable, INetWrapper
     private readonly PacketCallback packetInterceptorDelegate;
     private readonly ushort id;
 
+    public event Action<INetWrapper, ulong, PacketId, byte[], uint?>? PacketReceived;
+    public event Action<Exception>? PacketReceivedFailed;
+
     public NetWrapper(string directory, string netDllPath, string host, ushort port)
     {
         string idFile = Path.Join(directory, "id");
@@ -75,12 +78,6 @@ public class NetWrapper : IDisposable, INetWrapper
         this.id = (ushort)result;
 
         Debug.WriteLine($"Net wrapper initialized: {result}");
-    }
-
-    public void Dispose()
-    {
-        DestroyNetWrapper(this.id);
-        GC.SuppressFinalize(this);
     }
 
     public void Start() => StartNetWrapper(this.id);
@@ -173,9 +170,27 @@ public class NetWrapper : IDisposable, INetWrapper
 
         PacketId parsedPacketId = (PacketId)packetId;
 
-        this.PacketReceived?.Invoke(this, binaryAddress, parsedPacketId, data, hasPing ? ping : (uint?)null);
+        try
+        {
+            this.PacketReceived?.Invoke(this, binaryAddress, parsedPacketId, data, hasPing ? ping : (uint?)null);
+        }
+        catch(Exception ex)
+        {
+            try
+            {
+                PacketReceivedFailed?.Invoke(ex);
+            }
+            catch (Exception)
+            {
+                // Ignore
+            }
+        }
     }
 
-    public event Action<INetWrapper, ulong, PacketId, byte[], uint?>? PacketReceived;
+    public void Dispose()
+    {
+        DestroyNetWrapper(this.id);
+        GC.SuppressFinalize(this);
+    }
 
 }
