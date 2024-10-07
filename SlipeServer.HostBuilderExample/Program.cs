@@ -2,6 +2,8 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using SlipeServer.Server.Resources.Serving;
+using SlipeServer.Server.ServerBuilders;
+using SlipeServer.Example;
 
 
 Configuration? configuration = null;
@@ -22,6 +24,7 @@ builder
     {
         builder.UseConfiguration(configuration!);
         builder.AddHostedDefaults(exceptBehaviours: ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour);
+        builder.AddExampleLogic();
     });
 
 var app = builder.Build();
