@@ -8,6 +8,8 @@ public static partial class StringExtensions
     private static partial Regex ColorCodeRegex();
     [GeneratedRegex("^[!-~]{1,22}$")]
     private static partial Regex NickNameRegex();
+    [GeneratedRegex("^[A-F0-9]{32}$")]
+    private static partial Regex SerialRegex();
 
     /// <summary>
     /// Removes color codes from a string
@@ -30,4 +32,9 @@ public static partial class StringExtensions
     /// <a href="https://wiki.multitheftauto.com/wiki/SetPlayerName">See official documentation</a>
     /// </summary>
     public static bool IsValidNickName(this string value) => NickNameRegex().IsMatch(value);
+    /// <summary>
+    /// Checks if string is valid serial.
+    /// <a href="https://wiki.multitheftauto.com/wiki/Serial">See official documentation</a>
+    /// </summary>
+    public static bool IsValidSerial(this string value) => SerialRegex().IsMatch(value);
 }
