@@ -155,6 +155,29 @@ public class CollisionShapeBehaviourTest
     }
 
     [Fact]
+    public void ColShapeWhenPlayerSpawned()
+    {
+        var server = new TestingServer();
+        var behaviour = server.Instantiate<CollisionShapeBehaviour>();
+        var player = server.AddFakePlayer();
+
+        var collisionShape = new CollisionSphere(new Vector3(100, 100, 100), 10).AssociateWith(server);
+
+        var isEventCalled = false;
+        collisionShape.ElementEntered += (_, args) =>
+        {
+            if (args.Element == player)
+            {
+                isEventCalled = true;
+            }
+        };
+
+        isEventCalled.Should().BeFalse();
+        player.Spawn(new Vector3(100, 100, 100), 0, 0, 0, 0);
+        isEventCalled.Should().BeTrue();
+    }
+
+    [Fact]
     public void ElementShouldTriggerLeftColShapeOnDestroy()
     {
         var server = new TestingServer();
