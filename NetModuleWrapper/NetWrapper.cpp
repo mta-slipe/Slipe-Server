@@ -29,7 +29,7 @@ void NetWrapper::destroy()
 
 bool NetWrapper::packetHandler(unsigned char ucPacketID, const NetServerPlayerID& Socket, NetBitStreamInterface* pBitStream, SNetExtraInfo* pNetExtraInfo)
 {
-    sockets[Socket.GetBinaryAddress()] = Socket;
+    sockets[Socket.GetIdentifier()] = Socket;
 
     if (registeredCallback != nullptr && running)
     {
@@ -47,14 +47,14 @@ bool NetWrapper::packetHandler(unsigned char ucPacketID, const NetServerPlayerID
             ping = pNetExtraInfo->m_uiPing;
         }
 
-        registeredCallback(ucPacketID, Socket.GetBinaryAddress(), buffer, byteCount, hasPing, ping);
+        registeredCallback(ucPacketID, Socket.GetIdentifier(), buffer, byteCount, hasPing, ping);
         delete[] buffer;
     }
 
     return true;
 }
 
-void NetWrapper::sendPacket(unsigned long address, unsigned char packetId, unsigned short bitStreamVersion, unsigned char* payload, unsigned long payloadSize, unsigned char priority, unsigned char reliability)
+void NetWrapper::sendPacket(uint64 address, unsigned char packetId, unsigned short bitStreamVersion, unsigned char* payload, unsigned long payloadSize, unsigned char priority, unsigned char reliability)
 {
     NetBitStreamInterface* bitStream = network->AllocateNetServerBitStream(bitStreamVersion);
     if (bitStream)
@@ -67,22 +67,22 @@ void NetWrapper::sendPacket(unsigned long address, unsigned char packetId, unsig
     }
 }
 
-void NetWrapper::setSocketVersion(unsigned long address, unsigned short version)
+void NetWrapper::setSocketVersion(uint64 address, unsigned short version)
 {
     network->SetClientBitStreamVersion(sockets[address], version);
 }
 
-void NetWrapper::resendModPackets(unsigned long address)
+void NetWrapper::resendModPackets(uint64 address)
 {
     network->ResendModPackets(sockets[address]);
 }
 
-void NetWrapper::resendACPackets(unsigned long address)
+void NetWrapper::resendACPackets(uint64 address)
 {
     network->ResendACPackets(sockets[address]);
 }
 
-SerialExtraAndVersion NetWrapper::getClientSerialAndVersion(unsigned long address)
+SerialExtraAndVersion NetWrapper::getClientSerialAndVersion(uint64 address)
 {
     auto socket = sockets[address];
 
@@ -99,7 +99,7 @@ SerialExtraAndVersion NetWrapper::getClientSerialAndVersion(unsigned long addres
     return result;
 }
 
-std::string NetWrapper::getIPAddress(unsigned long address) {
+std::string NetWrapper::getIPAddress(uint64 address) {
     auto socket = sockets[address];
 
     unsigned short port;

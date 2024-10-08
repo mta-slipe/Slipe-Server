@@ -40,19 +40,19 @@ namespace SlipeServer.Server;
 public class MtaServer
 {
     private readonly List<INetWrapper> netWrappers;
-    private readonly List<IResourceServer> resourceServers;
+    protected readonly List<IResourceServer> resourceServers;
     private readonly List<Resource> additionalResources;
-    protected readonly PacketReducer packetReducer;
-    protected readonly Dictionary<INetWrapper, Dictionary<uint, IClient>> clients;
+    protected PacketReducer packetReducer;
+    protected readonly Dictionary<INetWrapper, Dictionary<ulong, IClient>> clients;
     protected readonly IServiceCollection? serviceCollection;
     protected readonly IServiceProvider serviceProvider;
-    private readonly IElementCollection elementCollection;
+    protected readonly IElementCollection elementCollection;
     private readonly IElementIdGenerator? elementIdGenerator;
-    private IResourceProvider? resourceProvider;
+    protected IResourceProvider? resourceProvider;
     private readonly RootElement root;
     private readonly Configuration configuration;
 
-    private readonly Func<uint, INetWrapper, IClient>? clientCreationMethod;
+    private readonly Func<ulong, INetWrapper, IClient>? clientCreationMethod;
 
     private readonly HashSet<object> persistentInstances;
 
@@ -79,12 +79,12 @@ public class MtaServer
     /// <summary>
     /// Indicates whether the server is currently accepting incoming packets
     /// </summary>
-    public bool IsRunning { get; private set; }
+    public bool IsRunning { get; protected set; }
 
     /// <summary>
     /// The timestamp the server was started at
     /// </summary>
-    public DateTime StartDatetime { get; private set; }
+    public DateTime StartDatetime { get; protected set; }
 
     /// <summary>
     /// The amount of time since the server has been started
@@ -102,7 +102,7 @@ public class MtaServer
 
     public MtaServer(
         Action<ServerBuilder> builderAction,
-        Func<uint, INetWrapper, IClient>? clientCreationMethod = null
+        Func<ulong, INetWrapper, IClient>? clientCreationMethod = null
     )
     {
         this.netWrappers = new();
@@ -123,21 +123,23 @@ public class MtaServer
         this.SetupDependencies(builder.LoadDependencies);
 
         this.serviceProvider = this.serviceCollection.BuildServiceProvider();
-        this.packetReducer = new(this.serviceProvider.GetRequiredService<ILogger>());
 
         this.elementCollection = this.serviceProvider.GetRequiredService<IElementCollection>();
         this.elementIdGenerator = this.serviceProvider.GetService<IElementIdGenerator>();
+        this.packetReducer = new(this.serviceProvider.GetRequiredService<ILogger>());
 
         this.root.AssociateWith(this);
 
         builder.ApplyTo(this);
     }
 
+    public Action? BuildFinalizer { get; }
+
     public MtaServer(IServiceProvider serviceProvider, Action<ServerBuilder> builderAction)
     {
         this.netWrappers = new();
         this.clients = new();
-        this.clientCreationMethod = serviceProvider.GetService<Func<uint, INetWrapper, IClient>>();
+        this.clientCreationMethod = serviceProvider.GetService<Func<ulong, INetWrapper, IClient>>();
         this.resourceServers = new();
         this.additionalResources = new();
         this.persistentInstances = new();
@@ -151,14 +153,14 @@ public class MtaServer
         this.Password = this.configuration.Password;
 
         this.serviceProvider = serviceProvider;
-        this.packetReducer = new(this.serviceProvider.GetRequiredService<ILogger>());
 
         this.elementCollection = this.serviceProvider.GetRequiredService<IElementCollection>();
         this.elementIdGenerator = this.serviceProvider.GetService<IElementIdGenerator>();
+        this.packetReducer = new(this.serviceProvider.GetRequiredService<ILogger>());
 
         this.root.AssociateWith(this);
 
-        builder.ApplyTo(this);
+        this.BuildFinalizer = () => builder.ApplyTo(this);
     }
 
     /// <summary>
@@ -179,6 +181,8 @@ public class MtaServer
             server.Start();
 
         this.IsRunning = true;
+
+        this.Started?.Invoke(this);
     }
 
     /// <summary>
@@ -186,12 +190,23 @@ public class MtaServer
     /// </summary>
     public virtual void Stop()
     {
+        foreach (var player in this.elementCollection.GetByType<Player>())
+            player.Kick(PlayerDisconnectType.SHUTDOWN);
+
+        foreach (var player in this.elementCollection.GetAll())
+            player.Destroy();
+
+        foreach (var server in this.resourceServers)
+            server.Stop();
+
         foreach (var netWrapper in this.netWrappers)
         {
             netWrapper.Stop();
         }
 
         this.IsRunning = false;
+
+        this.Stopped?.Invoke(this);
     }
 
     /// <summary>
@@ -534,10 +549,10 @@ public class MtaServer
     public void RegisterNetWrapper(INetWrapper netWrapper)
     {
         netWrapper.PacketReceived += EnqueueIncomingPacket;
-        this.clients[netWrapper] = new Dictionary<uint, IClient>();
+        this.clients[netWrapper] = new();
     }
 
-    private void EnqueueIncomingPacket(INetWrapper netWrapper, uint binaryAddress, PacketId packetId, byte[] data, uint? ping)
+    private void EnqueueIncomingPacket(INetWrapper netWrapper, ulong binaryAddress, PacketId packetId, byte[] data, uint? ping)
     {
         if (!this.clients[netWrapper].ContainsKey(binaryAddress))
         {
@@ -576,7 +591,7 @@ public class MtaServer
         }
     }
 
-    protected virtual IClient CreateClient(uint binaryAddress, INetWrapper netWrapper)
+    protected virtual IClient CreateClient(ulong binaryAddress, INetWrapper netWrapper)
     {
         if (this.clientCreationMethod != null)
             return this.clientCreationMethod(binaryAddress, netWrapper);
@@ -674,6 +689,16 @@ public class MtaServer
     /// Triggered when max player count changes
     /// </summary>
     public event Action<ushort>? MaxPlayerCountChanged;
+
+    /// <summary>
+    /// Triggered when the server started
+    /// </summary>
+    public event Action<MtaServer>? Started;
+
+    /// <summary>
+    /// Triggered when the server stopped
+    /// </summary>
+    public event Action<MtaServer>? Stopped;
 }
 
 /// <summary>
@@ -712,9 +737,10 @@ public abstract class MtaServer<TPlayer> : MtaServer where TPlayer : Player
 /// <typeparam name="TPlayer">The player type</typeparam>
 public class MtaNewPlayerServer<TPlayer> : MtaServer<TPlayer> where TPlayer : Player, new()
 {
+    public MtaNewPlayerServer(IServiceProvider serviceProvider, Action<ServerBuilder> builderAction) : base(serviceProvider, builderAction) { }
     internal MtaNewPlayerServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
 
-    protected override IClient CreateClient(uint binaryAddress, INetWrapper netWrapper)
+    protected override IClient CreateClient(ulong binaryAddress, INetWrapper netWrapper)
     {
         var player = new TPlayer();
         player.Client = new Client<TPlayer>(binaryAddress, netWrapper, player);
@@ -732,7 +758,7 @@ public class MtaDiPlayerServer<TPlayer> : MtaServer<TPlayer> where TPlayer : Pla
 
     public MtaDiPlayerServer(IServiceProvider serviceProvider, Action<ServerBuilder> builderAction) : base(serviceProvider, builderAction) { }
 
-    protected override IClient CreateClient(uint binaryAddress, INetWrapper netWrapper)
+    protected override IClient CreateClient(ulong binaryAddress, INetWrapper netWrapper)
     {
         var player = this.Instantiate<TPlayer>();
         player.Client = new Client<TPlayer>(binaryAddress, netWrapper, player);

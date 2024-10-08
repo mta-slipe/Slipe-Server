@@ -44,6 +44,12 @@ public class LatentLuaEventPacket : Packet
 
     }
 
+    public override void Reset()
+    {
+        this.Header = null;
+        this.Flag = null;
+    }
+
     public override byte[] Write()
     {
         PacketBuilder builder = new PacketBuilder();

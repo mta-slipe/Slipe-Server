@@ -92,7 +92,7 @@ public class ProxyService
         }
     }
 
-    public void SendMessage(RemoteMessageType type, byte packetId, uint id, byte[] data)
+    public void SendMessage(RemoteMessageType type, byte packetId, ulong id, byte[] data)
     {
         var payload = new byte[] { (byte)type }
             .Concat(BitConverter.GetBytes((uint)data.Length + 5))

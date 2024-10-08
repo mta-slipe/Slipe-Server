@@ -22,9 +22,8 @@ public class BasicHttpServer : IResourceServer
 
     private bool isRunning;
 
-    public BasicHttpServer(MtaServer mtaServer, ILogger logger)
+    public BasicHttpServer(Configuration configuration, ILogger logger)
     {
-        var configuration = mtaServer.Configuration;
         this.httpAddress = $"http://{configuration.HttpHost}:{configuration.HttpPort}/";
         this.httpListener = new HttpListener();
         this.httpListener.Prefixes.Add(this.httpAddress);
@@ -77,22 +76,39 @@ public class BasicHttpServer : IResourceServer
 
     private async Task HandleRequest(HttpListenerContext context)
     {
-        var path = Path.Join(this.rootDirectory, context.Request.Url?.LocalPath);
+        var localPath = context.Request.Url?.LocalPath ?? string.Empty;
+        var path = Path.Join(this.rootDirectory, localPath);
+
+        var fullPath = Path.GetFullPath(Path.Combine(this.rootDirectory, localPath.TrimStart('/')));
+
+        if (!fullPath.StartsWith(Path.GetFullPath(this.rootDirectory)))
+        {
+            context.Response.StatusCode = 403;
+            this.logger.LogWarning("403 forbidden path traversal attempt: {path}", context.Request.Url?.LocalPath);
+            context.Response.Close();
+            return;
+        }
+
 
         if (this.additionalFiles.TryGetValue(path, out var value))
         {
             context.Response.OutputStream.Write(value, 0, value.Length);
             context.Response.StatusCode = 200;
-        }
-        else if (File.Exists(path))
+        } else if (File.Exists(path))
         {
             using var file = File.Open(path, FileMode.Open, FileAccess.Read);
             await file.CopyToAsync(context.Response.OutputStream);
             context.Response.StatusCode = 200;
         } else
         {
-            context.Response.StatusCode = 404;
-            this.logger.LogWarning("404 encountered while trying to download {path}", context.Request.Url?.LocalPath);
+            if (localPath == "/mta_client_firewall_probe/")
+            {
+                context.Response.StatusCode = 200;
+            } else
+            {
+                context.Response.StatusCode = 404;
+                this.logger.LogWarning("404 encountered while trying to download {path}", localPath);
+            }
         }
 
         context.Response.Close();

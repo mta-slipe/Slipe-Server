@@ -6,6 +6,9 @@ using SlipeServer.Server.ServerBuilders;
 using SlipeServer.Server.Mappers;
 using SlipeServer.Console.Logic;
 using SlipeServer.Lua;
+using SlipeServer.WebHostBuilderExample;
+
+Directory.SetCurrentDirectory(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()!.Location)!);
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,28 +22,19 @@ var configuration = builder.Configuration.GetRequiredSection("MtaServer").Get<Co
 builder.Services.AddHttpClient();
 builder.Services.AddDefaultMtaServerServices();
 builder.Services.AddLua();
-builder.Services.AddMtaServer<CustomPlayer>(configuration, builder =>
-{
-    builder.AddDefaultServices();
-    builder.AddDefaultLuaMappings();
-    builder.AddDefaultNetWrapper();
-});
 
 builder.Services.AddSingleton<IResourceServer, BasicHttpServer>();
-builder.Services.AddHostedService<ResourcesServerHostedService>();
 
 builder.Services.AddHostedService<SampleHostedService>(); // Use instead of logics
 builder.Services.TryAddSingleton<ILogger>(x => x.GetRequiredService<ILogger<MtaServer>>());
 
-builder.ConfigureMtaServers(configure =>
+builder.AddMtaServer(serverBuilder =>
 {
     var isDevelopment = builder.Environment.IsDevelopment();
     var exceptBehaviours = isDevelopment ? ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour : ServerBuilderDefaultBehaviours.None;
 
-    configure.AddDefaultPacketHandlers();
-    configure.AddDefaultBehaviours(exceptBehaviours);
-    configure.StartResourceServers();
-    configure.StartAllServers();
+    serverBuilder.AddHostedDefaults(exceptBehaviours: exceptBehaviours);
+    serverBuilder.AddSampleResource();
 });
 
 var app = builder.Build();

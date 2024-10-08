@@ -53,7 +53,7 @@ public class JoinDataPacketHandler : IPacketHandler<PlayerJoinDataPacket>
             RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "Linux" :
             RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD) ? "Free BSD" :
             "Unknown";
-        client.SendPacket(new JoinCompletePacket($"Slipe Server 0.1.0 [{osName} {RuntimeInformation.ProcessArchitecture}]", "1.5.7-9.0.0"));
+        client.SendPacket(new JoinCompletePacket($"Slipe Server 0.1.0 [{osName} {RuntimeInformation.ProcessArchitecture}]", "1.6.0-9.0.0"));
 
         client.Player.RunAsSync(() =>
         {

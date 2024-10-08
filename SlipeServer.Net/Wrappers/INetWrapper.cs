@@ -9,15 +9,15 @@ namespace SlipeServer.Net.Wrappers;
 
 public interface INetWrapper
 {
-    event Action<INetWrapper, uint, PacketId, byte[], uint?>? PacketReceived;
+    event Action<INetWrapper, ulong, PacketId, byte[], uint?>? PacketReceived;
 
-    Tuple<string, string, string> GetClientSerialExtraAndVersion(uint binaryAddress);
-    IPAddress GetPlayerIp(uint binaryAddress);
-    void SendPacket(uint binaryAddress, ushort bitStreamVersion, Packet packet);
-    void SendPacket(uint binaryAddress, PacketId packetId, ushort bitStreamVersion, byte[] data, PacketPriority priority = PacketPriority.High, PacketReliability reliability = PacketReliability.ReliableSequenced);
-    void SetVersion(uint binaryAddress, ushort version);
-    void ResendModPackets(uint binaryAddress);
-    void ResendPlayerACInfo(uint binaryAddress);
+    Tuple<string, string, string> GetClientSerialExtraAndVersion(ulong binaryAddress);
+    IPAddress GetPlayerIp(ulong binaryAddress);
+    void SendPacket(ulong binaryAddress, ushort bitStreamVersion, Packet packet);
+    void SendPacket(ulong binaryAddress, PacketId packetId, ushort bitStreamVersion, byte[] data, PacketPriority priority = PacketPriority.High, PacketReliability reliability = PacketReliability.ReliableSequenced);
+    void SetVersion(ulong binaryAddress, ushort version);
+    void ResendModPackets(ulong binaryAddress);
+    void ResendPlayerACInfo(ulong binaryAddress);
     void SetAntiCheatConfig(
         IEnumerable<AntiCheat> disabledAntiCheats,
         bool hideAntiCheatFromClient,

@@ -103,4 +103,50 @@ public class PacketReaderTests
 
         value.Should().BeInRange(expectedOutput - 0.01f, expectedOutput + 0.01f);
     }
+
+
+    [Theory]
+    [InlineData(new byte[] { 0b11111111, 0b11001100 }, new byte[] { 0b00000001, 0b11001100 })]
+    public void AlignToByteBoundaryTest(byte[] input, byte[] expectedOutput)
+    {
+        var reader = new PacketReader(input);
+
+        var one = reader.GetByteCapped(1);
+        reader.AlignToByteBoundary();
+        var two = reader.GetByte();
+
+        new byte[] { one, two }.Should().Equal(expectedOutput);
+    }
+
+
+    [Theory]
+    [InlineData(new byte[] { 0b10000000, 0b10000000, 0b10000000 }, new byte[] { 1, 1, 1 })]
+    public void AlignToByteBoundaryThreeBytesTest(byte[] input, byte[] expectedOutput)
+    {
+        var reader = new PacketReader(input);
+
+        var one = reader.GetByteCapped(1);
+        reader.AlignToByteBoundary();
+        var two = reader.GetByteCapped(1);
+        reader.AlignToByteBoundary();
+        var three = reader.GetByteCapped(1);
+
+        new byte[] { one, two, three }.Should().Equal(expectedOutput);
+    }
+
+
+    [Theory]
+    [InlineData(new byte[] { 0b10000000, 0b10000000, 0b10000000 }, new byte[] { 128, 128, 128 })]
+    public void AlignToByteWhenAlreadyAlignedDoesNothing(byte[] input, byte[] expectedOutput)
+    {
+        var reader = new PacketReader(input);
+
+        var one = reader.GetByte();
+        reader.AlignToByteBoundary();
+        var two = reader.GetByte();
+        reader.AlignToByteBoundary();
+        var three = reader.GetByte();
+
+        new byte[] { one, two, three }.Should().Equal(expectedOutput);
+    }
 }

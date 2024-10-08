@@ -174,6 +174,8 @@ public class Player : Ped
 
     private string DebuggerDisplay => $"{this.Name} ({this.Id})";
 
+    private int pureSyncPacketsCount;
+
     public Player() : base(0, Vector3.Zero)
     {
         this.Camera = new Camera(this);
@@ -327,6 +329,7 @@ public class Player : Ped
     public void Kick(PlayerDisconnectType type = PlayerDisconnectType.CUSTOM)
     {
         this.Kicked?.Invoke(this, new PlayerKickEventArgs(string.Empty, type));
+        this.TriggerDisconnected(QuitReason.Kick);
         this.Client.SendPacket(new PlayerDisconnectPacket(type, string.Empty));
         this.Client.IsConnected = false;
         this.Client.SetDisconnected();
@@ -336,6 +339,7 @@ public class Player : Ped
     public void Kick(string reason, PlayerDisconnectType type = PlayerDisconnectType.CUSTOM)
     {
         this.Kicked?.Invoke(this, new PlayerKickEventArgs(reason, type));
+        this.TriggerDisconnected(QuitReason.Kick);
         this.Client.SendPacket(new PlayerDisconnectPacket(type, reason));
         this.Client.IsConnected = false;
         this.Client.SetDisconnected();
@@ -483,6 +487,11 @@ public class Player : Ped
     public void RemoveElement(Element element)
     {
         this.AssociatedElements.Remove(element);
+    }
+
+    internal bool ShouldSendReturnSyncPacket()
+    {
+        return this.pureSyncPacketsCount++ % 4 == 0;
     }
 
     public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;

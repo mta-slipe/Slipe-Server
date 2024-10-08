@@ -11,7 +11,7 @@ public class TestingServerCustomBuilderStepTests
     [Fact]
     public void TestIfCustomBuilderStepIsWorking()
     {
-        var server = new TestingServer(null, Configure);
+        var server = new TestingServer((Configuration?)null, Configure);
 
         server.GetRequiredService<Func<int>>()().Should().Be(2);
     }
