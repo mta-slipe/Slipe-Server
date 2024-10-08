@@ -100,6 +100,8 @@ public class MtaServer
     public RootElement RootElement => this.root;
     public Configuration Configuration => this.configuration;
 
+    private readonly ILogger logger;
+
     public MtaServer(
         Action<ServerBuilder> builderAction,
         Func<ulong, INetWrapper, IClient>? clientCreationMethod = null
@@ -126,7 +128,8 @@ public class MtaServer
 
         this.elementCollection = this.serviceProvider.GetRequiredService<IElementCollection>();
         this.elementIdGenerator = this.serviceProvider.GetService<IElementIdGenerator>();
-        this.packetReducer = new(this.serviceProvider.GetRequiredService<ILogger>());
+        this.logger = this.serviceProvider.GetRequiredService<ILogger>();
+        this.packetReducer = new(this.logger);
 
         this.root.AssociateWith(this);
 
@@ -156,7 +159,8 @@ public class MtaServer
 
         this.elementCollection = this.serviceProvider.GetRequiredService<IElementCollection>();
         this.elementIdGenerator = this.serviceProvider.GetService<IElementIdGenerator>();
-        this.packetReducer = new(this.serviceProvider.GetRequiredService<ILogger>());
+        this.logger = this.serviceProvider.GetRequiredService<ILogger>();
+        this.packetReducer = new(this.logger);
 
         this.root.AssociateWith(this);
 
@@ -537,9 +541,15 @@ public class MtaServer
 
     private INetWrapper CreateNetWrapper(string directory, string netDllPath, string host, ushort port)
     {
-        INetWrapper netWrapper = new NetWrapper(directory, netDllPath, host, port);
+        var netWrapper = new NetWrapper(directory, netDllPath, host, port);
+        netWrapper.PacketReceivedFailed += HandlePacketReceivedFailed;
         RegisterNetWrapper(netWrapper);
         return netWrapper;
+    }
+
+    private void HandlePacketReceivedFailed(Exception exception)
+    {
+        this.logger.LogError(exception, "Failed to receive packet");
     }
 
     /// <summary>
