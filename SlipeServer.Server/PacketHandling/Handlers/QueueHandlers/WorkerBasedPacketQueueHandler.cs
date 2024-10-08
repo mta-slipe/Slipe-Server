@@ -26,7 +26,7 @@ public class WorkerBasedPacketQueueHandler<T> : BasePacketQueueHandler<T> where 
         }
     }
 
-    private async void PulsePacketTask()
+    private async Task PulsePacketTask()
     {
         while (true)
         {
@@ -34,12 +34,17 @@ public class WorkerBasedPacketQueueHandler<T> : BasePacketQueueHandler<T> where 
             {
                 try
                 {
+                    ClientContext.Current = queueEntry.Client;
                     this.packetHandler.HandlePacket(queueEntry.Client, queueEntry.Packet);
                     TriggerPacketHandled(queueEntry.Packet);
                 }
                 catch (Exception e)
                 {
                     this.logger.LogError($"Handling packet ({queueEntry.Packet}) failed.\n{e.Message}\n{e.StackTrace}");
+                }
+                finally
+                {
+                    ClientContext.Current = null;
                 }
             }
 

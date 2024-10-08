@@ -2,6 +2,7 @@
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.ColShapes;
 using SlipeServer.Server.Elements.Events;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Numerics;
@@ -35,6 +36,8 @@ public class CollisionShapeBehaviour
             element.PositionChanged += OnElementPositionChange;
             element.InteriorChanged += OnElementInteriorChanged;
             element.DimensionChanged += HandleElementDimensionChanged;
+            if(element is Player player)
+                player.Spawned += HandleSpawned;
         }
     }
 
@@ -74,6 +77,14 @@ public class CollisionShapeBehaviour
     }
 
     private void HandleElementDimensionChanged(Element sender, ElementChangedEventArgs<ushort> eventArgs)
+    {
+        eventArgs.Source.RunWithContext(
+            () => RefreshColliders(eventArgs.Source),
+            Elements.Enums.ElementUpdateContext.PostEvent
+        );
+    }
+
+    private void HandleSpawned(Player sender, PlayerSpawnedEventArgs eventArgs)
     {
         eventArgs.Source.RunWithContext(
             () => RefreshColliders(eventArgs.Source),

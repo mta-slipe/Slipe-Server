@@ -6,9 +6,9 @@ namespace SlipeServer.Server.TestTools;
 
 public class TestingClient : Client<Player>
 {
-    public uint Address { get; private set; }
+    public ulong Address { get; private set; }
 
-    public TestingClient(uint address, INetWrapper netWrapper, Player player)
+    public TestingClient(ulong address, INetWrapper netWrapper, Player player)
         : base(address, netWrapper, player)
     {
         this.Address = address;

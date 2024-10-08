@@ -40,11 +40,16 @@ public class PlayerPureSyncPacketHandler : IPacketHandler<PlayerPureSyncPacket>
             return;
         }
 
-        client.SendPacket(new ReturnSyncPacket(packet.Position));
+        var player = client.Player;
+        if (player.Vehicle != null && player.VehicleAction != VehicleAction.Exiting)
+            return;
+
+        if(player.ShouldSendReturnSyncPacket())
+            client.SendPacket(new ReturnSyncPacket(packet.Position));
+
         packet.PlayerId = client.Player.Id;
         packet.Latency = (ushort)client.Ping;
 
-        var player = client.Player;
         player.RunAsSync(() =>
         {
             player.PedRotation = packet.Rotation * (180 / MathF.PI);
