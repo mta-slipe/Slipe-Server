@@ -15,7 +15,7 @@ namespace SlipeServer.Net.Wrappers;
 public class NetWrapper : IDisposable, INetWrapper
 {
     private const string wrapperDllpath = @"NetModuleWrapper";
-
+    private bool started = false;
     [UnmanagedFunctionPointer(CallingConvention.StdCall)]
     private delegate void PacketCallback(byte packetId, ulong binaryAddress, IntPtr payload, uint payloadSize, bool hasPing, uint ping);
 
@@ -83,9 +83,23 @@ public class NetWrapper : IDisposable, INetWrapper
         GC.SuppressFinalize(this);
     }
 
-    public void Start() => StartNetWrapper(this.id);
+    public void Start()
+    {
+        if (this.started)
+            throw new InvalidOperationException("Net server already started.");
 
-    public void Stop() => StopNetWrapper(this.id);
+        StartNetWrapper(this.id);
+        this.started = true;
+    }
+
+    public void Stop()
+    {
+        if (!this.started)
+            throw new InvalidOperationException("Net server is not running.");
+
+        StopNetWrapper(this.id);
+        this.started = false;
+    }
 
     protected virtual void SendPacket(ulong binaryAddress, byte packetId, ushort bitStreamVersion, byte[] payload, PacketPriority priority, PacketReliability reliability)
     {
