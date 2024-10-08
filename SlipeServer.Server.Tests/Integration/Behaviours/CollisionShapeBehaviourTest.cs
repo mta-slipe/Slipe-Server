@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using FluentAssertions.Execution;
 using SlipeServer.Server.Behaviour;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.ColShapes;
@@ -150,6 +151,55 @@ public class CollisionShapeBehaviourTest
         dummy.Position = new Vector3(100, 100, 100);
         isEventCalled.Should().BeFalse();
         dummy.Interior = collisionShape.Interior;
+        isEventCalled.Should().BeTrue();
+    }
+
+    [Fact]
+    public void ColShapeWhenPlayerSpawned()
+    {
+        var server = new TestingServer();
+        var behaviour = server.Instantiate<CollisionShapeBehaviour>();
+        var player = server.AddFakePlayer();
+
+        var collisionShape = new CollisionSphere(new Vector3(100, 100, 100), 10).AssociateWith(server);
+
+        var isEventCalled = false;
+        collisionShape.ElementEntered += (_, args) =>
+        {
+            if (args.Element == player)
+            {
+                isEventCalled = true;
+            }
+        };
+
+        isEventCalled.Should().BeFalse();
+        player.Spawn(new Vector3(100, 100, 100), 0, 0, 0, 0);
+        isEventCalled.Should().BeTrue();
+    }
+
+    [Fact]
+    public void ElementShouldTriggerLeftColShapeOnDestroy()
+    {
+        var server = new TestingServer();
+        var behaviour = server.Instantiate<CollisionShapeBehaviour>();
+
+        var collisionShape = new CollisionSphere(new Vector3(100, 100, 100), 10).AssociateWith(server);
+        var dummy = new DummyElement().AssociateWith(server);
+        dummy.Position = new Vector3(100, 100, 100);
+
+        var isEventCalled = false;
+        collisionShape.ElementLeft += (_, args) =>
+        {
+            if (args.Element == dummy)
+            {
+                isEventCalled = true;
+            }
+        };
+
+        collisionShape.Destroy();
+
+        using var _ = new AssertionScope();
+        collisionShape.ElementsWithin.Should().BeEmpty();
         isEventCalled.Should().BeTrue();
     }
 }
