@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using SlipeServer.Server.Resources.Serving;
-using SlipeServer.Server.Mappers;
 using SlipeServer.ConfigurationProviders.Configurations;
 using Microsoft.Extensions.Options;
 using SlipeServer.Lua;
@@ -9,7 +8,6 @@ using SlipeServer.Server.Resources.Interpreters;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Logging.Abstractions;
 using SlipeServer.Server.Resources;
-using System.Reflection;
 
 namespace SlipeServer.Legacy;
 
@@ -53,7 +51,6 @@ public class LegacyMtaServer
 
         this.configuration = mtaServerConfiguration.Configuration;
 
-
         builder.ConfigureServices((hostBuilderContext, services) =>
         {
             if (hostBuilderContext.HostingEnvironment.IsDevelopment())
@@ -62,7 +59,6 @@ public class LegacyMtaServer
                 var projectDirectory = Directory.GetParent(currentDirectory).Parent.Parent.FullName;
 
                 this.configuration.ResourceDirectory = Path.Join(projectDirectory, "mods/deathmatch/resources");
-                ;
             } else
             {
                 this.configuration.ResourceDirectory = "mods/deathmatch/resources";
@@ -82,29 +78,19 @@ public class LegacyMtaServer
             services.AddHttpClient();
             services.AddDefaultMtaServerServices();
             services.AddResourceInterpreter<MetaXmlResourceInterpreter>();
-            services.AddMtaServer<Player>(mtaServerConfiguration.Configuration, builder =>
-            {
-                builder.AddDefaultServices();
-                builder.AddDefaultLuaMappings();
-                builder.AddDefaultNetWrapper();
-            });
 
             services.AddSingleton<IResourceServer, BasicHttpServer>();
             services.AddHostedService<LegacyServerService>();
             services.AddHostedService<LegacyConsoleCommandsService>();
-            services.AddHostedService<ResourcesServerHostedService>();
+            //services.AddHostedService<ResourcesServerHostedService>();
 
             services.TryAddSingleton<ILogger>(x => x.GetRequiredService<ILogger<MtaServer>>());
         });
 
-        builder.ConfigureMtaServers((context, configure) =>
+        builder.AddMtaServer<Player>(serverBuilder =>
         {
-            var isDevelopment = context.HostingEnvironment.IsDevelopment();
-            var exceptBehaviours = isDevelopment ? ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour : ServerBuilderDefaultBehaviours.None;
-
-            configure.AddDefaultPacketHandlers();
-            configure.AddDefaultBehaviours(exceptBehaviours);
-            configure.StartResourceServers();
+            serverBuilder.UseConfiguration(configuration!);
+            serverBuilder.AddHostedDefaults(exceptBehaviours: ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour);
         });
 
         this.app = builder.Build();

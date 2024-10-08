@@ -66,7 +66,7 @@ internal sealed class LegacyServerService : IHostedService
                 this.logger.LogWarning("ERROR: Couldn't find resource {resourceName}. Check it exists.", startupResource.Name);
             }
         }
-        this.mtaServer.Start();
+
         this.logger.LogInformation("Server started and is ready to accept connections!");
         this.logger.LogInformation("To stop the server, type 'shutdown' or press Ctrl-C");
         this.logger.LogInformation("Type 'help' for a list of commands.");
