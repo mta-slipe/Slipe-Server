@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -73,6 +74,15 @@ public partial class Program
             DebugPort = 50667
 #endif
         };
+
+        IConfigurationRoot config = new ConfigurationBuilder()
+            .AddUserSecrets<Program>()
+            .Build();
+
+        if(ushort.TryParse(config.GetSection("HttpPort").Value, out var httpPort))
+        {
+            this.configuration.HttpPort = httpPort;
+        }
 
         this.server = MtaServer.CreateWithDiSupport<CustomPlayer>(
             (builder) =>
