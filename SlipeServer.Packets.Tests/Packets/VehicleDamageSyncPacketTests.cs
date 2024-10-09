@@ -7,14 +7,14 @@ namespace SlipeServer.Packets.Tests.Packets;
 
 public class VehicleDamageSyncPacketTests
 {
-    private readonly byte[] testPacket = new byte[]
-    {
+    private readonly byte[] testPacket =
+    [
             44, 0, 80, 0, 20, 0
-    };
-    private readonly byte[] testPacket2 = new byte[]
-    {
+    ];
+    private readonly byte[] testPacket2 =
+    [
             44, 0, 40, 0, 10, 0
-    };
+    ];
 
     [Fact]
     public void ReadPacket_ReadsValuesProperly()

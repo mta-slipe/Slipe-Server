@@ -830,28 +830,28 @@ public class Element
     /// Do note that the element will be required to have an id assigned for this to work properly
     /// </summary>
     public virtual void CreateFor(IEnumerable<Player> players)
-        => AddEntityPacketFactory.CreateAddEntityPacket(new Element[] { this }).SendTo(players);
+        => AddEntityPacketFactory.CreateAddEntityPacket([this]).SendTo(players);
 
     /// <summary>
     /// Sends packets to create an elementto a set of players
     /// Do note that the element will be required to have an id assigned for this to work properly
     /// </summary>
     public virtual void CreateFor(Player player)
-        => this.CreateFor(new Player[] { player });
+        => this.CreateFor([player]);
 
     /// <summary>
     /// Sends packets to destroy an elementto a set of players
     /// Do note that the element will be required to have an id assigned for this to work properly
     /// </summary>
     public virtual void DestroyFor(IEnumerable<Player> players)
-        => RemoveEntityPacketFactory.CreateRemoveEntityPacket(new Element[] { this }).SendTo(players);
+        => RemoveEntityPacketFactory.CreateRemoveEntityPacket([this]).SendTo(players);
 
     /// <summary>
     /// Sends packets to destroy an elementto a set of players
     /// Do note that the element will be required to have an id assigned for this to work properly
     /// </summary>
     public virtual void DestroyFor(Player player)
-        => this.DestroyFor(new Player[] { player });
+        => this.DestroyFor([player]);
 
     public event ElementChangedEventHandler<Vector3>? PositionChanged;
     public event ElementChangedEventHandler<Vector3>? RotationChanged;

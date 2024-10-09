@@ -77,7 +77,7 @@ public class LuaValue
 
         if (value != null)
         {
-            this.TableValue = new Dictionary<LuaValue, LuaValue>();
+            this.TableValue = [];
             int i = 1;
             foreach (var arrayValue in value)
                 this.TableValue[i++] = arrayValue;

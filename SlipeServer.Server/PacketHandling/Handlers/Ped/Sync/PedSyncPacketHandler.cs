@@ -27,7 +27,7 @@ public class PedSyncPacketHandler : IPacketHandler<PedSyncPacket>
 
     public void HandlePacket(IClient client, PedSyncPacket packet)
     {
-        List<PedSyncData> pedsToSync = new();
+        List<PedSyncData> pedsToSync = [];
 
         foreach (var syncData in packet.Syncs)
         {

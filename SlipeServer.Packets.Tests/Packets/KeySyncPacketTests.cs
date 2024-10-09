@@ -8,10 +8,10 @@ namespace SlipeServer.Packets.Tests.Packets;
 
 public class KeySyncPacketTests
 {
-    private readonly byte[] testPacket = new byte[]
-    {
+    private readonly byte[] testPacket =
+    [
             16,0,0,37,153,146,98,0,0
-    };
+    ];
 
     [Fact]
     public void ReadPacket_ReadsValuesProperly()

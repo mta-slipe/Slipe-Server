@@ -79,7 +79,7 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
         var players = this.elementCollection.GetByType<Elements.Player>(ElementType.Player);
 
         var otherPlayers = players
-            .Except(new Elements.Player[] { client.Player })
+            .Except([client.Player])
             .ToArray();
 
         var elements = this.elementCollection

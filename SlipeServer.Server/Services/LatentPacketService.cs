@@ -49,8 +49,8 @@ public class LatentPacketService
     {
         this.server = server;
         this.root = root;
-        this.transfers = new();
-        this.activeTransferPlayers = new();
+        this.transfers = [];
+        this.activeTransferPlayers = [];
 
         this.bytesPerSend = configuration.LatentBandwidthLimit / 1000 * configuration.LatentSendInterval;
 
@@ -116,7 +116,7 @@ public class LatentPacketService
             ResourceNetId = transfer.ResourceNetId
         };
         packet.Data = Array.Empty<byte>()
-            .Concat(new byte[] { (byte)transfer.PacketId })
+            .Concat([(byte)transfer.PacketId])
             .Concat(BitConverter.GetBytes((uint)transfer.Data.Length * 8))
             .Concat(packet.Data)
             .ToArray();

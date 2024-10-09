@@ -16,7 +16,7 @@ public class PacketBuilder
 
     public PacketBuilder()
     {
-        this.data = new List<byte>();
+        this.data = [];
         this.byteIndex = 0;
     }
 
@@ -105,7 +105,7 @@ public class PacketBuilder
     public void WriteCapped(uint integer, int bitCap) => WriteBytesCapped(BitConverter.GetBytes(integer), bitCap);
     public void WriteCapped(ushort integer, int bitCap) => WriteBytesCapped(BitConverter.GetBytes(integer), bitCap);
     public void WriteCapped(ulong integer, int bitCap) => WriteBytesCapped(BitConverter.GetBytes(integer), bitCap);
-    public void WriteCapped(byte integer, int bitCap) => WriteBytesCapped(new byte[] { integer }, bitCap);
+    public void WriteCapped(byte integer, int bitCap) => WriteBytesCapped([integer], bitCap);
 
     public void Write(ElementId id) => WriteElementId(id.Value);
     public void WriteElementId(uint integer) => WriteBytesCapped(BitConverter.GetBytes(integer), 17);
@@ -118,7 +118,7 @@ public class PacketBuilder
     public void Write(uint integer) => WriteBytes(BitConverter.GetBytes(integer));
     public void Write(ushort integer) => WriteBytes(BitConverter.GetBytes(integer));
     public void Write(ulong integer) => WriteBytes(BitConverter.GetBytes(integer));
-    public void Write(byte integer) => WriteBytes(new byte[] { integer });
+    public void Write(byte integer) => WriteBytes([integer]);
     public void Write(IEnumerable<byte> bytes) => WriteBytes(bytes);
 
     public void Write(bool boolean) => WriteBit(boolean);

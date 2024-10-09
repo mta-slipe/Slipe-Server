@@ -16,7 +16,7 @@ public class ClothingConstants
 
     public static Dictionary<ClothingType, PedClothing[]> ClothesTextureModel { get; } = new()
     {
-        [ClothingType.Shirt] = new PedClothing[] {
+        [ClothingType.Shirt] = [
                 new PedClothing("player_torso", "torso", (byte)ClothingType.Shirt),
                 new PedClothing("vestblack", "vest", (byte)ClothingType.Shirt),
                 new PedClothing("vest", "vest", (byte)ClothingType.Shirt),
@@ -85,9 +85,9 @@ public class ClothingConstants
                 new PedClothing("tuxedo", "suit2", (byte)ClothingType.Shirt),
                 new PedClothing("suit1gang", "suit1", (byte)ClothingType.Shirt),
                 new PedClothing("letter", "sleevt", (byte)ClothingType.Shirt),
-            },
+            ],
 
-        [ClothingType.Head] = new PedClothing[] {
+        [ClothingType.Head] = [
                 new PedClothing("player_face", "head", (byte)ClothingType.Head),
                 new PedClothing("hairblond", "head", (byte)ClothingType.Head),
                 new PedClothing("hairred", "head", (byte)ClothingType.Head),
@@ -121,8 +121,8 @@ public class ClothingConstants
                 new PedClothing("tash", "head", (byte)ClothingType.Head),
                 new PedClothing("goatee", "head", (byte)ClothingType.Head),
                 new PedClothing("afrogoatee", "afro", (byte)ClothingType.Head),
-            },
-        [ClothingType.Trousers] = new PedClothing[] {
+            ],
+        [ClothingType.Trousers] = [
                 new PedClothing("player_legs", "legs", (byte)ClothingType.Trousers),
                 new PedClothing("worktrcamogrn", "worktr", (byte)ClothingType.Trousers),
                 new PedClothing("worktrcamogry", "worktr", (byte)ClothingType.Trousers),
@@ -168,8 +168,8 @@ public class ClothingConstants
                 new PedClothing("suit1trgreen", "suit1tr", (byte)ClothingType.Trousers),
                 new PedClothing("suit1trblk2", "suit1tr", (byte)ClothingType.Trousers),
                 new PedClothing("suit1trgang", "suit1tr", (byte)ClothingType.Trousers),
-            },
-        [ClothingType.Shoes] = new PedClothing[] {
+            ],
+        [ClothingType.Shoes] = [
                 new PedClothing("foot", "feet", (byte)ClothingType.Shoes),
                 new PedClothing("cowboyboot2", "biker", (byte)ClothingType.Shoes),
                 new PedClothing("bask2semi", "bask1", (byte)ClothingType.Shoes),
@@ -208,31 +208,31 @@ public class ClothingConstants
                 new PedClothing("shoedressblk", "shoe", (byte)ClothingType.Shoes),
                 new PedClothing("shoedressbrn", "shoe", (byte)ClothingType.Shoes),
                 new PedClothing("shoespatz", "shoe", (byte)ClothingType.Shoes),
-            },
-        [ClothingType.TattoosLeftUpperArm] = new PedClothing[] {
+            ],
+        [ClothingType.TattoosLeftUpperArm] = [
                 new PedClothing("4weed", "4WEED", (byte)ClothingType.TattoosLeftUpperArm),
                 new PedClothing("4rip", "4RIP", (byte)ClothingType.TattoosLeftUpperArm),
                 new PedClothing("4spider", "4SPIDER", (byte)ClothingType.TattoosLeftUpperArm),
-            },
-        [ClothingType.TattoosLeftLowerArm] = new PedClothing[] {
+            ],
+        [ClothingType.TattoosLeftLowerArm] = [
                 new PedClothing("5gun", "5GUN", (byte)ClothingType.TattoosLeftLowerArm),
                 new PedClothing("5cross", "5CROSS", (byte)ClothingType.TattoosLeftLowerArm),
                 new PedClothing("5cross2", "5CROSS2", (byte)ClothingType.TattoosLeftLowerArm),
                 new PedClothing("5cross3", "5CROSS3", (byte)ClothingType.TattoosLeftLowerArm),
-            },
-        [ClothingType.TattoosRightUpperArm] = new PedClothing[] {
+            ],
+        [ClothingType.TattoosRightUpperArm] = [
                 new PedClothing("6aztec", "6AZTEC", (byte)ClothingType.TattoosRightUpperArm),
                 new PedClothing("6crown", "6CROWN", (byte)ClothingType.TattoosRightUpperArm),
                 new PedClothing("6clown", "6CLOWN", (byte)ClothingType.TattoosRightUpperArm),
                 new PedClothing("6africa", "6AFRICA", (byte)ClothingType.TattoosRightUpperArm),
-            },
-        [ClothingType.TattoosRightLowerArm] = new PedClothing[] {
+            ],
+        [ClothingType.TattoosRightLowerArm] = [
                 new PedClothing("7cross", "7CROSS", (byte)ClothingType.TattoosRightLowerArm),
                 new PedClothing("7cross2", "7CROSS2", (byte)ClothingType.TattoosRightLowerArm),
                 new PedClothing("7cross3", "7CROSS3", (byte)ClothingType.TattoosRightLowerArm),
                 new PedClothing("7mary", "7MARY", (byte)ClothingType.TattoosRightLowerArm),
-            },
-        [ClothingType.TattoosBack] = new PedClothing[] {
+            ],
+        [ClothingType.TattoosBack] = [
                 new PedClothing("8sa", "8SA", (byte)ClothingType.TattoosBack),
                 new PedClothing("8sa2", "8SA2", (byte)ClothingType.TattoosBack),
                 new PedClothing("8sa3", "8SA3", (byte)ClothingType.TattoosBack),
@@ -240,16 +240,16 @@ public class ClothingConstants
                 new PedClothing("8santos", "8SANTOS", (byte)ClothingType.TattoosBack),
                 new PedClothing("8poker", "8POKER", (byte)ClothingType.TattoosBack),
                 new PedClothing("8gun", "8GUN", (byte)ClothingType.TattoosBack),
-            },
-        [ClothingType.TattoosLeftChest] = new PedClothing[] {
+            ],
+        [ClothingType.TattoosLeftChest] = [
                 new PedClothing("9crown", "9CROWN", (byte)ClothingType.TattoosLeftChest),
                 new PedClothing("9gun", "9GUN", (byte)ClothingType.TattoosLeftChest),
                 new PedClothing("9gun2", "9GUN2", (byte)ClothingType.TattoosLeftChest),
                 new PedClothing("9homeboy", "9HOMBY", (byte)ClothingType.TattoosLeftChest),
                 new PedClothing("9bullet", "9BULLT", (byte)ClothingType.TattoosLeftChest),
                 new PedClothing("9rasta", "9RASTA", (byte)ClothingType.TattoosLeftChest),
-            },
-        [ClothingType.TattoosRightChest] = new PedClothing[] {
+            ],
+        [ClothingType.TattoosRightChest] = [
                 new PedClothing("10ls", "10LS", (byte)ClothingType.TattoosRightChest),
                 new PedClothing("10ls2", "10LS2", (byte)ClothingType.TattoosRightChest),
                 new PedClothing("10ls3", "10LS3", (byte)ClothingType.TattoosRightChest),
@@ -257,8 +257,8 @@ public class ClothingConstants
                 new PedClothing("10ls5", "10ls5", (byte)ClothingType.TattoosRightChest),
                 new PedClothing("10og", "10OG", (byte)ClothingType.TattoosRightChest),
                 new PedClothing("10weed", "10WEED", (byte)ClothingType.TattoosRightChest),
-            },
-        [ClothingType.TattoosStomach] = new PedClothing[] {
+            ],
+        [ClothingType.TattoosStomach] = [
                 new PedClothing("11grove", "11GROVE", (byte)ClothingType.TattoosStomach),
                 new PedClothing("11grove2", "11GROV2", (byte)ClothingType.TattoosStomach),
                 new PedClothing("11grove3", "11GROV3", (byte)ClothingType.TattoosStomach),
@@ -266,16 +266,16 @@ public class ClothingConstants
                 new PedClothing("11dice2", "11DICE2", (byte)ClothingType.TattoosStomach),
                 new PedClothing("11jail", "11JAIL", (byte)ClothingType.TattoosStomach),
                 new PedClothing("11godsgift", "11GGIFT", (byte)ClothingType.TattoosStomach),
-            },
-        [ClothingType.TattoosLowerBack] = new PedClothing[] {
+            ],
+        [ClothingType.TattoosLowerBack] = [
                 new PedClothing("12angels", "12ANGEL", (byte)ClothingType.TattoosLowerBack),
                 new PedClothing("12mayabird", "12MAYBR", (byte)ClothingType.TattoosLowerBack),
                 new PedClothing("12dagger", "12DAGER", (byte)ClothingType.TattoosLowerBack),
                 new PedClothing("12bandit", "12BNDIT", (byte)ClothingType.TattoosLowerBack),
                 new PedClothing("12cross7", "12CROSS", (byte)ClothingType.TattoosLowerBack),
                 new PedClothing("12mayafce", "12MYFAC", (byte)ClothingType.TattoosLowerBack),
-            },
-        [ClothingType.Necklace] = new PedClothing[] {
+            ],
+        [ClothingType.Necklace] = [
                 new PedClothing("dogtag", "neck", (byte)ClothingType.Necklace),
                 new PedClothing("neckafrica", "neck", (byte)ClothingType.Necklace),
                 new PedClothing("stopwatch", "neck", (byte)ClothingType.Necklace),
@@ -288,8 +288,8 @@ public class ClothingConstants
                 new PedClothing("neckls", "neck", (byte)ClothingType.Necklace),
                 new PedClothing("neckdollar", "neck2", (byte)ClothingType.Necklace),
                 new PedClothing("neckcross", "neck2", (byte)ClothingType.Necklace),
-            },
-        [ClothingType.Watches] = new PedClothing[] {
+            ],
+        [ClothingType.Watches] = [
                 new PedClothing("watchpink", "watch", (byte)ClothingType.Watches),
                 new PedClothing("watchyellow", "watch", (byte)ClothingType.Watches),
                 new PedClothing("watchpro", "watch", (byte)ClothingType.Watches),
@@ -302,8 +302,8 @@ public class ClothingConstants
                 new PedClothing("watchgno2", "watch", (byte)ClothingType.Watches),
                 new PedClothing("watchcro", "watch", (byte)ClothingType.Watches),
                 new PedClothing("watchcro2", "watch", (byte)ClothingType.Watches),
-            },
-        [ClothingType.Glasses] = new PedClothing[] {
+            ],
+        [ClothingType.Glasses] = [
                 new PedClothing("groucho", "grouchos", (byte)ClothingType.Glasses),
                 new PedClothing("zorro", "zorromask", (byte)ClothingType.Glasses),
                 new PedClothing("eyepatch", "eyepatch", (byte)ClothingType.Glasses),
@@ -321,8 +321,8 @@ public class ClothingConstants
                 new PedClothing("glasses03dark", "glasses03", (byte)ClothingType.Glasses),
                 new PedClothing("glasses05dark", "glasses03", (byte)ClothingType.Glasses),
                 new PedClothing("glasses05", "glasses03", (byte)ClothingType.Glasses),
-            },
-        [ClothingType.Hats] = new PedClothing[] {
+            ],
+        [ClothingType.Hats] = [
                 new PedClothing("bandred", "bandana", (byte)ClothingType.Hats),
                 new PedClothing("bandblue", "bandana", (byte)ClothingType.Hats),
                 new PedClothing("bandgang", "bandana", (byte)ClothingType.Hats),
@@ -380,8 +380,8 @@ public class ClothingConstants
                 new PedClothing("boater", "boater", (byte)ClothingType.Hats),
                 new PedClothing("bowlergang", "bowler", (byte)ClothingType.Hats),
                 new PedClothing("boaterblk", "boater", (byte)ClothingType.Hats),
-            },
-        [ClothingType.Extra] = new PedClothing[] {
+            ],
+        [ClothingType.Extra] = [
                 new PedClothing("gimpleg", "gimpleg", (byte)ClothingType.Extra),
                 new PedClothing("valet", "valet", (byte)ClothingType.Extra),
                 new PedClothing("countrytr", "countrytr", (byte)ClothingType.Extra),
@@ -391,7 +391,7 @@ public class ClothingConstants
                 new PedClothing("pimptr", "pimptr", (byte)ClothingType.Extra),
                 new PedClothing("garageleg", "garagetr", (byte)ClothingType.Extra),
                 new PedClothing("medictr", "medictr", (byte)ClothingType.Extra),
-            },
+            ],
     };
 
     public static int ShirtsCount => ClothesTextureModel[ClothingType.Shirt].Length;

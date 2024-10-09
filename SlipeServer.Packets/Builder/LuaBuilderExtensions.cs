@@ -8,7 +8,7 @@ public static class LuaBuilderExtensions
 {
     public static void Write(this PacketBuilder builder, LuaValue? luaValue, Dictionary<LuaValue, ulong>? knownTables = null)
     {
-        knownTables ??= new Dictionary<LuaValue, ulong>();
+        knownTables ??= [];
 
         if(luaValue is null)
         {
@@ -45,7 +45,7 @@ public static class LuaBuilderExtensions
 
     public static void Write(this PacketBuilder builder, IEnumerable<LuaValue> luaValues, Dictionary<LuaValue, ulong>? knownTables = null)
     {
-        knownTables ??= new Dictionary<LuaValue, ulong>();
+        knownTables ??= [];
         knownTables[new LuaValue()] = 0;
 
         builder.WriteCompressed((uint)luaValues.Count());

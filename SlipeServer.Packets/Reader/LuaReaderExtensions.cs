@@ -7,7 +7,7 @@ public static class LuaReaderExtensions
 {
     public static IEnumerable<LuaValue> GetLuaValues(this PacketReader reader, List<LuaValue>? knownTables = null)
     {
-        knownTables ??= new List<LuaValue>();
+        knownTables ??= [];
 
         uint count = reader.GetCompressedUInt32();
         LuaValue[] luaValues = new LuaValue[count];
@@ -21,7 +21,7 @@ public static class LuaReaderExtensions
 
     public static LuaValue GetLuaValue(this PacketReader reader, List<LuaValue>? knownTables = null)
     {
-        knownTables ??= new List<LuaValue>();
+        knownTables ??= [];
 
         LuaType type = (LuaType)reader.GetByteCapped(4);
 
@@ -49,7 +49,7 @@ public static class LuaReaderExtensions
     {
         var count = reader.GetCompressedUInt32();
 
-        Dictionary<LuaValue, LuaValue> tableValues = new Dictionary<LuaValue, LuaValue>();
+        Dictionary<LuaValue, LuaValue> tableValues = [];
         for (int i = 0; i < count / 2; i++)
         {
             tableValues.Add(

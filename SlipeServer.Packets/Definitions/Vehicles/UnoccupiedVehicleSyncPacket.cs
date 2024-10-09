@@ -19,7 +19,7 @@ public class UnoccupiedVehicleSyncPacket : Packet
 
     public UnoccupiedVehicleSyncPacket()
     {
-        this.Vehicles = new();
+        this.Vehicles = [];
     }
 
     public override void Read(byte[] bytes)

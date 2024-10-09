@@ -25,8 +25,8 @@ public class FileSystemResourceProvider : IResourceProvider
         this.mtaServer = mtaServer;
         this.rootElement = mtaServer.RootElement;
         this.configuration = mtaServer.Configuration;
-        this.resources = new();
-        this.resourceInterpreters = new();
+        this.resources = [];
+        this.resourceInterpreters = [];
     }
 
     public Resource GetResource(string name)
@@ -50,7 +50,7 @@ public class FileSystemResourceProvider : IResourceProvider
 
     private IEnumerable<Resource> IndexResourceDirectory(string directory)
     {
-        List<Resource> resources = new();
+        List<Resource> resources = [];
 
         if (!Directory.Exists(directory))
             return resources;

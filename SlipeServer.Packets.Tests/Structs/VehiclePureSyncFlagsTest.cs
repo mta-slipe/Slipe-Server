@@ -10,7 +10,7 @@ public class VehiclePureSyncFlagsTest
     [Fact]
     public void ReadVehiclePureSync_ReturnsProperValues()
     {
-        var reader = new PacketReader(new byte[] { 0b10101111, 0b11000000 });
+        var reader = new PacketReader([0b10101111, 0b11000000]);
         var structure = new VehiclePureSyncFlagsStructure();
 
         structure.Read(reader);

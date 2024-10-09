@@ -524,7 +524,7 @@ public class Vehicle : Element
         this.Upgrades = new(this);
 
         this.Name = $"vehicle{this.Id}";
-        this.Occupants = new Dictionary<byte, Ped>();
+        this.Occupants = [];
 
         this.Colors.ColorChanged += (source, args) => this.ColorChanged?.Invoke(this, args);
         this.Upgrades.UpgradeChanged+= (source, args) => this.UpgradeChanged?.Invoke(this, args);

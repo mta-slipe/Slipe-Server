@@ -321,8 +321,8 @@ public class Ped : Element
         this.Position = position;
 
         this.Clothing = new Clothing(this);
-        this.Weapons = new();
-        this.stats = new();
+        this.Weapons = [];
+        this.stats = [];
 
         this.Weapons.WeaponAdded += (sender, args) => this.WeaponReceived?.Invoke(this, new WeaponReceivedEventArgs(this, args.Type, args.Ammo, false));
         this.Weapons.WeaponRemoved += (sender, args) => this.WeaponRemoved?.Invoke(this, new WeaponRemovedEventArgs(this, args.Type, args.Ammo));

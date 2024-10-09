@@ -35,11 +35,11 @@ public class PhysicsWorldBuilder
         this.logger = logger;
 
         this.assetCollection = new();
-        this.actions = new();
-        this.imgs = new();
-        this.dffMeshes = new();
-        this.colMeshes = new();
-        this.namedColCombos = new();
+        this.actions = [];
+        this.imgs = [];
+        this.dffMeshes = [];
+        this.colMeshes = [];
+        this.namedColCombos = [];
 
         this.loadMode = PhysicsModelLoadMode.Col;
     }

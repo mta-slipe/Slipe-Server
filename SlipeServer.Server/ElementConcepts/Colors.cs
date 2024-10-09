@@ -60,7 +60,7 @@ public class Colors
         }
     }
 
-    public Color[] AsArray() => new Color[] { this.Primary, this.Secondary, this.Color3, this.Color4 };
+    public Color[] AsArray() => [this.Primary, this.Secondary, this.Color3, this.Color4];
 
     public Colors(Vehicle vehicle, Color? primary = null, Color? secondary = null, Color? color3 = null, Color? color4 = null)
     {

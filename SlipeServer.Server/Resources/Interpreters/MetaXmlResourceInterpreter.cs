@@ -40,7 +40,7 @@ public class MetaXmlResourceInterpreter : IResourceInterpreter
     {
         var files = fileNames.ToDictionary(x => x.Replace(Path.DirectorySeparatorChar, '/'), file => resourceProvider.GetFileContent(name, file));
 
-        List<ResourceFile> resourceFiles = new List<ResourceFile>();
+        List<ResourceFile> resourceFiles = [];
 
         var metaFile = files["meta.xml"];
         var reader = new StringReader(Encoding.Default.GetString(metaFile));
@@ -63,7 +63,7 @@ public class MetaXmlResourceInterpreter : IResourceInterpreter
 
     private List<ResourceFile> GetFilesForMetaXmlResource(MetaXml meta, Dictionary<string, byte[]> files)
     {
-        List<ResourceFile> resourceFiles = new List<ResourceFile>();
+        List<ResourceFile> resourceFiles = [];
 
         if (meta.files != null)
         {

@@ -7,10 +7,10 @@ namespace SlipeServer.Packets.Tests.Packets;
 
 public class PureSyncPacketTests
 {
-    private readonly byte[] testPacket = new byte[]
-    {
+    private readonly byte[] testPacket =
+    [
             2, 0, 0, 0, 0, 139, 173, 0, 3, 173, 20, 0, 2, 1, 29, 2, 1, 140, 200, 3, 33, 87, 29, 66, 172, 121, 93, 192, 80, 201, 23, 248,
-    };
+    ];
     [Fact]
     public void ReadPacket_ReadsValuesProperly()
     {

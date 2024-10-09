@@ -27,7 +27,6 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
     private uint binaryAddressCounter;
 
     private readonly List<SendPacketCall> sendPacketCalls;
-    public event Action Stopped;
 
     public TestingServer(Configuration configuration = null, Action<ServerBuilder> configure = null) : base(x =>
     {
@@ -37,8 +36,8 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
     })
     {
         this.NetWrapperMock = new Mock<INetWrapper>();
-        this.clients[this.NetWrapperMock.Object] = new();
-        this.sendPacketCalls = new();
+        this.clients[this.NetWrapperMock.Object] = [];
+        this.sendPacketCalls = [];
         RegisterNetWrapper(this.NetWrapperMock.Object);
         SetupSendPacketMocks();
     }
@@ -46,8 +45,8 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
     public TestingServer(IServiceProvider serviceProvider, Action<ServerBuilder> builderAction) : base(serviceProvider, builderAction)
     {
         this.NetWrapperMock = new Mock<INetWrapper>();
-        this.clients[this.NetWrapperMock.Object] = new();
-        this.sendPacketCalls = new();
+        this.clients[this.NetWrapperMock.Object] = [];
+        this.sendPacketCalls = [];
         RegisterNetWrapper(this.NetWrapperMock.Object);
         SetupSendPacketMocks();
     }
@@ -210,13 +209,6 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
             server.Start();
 
         this.IsRunning = true;
-    }
-
-    public override void Stop()
-    {
-        Stopped?.Invoke();
-
-        base.Stop();
     }
 }
 

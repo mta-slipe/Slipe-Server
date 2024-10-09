@@ -11,7 +11,7 @@ public class PlayerACInfoPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public List<byte> DetectedACList { get; set; } = new();
+    public List<byte> DetectedACList { get; set; } = [];
     public uint D3d9Size { get; set; }
     public string D3d9MD5 { get; set; } = string.Empty;
     public string D3d9SHA256 { get; set; } = string.Empty;
@@ -28,7 +28,7 @@ public class PlayerACInfoPacket : Packet
     {
         var reader = new PacketReader(bytes);
 
-        this.DetectedACList = new List<byte>();
+        this.DetectedACList = [];
         byte numItems = reader.GetByte();
         for (byte i = 0; i < numItems; i++)
         {

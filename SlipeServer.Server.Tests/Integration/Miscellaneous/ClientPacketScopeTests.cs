@@ -45,8 +45,8 @@ public class ClientPacketScopeTests
         var expectedPacket = new SetElementModelRpcPacket(player.Id, 1);
         var notExpectedPacket = new SetElementModelRpcPacket(player.Id, 2);
 
-        await Task.WhenAll(new Task[]
-        {
+        await Task.WhenAll(
+        [
                 Task.Run(async() =>
                 {
                     await Task.Delay(10);
@@ -60,7 +60,7 @@ public class ClientPacketScopeTests
                     await Task.Delay(25);
                     player.Client.SendPacket(notExpectedPacket);
                 })
-        });
+        ]);
 
         server.VerifyPacketSent(Packets.Enums.PacketId.PACKET_ID_LUA_ELEMENT_RPC, player, expectedPacket.Write(), count: 1);
         server.VerifyPacketSent(Packets.Enums.PacketId.PACKET_ID_LUA_ELEMENT_RPC, player, notExpectedPacket.Write(), count: 0);

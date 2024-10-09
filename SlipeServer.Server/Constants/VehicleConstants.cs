@@ -6,8 +6,8 @@ namespace SlipeServer.Server.Constants;
 
 public class VehicleConstants
 {
-    public static HashSet<VehicleModel> TrailerModels { get; } = new()
-    {
+    public static HashSet<VehicleModel> TrailerModels { get; } =
+    [
         VehicleModel.Trailer1,
         VehicleModel.Trailer2,
         VehicleModel.TrailerTankerCommando,
@@ -17,18 +17,18 @@ public class VehicleConstants
         VehicleModel.TrailerStairs,
         VehicleModel.FarmTrailer,
         VehicleModel.FarmTrailerTwo
-    };
+    ];
 
-    public static HashSet<VehicleModel> WaterEntryVehicles { get; } = new()
-    {
+    public static HashSet<VehicleModel> WaterEntryVehicles { get; } =
+    [
         VehicleModel.Leviathan,
         VehicleModel.Seasparrow,
         VehicleModel.Skimmer,
         VehicleModel.Vortex
-    };
+    ];
 
-    public static HashSet<VehicleModel> VehiclesWithoutDoors { get; } = new()
-    {
+    public static HashSet<VehicleModel> VehiclesWithoutDoors { get; } =
+    [
         VehicleModel.BFInjection,
         VehicleModel.RCBandit,
         VehicleModel.Caddy,
@@ -76,7 +76,7 @@ public class VehicleConstants
         VehicleModel.FreightTrainFlatbed,
         VehicleModel.Freight,
         VehicleModel.Tram,
-    };
+    ];
 
 
 
@@ -510,8 +510,8 @@ public class VehicleConstants
         [VehicleModel.FarmTrailerTwo] = 0
     };
 
-    public static HashSet<VehicleModel> AdjustablePropertyModels { get; } = new()
-    {
+    public static HashSet<VehicleModel> AdjustablePropertyModels { get; } =
+    [
         VehicleModel.Dumper,
         VehicleModel.Packer,
         VehicleModel.Dozer,
@@ -521,14 +521,14 @@ public class VehicleConstants
         VehicleModel.Tractor,
         VehicleModel.Andromada,
         VehicleModel.CementTruck,
-    };
+    ];
 
-    public static HashSet<VehicleModel> TurretModels { get; } = new()
-    {
+    public static HashSet<VehicleModel> TurretModels { get; } =
+    [
         VehicleModel.FireTruck,
         VehicleModel.Rhino,
         VehicleModel.SwatTank,
-    };
+    ];
 
     public static readonly Dictionary<byte, Color> ColorsPerId = new()
     {

@@ -20,8 +20,8 @@ public class LuaValueMapper
 
     public LuaValueMapper()
     {
-        this.strictlyDefinedClassMappers = new();
-        this.strictlyDefinedStructMappers = new();
+        this.strictlyDefinedClassMappers = [];
+        this.strictlyDefinedStructMappers = [];
     }
 
     public void DefineMapper(Type type, Func<object, LuaValue> mapper)
