@@ -46,9 +46,9 @@ public class FileSystemResourceProvider : IResourceProvider
         return this.resources.Values;
     }
     
-    public IEnumerable<ServerResourceFiles> GetServerResourcesFiles()
+    public IReadOnlyDictionary<string, ServerResourceFiles> GetServerResourcesFiles()
     {
-        return this.serverResources.Values;
+        return this.serverResources;
     }
 
     public void Refresh()

@@ -41,11 +41,10 @@ internal sealed class LegacyServerService : IHostedService
 
         this.resourceProvider.Refresh();
         var resources = this.resourceProvider.GetResources().ToArray();
-        var serverResourcesFiles = this.resourceProvider.GetServerResourcesFiles().ToArray();
 
-        foreach (var item in serverResourcesFiles)
+        foreach (var pair in this.resourceProvider.GetServerResourcesFiles())
         {
-            this.serverResourcesService.Create(item);
+            this.serverResourcesService.Create(pair.Value, resources.First(x => x.Name == pair.Value.Name));
         }
 
         this.logger.LogInformation("Resources: {loadedResourcesCount} loaded, {failedResourcesCount} failed", resources.Length, 0);

@@ -40,18 +40,18 @@ public class CustomConsoleFormatter : ConsoleFormatter
 
 public class LegacyMtaServer
 {
-    private readonly IHost app;
+    private readonly IHostBuilder hostBuilder;
     private readonly Configuration configuration;
 
     public LegacyMtaServer()
     {
-        var builder = Host.CreateDefaultBuilder();
+        this.hostBuilder = Host.CreateDefaultBuilder();
 
         var mtaServerConfiguration = new XmlConfigurationProvider("mods/deathmatch/mtaserver.conf");
 
         this.configuration = mtaServerConfiguration.Configuration;
 
-        builder.ConfigureServices((hostBuilderContext, services) =>
+        this.hostBuilder.ConfigureServices((hostBuilderContext, services) =>
         {
             if (hostBuilderContext.HostingEnvironment.IsDevelopment())
             {
@@ -87,17 +87,16 @@ public class LegacyMtaServer
             services.TryAddSingleton<ILogger>(x => x.GetRequiredService<ILogger<MtaServer>>());
         });
 
-        builder.AddMtaServer<Player>(serverBuilder =>
+        this.hostBuilder.AddMtaServer<Player>(serverBuilder =>
         {
             serverBuilder.UseConfiguration(configuration!);
             serverBuilder.AddHostedDefaults(exceptBehaviours: ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour);
         });
-
-        this.app = builder.Build();
     }
 
-    public async Task RunAsync()
+    public async Task BuildAndRunAsync(CancellationToken cancellationToken = default)
     {
+        var app = this.hostBuilder.Build();
         Console.WriteLine("==================================================================");
         Console.WriteLine("= Multi Theft Auto: San Andreas v1.6");
         Console.WriteLine("= Server name      : {0}", this.configuration.ServerName);
@@ -111,7 +110,7 @@ public class LegacyMtaServer
         Console.WriteLine("= Bandwidth saving : {0}", "TODO");
         Console.WriteLine("==================================================================");
 
-        var serverConsole = this.app.Services.GetRequiredService<InteractiveServerConsole>();
+        var serverConsole = app.Services.GetRequiredService<InteractiveServerConsole>();
 
         var _ = Task.Run(() =>
         {
@@ -138,6 +137,6 @@ public class LegacyMtaServer
 
             }
         });
-        await this.app.RunAsync();
+        await app.RunAsync(cancellationToken);
     }
 }

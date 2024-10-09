@@ -23,7 +23,7 @@ internal class LuaScriptingService : IScriptingService
         script.Options.DebugPrint = (value) =>
         {
             using var scope = this.logger.BeginScope(script);
-            this.logger.LogDebug(value);
+            this.logger.LogInformation(value);
         };
 
         this.luaService.LoadGlobals(script);

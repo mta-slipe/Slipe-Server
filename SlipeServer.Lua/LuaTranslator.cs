@@ -1,6 +1,7 @@
 ﻿using MoonSharp.Interpreter;
 using SlipeServer.Scripting;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Resources;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -73,6 +74,8 @@ public class LuaTranslator
             return new DynValue[] { DynValue.NewTable(table) };
         if (obj is DynValue dynValue)
             return new DynValue[] { dynValue };
+        if (obj is Resource resource)
+            return [UserData.Create(resource)];
 
         if (obj is IEnumerable<string> stringEnumerable)
             return stringEnumerable.Select(x => DynValue.NewString(x)).ToArray();

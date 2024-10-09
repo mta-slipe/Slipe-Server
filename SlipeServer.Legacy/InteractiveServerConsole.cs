@@ -6,6 +6,8 @@ public class InteractiveServerConsole
 {
     private readonly Dictionary<string, ConsoleCommandCallback> commands = [];
 
+    public IEnumerable<string> Commands => commands.Keys;
+
     public InteractiveServerConsole()
     {
 

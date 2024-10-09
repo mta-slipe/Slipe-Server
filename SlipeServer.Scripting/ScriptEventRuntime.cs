@@ -82,6 +82,15 @@ public class ScriptEventRuntime : IScriptEventRuntime
         {
             if (registeredEvent.ElementType.IsAssignableFrom(element.GetType()))
             {
+                try
+                {
+                    var actionsasd = (EventHandlerActions<DummyElement>)registeredEvent.Delegate.DynamicInvoke(element, wrapper)!;
+                    ;
+                }
+                catch (Exception ex)
+                {
+
+                }
                 var actions = (EventHandlerActions<Element>)registeredEvent.Delegate.DynamicInvoke(element, wrapper)!;
                 actions.Add(element);
             }
@@ -107,6 +116,17 @@ public class ScriptEventRuntime : IScriptEventRuntime
             EventName = eventName,
             Delegate = eventDelegate,
         };
+    }
+
+    public void TriggerEvent(string eventName, Element sourceElement, Element baseElement, params object[] parameters)
+    {
+        foreach (var eventHandler in this.registeredEventHandlers)
+        {
+            if(eventHandler.EventName != eventName)
+                continue;
+
+            eventHandler.Delegate(sourceElement, parameters);
+        }
     }
 
     public void LoadEvents(IEventDefinitions eventDefinitions)

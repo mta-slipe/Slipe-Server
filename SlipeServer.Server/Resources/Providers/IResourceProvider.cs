@@ -15,5 +15,5 @@ public interface IResourceProvider
 
     public void AddResourceInterpreter(IResourceInterpreter resourceInterpreter);
     ServerResourceFiles GetServerResourceFiles(string name);
-    IEnumerable<ServerResourceFiles> GetServerResourcesFiles();
+    IReadOnlyDictionary<string, ServerResourceFiles> GetServerResourcesFiles();
 }

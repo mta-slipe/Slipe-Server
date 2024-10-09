@@ -33,7 +33,7 @@ public class LocalServerAnnouncementBehaviour
                 IPEndPoint? source = new IPEndPoint(0, 0);
                 byte[] incomingData = socket.EndReceive(result, ref source);
                 string message = Encoding.UTF8.GetString(incomingData);
-                this.logger.LogInformation("Local server broadcast received from {address} \"{message}\"", source?.Address, message);
+                this.logger.LogTrace("Local server broadcast received from {address} \"{message}\"", source?.Address, message);
 
                 var port = this.configuration.Port + 123;
                 if (message.TrimEnd().EndsWith("n"))
