@@ -21,6 +21,7 @@ using SlipeServer.Server.ServerBuilders;
 using System;
 using System.IO;
 using System.Threading;
+using SlipeServer.Example;
 
 namespace SlipeServer.Console;
 
@@ -119,6 +120,7 @@ public partial class Program
                 builder.AddParachuteResource();
                 builder.AddLuaControllers();
 
+                builder.AddExampleLogic();
                 builder.AddLogic<ServerTestLogic>();
                 builder.AddLogic<LuaTestLogic>();
                 builder.AddLogic<PhysicsTestLogic>();
