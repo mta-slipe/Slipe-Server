@@ -174,6 +174,8 @@ public class Player : Ped
 
     private string DebuggerDisplay => $"{this.Name} ({this.Id})";
 
+    private int pureSyncPacketsCount;
+
     public Player() : base(0, Vector3.Zero)
     {
         this.Camera = new Camera(this);
@@ -485,6 +487,11 @@ public class Player : Ped
     public void RemoveElement(Element element)
     {
         this.AssociatedElements.Remove(element);
+    }
+
+    internal bool ShouldSendReturnSyncPacket()
+    {
+        return this.pureSyncPacketsCount++ % 4 == 0;
     }
 
     public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;

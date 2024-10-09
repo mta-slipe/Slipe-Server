@@ -28,13 +28,13 @@
 	</PropertyGroup>
 	
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SlipeServer.ConfigurationProviders\SlipeServer.ConfigurationProviders.csproj" />
     <ProjectReference Include="..\SlipeServer.Hosting\SlipeServer.Hosting.csproj" />
-    <ProjectReference Include="..\SlipeServer.Server\SlipeServer.Server.csproj" />
+	<ProjectReference Include="..\SlipeServer.Example\SlipeServer.Example.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -55,5 +55,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+    <PropertyGroup>
+	    <UserSecretsId>d7b25c98-70cf-4698-8f65-75748bfee697</UserSecretsId>
+    </PropertyGroup>
 
 </Project>

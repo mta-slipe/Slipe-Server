@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -20,6 +21,7 @@ using SlipeServer.Server.ServerBuilders;
 using System;
 using System.IO;
 using System.Threading;
+using SlipeServer.Example;
 
 namespace SlipeServer.Console;
 
@@ -73,6 +75,15 @@ public partial class Program
 #endif
         };
 
+        IConfigurationRoot config = new ConfigurationBuilder()
+            .AddUserSecrets<Program>()
+            .Build();
+
+        if(ushort.TryParse(config.GetSection("HttpPort").Value, out var httpPort))
+        {
+            this.configuration.HttpPort = httpPort;
+        }
+
         this.server = MtaServer.CreateWithDiSupport<CustomPlayer>(
             (builder) =>
             {
@@ -109,6 +120,7 @@ public partial class Program
                 builder.AddParachuteResource();
                 builder.AddLuaControllers();
 
+                builder.AddExampleLogic();
                 builder.AddLogic<ServerTestLogic>();
                 builder.AddLogic<LuaTestLogic>();
                 builder.AddLogic<PhysicsTestLogic>();
