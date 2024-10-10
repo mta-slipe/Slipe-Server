@@ -12,6 +12,7 @@ public interface IScriptEventRuntime
     void LoadDefaultEvents();
     void RegisterEvent<T>(string eventName, EventRegistrationDelegate<T> eventDelegate) where T : Element;
     void TriggerEvent(string eventName, Element sourceElement, Element baseElement, params object[] parameters);
+    void RemoveAllRootElementEvents(ServerResource serverResource);
 }
 
 public delegate void EventDelegate(Element element, params object[] parameters);

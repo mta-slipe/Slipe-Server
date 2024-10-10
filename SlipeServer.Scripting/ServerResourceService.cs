@@ -67,10 +67,11 @@ public class ServerResourceService
     {
         if (this.startedResources.Any(r => r.Name == name))
         {
-            var resource = this.startedResources.Single(r => r.Name == name);
-            this.startedResources.Remove(resource);
-            resource.Stop();
-            Stopped?.Invoke(resource.Resource);
+            var serverResource = this.startedResources.Single(r => r.Name == name);
+            this.startedResources.Remove(serverResource);
+            serverResource.Stop();
+            this.scriptEventRuntime.RemoveAllRootElementEvents(serverResource);
+            Stopped?.Invoke(serverResource.Resource);
             return true;
         }
         return false;

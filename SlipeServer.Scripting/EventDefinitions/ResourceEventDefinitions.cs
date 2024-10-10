@@ -14,6 +14,7 @@ public class ResourceEventDefinitions : IEventDefinitions
 
     public void LoadInto(IScriptEventRuntime eventRuntime)
     {
+        // https://wiki.multitheftauto.com/wiki/OnResourceStart
         eventRuntime.RegisterEvent<Element>(
             "onResourceStart",
             (element, callback) =>
@@ -25,8 +26,8 @@ public class ResourceEventDefinitions : IEventDefinitions
                 }
                 return new EventHandlerActions<Element>()
                 {
-                    Add = (element) => serverResourceService.Started += callbackProxy,
-                    Remove = (element) => serverResourceService.Stopped -= callbackProxy
+                    Add = (element) => this.serverResourceService.Started += callbackProxy,
+                    Remove = (element) => this.serverResourceService.Stopped -= callbackProxy
                 };
             }
         );

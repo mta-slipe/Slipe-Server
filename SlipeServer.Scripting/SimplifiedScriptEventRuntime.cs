@@ -42,16 +42,22 @@ public class SimplifiedScriptEventRuntime : IScriptEventRuntime
 
     public void AddEventHandler(string eventName, Element attachedTo, EventDelegate callbackDelegate)
     {
+        var serverResource = ServerResourceContext.Current;
+
+        if (serverResource == null)
+            throw new InvalidOperationException("Can not add event outside resource.");
+
         if (!this.registeredEvents.ContainsKey(eventName))
             return;
 
         var registeredEvent = this.registeredEvents[eventName];
-        var registeredEventHandler = new RegisteredEventHandler()
+        var registeredEventHandler = new RegisteredEventHandler
         {
             EventName = eventName,
             RegisteredEvent = registeredEvent,
             Delegate = callbackDelegate,
             Element = attachedTo,
+            ServerResource = serverResource
         };
 
         this.registeredEventHandlers.Add(registeredEventHandler);
@@ -101,7 +107,6 @@ public class SimplifiedScriptEventRuntime : IScriptEventRuntime
         eventDefinitions.LoadInto(this);
     }
 
-
     public void LoadDefaultEvents()
     {
         foreach (var type in typeof(ScriptEventRuntime).Assembly.DefinedTypes
@@ -112,6 +117,7 @@ public class SimplifiedScriptEventRuntime : IScriptEventRuntime
     }
 
     public void TriggerEvent(string eventName, Element sourceElement, Element baseElement, params object[] parameters) => throw new NotImplementedException();
+    public void RemoveAllRootElementEvents(ServerResource serverResource) => throw new NotImplementedException();
 }
 
 public delegate void HandleEventDelegate(Element element, string eventName, params object[] parameters);

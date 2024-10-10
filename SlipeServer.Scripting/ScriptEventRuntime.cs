@@ -44,16 +44,22 @@ public class ScriptEventRuntime : IScriptEventRuntime
 
     public void AddEventHandler(string eventName, Element attachedTo, EventDelegate callbackDelegate)
     {
+        var serverResource = ServerResourceContext.Current;
+
+        if (serverResource == null)
+            throw new InvalidOperationException("Can not add event outside resource.");
+
         if (!this.registeredEvents.ContainsKey(eventName))
             return;
 
         var registeredEvent = this.registeredEvents[eventName];
-        var registeredEventHandler = new RegisteredEventHandler()
+        var registeredEventHandler = new RegisteredEventHandler
         {
             EventName = eventName,
             RegisteredEvent = registeredEvent,
             Delegate = callbackDelegate,
             Element = attachedTo,
+            ServerResource = serverResource
         };
 
         this.registeredEventHandlers.Add(registeredEventHandler);
@@ -133,6 +139,16 @@ public class ScriptEventRuntime : IScriptEventRuntime
             LoadEvents((this.server.Instantiate(type) as IEventDefinitions)!);
         }
     }
+
+    public void RemoveAllRootElementEvents(ServerResource serverResource)
+    {
+        var handlers = this.registeredEventHandlers.Where(x => x.ServerResource == serverResource && x.Element is RootElement);
+
+        foreach (var handler in handlers)
+        {
+            this.registeredEventHandlers.Remove(handler);
+        }
+    }
 }
 
 internal struct RegisteredEvent
@@ -142,10 +158,11 @@ internal struct RegisteredEvent
     public Delegate Delegate { get; set; }
 }
 
-internal struct RegisteredEventHandler
+internal readonly struct RegisteredEventHandler
 {
-    public string EventName { get; set; }
-    public RegisteredEvent RegisteredEvent { get; set; }
-    public EventDelegate Delegate { get; set; }
-    public Element Element { get; set; }
+    public required string EventName { get; init; }
+    public required RegisteredEvent RegisteredEvent { get; init; }
+    public required EventDelegate Delegate { get; init; }
+    public required Element Element { get; init; }
+    public required ServerResource ServerResource { get; init; }
 }

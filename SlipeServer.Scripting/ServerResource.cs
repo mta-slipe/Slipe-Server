@@ -66,6 +66,7 @@ public class ServerResource
     {
         if(language == null)
             globalsCache.GetValueOrDefault(name);
+
         foreach (var script in this.scripts)
         {
             if(script.Language == language)
@@ -80,23 +81,23 @@ public class ServerResource
             this.globalsCache.Remove(name);
         else
             this.globalsCache[name] = value;
-        foreach (var script in scripts)
-        {
+
+        foreach (var script in this.scripts)
             script.SetGlobal(name, value);
-        }
     }
 
     private struct TemporarilyGlobalVariable : IDisposable
     {
         private readonly string variableName;
-        private readonly object? value;
+        private readonly object? oldValue;
 
         public TemporarilyGlobalVariable(string variableName, object newValue)
         {
             var resource = ServerResourceContext.Current;
             if (resource == null)
                 throw new InvalidOperationException("Can not push variable outside script.");
-            this.value = resource.GetGlobal(variableName);
+
+            this.oldValue = resource.GetGlobal(variableName);
             this.variableName = variableName;
 
             resource.SetGlobal(variableName, newValue);
@@ -108,7 +109,7 @@ public class ServerResource
             if (resource == null)
                 throw new InvalidOperationException("Can not push variable outside script.");
 
-            resource.SetGlobal(this.variableName, this.value);
+            resource.SetGlobal(this.variableName, this.oldValue);
         }
     }
 }
