@@ -26,13 +26,15 @@ public class SlipeLuaResourceInterpreter : IResourceInterpreter
         string name,
         string path,
         IResourceProvider resourceProvider,
-        out Resource? resource
+        out Resource? resource,
+        out ServerResourceFiles? serverResource
     )
     {
         var files = resourceProvider.GetFilesForResource(name);
         if (!files.Contains("entrypoint.slipe"))
         {
             resource = null;
+            serverResource = null;
             return false;
         }
 
@@ -42,6 +44,8 @@ public class SlipeLuaResourceInterpreter : IResourceInterpreter
         {
             Files = resourceFiles
         };
+
+        serverResource = null;
 
         return true;
     }

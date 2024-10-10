@@ -12,14 +12,16 @@ public class EventScriptDefinitions
     }
 
     [ScriptFunctionDefinition("addEventHandler")]
-    public void AddEventHandler(string eventName, Element attachedTo, EventDelegate callback)
+    public bool AddEventHandler(string eventName, Element attachedTo, EventDelegate callback)
     {
         this.eventRuntime.AddEventHandler(eventName, attachedTo, callback);
+        return true;
     }
 
     [ScriptFunctionDefinition("removeEventHandler")]
-    public void RemoveEventHandler(string eventName, Element attachedTo, EventDelegate callback)
+    public bool RemoveEventHandler(string eventName, Element attachedTo, EventDelegate callback)
     {
         this.eventRuntime.RemoveEventHandler(eventName, attachedTo, callback);
+        return true;
     }
 }

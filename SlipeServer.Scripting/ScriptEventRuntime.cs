@@ -72,7 +72,7 @@ public class ScriptEventRuntime : IScriptEventRuntime
                 callbackDelegate.DynamicInvoke(objects.First(), Array.Empty<object>());
             } else
             {
-                callbackDelegate.DynamicInvoke(objects.First(), objects.Skip(1));
+                callbackDelegate.DynamicInvoke(objects.First(), objects.Skip(1).ToArray());
             }
         }
 
@@ -107,6 +107,17 @@ public class ScriptEventRuntime : IScriptEventRuntime
             EventName = eventName,
             Delegate = eventDelegate,
         };
+    }
+
+    public void TriggerEvent(string eventName, Element sourceElement, Element baseElement, params object[] parameters)
+    {
+        foreach (var eventHandler in this.registeredEventHandlers)
+        {
+            if(eventHandler.EventName != eventName)
+                continue;
+
+            eventHandler.Delegate(sourceElement, parameters);
+        }
     }
 
     public void LoadEvents(IEventDefinitions eventDefinitions)

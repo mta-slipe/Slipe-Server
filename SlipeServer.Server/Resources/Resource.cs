@@ -10,6 +10,25 @@ using System.Threading.Tasks;
 
 namespace SlipeServer.Server.Resources;
 
+public class ScriptChunk
+{
+    public required string Name { get; init; }
+    public required byte[] Content { get; init; }
+    public required string Language { get; init; }
+}
+
+public class ServerResourceFiles
+{
+    public string Name { get; }
+    public ScriptChunk[] Chunks { get; }
+
+    public ServerResourceFiles(string name, ScriptChunk[] chunks)
+    {
+        this.Name = name;
+        this.Chunks = chunks;
+    }
+}
+
 /// <summary>
 /// Represents a client-side Lua resource
 /// </summary>

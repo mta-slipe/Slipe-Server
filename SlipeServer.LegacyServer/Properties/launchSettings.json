@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "SlipeServer.LegacyServer": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

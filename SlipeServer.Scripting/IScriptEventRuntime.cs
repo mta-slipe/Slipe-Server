@@ -11,6 +11,7 @@ public interface IScriptEventRuntime
     void LoadEvents(IEventDefinitions eventDefinitions);
     void LoadDefaultEvents();
     void RegisterEvent<T>(string eventName, EventRegistrationDelegate<T> eventDelegate) where T : Element;
+    void TriggerEvent(string eventName, Element sourceElement, Element baseElement, params object[] parameters);
 }
 
 public delegate void EventDelegate(Element element, params object[] parameters);

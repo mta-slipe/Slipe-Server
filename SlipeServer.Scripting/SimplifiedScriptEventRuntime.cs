@@ -110,6 +110,8 @@ public class SimplifiedScriptEventRuntime : IScriptEventRuntime
             LoadEvents((this.server.Instantiate(type) as IEventDefinitions)!);
         }
     }
+
+    public void TriggerEvent(string eventName, Element sourceElement, Element baseElement, params object[] parameters) => throw new NotImplementedException();
 }
 
 public delegate void HandleEventDelegate(Element element, string eventName, params object[] parameters);

@@ -26,7 +26,7 @@ public class JoinDataPacketHandler : IPacketHandler<PlayerJoinDataPacket>
 
     public void HandlePacket(IClient client, PlayerJoinDataPacket packet)
     {
-        if (this.mtaServer.Password != null)
+        if (this.mtaServer.HasPassword)
         {
             var hash = MD5.HashData(Encoding.ASCII.GetBytes(this.mtaServer.Password));
             if (!hash.SequenceEqual(packet.Password))

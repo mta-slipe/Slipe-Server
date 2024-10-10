@@ -1,6 +1,7 @@
 ﻿using MoonSharp.Interpreter;
 using SlipeServer.Scripting;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Resources;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -14,6 +15,7 @@ public class LuaTranslator
     public LuaTranslator()
     {
         UserData.RegisterType<Element>(InteropAccessMode.Hardwired);
+        UserData.RegisterType<Resource>(InteropAccessMode.Hardwired);
     }
 
     public IEnumerable<DynValue> ToDynValues(object? obj)
@@ -52,6 +54,8 @@ public class LuaTranslator
                     DynValue.NewNumber(color.B),
                     DynValue.NewNumber(color.A),
             };
+        if (obj is BlipIcon blipIcon)
+            return new DynValue[] { DynValue.NewNumber((int)blipIcon) };
         if (obj is Vector2 vector2)
             return new DynValue[]
             {
@@ -71,6 +75,8 @@ public class LuaTranslator
             return new DynValue[] { DynValue.NewTable(table) };
         if (obj is DynValue dynValue)
             return new DynValue[] { dynValue };
+        if (obj is Resource resource)
+            return [UserData.Create(resource)];
 
         if (obj is IEnumerable<string> stringEnumerable)
             return stringEnumerable.Select(x => DynValue.NewString(x)).ToArray();
@@ -95,6 +101,8 @@ public class LuaTranslator
 
     public object? FromDynValue(Type targetType, Queue<DynValue> dynValues)
     {
+        if (targetType == typeof(object) || targetType == typeof(DynValue))
+            return dynValues.Dequeue();
         if (targetType == typeof(Color) || targetType == typeof(Color?))
         {
             byte red = GetByteFromDynValue(dynValues.Dequeue());
@@ -131,9 +139,13 @@ public class LuaTranslator
             return GetBooleanFromDynValue(dynValues.Dequeue());
         if (targetType == typeof(Table))
             return GetTableFromDynValue(dynValues.Dequeue());
+        if (targetType == typeof(BlipIcon))
+            return (BlipIcon)GetInt32FromDynValue(dynValues.Dequeue());
         if (typeof(Player).IsAssignableFrom(targetType))
             return dynValues.Dequeue()?.UserData?.Object;
         if (typeof(Element).IsAssignableFrom(targetType))
+            return dynValues.Dequeue().UserData.Object;
+        if (typeof(Resource).IsAssignableFrom(targetType))
             return dynValues.Dequeue().UserData.Object;
         if (targetType == typeof(ScriptCallbackDelegateWrapper))
         {
@@ -143,7 +155,7 @@ public class LuaTranslator
         if (targetType == typeof(EventDelegate))
         {
             var callback = dynValues.Dequeue().Function;
-            return (EventDelegate)((element, parameters) => callback.Call(new DynValue[] { UserData.Create(element) }.Concat(ToDynValues(parameters))));
+            return (EventDelegate)((element, parameters) => callback.Call(ToDynValues(parameters).ToArray()));
         }
 
         throw new NotImplementedException($"Conversion from Lua for {targetType} not implemented");

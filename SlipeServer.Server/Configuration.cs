@@ -159,6 +159,11 @@ public class Configuration
     /// Intervals for player sync
     /// </summary>
     public SyncIntervals SyncIntervals { get; set; } = new();
+
+    /// <summary>
+    /// Specifies resources that are loaded when the server starts and/or which are protected from being stopped.
+    /// </summary>
+    public StartupResource[] StartupResources { get; set; } = [];
 }
 
 /// <summary>
@@ -187,4 +192,11 @@ public class SyncIntervals
     public int ObjectSync { get; set; } = 500;
     public int KeySyncRotation { get; set; } = 25;
     public int KeySyncAnalogMove { get; set; } = 25;
+}
+
+public class StartupResource
+{
+    public string Name { get; set; }
+    public bool Start { get; set; }
+    public bool Protected { get; set; }
 }

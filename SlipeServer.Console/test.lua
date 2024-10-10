@@ -28,6 +28,15 @@
 	print("md5 test: ", md5("qwerty") == "D8578EDF8458CE06FBC5BB76A58C5CA4");
 	print("sha256 test: ", sha256("qwerty") == "65E84BE33532FB784C48129675F9EFF3A682B27168C0EA744B2CF58EE02337C5");
 	print("custom definitions:",add(2,2), substract(2,2))
+
+	-- Begin blips
+	local blip = createBlip(100, 0,0, 51, 0, 0, 0, 255);
+	print("blip color:", getBlipColor(blip))
+	print("blip icon:", getBlipIcon(blip))
+	print("blip ordering:", getBlipOrdering(blip))
+	print("blip size:", getBlipSize(blip))
+	print("blip visible distance:", getBlipVisibleDistance(blip))
+	-- End blips
 end
 createExplosion(-10, 0,0, 4);
 

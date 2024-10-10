@@ -14,4 +14,6 @@ public interface IResourceProvider
     public byte[] GetFileContent(string resource, string file);
 
     public void AddResourceInterpreter(IResourceInterpreter resourceInterpreter);
+    ServerResourceFiles GetServerResourceFiles(string name);
+    IReadOnlyDictionary<string, ServerResourceFiles> GetServerResourcesFiles();
 }

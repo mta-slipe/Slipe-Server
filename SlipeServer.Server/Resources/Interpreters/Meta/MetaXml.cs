@@ -1,4 +1,8 @@
-﻿using System.Xml.Serialization;
+﻿using SlipeServer.Net.Wrappers.Enums;
+using System.Collections.Generic;
+using System.IO;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace SlipeServer.Server.Resources.Interpreters.Meta;
 
@@ -22,6 +26,43 @@ public struct MetaXml
 
     [XmlElement("download_priority_group")]
     public MetaXmlDownloadPriorityGroup[] downloadPriorityGroup;
+
+    public static MetaXml? Create(byte[] data)
+    {
+        XmlDocument xmlConfig = new XmlDocument();
+        using MemoryStream ms = new MemoryStream(data);
+
+        xmlConfig.Load(ms);
+
+        var scripts = new List<MetaXmlScript>();
+        var meta = new MetaXml();
+        foreach (XmlNode node in xmlConfig.FirstChild.ChildNodes)
+        {
+            switch (node.Name.ToLower())
+            {
+                case "script":
+                    var script = new MetaXmlScript();
+                    foreach (XmlAttribute attribute in node.Attributes)
+                    {
+                        switch (attribute.Name.ToLower())
+                        {
+                            case "src":
+                                script.Source = attribute.Value;
+                                break;
+                            case "type":
+                                script.Type = attribute.Value;
+                                break;
+                        }
+                    }
+                    scripts.Add(script);
+                    break;
+            }
+        }
+
+        meta.scripts = scripts.ToArray();
+
+        return meta;
+    }
 }
 
 public struct MetaXmlFile
