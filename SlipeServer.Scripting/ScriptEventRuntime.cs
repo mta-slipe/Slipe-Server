@@ -72,7 +72,7 @@ public class ScriptEventRuntime : IScriptEventRuntime
                 callbackDelegate.DynamicInvoke(objects.First(), Array.Empty<object>());
             } else
             {
-                callbackDelegate.DynamicInvoke(objects.First(), objects.Skip(1));
+                callbackDelegate.DynamicInvoke(objects.First(), objects.Skip(1).ToArray());
             }
         }
 
@@ -82,15 +82,6 @@ public class ScriptEventRuntime : IScriptEventRuntime
         {
             if (registeredEvent.ElementType.IsAssignableFrom(element.GetType()))
             {
-                try
-                {
-                    var actionsasd = (EventHandlerActions<DummyElement>)registeredEvent.Delegate.DynamicInvoke(element, wrapper)!;
-                    ;
-                }
-                catch (Exception ex)
-                {
-
-                }
                 var actions = (EventHandlerActions<Element>)registeredEvent.Delegate.DynamicInvoke(element, wrapper)!;
                 actions.Add(element);
             }

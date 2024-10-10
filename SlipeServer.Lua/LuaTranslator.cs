@@ -15,6 +15,7 @@ public class LuaTranslator
     public LuaTranslator()
     {
         UserData.RegisterType<Element>(InteropAccessMode.Hardwired);
+        UserData.RegisterType<Resource>(InteropAccessMode.Hardwired);
     }
 
     public IEnumerable<DynValue> ToDynValues(object? obj)
@@ -144,6 +145,8 @@ public class LuaTranslator
             return dynValues.Dequeue()?.UserData?.Object;
         if (typeof(Element).IsAssignableFrom(targetType))
             return dynValues.Dequeue().UserData.Object;
+        if (typeof(Resource).IsAssignableFrom(targetType))
+            return dynValues.Dequeue().UserData.Object;
         if (targetType == typeof(ScriptCallbackDelegateWrapper))
         {
             var callback = dynValues.Dequeue().Function;
@@ -152,7 +155,7 @@ public class LuaTranslator
         if (targetType == typeof(EventDelegate))
         {
             var callback = dynValues.Dequeue().Function;
-            return (EventDelegate)((element, parameters) => callback.Call(new DynValue[] { UserData.Create(element) }.Concat(ToDynValues(parameters))));
+            return (EventDelegate)((element, parameters) => callback.Call(ToDynValues(parameters).ToArray()));
         }
 
         throw new NotImplementedException($"Conversion from Lua for {targetType} not implemented");

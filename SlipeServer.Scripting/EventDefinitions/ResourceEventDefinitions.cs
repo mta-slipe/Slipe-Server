@@ -14,12 +14,12 @@ public class ResourceEventDefinitions : IEventDefinitions
 
     public void LoadInto(IScriptEventRuntime eventRuntime)
     {
-        eventRuntime.RegisterEvent<DummyElement>(
+        eventRuntime.RegisterEvent<Element>(
             "onResourceStart",
             (element, callback) =>
             {
                 void callbackProxy(Resource e) => callback.CallbackDelegate(e.Root, e);
-                return new EventHandlerActions<DummyElement>()
+                return new EventHandlerActions<Element>()
                 {
                     Add = (element) => serverResourceService.Started += callbackProxy,
                     Remove = (element) => serverResourceService.Stopped -= callbackProxy

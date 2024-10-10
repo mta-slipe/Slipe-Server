@@ -49,6 +49,7 @@ internal sealed class LegacyConsoleCommandsService : IHostedService
         }
         catch(Exception ex)
         {
+            Console.WriteLine(ex);
             this.logger.LogError(ex, "Failed to start resource {resourceName}", name);
         }
     }

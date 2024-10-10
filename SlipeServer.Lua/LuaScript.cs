@@ -16,7 +16,8 @@ internal class LuaScript : IScript
     {
         try
         {
-            this.script.DoString(System.Text.Encoding.UTF8.GetString(code), null, chunkName);
+            var source = System.Text.Encoding.UTF8.GetString(code);
+            this.script.DoString(source, null, chunkName);
         }
         catch(ScriptRuntimeException ex)
         {
