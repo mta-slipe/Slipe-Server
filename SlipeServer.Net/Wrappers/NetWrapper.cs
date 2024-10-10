@@ -53,6 +53,10 @@ public class NetWrapper : IDisposable, INetWrapper
     [DllImport(wrapperDllpath, EntryPoint = "resendPlayerACInfo")]
     private static extern void ResendPlayerACInfo(ushort id, ulong binaryAddress);
 
+
+    [DllImport(wrapperDllpath, EntryPoint = "getPingStatus")]
+    private static extern void GetPingStatus(ushort id, StringBuilder pingStatus);
+
 #pragma warning restore CA2101 // Specify marshaling for P/Invoke string arguments
 
     private readonly PacketCallback packetInterceptorDelegate;
@@ -164,6 +168,14 @@ public class NetWrapper : IDisposable, INetWrapper
             (int)disallowedDataFiles,
             hideAntiCheatFromClient,
             allowGta3ImgMods.ToString().ToLower());
+    }
+
+    public string GetPingStatus()
+    {
+        var builder = new StringBuilder(32);
+        GetPingStatus(this.id, builder);
+
+        return builder.ToString();
     }
 
     protected virtual void PacketInterceptor(byte packetId, ulong binaryAddress, IntPtr payload, uint payloadSize, bool hasPing, uint ping)

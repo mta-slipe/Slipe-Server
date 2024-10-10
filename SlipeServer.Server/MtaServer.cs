@@ -552,6 +552,17 @@ public class MtaServer
         this.clients[netWrapper] = new();
     }
 
+    public string GetPingStatus()
+    {
+        return this.clients
+            .OrderBy(x => x.Value.Count)
+            .First()
+            .Key
+            .GetPingStatus();
+            //.PadRight(32, 'P')
+            //.Substring(0, 32);
+    }
+
     private void EnqueueIncomingPacket(INetWrapper netWrapper, ulong binaryAddress, PacketId packetId, byte[] data, uint? ping)
     {
         if (!this.clients[netWrapper].ContainsKey(binaryAddress))

@@ -80,6 +80,13 @@ EXPORT void __cdecl setChecks(ushort id, const char* szDisableComboACMap, const 
     NetWrapper::getNetWrapper(id)->SetChecks(szDisableComboACMap, szDisableACMap, szEnableSDMap, iEnableClientChecks, bHideAC, szImgMods);
 }
 
+ extern "C" __declspec(dllexport) void __cdecl getPingStatus(ushort id, char* pingStatus)
+{
+     std::string fetchedStatus = NetWrapper::getNetWrapper(id)->GetPingStatus();
+
+     strcpy(pingStatus, fetchedStatus.c_str());
+}
+
 //enum ENetworkUsageDirection
 //{
 //    STATS_INCOMING_TRAFFIC = 0,

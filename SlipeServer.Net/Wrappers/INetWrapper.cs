@@ -25,6 +25,7 @@ public interface INetWrapper
         IEnumerable<SpecialDetection> enabledSpecialDetections,
         DataFile disallowedDataFiles
     );
+    string GetPingStatus();
 
     void Start();
     void Stop();

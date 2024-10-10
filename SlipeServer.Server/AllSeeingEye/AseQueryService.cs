@@ -143,7 +143,7 @@ public class AseQueryService : IAseQueryService
         string strPlayerCount = playerCount + "/" + this.configuration.MaxPlayerCount;
         string buildType = $"{(byte)version} ";
         string buildNumber = $"0";
-        string pingStatus = new('P', 32);
+        string pingStatus = /*new('P', 32);// */this.mtaServer.GetPingStatus();
         string strNetRoute = new('N', 32);
         string strUpTime = $"{(int)this.mtaServer.Uptime.Ticks / TimeSpan.TicksPerSecond}";
         string strHttpPort = this.configuration.HttpPort.ToString();
@@ -172,7 +172,9 @@ public class AseQueryService : IAseQueryService
         bw.Write(strUpTime.AsSpan());
         bw.Write((byte)0);
         bw.Write(strHttpPort.AsSpan());
+
         bw.WriteWithLength(aseVersion);
+
         bw.Write((byte)(this.mtaServer.HasPassword ? 1 : 0));
         bw.Write((byte)0); // serial verification
         bw.Write((byte)Math.Min(playerCount, 255));

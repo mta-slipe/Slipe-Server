@@ -83,6 +83,7 @@ public:
     bool isValidSocket(NetServerPlayerID id);
 
     void SetChecks(const char* szDisableComboACMap, const char* szDisableACMap, const char* szEnableSDMap, int iEnableClientChecks, bool bHideAC, const char* szImgMods);
+    std::string GetPingStatus();
 
     static NetWrapper* getNetWrapper(int id);
     static NetWrapper* getNetWrapper(NetServerPlayerID id);

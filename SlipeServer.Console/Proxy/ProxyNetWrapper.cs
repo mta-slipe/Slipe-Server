@@ -68,5 +68,10 @@ public class ProxyNetWrapper : INetWrapper
         this.PacketReceived?.Invoke(this, id, packet, payload, null);
     }
 
+    public string GetPingStatus()
+    {
+        return "";
+    }
+
     public event Action<INetWrapper, ulong, PacketId, byte[], uint?>? PacketReceived;
 }

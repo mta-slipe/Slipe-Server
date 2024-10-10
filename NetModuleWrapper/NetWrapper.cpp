@@ -165,7 +165,6 @@ int NetWrapper::init(const char* netDllFilePath, const char* idFile, const char*
     {
         return -1004;
     }
-    ;
 
     this->network = pfnInitNetServerInterface();
 
@@ -235,6 +234,14 @@ void NetWrapper::SetChecks(const char* szDisableComboACMap, const char* szDisabl
     int iEnableClientChecks, bool bHideAC, const char* szImgMods)
 {
     this->network->SetChecks(szDisableComboACMap, szDisableACMap, szEnableSDMap, iEnableClientChecks, bHideAC, szImgMods);
+}
+
+std::string NetWrapper::GetPingStatus()
+{
+    SFixedString<32> strPingStatusFixed;
+    this->network->GetPingStatus(&strPingStatusFixed);
+
+    return (std::string)SStringX(strPingStatusFixed);
 }
 
 NetWrapper* NetWrapper::getNetWrapper(int id)
