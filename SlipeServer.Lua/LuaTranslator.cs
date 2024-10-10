@@ -138,12 +138,21 @@ public class LuaTranslator
         if (targetType == typeof(ScriptCallbackDelegateWrapper))
         {
             var callback = dynValues.Dequeue().Function;
-            return new ScriptCallbackDelegateWrapper(parameters => callback.Call(ToDynValues(parameters)), callback);
+            return new ScriptCallbackDelegateWrapper(parameters => {
+                callback.Call(ToDynValues(parameters).ToArray());
+            }, callback);
         }
         if (targetType == typeof(EventDelegate))
         {
             var callback = dynValues.Dequeue().Function;
-            return (EventDelegate)((element, parameters) => callback.Call(new DynValue[] { UserData.Create(element) }.Concat(ToDynValues(parameters))));
+            return (EventDelegate)((element, parameters) => {
+                var source = UserData.Create(element);
+                callback.OwnerScript.Globals["source"] = source;
+
+                callback.Call(ToDynValues(parameters).ToArray());
+
+                callback.OwnerScript.Globals.Remove("source");
+            });
         }
 
         throw new NotImplementedException($"Conversion from Lua for {targetType} not implemented");

@@ -77,9 +77,15 @@ public class LuaService
                         throw new LuaException($"Error when converting Lua value to {methodParameters[i].ParameterType}", e);
                     }
                 }
-                var result = method.Invoke(methodSet, parameters);
+                try
+                {
+                    var result = method.Invoke(methodSet, parameters);
 
-                return this.translator.ToDynValues(result).ToArray();
+                    return this.translator.ToDynValues(result).ToArray();
+                } catch (Exception e)
+                {
+                    throw new Exception($"Failed to load definitions for {attribute?.NiceName} {e.Message}\n {e.StackTrace}", e);
+                }
             };
         }
     }
