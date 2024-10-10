@@ -89,3 +89,16 @@ addCommandHandler("foo4", commandHandler3)
 removeCommandHandler("foo3", commandHandler2)
 removeCommandHandler("foo4")
 addCommandHandler("outputChatBoxTest", outputChatBoxTest)
+
+local col = createColSphere(-10, 0, 4, 2)
+function handleHit(element, dimensionMatch)
+	print("Colshape hit", source, element, dimensionMatch)
+end
+addEventHandler("onColShapeHit", col, handleHit)
+
+function handleLeave(element, dimensionMatch)
+	print("Colshape leave", source, element, dimensionMatch)
+end
+addEventHandler("onColShapeLeave", col, handleLeave)
+
+local poly = createColPolygon(-15, 0, -16, 0, -16, 1, -17, 1, -17, -1, -16, -1, -16, 0)

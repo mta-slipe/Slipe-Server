@@ -30,7 +30,7 @@ public class ScriptEventRuntime : IScriptEventRuntime
         var handlers = this.registeredEventHandlers.Where(handler => handler.GetType().IsAssignableFrom(element.GetType()));
         foreach (var handler in handlers)
         {
-            var actions = (EventHandlerActions<Element>)handler.RegisteredEvent.Delegate.DynamicInvoke(element, handler.Delegate)!;
+            var actions = (IEventHandlerActions)handler.RegisteredEvent.Delegate.DynamicInvoke(element, handler.Delegate)!;
             actions.Add(element);
         }
 
@@ -72,7 +72,7 @@ public class ScriptEventRuntime : IScriptEventRuntime
                 callbackDelegate.DynamicInvoke(objects.First(), Array.Empty<object>());
             } else
             {
-                callbackDelegate.DynamicInvoke(objects.First(), objects.Skip(1));
+                callbackDelegate.DynamicInvoke(objects.First(), objects.Skip(1).ToArray());
             }
         }
 
@@ -82,7 +82,7 @@ public class ScriptEventRuntime : IScriptEventRuntime
         {
             if (registeredEvent.ElementType.IsAssignableFrom(element.GetType()))
             {
-                var actions = (EventHandlerActions<Element>)registeredEvent.Delegate.DynamicInvoke(element, wrapper)!;
+                var actions = (IEventHandlerActions)registeredEvent.Delegate.DynamicInvoke(element, wrapper)!;
                 actions.Add(element);
             }
         }

@@ -60,7 +60,11 @@ public class CollisionPolygon : CollisionShape
 
     public void AddPoint(Vector2 position, int index)
     {
-        this.Vertices.Insert(index, position);
+        if (index < 0)
+            this.Vertices.Add(position);
+        else
+            this.Vertices.Insert(index, position);
+
         var args = new CollisionPolygonPointAddedChangedArgs(this, index, position);
         PointAdded?.Invoke(this, args);
     }

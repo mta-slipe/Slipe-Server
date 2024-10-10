@@ -55,7 +55,27 @@ public class LuaService
                     {
                         if (valueQueue.Any())
                         {
-                            parameters[i] = this.translator.FromDynValue(methodParameters[i].ParameterType, valueQueue);
+                            if (methodParameters[i].IsDefined(typeof(ParamArrayAttribute), false))
+                            {
+                                var paramIndex = i;
+                                var paramType = methodParameters[i].ParameterType.GetElementType();
+
+                                if (paramType != null)
+                                {
+                                    var newParameters = new List<object?>(parameters.Take(parameters.Length - 1));
+
+                                    while (valueQueue.Any())
+                                        newParameters.Add(this.translator.FromDynValue(paramType, valueQueue));
+
+                                    var typedArray = Array.CreateInstance(paramType, newParameters.Count);
+                                    Array.Copy(newParameters.ToArray(), typedArray, newParameters.Count);
+                                    parameters[i] = typedArray;
+                                }
+                            } else
+                            {
+                                parameters[i] = this.translator.FromDynValue(methodParameters[i].ParameterType, valueQueue);
+                            }
+
                         } else
                         {
                             if (methodParameters[i].IsOptional)
@@ -67,19 +87,25 @@ public class LuaService
                             }
                         }
                     }
-                    catch (NotImplementedException)
+                    catch (NotImplementedException e)
                     {
                         valueQueue.TryDequeue(out DynValue? valueType);
-                        throw new LuaException($"Unsupported Lua value translation for {methodParameters[i].ParameterType}");
+                        throw new LuaException($"Unsupported Lua value translation for {methodParameters[i].ParameterType}. {e.Message}\n{e.StackTrace}");
                     }
                     catch (Exception e)
                     {
-                        throw new LuaException($"Error when converting Lua value to {methodParameters[i].ParameterType}", e);
+                        throw new LuaException($"Error when converting Lua value to {methodParameters[i].ParameterType}. {e.Message}\n{e.StackTrace}", e);
                     }
                 }
-                var result = method.Invoke(methodSet, parameters);
+                try
+                {
+                    var result = method.Invoke(methodSet, parameters);
 
-                return this.translator.ToDynValues(result).ToArray();
+                    return this.translator.ToDynValues(result).ToArray();
+                } catch (Exception e)
+                {
+                    throw new Exception($"Failed to load definitions for {attribute?.NiceName} {e.Message}\n {e.StackTrace}", e);
+                }
             };
         }
     }
