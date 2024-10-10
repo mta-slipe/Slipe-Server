@@ -100,3 +100,5 @@ function handleLeave(element, dimensionMatch)
 	print("Colshape leave", source, element, dimensionMatch)
 end
 addEventHandler("onColShapeLeave", col, handleLeave)
+
+local poly = createColPolygon(-15, 0, -16, 0, -16, 1, -17, 1, -17, -1, -16, -1, -16, 0)

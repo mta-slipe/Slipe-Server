@@ -27,9 +27,9 @@ public class CollisionShapeDefinitions(MtaServer server)
 
     // TODO: Figure out the usage of params
     [ScriptFunctionDefinition("createColPolygon")]
-    public CollisionShape CreateColPolygon(Vector3 position, params Vector2[] vertices)
+    public CollisionShape CreateColPolygon(Vector2 position, params Vector2[] vertices)
     {
-        return new CollisionPolygon(position, vertices)
+        return new CollisionPolygon(new Vector3(position.X, position.Y, 0), vertices)
             .AssociateWith(server);
     }
 
