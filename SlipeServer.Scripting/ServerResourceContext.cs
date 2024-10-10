@@ -4,7 +4,7 @@ namespace SlipeServer.Scripting;
 
 public static class ServerResourceContext
 {
-    private readonly static AsyncLocal<ServerResource?> _current = new AsyncLocal<ServerResource?>();
+    private readonly static AsyncLocal<ServerResource?> _current = new();
 
     public static ServerResource? Current
     {

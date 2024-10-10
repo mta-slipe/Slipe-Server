@@ -1,4 +1,5 @@
 ﻿using SlipeServer.Server.Resources;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,6 +11,7 @@ public class ServerResource
     private readonly ScriptChunk[] chunks;
     private readonly IReadOnlyDictionary<string, IScriptingService> scriptingServiceByLanguage;
     private readonly List<IScript> scripts = [];
+    private readonly Dictionary<string, object> globalsCache = [];
 
     public string Name => this.name;
     public IEnumerable<ScriptChunk> Chunks => this.chunks;
@@ -21,11 +23,6 @@ public class ServerResource
         this.name = name;
         this.chunks = chunks;
         this.scriptingServiceByLanguage = scriptingServiceByLanguage;
-    }
-
-    public void AddScripts(IEnumerable<IScript> scripts)
-    {
-        this.scripts.AddRange(scripts);
     }
 
     public void Start()
@@ -55,8 +52,63 @@ public class ServerResource
         }
     }
 
+    public IDisposable PushVariable(string variableName, object value)
+    {
+        return new TemporarilyGlobalVariable(variableName, value);
+    }
+
     public void Stop()
     {
 
+    }
+
+    public object? GetGlobal(string name, string? language = null)
+    {
+        if(language == null)
+            globalsCache.GetValueOrDefault(name);
+        foreach (var script in this.scripts)
+        {
+            if(script.Language == language)
+                return script;
+        }
+        return null;
+    }
+
+    public void SetGlobal(string name, object? value)
+    {
+        if(value == null)
+            this.globalsCache.Remove(name);
+        else
+            this.globalsCache[name] = value;
+        foreach (var script in scripts)
+        {
+            script.SetGlobal(name, value);
+        }
+    }
+
+    private struct TemporarilyGlobalVariable : IDisposable
+    {
+        private readonly string variableName;
+        private readonly object? value;
+
+        public TemporarilyGlobalVariable(string variableName, object newValue)
+        {
+            var resource = ServerResourceContext.Current;
+            if (resource == null)
+                throw new InvalidOperationException("Can not push variable outside script.");
+            this.value = resource.GetGlobal(variableName);
+            this.variableName = variableName;
+
+            resource.SetGlobal(variableName, newValue);
+        }
+
+        public void Dispose()
+        {
+            var resource = ServerResourceContext.Current;
+            if (resource == null)
+                throw new InvalidOperationException("Can not push variable outside script.");
+
+            resource.SetGlobal(this.variableName, this.value);
+        }
     }
 }

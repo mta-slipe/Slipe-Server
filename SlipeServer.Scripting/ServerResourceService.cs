@@ -48,7 +48,15 @@ public class ServerResourceService
             var serverResource = this.serverResources.Single(r => r.Name == name);
             serverResource.Start();
             this.startedResources.Add(serverResource);
-            Started?.Invoke(serverResource.Resource);
+            ServerResourceContext.Current = serverResource;
+            try
+            {
+                Started?.Invoke(serverResource.Resource);
+            }
+            finally
+            {
+                ServerResourceContext.Current = null;
+            }
             //this.scriptEventRuntime.TriggerEvent("onResourceStart", root, root, serverResource.Resource);
             return true;
         }

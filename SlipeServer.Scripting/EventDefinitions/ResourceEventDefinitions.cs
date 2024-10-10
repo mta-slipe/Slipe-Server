@@ -18,7 +18,11 @@ public class ResourceEventDefinitions : IEventDefinitions
             "onResourceStart",
             (element, callback) =>
             {
-                void callbackProxy(Resource e) => callback.CallbackDelegate(e.Root, e);
+                void callbackProxy(Resource e)
+                {
+                    using var eventName = ServerResourceContext.Current!.PushVariable("eventName", "onResourceStart");
+                    callback.CallbackDelegate(e.Root, e);
+                }
                 return new EventHandlerActions<Element>()
                 {
                     Add = (element) => serverResourceService.Started += callbackProxy,

@@ -6,6 +6,7 @@ namespace SlipeServer.Lua;
 internal class LuaScript : IScript
 {
     private readonly Script script;
+    public string Language { get; } = "Lua";
 
     public LuaScript(Script script)
     {
@@ -22,6 +23,22 @@ internal class LuaScript : IScript
         catch(ScriptRuntimeException ex)
         {
             throw new ScriptingException(ex.DecoratedMessage, ex);
+        }
+    }
+
+    public object? GetGlobal(string name)
+    {
+        return this.script.Globals[name];
+    }
+
+    public void SetGlobal(string name, object? value)
+    {
+        if (value == null)
+        {
+            this.script.Globals.Remove(name);
+        } else
+        {
+            this.script.Globals[name] = value;
         }
     }
 }
