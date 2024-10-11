@@ -23,9 +23,9 @@ public class PlayerTests
         var queueHandler = new ScalingPacketQueueHandler<PlayerWastedPacket>(new NullLogger(), handler);
         server.RegisterPacketHandler(PacketId.PACKET_ID_PLAYER_WASTED, queueHandler);
 
-        server.EnqueuePacketToClient(player1.Client, PacketId.PACKET_ID_PLAYER_WASTED, new byte[] {
+        server.EnqueuePacketToClient(player1.Client, PacketId.PACKET_ID_PLAYER_WASTED, [
             240, 232, 192, 224, 6, 163, 149, 228, 3, 40, 116, 12, 119, 72, 123, 7, 0,
-        });
+        ]);
 
         await queueHandler.GetPulseTask();
 

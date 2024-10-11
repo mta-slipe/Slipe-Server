@@ -26,7 +26,7 @@ public class UnoccupiedVehicleSyncPacketHandler : IPacketHandler<UnoccupiedVehic
 
     public void HandlePacket(IClient client, UnoccupiedVehicleSyncPacket packet)
     {
-        List<UnoccupiedVehicleSync> vehiclesToSync = new();
+        List<UnoccupiedVehicleSync> vehiclesToSync = [];
 
         foreach (var vehicle in packet.Vehicles)
         {

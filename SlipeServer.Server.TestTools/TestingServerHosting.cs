@@ -78,7 +78,7 @@ public class TestingServerHosting<TPlayer> : IDisposable where TPlayer : Player
     public void Dispose()
     {
         var waitHandle = new AutoResetEvent(false);
-        this.Server.Stopped += () =>
+        this.Server.Stopped += (mtaServer) =>
         {
             waitHandle.Set();
         };

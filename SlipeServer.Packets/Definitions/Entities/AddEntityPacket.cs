@@ -112,46 +112,6 @@ public class AddEntityPacket : Packet
         this.builder.WriteFloatFromBits(health, 11, 0, 1023.5f, true);
     }
 
-    private void WritePositionRotationAnimation(PositionRotationAnimation positionRotationAnimation, bool resumeMode = true)
-    {
-        this.builder.Write(resumeMode);
-
-        if (resumeMode)
-        {
-            var now = DateTime.UtcNow;
-            ulong elapsedTime = (ulong)(now - positionRotationAnimation.StartTime).Ticks / 10000;
-            ulong timeRemaining = 0;
-            if (positionRotationAnimation.EndTime > now)
-            {
-                timeRemaining = (ulong)(positionRotationAnimation.EndTime - now).Ticks / 10000;
-            }
-            this.builder.WriteCompressed(elapsedTime);
-            this.builder.WriteCompressed(timeRemaining);
-        } else
-        {
-            var duration = (positionRotationAnimation.EndTime - positionRotationAnimation.StartTime).Ticks / 10000;
-            this.builder.WriteCompressed((ulong)duration);
-        }
-
-        this.builder.WriteVector3WithZAsFloat(positionRotationAnimation.SourcePosition);
-        this.builder.Write(positionRotationAnimation.SourceRotation * (MathF.PI / 180));
-
-        this.builder.WriteVector3WithZAsFloat(positionRotationAnimation.TargetPosition);
-        this.builder.Write(positionRotationAnimation.DeltaRotationMode);
-        if (positionRotationAnimation.DeltaRotationMode)
-        {
-            this.builder.Write(positionRotationAnimation.DeltaRotation * (MathF.PI / 180));
-        } else
-        {
-            this.builder.Write(positionRotationAnimation.TargetRotation * (MathF.PI / 180));
-        }
-
-        this.builder.Write(positionRotationAnimation.EasingType);
-        this.builder.Write(positionRotationAnimation.EasingPeriod);
-        this.builder.Write(positionRotationAnimation.EasingAmplitude);
-        this.builder.Write(positionRotationAnimation.EasingOvershoot);
-    }
-
     public void AddWeapon(
         ElementId elementId, byte elementType, ElementId? parentId, byte interior,
         ushort dimension, ElementAttachment? attachment, bool areCollisionsEnabled,

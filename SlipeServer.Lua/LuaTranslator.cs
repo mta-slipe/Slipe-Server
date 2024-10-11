@@ -19,58 +19,58 @@ public class LuaTranslator
     public IEnumerable<DynValue> ToDynValues(object? obj)
     {
         if (obj == null)
-            return new DynValue[] { DynValue.Nil };
+            return [DynValue.Nil];
         if (obj is Element element)
-            return new DynValue[] { UserData.Create(element) };
+            return [UserData.Create(element)];
         if (obj is byte int8)
-            return new DynValue[] { DynValue.NewNumber(int8) };
+            return [DynValue.NewNumber(int8)];
         if (obj is short int16)
-            return new DynValue[] { DynValue.NewNumber(int16) };
+            return [DynValue.NewNumber(int16)];
         if (obj is int int32)
-            return new DynValue[] { DynValue.NewNumber(int32) };
+            return [DynValue.NewNumber(int32)];
         if (obj is long int64)
-            return new DynValue[] { DynValue.NewNumber(int64) };
+            return [DynValue.NewNumber(int64)];
         if (obj is ushort uint16)
-            return new DynValue[] { DynValue.NewNumber(uint16) };
+            return [DynValue.NewNumber(uint16)];
         if (obj is uint uint32)
-            return new DynValue[] { DynValue.NewNumber(uint32) };
+            return [DynValue.NewNumber(uint32)];
         if (obj is ulong uint64)
-            return new DynValue[] { DynValue.NewNumber(uint64) };
+            return [DynValue.NewNumber(uint64)];
         if (obj is float single)
-            return new DynValue[] { DynValue.NewNumber(single) };
+            return [DynValue.NewNumber(single)];
         if (obj is double dub)
-            return new DynValue[] { DynValue.NewNumber(dub) };
+            return [DynValue.NewNumber(dub)];
         if (obj is bool boolean)
-            return new DynValue[] { DynValue.NewBoolean(boolean) };
+            return [DynValue.NewBoolean(boolean)];
         if (obj is string str)
-            return new DynValue[] { DynValue.NewString(str) };
+            return [DynValue.NewString(str)];
         if (obj is Color color)
-            return new DynValue[]
-            {
+            return
+            [
                     DynValue.NewNumber(color.R),
                     DynValue.NewNumber(color.G),
                     DynValue.NewNumber(color.B),
                     DynValue.NewNumber(color.A),
-            };
+            ];
         if (obj is Vector2 vector2)
-            return new DynValue[]
-            {
+            return
+            [
                     DynValue.NewNumber(vector2.X),
                     DynValue.NewNumber(vector2.Y)
-            };
+            ];
         if (obj is Vector3 vector3)
-            return new DynValue[]
-            {
+            return
+            [
                     DynValue.NewNumber(vector3.X),
                     DynValue.NewNumber(vector3.Y),
                     DynValue.NewNumber(vector3.Z)
-            };
+            ];
         if (obj is Delegate del)
-            return new DynValue[] { DynValue.NewCallback((context, arguments) => ToDynValues(del.DynamicInvoke(arguments.GetArray())!).First()) };
+            return [DynValue.NewCallback((context, arguments) => ToDynValues(del.DynamicInvoke(arguments.GetArray())!).First())];
         if (obj is Table table)
-            return new DynValue[] { DynValue.NewTable(table) };
+            return [DynValue.NewTable(table)];
         if (obj is DynValue dynValue)
-            return new DynValue[] { dynValue };
+            return [dynValue];
 
         if (obj is IEnumerable<string> stringEnumerable)
             return stringEnumerable.Select(x => DynValue.NewString(x)).ToArray();

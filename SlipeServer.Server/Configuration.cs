@@ -115,7 +115,7 @@ public class Configuration
     /// <summary>
     /// Weapon ids that will triggered bullet sync packets to be sent to the server.
     /// </summary>
-    public WeaponId[] BulletSyncEnabledWeapons { get; set; } = new WeaponId[] {
+    public WeaponId[] BulletSyncEnabledWeapons { get; set; } = [
             WeaponId.Colt,
             WeaponId.Silenced,
             WeaponId.Deagle,
@@ -129,7 +129,7 @@ public class Configuration
             WeaponId.M4,
             WeaponId.Rifle,
             WeaponId.Sniper
-        };
+        ];
 
     public short VehicleExtrapolationBaseMilliseconds { get; set; } = 5;
     public short VehicleExtrapolationPercentage { get; set; } = 0;

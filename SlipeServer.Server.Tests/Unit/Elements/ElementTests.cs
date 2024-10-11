@@ -98,8 +98,8 @@ public class ElementTests
         };
 
 
-        await Task.WhenAll(new Task[]
-        {
+        await Task.WhenAll(
+        [
                 Task.Run(async () =>
                 {
                     await Task.Delay(10);
@@ -113,7 +113,7 @@ public class ElementTests
                         element.Interior = 1;
                     });
                 })
-        });
+        ]);
 
 
         isDimensionEventCalled.Should().BeTrue();

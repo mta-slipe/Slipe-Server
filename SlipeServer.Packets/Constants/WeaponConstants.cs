@@ -4,8 +4,8 @@ namespace SlipeServer.Packets.Constants;
 
 public static class WeaponConstants
 {
-    public static HashSet<int> WeaponsWithAmmo { get; } = new()
-    {
+    public static HashSet<int> WeaponsWithAmmo { get; } =
+    [
         2,
         3,
         4,
@@ -14,10 +14,10 @@ public static class WeaponConstants
         7,
         8,
         9
-    };
+    ];
 
-    public static HashSet<byte> SlotsWithAmmo { get; } = new()
-    {
+    public static HashSet<byte> SlotsWithAmmo { get; } =
+    [
         2,
         3,
         4,
@@ -26,5 +26,5 @@ public static class WeaponConstants
         7,
         8,
         9
-    };
+    ];
 }

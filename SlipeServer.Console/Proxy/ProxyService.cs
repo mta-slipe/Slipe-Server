@@ -97,7 +97,7 @@ public class ProxyService
         var payload = new byte[] { (byte)type }
             .Concat(BitConverter.GetBytes((uint)data.Length + 5))
             .Concat(BitConverter.GetBytes(id))
-            .Concat(new byte[] { packetId })
+            .Concat([packetId])
             .Concat(data).ToArray();
         this.namedPipe.Write(payload);
     }

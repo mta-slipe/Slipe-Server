@@ -17,7 +17,7 @@ public class MasterListServer
 
 public class MtaSaMasterServerDelegateHandler : DelegatingHandler
 {
-    private readonly List<MasterListServer> _servers = new();
+    private readonly List<MasterListServer> _servers = [];
 
     public string DetectedIp { get; } = "123.123.123.123";
     public IEnumerable<MasterListServer> Servers => this._servers;

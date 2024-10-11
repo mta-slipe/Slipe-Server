@@ -7,7 +7,7 @@ namespace SlipeServer.SourceGenerators;
 
 internal class LuaEventAttributeSyntaxReceiver : ISyntaxReceiver
 {
-    public List<ClassDeclarationSyntax> EventClasses { get; } = new List<ClassDeclarationSyntax>();
+    public List<ClassDeclarationSyntax> EventClasses { get; } = [];
 
     public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
     {

@@ -7,10 +7,10 @@ namespace SlipeServer.Packets.Structures;
 
 public class CameraOrientationStructure : ISyncStructure
 {
-    private readonly static uint[] bitCountLookup = new uint[]
-    {
+    private readonly static uint[] bitCountLookup =
+    [
             3, 5, 9, 14
-    };
+    ];
 
     public Vector3 BasePosition { get; set; }
     public Vector3 CameraPosition { get; set; }

@@ -17,7 +17,7 @@ public class ElementByTypeCollection : IElementCollection
 
     public ElementByTypeCollection()
     {
-        this.elements = new Dictionary<ElementType, List<Element>>();
+        this.elements = [];
     }
 
     public void Add(Element element)
@@ -25,7 +25,7 @@ public class ElementByTypeCollection : IElementCollection
         this.slimLock.EnterWriteLock();
         if (!this.elements.ContainsKey(element.ElementType))
         {
-            this.elements[element.ElementType] = new List<Element>();
+            this.elements[element.ElementType] = [];
         }
         this.elements[element.ElementType].Add(element);
         this.slimLock.ExitWriteLock();

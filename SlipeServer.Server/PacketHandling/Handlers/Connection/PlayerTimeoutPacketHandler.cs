@@ -24,7 +24,7 @@ public class PlayerTimeoutPacketHandler : IPacketHandler<PlayerTimeoutPacket>
     public void HandlePacket(IClient client, PlayerTimeoutPacket packet)
     {
         var returnPacket = PlayerPacketFactory.CreateQuitPacket(client.Player, QuitReason.Timeout);
-        returnPacket.SendTo(this.elementCollection.GetByType<Elements.Player>(ElementType.Player).Except(new Elements.Player[] { client.Player }));
+        returnPacket.SendTo(this.elementCollection.GetByType<Elements.Player>(ElementType.Player).Except([client.Player]));
 
         client.Player.Destroy();
     }

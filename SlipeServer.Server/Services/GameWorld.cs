@@ -324,8 +324,8 @@ public class GameWorld
     public GameWorld(MtaServer server)
     {
         this.server = server;
-        this.garageStates = new Dictionary<GarageLocation, bool>();
-        this.jetpackEnabledWeapons = new Dictionary<WeaponId, bool>();
+        this.garageStates = [];
+        this.jetpackEnabledWeapons = [];
         this.enabledGlitches = new Dictionary<GlitchType, bool>
         {
             [GlitchType.GLITCH_QUICKRELOAD] = false,
@@ -339,7 +339,7 @@ public class GameWorld
             [GlitchType.GLITCH_QUICKSTAND] = false,
             [GlitchType.GLITCH_KICKOUTOFVEHICLE_ONMODELREPLACE] = false,
         };
-        this.worldObjectRemovals = new();
+        this.worldObjectRemovals = [];
 
         this.timeTimer = new Timer(this.minuteDuration)
         {

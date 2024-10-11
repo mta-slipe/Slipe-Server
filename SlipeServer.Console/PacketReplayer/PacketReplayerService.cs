@@ -22,8 +22,8 @@ public class PacketReplayerService
         this.logger = logger;
         this.chatBox = chatBox;
 
-        this.pureSyncCapturingPlayers = new();
-        this.keySyncCapturingPlayers = new();
+        this.pureSyncCapturingPlayers = [];
+        this.keySyncCapturingPlayers = [];
 
         server.ForAny<Player>(RegisterPlayerHandlers);
     }

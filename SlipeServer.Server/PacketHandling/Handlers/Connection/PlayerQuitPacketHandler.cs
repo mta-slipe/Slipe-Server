@@ -24,7 +24,7 @@ public class PlayerQuitPacketHandler : IPacketHandler<PlayerQuitPacket>
     public void HandlePacket(IClient client, PlayerQuitPacket packet)
     {
         var returnPacket = PlayerPacketFactory.CreateQuitPacket(client.Player, QuitReason.Quit);
-        returnPacket.SendTo(this.elementCollection.GetByType<Elements.Player>(ElementType.Player).Except(new Elements.Player[] { client.Player }));
+        returnPacket.SendTo(this.elementCollection.GetByType<Elements.Player>(ElementType.Player).Except([client.Player]));
 
         client.Player.TriggerDisconnected(QuitReason.Quit);
     }

@@ -21,7 +21,7 @@ public class ServerBuilder
     public ServerBuilder(bool withDependencyLoaders = true)
     {
         this.Configuration = new();
-        this.buildSteps = new();
+        this.buildSteps = [];
         this.dependencyLoaders = withDependencyLoaders ? new() : null;
     }
 

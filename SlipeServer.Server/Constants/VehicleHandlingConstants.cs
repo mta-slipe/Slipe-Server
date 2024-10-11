@@ -7,7 +7,7 @@ namespace SlipeServer.Server.Constants;
 
 public class VehicleHandlingConstants
 {
-    public static Dictionary<ushort, VehicleHandling> DefaultVehicleHandling { get; } = new();
+    public static Dictionary<ushort, VehicleHandling> DefaultVehicleHandling { get; } = [];
 
     static VehicleHandlingConstants()
     {

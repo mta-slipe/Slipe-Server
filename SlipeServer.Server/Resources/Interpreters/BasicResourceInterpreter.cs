@@ -18,7 +18,7 @@ public class BasicResourceInterpreter : IResourceInterpreter
         out Resource? resource
     )
     {
-        List<ResourceFile> resourceFiles = new List<ResourceFile>();
+        List<ResourceFile> resourceFiles = [];
 
         foreach (var file in resourceProvider.GetFilesForResource(name))
         {
