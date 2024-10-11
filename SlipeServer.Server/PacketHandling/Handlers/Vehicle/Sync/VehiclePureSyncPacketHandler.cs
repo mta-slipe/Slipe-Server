@@ -78,6 +78,8 @@ public class VehiclePureSyncPacketHandler : IPacketHandler<VehiclePureSyncPacket
                 var damager = this.elementCollection.Get(packet.DamagerId.Value);
                 player.TriggerDamaged(damager, (DamageType)(packet.DamageWeaponType ?? (byte?)DamageType.WEAPONTYPE_UNIDENTIFIED), (BodyPart)(packet.DamageBodyPart ?? (byte?)BodyPart.Torso));
             }
+
+            player.LastMovedUtc = DateTime.UtcNow;
         });
 
         if (vehicle != null && player == vehicle.Driver)

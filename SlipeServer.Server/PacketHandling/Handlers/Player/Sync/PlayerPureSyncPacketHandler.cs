@@ -98,6 +98,8 @@ public class PlayerPureSyncPacketHandler : IPacketHandler<PlayerPureSyncPacket>
             player.CameraDirection = packet.CameraOrientation.CameraForward;
             player.CameraRotation = packet.CameraRotation;
 
+            player.LastMovedUtc = DateTime.UtcNow;
+
             if (packet.IsDamageChanged)
             {
                 var damager = this.elementCollection.Get(packet.DamagerId);
