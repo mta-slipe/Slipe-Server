@@ -53,3 +53,9 @@ addCommandHandler("TriggerTests", function(command, ...)
 end)
 
 setFPSLimit(60)
+
+
+addCommandHandler("triggerLatent", function(command, ...)
+	outputChatBox("Sending latent event...")
+	triggerLatentServerEvent("exampleLatentTrigger",5000,false,root,string.rep("a", 10000))
+end)

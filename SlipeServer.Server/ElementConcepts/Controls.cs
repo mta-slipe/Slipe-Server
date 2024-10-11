@@ -2,6 +2,7 @@
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Extensions;
+using System.Collections.Generic;
 using SlipeServer.Server.PacketHandling.Factories;
 
 namespace SlipeServer.Server.Concepts;
@@ -797,14 +798,91 @@ public class Controls
         }
     }
 
+    private readonly HashSet<string> enabledControlStates = [];
+
     public void SetControlState(string control, bool state)
     {
-        new SetControlStatePacket(control, state).SendTo(this.player);
+        if (state)
+            this.enabledControlStates.Add(control);
+        else
+            this.enabledControlStates.Remove(control);
+
+        new SetControlStatePacket(control, state)
+            .SendTo(this.player);
     }
 
     public void SetControlState(Control control, bool state)
     {
         SetControlState(control.ToString().ToLower(), state);
+    }
+
+    public bool IsControlStateSet(string control)
+    {
+        return this.enabledControlStates.Contains(control);
+    }
+
+    public bool IsControlStateSet(Control control)
+    {
+        return IsControlStateSet(control.ToString().ToLower());
+    }
+
+    public void SetAllEnabled(bool newState)
+    {
+        this.FireEnabled = newState;
+        this.AimWeaponEnabled = newState;
+        this.NextWeaponEnabled = newState;
+        this.PreviousWeaponEnabled = newState;
+        this.ForwardsEnabled = newState;
+        this.BackwardsEnabled = newState;
+        this.LeftEnabled = newState;
+        this.RightEnabled = newState;
+        this.ZoomInEnabled = newState;
+        this.ZoomOutEnabled = newState;
+        this.ChangeCameraEnabled = newState;
+        this.JumpEnabled = newState;
+        this.SprintEnabled = newState;
+        this.LookBehindEnabled = newState;
+        this.CrouchEnabled = newState;
+        this.ActionEnabled = newState;
+        this.WalkEnabled = newState;
+        this.ConversationYesEnabled = newState;
+        this.ConversationNoEnabled = newState;
+        this.GroupControlForwardsEnabled = newState;
+        this.GroupControlBackEnabled = newState;
+        this.VehicleFireEnabled = newState;
+        this.VehicleSecondaryFireEnabled = newState;
+        this.VehicleLeftEnabled = newState;
+        this.VehicleRightEnabled = newState;
+        this.SteerForwardEnabled = newState;
+        this.SteerBackEnabled = newState;
+        this.AccelerateEnabled = newState;
+        this.BrakeReverseEnabled = newState;
+        this.RadioNextEnabled = newState;
+        this.RadioPreviousEnabled = newState;
+        this.RadioUserTrackSkipEnabled = newState;
+        this.HornEnabled = newState;
+        this.SubMissionEnabled = newState;
+        this.HandbrakeEnabled = newState;
+        this.VehicleLookLeftEnabled = newState;
+        this.VehicleLookRightEnabled = newState;
+        this.VehicleLookBehindEnabled = newState;
+        this.VehicleMouseLookEnabled = newState;
+        this.SpecialControlLeftEnabled = newState;
+        this.SpecialControlRightEnabled = newState;
+        this.SpecialControlDownEnabled = newState;
+        this.SpecialControlUpEnabled = newState;
+        this.EnterExitEnabled = newState;
+        this.EnterPassengerEnabled = newState;
+        this.ScreenshotEnabled = newState;
+        this.ChatboxEnabled = newState;
+        this.RadarEnabled = newState;
+        this.RadarZoomInEnabled = newState;
+        this.RadarZoomOutEnabled = newState;
+        this.RadarMoveNorthEnabled = newState;
+        this.RadarMoveSouthEnabled = newState;
+        this.RadarMoveEastEnabled = newState;
+        this.RadarMoveWestEnabled = newState;
+        this.RadarAttachEnabled = newState;
     }
 
     public event ElementEventHandler<Player, PlayerControlsChangedArgs>? StateChanged;

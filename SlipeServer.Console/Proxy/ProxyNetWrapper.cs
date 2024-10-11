@@ -22,22 +22,22 @@ public class ProxyNetWrapper : INetWrapper
 
     public void Stop() { }
 
-    protected virtual void SendPacket(uint binaryAddress, byte packetId, ushort bitStreamVersion, byte[] payload, PacketPriority priority, PacketReliability reliability)
+    protected virtual void SendPacket(ulong binaryAddress, byte packetId, ushort bitStreamVersion, byte[] payload, PacketPriority priority, PacketReliability reliability)
     {
         this.proxyService.SendMessage(RemoteMessageType.packet, packetId, binaryAddress, payload);
     }
 
-    public void SendPacket(uint binaryAddress, ushort bitStreamVersion, Packet packet)
+    public void SendPacket(ulong binaryAddress, ushort bitStreamVersion, Packet packet)
     {
         SendPacket(binaryAddress, (byte)packet.PacketId, bitStreamVersion, packet.Write(), packet.Priority, packet.Reliability);
     }
 
-    public void SendPacket(uint binaryAddress, PacketId packetId, ushort bitStreamVersion, byte[] data, PacketPriority priority = PacketPriority.High, PacketReliability reliability = PacketReliability.ReliableSequenced)
+    public void SendPacket(ulong binaryAddress, PacketId packetId, ushort bitStreamVersion, byte[] data, PacketPriority priority = PacketPriority.High, PacketReliability reliability = PacketReliability.ReliableSequenced)
     {
         SendPacket(binaryAddress, (byte)packetId, bitStreamVersion, data, priority, reliability);
     }
 
-    public Tuple<string, string, string> GetClientSerialExtraAndVersion(uint binaryAddress)
+    public Tuple<string, string, string> GetClientSerialExtraAndVersion(ulong binaryAddress)
     {
         return new Tuple<string, string, string>(
             Guid.NewGuid().ToString(),
@@ -46,13 +46,13 @@ public class ProxyNetWrapper : INetWrapper
         );
     }
 
-    public IPAddress GetPlayerIp(uint binaryAddress) => IPAddress.Any;
+    public IPAddress GetPlayerIp(ulong binaryAddress) => IPAddress.Any;
 
-    public void ResendModPackets(uint binaryAddress) { }
+    public void ResendModPackets(ulong binaryAddress) { }
 
-    public void ResendPlayerACInfo(uint binaryAddress) { }
+    public void ResendPlayerACInfo(ulong binaryAddress) { }
 
-    public void SetVersion(uint binaryAddress, ushort version) { }
+    public void SetVersion(ulong binaryAddress, ushort version) { }
 
     public void SetAntiCheatConfig(
         IEnumerable<AntiCheat> disabledAntiCheats,
@@ -68,5 +68,5 @@ public class ProxyNetWrapper : INetWrapper
         this.PacketReceived?.Invoke(this, id, packet, payload, null);
     }
 
-    public event Action<INetWrapper, uint, PacketId, byte[], uint?>? PacketReceived;
+    public event Action<INetWrapper, ulong, PacketId, byte[], uint?>? PacketReceived;
 }

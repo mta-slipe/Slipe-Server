@@ -209,4 +209,56 @@ public static class ServiceCollectionExtensions
             mtaServer.RegisterPacketHandler<PlayerResourceStartedPacketHandler, PlayerResourceStartedPacket>();
     }
 
+    public static IServiceCollection AddDefaultMiddlewares(
+        this IServiceCollection services,
+        ServerBuilderDefaultMiddleware exceptMiddleware = ServerBuilderDefaultMiddleware.None)
+    {
+        if ((exceptMiddleware & ServerBuilderDefaultMiddleware.ProjectileSyncPacketMiddleware) == 0)
+            services.AddSingleton<ISyncHandlerMiddleware<ProjectileSyncPacket>, RangeSyncHandlerMiddleware<ProjectileSyncPacket>>(
+                x => new RangeSyncHandlerMiddleware<ProjectileSyncPacket>(
+                    x.GetRequiredService<IElementCollection>(),
+                    x.GetRequiredService<Configuration>().ExplosionSyncDistance)
+            );
+        if ((exceptMiddleware & ServerBuilderDefaultMiddleware.DetonateSatchelsPacketMiddleware) == 0)
+            services.AddSingleton<ISyncHandlerMiddleware<DetonateSatchelsPacket>, RangeSyncHandlerMiddleware<DetonateSatchelsPacket>>(
+                x => new RangeSyncHandlerMiddleware<DetonateSatchelsPacket>(
+                    x.GetRequiredService<IElementCollection>(),
+                    x.GetRequiredService<Configuration>().ExplosionSyncDistance,
+                    false)
+            );
+        if ((exceptMiddleware & ServerBuilderDefaultMiddleware.DestroySatchelsPacketMiddleware) == 0)
+            services.AddSingleton<ISyncHandlerMiddleware<DestroySatchelsPacket>, RangeSyncHandlerMiddleware<DestroySatchelsPacket>>(
+                x => new RangeSyncHandlerMiddleware<DestroySatchelsPacket>(
+                    x.GetRequiredService<IElementCollection>(),
+                    x.GetRequiredService<Configuration>().ExplosionSyncDistance,
+                    false)
+            );
+        if ((exceptMiddleware & ServerBuilderDefaultMiddleware.ExplosionPacketMiddleware) == 0)
+            services.AddSingleton<ISyncHandlerMiddleware<ExplosionPacket>, RangeSyncHandlerMiddleware<ExplosionPacket>>(
+                x => new RangeSyncHandlerMiddleware<ExplosionPacket>(
+                    x.GetRequiredService<IElementCollection>(),
+                    x.GetRequiredService<Configuration>().ExplosionSyncDistance,
+                    false)
+            );
+
+        if ((exceptMiddleware & ServerBuilderDefaultMiddleware.PlayerPureSyncPacketMiddleware) == 0)
+            services.AddSingleton<ISyncHandlerMiddleware<PlayerPureSyncPacket>, RangeSyncHandlerMiddleware<PlayerPureSyncPacket>>(
+                x => new RangeSyncHandlerMiddleware<PlayerPureSyncPacket>(
+                    x.GetRequiredService<IElementCollection>(),
+                    x.GetRequiredService<Configuration>().LightSyncRange));
+
+        if ((exceptMiddleware & ServerBuilderDefaultMiddleware.KeySyncPacketMiddleware) == 0)
+            services.AddSingleton<ISyncHandlerMiddleware<KeySyncPacket>, RangeSyncHandlerMiddleware<KeySyncPacket>>(
+                x => new RangeSyncHandlerMiddleware<KeySyncPacket>(
+                    x.GetRequiredService<IElementCollection>(),
+                    x.GetRequiredService<Configuration>().LightSyncRange));
+
+        if ((exceptMiddleware & ServerBuilderDefaultMiddleware.LightSyncBehaviourMiddleware) == 0)
+            services.AddSingleton<ISyncHandlerMiddleware<LightSyncBehaviour>, MaxRangeSyncHandlerMiddleware<LightSyncBehaviour>>(
+                x => new MaxRangeSyncHandlerMiddleware<LightSyncBehaviour>(
+                    x.GetRequiredService<IElementCollection>(),
+                    x.GetRequiredService<Configuration>().LightSyncRange));
+
+        return services;
+    }
 }

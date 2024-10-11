@@ -19,15 +19,12 @@ public class SampleHostedService : IHostedService
         this.chatBox = chatBox;
         this.resourceProvider = resourceProvider;
         commandService.AddCommand("startSample").Triggered += HandleStartSample;
-        commandService.AddCommand("toggle").Triggered += HandleTriggered;
+        commandService.AddCommand("spawnVehicle").Triggered += HandleSpawnVehicleTriggered;
     }
 
-    private void HandleTriggered(object? sender, SlipeServer.Server.Events.CommandTriggeredEventArgs e)
+    private void HandleSpawnVehicleTriggered(object? sender, SlipeServer.Server.Events.CommandTriggeredEventArgs e)
     {
-        var controls = e.Player.Controls;
-        controls.ToggleAll(false);
-        controls.ForwardsEnabled = true;
-        this.chatBox.OutputTo(e.Player, "Toggle");
+        new Vehicle(404, e.Player.Position).AssociateWith(this.mtaServer);
     }
 
     private void HandleStartSample(object? sender, SlipeServer.Server.Events.CommandTriggeredEventArgs e)

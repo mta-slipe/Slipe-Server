@@ -7,6 +7,9 @@ using SlipeServer.Server.Mappers;
 using SlipeServer.Console.Logic;
 using SlipeServer.Lua;
 using SlipeServer.WebHostBuilderExample;
+using SlipeServer.Example;
+
+Directory.SetCurrentDirectory(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()!.Location)!);
 
 Directory.SetCurrentDirectory(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()!.Location)!);
 
@@ -18,6 +21,15 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var configuration = builder.Configuration.GetRequiredSection("MtaServer").Get<Configuration>();
+
+IConfigurationRoot config = new ConfigurationBuilder()
+    .AddUserSecrets<Program>()
+    .Build();
+
+if (configuration != null && ushort.TryParse(config.GetSection("HttpPort").Value, out var httpPort))
+{
+    configuration.HttpPort = httpPort;
+}
 
 builder.Services.AddHttpClient();
 builder.Services.AddDefaultMtaServerServices();
@@ -35,6 +47,7 @@ builder.AddMtaServer(serverBuilder =>
 
     serverBuilder.AddHostedDefaults(exceptBehaviours: exceptBehaviours);
     serverBuilder.AddSampleResource();
+    serverBuilder.AddExampleLogic();
 });
 
 var app = builder.Build();

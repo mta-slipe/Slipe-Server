@@ -1,10 +1,12 @@
 ﻿using FluentAssertions;
+using FluentAssertions.Execution;
 using SlipeServer.Packets.Definitions.Player;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Loggers;
 using SlipeServer.Server.PacketHandling.Handlers.Player;
 using SlipeServer.Server.PacketHandling.Handlers.QueueHandlers;
 using SlipeServer.Server.TestTools;
+using System.Linq;
 using Xunit;
 
 namespace SlipeServer.Server.Tests.Integration.Elements;
@@ -50,10 +52,20 @@ public class PlayerTests
         var server = new TestingServer();
         var player = server.AddFakePlayer();
 
+        using var monitor = player.Monitor();
+
         player.Kick();
+
+        using var _ = new AssertionScope();
 
         player.IsDestroyed.Should().BeTrue();
         player.Client.IsConnected.Should().BeFalse();
+
+        monitor.OccurredEvents.Should().HaveCount(3);
+        monitor.OccurredEvents
+            .OrderBy(x => x.Sequence)
+            .Select(x => x.EventName)
+            .Should().BeEquivalentTo(["Kicked", "Disconnected", "Destroyed"]);
     }
 
     [Fact]

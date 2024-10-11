@@ -92,7 +92,7 @@ public class ScalingPacketQueueHandler<T> : BasePacketQueueHandler<T> where T : 
         return false;
     }
 
-    private async void PulsePacketTask(Worker worker)
+    private async Task PulsePacketTask(Worker worker)
     {
         while (worker.Active)
         {
@@ -100,6 +100,7 @@ public class ScalingPacketQueueHandler<T> : BasePacketQueueHandler<T> where T : 
             {
                 try
                 {
+                    ClientContext.Current = queueEntry.Client;
                     this.packetHandler.HandlePacket(queueEntry.Client, queueEntry.Packet);
                     TriggerPacketHandled(queueEntry.Packet);
                 }
@@ -109,6 +110,10 @@ public class ScalingPacketQueueHandler<T> : BasePacketQueueHandler<T> where T : 
                         this.logger.LogError($"Handling rpcPacket ({rpcPacket.FunctionId}) failed.\n{e.Message}\n{e.StackTrace}");
                     else
                         this.logger.LogError($"Handling packet ({queueEntry.Packet}) failed.\n{e.Message}\n{e.StackTrace}");
+                }
+                finally
+                {
+                    ClientContext.Current = null;
                 }
             }
 

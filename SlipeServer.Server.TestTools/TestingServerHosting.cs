@@ -1,18 +1,22 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Moq;
 using SlipeServer.Hosting;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.ServerBuilders;
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace SlipeServer.Server.TestTools;
 
-public class TestingServerHosting<T> : IDisposable where T : Player
+public class TestingServerHosting<TPlayer> : IDisposable where TPlayer : Player
 {
     private readonly IHost host;
 
-    public TestingServer<T> Server { get; }
+    public TestingServer<TPlayer> Server { get; }
     public IHost Host => this.host;
 
     public TestingServerHosting(
@@ -22,17 +26,53 @@ public class TestingServerHosting<T> : IDisposable where T : Player
     {
         var builder = Microsoft.Extensions.Hosting.Host.CreateApplicationBuilder();
 
-        builder.AddMtaServer<TestingServer<T>>(new TestingServer<T>(configuration, x =>
+
+        if (typeof(TPlayer) == typeof(Player) || typeof(TPlayer) == typeof(TestingPlayer))
         {
-            serverBuilder?.Invoke(x);
-        }));
+            builder.AddMtaServer<TestingServer<TPlayer>>(new TestingServer<TPlayer>(configuration, x =>
+            {
+                x.UseConfiguration(configuration);
+                serverBuilder?.Invoke(x);
+            }));
+        }
+        else
+        {
+            builder.AddCustomMtaServerWithDiSupport(serviceProvider =>
+            {
+                return new TestingServer<TPlayer>(serviceProvider, x =>
+                {
+                    x.UseConfiguration(configuration);
+                    serverBuilder?.Invoke(x);
+                });
+            });
+        }
 
         applicationBuilder?.Invoke(builder);
+
+        Mock<ILogger> loggerMock = new();
+        builder.Services.TryAddSingleton(loggerMock.Object);
+
         this.host = builder.Build();
 
-        this.host.RunAsync();
+        var tcs = new TaskCompletionSource();
+        var lifecycle = this.Host.Services.GetRequiredService<IHostApplicationLifetime>();
+        lifecycle.ApplicationStarted.Register(tcs.SetResult);
 
-        this.Server = this.host.Services.GetRequiredService<TestingServer<T>>();
+        var _ = Task.Run(async () =>
+        {
+            try
+            {
+                await this.host.RunAsync();
+            }
+            catch (Exception ex)
+            {
+                tcs.SetException(ex);
+            }
+        });
+
+        tcs.Task.Wait();
+
+        this.Server = this.host.Services.GetRequiredService<TestingServer<TPlayer>>();
     }
 
     public void Dispose()
@@ -45,6 +85,8 @@ public class TestingServerHosting<T> : IDisposable where T : Player
         this.host.StopAsync().Wait();
         waitHandle.WaitOne(TimeSpan.FromSeconds(30));
     }
+
+    public T GetRequiredService<T>() where T : class => this.host.Services.GetRequiredService<T>();
 }
 
 public class TestingServerHosting : TestingServerHosting<TestingPlayer>
