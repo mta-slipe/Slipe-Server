@@ -17,6 +17,14 @@ public class ServerExampleLogic
         {
             this.chatBox.OutputTo(player, "Hello world");
         });
+
+        AddCommand("toggleControls", player =>
+        {
+            var controls = player.Controls;
+            controls.ToggleAll(false);
+            controls.ForwardsEnabled = true;
+            this.chatBox.OutputTo(player, "Toggle");
+        });
     }
 
     private void AddCommand(string command, Action<Player> callback)
