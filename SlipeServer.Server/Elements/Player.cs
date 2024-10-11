@@ -16,6 +16,8 @@ using SlipeServer.Packets.Lua.Event;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Clients;
+using System.Net;
+using SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
 
 namespace SlipeServer.Server.Elements;
 
@@ -110,6 +112,11 @@ public class Player : Ped
     private readonly HashSet<Element> subscriptionElements;
     private Dictionary<string, KeyState> BoundKeys { get; }
 
+    /// <summary>
+    /// This object can be used in a lock statement to ensure thread-safety when handling money
+    /// </summary>
+    public object ExternalMoneyLock { get; } = new();
+
     private int money;
     public int Money
     {
@@ -169,8 +176,39 @@ public class Player : Ped
             this.nametagColor = value;
             NametagColorChanged?.Invoke(this, args);
         }
-
     }
+
+    private byte blurLevel = 36;
+    public byte BlurLevel
+    {
+        get => this.blurLevel;
+        set
+        {
+            if (this.blurLevel == value)
+                return;
+
+            this.blurLevel = value;
+            this.client.SendPacket(new SetBlurLevelPacket(value));
+        }
+    }
+
+    private bool isMapForced;
+    public bool IsMapForced
+    {
+        get => this.isMapForced;
+        set
+        {
+            if (this.isMapForced == value)
+                return;
+
+            this.isMapForced = value;
+            this.Client.SendPacket(PlayerPacketFactory.CreateForcePlayerMapPacket(value));
+        }
+    }
+
+    public DateTime LastMovedUtc = DateTime.UtcNow;
+
+    public int DebugLogLevel { get; set; }
 
     private string DebuggerDisplay => $"{this.Name} ({this.Id})";
 
@@ -254,11 +292,6 @@ public class Player : Ped
     public void PlaySound(byte sound)
     {
         this.Client.SendPacket(PlayerPacketFactory.CreatePlaySoundPacket(sound));
-    }
-
-    public void ForceMapVisible(bool isVisible)
-    {
-        this.Client.SendPacket(PlayerPacketFactory.CreateForcePlayerMapPacket(isVisible));
     }
 
     public void SetTransferBoxVisible(bool isVisible)
@@ -487,6 +520,11 @@ public class Player : Ped
     public void RemoveElement(Element element)
     {
         this.AssociatedElements.Remove(element);
+    }
+
+    public void RedirectTo(IPAddress server, ushort port, string? password = null)
+    {
+        this.client.SendPacket(new ForceReconnectPacket(server.ToString(), port, password));
     }
 
     internal bool ShouldSendReturnSyncPacket()

@@ -73,9 +73,22 @@ public class LuaTranslator
             return new DynValue[] { dynValue };
 
         if (obj is IEnumerable<string> stringEnumerable)
-            return stringEnumerable.Select(x => DynValue.NewString(x)).ToArray();
+        {
+            var enumerableTable = new Table(null);
+            foreach (var value in stringEnumerable.Select(ToDynValues).SelectMany(x => x))
+                enumerableTable.Append(value);
+
+            return [DynValue.NewTable(enumerableTable)];
+        }
         if (obj is IEnumerable<object> enumerable)
-            return enumerable.Select(x => ToDynValues(x)).SelectMany(x => x).ToArray();
+        {
+            var enumerableTable = new Table(null);
+            foreach (var value in enumerable.Select(ToDynValues).SelectMany(x => x))
+                enumerableTable.Append(value);
+
+            return [DynValue.NewTable(enumerableTable)];
+
+        }
 
         throw new NotImplementedException($"Conversion to Lua for {obj.GetType()} not implemented");
     }
@@ -107,6 +120,8 @@ public class LuaTranslator
             return new Vector3(GetSingleFromDynValue(dynValues.Dequeue()), GetSingleFromDynValue(dynValues.Dequeue()), GetSingleFromDynValue(dynValues.Dequeue()));
         if (targetType == typeof(Vector2))
             return new Vector2(GetSingleFromDynValue(dynValues.Dequeue()), GetSingleFromDynValue(dynValues.Dequeue()));
+        if (targetType == typeof(Color))
+            return Color.FromArgb(255, GetInt32FromDynValue(dynValues.Dequeue()), GetInt32FromDynValue(dynValues.Dequeue()), GetInt32FromDynValue(dynValues.Dequeue()));
         if (targetType == typeof(float))
             return GetSingleFromDynValue(dynValues.Dequeue());
         if (targetType == typeof(double))
