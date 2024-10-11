@@ -4,7 +4,7 @@ namespace SlipeServer.Server.TestTools;
 
 public struct SendPacketCall
 {
-    public uint Address { get; set; }
+    public ulong Address { get; set; }
     public ushort Version { get; set; }
 
     public PacketId PacketId { get; set; }

@@ -15,9 +15,9 @@ namespace SlipeServer.Net.Wrappers;
 public class NetWrapper : IDisposable, INetWrapper
 {
     private const string wrapperDllpath = @"NetModuleWrapper";
-
+    private bool started = false;
     [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-    private delegate void PacketCallback(byte packetId, uint binaryAddress, IntPtr payload, uint payloadSize, bool hasPing, uint ping);
+    private delegate void PacketCallback(byte packetId, ulong binaryAddress, IntPtr payload, uint payloadSize, bool hasPing, uint ping);
 
 
 #pragma warning disable CA2101 // Specify marshaling for P/Invoke string arguments
@@ -34,24 +34,24 @@ public class NetWrapper : IDisposable, INetWrapper
     private static extern void StopNetWrapper(ushort id);
 
     [DllImport(wrapperDllpath, EntryPoint = "sendPacket")]
-    private static extern void SendPacket(ushort id, uint binaryAddress, byte packetId, ushort bitStreamVersion, IntPtr payload, uint payloadSize, byte priority, byte ordering);
+    private static extern void SendPacket(ushort id, ulong binaryAddress, byte packetId, ushort bitStreamVersion, IntPtr payload, uint payloadSize, byte priority, byte ordering);
 
     [DllImport(wrapperDllpath, EntryPoint = "setSocketVersion")]
-    private static extern void SetSocketVersion(ushort id, uint binaryAddress, ushort version);
+    private static extern void SetSocketVersion(ushort id, ulong binaryAddress, ushort version);
 
     [DllImport(wrapperDllpath, EntryPoint = "getClientSerialAndVersion", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-    private static extern void GetClientSerialAndVersion(ushort id, uint binaryAddress, StringBuilder serial, StringBuilder extra, StringBuilder version);
+    private static extern void GetClientSerialAndVersion(ushort id, ulong binaryAddress, StringBuilder serial, StringBuilder extra, StringBuilder version);
 
     [DllImport(wrapperDllpath, EntryPoint = "getPlayerIp", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-    private static extern void GetPlayerIp(ushort id, uint binaryAddress, StringBuilder ip);
+    private static extern void GetPlayerIp(ushort id, ulong binaryAddress, StringBuilder ip);
 
     [DllImport(wrapperDllpath, EntryPoint = "setChecks")]
     private static extern void SetChecks(ushort id, string szDisableComboACMap, string szDisableACMap, string szEnableSDMap, int iEnableClientChecks, bool bHideAC, string szImgMods);
 
     [DllImport(wrapperDllpath, EntryPoint = "resendModPackets")]
-    private static extern void ResendModPackets(ushort id, uint binaryAddress);
+    private static extern void ResendModPackets(ushort id, ulong binaryAddress);
     [DllImport(wrapperDllpath, EntryPoint = "resendPlayerACInfo")]
-    private static extern void ResendPlayerACInfo(ushort id, uint binaryAddress);
+    private static extern void ResendPlayerACInfo(ushort id, ulong binaryAddress);
 
 #pragma warning restore CA2101 // Specify marshaling for P/Invoke string arguments
 
@@ -83,11 +83,25 @@ public class NetWrapper : IDisposable, INetWrapper
         GC.SuppressFinalize(this);
     }
 
-    public void Start() => StartNetWrapper(this.id);
+    public void Start()
+    {
+        if (this.started)
+            throw new InvalidOperationException("Net server already started.");
 
-    public void Stop() => StopNetWrapper(this.id);
+        StartNetWrapper(this.id);
+        this.started = true;
+    }
 
-    protected virtual void SendPacket(uint binaryAddress, byte packetId, ushort bitStreamVersion, byte[] payload, PacketPriority priority, PacketReliability reliability)
+    public void Stop()
+    {
+        if (!this.started)
+            throw new InvalidOperationException("Net server is not running.");
+
+        StopNetWrapper(this.id);
+        this.started = false;
+    }
+
+    protected virtual void SendPacket(ulong binaryAddress, byte packetId, ushort bitStreamVersion, byte[] payload, PacketPriority priority, PacketReliability reliability)
     {
         int size = Marshal.SizeOf((byte)0) * payload.Length;
         IntPtr pointer = Marshal.AllocHGlobal(size);
@@ -102,17 +116,17 @@ public class NetWrapper : IDisposable, INetWrapper
         }
     }
 
-    public void SendPacket(uint binaryAddress, ushort bitStreamVersion, Packet packet)
+    public void SendPacket(ulong binaryAddress, ushort bitStreamVersion, Packet packet)
     {
         SendPacket(binaryAddress, (byte)packet.PacketId, bitStreamVersion, packet.Write(), packet.Priority, packet.Reliability);
     }
 
-    public void SendPacket(uint binaryAddress, PacketId packetId, ushort bitStreamVersion, byte[] data, PacketPriority priority = PacketPriority.High, PacketReliability reliability = PacketReliability.ReliableSequenced)
+    public void SendPacket(ulong binaryAddress, PacketId packetId, ushort bitStreamVersion, byte[] data, PacketPriority priority = PacketPriority.High, PacketReliability reliability = PacketReliability.ReliableSequenced)
     {
         SendPacket(binaryAddress, (byte)packetId, bitStreamVersion, data, priority, reliability);
     }
 
-    public Tuple<string, string, string> GetClientSerialExtraAndVersion(uint binaryAddress)
+    public Tuple<string, string, string> GetClientSerialExtraAndVersion(ulong binaryAddress)
     {
         var serial = new StringBuilder(48);
         var extra = new StringBuilder(48);
@@ -122,7 +136,7 @@ public class NetWrapper : IDisposable, INetWrapper
         return new Tuple<string, string, string>(serial.ToString(), extra.ToString(), version.ToString());
     }
 
-    public IPAddress GetPlayerIp(uint binaryAddress)
+    public IPAddress GetPlayerIp(ulong binaryAddress)
     {
         var ip = new StringBuilder(22);
         GetPlayerIp(this.id, binaryAddress, ip);
@@ -130,17 +144,17 @@ public class NetWrapper : IDisposable, INetWrapper
         return IPAddress.Parse(ip.ToString());
     }
 
-    public void ResendModPackets(uint binaryAddress)
+    public void ResendModPackets(ulong binaryAddress)
     {
         ResendModPackets(this.id, binaryAddress);
     }
 
-    public void ResendPlayerACInfo(uint binaryAddress)
+    public void ResendPlayerACInfo(ulong binaryAddress)
     {
         ResendPlayerACInfo(this.id, binaryAddress);
     }
 
-    public void SetVersion(uint binaryAddress, ushort version)
+    public void SetVersion(ulong binaryAddress, ushort version)
     {
         SetSocketVersion(this.id, binaryAddress, version);
     }
@@ -166,7 +180,7 @@ public class NetWrapper : IDisposable, INetWrapper
             allowGta3ImgMods.ToString().ToLower());
     }
 
-    protected virtual void PacketInterceptor(byte packetId, uint binaryAddress, IntPtr payload, uint payloadSize, bool hasPing, uint ping)
+    protected virtual void PacketInterceptor(byte packetId, ulong binaryAddress, IntPtr payload, uint payloadSize, bool hasPing, uint ping)
     {
         byte[] data = new byte[payloadSize];
         Marshal.Copy(payload, data, 0, (int)payloadSize);
@@ -176,6 +190,6 @@ public class NetWrapper : IDisposable, INetWrapper
         this.PacketReceived?.Invoke(this, binaryAddress, parsedPacketId, data, hasPing ? ping : (uint?)null);
     }
 
-    public event Action<INetWrapper, uint, PacketId, byte[], uint?>? PacketReceived;
+    public event Action<INetWrapper, ulong, PacketId, byte[], uint?>? PacketReceived;
 
 }

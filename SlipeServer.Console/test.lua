@@ -89,3 +89,57 @@ addCommandHandler("foo4", commandHandler3)
 removeCommandHandler("foo3", commandHandler2)
 removeCommandHandler("foo4")
 addCommandHandler("outputChatBoxTest", outputChatBoxTest)
+
+local col = createColSphere(-10, 0, 4, 2)
+function handleHit(element, dimensionMatch)
+	print("Colshape hit", source, element, dimensionMatch)
+end
+addEventHandler("onColShapeHit", col, handleHit)
+
+function handleLeave(element, dimensionMatch)
+	print("Colshape leave", source, element, dimensionMatch)
+end
+addEventHandler("onColShapeLeave", col, handleLeave)
+
+local poly = createColPolygon(-15, 0, -16, 0, -16, 1, -17, 1, -17, -1, -16, -1, -16, 0)
+
+function playerTests(player)
+	local count = getPlayerCount()
+	local living = getAlivePlayers()
+	local dead = getDeadPlayers()
+	local random = getRandomPlayer()
+
+	print("There are " .. count .. " players online. " .. #living .. " are alive, " .. #dead .. " are dead", player)
+	print("Here's a random player's name: " .. getPlayerName(random), player)	
+end
+addCommandHandler("playertests", playerTests)
+
+function outputInfo(sourcePlayer, command, name)
+	local player = getPlayerFromName(name)
+	if not player then
+		outputChatBox("There is no such player", sourcePlayer)
+		return
+	end
+
+	outputChatBox(getPlayerName(player) .. "'s", sourcePlayer)
+	outputChatBox("- Serial is " .. getPlayerSerial(player), sourcePlayer)
+	outputChatBox("- IP is " .. getPlayerIP(player), sourcePlayer)
+	outputChatBox("- Version is " .. getPlayerVersion(player), sourcePlayer)
+	outputChatBox("- Wanted level is " .. getPlayerWantedLevel(player), sourcePlayer)
+	outputChatBox("- Money is " .. getPlayerMoney(player), sourcePlayer)
+	outputChatBox("- Ping is " .. getPlayerPing(player), sourcePlayer)
+	outputChatBox("- Nametag is " .. getPlayerNametagText(player), sourcePlayer)
+
+	if (isPlayerMuted(player)) then
+		outputChatBox("- Is muted ", sourcePlayer)
+	end
+	if getControlState(player, "forwards") then
+		outputChatBox("- Is walking", sourcePlayer)
+	end
+end
+addCommandHandler("getinfo", outputInfo)
+
+function outputControlState(player)
+	setControlState(player, "forwards", not getControlState(player, "forwards"))
+end
+addCommandHandler("walkme", outputControlState)

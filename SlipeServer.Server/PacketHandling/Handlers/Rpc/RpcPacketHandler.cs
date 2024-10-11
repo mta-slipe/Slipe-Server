@@ -82,9 +82,6 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
             .Except(new Elements.Player[] { client.Player })
             .ToArray();
 
-        var existingPlayersListPacket = PlayerPacketFactory.CreatePlayerListPacket(otherPlayers, true);
-        client.SendPacket(existingPlayersListPacket);
-
         var elements = this.elementCollection
             .GetAll()
             .Where(x => x.Associations.ToArray().Any(y => y.IsGlobal))
@@ -92,6 +89,9 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
 
         var packet = AddEntityPacketFactory.CreateAddEntityPacket(elements);
         client.SendPacket(packet);
+
+        var existingPlayersListPacket = PlayerPacketFactory.CreatePlayerListPacket(otherPlayers, true);
+        client.SendPacket(existingPlayersListPacket);
 
         using (var scope = new ClientPacketScope(client.Player))
         {
