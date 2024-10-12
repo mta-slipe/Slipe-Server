@@ -18,18 +18,15 @@ public class LuaService
     private readonly MtaServer server;
     private readonly ILogger logger;
     private readonly RootElement root;
-    private readonly Dictionary<string, Script> scripts;
-    private readonly Dictionary<string, LuaMethod> methods;
-    private readonly LuaTranslator translator;
+    private readonly Dictionary<string, Script> scripts = [];
+    private readonly Dictionary<string, LuaMethod> methods = [];
+    private readonly LuaTranslator translator = new();
 
     public LuaService(MtaServer server, ILogger logger, RootElement root)
     {
         this.server = server;
         this.logger = logger;
         this.root = root;
-        this.scripts = new Dictionary<string, Script>();
-        this.methods = new Dictionary<string, LuaMethod>();
-        this.translator = new LuaTranslator();
     }
 
     public void LoadDefinitions(object methodSet)
@@ -144,7 +141,7 @@ public class LuaService
         script.Options.DebugPrint = (value) =>
         {
             using var scope = this.logger.BeginScope(script);
-            this.logger.LogDebug(value);
+            this.logger.LogDebug("{value}", value);
         };
         this.scripts[identifier] = script;
 
@@ -173,8 +170,8 @@ public class LuaService
         StringBuilder stringBuilder = new StringBuilder();
         foreach (var definition in this.methods)
         {
-            script.Globals["real" + definition.Key] = definition.Value;
-            stringBuilder.AppendLine($"function {definition.Key}(...) return table.unpack(real{definition.Key}({{...}})) end");
+            script.Globals["slipe_" + definition.Key] = definition.Value;
+            stringBuilder.AppendLine($"function {definition.Key}(...) return table.unpack(slipe_{definition.Key}({{...}})) end");
         }
         script.DoString(stringBuilder.ToString(), codeFriendlyName: "SlipeDefinitions");
     }

@@ -1,3 +1,3 @@
 ﻿namespace SlipeServer.Scripting;
 
-public delegate void ScriptCallbackDelegate(params object[] objects);
+public delegate void ScriptCallbackDelegate(params object?[] objects);
