@@ -66,6 +66,9 @@
     <None Update="Resources\**\*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="sample.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="test.lua">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
