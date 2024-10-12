@@ -9,7 +9,7 @@ public class CollisionShapeEventDefinitions : IEventDefinitions
     {
         eventRuntime.RegisterEvent(
             "onColShapeHit",
-            (element, callback) =>
+            (callback) =>
             {
                 void callbackProxy(CollisionShape source, CollisionShapeHitEventArgs args) => callback.CallbackDelegate(source, args.Element, args.Element.Dimension == source.Dimension);
                 return new EventHandlerActions<CollisionShape>()
@@ -22,7 +22,7 @@ public class CollisionShapeEventDefinitions : IEventDefinitions
 
         eventRuntime.RegisterEvent(
             "onColShapeLeave",
-            (element, callback) =>
+            (callback) =>
             {
                 void callbackProxy(CollisionShape source, CollisionShapeLeftEventArgs args) => callback.CallbackDelegate(source, args.Element, args.Element.Dimension == source.Dimension);
                 return new EventHandlerActions<CollisionShape>()
