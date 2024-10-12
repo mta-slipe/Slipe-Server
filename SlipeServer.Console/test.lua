@@ -143,3 +143,19 @@ function outputControlState(player)
 	setControlState(player, "forwards", not getControlState(player, "forwards"))
 end
 addCommandHandler("walkme", outputControlState)
+
+-- XML Functions
+print("-- XML Functions:")
+local rootXmlNode = xmlLoadFile("sample.xml", true);
+print("loaded sample.xml", rootXmlNode, xmlNodeGetName(rootXmlNode), "== rootNode")
+local node = xmlFindChild(rootXmlNode, "node", 0);
+local secondNode = xmlFindChild(rootXmlNode, "secondNode", 0);
+print("existing child", secondNode, xmlNodeGetName(secondNode) == "secondNode")
+print("non existing child", xmlFindChild(rootXmlNode, "nonExistingChild", 0))
+print("get parent", xmlNodeGetName(xmlNodeGetParent(secondNode)))
+print("two children nodes", #xmlNodeGetChildren(node))
+for name, value in pairs(xmlNodeGetAttributes(node))do
+	print("attribute", name, value)
+end
+print("-- End XML Functions")
+-- End XML Functions

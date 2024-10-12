@@ -1,0 +1,7 @@
+<rootNode>
+	<node attribute1="value1" attribute2="value2">
+		<childNode>value1</childNode>
+		<childNode>value2</childNode>
+	</node>
+	<secondNode></secondNode>
+</rootNode>

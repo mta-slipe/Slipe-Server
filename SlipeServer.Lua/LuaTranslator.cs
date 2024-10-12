@@ -1,11 +1,14 @@
 ﻿using MoonSharp.Interpreter;
 using SlipeServer.Scripting;
+using SlipeServer.Scripting.Definitions;
 using SlipeServer.Server.Elements;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using System.Xml;
+using XmlNode = SlipeServer.Scripting.Definitions.XmlNode;
 
 namespace SlipeServer.Lua;
 
@@ -14,6 +17,8 @@ public class LuaTranslator
     public LuaTranslator()
     {
         UserData.RegisterType<Element>(InteropAccessMode.Hardwired);
+        UserData.RegisterType<XmlFile>(InteropAccessMode.Hardwired);
+        UserData.RegisterType<XmlNode>(InteropAccessMode.Hardwired);
     }
 
     public IEnumerable<DynValue> ToDynValues(object? obj)
@@ -22,6 +27,10 @@ public class LuaTranslator
             return new DynValue[] { DynValue.Nil };
         if (obj is Element element)
             return new DynValue[] { UserData.Create(element) };
+        if (obj is XmlFile xmlFile)
+            return new DynValue[] { UserData.Create(xmlFile) };
+        if (obj is XmlNode xmlNode)
+            return new DynValue[] { UserData.Create(xmlNode) };
         if (obj is byte int8)
             return new DynValue[] { DynValue.NewNumber(int8) };
         if (obj is short int16)
@@ -89,6 +98,18 @@ public class LuaTranslator
             return [DynValue.NewTable(enumerableTable)];
 
         }
+        if(obj is Dictionary<string, string> dictionary)
+        {
+            var dictionaryTable = new Table(null);
+            foreach (var pair in dictionary)
+            {
+                dictionaryTable[pair.Key] = pair.Value;
+            }
+
+            return [DynValue.NewTable(dictionaryTable)];
+        }
+
+
 
         throw new NotImplementedException($"Conversion to Lua for {obj.GetType()} not implemented");
     }
@@ -149,6 +170,10 @@ public class LuaTranslator
         if (typeof(Player).IsAssignableFrom(targetType))
             return dynValues.Dequeue()?.UserData?.Object;
         if (typeof(Element).IsAssignableFrom(targetType))
+            return dynValues.Dequeue().UserData.Object;
+        if (typeof(XmlFile).IsAssignableFrom(targetType))
+            return dynValues.Dequeue().UserData.Object;
+        if (typeof(XmlNode).IsAssignableFrom(targetType))
             return dynValues.Dequeue().UserData.Object;
         if (targetType == typeof(ScriptCallbackDelegateWrapper))
         {

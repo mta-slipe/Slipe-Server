@@ -5,6 +5,7 @@ using SlipeServer.Lua;
 using SlipeServer.Scripting;
 using SlipeServer.Server.Services;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace SlipeServer.Console.Logic;
 
@@ -25,6 +26,11 @@ public class LuaTestLogic
         this.luaService = luaService;
         this.logger = logger;
         commandService.AddCommand("lua").Triggered += (source, args) => Init();
+        Task.Run(async () =>
+        {
+            await Task.Delay(1000);
+            Init();
+        });
     }
 
     private void Init()
