@@ -143,3 +143,19 @@ function outputControlState(player)
 	setControlState(player, "forwards", not getControlState(player, "forwards"))
 end
 addCommandHandler("walkme", outputControlState)
+
+function outputClicks(button, state, element, x, y, z, screenX, screenY)
+	print("Clicky clicky", button, state, element, x, y, z, screenX, screenY)
+end
+
+function outputControlState(player)
+	addEventHandler("onPlayerClick", player, outputClicks)
+	print("Starting to output clicks for ", getPlayerName(player))
+end
+addCommandHandler("outputmyclicks", outputControlState)
+
+
+function outputCommand(command)
+	print("Player " .. getPlayerName(source) .. " used /" .. command)
+end
+addEventHandler("onPlayerCommand", root, outputCommand)

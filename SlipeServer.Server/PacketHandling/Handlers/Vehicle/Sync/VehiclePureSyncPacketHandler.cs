@@ -48,6 +48,9 @@ public class VehiclePureSyncPacketHandler : IPacketHandler<VehiclePureSyncPacket
 
         player.RunAsSync(() =>
         {
+            var previousHealth = player.Health;
+            var previousArmor = player.Armor;
+
             player.Position = packet.Position;
             player.Velocity = packet.Velocity;
             player.Health = packet.PlayerHealth;
@@ -76,7 +79,13 @@ public class VehiclePureSyncPacketHandler : IPacketHandler<VehiclePureSyncPacket
             if (packet.DamagerId != null)
             {
                 var damager = this.elementCollection.Get(packet.DamagerId.Value);
-                player.TriggerDamaged(damager, (DamageType)(packet.DamageWeaponType ?? (byte?)DamageType.WEAPONTYPE_UNIDENTIFIED), (BodyPart)(packet.DamageBodyPart ?? (byte?)BodyPart.Torso));
+                var loss = (previousHealth - packet.PlayerHealth) + (previousArmor - packet.PlayerArmor);
+
+                player.TriggerDamaged(
+                    damager, 
+                    (DamageType)(packet.DamageWeaponType ?? (byte?)DamageType.WEAPONTYPE_UNIDENTIFIED), 
+                    (BodyPart)(packet.DamageBodyPart ?? (byte?)BodyPart.Torso),
+                    loss);
             }
 
             player.LastMovedUtc = DateTime.UtcNow;
