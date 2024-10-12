@@ -643,6 +643,14 @@ public class MtaServer
     /// </summary>
     /// <param name="builderAction">Action that allows you to configure the server</param>
     /// <returns></returns>
+    public static MtaServer Create(Action<ServerBuilder> builderAction)
+        => new(builderAction);
+
+    /// <summary>
+    /// Creates an MTA Server.
+    /// </summary>
+    /// <param name="builderAction">Action that allows you to configure the server</param>
+    /// <returns></returns>
     public static MtaServer Create(IServiceProvider serviceProvider, Action<ServerBuilder> builderAction)
         => new(serviceProvider, builderAction);
 
