@@ -872,6 +872,12 @@ public class Element
     public event ElementEventHandler<Element, ElementDetachedEventArgs>? Detached;
     public event ElementEventHandler<Element, ElementAttachOffsetsChangedArgs>? AttachedOffsetChanged;
     public event Action<Element>? Destroyed;
+    public event Action<Element, Exception>? ExceptionThrown;
+
+    protected void RelayExceptionThrown(Exception exception)
+    {
+        ExceptionThrown?.Invoke(this, exception);
+    }
 
     /// <summary>
     /// Returns a Lua value for the element, this is used for any lua event communication.

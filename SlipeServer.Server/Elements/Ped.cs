@@ -192,7 +192,14 @@ public class Ped : Element
 
             var args = new ElementChangedEventArgs<Ped, Vehicle?>(this, this.vehicle, value, this.IsSync);
             this.vehicle = value;
-            VehicleChanged?.Invoke(this, args);
+            try
+            {
+                VehicleChanged?.Invoke(this, args);
+            }
+            catch (Exception ex)
+            {
+                RelayExceptionThrown(ex);
+            }
         }
     }
 
