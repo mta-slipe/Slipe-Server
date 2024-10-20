@@ -25,7 +25,6 @@ public class LuaTestLogic
         this.luaService = luaService;
         this.logger = logger;
         commandService.AddCommand("lua").Triggered += (source, args) => Init();
-        Init();
     }
 
     private void Init()
