@@ -18,15 +18,17 @@ public class LuaService
     private readonly MtaServer server;
     private readonly ILogger logger;
     private readonly RootElement root;
+    private readonly ScriptTransformationPipeline scriptTransformationPipeline;
     private readonly Dictionary<string, Script> scripts = [];
     private readonly Dictionary<string, LuaMethod> methods = [];
     private readonly LuaTranslator translator = new();
 
-    public LuaService(MtaServer server, ILogger logger, RootElement root)
+    public LuaService(MtaServer server, ILogger logger, RootElement root, ScriptTransformationPipeline scriptTransformationPipeline)
     {
         this.server = server;
         this.logger = logger;
         this.root = root;
+        this.scriptTransformationPipeline = scriptTransformationPipeline;
     }
 
     public void LoadDefinitions(object methodSet)
@@ -132,7 +134,10 @@ public class LuaService
         LoadGlobals(script);
         LoadDefinitions(script);
 
-        script.DoString(code, codeFriendlyName: identifier);
+        using var ms = new MemoryStream(System.Text.UTF8Encoding.UTF8.GetBytes(code));
+        var stream = this.scriptTransformationPipeline.Transform(ms, "lua");
+
+        script.DoStream(stream, codeFriendlyName: identifier);
     }
 
     public void LoadScript(string identifier, string[] codes)
