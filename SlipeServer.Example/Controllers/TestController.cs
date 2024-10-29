@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using SlipeServer.Example.Elements;
 using SlipeServer.Example.LuaValues;
 using SlipeServer.Example.Services;
@@ -22,11 +23,15 @@ public class TestController : BaseLuaController<CustomPlayer>
     private readonly ChatBox chatBox;
     private readonly TestService testService;
     private readonly ILogger logger;
+    private readonly IServiceProvider serviceProvider;
+    private readonly IServiceScope serviceScope;
 
-    public TestController(ChatBox chatBox, TestService testService, ILogger logger)
+    public TestController(IServiceProvider serviceProvider, ChatBox chatBox, ILogger logger)
     {
+        this.serviceScope = serviceProvider.CreateScope();
+        this.serviceProvider = this.serviceScope.ServiceProvider;
         this.chatBox = chatBox;
-        this.testService = testService;
+        this.testService = this.serviceProvider.GetRequiredService<TestService>();
         this.logger = logger;
         this.logger.LogInformation("Instantiating {type}", typeof(TestController));
     }
