@@ -1,13 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
-using SlipeServer.Console.Elements;
-using SlipeServer.Console.Services;
+using SlipeServer.Example.Elements;
+using SlipeServer.Example.Services;
 using SlipeServer.LuaControllers;
 using SlipeServer.LuaControllers.Attributes;
 using SlipeServer.Server.Services;
-using System;
 
-namespace SlipeServer.Console.Controllers;
-
+namespace SlipeServer.Example.Controllers;
 
 [LuaController(usesScopedEvents: false)]
 public class SingletonTestController : BaseLuaController<CustomPlayer>

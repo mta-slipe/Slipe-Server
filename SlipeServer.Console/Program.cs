@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using SlipeServer.ConfigurationProviders;
 using SlipeServer.Console.AdditionalResources;
-using SlipeServer.Console.Elements;
 using SlipeServer.Console.Logic;
 using SlipeServer.Console.PacketReplayer;
 using SlipeServer.Console.Proxy;

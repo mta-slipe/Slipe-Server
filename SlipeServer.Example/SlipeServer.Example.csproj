@@ -14,4 +14,10 @@
     <ProjectReference Include="..\SlipeServer.Server\SlipeServer.Server.csproj" />
     <ProjectReference Include="..\SlipeServer.SourceGenerators\SlipeServer.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="SlipeServer.Example.Elements" />
+    <Using Include="SlipeServer.Example.Services" />
+    <Using Include="SlipeServer.Example.LuaValues" />
+  </ItemGroup>
 </Project>

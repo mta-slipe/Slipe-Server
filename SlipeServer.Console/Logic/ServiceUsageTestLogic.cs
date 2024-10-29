@@ -1,5 +1,4 @@
-﻿using SlipeServer.Console.Elements;
-using SlipeServer.Console.Services;
+﻿using SlipeServer.Console.Services;
 using SlipeServer.Server;
 
 namespace SlipeServer.Console.Logic;
