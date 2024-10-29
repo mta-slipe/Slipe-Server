@@ -1,6 +1,6 @@
 ﻿namespace SlipeServer.Hosting;
 
-public class MtaServerHostedService<T> : IHostedService where T : MtaServer
+public class MtaServerHostedService<T> : IHostedLifecycleService where T : MtaServer
 {
     private readonly T server;
 
@@ -8,17 +8,37 @@ public class MtaServerHostedService<T> : IHostedService where T : MtaServer
     {
         this.server = server;
 
-        server.BuildFinalizer?.Invoke();
+        this.server.BuildFinalizer?.Invoke();
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
+
+    public Task StartedAsync(CancellationToken cancellationToken)
     {
         this.server.Start();
 
         return Task.CompletedTask;
     }
 
+    public Task StartingAsync(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
+
     public Task StopAsync(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
+
+    public Task StoppedAsync(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
+
+    public Task StoppingAsync(CancellationToken cancellationToken)
     {
         this.server.Stop();
 
