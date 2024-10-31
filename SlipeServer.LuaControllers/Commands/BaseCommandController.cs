@@ -29,13 +29,47 @@ public abstract class BaseCommandController
     {
         next.Invoke();
     }
+    
+    protected virtual async Task InvokeAsync(Func<Task> next)
+    {
+        await next();
+    }
 
     internal virtual void HandleCommand(Player player, string command, IEnumerable<object?> args, MethodInfo methodInfo, Func<IEnumerable<object?>, object?> handler)
     {
-        SetContext(new CommandContext(player, command, args, methodInfo));
+        var cts = new CancellationTokenSource();
+        player.Disconnected += (sender, e) =>
+        {
+            cts.Cancel();
+        };
+        if (player.IsDestroyed)
+            cts.Cancel();
+
+        SetContext(new CommandContext(player, command, args, methodInfo, cts.Token));
         try
         {
             Invoke(() => handler.Invoke(args));
+        }
+        finally
+        {
+            SetContext(null);
+        }
+    }
+
+    internal virtual async Task HandleCommandAsync(Player player, string command, IEnumerable<object?> args, MethodInfo methodInfo, Func<IEnumerable<object?>, Task> handler)
+    {
+        var cts = new CancellationTokenSource();
+        player.Disconnected += (sender, e) =>
+        {
+            cts.Cancel();
+        };
+        if (player.IsDestroyed)
+            cts.Cancel();
+
+        SetContext(new CommandContext(player, command, args, methodInfo, cts.Token));
+        try
+        {
+            await InvokeAsync(async () => await handler(args));
         }
         finally
         {
@@ -54,10 +88,42 @@ public abstract class BaseCommandController<TPlayer> : BaseCommandController whe
         if (player is not TPlayer tPlayer)
             return;
 
-        SetContext(new CommandContext<TPlayer>(tPlayer, command, args, methodInfo));
+        var cts = new CancellationTokenSource();
+        tPlayer.Disconnected += (sender, e) =>
+        {
+            cts.Cancel();
+        };
+        if(tPlayer.IsDestroyed)
+            cts.Cancel();
+
+        SetContext(new CommandContext<TPlayer>(tPlayer, command, args, methodInfo, cts.Token));
         try
         {
             Invoke(() => handler.Invoke(args));
+        }
+        finally
+        {
+            SetContext(null);
+        }
+    }
+
+    internal override async Task HandleCommandAsync(Player player, string command, IEnumerable<object?> args, MethodInfo methodInfo, Func<IEnumerable<object?>, Task> handler)
+    {
+        if (player is not TPlayer tPlayer)
+            return;
+
+        var cts = new CancellationTokenSource();
+        tPlayer.Disconnected += (sender, e) =>
+        {
+            cts.Cancel();
+        };
+        if (tPlayer.IsDestroyed)
+            cts.Cancel();
+
+        SetContext(new CommandContext<TPlayer>(tPlayer, command, args, methodInfo, cts.Token));
+        try
+        {
+            await InvokeAsync(async () => await handler.Invoke(args));
         }
         finally
         {

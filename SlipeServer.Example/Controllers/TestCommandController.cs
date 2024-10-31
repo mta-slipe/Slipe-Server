@@ -5,6 +5,7 @@ using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Services;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace SlipeServer.Example.Controllers;
@@ -46,6 +47,13 @@ public class TestCommandController : BaseCommandController<CustomPlayer>
         }
     }
 
+    protected override async Task InvokeAsync(Func<Task> next)
+    {
+        var stopwatch = Stopwatch.StartNew();
+        await next();
+        Console.WriteLine("Executed async command in: {0}ms", stopwatch.ElapsedMilliseconds);
+    }
+
     public void Chat(IEnumerable<string> words)
     {
         this.chatBox.OutputTo(this.Context.Player, string.Join(' ', words));
@@ -75,6 +83,27 @@ public class TestCommandController : BaseCommandController<CustomPlayer>
     public void FindPlayer(Player player)
     {
         this.chatBox.OutputTo(this.Context.Player, $"player: {player}");
+    }
+    
+    public async Task Async()
+    {
+        this.chatBox.OutputTo(this.Context.Player, "Executing command...");
+        await Task.Delay(1000);
+        this.chatBox.OutputTo(this.Context.Player, "Command executed!");
+    }
+    
+    public async Task AsyncLong()
+    {
+        this.chatBox.OutputTo(this.Context.Player, $"Simulating long execution...");
+        try
+        {
+            await Task.Delay(10_000, this.Context.CancellationToken);
+            this.chatBox.OutputTo(this.Context.Player, "Long command executed!");
+        }
+        catch (OperationCanceledException)
+        {
+            Console.WriteLine("Failed to execute long async command :(");
+        }
     }
 
     [Command("tp")]

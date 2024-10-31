@@ -20,7 +20,8 @@ public sealed class CommandControllerLogic
     private readonly CommandService commandService;
     private readonly ILogger logger;
     private readonly LuaControllerArgumentsMapper argumentsMapper;
-    private readonly Dictionary<string, List<BoundCommand>> handlers = [];
+    private readonly Dictionary<string, List<BoundCommand>> syncHandlers = [];
+    private readonly Dictionary<string, List<AsyncBoundCommand>> asyncHandlers = [];
 
     public CommandControllerLogic(
         MtaServer server,
@@ -54,7 +55,10 @@ public sealed class CommandControllerLogic
 
             foreach (var method in methods)
             {
-                if (!method.GetCustomAttributes<NoCommandAttribute>().Any())
+                if (method.GetCustomAttributes<NoCommandAttribute>().Any())
+                    continue;
+
+                if (method.ReturnType == typeof(void))
                 {
                     var commandAttributes = method.GetCustomAttributes<CommandAttribute>();
 
@@ -64,24 +68,45 @@ public sealed class CommandControllerLogic
                     if (!commandAttributes.Any())
                         AddHandler(method.Name, controllerType, method, controller);
                 }
+                else if(method.ReturnType == typeof(Task))
+                {
+                    var commandAttributes = method.GetCustomAttributes<CommandAttribute>();
+
+                    foreach (var attribute in commandAttributes)
+                        AddAsyncHandler(attribute.Command, controllerType, method, controller, attribute.IsCaseSensitive);
+
+                    if (!commandAttributes.Any())
+                        AddAsyncHandler(method.Name, controllerType, method, controller);
+                }
             }
         }
     }
 
     private void AddHandler(string command, Type type, MethodInfo method, BaseCommandController? controller, bool isCaseSensitive = false)
     {
-        if (!this.handlers.ContainsKey(command))
+        if (!this.syncHandlers.ContainsKey(command))
         {
-            this.handlers[command] = [];
+            this.syncHandlers[command] = [];
             this.commandService.AddCommand(command, isCaseSensitive).Triggered += (_, args) => HandleCommand(command, args);
         }
 
-        this.handlers[command].Add(new BoundCommand(this.server.Services, command, type, method, controller));
+        this.syncHandlers[command].Add(new BoundCommand(this.server.Services, command, type, method, controller));
+    }
+    
+    private void AddAsyncHandler(string command, Type type, MethodInfo method, BaseCommandController? controller, bool isCaseSensitive = false)
+    {
+        if (!this.asyncHandlers.ContainsKey(command))
+        {
+            this.asyncHandlers[command] = [];
+            this.commandService.AddCommand(command, isCaseSensitive).Triggered += (_, args) => HandleAsyncCommand(command, args);
+        }
+
+        this.asyncHandlers[command].Add(new AsyncBoundCommand(this.server.Services, command, type, method, controller));
     }
 
     private void HandleCommand(string command, CommandTriggeredEventArgs e)
     {
-        if (!this.handlers.TryGetValue(command, out var handlers))
+        if (!this.syncHandlers.TryGetValue(command, out var handlers))
             return;
 
         foreach (var handler in handlers)
@@ -96,6 +121,34 @@ public sealed class CommandControllerLogic
             {
                 this.logger.LogError(exception, "An error occured while handling the command {event}:\n{message}", command, exception.Message);
             }
+        }
+    }
+
+    private async Task HandleAsyncCommand(string command, CommandTriggeredEventArgs e)
+    {
+        try
+        {
+            if (!this.asyncHandlers.TryGetValue(command, out var handlers))
+                return;
+
+            foreach (var handler in handlers)
+            {
+                try
+                {
+                    var parameters = this.argumentsMapper.MapParameters(e.Player, e.Arguments, handler.Method);
+                    if (parameters != null)
+                        await handler.HandleCommand(e.Player, command, parameters);
+                }
+                catch (Exception exception)
+                {
+                    this.logger.LogError(exception, "An error occured while handling the command {event}:\n{message}", command, exception.Message);
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            this.logger.LogError(ex, "Unhandled exception thrown while executing command {commandName}", command);
         }
     }
 }

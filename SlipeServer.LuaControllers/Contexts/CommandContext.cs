@@ -9,13 +9,15 @@ public class CommandContext
     public string Command { get; }
     public IEnumerable<object?> Arguments { get; }
     public MethodInfo MethodInfo { get; }
+    public CancellationToken CancellationToken { get; }
 
-    public CommandContext(Player player, string command, IEnumerable<object?> arguments, MethodInfo methodInfo)
+    public CommandContext(Player player, string command, IEnumerable<object?> arguments, MethodInfo methodInfo, CancellationToken cancellationToken)
     {
         this.Player = player;
         this.Command = command;
         this.Arguments = arguments;
         this.MethodInfo = methodInfo;
+        this.CancellationToken = cancellationToken;
     }
 }
 
@@ -23,7 +25,7 @@ public class CommandContext<TPlayer> : CommandContext where TPlayer : Player
 {
     public new TPlayer Player => (base.Player as TPlayer)!;
 
-    public CommandContext(TPlayer player, string command, IEnumerable<object?> arguments, MethodInfo methodInfo) : base(player, command, arguments, methodInfo)
+    public CommandContext(TPlayer player, string command, IEnumerable<object?> arguments, MethodInfo methodInfo, CancellationToken cancellationToken) : base(player, command, arguments, methodInfo, cancellationToken)
     {
     }
 }
