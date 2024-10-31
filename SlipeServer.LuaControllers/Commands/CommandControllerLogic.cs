@@ -25,18 +25,17 @@ public class ControllerArgumentException : Exception
     }
 }
 
-public class ControllerArgumentsMapper
+public sealed class LuaControllerArgumentsMapper
 {
-    private Dictionary<Type, Func<Type, string, object?>> mappings = new Dictionary<Type, Func<Type, string, object?>>();
+    private readonly Dictionary<Type, Func<string, object?>> mappings = []; 
 
-    public ControllerArgumentsMapper() { }
+    public LuaControllerArgumentsMapper() { }
 
-    public void DefineMap(Type type, Func<Type, string, object?> map)
+    public void DefineMap<T>(Func<string, object?> map)
     {
-        var targetType = map.Method.GetParameters()[0].ParameterType;
-        if (!this.mappings.ContainsKey(targetType))
+        if (!this.mappings.ContainsKey(typeof(T)))
         {
-            this.mappings[targetType] = map;
+            this.mappings[typeof(T)] = map;
         }
     }
 
@@ -44,29 +43,31 @@ public class ControllerArgumentsMapper
     {
         if (this.mappings.TryGetValue(targetType, out var mapFunction))
         {
-            return mapFunction(targetType, value);
+            return mapFunction(value);
         }
 
         return null;
     }
 }
 
-public class CommandControllerLogic
+public sealed class CommandControllerLogic
 {
     private readonly MtaServer server;
     private readonly CommandService commandService;
     private readonly ILogger logger;
+    private readonly LuaControllerArgumentsMapper argumentsMapper;
     private readonly Dictionary<string, List<BoundCommand>> handlers = [];
 
     public CommandControllerLogic(
         MtaServer server,
         CommandService commandService,
-        ILogger logger)
+        ILogger logger,
+        LuaControllerArgumentsMapper argumentsMapper)
     {
         this.server = server;
         this.commandService = commandService;
         this.logger = logger;
-
+        this.argumentsMapper = argumentsMapper;
         IndexControllers();
     }
 
@@ -77,7 +78,7 @@ public class CommandControllerLogic
             .Where(x => x.IsAssignableTo(typeof(BaseCommandController)))
             .Where(x => !x.IsAbstract);
 
-        foreach (var controllerType in controllerTypes ?? Array.Empty<Type>())
+        foreach (var controllerType in controllerTypes ?? [])
         {
             var controllerAttribute = controllerType
                 .GetCustomAttributes<CommandControllerAttribute>()
@@ -107,7 +108,7 @@ public class CommandControllerLogic
     {
         if (!this.handlers.ContainsKey(command))
         {
-            this.handlers[command] = new();
+            this.handlers[command] = [];
             this.commandService.AddCommand(command, isCaseSensitive).Triggered += (_, args) => HandleCommand(command, args);
         }
 
@@ -148,7 +149,7 @@ public class CommandControllerLogic
         if (targetType.IsEnum)
             return Enum.Parse(targetType, value, true);
 
-        return JsonSerializer.Deserialize(value, targetType);
+        return argumentsMapper.MapParameter(targetType, value);
     }
 
     private object?[] MapParameters(string[] values, MethodInfo method)

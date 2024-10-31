@@ -66,6 +66,11 @@ public class TestCommandController : BaseCommandController<CustomPlayer>
     {
         this.chatBox.OutputTo(this.Context.Player, $"Your ping is {this.Context.Player.Client.Ping}.");
     }
+    
+    public void SampleClass(SampleClass sampleClass)
+    {
+        this.chatBox.OutputTo(this.Context.Player, $"sampleClass: {sampleClass.Number}");
+    }
 
     [Command("tp")]
     [Command("teleport")]
@@ -84,7 +89,7 @@ public class TestCommandController : BaseCommandController<CustomPlayer>
         this.Context.Player.AddWeapon(weapon, ammoCount, true);
     }
 
-    [NoCommand()]
+    [NoCommand]
     public void NoCommand()
     {
         this.chatBox.OutputTo(this.Context.Player, $"This should not run.");
