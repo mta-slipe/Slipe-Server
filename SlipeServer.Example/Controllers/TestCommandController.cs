@@ -5,12 +5,11 @@ using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Services;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+using System.Reflection;
 
 namespace SlipeServer.Example.Controllers;
+
+internal class NoAccessAttribute : Attribute;
 
 [CommandController()]
 public class TestCommandController : BaseCommandController<CustomPlayer>
@@ -29,11 +28,40 @@ public class TestCommandController : BaseCommandController<CustomPlayer>
         this.logger.LogInformation("Instantiating {type}", typeof(TestController));
     }
 
+    protected override void Invoke(Action next)
+    {
+        try
+        {
+            if (this.Context.MethodInfo.GetCustomAttribute<NoAccessAttribute>() != null)
+            {
+                this.chatBox.OutputTo(this.Context.Player, $"You can not access command {this.Context.Command}");
+            } else
+            {
+                next();
+            }
+        }
+        catch (Exception ex)
+        {
+            this.chatBox.OutputTo(this.Context.Player, $"Failed to execute command {this.Context.Command}");
+        }
+    }
+
     public void Chat(IEnumerable<string> words)
     {
         this.chatBox.OutputTo(this.Context.Player, string.Join(' ', words));
     }
 
+    [NoAccess]
+    public void NoAccess()
+    {
+        this.chatBox.OutputTo(this.Context.Player, "You have accessed command with NoAccess attribute!");
+    }
+
+    public void Oops()
+    {
+        throw new Exception("oops");
+    }
+    
     public void Ping()
     {
         this.chatBox.OutputTo(this.Context.Player, $"Your ping is {this.Context.Player.Client.Ping}.");

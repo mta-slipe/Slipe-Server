@@ -1,5 +1,6 @@
 ﻿using SlipeServer.LuaControllers.Contexts;
 using SlipeServer.Server.Elements;
+using System.Reflection;
 
 namespace SlipeServer.LuaControllers;
 
@@ -23,12 +24,17 @@ public abstract class BaseCommandController
         this.context.Value = context;
     }
 
-    internal virtual void HandleCommand(Player player, string command, IEnumerable<object?> args, Func<IEnumerable<object?>, object?> handler)
+    protected virtual void Invoke(Action next)
     {
-        this.SetContext(new CommandContext(player, command));
+        next.Invoke();
+    }
+
+    internal virtual void HandleCommand(Player player, string command, IEnumerable<object?> args, MethodInfo methodInfo, Func<IEnumerable<object?>, object?> handler)
+    {
+        this.SetContext(new CommandContext(player, command, args, methodInfo));
         try
         {
-            handler.Invoke(args);
+            Invoke(() => handler.Invoke(args));
         }
         finally
         {
@@ -42,15 +48,15 @@ public abstract class BaseCommandController<TPlayer> : BaseCommandController whe
 {
     public new CommandContext<TPlayer> Context => (base.Context as CommandContext<TPlayer>)!;
 
-    internal override void HandleCommand(Player player, string command, IEnumerable<object?> args, Func<IEnumerable<object?>, object?> handler)
+    internal override void HandleCommand(Player player, string command, IEnumerable<object?> args, MethodInfo methodInfo, Func<IEnumerable<object?>, object?> handler)
     {
         if (player is not TPlayer tPlayer)
             return;
 
-        this.SetContext(new CommandContext<TPlayer>(tPlayer, command));
+        this.SetContext(new CommandContext<TPlayer>(tPlayer, command, args, methodInfo));
         try
         {
-            handler.Invoke(args);
+            Invoke(() => handler.Invoke(args));
         }
         finally
         {

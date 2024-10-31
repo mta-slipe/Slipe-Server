@@ -35,6 +35,6 @@ public class BoundCommand
             controller = (BaseCommandController)ActivatorUtilities.CreateInstance(scope.ServiceProvider, this.ControllerType);
         }
 
-        controller.HandleCommand(player, command, args, (values) => this.Method.Invoke(controller, values.ToArray()));
+        controller.HandleCommand(player, command, args, this.Method, (values) => this.Method.Invoke(controller, values.ToArray()));
     }
 }

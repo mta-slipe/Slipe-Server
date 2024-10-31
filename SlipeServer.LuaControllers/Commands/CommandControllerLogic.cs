@@ -15,12 +15,48 @@ public class CommandArgumentList(IEnumerable<string> arguments) : IEnumerable<st
     IEnumerator IEnumerable.GetEnumerator() => arguments.GetEnumerator();
 }
 
+public class ControllerArgumentException : Exception
+{
+    public int Index { get; }
+
+    public ControllerArgumentException(int index, Exception innerException) : base(null, innerException)
+    {
+        this.Index = index;
+    }
+}
+
+public class ControllerArgumentsMapper
+{
+    private Dictionary<Type, Func<Type, string, object?>> mappings = new Dictionary<Type, Func<Type, string, object?>>();
+
+    public ControllerArgumentsMapper() { }
+
+    public void DefineMap(Type type, Func<Type, string, object?> map)
+    {
+        var targetType = map.Method.GetParameters()[0].ParameterType;
+        if (!this.mappings.ContainsKey(targetType))
+        {
+            this.mappings[targetType] = map;
+        }
+    }
+
+    internal object? MapParameter(Type targetType, string value)
+    {
+        if (this.mappings.TryGetValue(targetType, out var mapFunction))
+        {
+            return mapFunction(targetType, value);
+        }
+
+        return null;
+    }
+}
+
 public class CommandControllerLogic
 {
     private readonly MtaServer server;
     private readonly CommandService commandService;
     private readonly ILogger logger;
-    private readonly Dictionary<string, List<BoundCommand>> handlers = new();
+    private readonly Dictionary<string, List<BoundCommand>> handlers = [];
 
     public CommandControllerLogic(
         MtaServer server,
@@ -120,7 +156,7 @@ public class CommandControllerLogic
         var parameters = method.GetParameters();
 
         if (parameters.Length == 0)
-            return Array.Empty<object?>();
+            return [];
 
         if (parameters.Length == 1 && parameters[0].ParameterType.IsAssignableTo(typeof(IEnumerable<string>)))
             return [ new CommandArgumentList(values) ];
@@ -132,7 +168,7 @@ public class CommandControllerLogic
             else if (values.Length <= i)
                 objects.Add(parameters[i].DefaultValue);
 
-        return objects.ToArray();
+        return [.. objects];
     }
 
     private void HandleCommand(string command, CommandTriggeredEventArgs e)
@@ -144,7 +180,7 @@ public class CommandControllerLogic
         {
             try
             {
-                var parameters = MapParameters(e.Arguments.ToArray(), handler.Method);
+                var parameters = MapParameters(e.Arguments, handler.Method);
                 handler.HandleCommand(e.Player, command, parameters);
             }
             catch (Exception exception)
