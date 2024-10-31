@@ -12,10 +12,11 @@ public abstract class BaseCommandController
     {
         get
         {
-            if (this.context.Value == null)
+            var value = this.context.Value;
+            if (value == null)
                 throw new Exception("Can not access BaseCommandController.Context outside of command handling methods.");
 
-            return this.context.Value;
+            return value;
         }
     }
 
@@ -31,14 +32,14 @@ public abstract class BaseCommandController
 
     internal virtual void HandleCommand(Player player, string command, IEnumerable<object?> args, MethodInfo methodInfo, Func<IEnumerable<object?>, object?> handler)
     {
-        this.SetContext(new CommandContext(player, command, args, methodInfo));
+        SetContext(new CommandContext(player, command, args, methodInfo));
         try
         {
             Invoke(() => handler.Invoke(args));
         }
         finally
         {
-            this.SetContext(null);
+            SetContext(null);
         }
     }
 }
@@ -53,14 +54,14 @@ public abstract class BaseCommandController<TPlayer> : BaseCommandController whe
         if (player is not TPlayer tPlayer)
             return;
 
-        this.SetContext(new CommandContext<TPlayer>(tPlayer, command, args, methodInfo));
+        SetContext(new CommandContext<TPlayer>(tPlayer, command, args, methodInfo));
         try
         {
             Invoke(() => handler.Invoke(args));
         }
         finally
         {
-            this.SetContext(null);
+            SetContext(null);
         }
     }
 }

@@ -71,6 +71,11 @@ public class TestCommandController : BaseCommandController<CustomPlayer>
     {
         this.chatBox.OutputTo(this.Context.Player, $"sampleClass: {sampleClass.Number}");
     }
+    
+    public void FindPlayer(Player player)
+    {
+        this.chatBox.OutputTo(this.Context.Player, $"player: {player}");
+    }
 
     [Command("tp")]
     [Command("teleport")]
