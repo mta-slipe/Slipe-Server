@@ -30,7 +30,7 @@ public abstract class BaseCommandController
         next.Invoke();
     }
     
-    protected virtual async Task InvokeAsync(Func<Task> next)
+    protected async virtual Task InvokeAsync(Func<Task> next)
     {
         await next();
     }
@@ -45,7 +45,7 @@ public abstract class BaseCommandController
         if (player.IsDestroyed)
             cts.Cancel();
 
-        SetContext(new CommandContext(player, command, args, methodInfo, cts.Token));
+        SetContext(new CommandContext(player, command, args, methodInfo, player.GetCancellationToken()));
         try
         {
             Invoke(() => handler.Invoke(args));
@@ -58,15 +58,7 @@ public abstract class BaseCommandController
 
     internal virtual async Task HandleCommandAsync(Player player, string command, IEnumerable<object?> args, MethodInfo methodInfo, Func<IEnumerable<object?>, Task> handler)
     {
-        var cts = new CancellationTokenSource();
-        player.Disconnected += (sender, e) =>
-        {
-            cts.Cancel();
-        };
-        if (player.IsDestroyed)
-            cts.Cancel();
-
-        SetContext(new CommandContext(player, command, args, methodInfo, cts.Token));
+        SetContext(new CommandContext(player, command, args, methodInfo, player.GetCancellationToken()));
         try
         {
             await InvokeAsync(async () => await handler(args));
@@ -78,7 +70,6 @@ public abstract class BaseCommandController
     }
 }
 
-
 public abstract class BaseCommandController<TPlayer> : BaseCommandController where TPlayer : Player
 {
     public new CommandContext<TPlayer> Context => (base.Context as CommandContext<TPlayer>)!;
@@ -88,15 +79,7 @@ public abstract class BaseCommandController<TPlayer> : BaseCommandController whe
         if (player is not TPlayer tPlayer)
             return;
 
-        var cts = new CancellationTokenSource();
-        tPlayer.Disconnected += (sender, e) =>
-        {
-            cts.Cancel();
-        };
-        if(tPlayer.IsDestroyed)
-            cts.Cancel();
-
-        SetContext(new CommandContext<TPlayer>(tPlayer, command, args, methodInfo, cts.Token));
+        SetContext(new CommandContext<TPlayer>(tPlayer, command, args, methodInfo, tPlayer.GetCancellationToken()));
         try
         {
             Invoke(() => handler.Invoke(args));
@@ -112,15 +95,7 @@ public abstract class BaseCommandController<TPlayer> : BaseCommandController whe
         if (player is not TPlayer tPlayer)
             return;
 
-        var cts = new CancellationTokenSource();
-        tPlayer.Disconnected += (sender, e) =>
-        {
-            cts.Cancel();
-        };
-        if (tPlayer.IsDestroyed)
-            cts.Cancel();
-
-        SetContext(new CommandContext<TPlayer>(tPlayer, command, args, methodInfo, cts.Token));
+        SetContext(new CommandContext<TPlayer>(tPlayer, command, args, methodInfo, tPlayer.GetCancellationToken()));
         try
         {
             await InvokeAsync(async () => await handler.Invoke(args));

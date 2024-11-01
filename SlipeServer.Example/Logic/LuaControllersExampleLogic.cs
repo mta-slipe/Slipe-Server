@@ -3,7 +3,7 @@ using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Services;
 
-namespace SlipeServer.Example;
+namespace SlipeServer.Example.Logic;
 
 public class SampleClass
 {
@@ -34,14 +34,13 @@ public class LuaControllersExampleLogic
         this.chatBox = chatBox;
     }
 
-    private void HandleArgumentErrorOccurred(Player player, LuaControllerArgumentException ex)
+    private void HandleArgumentErrorOccurred(Player player, Exception exception)
     {
-        if(ex.InnerException is ArgumentOutOfRangeException)
-        {
+        if (exception is ArgumentOutOfRangeException)
             this.chatBox.OutputTo(player, "Too many or too few arguments");
-        } else
+        else if (exception is LuaControllerArgumentException ex)
         {
-            this.chatBox.OutputTo(player, "Error while executing command");
+            this.chatBox.OutputTo(player, $"Error while executing command, argument at index {ex.Index + 1} expected {ex.ParameterInfo.ParameterType}, got '{ex.Argument}'");
         }
     }
 }

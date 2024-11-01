@@ -2,7 +2,6 @@
 
 namespace SlipeServer.LuaControllers.Contexts;
 
-
 public class LuaEventContext
 {
     public Player Player { get; }
@@ -16,7 +15,6 @@ public class LuaEventContext
         this.EventName = eventName;
     }
 }
-
 
 public class LuaEventContext<TPlayer> : LuaEventContext where TPlayer: Player
 {

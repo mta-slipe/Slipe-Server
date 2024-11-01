@@ -6,19 +6,23 @@ namespace SlipeServer.LuaControllers.Commands;
 public class LuaControllerArgumentException : Exception
 {
     public int Index { get; }
+    public string Argument { get; }
     public MethodInfo MethodInfo { get; }
+    public ParameterInfo ParameterInfo { get; }
 
-    public LuaControllerArgumentException(int index, MethodInfo methodInfo, Exception innerException) : base(null, innerException)
+    public LuaControllerArgumentException(int index, string argument, MethodInfo methodInfo, ParameterInfo parameterInfo, Exception innerException) : base(null, innerException)
     {
         this.Index = index;
+        this.Argument = argument;
         this.MethodInfo = methodInfo;
+        this.ParameterInfo = parameterInfo;
     }
 }
 
 public sealed class LuaControllerArgumentsMapper
 {
     private readonly Dictionary<Type, Func<string, object?>> mappings = [];
-    public event Action<Player, LuaControllerArgumentException>? ArgumentErrorOccurred;
+    public event Action<Player, Exception>? ArgumentErrorOccurred;
     public LuaControllerArgumentsMapper() { }
 
     public void DefineMap<T>(Func<string, object?> map)
@@ -86,26 +90,30 @@ public sealed class LuaControllerArgumentsMapper
         if (parameters.Length == 1 && parameters[0].ParameterType.IsAssignableTo(typeof(IEnumerable<string>)))
             return [new CommandArgumentList(values)];
 
-        int i = 0;
-        try
+        if (parameters.Length < values.Length)
         {
-            if (parameters.Length != values.Length)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-            var objects = new List<object?>();
-            for (; i < parameters.Length; i++)
-                if (!parameters[i].IsOptional || values.Length > i)
-                    objects.Add(MapParameter(parameters[i].ParameterType, values[i]));
-                else if (values.Length <= i)
-                    objects.Add(parameters[i].DefaultValue);
+            ArgumentErrorOccurred?.Invoke(player, new ArgumentOutOfRangeException());
+            return null;
+        }
+        var objects = new List<object?>();
+        for (int i = 0; i < parameters.Length; i++)
+        {
+            var parameter = parameters[i];
 
-            return [.. objects];
+            try
+            {
+                if (!parameter.IsOptional || values.Length > i)
+                    objects.Add(MapParameter(parameter.ParameterType, values[i]));
+                else if (values.Length <= i)
+                    objects.Add(parameter.DefaultValue);
+            }
+            catch (Exception ex)
+            {
+                ArgumentErrorOccurred?.Invoke(player, new LuaControllerArgumentException(i, values[i], method, parameter, ex));
+                return null;
+            }
         }
-        catch (Exception ex)
-        {
-            ArgumentErrorOccurred?.Invoke(player, new LuaControllerArgumentException(i, method, ex));
-        }
-        return null;
+
+        return [.. objects];
     }
 }

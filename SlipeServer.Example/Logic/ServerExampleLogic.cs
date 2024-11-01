@@ -1,7 +1,7 @@
 ﻿using SlipeServer.Server.Elements;
 using SlipeServer.Server.Services;
 
-namespace SlipeServer.Example;
+namespace SlipeServer.Example.Logic;
 
 public class ServerExampleLogic
 {
@@ -21,7 +21,7 @@ public class ServerExampleLogic
 
     private void AddCommand(string command, Action<Player> callback)
     {
-        this.commandService.AddCommand(command).Triggered += (object? sender, Server.Events.CommandTriggeredEventArgs e) =>
+        this.commandService.AddCommand(command).Triggered += (sender, e) =>
         {
             callback(e.Player);
         };

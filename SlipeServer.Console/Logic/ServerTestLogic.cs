@@ -64,9 +64,6 @@ public class ServerTestLogic
     private readonly WeaponConfigurationService weaponConfigurationService;
     private readonly GameWorld gameWorld;
     private readonly IElementIdGenerator elementIdGenerator;
-    private Resource? testResource;
-    private Resource? secondTestResource;
-    private Resource? thirdTestResource;
 
     private readonly Random random = new();
     private RadarArea? RadarArea { get; set; }
@@ -160,14 +157,6 @@ public class ServerTestLogic
 
     private void SetupTestElements()
     {
-        this.testResource = this.resourceProvider.GetResource("TestResource");
-        this.secondTestResource = this.resourceProvider.GetResource("SecondTestResource");
-        this.secondTestResource.NoClientScripts[$"{this.secondTestResource!.Name}/testfile.lua"] =
-            Encoding.UTF8.GetBytes("outputChatBox(\"I AM A NOT CACHED MESSAGE\")");
-        this.secondTestResource.NoClientScripts[$"blabla.lua"] = new byte[] { };
-
-        this.thirdTestResource = this.resourceProvider.GetResource("MetaXmlTestResource");
-
         new WorldObject(321, new Vector3(5, 0, 3)).AssociateWith(this.server);
         new Water(new Vector3[]
         {
@@ -842,11 +831,6 @@ public class ServerTestLogic
                 else
                     this.FrozenVehicle.Position = args.Player.Position + new Vector3(0, 0, 3);
             }
-        };
-
-        this.commandService.AddCommand("latent").Triggered += (source, args) =>
-        {
-            this.luaService.TriggerLatentEvent("Slipe.Test.ClientEvent", this.testResource!, this.root, 1, this.root, 50, "STRING");
         };
 
         this.commandService.AddCommand("dim").Triggered += (source, args) =>
@@ -1533,10 +1517,6 @@ public class ServerTestLogic
         player.Weapons.First(weapon => weapon.Type == WeaponId.Deagle).Ammo -= 200;
         player.Weapons.First(weapon => weapon.Type == WeaponId.Ak47).Ammo = 750;
         player.Weapons.First(weapon => weapon.Type == WeaponId.Ak47).AmmoInClip = 25;
-
-        this.testResource?.StartFor(player);
-        this.secondTestResource?.StartFor(player);
-        this.thirdTestResource?.StartFor(player);
 
         this.HandlePlayerSubscriptions(player);
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using SlipeServer.Example.Logic;
 using SlipeServer.LuaControllers;
 using SlipeServer.LuaControllers.Attributes;
 using SlipeServer.Server.ElementCollections;
@@ -12,7 +13,7 @@ namespace SlipeServer.Example.Controllers;
 
 internal class NoAccessAttribute : Attribute;
 
-[CommandController()]
+[CommandController]
 public class TestCommandController : BaseCommandController<CustomPlayer>
 {
     private readonly ChatBox chatBox;

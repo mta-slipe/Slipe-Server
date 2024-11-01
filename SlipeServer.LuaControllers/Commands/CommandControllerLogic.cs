@@ -18,7 +18,7 @@ public sealed class CommandControllerLogic
 {
     private readonly MtaServer server;
     private readonly CommandService commandService;
-    private readonly ILogger logger;
+    private readonly ILogger<CommandControllerLogic> logger;
     private readonly LuaControllerArgumentsMapper argumentsMapper;
     private readonly Dictionary<string, List<BoundCommand>> syncHandlers = [];
     private readonly Dictionary<string, List<AsyncBoundCommand>> asyncHandlers = [];
@@ -26,7 +26,7 @@ public sealed class CommandControllerLogic
     public CommandControllerLogic(
         MtaServer server,
         CommandService commandService,
-        ILogger logger,
+        ILogger<CommandControllerLogic> logger,
         LuaControllerArgumentsMapper argumentsMapper)
     {
         this.server = server;
@@ -124,7 +124,7 @@ public sealed class CommandControllerLogic
         }
     }
 
-    private async Task HandleAsyncCommand(string command, CommandTriggeredEventArgs e)
+    private async void HandleAsyncCommand(string command, CommandTriggeredEventArgs e)
     {
         try
         {
