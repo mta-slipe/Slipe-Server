@@ -1015,12 +1015,6 @@ public class ServerTestLogic
             this.logger.LogInformation("Starting Slipe Lua test resource for {playerName} took {milliseconds}ms", args.Player.Name, stopwatch.ElapsedMilliseconds);
         };
         
-        this.commandService.AddCommand("fixmyveh").Triggered += (source, args) =>
-        {
-            args.Player.Vehicle?.Fix();
-            this.chatBox.OutputTo(args.Player, "Vehicle fixed");
-        };
-        
         this.commandService.AddCommand("blowup").Triggered += (source, args) =>
         {
             args.Player.Vehicle?.BlowUp();
