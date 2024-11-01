@@ -1,4 +1,6 @@
-﻿namespace SlipeServer.Hosting;
+﻿using SlipeServer.Server.ServerBuilders;
+
+namespace SlipeServer.Hosting;
 
 public static class HostBuilderExtensions
 {

@@ -18,6 +18,7 @@ using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Clients;
 using System.Net;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
+using System.Threading;
 
 namespace SlipeServer.Server.Elements;
 
@@ -546,6 +547,22 @@ public class Player : Ped
     internal bool ShouldSendReturnSyncPacket()
     {
         return this.pureSyncPacketsCount++ % 4 == 0;
+    }
+
+    /// <summary>
+    /// Returns a CancellationToken that is valid until the player leaves the server or is destroyed
+    /// </summary>
+    public CancellationToken GetCancellationToken()
+    {
+        var cts = new CancellationTokenSource();
+        this.Disconnected += (sender, e) =>
+        {
+            cts.Cancel();
+        };
+        if (this.IsDestroyed)
+            cts.Cancel();
+
+        return cts.Token;
     }
 
     public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;

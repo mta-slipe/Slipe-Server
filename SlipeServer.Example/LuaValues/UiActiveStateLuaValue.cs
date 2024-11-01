@@ -2,7 +2,7 @@
 using SlipeServer.Server.Events;
 using SlipeServer.SourceGenerators;
 
-namespace SlipeServer.Console.LuaValues;
+namespace SlipeServer.Example.LuaValues;
 
 [LuaValue]
 public partial class UiActiveStateLuaValue : ILuaValue

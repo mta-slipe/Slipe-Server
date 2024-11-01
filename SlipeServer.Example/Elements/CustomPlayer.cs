@@ -7,7 +7,7 @@ using System.Drawing;
 using System.Numerics;
 using System.Threading.Tasks;
 
-namespace SlipeServer.Console.Elements;
+namespace SlipeServer.Example.Elements;
 public class CustomPlayer : Player
 {
     private readonly ExplosionService explosionService;
