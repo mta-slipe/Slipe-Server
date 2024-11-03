@@ -21,6 +21,7 @@ using System.IO;
 using System.Threading;
 using SlipeServer.Example;
 using SlipeServer.Example.Services;
+using SlipeServer.Scripting.Luau;
 
 namespace SlipeServer.Console;
 
@@ -107,6 +108,7 @@ public partial class Program
 
                 });
                 builder.AddLua();
+                builder.AddLuauTranspiler();
                 builder.AddPhysics();
                 builder.AddParachuteResource();
 
