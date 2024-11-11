@@ -1204,11 +1204,6 @@ public class ServerTestLogic
             blip.CreateFor(args.Player);
         };
 
-        this.commandService.AddCommand("gp").Triggered += (source, args) =>
-        {
-            this.chatBox.Output($"{args.Player.Position}");
-        };
-
         this.commandService.AddCommand("pickuptest").Triggered += (source, args) =>
         {
             var pickup = new Pickup(args.Player.Position, 1337)

@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="KdTree" Version="1.4.1" />
+		<PackageReference Include="Dijkstra.NET" Version="1.2.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Using Include="Dijkstra.NET.Graph" />
+		<Using Include="Dijkstra.NET.ShortestPath" />
+		<Using Include="KdTree" />
+		<Using Include="KdTree.Math" />
+		<Using Include="System.Numerics" />
+	</ItemGroup>
+
+</Project>
