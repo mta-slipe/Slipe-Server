@@ -10,6 +10,7 @@ using SlipeServer.Packets.Enums.VehicleUpgrades;
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Packets.Structs;
 using SlipeServer.Server;
+using SlipeServer.Server.Concepts;
 using SlipeServer.Server.Constants;
 using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
@@ -162,6 +163,7 @@ public class ServerTestLogic
     private void SetupTestElements()
     {
         this.testResource = this.resourceProvider.GetResource("TestResource");
+        this.testResource.AddClientTaskHelper();
         this.secondTestResource = this.resourceProvider.GetResource("SecondTestResource");
         this.secondTestResource.NoClientScripts[$"{this.secondTestResource!.Name}/testfile.lua"] =
             Encoding.UTF8.GetBytes("outputChatBox(\"I AM A NOT CACHED MESSAGE\")");
