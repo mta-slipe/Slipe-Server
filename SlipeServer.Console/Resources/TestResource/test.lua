@@ -93,3 +93,26 @@ addCommandHandler("myvehprintdamageclient", function()
         end
     end
 end)
+
+local clientTasks = {}
+addEvent("testClientTask", true)
+addEventHandler("testClientTask", root, function(clientTask)
+	outputChatBox("ClientTask created.");
+	clientTasks[#clientTasks + 1] = clientTask;
+end)
+
+addCommandHandler("resolveTasks", function()
+	for i,task in ipairs(clientTasks)do
+		ClientTask.Resolve(task, "Ok");
+	end
+	outputChatBox("Resolved: "..#clientTasks.." tasks.")
+	clientTasks = {}
+end)
+
+addCommandHandler("rejectTasks", function()
+	for i,task in ipairs(clientTasks)do
+		ClientTask.Reject(task, "Ok");
+	end
+	outputChatBox("Failed: "..#clientTasks.." tasks.")
+	clientTasks = {}
+end)

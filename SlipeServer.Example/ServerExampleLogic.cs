@@ -1,4 +1,7 @@
-﻿using SlipeServer.Server.Elements;
+﻿using SlipeServer.Server;
+using SlipeServer.Server.Concepts;
+using SlipeServer.Server.Elements;
+using SlipeServer.Server.Exceptions;
 using SlipeServer.Server.Services;
 
 namespace SlipeServer.Example;
@@ -7,12 +10,13 @@ public class ServerExampleLogic
 {
     private readonly CommandService commandService;
     private readonly ChatBox chatBox;
+    private readonly MtaServer mtaServer;
 
-    public ServerExampleLogic(CommandService commandService, ChatBox chatBox)
+    public ServerExampleLogic(CommandService commandService, ChatBox chatBox, MtaServer mtaServer)
     {
         this.commandService = commandService;
         this.chatBox = chatBox;
-
+        this.mtaServer = mtaServer;
         AddCommand("hello", player =>
         {
             this.chatBox.OutputTo(player, "Hello world");
@@ -70,6 +74,40 @@ public class ServerExampleLogic
             vehicle.Fix();
             this.chatBox.OutputTo(player, "Vehicle fixed");
         });
+
+        AddCommand("clienttask", async player =>
+        {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            var task = this.mtaServer.CreateClientTask(player, cts.Token);
+
+            player.TriggerLuaEvent("testClientTask", player, task);
+
+            try
+            {
+                await task;
+            }
+            catch (PlayerDisconnectedException e) // When player left the server
+            {
+                Console.WriteLine("Result: PlayerDisconnectedException");
+            }
+            catch (InvalidOperationException e) // When client sent invalid response
+            {
+                Console.WriteLine("Result: InvalidOperationException");
+            }
+            catch (ClientErrorException e) // When client on purpose rejected task
+            {
+                Console.WriteLine("Result: ClientErrorException");
+            }
+            catch (OperationCanceledException e) // Exceptin from cts from above
+            {
+                Console.WriteLine("Result: OperationCanceledException");
+            }
+            finally
+            {
+                this.chatBox.OutputTo(player, "Task completed");
+            }
+
+        });
     }
 
     private void AddCommand(string command, Action<Player> callback)
@@ -77,6 +115,21 @@ public class ServerExampleLogic
         this.commandService.AddCommand(command).Triggered += (object? sender, Server.Events.CommandTriggeredEventArgs e) =>
         {
             callback(e.Player);
+        };
+    }
+
+    private void AddCommand(string command, Func<Player, Task> callback)
+    {
+        this.commandService.AddCommand(command).Triggered += async (object? sender, Server.Events.CommandTriggeredEventArgs e) =>
+        {
+            try
+            {
+                await callback(e.Player);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
         };
     }
 }
