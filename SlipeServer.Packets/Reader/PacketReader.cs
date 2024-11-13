@@ -96,6 +96,7 @@ public class PacketReader
     public uint GetUint32() => BitConverter.ToUInt32(GetBytes(4), 0);
     public ulong GetUint64() => BitConverter.ToUInt64(GetBytes(8), 0);
     public short GetInt16() => BitConverter.ToInt16(GetBytes(2), 0);
+    public ushort GetUInt16() => BitConverter.ToUInt16(GetBytes(2), 0);
     public int GetInt32() => BitConverter.ToInt32(GetBytes(4), 0);
     public long GetInt64() => BitConverter.ToInt64(GetBytes(8), 0);
     public float GetFloat() => BitConverter.ToSingle(GetBytes(4), 0);

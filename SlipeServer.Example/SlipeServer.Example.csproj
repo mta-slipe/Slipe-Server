@@ -15,4 +15,18 @@
     <ProjectReference Include="..\SlipeServer.Server\SlipeServer.Server.csproj" />
     <ProjectReference Include="..\SlipeServer.SourceGenerators\SlipeServer.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Resources\ResourceB\" />
+    <Folder Include="Resources\ResourceA\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Resources\ResourceA\client.lua">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\ResourceB\client.lua">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

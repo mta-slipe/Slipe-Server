@@ -23,6 +23,7 @@ using System.IO;
 using System.Threading;
 using SlipeServer.Example;
 using SlipeServer.Scripting.Luau;
+using SlipeServer.Server.Resources;
 
 namespace SlipeServer.Console;
 
@@ -104,6 +105,7 @@ public partial class Program
                     services.AddScoped<TestService>();
                     services.AddSingleton<PacketReplayerService>();
                     services.AddScoped<SampleScopedService>();
+                    services.AddSingleton<ResourceService>();
 
                     services.AddHttpClient();
 
