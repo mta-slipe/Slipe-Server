@@ -16,7 +16,6 @@ namespace SlipeServer.Server.Resources;
 public class ResourceService
 {
     private readonly IResourceProvider resourceProvider;
-    private readonly ILogger<ResourceService> logger;
 
     private readonly List<Resource> startedResources;
 
@@ -25,10 +24,9 @@ public class ResourceService
     public event Action<Player>? AllStarted;
     public event Action<Resource, Player>? Started;
 
-    public ResourceService(IResourceProvider resourceProvider, ILogger<ResourceService> logger)
+    public ResourceService(IResourceProvider resourceProvider)
     {
         this.resourceProvider = resourceProvider;
-        this.logger = logger;
         this.startedResources = [];
     }
 
@@ -129,7 +127,4 @@ public class ResourceService
         this.startedResources.Remove(resource);
         resource.Stop();
     }
-
-    public event Action<Player>? AllResourcesStartedForPlayer;
-    public event Action<Resource, Player>? Started;
 }
