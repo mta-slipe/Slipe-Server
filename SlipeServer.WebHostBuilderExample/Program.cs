@@ -11,6 +11,8 @@ using SlipeServer.Example;
 
 Directory.SetCurrentDirectory(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()!.Location)!);
 
+Directory.SetCurrentDirectory(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()!.Location)!);
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
