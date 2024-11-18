@@ -121,7 +121,7 @@ public class Player : Ped
         }
     }
 
-    public Dictionary<int, PlayerPendingScreenshot> PendingScreenshots { get; } = new();
+    public Dictionary<int, PlayerPendingScreenshot> PendingScreenshots { get; } = [];
 
     private readonly HashSet<Element> subscriptionElements;
     private Dictionary<string, KeyState> BoundKeys { get; }
@@ -231,10 +231,10 @@ public class Player : Ped
     public Player() : base(0, Vector3.Zero)
     {
         this.Camera = new Camera(this);
-        this.subscriptionElements = new();
-        this.SyncingPeds = new();
-        this.SyncingVehicles = new();
-        this.BoundKeys = new();
+        this.subscriptionElements = [];
+        this.SyncingPeds = [];
+        this.SyncingVehicles = [];
+        this.BoundKeys = [];
         this.Controls = new(this);
         this.UpdateAssociatedPlayers();
 

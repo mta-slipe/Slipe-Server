@@ -11,10 +11,10 @@ public class PacketReaderTests
     [Fact]
     public void WriteIntTest()
     {
-        var reader = new PacketReader(new byte[]
-        {
+        var reader = new PacketReader(
+        [
                 0, 0x10, 0, 0
-        });
+        ]);
 
         var value = reader.GetInt16();
 
@@ -83,14 +83,14 @@ public class PacketReaderTests
     [Fact]
     public void ReadBitsTest()
     {
-        var reader = new PacketReader(new byte[] { 0b11001010 });
+        var reader = new PacketReader([0b11001010]);
 
         var value = reader.GetBits(8);
 
-        value.Should().Equal(new bool[]
-        {
+        value.Should().Equal(
+        [
                 true, true, false, false, true, false, true, false
-        });
+        ]);
     }
 
     [Theory]

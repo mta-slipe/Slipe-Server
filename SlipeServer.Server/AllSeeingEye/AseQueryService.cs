@@ -30,7 +30,7 @@ public class AseQueryService : IAseQueryService
 
         this.aseVersion = AseVersion.v1_6;
 
-        this.rules = new Dictionary<string, string>();
+        this.rules = [];
     }
 
     public void SetRule(string key, string value)

@@ -35,7 +35,7 @@ public class LuaEventService
         this.latentPacketService = latentPacketService;
         this.elementCollection = elementCollection;
         this.mapper = mapper;
-        this.eventHandlers = new Dictionary<string, List<Action<LuaEvent>>>();
+        this.eventHandlers = [];
 
         server.LuaEventTriggered += HandleLuaEvent;
     }
@@ -107,7 +107,7 @@ public class LuaEventService
     public void TriggerLatentEventFor(Player player, string eventName, Resource sourceResource, Element? source = null, int rate = 50000, params LuaValue[] parameters)
     {
         var packet = new LuaEventPacket(eventName, (source ?? this.root).Id, parameters);
-        this.latentPacketService.EnqueueLatentPacket(new Player[] { player }, packet, sourceResource.NetId, rate);
+        this.latentPacketService.EnqueueLatentPacket([player], packet, sourceResource.NetId, rate);
     }
 
     public void TriggerLatentEventFor(Player player, string eventName, Resource sourceResource, Element? source = null, int rate = 50000, params object[] parameters)
@@ -142,7 +142,7 @@ public class LuaEventService
     {
         if (!this.eventHandlers.ContainsKey(eventName))
         {
-            this.eventHandlers[eventName] = new List<Action<LuaEvent>>();
+            this.eventHandlers[eventName] = [];
         }
         this.eventHandlers[eventName].Add(handler);
     }

@@ -31,10 +31,10 @@ public class KdTreeElementCollection : IElementCollection
             .FirstOrDefault();
 
         if (elements == null)
-            this.elements.Add(position, new()
-            {
+            this.elements.Add(position,
+            [
                 element
-            });
+            ]);
         else
             elements.Add(element);
 
@@ -107,7 +107,7 @@ public class KdTreeElementCollection : IElementCollection
     {
         this.slimLock.EnterReadLock();
         var value = this.elements
-            .RadialSearch(new float[] { position.X, position.Y, position.Z }, range)
+            .RadialSearch([position.X, position.Y, position.Z], range)
             .SelectMany(entry => entry.Value)
             .ToArray();
         this.slimLock.ExitReadLock();
@@ -118,7 +118,7 @@ public class KdTreeElementCollection : IElementCollection
     {
         this.slimLock.EnterReadLock();
         var value = this.elements
-            .RadialSearch(new float[] { position.X, position.Y, position.Z }, range)
+            .RadialSearch([position.X, position.Y, position.Z], range)
             .SelectMany(kvPair => kvPair.Value)
             .Where(element => element.ElementType == elementType)
             .Cast<TElement>()
@@ -136,7 +136,7 @@ public class KdTreeElementCollection : IElementCollection
     {
         this.slimLock.EnterReadLock();
         var value = this.elements
-            .GetNearestNeighbours(new float[] { position.X, position.Y, position.Z }, count)
+            .GetNearestNeighbours([position.X, position.Y, position.Z], count)
             .SelectMany(kvPair => kvPair.Value)
             .ToArray();
         this.slimLock.ExitReadLock();
@@ -167,10 +167,10 @@ public class KdTreeElementCollection : IElementCollection
             .Select(x => x.Value)
             .FirstOrDefault();
         if (newPositionElements == null)
-            this.elements.Add(newPosition, new()
-            {
+            this.elements.Add(newPosition,
+            [
                 element
-            });
+            ]);
         else
             newPositionElements.Add(element);
 

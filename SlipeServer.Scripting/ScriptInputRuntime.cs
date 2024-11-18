@@ -13,7 +13,7 @@ public class ScriptInputRuntime : IScriptInputRuntime
 
     public ScriptInputRuntime(MtaServer server, IElementCollection elementCollection)
     {
-        this.registeredCommandHandlers = new List<RegisteredCommandHandler>();
+        this.registeredCommandHandlers = [];
 
         this.server = server;
         this.server.PlayerJoined += HandlePlayerJoined;

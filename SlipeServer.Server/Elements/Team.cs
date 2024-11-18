@@ -22,7 +22,7 @@ public class Team : Element, IEnumerable
         this.TeamName = name;
         this.Color = color;
 
-        this.Players = new List<Player>();
+        this.Players = [];
     }
 
     public new Team AssociateWith(MtaServer server)

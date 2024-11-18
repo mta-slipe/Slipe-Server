@@ -22,8 +22,8 @@ public class LuaControllerLogic
     private readonly ITimerService timerService;
     private readonly IServiceProvider serviceProvider;
     private readonly ILogger logger;
-    private readonly Dictionary<string, List<BoundEvent>> handlers = new();
-    private readonly HashSet<object> timers = new();
+    private readonly Dictionary<string, List<BoundEvent>> handlers = [];
+    private readonly HashSet<object> timers = [];
 
     public LuaControllerLogic(
         MtaServer server,
@@ -89,7 +89,7 @@ public class LuaControllerLogic
     {
         if (!this.handlers.ContainsKey(name))
         {
-            this.handlers[name] = new();
+            this.handlers[name] = [];
             this.luaEventService.AddEventHandler(name, HandleLuaEvent);
         }
 
@@ -119,7 +119,7 @@ public class LuaControllerLogic
 
     private object?[] MapParameters(LuaValue[] values, MethodInfo method)
     {
-        List<object?> objects = new();
+        List<object?> objects = [];
 
         var parameters = method.GetParameters();
         for (var i = 0; i < parameters.Length; i++)

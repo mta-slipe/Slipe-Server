@@ -105,12 +105,12 @@ public class MtaServer
         Func<ulong, INetWrapper, IClient>? clientCreationMethod = null
     )
     {
-        this.netWrappers = new();
-        this.clients = new();
+        this.netWrappers = [];
+        this.clients = [];
         this.clientCreationMethod = clientCreationMethod;
-        this.resourceServers = new();
-        this.additionalResources = new();
-        this.persistentInstances = new();
+        this.resourceServers = [];
+        this.additionalResources = [];
+        this.persistentInstances = [];
 
         this.root = new();
         this.serviceCollection = new ServiceCollection();
@@ -137,12 +137,12 @@ public class MtaServer
 
     public MtaServer(IServiceProvider serviceProvider, Action<ServerBuilder> builderAction)
     {
-        this.netWrappers = new();
-        this.clients = new();
+        this.netWrappers = [];
+        this.clients = [];
         this.clientCreationMethod = serviceProvider.GetService<Func<ulong, INetWrapper, IClient>>();
-        this.resourceServers = new();
-        this.additionalResources = new();
-        this.persistentInstances = new();
+        this.resourceServers = [];
+        this.additionalResources = [];
+        this.persistentInstances = [];
 
         this.root = new();
 
@@ -284,13 +284,7 @@ public class MtaServer
         where TPacketHandler : IPacketHandler<TPacket>
     {
         var packetHandler = this.Instantiate<TPacketHandler>();
-        var queueHandler = this.Instantiate(
-            typeof(TPacketQueueHandler),
-            Array.Empty<object>()
-                .Concat(new object[] { packetHandler })
-                .Concat(parameters)
-                .ToArray()
-            ) as TPacketQueueHandler;
+        var queueHandler = this.Instantiate(typeof(TPacketQueueHandler), [packetHandler, .. parameters]) as TPacketQueueHandler;
         this.packetReducer.RegisterPacketHandler(packetHandler.PacketId, queueHandler!);
     }
 
@@ -300,7 +294,7 @@ public class MtaServer
     /// <typeparam name="TPacketHandler"></typeparam>
     /// <typeparam name="TPacket"></typeparam>
     /// <param name="parameters"></param>
-    public void RegisterPacketHandler<TPacketHandler, TPacket>(params object[] parameters)
+    public void RegisterPacketHandler<TPacketHandler, TPacket>()
         where TPacket : Packet, new()
         where TPacketHandler : IPacketHandler<TPacket>
     {
@@ -471,10 +465,7 @@ public class MtaServer
     /// </summary>
     public void AddAdditionalResource(Resource resource, Dictionary<string, byte[]> files)
     {
-        if(this.resourceProvider == null)
-        {
-            this.resourceProvider = this.serviceProvider.GetRequiredService<IResourceProvider>();
-        }
+        this.resourceProvider ??= this.serviceProvider.GetRequiredService<IResourceProvider>();
         resource.NetId = this.resourceProvider.ReserveNetId();
         this.additionalResources.Add(resource);
         foreach (var server in this.resourceServers)
@@ -549,24 +540,23 @@ public class MtaServer
     public void RegisterNetWrapper(INetWrapper netWrapper)
     {
         netWrapper.PacketReceived += EnqueueIncomingPacket;
-        this.clients[netWrapper] = new();
+        this.clients[netWrapper] = [];
     }
 
     private void EnqueueIncomingPacket(INetWrapper netWrapper, ulong binaryAddress, PacketId packetId, byte[] data, uint? ping)
     {
-        if (!this.clients[netWrapper].ContainsKey(binaryAddress))
+        if (!this.clients[netWrapper].TryGetValue(binaryAddress, out var client))
         {
-            var client = CreateClient(binaryAddress, netWrapper);
+            client = CreateClient(binaryAddress, netWrapper);
             client.Player.AssociateWith(this);
-
             this.clients[netWrapper][binaryAddress] = client;
             ClientConnected?.Invoke(client);
         }
 
         if (ping != null)
-            this.clients[netWrapper][binaryAddress].Ping = ping.Value;
+            client.Ping = ping.Value;
 
-        this.packetReducer.EnqueuePacket(this.clients[netWrapper][binaryAddress], packetId, data);
+        this.packetReducer.EnqueuePacket(client, packetId, data);
 
         if (
             packetId == PacketId.PACKET_ID_PLAYER_QUIT ||
@@ -574,7 +564,7 @@ public class MtaServer
             packetId == PacketId.PACKET_ID_PLAYER_NO_SOCKET
         )
         {
-            if (this.clients[netWrapper].TryGetValue(binaryAddress, out var client))
+            if (this.clients[netWrapper].TryGetValue(binaryAddress, out client))
             {
                 client.IsConnected = false;
                 var quitReason = packetId switch

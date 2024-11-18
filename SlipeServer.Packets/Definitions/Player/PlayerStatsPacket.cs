@@ -19,7 +19,7 @@ public class PlayerStatsPacket : Packet
 
     public PlayerStatsPacket()
     {
-        this.Stats = new();
+        this.Stats = [];
     }
 
     public override void Read(byte[] bytes)

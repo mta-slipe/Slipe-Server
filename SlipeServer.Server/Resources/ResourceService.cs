@@ -24,7 +24,7 @@ public class ResourceService
         this.root = root;
         this.resourceProvider = resourceProvider;
 
-        this.startedResources = new List<Resource>();
+        this.startedResources = [];
 
         this.server.PlayerJoined += HandlePlayerJoin;
     }

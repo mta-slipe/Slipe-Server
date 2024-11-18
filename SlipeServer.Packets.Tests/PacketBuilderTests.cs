@@ -31,10 +31,10 @@ public class PacketBuilderTests
 
         var bytes = builder.Build();
 
-        bytes.Should().Equal(new byte[]
-        {
+        bytes.Should().Equal(
+        [
                 0, 0x10, 0, 0
-        });
+        ]);
     }
 
     [Theory]
@@ -188,7 +188,7 @@ public class PacketBuilderTests
 
         var bytes = builder.Build();
         bytes.Length.Should().Be(3);
-        bytes.Should().Equal(new byte[] { 0b10000000, 0b10000000, 0b10000000 });
+        bytes.Should().Equal([0b10000000, 0b10000000, 0b10000000]);
     }
 
 

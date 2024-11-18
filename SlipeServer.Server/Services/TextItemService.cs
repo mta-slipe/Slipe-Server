@@ -52,7 +52,7 @@ public class TextItemService
         VerticalTextAlignment verticalAlignment = VerticalTextAlignment.Top
     )
     {
-        return this.CreateTextItemFor(new Player[] { player }, text, position, scale, color, shadowAlpha, horizontalAlignment, verticalAlignment);
+        return this.CreateTextItemFor([player], text, position, scale, color, shadowAlpha, horizontalAlignment, verticalAlignment);
     }
 
     public void DeleteTextItemFor(IEnumerable<Player> players, TextItem item)

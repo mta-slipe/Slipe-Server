@@ -24,10 +24,10 @@ public class PacketReducer : IDisposable
 
     public PacketReducer(ILogger logger)
     {
-        this.packetQueueHandlers = new();
-        this.queueHandlers = new();
-        this.registeredQueueHandlers = new();
-        this.registeredPacketHandlerActions = new();
+        this.packetQueueHandlers = [];
+        this.queueHandlers = [];
+        this.registeredQueueHandlers = [];
+        this.registeredPacketHandlerActions = [];
         this.logger = logger;
     }
 
@@ -80,7 +80,7 @@ public class PacketReducer : IDisposable
         {
             if (!this.registeredPacketHandlerActions.ContainsKey(packetId))
             {
-                this.registeredPacketHandlerActions[packetId] = new();
+                this.registeredPacketHandlerActions[packetId] = [];
             }
 
             var pool = new PacketPool<TPacket>();

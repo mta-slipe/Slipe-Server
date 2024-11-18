@@ -21,14 +21,14 @@ public class WeaponConfigurationServiceTests
         modified.MaximumClipAmmo = 15;
         service.SetWeaponConfiguration(WeaponId.Deagle, modified);
 
-        mtaServer.VerifyPacketSent(Packets.Enums.PacketId.PACKET_ID_LUA, player, new byte[]
-        {
+        mtaServer.VerifyPacketSent(Packets.Enums.PacketId.PACKET_ID_LUA, player,
+        [
             (byte)ElementRpcFunction.SET_WEAPON_PROPERTY,
             (byte)WeaponId.Deagle,
             (byte)WeaponProperty.MaxClipAmmo,
             (byte)WeaponSkillLevel.Poor,
             15, 0
-        });
+        ]);
     }
 
     [Fact]
@@ -45,22 +45,22 @@ public class WeaponConfigurationServiceTests
         modified.MaximumClipAmmo = 15;
         service.SetWeaponConfigurationFor(WeaponId.Deagle, modified, player);
 
-        mtaServer.VerifyPacketSent(Packets.Enums.PacketId.PACKET_ID_LUA, player, new byte[]
-        {
+        mtaServer.VerifyPacketSent(Packets.Enums.PacketId.PACKET_ID_LUA, player,
+        [
             (byte)ElementRpcFunction.SET_WEAPON_PROPERTY,
             (byte)WeaponId.Deagle,
             (byte)WeaponProperty.MaxClipAmmo,
             (byte)WeaponSkillLevel.Poor,
             15, 0
-        });
+        ]);
 
-        mtaServer.VerifyPacketSent(Packets.Enums.PacketId.PACKET_ID_LUA, player2, new byte[]
-        {
+        mtaServer.VerifyPacketSent(Packets.Enums.PacketId.PACKET_ID_LUA, player2,
+        [
             (byte)ElementRpcFunction.SET_WEAPON_PROPERTY,
             (byte)WeaponId.Deagle,
             (byte)WeaponProperty.MaxClipAmmo,
             (byte)WeaponSkillLevel.Poor,
             15, 0
-        }, 0);
+        ], 0);
     }
 }

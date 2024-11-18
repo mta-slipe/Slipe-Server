@@ -9,7 +9,7 @@ namespace SlipeServer.Server.AllSeeingEye;
 /// </summary>
 public class AseBehaviour
 {
-    private readonly List<AseUdpListener> aseListeners = new();
+    private readonly List<AseUdpListener> aseListeners = [];
 
     public AseBehaviour(IAseQueryService aseQueryService, Configuration configuration, ILogger logger)
     {

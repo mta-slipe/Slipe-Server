@@ -64,7 +64,6 @@ public class ServerTestLogic
     private readonly CommandService commandService;
     private readonly WeaponConfigurationService weaponConfigurationService;
     private readonly GameWorld gameWorld;
-    private readonly IElementIdGenerator elementIdGenerator;
     private Resource? testResource;
     private Resource? secondTestResource;
     private Resource? thirdTestResource;
@@ -115,8 +114,7 @@ public class ServerTestLogic
         IResourceProvider resourceProvider,
         CommandService commandService,
         WeaponConfigurationService weaponConfigurationService,
-        GameWorld gameWorld,
-        IElementIdGenerator elementIdGenerator
+        GameWorld gameWorld
     )
     {
         this.server = server;
@@ -134,7 +132,6 @@ public class ServerTestLogic
         this.resourceProvider = resourceProvider;
         this.commandService = commandService;
         this.weaponConfigurationService = weaponConfigurationService;
-        this.elementIdGenerator = elementIdGenerator;
         this.gameWorld = gameWorld;
 
         this.slipeDevsTeam = new Team("Slipe devs", Color.FromArgb(255, 255, 81, 81));
@@ -165,16 +162,16 @@ public class ServerTestLogic
         this.secondTestResource = this.resourceProvider.GetResource("SecondTestResource");
         this.secondTestResource.NoClientScripts[$"{this.secondTestResource!.Name}/testfile.lua"] =
             Encoding.UTF8.GetBytes("outputChatBox(\"I AM A NOT CACHED MESSAGE\")");
-        this.secondTestResource.NoClientScripts[$"blabla.lua"] = new byte[] { };
+        this.secondTestResource.NoClientScripts["blabla.lua"] = ""u8.ToArray();
 
         this.thirdTestResource = this.resourceProvider.GetResource("MetaXmlTestResource");
 
         new WorldObject(321, new Vector3(5, 0, 3)).AssociateWith(this.server);
-        new Water(new Vector3[]
-        {
+        new Water(
+        [
                 new Vector3(-6, 0, 4), new Vector3(-3, 0, 4),
                 new Vector3(-6, 3, 4), new Vector3(-3, 3, 4)
-        }).AssociateWith(this.server);
+        ]).AssociateWith(this.server);
         new WorldObject(321, new Vector3(5, 0, 3)).AssociateWith(this.server);
         this.BlipA = new Blip(new Vector3(20, 0, 0), BlipIcon.Marker, 50).AssociateWith(this.server);
         this.BlipB = new Blip(new Vector3(15, 0, 0), BlipIcon.Marker, 50).AssociateWith(this.server);
@@ -280,8 +277,8 @@ public class ServerTestLogic
         var firetruck = new Vehicle(407, new Vector3(30, 5, 3)).AssociateWith(this.server);
         var firetruck2 = new Vehicle(407, new Vector3(35, 5, 3)).AssociateWith(this.server);
 
-        var polygon1 = new CollisionPolygon(new Vector3(0, -25, 0), new Vector2[] { new Vector2(-25, -25), new Vector2(-25, -50), new Vector2(-50, -25) }).AssociateWith(this.server);
-        var polygon2 = new CollisionPolygon(new Vector3(0, 25, 0), new Vector2[] { new Vector2(25, 25), new Vector2(25, 50), new Vector2(50, 25) }).AssociateWith(this.server);
+        var polygon1 = new CollisionPolygon(new Vector3(0, -25, 0), [new Vector2(-25, -25), new Vector2(-25, -50), new Vector2(-50, -25)]).AssociateWith(this.server);
+        var polygon2 = new CollisionPolygon(new Vector3(0, 25, 0), [new Vector2(25, 25), new Vector2(25, 50), new Vector2(50, 25)]).AssociateWith(this.server);
 
         vehicle.PedEntered += async (sender, eventArgs) =>
         {
@@ -305,7 +302,7 @@ public class ServerTestLogic
         var circle = new CollisionCircle(new Vector2(0, 25), 3).AssociateWith(this.server);
         var sphere = new CollisionSphere(new Vector3(0, 25, 0), 3).AssociateWith(this.server);
         var tube = new CollisionTube(new Vector3(0, 25, 0), 3, 3).AssociateWith(this.server);
-        var polygon = new CollisionPolygon(new Vector3(0, -25, 0), new Vector2[] { new Vector2(-25, -25), new Vector2(-25, -50), new Vector2(-50, -25) }).AssociateWith(this.server);
+        var polygon = new CollisionPolygon(new Vector3(0, -25, 0), [new Vector2(-25, -25), new Vector2(-25, -50), new Vector2(-50, -25)]).AssociateWith(this.server);
         var rectangle = new CollisionRectangle(new Vector2(50, 20), new Vector2(2, 2)).AssociateWith(this.server);
         var cuboid = new CollisionCuboid(new Vector3(30, 20, 4), new Vector3(2, 2, 2)).AssociateWith(this.server);
         Task.Run(async () =>
@@ -414,6 +411,11 @@ public class ServerTestLogic
 
     private void SetupTestCommands()
     {
+        this.commandService.AddCommand("forcemapvisible").Triggered += (source, args) =>
+        {
+            args.Player.IsMapForced = false;
+        };
+        
         this.commandService.AddCommand("elegysethealth").Triggered += (source, args) =>
         {
             this.Elegy.Health = Random.Shared.Next(700, 800);
@@ -716,8 +718,8 @@ public class ServerTestLogic
                 var random = new Random();
                 this.Ped2.Position += new Vector3(random.Next(0, 3) * .1f, random.Next(0, 3) * .1f, random.Next(0, 3) * .1f);
 
-                var packet = new Packets.Definitions.Ped.PedSyncPacket(new List<Packets.Structs.PedSyncData>()
-                {
+                var packet = new Packets.Definitions.Ped.PedSyncPacket(
+                [
                         new()
                         {
                             SourceElementId = this.Ped2.Id,
@@ -725,7 +727,7 @@ public class ServerTestLogic
                             Flags = Packets.Enums.PedSyncFlags.Position,
                             Position = this.Ped2.Position
                         }
-                });
+                ]);
                 args.Player.Client.SendPacket(packet);
             });
         };
@@ -1645,7 +1647,7 @@ public class ServerTestLogic
         {
             if (o is Player player)
             {
-                chatBox.OutputTo(player, $"In on fire: {args.NewValue}");
+                this.chatBox.OutputTo(player, $"In on fire: {args.NewValue}");
             }
         };
 

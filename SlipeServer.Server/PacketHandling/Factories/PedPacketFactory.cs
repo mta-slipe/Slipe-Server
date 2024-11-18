@@ -52,7 +52,7 @@ public static class PedPacketFactory
         if (index == null)
             return new RemovePedClothesRpcPacket(ped.Id, (byte)clothingType);
 
-        return new PedClothesPacket(ped.Id, new PedClothing[] { ClothingConstants.ClothesTextureModel[clothingType][index.Value] });
+        return new PedClothesPacket(ped.Id, [ClothingConstants.ClothesTextureModel[clothingType][index.Value]]);
     }
 
     public static PedClothesPacket CreateFullClothesPacket(Ped ped)

@@ -267,7 +267,7 @@ public static class VehiclePropertyRelayingExtensions
 
     private static void RelayRespawn(Element sender, VehicleRespawnEventArgs args)
     {
-        sender.RelayChange(new VehicleSpawnPacket(new VehicleSpawnInfo[] { new VehicleSpawnInfo
+        sender.RelayChange(new VehicleSpawnPacket([ new VehicleSpawnInfo
                 {
                     ElementId = args.Vehicle.Id,
                     TimeContext = args.Vehicle.GetAndIncrementTimeContext(),
@@ -275,7 +275,7 @@ public static class VehiclePropertyRelayingExtensions
                     Position = args.Vehicle.RespawnPosition,
                     Rotation = args.Vehicle.RespawnRotation,
                     Colors = args.Vehicle.Colors.AsArray(),
-                } }));
+                } ]));
     }
 
     private static void RelayEnter(Element sender, VehicleEnteredEventsArgs eventArgs)

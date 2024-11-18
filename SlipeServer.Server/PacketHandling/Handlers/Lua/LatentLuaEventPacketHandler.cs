@@ -13,7 +13,7 @@ struct LatentTransfer
     public ushort Id { get; set; }
     public IClient Source { get; set; }
     public LatentEventCategory Category { get; set; }
-    public List<byte> Data { get; set; } = new();
+    public List<byte> Data { get; set; } = [];
 
     public LatentTransfer(ushort id, IClient source, LatentEventCategory category)
     {
@@ -38,7 +38,7 @@ public class LatentLuaEventPacketHandler : IPacketHandler<LatentLuaEventPacket>
     {
         this.logger = logger;
         this.server = server;
-        this.transfers = new();
+        this.transfers = [];
     }
 
     public void HandlePacket(IClient client, LatentLuaEventPacket packet)

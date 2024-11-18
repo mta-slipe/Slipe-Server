@@ -20,8 +20,8 @@ public class FromLuaValueMapper
 
     public FromLuaValueMapper(IElementCollection elementCollection)
     {
-        this.strictlyDefinedMappers = new();
-        this.implicitlyCastableTypes = new();
+        this.strictlyDefinedMappers = [];
+        this.implicitlyCastableTypes = [];
 
         this.elementCollection = elementCollection;
 
@@ -31,7 +31,7 @@ public class FromLuaValueMapper
     private void IndexImplicitlyCastableTypes()
     {
         foreach (var method in typeof(LuaValue).GetMethods().Where(x => x.Name == "op_Explicit"))
-            this.implicitlyCastableTypes[method.ReturnType] = (value) => method.Invoke(null, new object[] { value })!;
+            this.implicitlyCastableTypes[method.ReturnType] = (value) => method.Invoke(null, [value])!;
     }
 
     public void DefineMapper(Type type, Func<LuaValue, object> mapper)

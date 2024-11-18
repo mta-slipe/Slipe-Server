@@ -8,10 +8,10 @@ namespace SlipeServer.Packets.Tests.Packets;
 
 public class CameraSyncPacketTest
 {
-    private readonly byte[] testPacket = new byte[]
-    {
+    private readonly byte[] testPacket =
+    [
             0, 128, 110, 109, 0, 56, 115, 0, 0, 23, 162, 0, 0, 0, 0, 0, 0, 0, 0, 26, 34, 0
-    };
+    ];
 
     [Fact]
     public void ReadPacket_ReadsValuesProperly()

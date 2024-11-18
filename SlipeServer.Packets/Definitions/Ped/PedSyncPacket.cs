@@ -19,7 +19,7 @@ public class PedSyncPacket : Packet
 
     public PedSyncPacket()
     {
-        this.Syncs = new List<PedSyncData>();
+        this.Syncs = [];
     }
 
     public PedSyncPacket(List<PedSyncData> syncs)

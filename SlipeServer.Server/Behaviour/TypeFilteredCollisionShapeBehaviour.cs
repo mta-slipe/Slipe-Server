@@ -21,7 +21,7 @@ public class TypeFilteredCollisionShapeBehaviour
     {
         this.types = new HashSet<Type>(types);
 
-        this.collisionShapes = new HashSet<CollisionShape>();
+        this.collisionShapes = [];
         foreach (var collisionShape in elementCollection.GetByType<CollisionShape>(ElementType.Colshape))
         {
             this.AddCollisionShape(collisionShape);

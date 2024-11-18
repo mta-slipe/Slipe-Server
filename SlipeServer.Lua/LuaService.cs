@@ -29,6 +29,9 @@ public class LuaService
         this.logger = logger;
         this.root = root;
         this.scriptTransformationPipeline = scriptTransformationPipeline;
+        this.scripts = [];
+        this.methods = [];
+        this.translator = new LuaTranslator();
     }
 
     public void LoadDefinitions(object methodSet)

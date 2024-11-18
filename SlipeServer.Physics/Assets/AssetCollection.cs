@@ -11,8 +11,8 @@ public class AssetCollection
 
     public AssetCollection()
     {
-        this.dffs = new();
-        this.cols = new();
+        this.dffs = [];
+        this.cols = [];
     }
 
     public Dff? GetDff(int model)

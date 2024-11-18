@@ -8,10 +8,10 @@ namespace SlipeServer.Packets.Tests.Packets;
 
 public class ProjectilePacketTests
 {
-    private readonly byte[] testPacket = new byte[]
-    {
+    private readonly byte[] testPacket =
+    [
             23, 132, 0, 5, 112, 255, 129, 105, 193, 160, 38, 178, 2, 230, 230, 102, 31, 68, 43, 137, 90, 127, 79, 218, 11, 224, 0, 0, 3, 42, 252, 106, 35, 240
-    };
+    ];
 
     [Fact]
     public void ReadPacket_ReadsValuesProperly()
