@@ -80,12 +80,6 @@ public class NetWrapper : IDisposable, INetWrapper
         Debug.WriteLine($"Net wrapper initialized: {result}");
     }
 
-    public void Dispose()
-    {
-        DestroyNetWrapper(this.id);
-        GC.SuppressFinalize(this);
-    }
-
     public void Start()
     {
         if (this.started)
