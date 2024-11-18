@@ -58,6 +58,12 @@ public class LuaTranslator
                     DynValue.NewNumber(vector2.X),
                     DynValue.NewNumber(vector2.Y)
             };
+        if (obj is Point point)
+            return new DynValue[]
+            {
+                    DynValue.NewNumber(point.X),
+                    DynValue.NewNumber(point.Y)
+            };
         if (obj is Vector3 vector3)
             return new DynValue[]
             {
@@ -73,9 +79,22 @@ public class LuaTranslator
             return new DynValue[] { dynValue };
 
         if (obj is IEnumerable<string> stringEnumerable)
-            return stringEnumerable.Select(x => DynValue.NewString(x)).ToArray();
+        {
+            var enumerableTable = new Table(null);
+            foreach (var value in stringEnumerable.Select(ToDynValues).SelectMany(x => x))
+                enumerableTable.Append(value);
+
+            return [DynValue.NewTable(enumerableTable)];
+        }
         if (obj is IEnumerable<object> enumerable)
-            return enumerable.Select(x => ToDynValues(x)).SelectMany(x => x).ToArray();
+        {
+            var enumerableTable = new Table(null);
+            foreach (var value in enumerable.Select(ToDynValues).SelectMany(x => x))
+                enumerableTable.Append(value);
+
+            return [DynValue.NewTable(enumerableTable)];
+
+        }
 
         throw new NotImplementedException($"Conversion to Lua for {obj.GetType()} not implemented");
     }
@@ -107,6 +126,10 @@ public class LuaTranslator
             return new Vector3(GetSingleFromDynValue(dynValues.Dequeue()), GetSingleFromDynValue(dynValues.Dequeue()), GetSingleFromDynValue(dynValues.Dequeue()));
         if (targetType == typeof(Vector2))
             return new Vector2(GetSingleFromDynValue(dynValues.Dequeue()), GetSingleFromDynValue(dynValues.Dequeue()));
+        if (targetType == typeof(Point))
+            return new Point(GetInt32FromDynValue(dynValues.Dequeue()), GetInt32FromDynValue(dynValues.Dequeue()));
+        if (targetType == typeof(Color))
+            return Color.FromArgb(255, GetInt32FromDynValue(dynValues.Dequeue()), GetInt32FromDynValue(dynValues.Dequeue()), GetInt32FromDynValue(dynValues.Dequeue()));
         if (targetType == typeof(float))
             return GetSingleFromDynValue(dynValues.Dequeue());
         if (targetType == typeof(double))
@@ -138,12 +161,30 @@ public class LuaTranslator
         if (targetType == typeof(ScriptCallbackDelegateWrapper))
         {
             var callback = dynValues.Dequeue().Function;
-            return new ScriptCallbackDelegateWrapper(parameters => callback.Call(ToDynValues(parameters)), callback);
+            return new ScriptCallbackDelegateWrapper(parameters => {
+                var values = parameters
+                    .Select(ToDynValues)
+                    .SelectMany(x => x)
+                    .ToArray();
+                callback.Call(values);
+            }, callback);
         }
         if (targetType == typeof(EventDelegate))
         {
             var callback = dynValues.Dequeue().Function;
-            return (EventDelegate)((element, parameters) => callback.Call(new DynValue[] { UserData.Create(element) }.Concat(ToDynValues(parameters))));
+            return (EventDelegate)((element, parameters) => {
+                var source = UserData.Create(element);
+
+                callback.OwnerScript.Globals["source"] = source;
+
+                var values = parameters
+                    .Select(ToDynValues)
+                    .SelectMany(x => x)
+                    .ToArray();
+                callback.Call(values);
+
+                callback.OwnerScript.Globals.Remove("source");
+            });
         }
 
         throw new NotImplementedException($"Conversion from Lua for {targetType} not implemented");

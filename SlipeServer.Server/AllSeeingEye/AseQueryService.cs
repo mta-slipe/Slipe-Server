@@ -138,15 +138,19 @@ public class AseQueryService : IAseQueryService
             .Select(o => o.Name.StripColorCode())
             .ToList();
 
-        string aseVersion = GetVersion(version == VersionType.Release ? this.aseVersion : AseVersion.v1_6n);
-        int playerCount = playerNames.Count;
-        string strPlayerCount = playerCount + "/" + this.configuration.MaxPlayerCount;
-        string buildType = $"{(byte)version} ";
-        string buildNumber = $"0";
-        string pingStatus = new('P', 32);
-        string strNetRoute = new('N', 32);
-        string strUpTime = $"{(int)this.mtaServer.Uptime.Ticks / TimeSpan.TicksPerSecond}";
-        string strHttpPort = this.configuration.HttpPort.ToString();
+        var aseVersion = GetVersion(version == VersionType.Release ? this.aseVersion : AseVersion.v1_6n);
+        var playerCount = playerNames.Count;
+        var strPlayerCount = playerCount + "/" + this.configuration.MaxPlayerCount;
+        var buildType = $"{(byte)version} ";
+        var buildNumber = $"0";
+        var pingStatus = Array.Empty<byte>()
+            .Concat(BitConverter.GetBytes((ushort)0x728D))
+            .Concat(BitConverter.GetBytes((ushort)playerCount))
+            .Concat(BitConverter.GetBytes((ushort)0xFFFF))
+            .ToArray();
+        var strNetRoute = new string('N', 32);
+        var strUpTime = $"{(int)this.mtaServer.Uptime.Ticks / TimeSpan.TicksPerSecond}";
+        var strHttpPort = this.configuration.HttpPort.ToString();
         uint extraDataLength = (uint)(strPlayerCount.Length + buildType.Length + buildNumber.Length + pingStatus.Length + strNetRoute.Length + strUpTime.Length + strHttpPort.Length) + 7;
 
         bw.Write("EYE2".AsSpan());
@@ -157,20 +161,26 @@ public class AseQueryService : IAseQueryService
 
         bw.Write((byte)(this.mtaServer.MapName.Length + 1 + extraDataLength));
         bw.Write(this.mtaServer.MapName.AsSpan());
-
         bw.Write((byte)0);
+
         bw.Write(strPlayerCount.AsSpan());
         bw.Write((byte)0);
+
         bw.Write(buildType.AsSpan());
         bw.Write((byte)0);
+
         bw.Write(buildNumber.AsSpan());
         bw.Write((byte)0);
-        bw.Write(pingStatus.AsSpan());
+
+        bw.Write(pingStatus);
         bw.Write((byte)0);
+
         bw.Write(strNetRoute.AsSpan());
         bw.Write((byte)0);
+
         bw.Write(strUpTime.AsSpan());
         bw.Write((byte)0);
+
         bw.Write(strHttpPort.AsSpan());
         bw.WriteWithLength(aseVersion);
         bw.Write((byte)(this.mtaServer.HasPassword ? 1 : 0));

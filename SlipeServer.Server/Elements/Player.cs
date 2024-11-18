@@ -16,6 +16,8 @@ using SlipeServer.Packets.Lua.Event;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Clients;
+using System.Net;
+using SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
 
 namespace SlipeServer.Server.Elements;
 
@@ -66,7 +68,21 @@ public class Player : Ped
     /// </summary>
     public IElementCollection AssociatedElements { get; } = new RTreeCompoundElementCollection(); 
 
-    public Element? ContactElement { get; set; }
+
+    private Element? contactElement;
+    public Element? ContactElement
+    {
+        get => this.contactElement;
+        set
+        {
+            if (this.contactElement == value)
+                return;
+
+            var args = new ElementChangedEventArgs<Player, Element?>(this, this.contactElement, value, this.IsSync);
+            this.contactElement = value;
+            ContactElementChanged?.Invoke(this, args);
+        }
+    }
 
     public Vector3 AimOrigin { get; set; }
     public Vector3 AimDirection { get; set; }
@@ -109,6 +125,11 @@ public class Player : Ped
 
     private readonly HashSet<Element> subscriptionElements;
     private Dictionary<string, KeyState> BoundKeys { get; }
+
+    /// <summary>
+    /// This object can be used in a lock statement to ensure thread-safety when handling money
+    /// </summary>
+    public object ExternalMoneyLock { get; } = new();
 
     private int money;
     public int Money
@@ -169,8 +190,39 @@ public class Player : Ped
             this.nametagColor = value;
             NametagColorChanged?.Invoke(this, args);
         }
-
     }
+
+    private byte blurLevel = 36;
+    public byte BlurLevel
+    {
+        get => this.blurLevel;
+        set
+        {
+            if (this.blurLevel == value)
+                return;
+
+            this.blurLevel = value;
+            this.client.SendPacket(new SetBlurLevelPacket(value));
+        }
+    }
+
+    private bool isMapForced;
+    public bool IsMapForced
+    {
+        get => this.isMapForced;
+        set
+        {
+            if (this.isMapForced == value)
+                return;
+
+            this.isMapForced = value;
+            this.Client.SendPacket(PlayerPacketFactory.CreateForcePlayerMapPacket(value));
+        }
+    }
+
+    public DateTime LastMovedUtc = DateTime.UtcNow;
+
+    public int DebugLogLevel { get; set; }
 
     private string DebuggerDisplay => $"{this.Name} ({this.Id})";
 
@@ -256,11 +308,6 @@ public class Player : Ped
         this.Client.SendPacket(PlayerPacketFactory.CreatePlaySoundPacket(sound));
     }
 
-    public void ForceMapVisible(bool isVisible)
-    {
-        this.Client.SendPacket(PlayerPacketFactory.CreateForcePlayerMapPacket(isVisible));
-    }
-
     public void SetTransferBoxVisible(bool isVisible)
     {
         this.Client.SendPacket(PlayerPacketFactory.CreateTransferBoxVisiblePacket(isVisible));
@@ -276,9 +323,9 @@ public class Player : Ped
         this.CommandEntered?.Invoke(this, new PlayerCommandEventArgs(this, command, arguments));
     }
 
-    public void TriggerDamaged(Element? damager, DamageType damageType, BodyPart bodyPart)
+    public void TriggerDamaged(Element? damager, DamageType damageType, BodyPart bodyPart, float loss)
     {
-        this.Damaged?.Invoke(this, new PlayerDamagedEventArgs(this, damager, damageType, bodyPart));
+        this.Damaged?.Invoke(this, new PlayerDamagedEventArgs(this, damager, damageType, bodyPart, loss));
     }
 
     public override void Kill(Element? damager, DamageType damageType, BodyPart bodyPart, ulong animationGroup = 0, ulong animationId = 15)
@@ -431,12 +478,14 @@ public class Player : Ped
         this.BindExecuted?.Invoke(this, new PlayerBindExecutedEventArgs(this, bindType, keyState, key));
     }
 
-    public void TriggerCursorClicked(byte button,
+    public void TriggerCursorClicked(
+        CursorButton button,
+        bool isDown,
         Point position,
         Vector3 worldPosition,
         Element? element)
     {
-        this.CursorClicked?.Invoke(this, new PlayerCursorClickedEventArgs(button, position, worldPosition, element));
+        this.CursorClicked?.Invoke(this, new PlayerCursorClickedEventArgs(button, isDown, position, worldPosition, element));
     }
 
     public void TriggerJoined()
@@ -489,6 +538,11 @@ public class Player : Ped
         this.AssociatedElements.Remove(element);
     }
 
+    public void RedirectTo(IPAddress server, ushort port, string? password = null)
+    {
+        this.client.SendPacket(new ForceReconnectPacket(server.ToString(), port, password));
+    }
+
     internal bool ShouldSendReturnSyncPacket()
     {
         return this.pureSyncPacketsCount++ % 4 == 0;
@@ -498,6 +552,7 @@ public class Player : Ped
     public event ElementChangedEventHandler<Player, string>? NametagTextChanged;
     public event ElementChangedEventHandler<Player, bool>? IsNametagShowingChanged;
     public event ElementChangedEventHandler<Player, Color?>? NametagColorChanged;
+    public event ElementChangedEventHandler<Player, Element?>? ContactElementChanged;
     public event ElementEventHandler<Player, PlayerDamagedEventArgs>? Damaged;
     public event ElementEventHandler<Player, PlayerSpawnedEventArgs>? Spawned;
     public event ElementEventHandler<Player, PlayerCommandEventArgs>? CommandEntered;

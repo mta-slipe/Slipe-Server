@@ -52,6 +52,9 @@ public class PlayerPureSyncPacketHandler : IPacketHandler<PlayerPureSyncPacket>
 
         player.RunAsSync(() =>
         {
+            var previousHealth = player.Health;
+            var previousArmor = player.Armor;
+
             player.PedRotation = packet.Rotation * (180 / MathF.PI);
             player.Velocity = packet.Velocity;
             player.Health = packet.Health;
@@ -98,10 +101,14 @@ public class PlayerPureSyncPacketHandler : IPacketHandler<PlayerPureSyncPacket>
             player.CameraDirection = packet.CameraOrientation.CameraForward;
             player.CameraRotation = packet.CameraRotation;
 
+            player.LastMovedUtc = DateTime.UtcNow;
+
             if (packet.IsDamageChanged)
             {
                 var damager = this.elementCollection.Get(packet.DamagerId);
-                player.TriggerDamaged(damager, (DamageType)packet.DamageType, (BodyPart)packet.DamageBodypart);
+                var loss = (previousHealth - packet.Health) + (previousArmor - packet.Armor);
+
+                player.TriggerDamaged(damager, (DamageType)packet.DamageType, (BodyPart)packet.DamageBodypart, loss);
             }
         });
 

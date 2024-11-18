@@ -39,6 +39,9 @@ using SlipeServer.Server.Resources.Serving;
 using SlipeServer.Server.Mappers;
 using SlipeServer.Server.Resources.Interpreters;
 using System;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
+using SlipeServer.Server.Loggers;
 
 namespace SlipeServer.Server.ServerBuilders;
 
@@ -83,6 +86,21 @@ public static class DefaultServerBuilderExtensions
             builder.AddResourceInterpreter<SlipeLuaResourceInterpreter>();
     }
 
+    public static void AddDefaultLogging(this ServerBuilder builder)
+    {
+        builder.ConfigureServices(services =>
+        {
+            services.AddLogging(x =>
+            {
+                if (Environment.UserInteractive)
+                    services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, ConsoleLoggerProvider>());
+                else
+                    services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, NullLoggerProvider>());
+            });
+            services.TryAddSingleton<ILogger>(x => x.GetRequiredService<ILogger<MtaServer>>());
+        });
+    }
+
     /// <summary>
     /// Registers all default packet handlers, behaviours, services, lua mappings, resource servers, resource interpreters, and networking interfaces
     /// More information can be found on https://server.mta-slipe.com/articles/getting-started/configuration.html#building-your-server
@@ -98,7 +116,8 @@ public static class DefaultServerBuilderExtensions
         ServerBuilderDefaultBehaviours exceptBehaviours = ServerBuilderDefaultBehaviours.None,
         ServerBuilderDefaultServices exceptServices = ServerBuilderDefaultServices.None,
         ServerBuilderDefaultMiddleware exceptMiddleware = ServerBuilderDefaultMiddleware.None,
-        ServerBuilderDefaultResourceInterpreters exceptResourceInterpreters = ServerBuilderDefaultResourceInterpreters.None)
+        ServerBuilderDefaultResourceInterpreters exceptResourceInterpreters = ServerBuilderDefaultResourceInterpreters.None,
+        bool includeLogging = true)
     {
         builder.AddDefaultPacketHandler(exceptPacketHandlers);
         builder.AddDefaultBehaviours(exceptBehaviours);
@@ -109,6 +128,9 @@ public static class DefaultServerBuilderExtensions
         builder.AddDefaultResourceInterpreters(exceptResourceInterpreters);
 
         builder.AddDefaultNetWrapper();
+
+        if (includeLogging)
+            AddDefaultLogging(builder);
     }
 
     /// <summary>
@@ -125,7 +147,8 @@ public static class DefaultServerBuilderExtensions
         ServerBuilderDefaultPacketHandlers exceptPacketHandlers = ServerBuilderDefaultPacketHandlers.None,
         ServerBuilderDefaultBehaviours exceptBehaviours = ServerBuilderDefaultBehaviours.None,
         ServerBuilderDefaultMiddleware exceptMiddleware = ServerBuilderDefaultMiddleware.None,
-        ServerBuilderDefaultResourceInterpreters exceptResourceInterpreters = ServerBuilderDefaultResourceInterpreters.None)
+        ServerBuilderDefaultResourceInterpreters exceptResourceInterpreters = ServerBuilderDefaultResourceInterpreters.None,
+        bool includeLogging = true)
     {
         builder.AddDefaultPacketHandler(exceptPacketHandlers);
         builder.AddDefaultBehaviours(exceptBehaviours);
@@ -135,6 +158,9 @@ public static class DefaultServerBuilderExtensions
         builder.AddDefaultResourceInterpreters(exceptResourceInterpreters);
 
         builder.AddDefaultNetWrapper();
+
+        if (includeLogging)
+            AddDefaultLogging(builder);
     }
 
     public static void AddDefaultNetWrapper(this ServerBuilder builder)
