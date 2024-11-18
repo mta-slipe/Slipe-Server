@@ -545,19 +545,18 @@ public class MtaServer
 
     private void EnqueueIncomingPacket(INetWrapper netWrapper, ulong binaryAddress, PacketId packetId, byte[] data, uint? ping)
     {
-        if (!this.clients[netWrapper].TryGetValue(binaryAddress, out var value))
+        if (!this.clients[netWrapper].TryGetValue(binaryAddress, out var client))
         {
-            var client = CreateClient(binaryAddress, netWrapper);
+            client = CreateClient(binaryAddress, netWrapper);
             client.Player.AssociateWith(this);
-            value = client;
-            this.clients[netWrapper][binaryAddress] = value;
+            this.clients[netWrapper][binaryAddress] = client;
             ClientConnected?.Invoke(client);
         }
 
         if (ping != null)
-            value.Ping = ping.Value;
+            client.Ping = ping.Value;
 
-        this.packetReducer.EnqueuePacket(value, packetId, data);
+        this.packetReducer.EnqueuePacket(client, packetId, data);
 
         if (
             packetId == PacketId.PACKET_ID_PLAYER_QUIT ||
@@ -565,7 +564,7 @@ public class MtaServer
             packetId == PacketId.PACKET_ID_PLAYER_NO_SOCKET
         )
         {
-            if (this.clients[netWrapper].TryGetValue(binaryAddress, out var client))
+            if (this.clients[netWrapper].TryGetValue(binaryAddress, out client))
             {
                 client.IsConnected = false;
                 var quitReason = packetId switch
