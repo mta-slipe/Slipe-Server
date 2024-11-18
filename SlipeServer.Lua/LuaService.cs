@@ -18,18 +18,17 @@ public class LuaService
     private readonly MtaServer server;
     private readonly ILogger logger;
     private readonly RootElement root;
-    private readonly Dictionary<string, Script> scripts;
-    private readonly Dictionary<string, LuaMethod> methods;
-    private readonly LuaTranslator translator;
+    private readonly ScriptTransformationPipeline scriptTransformationPipeline;
+    private readonly Dictionary<string, Script> scripts = [];
+    private readonly Dictionary<string, LuaMethod> methods = [];
+    private readonly LuaTranslator translator = new();
 
-    public LuaService(MtaServer server, ILogger logger, RootElement root)
+    public LuaService(MtaServer server, ILogger logger, RootElement root, ScriptTransformationPipeline scriptTransformationPipeline)
     {
         this.server = server;
         this.logger = logger;
         this.root = root;
-        this.scripts = new Dictionary<string, Script>();
-        this.methods = new Dictionary<string, LuaMethod>();
-        this.translator = new LuaTranslator();
+        this.scriptTransformationPipeline = scriptTransformationPipeline;
     }
 
     public void LoadDefinitions(object methodSet)
@@ -135,7 +134,10 @@ public class LuaService
         LoadGlobals(script);
         LoadDefinitions(script);
 
-        script.DoString(code, codeFriendlyName: identifier);
+        using var ms = new MemoryStream(System.Text.UTF8Encoding.UTF8.GetBytes(code));
+        var stream = this.scriptTransformationPipeline.Transform(ms, "lua");
+
+        script.DoStream(stream, codeFriendlyName: identifier);
     }
 
     public void LoadScript(string identifier, string[] codes)
@@ -144,7 +146,7 @@ public class LuaService
         script.Options.DebugPrint = (value) =>
         {
             using var scope = this.logger.BeginScope(script);
-            this.logger.LogDebug(value);
+            this.logger.LogDebug("{value}", value);
         };
         this.scripts[identifier] = script;
 
@@ -173,8 +175,8 @@ public class LuaService
         StringBuilder stringBuilder = new StringBuilder();
         foreach (var definition in this.methods)
         {
-            script.Globals["real" + definition.Key] = definition.Value;
-            stringBuilder.AppendLine($"function {definition.Key}(...) return table.unpack(real{definition.Key}({{...}})) end");
+            script.Globals["slipe_" + definition.Key] = definition.Value;
+            stringBuilder.AppendLine($"function {definition.Key}(...) return table.unpack(slipe_{definition.Key}({{...}})) end");
         }
         script.DoString(stringBuilder.ToString(), codeFriendlyName: "SlipeDefinitions");
     }

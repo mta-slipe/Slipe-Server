@@ -1,4 +1,10 @@
-﻿if(isSlipeServer)then
+﻿type Point = { x: number, y: number }
+
+local p: Point = { x = 1, y = 2 }
+
+print("Point with luau:", p.x, p.y);
+
+if(isSlipeServer)then
 	local object = createObject(321, 5, 5, 5)
 	setElementPosition(object, 50, 50, 250)
 	setElementRotation(object, 180, 180, 90)
@@ -143,3 +149,19 @@ function outputControlState(player)
 	setControlState(player, "forwards", not getControlState(player, "forwards"))
 end
 addCommandHandler("walkme", outputControlState)
+
+function outputClicks(button, state, element, x, y, z, screenX, screenY)
+	print("Clicky clicky", button, state, element, x, y, z, screenX, screenY)
+end
+
+function outputControlState(player)
+	addEventHandler("onPlayerClick", player, outputClicks)
+	print("Starting to output clicks for ", getPlayerName(player))
+end
+addCommandHandler("outputmyclicks", outputControlState)
+
+
+function outputCommand(command)
+	print("Player " .. getPlayerName(source) .. " used /" .. command)
+end
+addEventHandler("onPlayerCommand", root, outputCommand)

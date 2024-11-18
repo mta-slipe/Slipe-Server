@@ -58,6 +58,12 @@ public class LuaTranslator
                     DynValue.NewNumber(vector2.X),
                     DynValue.NewNumber(vector2.Y)
             };
+        if (obj is Point point)
+            return new DynValue[]
+            {
+                    DynValue.NewNumber(point.X),
+                    DynValue.NewNumber(point.Y)
+            };
         if (obj is Vector3 vector3)
             return new DynValue[]
             {
@@ -120,6 +126,8 @@ public class LuaTranslator
             return new Vector3(GetSingleFromDynValue(dynValues.Dequeue()), GetSingleFromDynValue(dynValues.Dequeue()), GetSingleFromDynValue(dynValues.Dequeue()));
         if (targetType == typeof(Vector2))
             return new Vector2(GetSingleFromDynValue(dynValues.Dequeue()), GetSingleFromDynValue(dynValues.Dequeue()));
+        if (targetType == typeof(Point))
+            return new Point(GetInt32FromDynValue(dynValues.Dequeue()), GetInt32FromDynValue(dynValues.Dequeue()));
         if (targetType == typeof(Color))
             return Color.FromArgb(255, GetInt32FromDynValue(dynValues.Dequeue()), GetInt32FromDynValue(dynValues.Dequeue()), GetInt32FromDynValue(dynValues.Dequeue()));
         if (targetType == typeof(float))
@@ -154,7 +162,11 @@ public class LuaTranslator
         {
             var callback = dynValues.Dequeue().Function;
             return new ScriptCallbackDelegateWrapper(parameters => {
-                callback.Call(ToDynValues(parameters).ToArray());
+                var values = parameters
+                    .Select(ToDynValues)
+                    .SelectMany(x => x)
+                    .ToArray();
+                callback.Call(values);
             }, callback);
         }
         if (targetType == typeof(EventDelegate))
@@ -162,9 +174,14 @@ public class LuaTranslator
             var callback = dynValues.Dequeue().Function;
             return (EventDelegate)((element, parameters) => {
                 var source = UserData.Create(element);
+
                 callback.OwnerScript.Globals["source"] = source;
 
-                callback.Call(ToDynValues(parameters).ToArray());
+                var values = parameters
+                    .Select(ToDynValues)
+                    .SelectMany(x => x)
+                    .ToArray();
+                callback.Call(values);
 
                 callback.OwnerScript.Globals.Remove("source");
             });

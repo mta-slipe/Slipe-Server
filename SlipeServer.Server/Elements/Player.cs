@@ -68,7 +68,21 @@ public class Player : Ped
     /// </summary>
     public IElementCollection AssociatedElements { get; } = new RTreeCompoundElementCollection(); 
 
-    public Element? ContactElement { get; set; }
+
+    private Element? contactElement;
+    public Element? ContactElement
+    {
+        get => this.contactElement;
+        set
+        {
+            if (this.contactElement == value)
+                return;
+
+            var args = new ElementChangedEventArgs<Player, Element?>(this, this.contactElement, value, this.IsSync);
+            this.contactElement = value;
+            ContactElementChanged?.Invoke(this, args);
+        }
+    }
 
     public Vector3 AimOrigin { get; set; }
     public Vector3 AimDirection { get; set; }
@@ -304,9 +318,9 @@ public class Player : Ped
         this.CommandEntered?.Invoke(this, new PlayerCommandEventArgs(this, command, arguments));
     }
 
-    public void TriggerDamaged(Element? damager, DamageType damageType, BodyPart bodyPart)
+    public void TriggerDamaged(Element? damager, DamageType damageType, BodyPart bodyPart, float loss)
     {
-        this.Damaged?.Invoke(this, new PlayerDamagedEventArgs(this, damager, damageType, bodyPart));
+        this.Damaged?.Invoke(this, new PlayerDamagedEventArgs(this, damager, damageType, bodyPart, loss));
     }
 
     public override void Kill(Element? damager, DamageType damageType, BodyPart bodyPart, ulong animationGroup = 0, ulong animationId = 15)
@@ -459,12 +473,14 @@ public class Player : Ped
         this.BindExecuted?.Invoke(this, new PlayerBindExecutedEventArgs(this, bindType, keyState, key));
     }
 
-    public void TriggerCursorClicked(byte button,
+    public void TriggerCursorClicked(
+        CursorButton button,
+        bool isDown,
         Point position,
         Vector3 worldPosition,
         Element? element)
     {
-        this.CursorClicked?.Invoke(this, new PlayerCursorClickedEventArgs(button, position, worldPosition, element));
+        this.CursorClicked?.Invoke(this, new PlayerCursorClickedEventArgs(button, isDown, position, worldPosition, element));
     }
 
     public void TriggerJoined()
@@ -531,6 +547,7 @@ public class Player : Ped
     public event ElementChangedEventHandler<Player, string>? NametagTextChanged;
     public event ElementChangedEventHandler<Player, bool>? IsNametagShowingChanged;
     public event ElementChangedEventHandler<Player, Color?>? NametagColorChanged;
+    public event ElementChangedEventHandler<Player, Element?>? ContactElementChanged;
     public event ElementEventHandler<Player, PlayerDamagedEventArgs>? Damaged;
     public event ElementEventHandler<Player, PlayerSpawnedEventArgs>? Spawned;
     public event ElementEventHandler<Player, PlayerCommandEventArgs>? CommandEntered;

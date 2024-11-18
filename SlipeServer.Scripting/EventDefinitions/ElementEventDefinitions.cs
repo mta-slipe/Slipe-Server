@@ -8,7 +8,7 @@ public class ElementEventDefinitions : IEventDefinitions
     {
         eventRuntime.RegisterEvent<Element>(
             "onElementDestroyed",
-            (element, callback) =>
+            (callback) =>
             {
                 void callbackProxy(Element e) => callback.CallbackDelegate(e);
                 return new EventHandlerActions<Element>()
