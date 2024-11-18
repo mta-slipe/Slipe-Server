@@ -195,7 +195,8 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
 
     private void HandlePlayerCursorEvent(IClient client, RpcPacket packet)
     {
-        var button = packet.Reader.GetByteCapped(3);
+        var buttonByte = packet.Reader.GetByteCapped(3);
+
         var x = packet.Reader.GetCompressedUint16();
         var y = packet.Reader.GetCompressedUint16();
         var worldPosition = packet.Reader.GetVector3WithZAsFloat();
@@ -203,6 +204,41 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
         if (packet.Reader.GetBit())
             element = this.elementCollection.Get(packet.Reader.GetElementId());
 
-        client.Player.TriggerCursorClicked(button, new(x, y), worldPosition, element);
+        CursorButton button;
+        bool isDown;
+
+        switch (buttonByte)
+        {
+            case 0:
+                button = CursorButton.Left;
+                isDown = true;
+                break;
+            case 1:
+                button = CursorButton.Left;
+                isDown = false;
+                break;
+
+            case 2:
+                button = CursorButton.Middle;
+                isDown = true;
+                break;
+            case 3:
+                button = CursorButton.Middle;
+                isDown = false;
+                break;
+
+            case 4:
+                button = CursorButton.Right;
+                isDown = true;
+                break;
+            case 5:
+                button = CursorButton.Right;
+                isDown = false;
+                break;
+
+            default:
+                throw new Exception($"Unsupported CURSOR_EVENT button {buttonByte}");
+        }
+        client.Player.TriggerCursorClicked(button, isDown, new(x, y), worldPosition, element);
     }
 }

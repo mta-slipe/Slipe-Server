@@ -413,7 +413,7 @@ public class ServerTestLogic
     {
         this.commandService.AddCommand("forcemapvisible").Triggered += (source, args) =>
         {
-            args.Player.ForceMapVisible(false);
+            args.Player.IsMapForced = false;
         };
         
         this.commandService.AddCommand("elegysethealth").Triggered += (source, args) =>
@@ -1015,12 +1015,6 @@ public class ServerTestLogic
             }
             stopwatch.Stop();
             this.logger.LogInformation("Starting Slipe Lua test resource for {playerName} took {milliseconds}ms", args.Player.Name, stopwatch.ElapsedMilliseconds);
-        };
-        
-        this.commandService.AddCommand("fixmyveh").Triggered += (source, args) =>
-        {
-            args.Player.Vehicle?.Fix();
-            this.chatBox.OutputTo(args.Player, "Vehicle fixed");
         };
         
         this.commandService.AddCommand("blowup").Triggered += (source, args) =>

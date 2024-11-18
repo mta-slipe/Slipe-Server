@@ -18,15 +18,17 @@ public class LuaService
     private readonly MtaServer server;
     private readonly ILogger logger;
     private readonly RootElement root;
-    private readonly Dictionary<string, Script> scripts;
-    private readonly Dictionary<string, LuaMethod> methods;
-    private readonly LuaTranslator translator;
+    private readonly ScriptTransformationPipeline scriptTransformationPipeline;
+    private readonly Dictionary<string, Script> scripts = [];
+    private readonly Dictionary<string, LuaMethod> methods = [];
+    private readonly LuaTranslator translator = new();
 
-    public LuaService(MtaServer server, ILogger logger, RootElement root)
+    public LuaService(MtaServer server, ILogger logger, RootElement root, ScriptTransformationPipeline scriptTransformationPipeline)
     {
         this.server = server;
         this.logger = logger;
         this.root = root;
+        this.scriptTransformationPipeline = scriptTransformationPipeline;
         this.scripts = [];
         this.methods = [];
         this.translator = new LuaTranslator();
@@ -55,7 +57,27 @@ public class LuaService
                     {
                         if (valueQueue.Any())
                         {
-                            parameters[i] = this.translator.FromDynValue(methodParameters[i].ParameterType, valueQueue);
+                            if (methodParameters[i].IsDefined(typeof(ParamArrayAttribute), false))
+                            {
+                                var paramIndex = i;
+                                var paramType = methodParameters[i].ParameterType.GetElementType();
+
+                                if (paramType != null)
+                                {
+                                    var newParameters = new List<object?>(parameters.Take(parameters.Length - 1));
+
+                                    while (valueQueue.Any())
+                                        newParameters.Add(this.translator.FromDynValue(paramType, valueQueue));
+
+                                    var typedArray = Array.CreateInstance(paramType, newParameters.Count);
+                                    Array.Copy(newParameters.ToArray(), typedArray, newParameters.Count);
+                                    parameters[i] = typedArray;
+                                }
+                            } else
+                            {
+                                parameters[i] = this.translator.FromDynValue(methodParameters[i].ParameterType, valueQueue);
+                            }
+
                         } else
                         {
                             if (methodParameters[i].IsOptional)
@@ -67,19 +89,25 @@ public class LuaService
                             }
                         }
                     }
-                    catch (NotImplementedException)
+                    catch (NotImplementedException e)
                     {
                         valueQueue.TryDequeue(out DynValue? valueType);
-                        throw new LuaException($"Unsupported Lua value translation for {methodParameters[i].ParameterType}");
+                        throw new LuaException($"Unsupported Lua value translation for {methodParameters[i].ParameterType}. {e.Message}\n{e.StackTrace}");
                     }
                     catch (Exception e)
                     {
-                        throw new LuaException($"Error when converting Lua value to {methodParameters[i].ParameterType}", e);
+                        throw new LuaException($"Error when converting Lua value to {methodParameters[i].ParameterType}. {e.Message}\n{e.StackTrace}", e);
                     }
                 }
-                var result = method.Invoke(methodSet, parameters);
+                try
+                {
+                    var result = method.Invoke(methodSet, parameters);
 
-                return this.translator.ToDynValues(result).ToArray();
+                    return this.translator.ToDynValues(result).ToArray();
+                } catch (Exception e)
+                {
+                    throw new Exception($"Failed to load definitions for {attribute?.NiceName} {e.Message}\n {e.StackTrace}", e);
+                }
             };
         }
     }
@@ -109,7 +137,10 @@ public class LuaService
         LoadGlobals(script);
         LoadDefinitions(script);
 
-        script.DoString(code, codeFriendlyName: identifier);
+        using var ms = new MemoryStream(System.Text.UTF8Encoding.UTF8.GetBytes(code));
+        var stream = this.scriptTransformationPipeline.Transform(ms, "lua");
+
+        script.DoStream(stream, codeFriendlyName: identifier);
     }
 
     public void LoadScript(string identifier, string[] codes)
@@ -118,7 +149,7 @@ public class LuaService
         script.Options.DebugPrint = (value) =>
         {
             using var scope = this.logger.BeginScope(script);
-            this.logger.LogDebug(value);
+            this.logger.LogDebug("{value}", value);
         };
         this.scripts[identifier] = script;
 
@@ -147,8 +178,8 @@ public class LuaService
         StringBuilder stringBuilder = new StringBuilder();
         foreach (var definition in this.methods)
         {
-            script.Globals["real" + definition.Key] = definition.Value;
-            stringBuilder.AppendLine($"function {definition.Key}(...) return table.unpack(real{definition.Key}({{...}})) end");
+            script.Globals["slipe_" + definition.Key] = definition.Value;
+            stringBuilder.AppendLine($"function {definition.Key}(...) return table.unpack(slipe_{definition.Key}({{...}})) end");
         }
         script.DoString(stringBuilder.ToString(), codeFriendlyName: "SlipeDefinitions");
     }

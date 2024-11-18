@@ -51,7 +51,7 @@ public class SimplifiedScriptEventRuntime : IScriptEventRuntime
             EventName = eventName,
             RegisteredEvent = registeredEvent,
             Delegate = callbackDelegate,
-            Element = attachedTo,
+            AttachedTo = attachedTo,
         };
 
         this.registeredEventHandlers.Add(registeredEventHandler);
@@ -69,7 +69,7 @@ public class SimplifiedScriptEventRuntime : IScriptEventRuntime
     public void RemoveEventHandler(string eventName, Element attachedTo, EventDelegate callbackDelegate)
     {
         var registeredEvent = this.registeredEvents[eventName];
-        var handlers = this.registeredEventHandlers.Where(x => x.EventName == eventName && x.Delegate == callbackDelegate && x.Element == attachedTo);
+        var handlers = this.registeredEventHandlers.Where(x => x.EventName == eventName && x.Delegate == callbackDelegate && x.AttachedTo == attachedTo);
 
         foreach (var handler in handlers)
         {
@@ -110,6 +110,9 @@ public class SimplifiedScriptEventRuntime : IScriptEventRuntime
             LoadEvents((this.server.Instantiate(type) as IEventDefinitions)!);
         }
     }
+
+    public void AddEventHandler(string eventName, Element attachedTo, EventDelegate callbackDelegate, object? owner = null) => throw new NotImplementedException();
+    public void RemoveEventHandlersOwnedBy(object owner) => throw new NotImplementedException();
 }
 
 public delegate void HandleEventDelegate(Element element, string eventName, params object[] parameters);

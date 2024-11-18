@@ -10,10 +10,12 @@ namespace SlipeServer.Scripting;
 
 public class ScriptEventRuntime : IScriptEventRuntime
 {
-    private readonly List<RegisteredEventHandler> registeredEventHandlers;
-    private readonly Dictionary<string, RegisteredEvent> registeredEvents;
+    private readonly List<RegisteredEventHandler> registeredEventHandlers = [];
+    private readonly Dictionary<string, RegisteredEvent> registeredEvents = [];
     private readonly MtaServer server;
     private readonly IElementCollection elementCollection;
+
+    private readonly object handlerLock = new();
 
     public ScriptEventRuntime(MtaServer server, IElementCollection elementCollection)
     {
@@ -27,86 +29,158 @@ public class ScriptEventRuntime : IScriptEventRuntime
 
     private void HandleElementCreation(Element element)
     {
-        var handlers = this.registeredEventHandlers.Where(handler => handler.GetType().IsAssignableFrom(element.GetType()));
-        foreach (var handler in handlers)
+        lock (this.handlerLock)
         {
-            var actions = (EventHandlerActions<Element>)handler.RegisteredEvent.Delegate.DynamicInvoke(element, handler.Delegate)!;
-            actions.Add(element);
-        }
+            var handlers = this.registeredEventHandlers.Where(handler => handler.GetType().IsAssignableFrom(element.GetType()));
+            foreach (var handler in handlers)
+            {
+                var actions = (IEventHandlerActions)handler.RegisteredEvent.Delegate.DynamicInvoke(handler.Delegate)!;
+                actions.Add(element);
 
-        element.Destroyed += HandleElementDestruction;
+                handler.Actions.Add(new RegisteredEventHandlerElement()
+                {
+                    Element = element,
+                    Actions = actions
+                });
+            }
+
+            element.Destroyed += HandleElementDestruction;
+        }
     }
 
     private void HandleElementDestruction(Element element)
     {
-        var handlers = this.registeredEventHandlers.RemoveAll(handler => handler.Element == element);
-    }
-
-    public void AddEventHandler(string eventName, Element attachedTo, EventDelegate callbackDelegate)
-    {
-        if (!this.registeredEvents.ContainsKey(eventName))
-            return;
-
-        var registeredEvent = this.registeredEvents[eventName];
-        var registeredEventHandler = new RegisteredEventHandler()
+        lock (this.handlerLock)
         {
-            EventName = eventName,
-            RegisteredEvent = registeredEvent,
-            Delegate = callbackDelegate,
-            Element = attachedTo,
-        };
+            var attachedHandlers = this.registeredEventHandlers
+                .Where(handler => handler.AttachedTo == element)
+                .ToArray();
 
-        this.registeredEventHandlers.Add(registeredEventHandler);
+            foreach (var handler in attachedHandlers)
+            {
+                foreach (var action in handler.Actions)
+                    action.Remove();
 
-        void elementCheckingDelegate(object[] objects)
-        {
-            if (objects.First() is Element element)
-                if (element != attachedTo && !element.IsChildOf(attachedTo))
-                    return;
+                this.registeredEventHandlers.Remove(handler);
+            }
 
-            if (objects.Length == 0)
+            var relatedHandlers = this.registeredEventHandlers
+                .Where(handler => handler.Actions.Any(x => x.Element == element))
+                .ToArray();
+
+            foreach (var handler in relatedHandlers)
             {
-                callbackDelegate.DynamicInvoke(null, Array.Empty<object>());
-            } else if (objects.Length == 1)
-            {
-                callbackDelegate.DynamicInvoke(objects.First(), Array.Empty<object>());
-            } else
-            {
-                callbackDelegate.DynamicInvoke(objects.First(), objects.Skip(1));
+                var action = handler.Actions.Single(x => x.Element == element);
+                action.Remove();
+                handler.Actions.Remove(action);
             }
         }
+    }
 
-        ScriptCallbackDelegateWrapper wrapper = new ScriptCallbackDelegateWrapper(elementCheckingDelegate, new());
+    public void AddEventHandler(string eventName, Element attachedTo, EventDelegate callbackDelegate, object? owner = null)
+    {
+        if (!this.registeredEvents.TryGetValue(eventName, out var registeredEvent))
+            throw new Exception($"Attempt to add event handler for non-existent event {eventName}");
 
-        foreach (var element in this.elementCollection.GetAll())
+        lock (this.handlerLock)
         {
-            if (registeredEvent.ElementType.IsAssignableFrom(element.GetType()))
+            void elementCheckingDelegate(object[] objects)
             {
-                var actions = (EventHandlerActions<Element>)registeredEvent.Delegate.DynamicInvoke(element, wrapper)!;
-                actions.Add(element);
+                if (objects.First() is Element element)
+                    if (element != attachedTo && !element.IsChildOf(attachedTo))
+                        return;
+
+                if (objects.Length == 0)
+                {
+                    callbackDelegate.DynamicInvoke(null, Array.Empty<object>());
+                } else if (objects.Length == 1)
+                {
+                    callbackDelegate.DynamicInvoke(objects.First(), Array.Empty<object>());
+                } else
+                {
+                    callbackDelegate.DynamicInvoke(objects.First(), objects.Skip(1).ToArray());
+                }
+            }
+
+            ScriptCallbackDelegateWrapper wrapper = new ScriptCallbackDelegateWrapper(elementCheckingDelegate, new());
+
+            var registeredEventHandler = new RegisteredEventHandler()
+            {
+                EventName = eventName,
+                RegisteredEvent = registeredEvent,
+                Delegate = callbackDelegate,
+                AttachedTo = attachedTo,
+                Actions = [],
+                Owner = owner
+            };
+
+            this.registeredEventHandlers.Add(registeredEventHandler);
+
+            foreach (var element in this.elementCollection.GetAll())
+            {
+                if (registeredEvent.ElementType.IsAssignableFrom(element.GetType()))
+                {
+                    var actions = (IEventHandlerActions)registeredEvent.Delegate.DynamicInvoke(wrapper)!;
+                    actions.Add(element);
+
+                    registeredEventHandler.Actions.Add(new RegisteredEventHandlerElement()
+                    {
+                        Element = element,
+                        Actions = actions
+                    });
+                }
             }
         }
     }
 
     public void RemoveEventHandler(string eventName, Element attachedTo, EventDelegate callbackDelegate)
     {
-        var registeredEvent = this.registeredEvents[eventName];
-        var handlers = this.registeredEventHandlers.Where(x => x.EventName == eventName && x.Delegate == callbackDelegate && x.Element == attachedTo);
-
-        foreach (var handler in handlers)
+        lock (this.handlerLock)
         {
-            this.registeredEventHandlers.Remove(handler);
+            var registeredEvent = this.registeredEvents[eventName];
+            var handlers = this.registeredEventHandlers
+                .Where(x => x.EventName == eventName && x.Delegate == callbackDelegate && x.AttachedTo == attachedTo)
+                .ToArray();
+
+            foreach (var handler in handlers)
+            {
+                foreach (var action in handler.Actions)
+                    action.Remove();
+
+                this.registeredEventHandlers.Remove(handler);
+            }
+        }
+    }
+
+    public void RemoveEventHandlersOwnedBy(object owner)
+    {
+        lock (this.handlerLock)
+        {
+            var handlers = this.registeredEventHandlers
+                .Where(x => x.Owner == owner)
+                .ToArray();
+
+            foreach (var handler in handlers)
+            {
+                foreach (var action in handler.Actions)
+                    action.Remove();
+
+                this.registeredEventHandlers.Remove(handler);
+            }
         }
     }
 
     public void RegisterEvent<T>(string eventName, EventRegistrationDelegate<T> eventDelegate) where T : Element
     {
-        this.registeredEvents[eventName] = new RegisteredEvent()
+        lock (this.handlerLock)
         {
-            ElementType = typeof(T),
-            EventName = eventName,
-            Delegate = eventDelegate,
-        };
+            this.registeredEvents[eventName] = new RegisteredEvent()
+            {
+                ElementType = typeof(T),
+                EventName = eventName,
+                Delegate = eventDelegate,
+            };
+        }
     }
 
     public void LoadEvents(IEventDefinitions eventDefinitions)
@@ -133,8 +207,20 @@ internal struct RegisteredEvent
 
 internal struct RegisteredEventHandler
 {
-    public string EventName { get; set; }
-    public RegisteredEvent RegisteredEvent { get; set; }
-    public EventDelegate Delegate { get; set; }
-    public Element Element { get; set; }
+    public string EventName { get; init; }
+    public RegisteredEvent RegisteredEvent { get; init; }
+    public EventDelegate Delegate { get; init; }
+    public Element AttachedTo { get; init; }
+    public List<RegisteredEventHandlerElement> Actions { get; init; }
+
+    public object? Owner { get; init; }
+}
+
+
+internal readonly struct RegisteredEventHandlerElement
+{
+    public Element Element { get; init; }
+    public IEventHandlerActions Actions { get; init; }
+
+    public readonly void Remove() => this.Actions.Remove(this.Element);
 }

@@ -22,6 +22,7 @@ using System;
 using System.IO;
 using System.Threading;
 using SlipeServer.Example;
+using SlipeServer.Scripting.Luau;
 
 namespace SlipeServer.Console;
 
@@ -104,18 +105,11 @@ public partial class Program
                     services.AddSingleton<PacketReplayerService>();
                     services.AddScoped<SampleScopedService>();
 
-                    services.AddLogging(x =>
-                    {
-                        if (Environment.UserInteractive)
-                            services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, ConsoleLoggerProvider>());
-                        else
-                            services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, NullLoggerProvider>());
-                    });
                     services.AddHttpClient();
-                    services.TryAddSingleton<ILogger>(x => x.GetRequiredService<ILogger<MtaServer>>());
 
                 });
                 builder.AddLua();
+                builder.AddLuauTranspiler();
                 builder.AddPhysics();
                 builder.AddParachuteResource();
                 builder.AddLuaControllers();
