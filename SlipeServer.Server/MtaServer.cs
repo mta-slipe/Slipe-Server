@@ -67,6 +67,12 @@ public class MtaServer
     public string MapName { get; set; } = "unknown";
 
     /// <summary>
+    /// Clients with a lower version will not be allowed to connect.
+    /// See: <a href="https://nightly.mtasa.com/ver/" />
+    /// </summary>
+    public string MinClientVersion { get; set; } = "1.6.0-9.22789.0";
+
+    /// <summary>
     /// Current server password, to be entered when connecting
     /// </summary>
     public string? Password { get; set; }
