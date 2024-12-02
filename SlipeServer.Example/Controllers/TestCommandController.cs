@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using SlipeServer.Console.Elements;
 using SlipeServer.LuaControllers;
 using SlipeServer.LuaControllers.Attributes;
 using SlipeServer.Server.ElementCollections;
@@ -11,7 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SlipeServer.Console.Controllers;
+namespace SlipeServer.Example.Controllers;
 
 [CommandController()]
 public class TestCommandController : BaseCommandController<CustomPlayer>

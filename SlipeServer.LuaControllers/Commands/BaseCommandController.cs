@@ -26,8 +26,14 @@ public abstract class BaseCommandController
     internal virtual void HandleCommand(Player player, string command, IEnumerable<object?> args, Func<IEnumerable<object?>, object?> handler)
     {
         this.SetContext(new CommandContext(player, command));
-        handler.Invoke(args);
-        this.SetContext(null);
+        try
+        {
+            handler.Invoke(args);
+        }
+        finally
+        {
+            this.SetContext(null);
+        }
     }
 }
 
@@ -42,7 +48,13 @@ public abstract class BaseCommandController<TPlayer> : BaseCommandController whe
             return;
 
         this.SetContext(new CommandContext<TPlayer>(tPlayer, command));
-        handler.Invoke(args);
-        this.SetContext(null);
+        try
+        {
+            handler.Invoke(args);
+        }
+        finally
+        {
+            this.SetContext(null);
+        }
     }
 }

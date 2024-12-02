@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using SlipeServer.Console.Elements;
-using SlipeServer.Console.LuaValues;
+using SlipeServer.Example.LuaValues;
 using SlipeServer.Packets.Definitions.Entities.Structs;
 using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;

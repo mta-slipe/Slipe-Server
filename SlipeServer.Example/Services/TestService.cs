@@ -1,7 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
-using SlipeServer.Console.Elements;
+using SlipeServer.Example.Elements;
 
-namespace SlipeServer.Console.Services;
+namespace SlipeServer.Example.Services;
+
 public class TestService
 {
     private readonly ILogger logger;
