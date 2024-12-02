@@ -1,5 +1,6 @@
 ﻿using Castle.Core.Logging;
 using FluentAssertions;
+using FluentAssertions.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -7,15 +8,19 @@ using SlipeServer.Net.Wrappers;
 using SlipeServer.Packets;
 using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc;
+using SlipeServer.Packets.Definitions.Resources;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Lua.Event;
 using SlipeServer.Server.Clients;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Resources;
+using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.Resources.Serving;
 using SlipeServer.Server.ServerBuilders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace SlipeServer.Server.TestTools;
@@ -76,12 +81,14 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
         this.NetWrapperMock.Setup(x => x.SendPacket(It.IsAny<ulong>(), It.IsAny<ushort>(), It.IsAny<Packet>()))
             .Callback((ulong address, ushort version, Packet packet) =>
             {
+                var data = packet.Write();
+                this.packetReducer.EnqueuePacket(this.clients[this.NetWrapperMock.Object][address], packet.PacketId, data);
                 this.sendPacketCalls.Add(new SendPacketCall()
                 {
                     Address = address,
                     Version = version,
                     PacketId = packet.PacketId,
-                    Data = packet.Write(),
+                    Data = data,
                     Priority = packet.Priority,
                     Reliability = packet.Reliability
                 });
@@ -153,6 +160,26 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
         ).Should().Be(count);
     }
 
+    public void VerifyResourceStartedPacketSent(TPlayer player, Resource resource, int count = 1)
+    {
+        var sendPacketCalls = this.sendPacketCalls
+            .Where(x => x.PacketId == PacketId.PACKET_ID_RESOURCE_START && x.Address == player.GetAddress());
+
+        int startedCount = 0;
+
+        var packet = new ResourceStartPacket();
+        foreach (var sendPacketCall in sendPacketCalls)
+        {
+            packet.Read(sendPacketCall.Data);
+            if(packet.NetId == resource.NetId)
+            {
+                startedCount++;
+            }
+        }
+
+        startedCount.Should().Be(count);
+    }
+
     public void VerifyLuaElementRpcPacketSent(ElementRpcFunction packetId, TPlayer to, byte[] data = null, int count = 1)
     {
         this.sendPacketCalls.Count(x =>
@@ -190,6 +217,11 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
         }
 
         count.Should().Be(expectedCount);
+    }
+
+    public T CreateInstance<T>(params object[] parameters)
+    {
+        return ActivatorUtilities.CreateInstance<T>(this.serviceProvider, parameters);
     }
 
     public void ResetPacketCountVerification() => this.sendPacketCalls.Clear();
