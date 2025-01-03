@@ -28,6 +28,7 @@ public class Resource
     public string Name { get; }
     public string Path { get; }
     public bool IsOopEnabled { get; set; }
+    public string MinClientVersion { get; set; }
 
     public Resource(
         MtaServer server, 
@@ -55,6 +56,7 @@ public class Resource
         }.AssociateWith(server);
 
         this.Exports = new List<string>();
+        this.MinClientVersion = server.MinClientVersion;
     }
 
     public void Start()
@@ -75,7 +77,7 @@ public class Resource
 
     public void StartFor(Player player)
     {
-        new ResourceStartPacket(this.Name, this.NetId, this.Root.Id, this.DynamicRoot.Id, (ushort)this.SanitisedNoClientScripts.Count, null, null, this.IsOopEnabled, this.PriorityGroup, this.Files, this.Exports)
+        new ResourceStartPacket(this.Name, this.NetId, this.Root.Id, this.DynamicRoot.Id, (ushort)this.SanitisedNoClientScripts.Count, null, this.MinClientVersion, this.IsOopEnabled, this.PriorityGroup, this.Files, this.Exports)
             .SendTo(player);
 
         if (this.SanitisedNoClientScripts.Any())
