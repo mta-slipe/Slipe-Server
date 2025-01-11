@@ -1,4 +1,5 @@
-﻿using SlipeServer.Server.Elements;
+﻿using SlipeServer.Server;
+using SlipeServer.Server.Elements;
 using SlipeServer.Server.Services;
 
 namespace SlipeServer.Example;
@@ -8,7 +9,7 @@ public class ServerExampleLogic
     private readonly CommandService commandService;
     private readonly ChatBox chatBox;
 
-    public ServerExampleLogic(CommandService commandService, ChatBox chatBox)
+    public ServerExampleLogic(CommandService commandService, ChatBox chatBox, MtaServer mtaServer)
     {
         this.commandService = commandService;
         this.chatBox = chatBox;
@@ -16,6 +17,18 @@ public class ServerExampleLogic
         AddCommand("hello", player =>
         {
             this.chatBox.OutputTo(player, "Hello world");
+        });
+
+        AddCommand("spawndespawnvehicle", player =>
+        {
+            if (player.Vehicle == null)
+            {
+                var vehicle = new Vehicle(404, player.Position).AssociateWith(mtaServer);
+                player.WarpIntoVehicle(vehicle);
+            } else
+            {
+                player.Vehicle.Destroy();
+            }
         });
 
         AddVehiclesCommands();
