@@ -505,7 +505,7 @@ public class MtaServer
         return this.additionalResources
             .Where(x => x is TResource)
             .Select(x => (x as TResource)!)
-            .First();
+            .Single();
     }
 
     /// <summary>
