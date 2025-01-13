@@ -543,7 +543,7 @@ public class Player : Ped
         this.client.SendPacket(new ForceReconnectPacket(server.ToString(), port, password));
     }
 
-    internal void IncrementReturnSyncPacket()
+    public void IncrementReturnSyncPacket()
     {
         this.pureSyncPacketsCount++;
     }

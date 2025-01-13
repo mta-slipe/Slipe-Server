@@ -7,6 +7,7 @@ using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.PacketHandling.Handlers.Player.Sync;
+using SlipeServer.Server.Tests.Integration;
 using SlipeServer.Server.TestTools;
 using System;
 using System.Numerics;
@@ -56,6 +57,10 @@ public class PureSyncPacketHandlerTests
         Mock<IElementCollection> elementCollectionMock = new();
 
         var handler = new PlayerPureSyncPacketHandler(loggerMock.Object, middlewareMock.Object, elementCollectionMock.Object);
+
+        sourcePlayer.IncrementReturnSyncPacket();
+        sourcePlayer.IncrementReturnSyncPacket();
+        sourcePlayer.IncrementReturnSyncPacket();
 
         handler.HandlePacket(sourcePlayer.Client, new PlayerPureSyncPacket()
         {
