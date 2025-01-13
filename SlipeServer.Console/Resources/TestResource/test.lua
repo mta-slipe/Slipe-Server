@@ -96,12 +96,21 @@ end)
 
 local screenX, screenY = guiGetScreenSize()
 local color = tocolor(255,255,255)
+local colorRed = tocolor(255,0,0)
 
 local function printDebugVehicle(k, ped)
 	local veh = getPedOccupiedVehicle(ped)
 	local name = (getElementType(ped) == "ped") and "ped" or getPlayerName(ped);
 
-	dxDrawText(string.format("%s - %s/%s", name, veh and tostring(veh) or "<none>", getElementData(ped, "currentVehicle") and tostring(getElementData(ped, "currentVehicle")) or "<none>"), screenX - 600, 400 + k * 25, screenX - 600, 400 + k * 25, color, 1.5, "sans")
+	local left = veh and tostring(veh) or "<none>";
+	local right = getElementData(ped, "currentVehicle") and tostring(getElementData(ped, "currentVehicle")) or "<none>";
+	local action = getElementData(ped, "currentVehicleAction") and tostring(getElementData(ped, "currentVehicleAction")) or "<none>";
+	local str = string.format("%s - %s/%s | %s", name, left, right, action);
+	if(left == right)then
+		dxDrawText(str, screenX - 600, 400 + k * 20, screenX - 600, 400 + k * 20, color, 1.2, "sans")
+	else
+		dxDrawText(str, screenX - 600, 400 + k * 20, screenX - 600, 400 + k * 20, colorRed, 1.2, "sans")
+	end
 end
 
 addEventHandler("onClientRender", root, function()

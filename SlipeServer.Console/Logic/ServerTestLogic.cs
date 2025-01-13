@@ -164,18 +164,30 @@ public class ServerTestLogic
             {
                 foreach (var item in elementCollection.GetByType<Player>())
                 {
-                    if(item.Vehicle == null)
+                    if (item.Vehicle == null)
+                    {
                         item.SetData("currentVehicle", LuaValue.Nil, DataSyncType.Broadcast);
+                        item.SetData("currentVehicleAction", LuaValue.Nil, DataSyncType.Broadcast);
+                    }
                     else
+                    {
                         item.SetData("currentVehicle", item.Vehicle, DataSyncType.Broadcast);
+                        item.SetData("currentVehicleAction", item.VehicleAction.ToString(), DataSyncType.Broadcast);
+                    }
                 }
 
                 foreach (var item in elementCollection.GetByType<Ped>())
                 {
                     if (item.Vehicle == null)
+                    {
                         item.SetData("currentVehicle", LuaValue.Nil, DataSyncType.Broadcast);
+                        item.SetData("currentVehicleAction", LuaValue.Nil, DataSyncType.Broadcast);
+                    }
                     else
+                    {
                         item.SetData("currentVehicle", item.Vehicle, DataSyncType.Broadcast);
+                        item.SetData("currentVehicleAction", item.VehicleAction.ToString(), DataSyncType.Broadcast);
+                    }
                 }
 
                 await Task.Delay(100);

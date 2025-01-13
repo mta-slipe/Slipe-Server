@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using SlipeServer.Packets.Definitions.Sync;
+using SlipeServer.Server.Elements;
 
 namespace SlipeServer.Server.PacketHandling.Factories;
 
@@ -28,5 +29,26 @@ public static class SyncPacketFactory
             configuration.SyncIntervals.KeySyncRotation,
             configuration.SyncIntervals.KeySyncAnalogMove
         );
+    }
+
+    public static ReturnSyncPacket CreateReturnSyncPacket(Player player)
+    {
+        if (player.Vehicle != null)
+        {
+            return new ReturnSyncPacket
+            {
+                IsInVechicle = true,
+                Position = player.Vehicle.Position,
+                Rotation = player.Vehicle.Rotation,
+            };
+        }
+        else
+        {
+            return new ReturnSyncPacket
+            {
+                IsInVechicle = false,
+                Position = player.Position,
+            };
+        }
     }
 }

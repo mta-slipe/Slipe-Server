@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using System;
 using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Sync;
@@ -20,29 +21,9 @@ public class ReturnSyncPacket : Packet
 
     }
 
-    public ReturnSyncPacket(bool isInVehicle, Vector3 position, Vector3 rotation)
-    {
-        this.IsInVechicle = isInVehicle;
-        this.Position = position;
-        this.Rotation = rotation;
-    }
-
-    public ReturnSyncPacket(Vector3 position, Vector3 rotation)
-    {
-        this.IsInVechicle = true;
-        this.Position = position;
-        this.Rotation = rotation;
-    }
-
-    public ReturnSyncPacket(Vector3 position)
-    {
-        this.IsInVechicle = false;
-        this.Position = position;
-    }
-
     public override void Read(byte[] bytes)
     {
-
+        throw new NotSupportedException();
     }
 
     public override byte[] Write()

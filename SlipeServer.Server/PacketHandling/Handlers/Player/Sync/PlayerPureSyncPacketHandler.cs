@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using SlipeServer.Packets;
 using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Clients;
@@ -7,6 +8,7 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
+using SlipeServer.Server.PacketHandling.Factories;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using System;
 using System.Linq;
@@ -41,11 +43,13 @@ public class PlayerPureSyncPacketHandler : IPacketHandler<PlayerPureSyncPacket>
         }
 
         var player = client.Player;
+        player.IncrementReturnSyncPacket();
+
         if (player.Vehicle != null && player.VehicleAction != VehicleAction.Exiting)
             return;
 
         if(player.ShouldSendReturnSyncPacket())
-            client.SendPacket(new ReturnSyncPacket(packet.Position));
+            client.SendPacket(SyncPacketFactory.CreateReturnSyncPacket(client.Player));
 
         packet.PlayerId = client.Player.Id;
         packet.Latency = (ushort)client.Ping;

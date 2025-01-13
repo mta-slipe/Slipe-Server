@@ -9,6 +9,7 @@ using SlipeServer.Server.ElementCollections;
 using System;
 using SlipeServer.Server.Clients;
 using SlipeServer.Server.Elements.Enums;
+using SlipeServer.Server.PacketHandling.Factories;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync;
 
@@ -33,7 +34,7 @@ public class VehiclePureSyncPacketHandler : IPacketHandler<VehiclePureSyncPacket
         var player = client.Player;
         var vehicle = player.Vehicle;
 
-        client.SendPacket(new ReturnSyncPacket(packet.Position, packet.Rotation));
+        client.SendPacket(SyncPacketFactory.CreateReturnSyncPacket(player));
 
         packet.PlayerId = client.Player.Id;
         packet.Latency = (ushort)client.Ping;

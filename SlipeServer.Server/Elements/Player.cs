@@ -543,9 +543,14 @@ public class Player : Ped
         this.client.SendPacket(new ForceReconnectPacket(server.ToString(), port, password));
     }
 
+    internal void IncrementReturnSyncPacket()
+    {
+        this.pureSyncPacketsCount++;
+    }
+
     internal bool ShouldSendReturnSyncPacket()
     {
-        return this.pureSyncPacketsCount++ % 4 == 0;
+        return this.pureSyncPacketsCount % 4 == 0;
     }
 
     public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
