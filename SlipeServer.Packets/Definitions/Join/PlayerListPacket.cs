@@ -1,11 +1,46 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Reader;
 using SlipeServer.Packets.Structs;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Join;
+
+public record PacketPlayer(ElementId playerId,
+        byte timeContext,
+        string nickname,
+        ushort bitsreamVersion,
+        uint buildNumber,
+
+        bool isDead,
+        bool isInVehicle,
+        bool hasJetpack,
+        bool isNametagShowing,
+        bool isHeadless,
+        bool isFrozen,
+
+        string nametagText,
+        Color? nametagColor,
+        byte moveAnimation,
+
+        ushort model,
+        ElementId? teamId,
+
+        ElementId? vehicleId,
+        byte? seat,
+
+        Vector3? position,
+        float? rotation,
+
+        ushort dimension,
+        byte fightingStyle,
+        byte alpha,
+        byte interior,
+
+        byte[] weapons);
 
 public class PlayerListPacket : Packet
 {
@@ -13,15 +48,11 @@ public class PlayerListPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
+    private PacketBuilder builder = new();
+    public List<PacketPlayer>? Players { get; private set; }
 
-    private readonly PacketBuilder builder;
-
-    public PlayerListPacket(bool showInChat)
-    {
-        this.builder = new PacketBuilder();
-
-        this.builder.Write(showInChat);
-    }
+    public bool ShowInChat { get; set; }
+    public PlayerListPacket() { }
 
     public void AddPlayer(
         ElementId playerId,
@@ -129,11 +160,21 @@ public class PlayerListPacket : Packet
 
     public override void Read(byte[] bytes)
     {
-        throw new NotSupportedException();
+        this.Players = new();
+        var reader = new PacketReader(bytes);
+        this.ShowInChat = reader.GetBit();
+        while (!reader.IsFinishedReading)
+        {
+            var playerId = reader.GetElementId();
+            var timeContext = reader.GetByte();
+            var nickname = reader.GetStringWithByteAsLength();
+            ;
+
+        }
     }
 
     public override byte[] Write()
     {
-        return this.builder.Build();
+        return this.builder!.Build();
     }
 }

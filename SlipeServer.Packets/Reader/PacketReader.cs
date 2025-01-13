@@ -15,6 +15,7 @@ public class PacketReader
     public int Counter { get; private set; }
     public int Size { get; private set; }
     public bool IsFinishedReading => this.Counter == this.Size;
+    public int RemainingBytes => (this.Size - this.Counter) / 8;
 
     public PacketReader(byte[] data)
     {
@@ -146,7 +147,13 @@ public class PacketReader
         int length = GetUint16();
         return GetStringCharacters(length);
     }
-
+    
+    public string GetStringWithByteAsLength()
+    {
+        var length = GetByte();
+        return GetStringCharacters(length);
+    }
+    
     public ElementId GetElementId()
     {
         var id = BitConverter.ToUInt32(GetBytesCapped(17).Concat(new byte[] { 0 }).ToArray(), 0);

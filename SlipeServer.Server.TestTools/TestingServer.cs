@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using System.Diagnostics.Tracing;
+using SlipeServer.Server.PacketHandling.Handlers.Rpc;
 
 namespace SlipeServer.Server.TestTools;
 
@@ -116,6 +117,7 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
     public static void ConfigureOverrides(IServiceCollection services)
     {
         var httpServerMock = new Mock<IResourceServer>();
+        services.AddSingleton<RpcPacketHandler>();
         services.AddSingleton<TestPacketQueueHandlerDispatcher>();
         services.AddSingleton<IResourceServer>(httpServerMock.Object);
         services.AddLogging();
@@ -207,6 +209,12 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
 
     public uint GenerateBinaryAddress() => ++this.binaryAddressCounter;
 
+    public ClientPlayer<TPlayer> CreateClientPlayer(TPlayer player)
+    {
+        var clientPlayer = new ClientPlayer<TPlayer>(this, player);
+        this.FlushPacketQueueHandler();
+        return clientPlayer;
+    }
 
     /// <summary>
     /// Starts the networking interfaces, allowing clients to connect and packets to be sent out to clients.

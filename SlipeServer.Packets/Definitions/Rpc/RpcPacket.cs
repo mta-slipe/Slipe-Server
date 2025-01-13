@@ -1,4 +1,5 @@
-﻿using SlipeServer.Packets.Enums;
+﻿using SlipeServer.Packets.Builder;
+using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
 using System;
 
@@ -10,7 +11,7 @@ public class RpcPacket : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public RpcFunctions FunctionId { get; private set; }
+    public RpcFunctions FunctionId { get; set; }
 
     public PacketReader Reader { get; private set; }
 
@@ -28,6 +29,10 @@ public class RpcPacket : Packet
 
     public override byte[] Write()
     {
-        throw new NotSupportedException();
+        var builder = new PacketBuilder();
+
+        builder.Write((byte)this.FunctionId);
+
+        return builder.Build();
     }
 }

@@ -1,7 +1,9 @@
 ﻿using SlipeServer.Net.Wrappers;
 using SlipeServer.Packets;
+using SlipeServer.Packets.Definitions.Join;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
+using SlipeServer.Packets.Definitions.Player;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Clients;
 using SlipeServer.Server.Elements;
@@ -32,6 +34,7 @@ public class TestingClient : Client<Player>
     public override void SendPacket(PacketId packetId, byte[] data, PacketPriority priority = PacketPriority.Medium, PacketReliability reliability = PacketReliability.Unreliable)
     {
         base.SendPacket(packetId, data, priority, reliability);
+        Packet? packet = null;
         switch (packetId)
         {
             case PacketId.PACKET_ID_LUA_ELEMENT_RPC:
@@ -39,18 +42,28 @@ public class TestingClient : Client<Player>
                 switch (elementRpcFunction)
                 {
                     case ElementRpcFunction.SET_ELEMENT_POSITION:
-                        HandleElementSetElementPositionPacket(data);
+                        packet = new SetElementPositionRpcPacket();
                         break;
                 }
-                ;
                 break;
-        }
-    }
+            case PacketId.PACKET_ID_ENTITY_ADD:
+                packet = new AddEntityPacket();
+                break;
+            case PacketId.PACKET_ID_PLAYER_LIST:
+                packet = new PlayerListPacket();
+                break;
+            case PacketId.PACKET_ID_PLAYER_CHANGE_NICK:
+                packet = new ChangeNicknamePacket();
+                break;
+            default:
+                throw new NotImplementedException(packetId.ToString());
 
-    private void HandleElementSetElementPositionPacket(byte[] data)
-    {
-        var packet = new SetElementPositionRpcPacket();
-        packet.Read(data);
-        PacketSent?.Invoke(this, packet);
+        }
+
+        if(packet != null)
+        {
+            packet.Read(data);
+            PacketSent?.Invoke(this, packet);
+        }
     }
 }

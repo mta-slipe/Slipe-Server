@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Definitions.Entities.Structs;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Reader;
 using SlipeServer.Packets.Structs;
 using System;
 using System.Drawing;
@@ -17,6 +18,8 @@ public class AddEntityPacket : Packet
 
     private readonly PacketBuilder builder;
     private uint entityCount;
+
+    public bool HasAnyEntity => entityCount > 0;
 
     public AddEntityPacket()
     {
@@ -785,7 +788,14 @@ public class AddEntityPacket : Packet
 
     public override void Read(byte[] bytes)
     {
-        throw new NotSupportedException();
+        var reader = new PacketReader(bytes);
+        this.entityCount = reader.GetCompressedUInt32();
+
+        for (int i = 0; i < entityCount; i++)
+        {
+
+        }
+        ;
     }
 
     public override byte[] Write()

@@ -22,7 +22,10 @@ public static class PlayerPacketFactory
 
     public static PlayerListPacket CreatePlayerListPacket(Player[] players, bool showInChat = false)
     {
-        var packet = new PlayerListPacket(showInChat);
+        var packet = new PlayerListPacket
+        {
+            ShowInChat = showInChat
+        };
 
         foreach (var player in players)
         {
@@ -139,7 +142,11 @@ public static class PlayerPacketFactory
 
     public static ChangeNicknamePacket CreateNicknameChangePacket(Player player)
     {
-        return new ChangeNicknamePacket(player.Id, player.Name);
+        return new ChangeNicknamePacket
+        {
+            PlayerId = player.Id,
+            Name = player.Name
+        };
     }
 
     public static UpdateInfoPacket CreateUpdateInfoPacket(Version version, bool mandatory = true)
