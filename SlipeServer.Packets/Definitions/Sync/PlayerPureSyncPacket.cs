@@ -6,6 +6,7 @@ using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Reader;
 using SlipeServer.Packets.Constants;
 using SlipeServer.Packets.Structs;
+using System.Reflection.PortableExecutable;
 
 namespace SlipeServer.Packets.Definitions.Sync;
 
@@ -113,9 +114,9 @@ public class PlayerPureSyncPacket : Packet
     {
         var builder = new PacketBuilder();
 
-        builder.Write(this.PlayerId);
+        //builder.Write(this.PlayerId);
         builder.Write(this.TimeContext);
-        builder.WriteCompressed(this.Latency);
+        //builder.WriteCompressed(this.Latency);
 
         this.KeySync.Write(builder);
         this.SyncFlags.Write(builder);
@@ -135,7 +136,9 @@ public class PlayerPureSyncPacket : Packet
         builder.WritePlayerHealth(this.Health);
         builder.WritePlayerArmor(this.Armor);
 
-        builder.WriteFloatFromBits(this.CameraRotation, 12, -MathF.PI, MathF.PI, true, false);
+        builder.WriteFloatFromBits(this.CameraRotation, 12, -MathF.PI, MathF.PI, false, true);
+        this.CameraOrientation = new CameraOrientationStructure(this.Position);
+        this.CameraOrientation.Write(builder);
 
         if (this.SyncFlags.HasAWeapon)
         {

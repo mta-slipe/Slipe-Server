@@ -11,15 +11,15 @@ public static class ElementPacketFactory
 {
     public static SetElementPositionRpcPacket CreateSetPositionPacket(Element element, Vector3 position, bool isWarp = false)
     {
-        return new SetElementPositionRpcPacket(element.Id, element.GetAndIncrementTimeContext(), position, isWarp);
+        return new SetElementPositionRpcPacket(element.Id, element.TimeContext.GetAndIncrement(), position, isWarp);
     }
 
     public static Packet CreateSetRotationPacket(Element element, Vector3 rotation)
     {
         return element switch
         {
-            Vehicle => new SetVehicleRotationRpcPacket(element.Id, element.GetAndIncrementTimeContext(), rotation),
-            Ped => new SetPedRotationRpcPacket(element.Id, element.GetAndIncrementTimeContext(), rotation.Z / (180 / MathF.PI), true),
+            Vehicle => new SetVehicleRotationRpcPacket(element.Id, element.TimeContext.GetAndIncrement(), rotation),
+            Ped => new SetPedRotationRpcPacket(element.Id, element.TimeContext.GetAndIncrement(), rotation.Z / (180 / MathF.PI), true),
             WorldObject => new SetObjectRotationRpcPacket(element.Id, rotation),
             _ => throw new NotImplementedException($"Can not create set rotation packet for {element.GetType()}"),
         };
@@ -27,12 +27,12 @@ public static class ElementPacketFactory
 
     public static FixVehicleRpcPacket CreateFixVehiclePacket(Element element)
     {
-        return new FixVehicleRpcPacket(element.Id, element.GetAndIncrementTimeContext());
+        return new FixVehicleRpcPacket(element.Id, element.TimeContext.GetAndIncrement());
     }
     
     public static SetElementHealthRpcPacket CreateSetHealthPacket(Element element, float health)
     {
-        return new SetElementHealthRpcPacket(element.Id, element.GetAndIncrementTimeContext(), health);
+        return new SetElementHealthRpcPacket(element.Id, element.TimeContext.GetAndIncrement(), health);
     }
 
     public static SetElementAlphaRpcPacket CreateSetAlphaPacket(Element element, byte alpha)

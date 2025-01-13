@@ -262,7 +262,7 @@ public static class VehiclePropertyRelayingExtensions
     private static void RelayHealthChange(Vehicle sender, ElementChangedEventArgs<Vehicle, float> args)
     {
         if (!args.IsSync)
-            sender.RelayChange(new SetElementHealthRpcPacket(sender.Id, sender.GetAndIncrementTimeContext(), args.NewValue));
+            sender.RelayChange(new SetElementHealthRpcPacket(sender.Id, sender.TimeContext.GetAndIncrement(), args.NewValue));
     }
 
     private static void RelayRespawn(Element sender, VehicleRespawnEventArgs args)
@@ -270,7 +270,7 @@ public static class VehiclePropertyRelayingExtensions
         sender.RelayChange(new VehicleSpawnPacket(new VehicleSpawnInfo[] { new VehicleSpawnInfo
                 {
                     ElementId = args.Vehicle.Id,
-                    TimeContext = args.Vehicle.GetAndIncrementTimeContext(),
+                    TimeContext = args.Vehicle.TimeContext.GetAndIncrement(),
                     VehicleId = args.Vehicle.Model,
                     Position = args.Vehicle.RespawnPosition,
                     Rotation = args.Vehicle.RespawnRotation,
@@ -286,7 +286,7 @@ public static class VehiclePropertyRelayingExtensions
                 eventArgs.Ped.Id,
                 eventArgs.Vehicle.Id,
                 eventArgs.Seat,
-                eventArgs.Ped.GetAndIncrementTimeContext()
+                eventArgs.Ped.TimeContext.GetAndIncrement()
             ));
         }
     }
@@ -297,7 +297,7 @@ public static class VehiclePropertyRelayingExtensions
         {
             sender.RelayChange(new RemoveFromVehiclePacket(
                 eventArgs.Ped.Id,
-                eventArgs.Ped.GetAndIncrementTimeContext()
+                eventArgs.Ped.TimeContext.GetAndIncrement()
             ));
         }
     }

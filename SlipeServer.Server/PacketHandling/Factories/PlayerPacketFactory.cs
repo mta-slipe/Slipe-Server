@@ -125,7 +125,7 @@ public static class PlayerPacketFactory
 
     public static SpawnPlayerPacket CreateSpawnPacket(Player player)
     {
-        return new SpawnPlayerPacket(player.Id, 0, player.Position, player.PedRotation, player.Model, ElementId.Zero, player.Interior, player.Dimension, player.GetAndIncrementTimeContext());
+        return new SpawnPlayerPacket(player.Id, 0, player.Position, player.PedRotation, player.Model, ElementId.Zero, player.Interior, player.Dimension, player.TimeContext.GetAndIncrement());
     }
 
     public static PlayerWastedPacket CreateWastedPacket(
@@ -134,7 +134,7 @@ public static class PlayerPacketFactory
     )
     {
         return new PlayerWastedPacket(player.Id, killer?.Id ?? ElementId.Zero, (byte)weaponType, (byte)bodyPart, isStealth,
-            player.GetAndIncrementTimeContext(), animationGroup, animationId);
+            player.TimeContext.GetAndIncrement(), animationGroup, animationId);
     }
 
     public static ChangeNicknamePacket CreateNicknameChangePacket(Player player)

@@ -76,6 +76,7 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
         this.NetWrapperMock.Setup(x => x.SendPacket(It.IsAny<ulong>(), It.IsAny<ushort>(), It.IsAny<Packet>()))
             .Callback((ulong address, ushort version, Packet packet) =>
             {
+                var data = packet.Write();
                 this.sendPacketCalls.Add(new SendPacketCall()
                 {
                     Address = address,
@@ -85,6 +86,7 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
                     Priority = packet.Priority,
                     Reliability = packet.Reliability
                 });
+                this.EnqueueIncomingPacket(this.NetWrapperMock.Object, address, packet.PacketId, data, null);
             });
 
         this.NetWrapperMock.Setup(x => x.SendPacket(

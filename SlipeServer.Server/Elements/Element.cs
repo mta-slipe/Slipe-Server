@@ -75,12 +75,7 @@ public class Element
         }
     }
 
-    private readonly object timeContextLock = new();
-    /// <summary>
-    /// The time sync context, this is a value used to verify whether synchronisation packets are to be applied or ignored.
-    /// </summary>
-    public byte TimeContext { get; private set; }
-
+    public TimeContext TimeContext { get; }
 
     private string name = "";
     /// <summary>
@@ -386,7 +381,7 @@ public class Element
         this.associatedPlayers = [];
         this.subscribers = [];
         this.attachedElements = [];
-        this.TimeContext = 1;
+        this.TimeContext = new();
 
         this.ElementData = [];
         this.ElementDataSubscriptions = new();
@@ -423,22 +418,6 @@ public class Element
 
         this.subscribers.Remove(player);
         player.UnsubscribeFrom(this);
-    }
-
-    /// <summary>
-    /// Returns a new time context, to be used when sync updates sent prior to this moment are meant to be invaldiated.
-    /// </summary>
-    /// <returns>The new time context</returns>
-    public byte GetAndIncrementTimeContext()
-    {
-        lock (this.timeContextLock)
-        {
-            if (++this.TimeContext == 0)
-            {
-                this.TimeContext++;
-            }
-            return this.TimeContext;
-        }
     }
 
     /// <summary>

@@ -547,7 +547,7 @@ public class ServerTestLogic
         };
 
         this.commandService.AddCommand("increment").Triggered += (source, args)
-            => args.Player.GetAndIncrementTimeContext();
+            => args.Player.TimeContext.GetAndIncrement();
 
         this.commandService.AddCommand("resendmodpackets").Triggered += (source, args)
             => args.Player.ResendModPackets();

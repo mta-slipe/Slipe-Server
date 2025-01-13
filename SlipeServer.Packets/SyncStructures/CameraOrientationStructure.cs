@@ -60,6 +60,14 @@ public class CameraOrientationStructure : ISyncStructure
 
     public void Write(PacketBuilder builder)
     {
-
+        builder.WriteFloatFromBits(this.CameraForward.Z, 8, -MathF.PI, MathF.PI, false);
+        builder.WriteFloatFromBits(this.CameraForward.X, 8, -MathF.PI, MathF.PI, false);
+        builder.Write(true);
+        builder.WriteCapped(3, 2);
+        uint bitCount = bitCountLookup[3];
+        float range = MathF.Pow(2, bitCount);
+        builder.WriteFloatFromBits(this.CameraForward.X, (int)bitCount, -range, range, false);
+        builder.WriteFloatFromBits(this.CameraForward.Y, (int)bitCount, -range, range, false);
+        builder.WriteFloatFromBits(this.CameraForward.Z, (int)bitCount, -range, range, false);
     }
 }
