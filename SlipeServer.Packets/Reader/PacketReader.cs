@@ -216,6 +216,9 @@ public class PacketReader
 
     public void AlignToByteBoundary()
     {
+        if (this.byteIndex == 128)
+            return;
+
         this.byteIndex = 128;
         this.dataIndex++;
     }

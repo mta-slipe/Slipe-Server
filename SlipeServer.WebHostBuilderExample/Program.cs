@@ -4,7 +4,12 @@ using SlipeServer.Server.Resources.Serving;
 using SlipeServer.Server;
 using SlipeServer.Server.ServerBuilders;
 using SlipeServer.Server.Mappers;
+using SlipeServer.Console.Logic;
+using SlipeServer.Lua;
 using SlipeServer.WebHostBuilderExample;
+using SlipeServer.Example;
+
+Directory.SetCurrentDirectory(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()!.Location)!);
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,30 +20,32 @@ builder.Services.AddSwaggerGen();
 
 var configuration = builder.Configuration.GetRequiredSection("MtaServer").Get<Configuration>();
 
+IConfigurationRoot config = new ConfigurationBuilder()
+    .AddUserSecrets<Program>()
+    .Build();
+
+if (configuration != null && ushort.TryParse(config.GetSection("HttpPort").Value, out var httpPort))
+{
+    configuration.HttpPort = httpPort;
+}
+
 builder.Services.AddHttpClient();
 builder.Services.AddDefaultMtaServerServices();
-builder.Services.AddMtaServer<CustomPlayer>(configuration, builder =>
-{
-    builder.AddDefaultServices();
-    builder.AddDefaultLuaMappings();
-    builder.AddDefaultNetWrapper();
-    builder.AddResourceServer<BasicHttpServer>();
-    builder.AddSampleResource();
-});
+builder.Services.AddLua();
 
 builder.Services.AddSingleton<IResourceServer, BasicHttpServer>();
 
 builder.Services.AddHostedService<SampleHostedService>(); // Use instead of logics
 builder.Services.TryAddSingleton<ILogger>(x => x.GetRequiredService<ILogger<MtaServer>>());
 
-builder.ConfigureMtaServers(configure =>
+builder.AddMtaServer(serverBuilder =>
 {
     var isDevelopment = builder.Environment.IsDevelopment();
     var exceptBehaviours = isDevelopment ? ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour : ServerBuilderDefaultBehaviours.None;
 
-    configure.AddDefaultPacketHandlers();
-    configure.AddDefaultBehaviours(exceptBehaviours);
-    configure.StartAllServers();
+    serverBuilder.AddHostedDefaults(exceptBehaviours: exceptBehaviours);
+    serverBuilder.AddSampleResource();
+    serverBuilder.AddExampleLogic();
 });
 
 var app = builder.Build();

@@ -1,40 +1,40 @@
-﻿using Microsoft.Extensions.DependencyInjection.Extensions;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using SlipeServer.Server.Resources.Serving;
-using SlipeServer.Server.Mappers;
-using Microsoft.Extensions.Configuration;
+using SlipeServer.Server.ServerBuilders;
+using SlipeServer.Example;
+
+
+Configuration? configuration = null;
 
 var builder = Host.CreateDefaultBuilder(args);
-
-builder.ConfigureServices((hostBuilderContext, services) =>
-{
-    var configuration = hostBuilderContext.Configuration.GetRequiredSection("MtaServer").Get<Configuration>();
-
-    services.AddHttpClient();
-    services.AddDefaultMtaServerServices();
-    services.AddMtaServer<CustomPlayer>(configuration, builder =>
+builder
+    .ConfigureServices((hostBuilderContext, services) =>
     {
-        builder.AddDefaultServices();
-        builder.AddDefaultLuaMappings();
-        builder.AddDefaultNetWrapper();
+        configuration = hostBuilderContext.Configuration.GetRequiredSection("MtaServer").Get<Configuration>();
+
+        IConfigurationRoot config = new ConfigurationBuilder()
+            .AddUserSecrets<Program>()
+            .Build();
+
+        if (configuration != null && ushort.TryParse(config.GetSection("HttpPort").Value, out var httpPort))
+        {
+            configuration.HttpPort = httpPort;
+        }
+
+        services.AddHttpClient();
+        services.AddSingleton<IResourceServer, BasicHttpServer>();
+
+        services.AddHostedService<SampleHostedService>(); // Use instead of logics
+        services.TryAddSingleton<ILogger>(x => x.GetRequiredService<ILogger<MtaServer>>());
+    })
+    .AddMtaServer(builder =>
+    {
+        builder.UseConfiguration(configuration!);
+        builder.AddHostedDefaults(exceptBehaviours: ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour);
+        builder.AddExampleLogic();
     });
-
-    services.AddSingleton<IResourceServer, BasicHttpServer>();
-
-    services.AddHostedService<SampleHostedService>(); // Use instead of logics
-    services.TryAddSingleton<ILogger>(x => x.GetRequiredService<ILogger<MtaServer>>());
-});
-
-builder.ConfigureMtaServers((context, configure) =>
-{
-    var isDevelopment = context.HostingEnvironment.IsDevelopment();
-    var exceptBehaviours = isDevelopment ? ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour : ServerBuilderDefaultBehaviours.None;
-
-    configure.AddDefaultPacketHandlers();
-    configure.AddDefaultBehaviours(exceptBehaviours);
-    configure.StartAllServers();
-});
-
 
 var app = builder.Build();
 

@@ -2,6 +2,7 @@
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Extensions;
+using System.Collections.Generic;
 
 namespace SlipeServer.Server.Concepts;
 
@@ -683,8 +684,15 @@ public class Controls
         }
     }
 
+    private readonly HashSet<string> enabledControlStates = [];
+
     public void SetControlState(string control, bool state)
     {
+        if (state)
+            this.enabledControlStates.Add(control);
+        else
+            this.enabledControlStates.Remove(control);
+
         new SetControlStatePacket(control, state)
             .SendTo(this.player);
     }
@@ -692,6 +700,16 @@ public class Controls
     public void SetControlState(Control control, bool state)
     {
         SetControlState(control.ToString().ToLower(), state);
+    }
+
+    public bool IsControlStateSet(string control)
+    {
+        return this.enabledControlStates.Contains(control);
+    }
+
+    public bool IsControlStateSet(Control control)
+    {
+        return IsControlStateSet(control.ToString().ToLower());
     }
 
     public void SetAllEnabled(bool newState)
@@ -752,5 +770,6 @@ public class Controls
         this.RadarMoveWestEnabled = newState;
         this.RadarAttachEnabled = newState;
     }
+
     public event ElementEventHandler<Player, PlayerControlsChangedArgs>? StateChanged;
 }

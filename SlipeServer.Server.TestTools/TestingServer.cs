@@ -42,6 +42,15 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
         RegisterNetWrapper(this.NetWrapperMock.Object);
         SetupSendPacketMocks();
     }
+    
+    public TestingServer(IServiceProvider serviceProvider, Action<ServerBuilder> builderAction) : base(serviceProvider, builderAction)
+    {
+        this.NetWrapperMock = new Mock<INetWrapper>();
+        this.clients[this.NetWrapperMock.Object] = new();
+        this.sendPacketCalls = new();
+        RegisterNetWrapper(this.NetWrapperMock.Object);
+        SetupSendPacketMocks();
+    }
 
     public IEnumerable<SendLuaEvent> GetSendLuaEvents()
     {
@@ -64,8 +73,8 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
 
     private void SetupSendPacketMocks()
     {
-        this.NetWrapperMock.Setup(x => x.SendPacket(It.IsAny<uint>(), It.IsAny<ushort>(), It.IsAny<Packet>()))
-            .Callback((uint address, ushort version, Packet packet) =>
+        this.NetWrapperMock.Setup(x => x.SendPacket(It.IsAny<ulong>(), It.IsAny<ushort>(), It.IsAny<Packet>()))
+            .Callback((ulong address, ushort version, Packet packet) =>
             {
                 this.sendPacketCalls.Add(new SendPacketCall()
                 {
@@ -79,13 +88,13 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
             });
 
         this.NetWrapperMock.Setup(x => x.SendPacket(
-            It.IsAny<uint>(),
+            It.IsAny<ulong>(),
             It.IsAny<PacketId>(), 
             It.IsAny<ushort>(), 
             It.IsAny<byte[]>(), 
             It.IsAny<PacketPriority>(), 
             It.IsAny<PacketReliability>()
-        )).Callback((uint address, PacketId packetId, ushort version, byte[] data, PacketPriority priority, PacketReliability reliability) =>
+        )).Callback((ulong address, PacketId packetId, ushort version, byte[] data, PacketPriority priority, PacketReliability reliability) =>
             {
                 this.sendPacketCalls.Add(new SendPacketCall()
                 {
@@ -122,20 +131,17 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
         return player;
     }
 
-    public void HandlePacket(TestingPlayer source, PacketId packetId, byte[] data)
+    protected override IClient CreateClient(ulong binaryAddress, INetWrapper netWrapper)
     {
-        this.packetReducer.EnqueuePacket(source.Client, packetId, data);
-    }
-
-    public void HandlePacket(uint address, PacketId packetId, byte[] data)
-    {
-        var sourceClient = CreateClient(0, this.NetWrapperMock.Object);
-        this.packetReducer.EnqueuePacket(sourceClient, packetId, data);
-    }
-
-    protected override IClient CreateClient(uint binaryAddress, INetWrapper netWrapper)
-    {
-        var player = new TestingPlayer();
+        Player player;
+        if (typeof(TPlayer) == typeof(Player) || typeof(TPlayer) == typeof(TestingPlayer))
+        {
+            player = new TestingPlayer();
+        }
+        else
+        {
+            player = Instantiate<TPlayer>();
+        }
         player.Client = new TestingClient(binaryAddress, netWrapper, player);
         return player.Client;
     }
@@ -208,20 +214,20 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
 
     public override void Stop()
     {
-        foreach (var player in elementCollection.GetByType<Player>())
-        {
-            player.Kick(PlayerDisconnectType.SHUTDOWN);
-        }
-
-        this.IsRunning = false;
-
         Stopped?.Invoke();
+
+        base.Stop();
     }
 }
 
 public class TestingServer : TestingServer<TestingPlayer>
 {
     public TestingServer(Configuration configuration = null, Action<ServerBuilder>? configure = null) : base(configuration, configure)
+    {
+
+    }
+
+    public TestingServer(IServiceProvider serviceProvider, Action<ServerBuilder> builderAction) : base(serviceProvider, builderAction)
     {
 
     }

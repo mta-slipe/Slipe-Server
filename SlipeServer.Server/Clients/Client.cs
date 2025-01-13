@@ -19,7 +19,7 @@ public class Client<TPlayer>
     where TPlayer : Player
 {
     private readonly INetWrapper netWrapper;
-    private readonly uint binaryAddress;
+    private readonly ulong binaryAddress;
     private ushort bitStreamVersion;
 
     protected TPlayer Player { get; set; }
@@ -80,7 +80,7 @@ public class Client<TPlayer>
     /// <param name="binaryAddress">The identifier using within the networking interface for the client</param>
     /// <param name="netWrapper">The networking interface the client is connected to</param>
     /// <param name="player">The player this client is associated with</param>
-    public Client(uint binaryAddress, INetWrapper netWrapper, TPlayer player)
+    public Client(ulong binaryAddress, INetWrapper netWrapper, TPlayer player)
     {
         this.binaryAddress = binaryAddress;
         this.netWrapper = netWrapper;
@@ -208,7 +208,7 @@ public class Client<TPlayer>
 /// </summary>
 public class Client : Client<Player>
 {
-    public Client(uint binaryAddress, INetWrapper netWrapper, Player player)
+    public Client(ulong binaryAddress, INetWrapper netWrapper, Player player)
         : base(binaryAddress, netWrapper, player)
     {
 

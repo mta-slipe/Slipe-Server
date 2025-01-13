@@ -39,6 +39,9 @@ using SlipeServer.Server.Resources.Serving;
 using SlipeServer.Server.Mappers;
 using SlipeServer.Server.Resources.Interpreters;
 using System;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
+using SlipeServer.Server.Loggers;
 
 namespace SlipeServer.Server.ServerBuilders;
 
@@ -65,38 +68,10 @@ public static class DefaultServerBuilderExtensions
     {
         builder.ConfigureServices(services =>
         {
-            if ((exceptMiddleware & ServerBuilderDefaultMiddleware.ProjectileSyncPacketMiddleware) == 0)
-                services.AddSingleton<ISyncHandlerMiddleware<ProjectileSyncPacket>, RangeSyncHandlerMiddleware<ProjectileSyncPacket>>(
-                    x => new RangeSyncHandlerMiddleware<ProjectileSyncPacket>(x.GetRequiredService<IElementCollection>(), builder.Configuration.ExplosionSyncDistance)
-                );
-            if ((exceptMiddleware & ServerBuilderDefaultMiddleware.DetonateSatchelsPacketMiddleware) == 0)
-                services.AddSingleton<ISyncHandlerMiddleware<DetonateSatchelsPacket>, RangeSyncHandlerMiddleware<DetonateSatchelsPacket>>(
-                    x => new RangeSyncHandlerMiddleware<DetonateSatchelsPacket>(x.GetRequiredService<IElementCollection>(), builder.Configuration.ExplosionSyncDistance, false)
-                );
-            if ((exceptMiddleware & ServerBuilderDefaultMiddleware.DestroySatchelsPacketMiddleware) == 0)
-                services.AddSingleton<ISyncHandlerMiddleware<DestroySatchelsPacket>, RangeSyncHandlerMiddleware<DestroySatchelsPacket>>(
-                    x => new RangeSyncHandlerMiddleware<DestroySatchelsPacket>(x.GetRequiredService<IElementCollection>(), builder.Configuration.ExplosionSyncDistance, false)
-                );
-            if ((exceptMiddleware & ServerBuilderDefaultMiddleware.ExplosionPacketMiddleware) == 0)
-                services.AddSingleton<ISyncHandlerMiddleware<ExplosionPacket>, RangeSyncHandlerMiddleware<ExplosionPacket>>(
-                    x => new RangeSyncHandlerMiddleware<ExplosionPacket>(x.GetRequiredService<IElementCollection>(), builder.Configuration.ExplosionSyncDistance, false)
-                );
-
-            if ((exceptMiddleware & ServerBuilderDefaultMiddleware.PlayerPureSyncPacketMiddleware) == 0)
-                services.AddSingleton<ISyncHandlerMiddleware<PlayerPureSyncPacket>, RangeSyncHandlerMiddleware<PlayerPureSyncPacket>>(
-                    x => new RangeSyncHandlerMiddleware<PlayerPureSyncPacket>(x.GetRequiredService<IElementCollection>(), builder.Configuration.LightSyncRange));
-
-            if ((exceptMiddleware & ServerBuilderDefaultMiddleware.KeySyncPacketMiddleware) == 0)
-                services.AddSingleton<ISyncHandlerMiddleware<KeySyncPacket>, RangeSyncHandlerMiddleware<KeySyncPacket>>(
-                    x => new RangeSyncHandlerMiddleware<KeySyncPacket>(x.GetRequiredService<IElementCollection>(), builder.Configuration.LightSyncRange));
-
-            if ((exceptMiddleware & ServerBuilderDefaultMiddleware.LightSyncBehaviourMiddleware) == 0)
-                services.AddSingleton<ISyncHandlerMiddleware<LightSyncBehaviour>, MaxRangeSyncHandlerMiddleware<LightSyncBehaviour>>(
-                    x => new MaxRangeSyncHandlerMiddleware<LightSyncBehaviour>(x.GetRequiredService<IElementCollection>(), builder.Configuration.LightSyncRange));
-
-
+            services.AddDefaultMiddlewares(exceptMiddleware);
         });
     }
+
     public static void AddDefaultResourceInterpreters(
         this ServerBuilder builder,
         ServerBuilderDefaultResourceInterpreters except = ServerBuilderDefaultResourceInterpreters.None)
@@ -109,6 +84,21 @@ public static class DefaultServerBuilderExtensions
 
         if (!except.HasFlag(ServerBuilderDefaultResourceInterpreters.SlipeLua))
             builder.AddResourceInterpreter<SlipeLuaResourceInterpreter>();
+    }
+
+    public static void AddDefaultLogging(this ServerBuilder builder)
+    {
+        builder.ConfigureServices(services =>
+        {
+            services.AddLogging(x =>
+            {
+                if (Environment.UserInteractive)
+                    services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, ConsoleLoggerProvider>());
+                else
+                    services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, NullLoggerProvider>());
+            });
+            services.TryAddSingleton<ILogger>(x => x.GetRequiredService<ILogger<MtaServer>>());
+        });
     }
 
     /// <summary>
@@ -126,7 +116,8 @@ public static class DefaultServerBuilderExtensions
         ServerBuilderDefaultBehaviours exceptBehaviours = ServerBuilderDefaultBehaviours.None,
         ServerBuilderDefaultServices exceptServices = ServerBuilderDefaultServices.None,
         ServerBuilderDefaultMiddleware exceptMiddleware = ServerBuilderDefaultMiddleware.None,
-        ServerBuilderDefaultResourceInterpreters exceptResourceInterpreters = ServerBuilderDefaultResourceInterpreters.None)
+        ServerBuilderDefaultResourceInterpreters exceptResourceInterpreters = ServerBuilderDefaultResourceInterpreters.None,
+        bool includeLogging = true)
     {
         builder.AddDefaultPacketHandler(exceptPacketHandlers);
         builder.AddDefaultBehaviours(exceptBehaviours);
@@ -137,6 +128,39 @@ public static class DefaultServerBuilderExtensions
         builder.AddDefaultResourceInterpreters(exceptResourceInterpreters);
 
         builder.AddDefaultNetWrapper();
+
+        if (includeLogging)
+            AddDefaultLogging(builder);
+    }
+
+    /// <summary>
+    /// Registers all default packet handlers, behaviours, services, lua mappings, resource servers, resource interpreters, and networking interfaces
+    /// More information can be found on https://server.mta-slipe.com/articles/getting-started/configuration.html#building-your-server
+    /// </summary>
+    /// <param name="exceptPacketHandlers">Packet handlers to exclude</param>
+    /// <param name="exceptBehaviours">Behaviours to exclude</param>
+    /// <param name="exceptServices">Services to exclude</param>
+    /// <param name="exceptMiddleware">Middleware to exclude</param>
+    /// <param name="exceptResourceInterpreters">Resource interpreters to exclude</param>
+    public static void AddHostedDefaults(
+        this ServerBuilder builder,
+        ServerBuilderDefaultPacketHandlers exceptPacketHandlers = ServerBuilderDefaultPacketHandlers.None,
+        ServerBuilderDefaultBehaviours exceptBehaviours = ServerBuilderDefaultBehaviours.None,
+        ServerBuilderDefaultMiddleware exceptMiddleware = ServerBuilderDefaultMiddleware.None,
+        ServerBuilderDefaultResourceInterpreters exceptResourceInterpreters = ServerBuilderDefaultResourceInterpreters.None,
+        bool includeLogging = true)
+    {
+        builder.AddDefaultPacketHandler(exceptPacketHandlers);
+        builder.AddDefaultBehaviours(exceptBehaviours);
+        builder.AddDefaultLuaMappings();
+
+        builder.AddResourceServer<BasicHttpServer>();
+        builder.AddDefaultResourceInterpreters(exceptResourceInterpreters);
+
+        builder.AddDefaultNetWrapper();
+
+        if (includeLogging)
+            AddDefaultLogging(builder);
     }
 
     public static void AddDefaultNetWrapper(this ServerBuilder builder)

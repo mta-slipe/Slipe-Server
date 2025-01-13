@@ -51,17 +51,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.14" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="6.0.0-preview.5.21301.5" />
     <PackageReference Include="System.Drawing.Common" Version="5.0.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SlipeServer.ConfigurationProviders\SlipeServer.ConfigurationProviders.csproj" />
-    <ProjectReference Include="..\SlipeServer.LuaControllers\SlipeServer.LuaControllers.csproj" />
-    <ProjectReference Include="..\SlipeServer.Lua\SlipeServer.Lua.csproj" />
-    <ProjectReference Include="..\SlipeServer.Physics\SlipeServer.Physics.csproj" />
-    <ProjectReference Include="..\SlipeServer.Server\SlipeServer.Server.csproj" />
+    <ProjectReference Include="..\SlipeServer.Example\SlipeServer.Example.csproj" />
     <ProjectReference Include="..\SlipeServer.SourceGenerators\SlipeServer.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
@@ -77,6 +74,7 @@
   <PropertyGroup>
     <DockerfileRunArguments>-p 50666:50666/udp -p 50667:50667/udp -p 50789:50789/udp -p 40680:40680/tcp</DockerfileRunArguments>
     <ApplicationIcon>slipe-logo.ico</ApplicationIcon>
+    <UserSecretsId>d7b25c98-70cf-4698-8f65-75748bfee697</UserSecretsId>
   </PropertyGroup>
 
 </Project>

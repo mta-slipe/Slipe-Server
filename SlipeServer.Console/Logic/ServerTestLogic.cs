@@ -4,6 +4,7 @@ using SlipeServer.Console.Elements;
 using SlipeServer.Console.LuaValues;
 using SlipeServer.Packets.Definitions.Entities.Structs;
 using SlipeServer.Packets.Definitions.Lua;
+using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Enums.VehicleUpgrades;
 using SlipeServer.Packets.Lua.Camera;
@@ -19,6 +20,7 @@ using SlipeServer.Server.Elements.IdGeneration;
 using SlipeServer.Server.Elements.Structs;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Events;
+using SlipeServer.Server.PacketHandling;
 using SlipeServer.Server.PacketHandling.Factories;
 using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Providers;
@@ -155,6 +157,30 @@ public class ServerTestLogic
         this.worldService.SetGlitchEnabled(GlitchType.GLITCH_FASTSPRINT, true);
 
         this.server.PlayerJoined += OnPlayerJoin;
+
+        Task.Run(async () =>
+        {
+            while (true)
+            {
+                foreach (var item in elementCollection.GetByType<Player>())
+                {
+                    if(item.Vehicle == null)
+                        item.SetData("currentVehicle", LuaValue.Nil, DataSyncType.Broadcast);
+                    else
+                        item.SetData("currentVehicle", item.Vehicle, DataSyncType.Broadcast);
+                }
+
+                foreach (var item in elementCollection.GetByType<Ped>())
+                {
+                    if (item.Vehicle == null)
+                        item.SetData("currentVehicle", LuaValue.Nil, DataSyncType.Broadcast);
+                    else
+                        item.SetData("currentVehicle", item.Vehicle, DataSyncType.Broadcast);
+                }
+
+                await Task.Delay(100);
+            }
+        });
     }
 
     private void SetupTestElements()
@@ -219,7 +245,7 @@ public class ServerTestLogic
 
         this.FrozenVehicle = new Vehicle(602, new Vector3(0, 0, 10)).AssociateWith(this.server);
         this.FrozenVehicle.IsFrozen = true;
-
+        this.Ped.WarpIntoVehicle(this.FrozenVehicle);
         this.PrivateVehicle = new Vehicle(602, new Vector3(-10.58f, -5.70f, 3.11f)).AssociateWith(this.server);
         this.PrivateVehicle.CanEnter = (Ped ped, Vehicle vehicle, byte seat) =>
         {
@@ -244,6 +270,27 @@ public class ServerTestLogic
         this.Rhino.Jacked += (e, args) => this.logger.LogInformation($"Rhino has been jacked by {args.NewDriver.Name}, kicking out {args.PreviousDriver.Name}");
 
         this.Elegy = new Vehicle(562, new Vector3(30, -20, 3)).AssociateWith(this.server);
+        this.Elegy.HealthChanged += (e, value) =>
+        {
+            if (ClientContext.Current != null)
+            {
+                this.chatBox.Output($"Elegy health changed to: {e.Health} by {ClientContext.Current.Player.Name}");
+
+            } else
+            {
+                this.chatBox.Output($"Elegy health changed to: {e.Health} by server");
+            }
+        };
+
+        Task.Run(async () =>
+        {
+            while (true)
+            {
+                await Task.Delay(15000);
+                this.Elegy.Health = Random.Shared.Next(700, 800);
+            }
+        });
+
         this.Flash = new Vehicle(565, new Vector3(34, -20, 3)).AssociateWith(this.server);
         this.Stratum = new Vehicle(561, new Vector3(38, -20, 3)).AssociateWith(this.server);
         this.Sultan = new Vehicle(560, new Vector3(42, -20, 3)).AssociateWith(this.server);
@@ -391,6 +438,11 @@ public class ServerTestLogic
 
     private void SetupTestCommands()
     {
+        this.commandService.AddCommand("elegysethealth").Triggered += (source, args) =>
+        {
+            this.Elegy.Health = Random.Shared.Next(700, 800);
+        };
+
         this.commandService.AddCommand("radararea").Triggered += (source, args) =>
         {
             this.RadarArea!.Color = Color.FromArgb(this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255), this.random.Next(0, 255));
@@ -456,8 +508,16 @@ public class ServerTestLogic
         this.commandService.AddCommand("ping").Triggered += (source, args)
             => this.chatBox.OutputTo(args.Player, $"Your ping is {args.Player.Client.Ping}", Color.YellowGreen);
 
-        this.commandService.AddCommand("kickme").Triggered += (source, args)
-            => args.Player.Kick("You have been kicked by slipe");
+        this.commandService.AddCommand("kickme").Triggered += (source, args) =>
+        {
+            void Player_Disconnected(Player sender, PlayerQuitEventArgs e)
+            {
+                System.Console.WriteLine("Kickme disconnected");
+            }
+            args.Player.Disconnected += Player_Disconnected;
+            args.Player.Kick("You have been kicked by slipe");
+            args.Player.Disconnected -= Player_Disconnected;
+        };
 
         this.commandService.AddCommand("a51").Triggered += (source, args)
             => args.Player.Position = new Vector3(216.46f, 1895.05f, 17.28f);
@@ -944,10 +1004,11 @@ public class ServerTestLogic
         };
         this.commandService.AddCommand("destroymyveh").Triggered += (source, args) =>
         {
-            if (args.Player.Vehicle != null)
+            var vehicle = args.Player.Vehicle;
+            if (vehicle != null)
             {
-                args.Player.Vehicle.Destroy();
-                this.chatBox.Output($"destroyed... veh={args.Player.Vehicle} {args.Player.Vehicle.IsDestroyed}");
+                vehicle.Destroy();
+                this.chatBox.Output($"Destroyed your vehicle. Veh={args.Player.Vehicle} Destroyed={vehicle.IsDestroyed}");
             }
         };
         this.commandService.AddCommand("destroyenteredvehicle").Triggered += (source, args) =>
@@ -977,12 +1038,6 @@ public class ServerTestLogic
             }
             stopwatch.Stop();
             this.logger.LogInformation("Starting Slipe Lua test resource for {playerName} took {milliseconds}ms", args.Player.Name, stopwatch.ElapsedMilliseconds);
-        };
-        
-        this.commandService.AddCommand("fixmyveh").Triggered += (source, args) =>
-        {
-            args.Player.Vehicle?.Fix();
-            this.chatBox.OutputTo(args.Player, "Vehicle fixed");
         };
         
         this.commandService.AddCommand("blowup").Triggered += (source, args) =>
