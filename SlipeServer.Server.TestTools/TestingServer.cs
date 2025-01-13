@@ -11,12 +11,15 @@ using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Lua.Event;
 using SlipeServer.Server.Clients;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.PacketHandling.Handlers.QueueHandlers;
+using SlipeServer.Server.PacketHandling.Handlers;
 using SlipeServer.Server.Resources.Serving;
 using SlipeServer.Server.ServerBuilders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
+using System.Diagnostics.Tracing;
 
 namespace SlipeServer.Server.TestTools;
 
@@ -113,9 +116,15 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
     public static void ConfigureOverrides(IServiceCollection services)
     {
         var httpServerMock = new Mock<IResourceServer>();
+        services.AddSingleton<TestPacketQueueHandlerDispatcher>();
         services.AddSingleton<IResourceServer>(httpServerMock.Object);
         services.AddLogging();
         services.AddSingleton<ILogger>(x => x.GetRequiredService<ILogger<MtaServer>>());
+    }
+
+    public void FlushPacketQueueHandler()
+    {
+        GetRequiredService<TestPacketQueueHandlerDispatcher>().Flush();
     }
 
     public TPlayer AddFakePlayer()
@@ -212,6 +221,11 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
             server.Start();
 
         this.IsRunning = true;
+    }
+
+    public override void RegisterPacketHandler<TPacketHandler, TPacket>(params object[] parameters)
+    {
+        RegisterPacketHandler<TPacket, TestPacketQueueHandler<TPacket>, TPacketHandler>();
     }
 
     public override void Stop()

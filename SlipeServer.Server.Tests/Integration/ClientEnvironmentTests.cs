@@ -24,15 +24,8 @@ public class ClientEnvironmentTests
         var clientPositionWas = player.Position;
         clientEnvironment.ClientPlayer.SetPosition(new Vector3(5, 0, 0));
 
-        var waitHandle = new AutoResetEvent(false);
-        void handlePositionChanged(Element sender, ElementChangedEventArgs<Vector3> args)
-        {
-            waitHandle.Set();
-        }
-        player.PositionChanged += handlePositionChanged;
         clientEnvironment.ClientPlayer.SynchronizeWithServer();
-
-        waitHandle.WaitOne(1000);
+        server.FlushPacketQueueHandler();
 
         using var _ = new AssertionScope();
 
