@@ -28,6 +28,9 @@ public class Cache<T>
 
     public T? Get(bool forceUpdate = false)
     {
+#if DEBUG
+        UpdateCache();
+#endif
         if (forceUpdate || this.CacheTime + this.CachePeriod < DateTime.Now.Ticks)
             UpdateCache();
         return this.Data;

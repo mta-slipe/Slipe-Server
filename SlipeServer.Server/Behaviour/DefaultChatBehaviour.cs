@@ -19,6 +19,12 @@ public class DefaultChatBehaviour
             {
                 if (arguments.Command == "say")
                 {
+                    if (sender.IsChatMuted)
+                    {
+                        chatBox.OutputTo(sender, "You are muted.", Color.Red);
+                        return;
+                    }
+
                     string message = $"{player.NametagColor.ToColorCode()}{player.Name}: #ffffff{string.Join(' ', arguments.Arguments)}";
                     chatBox.Output(message, Color.White, true, ChatEchoType.Player, player);
                     logger?.LogInformation("{message}", message);

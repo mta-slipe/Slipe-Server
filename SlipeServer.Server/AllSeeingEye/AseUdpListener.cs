@@ -67,11 +67,14 @@ public class AseUdpListener
                 } ?? Array.Empty<byte>();
 
                 socket.Send(data, data.Length, source);
-                socket.BeginReceive(new AsyncCallback(OnUdpData), socket);
             }
             catch (Exception e)
             {
                 this.logger.LogError(e, "ASE request failed");
+            }
+            finally
+            {
+                socket.BeginReceive(new AsyncCallback(OnUdpData), socket);
             }
         }
     }
