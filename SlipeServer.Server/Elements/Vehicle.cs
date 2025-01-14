@@ -777,7 +777,7 @@ public class Vehicle : Element
             {
                 RemovePassenger(occupant.Value);
             }
-            this.Occupants = [];
+            this.occupants.Clear();
             return true;
         }
 
