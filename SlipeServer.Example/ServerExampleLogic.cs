@@ -22,6 +22,18 @@ public class ServerExampleLogic
             this.chatBox.OutputTo(player, "Hello world");
         });
 
+        AddCommand("spawndespawnvehicle", player =>
+        {
+            if (player.Vehicle == null)
+            {
+                var vehicle = new Vehicle(404, player.Position).AssociateWith(mtaServer);
+                player.WarpIntoVehicle(vehicle);
+            } else
+            {
+                player.Vehicle.Destroy();
+            }
+        });
+
         AddVehiclesCommands();
     }
 

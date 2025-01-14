@@ -4,6 +4,7 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.ColShapes;
 using SlipeServer.Server.PacketHandling.Builders;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SlipeServer.Server.PacketHandling.Factories;
 
@@ -13,7 +14,7 @@ public static class AddEntityPacketFactory
     {
         var builder = new AddEntityPacketBuilder();
 
-        foreach (var element in elements)
+        foreach (var element in elements.OrderBy(x => x.ElementType))
         {
             if (element.Id == ElementId.Zero)
                 throw new System.Exception(string.Format("Element {0} can not be created with id 0", element.ElementType));

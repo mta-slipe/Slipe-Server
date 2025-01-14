@@ -94,6 +94,28 @@ addCommandHandler("myvehprintdamageclient", function()
     end
 end)
 
+local screenX, screenY = guiGetScreenSize()
+local color = tocolor(255,255,255)
+
+local function printDebugVehicle(k, ped)
+	local veh = getPedOccupiedVehicle(ped)
+	local name = (getElementType(ped) == "ped") and "ped" or getPlayerName(ped);
+
+	dxDrawText(string.format("%s - %s/%s", name, veh and tostring(veh) or "<none>", getElementData(ped, "currentVehicle") and tostring(getElementData(ped, "currentVehicle")) or "<none>"), screenX - 600, 400 + k * 25, screenX - 600, 400 + k * 25, color, 1.5, "sans")
+end
+
+addEventHandler("onClientRender", root, function()
+	local k = 0
+	for i,v in ipairs(getElementsByType("player"))do
+		k = k + 1
+		printDebugVehicle(k, v);
+	end
+	for i,v in ipairs(getElementsByType("ped"))do
+		k = k + 1
+		printDebugVehicle(k, v);
+	end
+end)
+
 local clientTasks = {}
 addEvent("testClientTask", true)
 addEventHandler("testClientTask", root, function(clientTask)

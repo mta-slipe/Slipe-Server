@@ -70,11 +70,16 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="SlipeServer.Example.Elements" />
+  </ItemGroup>
   
   <PropertyGroup>
     <DockerfileRunArguments>-p 50666:50666/udp -p 50667:50667/udp -p 50789:50789/udp -p 40680:40680/tcp</DockerfileRunArguments>
     <ApplicationIcon>slipe-logo.ico</ApplicationIcon>
     <UserSecretsId>d7b25c98-70cf-4698-8f65-75748bfee697</UserSecretsId>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
 </Project>
