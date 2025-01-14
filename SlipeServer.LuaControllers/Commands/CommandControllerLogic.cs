@@ -39,6 +39,7 @@ public sealed class CommandControllerLogic
     private void IndexControllers()
     {
         var controllerTypes = AppDomain.CurrentDomain.GetAssemblies()
+            .Where(x => !x.FullName.StartsWith("Microsoft.") && !x.FullName.StartsWith("System.") && !x.FullName.StartsWith("xunit."))
             .SelectMany(x => x.GetExportedTypes())
             .Where(x => x.IsAssignableTo(typeof(BaseCommandController)))
             .Where(x => !x.IsAbstract);
