@@ -100,7 +100,6 @@ public class Player : Ped
     public bool IsSyncingVelocity { get; set; }
     public bool IsStealthAiming { get; set; }
     public bool IsVoiceMuted { get; set; }
-    public bool IsChatMuted { get; set; }
     public List<Ped> SyncingPeds { get; set; }
     public List<Vehicle> SyncingVehicles { get; set; }
     public Controls Controls { get; private set; }
@@ -220,6 +219,22 @@ public class Player : Ped
         }
     }
 
+
+    private bool isChatMuted;
+    public bool IsChatMuted
+    {
+        get => this.isChatMuted;
+        set
+        {
+            if (this.isChatMuted == value)
+                return;
+
+            var args = new ElementChangedEventArgs<Player, bool>(this, this.isChatMuted, value, this.IsSync);
+            this.isChatMuted = value;
+            IsChatMutedChanged?.Invoke(this, args);
+        }
+    }
+
     public DateTime LastMovedUtc = DateTime.UtcNow;
 
     public int DebugLogLevel { get; set; }
@@ -276,7 +291,7 @@ public class Player : Ped
 
     public bool IsSubscribedTo(Element element) => this.subscriptionElements.Contains(element);
 
-    public void Spawn(Vector3 position, float rotation, ushort model, byte interior, ushort dimension)
+    public void Spawn(Vector3 position, float rotation, ushort model, byte interior, ushort dimension, Team? team = null)
     {
         this.position = position;
         this.PedRotation = rotation;
@@ -289,7 +304,9 @@ public class Player : Ped
         this.health = 100;
         this.armor = 0;
 
-        this.Spawned?.Invoke(this, new PlayerSpawnedEventArgs(this));
+        this.Team = team;
+
+        this.Spawned?.Invoke(this, new PlayerSpawnedEventArgs(this, position, rotation, this.Team, model, interior, dimension));
     }
 
     public void ShowHudComponent(HudComponent hudComponent, bool isVisible)
@@ -365,17 +382,16 @@ public class Player : Ped
         var pendingScreenshot = this.PendingScreenshots[screenshotId];
         if (pendingScreenshot != null && pendingScreenshot.Stream != null)
         {
-            using (var stream = pendingScreenshot.Stream)
-            {
-                this.ScreenshotTaken?.Invoke(this, new ScreenshotEventArgs(pendingScreenshot.Stream, pendingScreenshot.ErrorMessage, pendingScreenshot.Tag));
-            }
+            using var stream = pendingScreenshot.Stream;
+            this.ScreenshotTaken?.Invoke(this, new ScreenshotEventArgs(pendingScreenshot.Stream, pendingScreenshot.ErrorMessage, pendingScreenshot.Tag));
+            
             this.PendingScreenshots.Remove(screenshotId);
         }
     }
 
-    public void Kick(PlayerDisconnectType type = PlayerDisconnectType.CUSTOM)
+    public void Kick(PlayerDisconnectType type = PlayerDisconnectType.CUSTOM, Element? responsibleElement = null)
     {
-        this.Kicked?.Invoke(this, new PlayerKickEventArgs(string.Empty, type));
+        this.Kicked?.Invoke(this, new PlayerKickEventArgs(string.Empty, type, responsibleElement));
         this.TriggerDisconnected(QuitReason.Kick);
         this.Client.SendPacket(new PlayerDisconnectPacket(type, string.Empty));
         this.Client.IsConnected = false;
@@ -383,9 +399,9 @@ public class Player : Ped
         this.Destroy();
     }
 
-    public void Kick(string reason, PlayerDisconnectType type = PlayerDisconnectType.CUSTOM)
+    public void Kick(string reason, PlayerDisconnectType type = PlayerDisconnectType.CUSTOM, Element? responsibleElement = null)
     {
-        this.Kicked?.Invoke(this, new PlayerKickEventArgs(reason, type));
+        this.Kicked?.Invoke(this, new PlayerKickEventArgs(reason, type, responsibleElement));
         this.TriggerDisconnected(QuitReason.Kick);
         this.Client.SendPacket(new PlayerDisconnectPacket(type, reason));
         this.Client.IsConnected = false;
@@ -553,6 +569,7 @@ public class Player : Ped
     public event ElementChangedEventHandler<Player, bool>? IsNametagShowingChanged;
     public event ElementChangedEventHandler<Player, Color?>? NametagColorChanged;
     public event ElementChangedEventHandler<Player, Element?>? ContactElementChanged;
+    public event ElementChangedEventHandler<Player, bool>? IsChatMutedChanged;
     public event ElementEventHandler<Player, PlayerDamagedEventArgs>? Damaged;
     public event ElementEventHandler<Player, PlayerSpawnedEventArgs>? Spawned;
     public event ElementEventHandler<Player, PlayerCommandEventArgs>? CommandEntered;

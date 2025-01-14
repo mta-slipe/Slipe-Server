@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFramework>net9.0</TargetFramework>
 		<Platforms>AnyCPU;x64;x86;ARM64;ARM32</Platforms>
 		<Nullable>enable</Nullable>
 		<Version>0.1.0</Version>
@@ -128,8 +128,8 @@
 		<Content Include="Binaries\arm64\NetModuleWrapper.so" Pack="true" PackagePath="\runtimes\linux-arm64\native"></Content>
 
 
-		<Content Include="SlipeServer.Net.targets" Pack="true" PackagePath="\build\net8.0\SlipeServer.Net.targets"></Content>
-		<Content Include="SlipeServer.Net.targets" Pack="true" PackagePath="\buildTransitive\net8.0\SlipeServer.Net.targets"></Content>
+		<Content Include="SlipeServer.Net.targets" Pack="true" PackagePath="\build\net9.0\SlipeServer.Net.targets"></Content>
+		<Content Include="SlipeServer.Net.targets" Pack="true" PackagePath="\buildTransitive\net9.0\SlipeServer.Net.targets"></Content>
 	</ItemGroup>
 
 	<ItemGroup>

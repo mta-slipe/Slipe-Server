@@ -44,7 +44,7 @@ public class Element
         }
     }
 
-    private readonly object childrenLock = new();
+    private readonly Lock childrenLock = new();
     private readonly List<Element> children;
     /// <summary>
     /// The element's children as in the element tree.
@@ -75,7 +75,7 @@ public class Element
         }
     }
 
-    private readonly object timeContextLock = new();
+    private readonly Lock timeContextLock = new();
     /// <summary>
     /// The time sync context, this is a value used to verify whether synchronisation packets are to be applied or ignored.
     /// </summary>
@@ -372,7 +372,7 @@ public class Element
     /// </summary>
     public bool IsDestroyed { get; set; }
 
-    private readonly object destroyLock = new();
+    private readonly Lock destroyLock = new();
 
     /// <summary>
     /// When set to false will not create the element for new players that join, or any players when associated directly with the server
