@@ -1,5 +1,4 @@
-﻿using SlipeServer.Console.Elements;
-using SlipeServer.Packets.Enums;
+﻿using SlipeServer.Packets.Enums;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Services;
