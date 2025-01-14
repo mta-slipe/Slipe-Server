@@ -31,7 +31,7 @@ public class ConsoleEchoPacket : Packet
     {
         var builder = new PacketBuilder();
 
-        builder.WriteStringWithByteAsLength(this.Message);
+        builder.WriteStringWithoutLength(this.Message);
 
         return builder.Build();
     }
