@@ -1,4 +1,10 @@
-﻿if(isSlipeServer)then
+﻿type Point = { x: number, y: number }
+
+local p: Point = { x = 1, y = 2 }
+
+print("Point with luau:", p.x, p.y);
+
+if(isSlipeServer)then
 	local object = createObject(321, 5, 5, 5)
 	setElementPosition(object, 50, 50, 250)
 	setElementRotation(object, 180, 180, 90)

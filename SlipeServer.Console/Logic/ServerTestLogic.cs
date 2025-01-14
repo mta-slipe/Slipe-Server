@@ -153,6 +153,30 @@ public class ServerTestLogic
         this.worldService.SetGlitchEnabled(GlitchType.GLITCH_FASTSPRINT, true);
 
         this.server.PlayerJoined += OnPlayerJoin;
+
+        Task.Run(async () =>
+        {
+            while (true)
+            {
+                foreach (var item in elementCollection.GetByType<Player>())
+                {
+                    if(item.Vehicle == null)
+                        item.SetData("currentVehicle", LuaValue.Nil, DataSyncType.Broadcast);
+                    else
+                        item.SetData("currentVehicle", item.Vehicle, DataSyncType.Broadcast);
+                }
+
+                foreach (var item in elementCollection.GetByType<Ped>())
+                {
+                    if (item.Vehicle == null)
+                        item.SetData("currentVehicle", LuaValue.Nil, DataSyncType.Broadcast);
+                    else
+                        item.SetData("currentVehicle", item.Vehicle, DataSyncType.Broadcast);
+                }
+
+                await Task.Delay(100);
+            }
+        });
     }
 
     private void SetupTestElements()
@@ -209,7 +233,7 @@ public class ServerTestLogic
 
         this.FrozenVehicle = new Vehicle(602, new Vector3(0, 0, 10)).AssociateWith(this.server);
         this.FrozenVehicle.IsFrozen = true;
-
+        this.Ped.WarpIntoVehicle(this.FrozenVehicle);
         this.PrivateVehicle = new Vehicle(602, new Vector3(-10.58f, -5.70f, 3.11f)).AssociateWith(this.server);
         this.PrivateVehicle.CanEnter = (Ped ped, Vehicle vehicle, byte seat) =>
         {
@@ -963,10 +987,11 @@ public class ServerTestLogic
         };
         this.commandService.AddCommand("destroymyveh").Triggered += (source, args) =>
         {
-            if (args.Player.Vehicle != null)
+            var vehicle = args.Player.Vehicle;
+            if (vehicle != null)
             {
-                args.Player.Vehicle.Destroy();
-                this.chatBox.Output($"destroyed... veh={args.Player.Vehicle} {args.Player.Vehicle.IsDestroyed}");
+                vehicle.Destroy();
+                this.chatBox.Output($"Destroyed your vehicle. Veh={args.Player.Vehicle} Destroyed={vehicle.IsDestroyed}");
             }
         };
         this.commandService.AddCommand("destroyenteredvehicle").Triggered += (source, args) =>
@@ -996,12 +1021,6 @@ public class ServerTestLogic
             }
             stopwatch.Stop();
             this.logger.LogInformation("Starting Slipe Lua test resource for {playerName} took {milliseconds}ms", args.Player.Name, stopwatch.ElapsedMilliseconds);
-        };
-        
-        this.commandService.AddCommand("fixmyveh").Triggered += (source, args) =>
-        {
-            args.Player.Vehicle?.Fix();
-            this.chatBox.OutputTo(args.Player, "Vehicle fixed");
         };
         
         this.commandService.AddCommand("blowup").Triggered += (source, args) =>

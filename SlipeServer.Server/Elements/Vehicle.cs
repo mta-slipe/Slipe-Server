@@ -614,32 +614,47 @@ public class Vehicle : Element
 
     public void SetDoorState(VehicleDoor door, VehicleDoorState state, bool spawnFlyingComponent = false)
     {
-        this.doorStates[(int)door] = (byte)state;
-        this.DoorStateChanged?.Invoke(this, new VehicleDoorStateChangedArgs(this, door, state, spawnFlyingComponent));
+        if (this.doorStates[(int)door] != (byte)state)
+        {
+            this.doorStates[(int)door] = (byte)state;
+            this.DoorStateChanged?.Invoke(this, new VehicleDoorStateChangedArgs(this, door, state, spawnFlyingComponent));
+        }
     }
 
     public void SetWheelState(VehicleWheel wheel, VehicleWheelState state)
     {
-        this.wheelStates[(int)wheel] = (byte)state;
-        this.WheelStateChanged?.Invoke(this, new VehicleWheelStateChangedArgs(this, wheel, state));
+        if (this.wheelStates[(int)wheel] != (byte)state)
+        {
+            this.wheelStates[(int)wheel] = (byte)state;
+            this.WheelStateChanged?.Invoke(this, new VehicleWheelStateChangedArgs(this, wheel, state));
+        }
     }
 
     public void SetPanelState(VehiclePanel panel, VehiclePanelState state)
     {
-        this.panelStates[(int)panel] = (byte)state;
-        this.PanelStateChanged?.Invoke(this, new VehiclePanelStateChangedArgs(this, panel, state));
+        if (this.panelStates[(int)panel] != (byte)state)
+        {
+            this.panelStates[(int)panel] = (byte)state;
+            this.PanelStateChanged?.Invoke(this, new VehiclePanelStateChangedArgs(this, panel, state));
+        }
     }
 
     public void SetLightState(VehicleLight light, VehicleLightState state)
     {
-        this.lightStates[(int)light] = (byte)state;
-        this.LightStateChanged?.Invoke(this, new VehicleLightStateChangedArgs(this, light, state));
+        if (this.lightStates[(int)light] != (byte)state)
+        {
+            this.lightStates[(int)light] = (byte)state;
+            this.LightStateChanged?.Invoke(this, new VehicleLightStateChangedArgs(this, light, state));
+        }
     }
 
     public void SetDoorOpenRatio(VehicleDoor door, float ratio, uint time = 0)
     {
-        this.doorRatios[(int)door] = ratio;
-        this.DoorOpenRatioChanged?.Invoke(this, new VehicleDoorOpenRatioChangedArgs(this, door, ratio, time));
+        if (this.doorRatios[(int)door] != ratio)
+        {
+            this.doorRatios[(int)door] = ratio;
+            this.DoorOpenRatioChanged?.Invoke(this, new VehicleDoorOpenRatioChangedArgs(this, door, ratio, time));
+        }
     }
 
     public void TriggerPushed(Player player)
@@ -737,6 +752,27 @@ public class Vehicle : Element
 
     public void DetachFromTower(bool updateCounterpart = true) => AttachToTower(null, updateCounterpart);
 
+    public override bool Destroy()
+    {
+        if (base.Destroy())
+        {
+            if(this.JackingPed != null)
+            {
+                this.JackingPed.EnteringVehicle = null;
+                this.JackingPed.Seat = null;
+                this.JackingPed.VehicleAction = VehicleAction.None;
+            }
+
+            foreach (var occupant in this.Occupants)
+            {
+                RemovePassenger(occupant.Value);
+            }
+            this.Occupants = [];
+            return true;
+        }
+
+        return false;
+    }
 
     public Func<Ped, Vehicle, byte, bool>? CanEnter;
     public Func<Ped, Vehicle, byte, bool>? CanExit;
