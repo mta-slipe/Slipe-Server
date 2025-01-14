@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace SlipeServer.LuaControllers.Commands;
 
-public class BoundCommand
+public abstract class BoundCommandBase
 {
     public IServiceProvider ServiceProvider { get; }
     public string Command { get; set; }
@@ -12,7 +12,7 @@ public class BoundCommand
     public BaseCommandController? ControllerInstance { get; set; }
     public MethodInfo Method { get; set; }
 
-    public BoundCommand(
+    public BoundCommandBase(
         IServiceProvider serviceProvider,
         string command,
         Type controllerType,
@@ -25,6 +25,13 @@ public class BoundCommand
         this.Method = method;
         this.ControllerInstance = controllerInstance;
     }
+}
+
+public sealed class BoundCommand : BoundCommandBase
+{
+    public BoundCommand(IServiceProvider serviceProvider, string command, Type controllerType, MethodInfo method, BaseCommandController? controllerInstance) : base(serviceProvider, command, controllerType, method, controllerInstance)
+    {
+    }
 
     public void HandleCommand(Player player, string command, IEnumerable<object?> args)
     {
@@ -35,6 +42,29 @@ public class BoundCommand
             controller = (BaseCommandController)ActivatorUtilities.CreateInstance(scope.ServiceProvider, this.ControllerType);
         }
 
-        controller.HandleCommand(player, command, args, (values) => this.Method.Invoke(controller, values.ToArray()));
+        controller.HandleCommand(player, command, args, this.Method, (values) => this.Method.Invoke(controller, values.ToArray()));
+    }
+}
+
+public sealed class AsyncBoundCommand : BoundCommandBase
+{
+    public AsyncBoundCommand(IServiceProvider serviceProvider, string command, Type controllerType, MethodInfo method, BaseCommandController? controllerInstance) : base(serviceProvider, command, controllerType, method, controllerInstance)
+    {
+    }
+
+    public async Task HandleCommand(Player player, string command, IEnumerable<object?> args)
+    {
+        var controller = this.ControllerInstance;
+        if (controller == null)
+        {
+            var scope = this.ServiceProvider.CreateScope();
+            controller = (BaseCommandController)ActivatorUtilities.CreateInstance(scope.ServiceProvider, this.ControllerType);
+        }
+
+        await controller.HandleCommandAsync(player, command, args, this.Method, async (values) =>
+        {
+            var task = (Task)this.Method.Invoke(controller, values.ToArray())!;
+            await task;
+        });
     }
 }

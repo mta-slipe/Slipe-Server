@@ -10,6 +10,7 @@ public class CommandPacketHandler : IPacketHandler<CommandPacket>
 
     public void HandlePacket(IClient client, CommandPacket packet)
     {
-        client.Player.TriggerCommand(packet.Command, packet.Arguments);
+        if(!string.IsNullOrWhiteSpace(packet.Command) && packet.Command.Length >= CommandPacket.MinCommandLength)
+            client.Player.TriggerCommand(packet.Command, packet.Arguments);
     }
 }

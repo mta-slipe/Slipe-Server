@@ -10,6 +10,7 @@ using SlipeServer.WebHostBuilderExample;
 using SlipeServer.Example;
 using SlipeServer.Example.Services;
 using SlipeServer.Example.Elements;
+using SlipeServer.LuaControllers;
 
 Directory.SetCurrentDirectory(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()!.Location)!);
 
@@ -50,6 +51,8 @@ builder.AddMtaServerWithDiSupport<CustomPlayer>(serverBuilder =>
     serverBuilder.AddSampleResource();
     serverBuilder.AddExampleLogic();
 });
+
+builder.Services.AddLuaControllers();
 
 var app = builder.Build();
 

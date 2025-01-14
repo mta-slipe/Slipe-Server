@@ -1,6 +1,4 @@
 ﻿namespace SlipeServer.LuaControllers.Attributes;
 
-[AttributeUsage(AttributeTargets.Method)]
-public class NoLuaEventAttribute : Attribute
-{
-}
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+public class NoLuaEventAttribute : Attribute;

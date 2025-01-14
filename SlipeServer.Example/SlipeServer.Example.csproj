@@ -21,4 +21,10 @@
     <Using Include="SlipeServer.Example.Services" />
     <Using Include="SlipeServer.Example.LuaValues" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Resources\**\*.lua">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
