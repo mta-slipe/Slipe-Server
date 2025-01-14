@@ -7,14 +7,13 @@ public static class LuaServiceCollectionExtensions
 {
     public static void AddLua(this IServiceCollection services)
     {
-        services.AddSingleton<IScriptEventRuntime, ScriptEventRuntime>();
-        services.AddSingleton<IScriptInputRuntime, ScriptInputRuntime>();
+        services.AddScripting();
         services.AddSingleton<LuaService>();
     }
 
     public static void AddLua<T>(this IServiceCollection services) where T : class, IScriptEventRuntime
     {
-        services.AddSingleton<IScriptEventRuntime, T>();
+        services.AddScripting<T>();
         services.AddSingleton<LuaService>();
     }
 }
