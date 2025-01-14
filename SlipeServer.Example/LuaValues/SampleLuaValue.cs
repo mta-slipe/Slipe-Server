@@ -4,7 +4,7 @@ using SlipeServer.SourceGenerators;
 using System.ComponentModel.DataAnnotations;
 using System.Numerics;
 
-namespace SlipeServer.Console.LuaValues;
+namespace SlipeServer.Example.LuaValues;
 
 [LuaValue]
 public partial class SampleLuaValue : ILuaValue
