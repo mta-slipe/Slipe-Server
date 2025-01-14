@@ -1,4 +1,6 @@
 ﻿using FluentAssertions;
+using FluentAssertions.Execution;
+using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.TestTools;
 using System.Numerics;
@@ -74,5 +76,21 @@ public class PlayerTests
         player.Money = -1000000000;
 
         player.Money.Should().Be(-99999999);
+    }
+
+    [Fact]
+    public void DestroyingVehiclesWithPlayersInsideShouldWork()
+    {
+        var player = TestingPlayer.CreateStandalone();
+        var vehicle = new Vehicle(404, Vector3.Zero);
+        
+        player.WarpIntoVehicle(vehicle);
+        var veh1 = player.Vehicle;
+        vehicle.Destroy();
+        var veh2 = player.Vehicle;
+
+        using var _ = new AssertionScope();
+        veh1.Should().Be(vehicle);
+        veh2.Should().BeNull();
     }
 }

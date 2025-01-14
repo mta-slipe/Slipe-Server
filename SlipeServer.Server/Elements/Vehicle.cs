@@ -752,6 +752,27 @@ public class Vehicle : Element
 
     public void DetachFromTower(bool updateCounterpart = true) => AttachToTower(null, updateCounterpart);
 
+    public override bool Destroy()
+    {
+        if (base.Destroy())
+        {
+            if(this.JackingPed != null)
+            {
+                this.JackingPed.EnteringVehicle = null;
+                this.JackingPed.Seat = null;
+                this.JackingPed.VehicleAction = VehicleAction.None;
+            }
+
+            foreach (var occupant in this.Occupants)
+            {
+                RemovePassenger(occupant.Value);
+            }
+            this.Occupants = [];
+            return true;
+        }
+
+        return false;
+    }
 
     public Func<Ped, Vehicle, byte, bool>? CanEnter;
     public Func<Ped, Vehicle, byte, bool>? CanExit;
