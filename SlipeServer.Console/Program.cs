@@ -20,8 +20,8 @@ using System;
 using System.IO;
 using System.Threading;
 using SlipeServer.Example;
-using SlipeServer.Scripting.Luau;
 using SlipeServer.Example.Services;
+using SlipeServer.Scripting.Luau;
 
 namespace SlipeServer.Console;
 

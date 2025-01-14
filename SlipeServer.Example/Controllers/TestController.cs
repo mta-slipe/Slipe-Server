@@ -23,15 +23,11 @@ public class TestController : BaseLuaController<CustomPlayer>
     private readonly ChatBox chatBox;
     private readonly TestService testService;
     private readonly ILogger logger;
-    private readonly IServiceProvider serviceProvider;
-    private readonly IServiceScope serviceScope;
 
-    public TestController(IServiceProvider serviceProvider, ChatBox chatBox, ILogger logger)
+    public TestController(ChatBox chatBox, ILogger logger, TestService testService)
     {
-        this.serviceScope = serviceProvider.CreateScope();
-        this.serviceProvider = this.serviceScope.ServiceProvider;
         this.chatBox = chatBox;
-        this.testService = this.serviceProvider.GetRequiredService<TestService>();
+        this.testService = testService;
         this.logger = logger;
         this.logger.LogInformation("Instantiating {type}", typeof(TestController));
     }
