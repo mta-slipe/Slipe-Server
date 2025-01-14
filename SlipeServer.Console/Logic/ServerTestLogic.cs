@@ -1520,7 +1520,7 @@ public class ServerTestLogic
         this.chatBox.ClearFor(player);
         this.chatBox.OutputTo(player, "Hello World Again");
 
-        this.console.OutputTo(player, "Hello Console World");
+        this.console.OutputTo(player, "Hello Console World 你好，控制台世界");
 
         this.debugLog.SetVisibleTo(player, true);
         this.debugLog.OutputTo(player, "Test debug message", DebugLevel.Custom, Color.Red);
