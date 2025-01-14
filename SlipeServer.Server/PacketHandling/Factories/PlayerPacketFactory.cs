@@ -22,7 +22,10 @@ public static class PlayerPacketFactory
 
     public static PlayerListPacket CreatePlayerListPacket(Player[] players, bool showInChat = false)
     {
-        var packet = new PlayerListPacket(showInChat);
+        var packet = new PlayerListPacket
+        {
+            ShowInChat = showInChat
+        };
 
         foreach (var player in players)
         {
@@ -125,7 +128,7 @@ public static class PlayerPacketFactory
 
     public static SpawnPlayerPacket CreateSpawnPacket(Player player)
     {
-        return new SpawnPlayerPacket(player.Id, 0, player.Position, player.PedRotation, player.Model, ElementId.Zero, player.Interior, player.Dimension, player.GetAndIncrementTimeContext());
+        return new SpawnPlayerPacket(player.Id, 0, player.Position, player.PedRotation, player.Model, ElementId.Zero, player.Interior, player.Dimension, player.TimeContext.GetAndIncrement());
     }
 
     public static PlayerWastedPacket CreateWastedPacket(
@@ -134,12 +137,16 @@ public static class PlayerPacketFactory
     )
     {
         return new PlayerWastedPacket(player.Id, killer?.Id ?? ElementId.Zero, (byte)weaponType, (byte)bodyPart, isStealth,
-            player.GetAndIncrementTimeContext(), animationGroup, animationId);
+            player.TimeContext.GetAndIncrement(), animationGroup, animationId);
     }
 
     public static ChangeNicknamePacket CreateNicknameChangePacket(Player player)
     {
-        return new ChangeNicknamePacket(player.Id, player.Name);
+        return new ChangeNicknamePacket
+        {
+            PlayerId = player.Id,
+            Name = player.Name
+        };
     }
 
     public static UpdateInfoPacket CreateUpdateInfoPacket(Version version, bool mandatory = true)

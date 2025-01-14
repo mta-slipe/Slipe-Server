@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Reader;
 using SlipeServer.Packets.Structs;
 using System;
 
@@ -14,18 +15,11 @@ public class ChangeNicknamePacket : Packet
     public ElementId PlayerId { get; set; }
     public string Name { get; set; }
 
-    public ChangeNicknamePacket(
-        ElementId playerId,
-        string name
-    )
-    {
-        this.PlayerId = playerId;
-        this.Name = name;
-    }
-
     public override void Read(byte[] bytes)
     {
-        throw new NotSupportedException();
+        var reader = new PacketReader(bytes);
+        this.PlayerId = reader.GetElementId();
+        this.Name = reader.GetStringCharacters(reader.RemainingBytes);
     }
 
     public override byte[] Write()

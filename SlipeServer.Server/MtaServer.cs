@@ -301,7 +301,7 @@ public class MtaServer
     /// <typeparam name="TPacketHandler"></typeparam>
     /// <typeparam name="TPacket"></typeparam>
     /// <param name="parameters"></param>
-    public void RegisterPacketHandler<TPacketHandler, TPacket>(params object[] parameters)
+    public virtual void RegisterPacketHandler<TPacketHandler, TPacket>(params object[] parameters)
         where TPacket : Packet, new()
         where TPacketHandler : IPacketHandler<TPacket>
     {
@@ -557,7 +557,7 @@ public class MtaServer
         this.clients[netWrapper] = new();
     }
 
-    private void EnqueueIncomingPacket(INetWrapper netWrapper, ulong binaryAddress, PacketId packetId, byte[] data, uint? ping)
+    protected void EnqueueIncomingPacket(INetWrapper netWrapper, ulong binaryAddress, PacketId packetId, byte[] data, uint? ping)
     {
         if (!this.clients[netWrapper].ContainsKey(binaryAddress))
         {

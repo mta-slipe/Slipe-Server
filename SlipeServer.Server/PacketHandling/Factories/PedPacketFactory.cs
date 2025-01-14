@@ -20,12 +20,12 @@ public static class PedPacketFactory
 
     public static SetElementHealthRpcPacket CreateSetHealthPacket(Ped ped)
     {
-        return new SetElementHealthRpcPacket(ped.Id, ped.GetAndIncrementTimeContext(), ped.Health);
+        return new SetElementHealthRpcPacket(ped.Id, ped.TimeContext.GetAndIncrement(), ped.Health);
     }
 
     public static SetPedArmourRpcPacket CreateSetArmourPacket(Ped ped)
     {
-        return new SetPedArmourRpcPacket(ped.Id, ped.GetAndIncrementTimeContext(), ped.Armor);
+        return new SetPedArmourRpcPacket(ped.Id, ped.TimeContext.GetAndIncrement(), ped.Armor);
     }
 
     public static GivePedJetpackRpcPacket CreateGiveJetpack(Ped ped)

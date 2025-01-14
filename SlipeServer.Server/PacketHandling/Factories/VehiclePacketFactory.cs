@@ -107,11 +107,11 @@ public static class VehiclePacketFactory
 
     public static FixVehicleRpcPacket CreateFixVehiclePacket(Vehicle vehicle)
     {
-        return new FixVehicleRpcPacket(vehicle.Id, vehicle.GetAndIncrementTimeContext());
+        return new FixVehicleRpcPacket(vehicle.Id, vehicle.TimeContext.GetAndIncrement());
     }
 
     public static VehicleBlownRpcPacket CreateBlownVehiclePacket(Vehicle vehicle, bool createExplosion)
     {
-        return new VehicleBlownRpcPacket(vehicle.Id, vehicle.GetAndIncrementTimeContext(), createExplosion);
+        return new VehicleBlownRpcPacket(vehicle.Id, vehicle.TimeContext.GetAndIncrement(), createExplosion);
     }
 }

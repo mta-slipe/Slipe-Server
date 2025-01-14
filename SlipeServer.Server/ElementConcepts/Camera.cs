@@ -87,6 +87,6 @@ public class Camera
         this.target = null;
         this.Position = position;
         this.LookAt = lookAt;
-        this.player.Client.SendPacket(new SetCameraMatrixPacket(position, lookAt, roll, fov, this.player.GetAndIncrementTimeContext()));
+        this.player.Client.SendPacket(new SetCameraMatrixPacket(position, lookAt, roll, fov, this.player.TimeContext.GetAndIncrement()));
     }
 }

@@ -13,7 +13,7 @@ public class ElementTests
         var element = new Element();
 
         var context = element.TimeContext;
-        var incrementContext = element.GetAndIncrementTimeContext();
+        var incrementContext = element.TimeContext.GetAndIncrement();
 
         context.Should().NotBe(incrementContext);
     }
@@ -25,7 +25,7 @@ public class ElementTests
 
         for (int i = 0; i < 255; i++)
         {
-            element.GetAndIncrementTimeContext();
+            element.TimeContext.GetAndIncrement();
         }
         var context = element.TimeContext;
 
