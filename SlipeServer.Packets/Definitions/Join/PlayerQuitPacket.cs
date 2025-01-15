@@ -5,7 +5,7 @@ using SlipeServer.Packets.Structs;
 
 namespace MTAServerWrapper.Packets.Outgoing.Connection;
 
-public class PlayerQuitPacket : Packet
+public sealed class PlayerQuitPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_QUIT;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

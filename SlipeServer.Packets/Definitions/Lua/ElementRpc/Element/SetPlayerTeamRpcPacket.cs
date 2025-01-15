@@ -5,7 +5,7 @@ using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 
-public class SetPlayerTeamRpcPacket : Packet
+public sealed class SetPlayerTeamRpcPacket : Packet
 {
     public override PacketId PacketId { get; } = PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability { get; } = PacketReliability.ReliableSequenced;

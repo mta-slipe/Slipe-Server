@@ -5,7 +5,7 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Fire;
 
-public class FirePacket : Packet
+public sealed class FirePacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_FIRE;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

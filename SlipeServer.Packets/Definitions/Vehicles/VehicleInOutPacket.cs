@@ -6,7 +6,7 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Vehicles;
 
-public class VehicleInOutPacket : Packet
+public sealed class VehicleInOutPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_VEHICLE_INOUT;
 

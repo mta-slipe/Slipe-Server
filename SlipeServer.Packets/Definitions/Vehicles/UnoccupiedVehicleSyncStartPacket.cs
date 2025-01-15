@@ -5,7 +5,7 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Vehicles;
 
-public class UnoccupiedVehicleSyncStartPacket : Packet
+public sealed class UnoccupiedVehicleSyncStartPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_UNOCCUPIED_VEHICLE_STARTSYNC;
 

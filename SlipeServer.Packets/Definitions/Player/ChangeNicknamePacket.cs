@@ -5,7 +5,7 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Player;
 
-public class ChangeNicknamePacket : Packet
+public sealed class ChangeNicknamePacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_CHANGE_NICK;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

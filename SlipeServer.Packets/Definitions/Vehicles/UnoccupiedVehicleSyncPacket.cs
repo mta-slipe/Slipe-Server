@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace SlipeServer.Packets.Definitions.Vehicles;
 
-public class UnoccupiedVehicleSyncPacket : Packet
+public sealed class UnoccupiedVehicleSyncPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_UNOCCUPIED_VEHICLE_SYNC;
 

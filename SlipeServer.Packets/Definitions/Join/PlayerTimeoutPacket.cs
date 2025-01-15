@@ -4,7 +4,7 @@ using System;
 
 namespace MTAServerWrapper.Packets.Outgoing.Connection;
 
-public class PlayerTimeoutPacket : Packet
+public sealed class PlayerTimeoutPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_TIMEOUT;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

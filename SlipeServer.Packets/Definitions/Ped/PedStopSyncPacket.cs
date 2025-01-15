@@ -4,7 +4,7 @@ using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Ped;
 
-public class PedStopSyncPacket : Packet
+public sealed class PedStopSyncPacket : Packet
 {
     public override PacketId PacketId { get; } = PacketId.PACKET_ID_PED_STOPSYNC;
     public override PacketReliability Reliability { get; } = PacketReliability.ReliableSequenced;
