@@ -4,7 +4,7 @@ using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Vehicles;
 
-public class UnoccupiedVehicleSyncStopPacket : Packet
+public sealed class UnoccupiedVehicleSyncStopPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_UNOCCUPIED_VEHICLE_STOPSYNC;
 

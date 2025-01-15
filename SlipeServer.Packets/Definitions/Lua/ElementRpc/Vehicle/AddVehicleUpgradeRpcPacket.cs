@@ -5,7 +5,7 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
 
-public class AddVehicleUpgradeRpcPacket : Packet
+public sealed class AddVehicleUpgradeRpcPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

@@ -7,7 +7,7 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Vehicles;
 
-public class VehicleResyncPacket : Packet
+public sealed class VehicleResyncPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_VEHICLE_RESYNC;
 

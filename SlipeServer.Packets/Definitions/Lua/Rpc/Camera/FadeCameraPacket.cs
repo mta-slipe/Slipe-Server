@@ -10,7 +10,7 @@ public enum CameraFade
     Out
 }
 
-public class FadeCameraPacket : Packet
+public sealed class FadeCameraPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

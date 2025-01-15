@@ -6,7 +6,7 @@ using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Sync;
 
-public class CameraSyncPacket : Packet
+public sealed class CameraSyncPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_CAMERA_SYNC;
     public override PacketReliability Reliability => PacketReliability.UnreliableSequenced;

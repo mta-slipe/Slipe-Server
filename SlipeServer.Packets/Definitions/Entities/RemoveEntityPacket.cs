@@ -5,7 +5,7 @@ using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 
-public class RemoveEntityPacket : Packet
+public sealed class RemoveEntityPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_ENTITY_REMOVE;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

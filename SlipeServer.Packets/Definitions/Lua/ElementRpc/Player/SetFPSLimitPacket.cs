@@ -4,7 +4,7 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
 
-public class SetFPSLimitPacket : Packet
+public sealed class SetFPSLimitPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

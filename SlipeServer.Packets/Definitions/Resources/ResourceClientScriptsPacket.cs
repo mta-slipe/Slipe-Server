@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SlipeServer.Packets.Definitions.Resources;
 
-public class ResourceClientScriptsPacket : Packet
+public sealed class ResourceClientScriptsPacket : Packet
 {
 
     public override PacketId PacketId => PacketId.PACKET_ID_RESOURCE_CLIENT_SCRIPTS;

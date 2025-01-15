@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace SlipeServer.Packets.Definitions.Player;
 
-public class PlayerStatsPacket : Packet
+public sealed class PlayerStatsPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_STATS;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

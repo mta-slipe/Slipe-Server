@@ -6,7 +6,7 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Ped;
 
-public class RemovePedClothesRpcPacket : Packet
+public sealed class RemovePedClothesRpcPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
 

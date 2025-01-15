@@ -4,7 +4,7 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
 
-public class SetMoneyPacket : Packet
+public sealed class SetMoneyPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

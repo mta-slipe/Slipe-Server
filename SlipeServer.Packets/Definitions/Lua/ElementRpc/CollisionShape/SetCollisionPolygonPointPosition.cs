@@ -6,7 +6,7 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.CollisionShape;
 
-public class SetCollisionPolygonPointPosition : Packet
+public sealed class SetCollisionPolygonPointPosition : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

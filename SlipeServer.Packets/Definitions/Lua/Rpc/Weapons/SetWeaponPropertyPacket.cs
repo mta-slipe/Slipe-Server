@@ -4,7 +4,7 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.Rpc.Weapons;
 
-public class SetWeaponPropertyPacket : Packet
+public sealed class SetWeaponPropertyPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

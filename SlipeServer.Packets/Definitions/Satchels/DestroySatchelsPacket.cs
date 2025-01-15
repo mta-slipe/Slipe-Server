@@ -4,7 +4,7 @@ using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Satchels;
 
-public class DestroySatchelsPacket : Packet
+public sealed class DestroySatchelsPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_DESTROY_SATCHELS;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

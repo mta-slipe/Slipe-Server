@@ -5,7 +5,7 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.Rpc.Destroys;
 
-public class DestroyAllMarkersRpcPacket : Packet
+public sealed class DestroyAllMarkersRpcPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

@@ -4,7 +4,7 @@ using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Voice;
 
-public class VoiceEndPacket : Packet
+public sealed class VoiceEndPacket : Packet
 {
     public override PacketId PacketId { get; } = PacketId.PACKET_ID_VOICE_END;
     public override PacketReliability Reliability { get; } = PacketReliability.ReliableSequenced;

@@ -4,7 +4,7 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Player;
 
-public class ServerInfoSyncPacket : Packet
+public sealed class ServerInfoSyncPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_SERVER_INFO_SYNC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

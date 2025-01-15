@@ -4,7 +4,7 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 
-public class UpdateInfoPacket : Packet
+public sealed class UpdateInfoPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_UPDATE_INFO;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
