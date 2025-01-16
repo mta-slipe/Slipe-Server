@@ -186,9 +186,8 @@ public class ServerTestLogic
     {
         this.testResource = this.resourceProvider.GetResource("TestResource");
         this.secondTestResource = this.resourceProvider.GetResource("SecondTestResource");
-        this.secondTestResource.NoClientScripts[$"{this.secondTestResource!.Name}/testfile.lua"] =
-            Encoding.UTF8.GetBytes("outputChatBox(\"I AM A NOT CACHED MESSAGE\")");
-        this.secondTestResource.NoClientScripts[$"blabla.lua"] = new byte[] { };
+        this.secondTestResource.AddNoClientScript($"{this.secondTestResource!.Name}/testfile.lua", "outputChatBox(\"I AM A NOT CACHED MESSAGE\")");
+        this.secondTestResource.AddNoClientScript("blabla.lua", []);
 
         this.thirdTestResource = this.resourceProvider.GetResource("MetaXmlTestResource");
 
