@@ -18,6 +18,7 @@ using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Clients;
 using System.Net;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
+using System.Threading;
 
 namespace SlipeServer.Server.Elements;
 
@@ -363,7 +364,11 @@ public class Player : Ped
     public void TriggerDisconnected(QuitReason reason)
     {
         if (this.Destroy())
+        {
+            this.Client.IsConnected = false;
+            this.Client.SetDisconnected();
             this.Disconnected?.Invoke(this, new PlayerQuitEventArgs(reason));        
+        }
     }
 
     public void TakeScreenshot(ushort width, ushort height, string tag = "", byte quality = 30, uint maxBandwith = 5000, ushort maxPacketSize = 500)
@@ -557,6 +562,27 @@ public class Player : Ped
     internal bool ShouldSendReturnSyncPacket()
     {
         return this.pureSyncPacketsCount++ % 4 == 0;
+    }
+
+    /// <summary>
+    /// Returns a CancellationToken that is valid until the player leaves the server or is destroyed
+    /// </summary>
+    public CancellationToken GetCancellationToken()
+    {
+        var cts = new CancellationTokenSource();
+
+        void handleDisconnected(Player sender, PlayerQuitEventArgs e)
+        {
+            cts.Cancel();
+        };
+
+        cts.Token.Register(() => this.Disconnected -= handleDisconnected);
+        this.Disconnected += handleDisconnected;
+
+        if (this.IsDestroyed)
+            cts.Cancel();
+
+        return cts.Token;
     }
 
     public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;

@@ -1,7 +1,9 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Packets.Reader;
 using SlipeServer.Packets.Structs;
 using System.Collections.Generic;
+using System.Text;
 
 namespace SlipeServer.Packets.Definitions.Resources;
 
@@ -13,7 +15,7 @@ public sealed class ResourceStartPacket : Packet
     public override PacketPriority Priority => PacketPriority.High;
 
     public string Name { get; set; }
-    public ushort NetId { get; }
+    public ushort NetId { get; set; }
     public ElementId ResourceDynamicElementId { get; set; }
     public ushort UncachedScriptCount { get; }
     public string MinServerVersion { get; }
@@ -23,6 +25,11 @@ public sealed class ResourceStartPacket : Packet
     public IEnumerable<ResourceFile> Files { get; }
     public IEnumerable<string> ExportedFunctions { get; }
     public ElementId ResourceElementId { get; }
+
+    public ResourceStartPacket()
+    {
+
+    }
 
     public ResourceStartPacket(
         string name,
@@ -53,6 +60,10 @@ public sealed class ResourceStartPacket : Packet
 
     public override void Read(byte[] bytes)
     {
+        var reader = new PacketReader(bytes);
+        var len = reader.GetByte();
+        this.Name = Encoding.UTF8.GetString(reader.GetBytes(len));
+        this.NetId = reader.GetUInt16();
     }
 
     public override byte[] Write()

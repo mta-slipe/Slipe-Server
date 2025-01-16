@@ -6,6 +6,7 @@ using SlipeServer.Server.ServerBuilders;
 using SlipeServer.Example;
 using SlipeServer.Example.Services;
 using SlipeServer.Example.Elements;
+using SlipeServer.Server.Resources;
 
 
 Configuration? configuration = null;
@@ -28,6 +29,7 @@ builder
         services.AddHttpClient();
         services.AddSingleton<IResourceServer, BasicHttpServer>();
         services.AddScoped<TestService>();
+        services.AddSingleton<ResourceService>();
 
         services.AddHostedService<SampleHostedService>(); // Use instead of logics
         services.TryAddSingleton<ILogger>(x => x.GetRequiredService<ILogger<MtaServer>>());
