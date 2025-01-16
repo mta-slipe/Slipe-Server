@@ -5,6 +5,7 @@ using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Extensions;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,6 +17,7 @@ namespace SlipeServer.Server.Resources;
 public class Resource
 {
     private readonly MtaServer server;
+    private readonly Dictionary<string, byte[]> noClientScripts = [];
 
     public DummyElement Root { get; }
     public DummyElement DynamicRoot { get; }
@@ -23,8 +25,7 @@ public class Resource
     public int PriorityGroup { get; set; }
     public List<string> Exports { get; init; }
     public List<ResourceFile> Files { get; init; }
-    public Dictionary<string, byte[]> NoClientScripts { get; init; }
-    private Dictionary<string, byte[]> SanitisedNoClientScripts => this.NoClientScripts.Where(x => x.Value.Length > 0).ToDictionary(x => x.Key, x => x.Value);
+    public IReadOnlyDictionary<string, byte[]> NoClientScripts => this.noClientScripts.AsReadOnly();
     public string Name { get; }
     public string Path { get; }
     public bool IsOopEnabled { get; set; }
@@ -41,7 +42,6 @@ public class Resource
         this.Path = path ?? $"./{name}";
 
         this.Files = new();
-        this.NoClientScripts = new();
 
         this.Root = new DummyElement()
         {
@@ -54,20 +54,36 @@ public class Resource
             ElementTypeName = "map",
         }.AssociateWith(server);
 
-        this.Exports = new List<string>();
+        this.Exports = [];
+    }
+
+    public void AddNoClientScript(string name, string source)
+    {
+        AddNoClientScript(name, Encoding.UTF8.GetBytes(source));
+    }
+
+    public void AddNoClientScript(string name, byte[] source)
+    {
+        if (source.Length == 0)
+            return;
+
+        if (this.noClientScripts.ContainsKey(name))
+            throw new System.ArgumentException($"A client script with the name '{name}' already exists in the collection.", nameof(name));
+
+        this.noClientScripts[name] = CompressFile(source);
     }
 
     public void Start()
     {
         this.server.BroadcastPacket(new ResourceStartPacket(
-            this.Name, this.NetId, this.Root.Id, this.DynamicRoot.Id, (ushort)this.SanitisedNoClientScripts.Count, null, null, this.IsOopEnabled, this.PriorityGroup, this.Files, this.Exports)
+            this.Name, this.NetId, this.Root.Id, this.DynamicRoot.Id, (ushort)this.noClientScripts.Count, null, null, this.IsOopEnabled, this.PriorityGroup, this.Files, this.Exports)
         );
 
         this.server.BroadcastPacket(new ResourceClientScriptsPacket(
-            this.NetId, this.SanitisedNoClientScripts.ToDictionary(x => x.Key, x => CompressFile(x.Value)))
+            this.NetId, this.noClientScripts)
         );
     }
-
+    
     public void Stop()
     {
         this.server.BroadcastPacket(new ResourceStopPacket(this.NetId));
@@ -75,11 +91,11 @@ public class Resource
 
     public void StartFor(Player player)
     {
-        new ResourceStartPacket(this.Name, this.NetId, this.Root.Id, this.DynamicRoot.Id, (ushort)this.SanitisedNoClientScripts.Count, null, null, this.IsOopEnabled, this.PriorityGroup, this.Files, this.Exports)
+        new ResourceStartPacket(this.Name, this.NetId, this.Root.Id, this.DynamicRoot.Id, (ushort)this.noClientScripts.Count, null, null, this.IsOopEnabled, this.PriorityGroup, this.Files, this.Exports)
             .SendTo(player);
 
-        if (this.SanitisedNoClientScripts.Any())
-            new ResourceClientScriptsPacket(this.NetId, this.SanitisedNoClientScripts.ToDictionary(x => x.Key, x => CompressFile(x.Value)))
+        if (this.noClientScripts.Any())
+            new ResourceClientScriptsPacket(this.NetId, this.noClientScripts)
                 .SendTo(player);
     }
 
@@ -130,7 +146,7 @@ public class Resource
         new ResourceStopPacket(this.NetId).SendTo(player);
     }
 
-    private byte[] CompressFile(byte[] input)
+    public static byte[] CompressFile(byte[] input)
     {
         var compressed = Ionic.Zlib.ZlibStream.CompressBuffer(input);
 

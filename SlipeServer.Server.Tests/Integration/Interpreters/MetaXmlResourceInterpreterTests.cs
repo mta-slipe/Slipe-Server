@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Moq;
+using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Interpreters;
 using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.TestTools;
@@ -50,7 +51,7 @@ public class MetaXmlResourceInterpreterTests
         resource.PriorityGroup.Should().Be(0);
         resource.NoClientScripts.Should().BeEquivalentTo(new Dictionary<string, byte[]>
         {
-            ["script.lua"] = "420"u8.ToArray(),
+            ["script.lua"] = Resource.CompressFile("420"u8.ToArray()),
         });
     }
 
@@ -95,7 +96,7 @@ public class MetaXmlResourceInterpreterTests
         resource.PriorityGroup.Should().Be(1234);
         resource.NoClientScripts.Should().BeEquivalentTo(new Dictionary<string, byte[]>
         {
-            ["script1.lua"] = "420"u8.ToArray(),
+            ["script1.lua"] = Resource.CompressFile([.. "420"u8]),
         });
     }
 }
