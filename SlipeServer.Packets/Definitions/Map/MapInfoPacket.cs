@@ -9,7 +9,7 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Map;
 
-public class MapInfoPacket : Packet
+public sealed class MapInfoPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_MAP_INFO;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

@@ -1,13 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
-using SlipeServer.Console.Elements;
-using SlipeServer.Console.Services;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using SlipeServer.Example.Elements;
+using SlipeServer.Example.Services;
 using SlipeServer.LuaControllers;
 using SlipeServer.LuaControllers.Attributes;
 using SlipeServer.Server.Services;
-using System;
 
-namespace SlipeServer.Console.Controllers;
-
+namespace SlipeServer.Example.Controllers;
 
 [LuaController(usesScopedEvents: false)]
 public class SingletonTestController : BaseLuaController<CustomPlayer>
@@ -15,11 +14,15 @@ public class SingletonTestController : BaseLuaController<CustomPlayer>
     private readonly ChatBox chatBox;
     private readonly TestService testService;
     private readonly ILogger logger;
+    private readonly IServiceProvider serviceProvider;
+    private readonly IServiceScope serviceScope;
 
-    public SingletonTestController(ChatBox chatBox, TestService testService, ILogger logger)
+    public SingletonTestController(IServiceProvider serviceProvider, ChatBox chatBox, ILogger logger)
     {
+        this.serviceScope = serviceProvider.CreateScope();
+        this.serviceProvider = this.serviceScope.ServiceProvider;
         this.chatBox = chatBox;
-        this.testService = testService;
+        this.testService = this.serviceProvider.GetRequiredService<TestService>();
         this.logger = logger;
         this.logger.LogInformation("Instantiating {type}", typeof(SingletonTestController));
     }

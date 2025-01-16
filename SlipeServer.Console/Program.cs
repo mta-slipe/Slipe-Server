@@ -4,11 +4,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using SlipeServer.ConfigurationProviders;
 using SlipeServer.Console.AdditionalResources;
-using SlipeServer.Console.Elements;
 using SlipeServer.Console.Logic;
 using SlipeServer.Console.PacketReplayer;
 using SlipeServer.Console.Proxy;
-using SlipeServer.Console.Services;
 using SlipeServer.Lua;
 using SlipeServer.LuaControllers;
 using SlipeServer.Packets.Definitions.Sync;
@@ -22,6 +20,7 @@ using System;
 using System.IO;
 using System.Threading;
 using SlipeServer.Example;
+using SlipeServer.Example.Services;
 using SlipeServer.Scripting.Luau;
 using SlipeServer.Server.Resources;
 
@@ -114,7 +113,6 @@ public partial class Program
                 builder.AddLuauTranspiler();
                 builder.AddPhysics();
                 builder.AddParachuteResource();
-                builder.AddLuaControllers();
 
                 builder.AddExampleLogic();
                 builder.AddLogic<ServerTestLogic>();

@@ -11,7 +11,7 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Vehicles;
 
-public class VehiclePureSyncPacket : Packet
+public sealed class VehiclePureSyncPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_VEHICLE_PURESYNC;
 

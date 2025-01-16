@@ -7,7 +7,7 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle.Sirens;
 
-public class SetVehicleSirensPacket : Packet
+public sealed class SetVehicleSirensPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

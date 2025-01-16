@@ -4,7 +4,7 @@ using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Join;
 
-public class JoinedGamePacket : Packet
+public sealed class JoinedGamePacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_SERVER_JOINEDGAME;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

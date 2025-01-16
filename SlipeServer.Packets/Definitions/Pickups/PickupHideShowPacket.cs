@@ -18,7 +18,7 @@ public struct PickupIdAndModel
     }
 }
 
-public class PickupHideShowPacket : Packet
+public sealed class PickupHideShowPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_PICKUP_HIDESHOW;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

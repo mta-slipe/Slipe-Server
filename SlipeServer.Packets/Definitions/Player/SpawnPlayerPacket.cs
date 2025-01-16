@@ -6,7 +6,7 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Player;
 
-public class SpawnPlayerPacket : Packet
+public sealed class SpawnPlayerPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_SPAWN;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

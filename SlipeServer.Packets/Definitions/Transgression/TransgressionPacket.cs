@@ -4,7 +4,7 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Transgression;
 
-public class TransgressionPacket : Packet
+public sealed class TransgressionPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_TRANSGRESSION;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

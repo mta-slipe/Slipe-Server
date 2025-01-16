@@ -31,6 +31,14 @@ public class ServerExampleLogic
             }
         });
 
+        AddCommand("toggleControls", player =>
+        {
+            var controls = player.Controls;
+            controls.ToggleAll(false);
+            controls.ForwardsEnabled = true;
+            this.chatBox.OutputTo(player, "Toggle");
+        });
+
         AddVehiclesCommands();
     }
 

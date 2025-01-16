@@ -8,6 +8,8 @@ using SlipeServer.Console.Logic;
 using SlipeServer.Lua;
 using SlipeServer.WebHostBuilderExample;
 using SlipeServer.Example;
+using SlipeServer.Example.Services;
+using SlipeServer.Example.Elements;
 using SlipeServer.Server.Resources;
 
 Directory.SetCurrentDirectory(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()!.Location)!);
@@ -35,12 +37,13 @@ builder.Services.AddDefaultMtaServerServices();
 builder.Services.AddLua();
 
 builder.Services.AddSingleton<IResourceServer, BasicHttpServer>();
+builder.Services.AddScoped<TestService>();
 builder.Services.AddSingleton<ResourceService>();
 
 builder.Services.AddHostedService<SampleHostedService>(); // Use instead of logics
 builder.Services.TryAddSingleton<ILogger>(x => x.GetRequiredService<ILogger<MtaServer>>());
 
-builder.AddMtaServer(serverBuilder =>
+builder.AddMtaServerWithDiSupport<CustomPlayer>(serverBuilder =>
 {
     var isDevelopment = builder.Environment.IsDevelopment();
     var exceptBehaviours = isDevelopment ? ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour : ServerBuilderDefaultBehaviours.None;

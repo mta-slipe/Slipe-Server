@@ -8,6 +8,7 @@ using SlipeServer.Server.Extensions;
 using SlipeServer.Server.ElementCollections;
 using System.Numerics;
 using SlipeServer.Server.Clients;
+using System.Linq;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle;
 
@@ -151,19 +152,18 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
                 }
             } else
             {
-
-                if (vehicle.CanEnter != null && !vehicle.CanEnter(client.Player, vehicle, packet.Seat))
+                if (vehicle.CanEnter?.Invoke(client.Player, vehicle, packet.Seat) == false)
                 {
                     SendInRequestFailResponse(client, vehicle, VehicleEnterFailReason.Script);
                     return;
                 }
 
                 client.Player.Seat = packet.Seat;
-                if (vehicle.Driver is Elements.Player player)
+                if (vehicle.Driver is Elements.Ped currentDriver)
                 {
                     client.Player.VehicleAction = VehicleAction.Jacking;
                     client.Player.JackingVehicle = vehicle;
-                    player.VehicleAction = VehicleAction.Jacked;
+                    currentDriver.VehicleAction = VehicleAction.Jacked;
                     vehicle.JackingPed = client.Player;
 
                     var replyPacket = new VehicleInOutPacket()
@@ -175,7 +175,6 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
                     };
                     this.server.BroadcastPacket(replyPacket);
                 }
-
             }
         } else
         {
@@ -233,47 +232,47 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
 
     private void HandleNotifyIn(IClient client, Elements.Vehicle vehicle)
     {
-        if (client.Player.VehicleAction == VehicleAction.Entering)
-        {
-            client.Player.VehicleAction = VehicleAction.None;
-            if (client.Player.EnteringVehicle == vehicle)
-            {
-                client.Player.Vehicle = client.Player.EnteringVehicle;
-                client.Player.EnteringVehicle = null;
-                vehicle.AddPassenger(client.Player.Seat ?? 0, client.Player, false);
+        if (client.Player.VehicleAction != VehicleAction.Entering)
+            return;
 
-                var replyPacket = new VehicleInOutPacket()
-                {
-                    PedId = client.Player.Id,
-                    VehicleId = vehicle.Id,
-                    Seat = client.Player.Seat ?? 0,
-                    OutActionId = VehicleInOutActionReturns.NotifyInReturn,
-                };
-                this.server.BroadcastPacket(replyPacket);
-            }
-        }
+        client.Player.VehicleAction = VehicleAction.None;
+        if (client.Player.EnteringVehicle != vehicle)
+            return;
+
+        client.Player.Vehicle = client.Player.EnteringVehicle;
+        client.Player.EnteringVehicle = null;
+        vehicle.AddPassenger(client.Player.Seat ?? 0, client.Player, false);
+
+        var replyPacket = new VehicleInOutPacket()
+        {
+            PedId = client.Player.Id,
+            VehicleId = vehicle.Id,
+            Seat = client.Player.Seat ?? 0,
+            OutActionId = VehicleInOutActionReturns.NotifyInReturn,
+        };
+        this.server.BroadcastPacket(replyPacket);
     }
 
     private void HandleNotifyInAbort(IClient client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
     {
-        if (client.Player.VehicleAction == VehicleAction.Entering)
-        {
-            client.Player.VehicleAction = VehicleAction.None;
-            client.Player.EnteringVehicle = null;
-            client.Player.Vehicle = null;
-            vehicle.RemovePassenger(client.Player, false);
+        if (client.Player.VehicleAction != VehicleAction.Entering)
+            return;
 
-            var replyPacket = new VehicleInOutPacket()
-            {
-                PedId = client.Player.Id,
-                VehicleId = vehicle.Id,
-                Seat = packet.Seat,
-                Door = packet.Door,
-                DoorOpenRatio = packet.DoorOpenRatio,
-                OutActionId = VehicleInOutActionReturns.NotifyInAbortReturn,
-            };
-            this.server.BroadcastPacket(replyPacket);
-        }
+        client.Player.VehicleAction = VehicleAction.None;
+        client.Player.EnteringVehicle = null;
+        client.Player.Vehicle = null;
+        vehicle.RemovePassenger(client.Player, false);
+
+        var replyPacket = new VehicleInOutPacket()
+        {
+            PedId = client.Player.Id,
+            VehicleId = vehicle.Id,
+            Seat = packet.Seat,
+            Door = packet.Door,
+            DoorOpenRatio = packet.DoorOpenRatio,
+            OutActionId = VehicleInOutActionReturns.NotifyInAbortReturn,
+        };
+        this.server.BroadcastPacket(replyPacket);
     }
 
     private void HandleRequestOut(IClient client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
@@ -323,9 +322,6 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
         client.Player.EnteringVehicle = null;
         client.Player.VehicleAction = VehicleAction.None;
 
-        if (!vehicle.Occupants.ContainsValue(client.Player))
-            return;
-
         vehicle.RemovePassenger(client.Player, false);
 
         var replyPacket = new VehicleInOutPacket()
@@ -343,11 +339,10 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
         if (client.Player.VehicleAction != VehicleAction.Exiting)
             return;
 
-        if (!vehicle.Occupants.ContainsValue(client.Player))
+        if (!vehicle.Occupants.Any(x => x.Value == client.Player))
             return;
 
         client.Player.VehicleAction = VehicleAction.None;
-
 
         var replyPacket = new VehicleInOutPacket()
         {
@@ -361,7 +356,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
 
     private void HandleNotifyFellOff(IClient client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
     {
-        if (!vehicle.Occupants.ContainsValue(client.Player))
+        if (!vehicle.Occupants.Any(x => x.Value == client.Player))
             return;
 
         client.Player.VehicleAction = VehicleAction.None;
@@ -384,34 +379,48 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
         if (client.Player.VehicleAction != VehicleAction.Jacking)
             return;
 
-        if (vehicle.Driver == null)
-            return;
+        client.Player.Vehicle = vehicle;
+        client.Player.EnteringVehicle = null;
+        client.Player.VehicleAction = VehicleAction.None;
 
         var jackedPed = vehicle.Driver;
-        if (jackedPed is Elements.Player jackedPlayer)
+
+        vehicle.JackingPed = null;
+        vehicle.AddPassenger(0, client.Player, false);
+
+        if (jackedPed == null)
         {
-            jackedPlayer.Vehicle = null;
-            jackedPlayer.VehicleAction = VehicleAction.None;
-            vehicle.JackingPed = null;
-
-            client.Player.Vehicle = vehicle;
-            client.Player.EnteringVehicle = null;
-            client.Player.VehicleAction = VehicleAction.None;
-            vehicle.AddPassenger(0, client.Player, false);
-
-            vehicle.Jack(jackedPlayer, client.Player);
-
-            var replyPacket = new VehicleInOutPacket()
+            var notifyInReturnPacked = new VehicleInOutPacket()
             {
                 PedId = client.Player.Id,
                 PlayerInId = client.Player.Id,
-                PlayerOutId = jackedPlayer.Id,
                 VehicleId = vehicle.Id,
-                OutActionId = VehicleInOutActionReturns.NotifyJackReturn,
+                OutActionId = VehicleInOutActionReturns.NotifyInReturn,
                 Seat = packet.Seat
             };
-            this.server.BroadcastPacket(replyPacket);
+            this.server.BroadcastPacket(notifyInReturnPacked);
+
+            return;
         }
+
+        vehicle.Jack(jackedPed, client.Player);
+
+        jackedPed.RunAsSync(() =>
+        {
+            jackedPed.Vehicle = null;
+            jackedPed.VehicleAction = VehicleAction.None;
+        });
+
+        var replyPacket = new VehicleInOutPacket()
+        {
+            PedId = client.Player.Id,
+            PlayerInId = client.Player.Id,
+            PlayerOutId = jackedPed.Id,
+            VehicleId = vehicle.Id,
+            OutActionId = VehicleInOutActionReturns.NotifyJackReturn,
+            Seat = packet.Seat
+        };
+        this.server.BroadcastPacket(replyPacket);
     }
 
     private void HandleNotifyJackAbort(IClient client, Elements.Vehicle vehicle, VehicleInOutPacket packet)

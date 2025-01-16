@@ -3,7 +3,7 @@ using SlipeServer.Packets.Enums;
 
 namespace SlipeServer.Packets.Definitions.Resources;
 
-public class ResourceStopPacket : Packet
+public sealed class ResourceStopPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_RESOURCE_STOP;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

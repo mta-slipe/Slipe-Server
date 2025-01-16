@@ -5,7 +5,7 @@ using System;
 
 namespace MTAServerWrapper.Packets.Outgoing.Connection;
 
-public class ModNamePacket : Packet
+public sealed class ModNamePacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_MOD_NAME;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

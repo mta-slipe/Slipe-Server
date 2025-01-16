@@ -6,7 +6,7 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Explosions;
 
-public class ExplosionPacket : Packet
+public sealed class ExplosionPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_EXPLOSION;
 

@@ -6,7 +6,7 @@ using System.Drawing;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
 
-public class SetPlayerNametagColorPacket : Packet
+public sealed class SetPlayerNametagColorPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

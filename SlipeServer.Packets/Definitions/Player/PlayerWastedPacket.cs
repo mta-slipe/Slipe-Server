@@ -6,7 +6,7 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Player;
 
-public class PlayerWastedPacket : Packet
+public sealed class PlayerWastedPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_WASTED;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

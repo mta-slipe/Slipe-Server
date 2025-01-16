@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace SlipeServer.Packets.Lua.Event;
 
-public class LuaEventPacket : Packet
+public sealed class LuaEventPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_EVENT;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

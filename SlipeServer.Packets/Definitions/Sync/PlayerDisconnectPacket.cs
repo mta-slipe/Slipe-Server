@@ -4,7 +4,7 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 
-public class PlayerDisconnectPacket : Packet
+public sealed class PlayerDisconnectPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_SERVER_DISCONNECTED;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

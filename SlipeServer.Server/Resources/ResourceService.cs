@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Resources.Providers;
@@ -17,22 +18,26 @@ public class ResourceService
 {
     private readonly IResourceProvider resourceProvider;
 
-    private readonly List<Resource> startedResources;
+    private readonly List<Resource> startedResources = [];
 
     public IReadOnlyCollection<Resource> StartedResources => this.startedResources.AsReadOnly();
 
     public event Action<Player>? AllStarted;
+    public event Action<Resource, Player>? Stopped;
     public event Action<Resource, Player>? Started;
 
     public ResourceService(IResourceProvider resourceProvider)
     {
         this.resourceProvider = resourceProvider;
-        this.startedResources = [];
     }
 
     public async Task StartResourcesForPlayer(Player player, bool parallel = true, CancellationToken cancellationToken = default)
     {
-        var exceptions = new List<Exception>();
+        var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, player.GetCancellationToken());
+
+        cts.Token.ThrowIfCancellationRequested();
+
+        List<Exception> exceptions = [];
 
         if (parallel)
         {
@@ -43,9 +48,19 @@ public class ResourceService
             {
                 if (sender == player && resourcesNetIds.Remove(e.NetId))
                 {
-                    Started?.Invoke(this.startedResources.Where(x => x.NetId == e.NetId).First(), sender);
-                    if (resourcesNetIds.Count == 0)
-                        tcs.SetResult();
+                    try
+                    {
+                        this.Started?.Invoke(this.startedResources.Where(x => x.NetId == e.NetId).First(), sender);
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptions.Add(ex);
+                    }
+                    finally
+                    {
+                        if (resourcesNetIds.Count == 0)
+                            tcs.SetResult();
+                    }
                 }
             }
 
@@ -57,12 +72,12 @@ public class ResourceService
                 player.ResourceStarted -= handleResourceStart;
                 player.Disconnected -= handlePlayerDisconnected;
 
-                tcs.SetException(new System.Exception("Player disconnected."));
+                tcs.SetException(new Exception("Player disconnected."));
             }
 
             player.ResourceStarted += handleResourceStart;
             player.Disconnected += handlePlayerDisconnected;
-            cancellationToken.Register(() =>
+            cts.Token.Register(() =>
             {
                 tcs.TrySetException(new OperationCanceledException());
             });
@@ -73,6 +88,10 @@ public class ResourceService
             try
             {
                 await tcs.Task;
+            }
+            catch(Exception ex)
+            {
+                exceptions.Add(ex);
             }
             finally
             {
@@ -86,8 +105,13 @@ public class ResourceService
             {
                 try
                 {
-                    await resource.StartForAsync(player);
-                    Started?.Invoke(resource, player);
+                    await resource.StartForAsync(player, cts.Token);
+                    this.Started?.Invoke(resource, player);
+                }
+                catch (OperationCanceledException ex)
+                {
+                    exceptions.Add(ex);
+                    break;
                 }
                 catch (Exception ex)
                 {
@@ -96,35 +120,34 @@ public class ResourceService
             }
         }
 
-        this.AllStarted?.Invoke(player);
+        if (!cts.IsCancellationRequested)
+        {
+            try
+            {
+                this.AllStarted?.Invoke(player);
+            }
+            catch(Exception ex)
+            {
+                exceptions.Add(ex);
+            }
+        }
 
         if (exceptions.Count > 0)
             throw new AggregateException(exceptions);
     }
 
-    public Resource? StartResource(string name)
+    public bool AddStartResource(string name)
     {
-        if (!this.startedResources.Any(r => r.Name == name))
-        {
-            var resource = this.resourceProvider.GetResource(name);
-            resource.Start();
-            this.startedResources.Add(resource);
+        if (this.startedResources.Any(r => r.Name == name))
+            return false;
 
-            return resource;
-        }
-        return null;
-    }
+        var resource = this.resourceProvider.GetResource(name);
+        if (resource == null)
+            return false;
 
-    public void StopResource(string name)
-    {
-        var resource = this.startedResources.Single(r => r.Name == name);
-        this.startedResources.Remove(resource);
-        resource.Stop();
-    }
+        resource.Start();
+        this.startedResources.Add(resource);
 
-    public void StopResource(Resource resource)
-    {
-        this.startedResources.Remove(resource);
-        resource.Stop();
+        return true;
     }
 }

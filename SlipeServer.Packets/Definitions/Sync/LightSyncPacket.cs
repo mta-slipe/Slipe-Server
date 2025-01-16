@@ -5,7 +5,7 @@ using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Sync;
 
-public class LightSyncPacket : Packet
+public sealed class LightSyncPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LIGHTSYNC;
     public override PacketReliability Reliability => PacketReliability.Unreliable;

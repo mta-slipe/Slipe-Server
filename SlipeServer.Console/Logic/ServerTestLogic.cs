@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using SlipeServer.Console.Elements;
-using SlipeServer.Console.LuaValues;
+using SlipeServer.Example.LuaValues;
 using SlipeServer.Packets.Definitions.Entities.Structs;
 using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
@@ -1521,7 +1520,7 @@ public class ServerTestLogic
         this.chatBox.ClearFor(player);
         this.chatBox.OutputTo(player, "Hello World Again");
 
-        this.console.OutputTo(player, "Hello Console World");
+        this.console.OutputTo(player, "Hello Console World 你好，控制台世界");
 
         this.debugLog.SetVisibleTo(player, true);
         this.debugLog.OutputTo(player, "Test debug message", DebugLevel.Custom, Color.Red);

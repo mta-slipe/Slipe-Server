@@ -9,7 +9,7 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 
-public class AddEntityPacket : Packet
+public sealed class AddEntityPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_ENTITY_ADD;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

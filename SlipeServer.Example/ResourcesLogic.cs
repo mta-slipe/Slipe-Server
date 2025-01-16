@@ -18,8 +18,8 @@ public class ResourcesLogic
         this.chatBox = chatBox;
         this.resourceService = resourceService;
         this.logger = logger;
-        this.resourceService.StartResource("ResourceA");
-        this.resourceService.StartResource("ResourceB");
+        this.resourceService.AddStartResource("ResourceA");
+        this.resourceService.AddStartResource("ResourceB");
         this.resourceService.AllStarted += HandleAllStarted;
         mtaServer.PlayerJoined += HandlePlayerJoin;
     }

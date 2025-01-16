@@ -5,7 +5,7 @@ using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Voice;
 
-public class VoiceDataPacket : Packet
+public sealed class VoiceDataPacket : Packet
 {
     public override PacketId PacketId { get; } = PacketId.PACKET_ID_VOICE_DATA;
     public override PacketReliability Reliability { get; } = PacketReliability.ReliableSequenced;

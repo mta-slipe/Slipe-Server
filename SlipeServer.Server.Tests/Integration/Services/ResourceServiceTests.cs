@@ -5,21 +5,23 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using SlipeServer.Packets.Definitions.Resources;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Clients;
+using SlipeServer.Server.Elements;
 using SlipeServer.Server.PacketHandling.Handlers;
 using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.TestTools;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace SlipeServer.Server.Tests.Integration.Services;
 
-public class ClientPlayerResourceStartedPacketHandler : IPacketHandler<ResourceStartPacket>
+public class TestResourceStartPacketHandler : IPacketHandler<ResourceStartPacket>
 {
     public PacketId PacketId => PacketId.PACKET_ID_RESOURCE_START;
 
-    public ClientPlayerResourceStartedPacketHandler()
+    public TestResourceStartPacketHandler()
     {
     }
 
@@ -29,24 +31,25 @@ public class ClientPlayerResourceStartedPacketHandler : IPacketHandler<ResourceS
     }
 }
 
-public class ResourceServiceTests
+public class ResourceA : Resource
 {
-    class ResourceA : Resource
-    {
-        public ResourceA(MtaServer server) : base(server, server.RootElement, "ResourceA") { }
-    }
-    
-    class ResourceB : Resource
-    {
-        public ResourceB(MtaServer server) : base(server, server.RootElement, "ResourceB") { }
-    }
+    public ResourceA(MtaServer server) : base(server, server.RootElement, "ResourceA") { }
+}
 
-    [InlineData(true)]
-    [InlineData(false)]
-    [Theory]
-    public async Task ResourceServiceShouldWork(bool parallel)
+public class ResourceB : Resource
+{
+    public ResourceB(MtaServer server) : base(server, server.RootElement, "ResourceB") { }
+}
+
+public class TestingServerResourceService
+{
+    public TestingServer Server { get; }
+    public ResourceA ResourceA { get; }
+    public ResourceB ResourceB { get; }
+
+    public TestingServerResourceService()
     {
-        var server = new TestingServer((Configuration?)null, builder =>
+        this.Server = new TestingServer((Configuration?)null, builder =>
         {
             builder.ConfigureServices(services =>
             {
@@ -56,28 +59,127 @@ public class ResourceServiceTests
             });
         });
 
-        server.RegisterPacketHandler<ClientPlayerResourceStartedPacketHandler, ResourceStartPacket>();
+        this.Server.RegisterPacketHandler<TestResourceStartPacketHandler, ResourceStartPacket>();
 
-        var resourceProvider = server.GetRequiredService<TestResourceProvider>();
-        var resourceA = new ResourceA(server);
-        server.AddAdditionalResource(resourceA, []);
-        resourceProvider.AddResource(resourceA);
-        var resourceB = new ResourceB(server);
-        server.AddAdditionalResource(resourceB, []);
-        resourceProvider.AddResource(resourceB);
+        var resourceProvider = this.Server.GetRequiredService<TestResourceProvider>();
+        this.ResourceA = new ResourceA(this.Server);
+        this.Server.AddAdditionalResource(this.ResourceA, []);
+        resourceProvider.AddResource(this.ResourceA);
+        this.ResourceB = new ResourceB(this.Server);
+        this.Server.AddAdditionalResource(this.ResourceB, []);
+        resourceProvider.AddResource(this.ResourceB);
+    }
+}
 
-        var resourceService = server.CreateInstance<ResourceService>();
-        using var monitor = resourceService.Monitor();
+public class ResourceServiceTests : IClassFixture<TestingServerResourceService>
+{
+    private readonly TestingServer server;
+    private readonly ResourceService resourceService;
+    private readonly ResourceA resourceA;
+    private readonly ResourceB resourceB;
 
-        resourceService.StartResource("ResourceA");
-        resourceService.StartResource("ResourceB");
+    public ResourceServiceTests(TestingServerResourceService testingServerResourceService)
+    {
+        this.server = testingServerResourceService.Server;
 
-        var player = server.AddFakePlayer();
-        await resourceService.StartResourcesForPlayer(player, parallel);
+        this.resourceService = this.server.CreateInstance<ResourceService>();
+        this.resourceService.AddStartResource("ResourceA");
+        this.resourceService.AddStartResource("ResourceB");
+
+        this.resourceA = testingServerResourceService.ResourceA;
+        this.resourceB = testingServerResourceService.ResourceB;
+    }
+
+    [InlineData(true)]
+    [InlineData(false)]
+    [Theory]
+    public async Task ResourceServiceShouldWork(bool parallel)
+    {
+        var player = this.server.AddFakePlayer();
+        using var monitor = this.resourceService.Monitor();
+
+        await this.resourceService.StartResourcesForPlayer(player, parallel);
 
         using var _ = new AssertionScope();
         monitor.OccurredEvents.Select(x => x.EventName).Should().BeEquivalentTo(["Started", "Started", "AllStarted"]);
-        server.VerifyResourceStartedPacketSent(player, resourceA);
-        server.VerifyResourceStartedPacketSent(player, resourceB);
+        this.server.VerifyResourceStartedPacketSent(player, this.resourceA);
+        this.server.VerifyResourceStartedPacketSent(player, this.resourceB);
     }
+
+    [InlineData(true)]
+    [InlineData(false)]
+    [Theory]
+    public async Task DisconnectingPlayerShouldStopResourceStarting(bool parallel)
+    {
+        using var monitor = this.resourceService.Monitor();
+
+        var player = this.server.AddFakePlayer();
+
+        void handleStarted(Resource arg1, Player arg2)
+        {
+            player.TriggerDisconnected(Enums.QuitReason.Quit);
+        }
+
+        this.resourceService.Started += handleStarted;
+
+        var act = async () => await this.resourceService.StartResourcesForPlayer(player, parallel);
+
+        using var _ = new AssertionScope();
+        (await act.Should().ThrowAsync<AggregateException>())
+            .Which.InnerExceptions.Should()
+            .SatisfyRespectively(
+                first =>
+                {
+                    first.Should().BeOfType<OperationCanceledException>();
+                });
+
+        monitor.OccurredEvents.Select(x => x.EventName).Should().BeEquivalentTo(["Started"]);
+
+        if (parallel)
+        {
+            this.server.VerifyResourceStartedPacketSent(player, this.resourceA);
+            this.server.VerifyResourceStartedPacketSent(player, this.resourceB);
+        }
+        else
+        {
+            this.server.VerifyResourceStartedPacketSent(player, this.resourceA);
+            this.server.VerifyResourceStartedPacketSent(player, this.resourceB, 0);
+        }
+    }
+
+    [InlineData(true)]
+    [InlineData(false)]
+    [Theory]
+    public async Task ExceptionThrownInStartedEventShouldBeHandledProperly(bool parallel)
+    {
+        using var monitor = this.resourceService.Monitor();
+
+        var player = this.server.AddFakePlayer();
+
+        void handleStarted(Resource resource, Player player)
+        {
+            throw new Exception("oops");
+        }
+        
+        void handleAllStarted(Player player)
+        {
+            throw new Exception("oops");
+        }
+
+        this.resourceService.Started += handleStarted;
+        this.resourceService.AllStarted += handleAllStarted;
+
+        var act = async () => await this.resourceService.StartResourcesForPlayer(player, parallel);
+
+        using var _ = new AssertionScope();
+        (await act.Should().ThrowAsync<AggregateException>())
+            .Which.InnerExceptions.Should().HaveCount(3);
+
+        monitor.OccurredEvents.Select(x => x.EventName).Should().BeEquivalentTo(["Started", "Started", "AllStarted"]);
+
+        this.server.VerifyResourceStartedPacketSent(player, this.resourceA);
+        this.server.VerifyResourceStartedPacketSent(player, this.resourceB);
+    }
+
+
 }

@@ -5,7 +5,7 @@ using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Vehicles;
 
-public class VehiclePushSyncPacket : Packet
+public sealed class VehiclePushSyncPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_VEHICLE_PUSH_SYNC;
 

@@ -6,7 +6,7 @@ using System.Drawing;
 
 namespace SlipeServer.Packets.Definitions.Commands;
 
-public class ChatEchoPacket : Packet
+public sealed class ChatEchoPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_CHAT_ECHO;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

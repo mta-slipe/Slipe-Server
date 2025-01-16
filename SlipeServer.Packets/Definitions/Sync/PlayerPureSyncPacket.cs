@@ -9,7 +9,7 @@ using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Sync;
 
-public class PlayerPureSyncPacket : Packet
+public sealed class PlayerPureSyncPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_PURESYNC;
     public override PacketReliability Reliability => PacketReliability.UnreliableSequenced;

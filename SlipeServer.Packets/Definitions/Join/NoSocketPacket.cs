@@ -4,7 +4,7 @@ using System;
 
 namespace MTAServerWrapper.Packets.Outgoing.Connection;
 
-public class NoSocketPacket : Packet
+public sealed class NoSocketPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_NO_SOCKET;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

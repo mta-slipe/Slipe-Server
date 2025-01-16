@@ -5,7 +5,7 @@ using SlipeServer.Packets.Reader;
 
 namespace SlipeServer.Packets.Definitions.Commands;
 
-public class CommandPacket : Packet
+public sealed class CommandPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_COMMAND;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

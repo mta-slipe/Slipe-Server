@@ -5,7 +5,7 @@ using System;
 
 namespace MTAServerWrapper.Packets.Outgoing.Connection;
 
-public class JoinCompletePacket : Packet
+public sealed class JoinCompletePacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_SERVER_JOIN_COMPLETE;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
