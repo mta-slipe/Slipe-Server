@@ -6,7 +6,7 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Ped;
 
-public class PedClothesPacket : Packet
+public sealed class PedClothesPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_CLOTHES;
 

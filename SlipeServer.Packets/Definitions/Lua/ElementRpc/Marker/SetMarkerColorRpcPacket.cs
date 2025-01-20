@@ -6,7 +6,7 @@ using System.Drawing;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Marker;
 
-public class SetMarkerColorRpcPacket : Packet
+public sealed class SetMarkerColorRpcPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

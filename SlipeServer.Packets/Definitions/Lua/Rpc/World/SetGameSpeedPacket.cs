@@ -5,7 +5,7 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.Rpc.World;
 
-public class SetGameSpeedPacket : Packet
+public sealed class SetGameSpeedPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

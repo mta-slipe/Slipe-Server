@@ -4,7 +4,7 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Player;
 
-public class PlayerNetworkStatusPacket : Packet
+public sealed class PlayerNetworkStatusPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_NETWORK_STATUS;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

@@ -4,7 +4,7 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Commands;
 
-public class ConsoleEchoPacket : Packet
+public sealed class ConsoleEchoPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_CONSOLE_ECHO;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
@@ -31,7 +31,7 @@ public class ConsoleEchoPacket : Packet
     {
         var builder = new PacketBuilder();
 
-        builder.WriteStringWithByteAsLength(this.Message);
+        builder.WriteStringWithoutLength(this.Message);
 
         return builder.Build();
     }

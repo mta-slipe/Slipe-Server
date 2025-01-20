@@ -7,11 +7,13 @@ using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Enums;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using System.Threading;
 
 namespace SlipeServer.Server.Elements;
 
@@ -460,7 +462,9 @@ public class Vehicle : Element
         }
     }
 
-    public Dictionary<byte, Ped> Occupants { get; set; }
+    private readonly Lock occupantLock = new();
+    private readonly ConcurrentDictionary<byte, Ped> occupants = [];
+    public IReadOnlyDictionary<byte, Ped> Occupants => this.occupants.AsReadOnly();
 
     /// <summary>
     /// Vehicle that is towing this vehicle
@@ -524,7 +528,6 @@ public class Vehicle : Element
         this.Upgrades = new(this);
 
         this.Name = $"vehicle{this.Id}";
-        this.Occupants = new Dictionary<byte, Ped>();
 
         this.Colors.ColorChanged += (source, args) => this.ColorChanged?.Invoke(this, args);
         this.Upgrades.UpgradeChanged+= (source, args) => this.UpgradeChanged?.Invoke(this, args);
@@ -550,30 +553,37 @@ public class Vehicle : Element
 
     public void AddPassenger(byte seat, Ped ped, bool warpsIn = true)
     {
-        this.Occupants.TryGetValue(seat, out Ped? occupant);
-        if (occupant != null && occupant != ped)
+        lock (this.occupantLock)
         {
-            this.RemovePassenger(occupant, true);
-        }
-        this.Occupants[seat] = ped;
-        ped.EnteringVehicle = null;
-        ped.Seat = seat;
-        ped.Vehicle = this;
+            this.Occupants.TryGetValue(seat, out Ped? occupant);
+            if (occupant != null && occupant != ped)
+            {
+                this.RemovePassenger(occupant, true);
+            }
+            this.occupants[seat] = ped;
+            ped.EnteringVehicle = null;
+            ped.Seat = seat;
+            ped.Vehicle = this;
 
-        this.PedEntered?.Invoke(this, new VehicleEnteredEventsArgs(ped, this, seat, warpsIn));
+            this.PedEntered?.Invoke(this, new VehicleEnteredEventsArgs(ped, this, seat, warpsIn));
+        }
     }
 
     public void RemovePassenger(Ped ped, bool warpsOut = true)
     {
-        if (this.Occupants.ContainsValue(ped))
+        lock (this.occupantLock)
         {
-            var item = this.Occupants.First(kvPair => kvPair.Value == ped);
+            if (this.occupants.Any(x => x.Value == ped))
+            {
+                var item = this.Occupants.First(kvPair => kvPair.Value == ped);
 
-            this.Occupants.Remove(item.Key);
-            ped.Vehicle = null;
-            ped.EnteringVehicle = null;
+                this.occupants.Remove(item.Key, out var _);
+                ped.Vehicle = null;
+                ped.EnteringVehicle = null;
 
-            this.PedLeft?.Invoke(this, new VehicleLeftEventArgs(ped, this, item.Key, warpsOut));
+                if (ped.VehicleAction != VehicleAction.Jacked)
+                    this.PedLeft?.Invoke(this, new VehicleLeftEventArgs(ped, this, item.Key, warpsOut));
+            }
         }
     }
 
@@ -752,6 +762,27 @@ public class Vehicle : Element
 
     public void DetachFromTower(bool updateCounterpart = true) => AttachToTower(null, updateCounterpart);
 
+    public override bool Destroy()
+    {
+        if (base.Destroy())
+        {
+            if(this.JackingPed != null)
+            {
+                this.JackingPed.EnteringVehicle = null;
+                this.JackingPed.Seat = null;
+                this.JackingPed.VehicleAction = VehicleAction.None;
+            }
+
+            foreach (var occupant in this.Occupants)
+            {
+                RemovePassenger(occupant.Value);
+            }
+            this.occupants.Clear();
+            return true;
+        }
+
+        return false;
+    }
 
     public Func<Ped, Vehicle, byte, bool>? CanEnter;
     public Func<Ped, Vehicle, byte, bool>? CanExit;

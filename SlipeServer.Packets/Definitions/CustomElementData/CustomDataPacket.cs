@@ -6,7 +6,7 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.CustomElementData;
 
-public class CustomDataPacket : Packet
+public sealed class CustomDataPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_CUSTOM_DATA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

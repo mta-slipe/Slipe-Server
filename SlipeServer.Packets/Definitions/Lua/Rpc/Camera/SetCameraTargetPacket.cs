@@ -4,7 +4,7 @@ using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Lua.Camera;
 
-public class SetCameraTargetPacket : Packet
+public sealed class SetCameraTargetPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

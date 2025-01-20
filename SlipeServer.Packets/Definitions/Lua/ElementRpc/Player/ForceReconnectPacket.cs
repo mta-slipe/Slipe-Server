@@ -4,7 +4,7 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
 
-public class ForceReconnectPacket(string ip, ushort port, string? password = null) : Packet
+public sealed class ForceReconnectPacket(string ip, ushort port, string? password = null) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

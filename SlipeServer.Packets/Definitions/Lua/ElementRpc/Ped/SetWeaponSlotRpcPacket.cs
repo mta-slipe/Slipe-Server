@@ -4,7 +4,7 @@ using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 
-public class SetWeaponSlotRpcPacket : Packet
+public sealed class SetWeaponSlotRpcPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
 

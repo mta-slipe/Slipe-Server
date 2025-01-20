@@ -4,7 +4,7 @@ using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Pickups;
 
-public class PickupHitConfirmPacket : Packet
+public sealed class PickupHitConfirmPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_PICKUP_HIT_CONFIRM;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

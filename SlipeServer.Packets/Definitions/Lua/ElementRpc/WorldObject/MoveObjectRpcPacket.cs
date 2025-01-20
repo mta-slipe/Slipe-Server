@@ -6,7 +6,7 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.WorldObject;
 
-public class MoveObjectRpcPacket(ElementId elementId, PositionRotationAnimation movement) : Packet
+public sealed class MoveObjectRpcPacket(ElementId elementId, PositionRotationAnimation movement) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
 

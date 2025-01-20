@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Sync;
 
-public class ReturnSyncPacket : Packet
+public sealed class ReturnSyncPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_RETURN_SYNC;
     public override PacketReliability Reliability => PacketReliability.Reliable;

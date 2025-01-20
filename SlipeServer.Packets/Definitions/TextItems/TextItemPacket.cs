@@ -6,7 +6,7 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.DefinitionsTextITems;
 
-public class TextItemPacket : Packet
+public sealed class TextItemPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_TEXT_ITEM;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

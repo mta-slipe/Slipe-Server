@@ -4,7 +4,7 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.Rpc.World;
 
-public class ResetHeatHazePacket : Packet
+public sealed class ResetHeatHazePacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

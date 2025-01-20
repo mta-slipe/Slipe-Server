@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace SlipeServer.Packets.Definitions.Player;
 
-public class PlayerModInfoPacket : Packet
+public sealed class PlayerModInfoPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_MODINFO;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

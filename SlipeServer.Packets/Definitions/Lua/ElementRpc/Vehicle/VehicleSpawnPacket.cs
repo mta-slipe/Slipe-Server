@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
 
-public class VehicleSpawnPacket : Packet
+public sealed class VehicleSpawnPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_VEHICLE_SPAWN;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

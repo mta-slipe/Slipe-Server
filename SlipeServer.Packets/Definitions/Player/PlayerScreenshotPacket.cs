@@ -4,7 +4,7 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Player;
 
-public class PlayerScreenshotPacket : Packet
+public sealed class PlayerScreenshotPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_SCREENSHOT;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

@@ -3,7 +3,7 @@ using SlipeServer.Packets.Enums;
 
 namespace SlipeServer.Packets.Definitions.Player;
 
-public class ShowChatPacket : Packet
+public sealed class ShowChatPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

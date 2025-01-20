@@ -3,6 +3,7 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Extensions;
 using System.Collections.Generic;
+using SlipeServer.Server.PacketHandling.Factories;
 
 namespace SlipeServer.Server.Concepts;
 
@@ -11,17 +12,75 @@ namespace SlipeServer.Server.Concepts;
 /// </summary>
 public class Controls
 {
+    public static string[] AllControls = ["fire", "aim_weapon", "next_weapon", "previous_weapon", "forwards", "backwards", "left", "right", "zoom_in", "zoom_out", "change_camera", "jump", "sprint", "look_behind", "crouch", "action", "walk", "conversation_yes", "conversation_no", "group_control_forwards", "group_control_back", "enter_exit", "vehicle_fire", "vehicle_secondary_fire", "vehicle_left", "vehicle_right", "steer_forward", "steer_back", "accelerate", "brake_reverse", "radio_next", "radio_previous", "radio_user_track_skip", "horn", "sub_mission", "handbrake", "vehicle_look_left", "vehicle_look_right", "vehicle_look_behind", "vehicle_mouse_look", "special_control_left", "special_control_right", "special_control_down", "special_control_up"];
+
     private readonly Player player;
 
     public Controls(Player player)
     {
         this.player = player;
-        StateChanged += HandleStateChanged;
     }
 
-    private void HandleStateChanged(Player player, PlayerControlsChangedArgs args)
+    public void ToggleAll(bool isEnabled, bool gtaControls = true, bool mtaControls = true)
     {
-        player.Client.SendPacket(new ToggleControlAbility(args.Control, args.NewState));
+        this.player.Client.SendPacket(PlayerPacketFactory.CreateToggleAllControlsPacket(isEnabled, gtaControls, mtaControls));
+        this.fireEnabled = isEnabled;
+        this.aimWeaponEnabled = isEnabled;
+        this.nextWeaponEnabled = isEnabled;
+        this.previousWeaponEnabled = isEnabled;
+        this.forwardsEnabled = isEnabled;
+        this.backwardsEnabled = isEnabled;
+        this.leftEnabled = isEnabled;
+        this.rightEnabled = isEnabled;
+        this.zoomInEnabled = isEnabled;
+        this.zoomOutEnabled = isEnabled;
+        this.changeCameraEnabled = isEnabled;
+        this.jumpEnabled = isEnabled;
+        this.sprintEnabled = isEnabled;
+        this.lookBehindEnabled = isEnabled;
+        this.crouchEnabled = isEnabled;
+        this.actionEnabled = isEnabled;
+        this.walkEnabled = isEnabled;
+        this.conversationYesEnabled = isEnabled;
+        this.conversationNoEnabled = isEnabled;
+        this.groupControlForwardsEnabled = isEnabled;
+        this.groupControlBackEnabled = isEnabled;
+        this.vehicleFireEnabled = isEnabled;
+        this.vehicleSecondaryFireEnabled = isEnabled;
+        this.vehicleLeftEnabled = isEnabled;
+        this.vehicleRightEnabled = isEnabled;
+        this.steerForwardEnabled = isEnabled;
+        this.steerBackEnabled = isEnabled;
+        this.accelerateEnabled = isEnabled;
+        this.brakeReverseEnabled = isEnabled;
+        this.radioNextEnabled = isEnabled;
+        this.radioPreviousEnabled = isEnabled;
+        this.radioUserTrackSkipEnabled = isEnabled;
+        this.hornEnabled = isEnabled;
+        this.subMissionEnabled = isEnabled;
+        this.handbrakeEnabled = isEnabled;
+        this.vehicleLookLeftEnabled = isEnabled;
+        this.vehicleLookRightEnabled = isEnabled;
+        this.vehicleLookBehindEnabled = isEnabled;
+        this.vehicleMouseLookEnabled = isEnabled;
+        this.specialControlLeftEnabled = isEnabled;
+        this.specialControlRightEnabled = isEnabled;
+        this.specialControlDownEnabled = isEnabled;
+        this.specialControlUpEnabled = isEnabled;
+        this.enterExitEnabled = isEnabled;
+        this.enterPassengerEnabled = isEnabled;
+        this.screenshotEnabled = isEnabled;
+        this.chatboxEnabled = isEnabled;
+        this.radarEnabled = isEnabled;
+        this.radarZoomInEnabled = isEnabled;
+        this.radarZoomOutEnabled = isEnabled;
+        this.radarMoveNorthEnabled = isEnabled;
+        this.radarMoveSouthEnabled = isEnabled;
+        this.radarMoveEastEnabled = isEnabled;
+        this.radarMoveWestEnabled = isEnabled;
+        this.radarAttachEnabled = isEnabled;
+        var args = new PlayerControlsChangedArgs(this.player, AllControls, isEnabled);
+        StateChanged?.Invoke(this.player, args);
     }
 
     private bool fireEnabled = true;
@@ -31,6 +90,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "fire", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("fire", value));
             this.fireEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -43,6 +103,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "aim_weapon", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("aim_weapon", value));
             this.aimWeaponEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -55,6 +116,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "next_weapon", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("next_weapon", value));
             this.nextWeaponEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -67,6 +129,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "previous_weapon", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("previous_weapon", value));
             this.previousWeaponEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -79,6 +142,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "forwards", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("forwards", value));
             this.forwardsEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -91,6 +155,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "backwards", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("backwards", value));
             this.backwardsEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -103,6 +168,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "left", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("left", value));
             this.leftEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -115,6 +181,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "right", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("right", value));
             this.rightEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -127,6 +194,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "zoom_in", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("zoom_in", value));
             this.zoomInEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -139,6 +207,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "zoom_out", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("zoom_out", value));
             this.zoomOutEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -151,6 +220,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "change_camera", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("change_camera", value));
             this.changeCameraEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -163,6 +233,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "jump", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("jump", value));
             this.jumpEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -175,6 +246,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "sprint", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("sprint", value));
             this.sprintEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -187,6 +259,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "look_behind", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("look_behind", value));
             this.lookBehindEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -199,6 +272,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "crouch", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("crouch", value));
             this.crouchEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -211,6 +285,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "action", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("action", value));
             this.actionEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -223,6 +298,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "walk", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("walk", value));
             this.walkEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -235,6 +311,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "conversation_yes", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("conversation_yes", value));
             this.conversationYesEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -247,6 +324,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "conversation_no", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("conversation_no", value));
             this.conversationNoEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -259,6 +337,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "group_control_forwards", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("group_control_forwards", value));
             this.groupControlForwardsEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -271,6 +350,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "group_control_back", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("group_control_back", value));
             this.groupControlBackEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -283,6 +363,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "vehicle_fire", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("vehicle_fire", value));
             this.vehicleFireEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -295,6 +376,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "vehicle_secondary_fire", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("vehicle_secondary_fire", value));
             this.vehicleSecondaryFireEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -307,6 +389,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "vehicle_left", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("vehicle_left", value));
             this.vehicleLeftEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -319,6 +402,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "vehicle_right", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("vehicle_right", value));
             this.vehicleRightEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -331,6 +415,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "steer_forward", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("steer_forward", value));
             this.steerForwardEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -343,6 +428,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "steer_back", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("steer_back", value));
             this.steerBackEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -355,6 +441,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "accelerate", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("accelerate", value));
             this.accelerateEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -367,6 +454,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "brake_reverse", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("brake_reverse", value));
             this.brakeReverseEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -379,6 +467,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "radio_next", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("radio_next", value));
             this.radioNextEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -391,6 +480,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "radio_previous", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("radio_previous", value));
             this.radioPreviousEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -403,6 +493,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "radio_user_track_skip", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("radio_user_track_skip", value));
             this.radioUserTrackSkipEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -415,6 +506,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "horn", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("horn", value));
             this.hornEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -427,6 +519,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "sub_mission", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("sub_mission", value));
             this.subMissionEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -439,6 +532,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "handbrake", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("handbrake", value));
             this.handbrakeEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -451,6 +545,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "vehicle_look_left", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("vehicle_look_left", value));
             this.vehicleLookLeftEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -463,6 +558,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "vehicle_look_right", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("vehicle_look_right", value));
             this.vehicleLookRightEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -475,6 +571,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "vehicle_look_behind", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("vehicle_look_behind", value));
             this.vehicleLookBehindEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -487,6 +584,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "vehicle_mouse_look", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("vehicle_mouse_look", value));
             this.vehicleMouseLookEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -499,6 +597,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "special_control_left", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("special_control_left", value));
             this.specialControlLeftEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -511,6 +610,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "special_control_right", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("special_control_right", value));
             this.specialControlRightEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -523,6 +623,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "special_control_down", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("special_control_down", value));
             this.specialControlDownEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -535,6 +636,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "special_control_up", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("special_control_up", value));
             this.specialControlUpEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -547,6 +649,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "enter_exit", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("enter_exit", value));
             this.enterExitEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -559,6 +662,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "enter_passenger", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("enter_passenger", value));
             this.enterPassengerEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -571,6 +675,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "screenshot", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("screenshot", value));
             this.screenshotEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -583,6 +688,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "chatbox", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("chatbox", value));
             this.chatboxEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -595,6 +701,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "radar", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("radar", value));
             this.radarEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -607,6 +714,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "radar_zoom_in", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("radar_zoom_in", value));
             this.radarZoomInEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -619,6 +727,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "radar_zoom_out", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("radar_zoom_out", value));
             this.radarZoomOutEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -631,6 +740,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "radar_move_north", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("radar_move_north", value));
             this.radarMoveNorthEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -643,6 +753,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "radar_move_south", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("radar_move_south", value));
             this.radarMoveSouthEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -655,6 +766,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "radar_move_east", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("radar_move_east", value));
             this.radarMoveEastEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -667,6 +779,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "radar_move_west", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("radar_move_west", value));
             this.radarMoveWestEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }
@@ -679,6 +792,7 @@ public class Controls
         set
         {
             var args = new PlayerControlsChangedArgs(this.player, "radar_attach", value);
+            this.player.Client.SendPacket(new ToggleControlAbility("radar_attach", value));
             this.radarAttachEnabled = value;
             StateChanged?.Invoke(this.player, args);
         }

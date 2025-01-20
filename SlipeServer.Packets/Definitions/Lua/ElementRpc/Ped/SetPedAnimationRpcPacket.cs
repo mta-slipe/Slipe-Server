@@ -4,7 +4,7 @@ using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 
-public class SetPedAnimationRpcPacket : Packet
+public sealed class SetPedAnimationRpcPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
 

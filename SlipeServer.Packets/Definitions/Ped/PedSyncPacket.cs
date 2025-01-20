@@ -7,7 +7,7 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Ped;
 
-public class PedSyncPacket : Packet
+public sealed class PedSyncPacket : Packet
 {
     public override PacketId PacketId { get; } = PacketId.PACKET_ID_PED_SYNC;
     public override PacketReliability Reliability { get; } = PacketReliability.UnreliableSequenced;

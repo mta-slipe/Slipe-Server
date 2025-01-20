@@ -30,6 +30,7 @@ using SlipeServer.Server.ServerBuilders;
 using SlipeServer.Server.Services;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace SlipeServer.Server;
@@ -479,6 +480,10 @@ public class MtaServer
         {
             this.resourceProvider = this.serviceProvider.GetRequiredService<IResourceProvider>();
         }
+
+        if (this.additionalResources.Where(x => x.GetType() == resource.GetType()).Any())
+            throw new InvalidOperationException($"A resource of type '{resource.GetType().Name}' has already been added.");
+
         resource.NetId = this.resourceProvider.ReserveNetId();
         this.additionalResources.Add(resource);
         foreach (var server in this.resourceServers)

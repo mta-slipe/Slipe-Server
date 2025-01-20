@@ -6,7 +6,7 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Vehicles;
 
-public class VehicleDamageSyncPacket : Packet
+public sealed class VehicleDamageSyncPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_VEHICLE_DAMAGE_SYNC;
 

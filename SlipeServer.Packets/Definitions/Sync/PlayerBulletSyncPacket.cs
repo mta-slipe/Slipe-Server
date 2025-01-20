@@ -6,7 +6,7 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Sync;
 
-public class PlayerBulletSyncPacket : Packet
+public sealed class PlayerBulletSyncPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_BULLETSYNC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
