@@ -81,6 +81,19 @@ public class Element
     /// </summary>
     public byte TimeContext { get; private set; }
 
+    /// <summary>
+    /// This overwrites the current time sync context. 
+    /// In normal usage this is not required, if you feel like it is, there is most likely something else going on.
+    /// </summary>
+    /// <param name="value"></param>
+    public void OverrideTimeContext(byte value)
+        => this.TimeContext = value;
+
+
+    public Lock TimeContextFailureCountLock = new();
+    public byte TimeContextFailureCount { get; set; }
+
+
 
     private string name = "";
     /// <summary>

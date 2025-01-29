@@ -1,35 +1,32 @@
-﻿using SlipeServer.Packets.Definitions.Sync;
+﻿using Microsoft.Extensions.Logging;
+using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Packets.Definitions.Vehicles;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Server.Clients;
+using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
-using SlipeServer.Server.ElementCollections;
 using System;
-using SlipeServer.Server.Clients;
-using SlipeServer.Server.Elements.Enums;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync;
 
-public class VehiclePureSyncPacketHandler : IPacketHandler<VehiclePureSyncPacket>
+public class VehiclePureSyncPacketHandler(
+    ISyncHandlerMiddleware<VehiclePureSyncPacket> middleware,
+    IElementCollection elementCollection,
+    ILogger logger,
+    Configuration configuration
+    ) : IPacketHandler<VehiclePureSyncPacket>
 {
-    private readonly ISyncHandlerMiddleware<VehiclePureSyncPacket> middleware;
-    private readonly IElementCollection elementCollection;
-
     public PacketId PacketId => PacketId.PACKET_ID_PLAYER_VEHICLE_PURESYNC;
-
-    public VehiclePureSyncPacketHandler(
-        ISyncHandlerMiddleware<VehiclePureSyncPacket> middleware,
-        IElementCollection elementCollection
-    )
-    {
-        this.middleware = middleware;
-        this.elementCollection = elementCollection;
-    }
 
     public void HandlePacket(IClient client, VehiclePureSyncPacket packet)
     {
+        if (!IsTimeSyncContextValid(client, packet.TimeContext))
+            return;
+
         var player = client.Player;
         var vehicle = player.Vehicle;
 
@@ -38,12 +35,12 @@ public class VehiclePureSyncPacketHandler : IPacketHandler<VehiclePureSyncPacket
         packet.PlayerId = client.Player.Id;
         packet.Latency = (ushort)client.Ping;
 
-        packet.DoorStates = vehicle?.Damage.Doors ?? Array.Empty<byte>();
-        packet.WheelStates = vehicle?.Damage.Wheels ?? Array.Empty<byte>();
-        packet.PanelStates = vehicle?.Damage.Panels ?? Array.Empty<byte>();
-        packet.LightStates = vehicle?.Damage.Lights ?? Array.Empty<byte>();
+        packet.DoorStates = vehicle?.Damage.Doors ?? [];
+        packet.WheelStates = vehicle?.Damage.Wheels ?? [];
+        packet.PanelStates = vehicle?.Damage.Panels ?? [];
+        packet.LightStates = vehicle?.Damage.Lights ?? [];
 
-        var otherPlayers = this.middleware.GetPlayersToSyncTo(client.Player, packet);
+        var otherPlayers = middleware.GetPlayersToSyncTo(client.Player, packet);
         packet.SendTo(otherPlayers);
 
         player.RunAsSync(() =>
@@ -78,12 +75,12 @@ public class VehiclePureSyncPacketHandler : IPacketHandler<VehiclePureSyncPacket
 
             if (packet.DamagerId != null)
             {
-                var damager = this.elementCollection.Get(packet.DamagerId.Value);
+                var damager = elementCollection.Get(packet.DamagerId.Value);
                 var loss = (previousHealth - packet.PlayerHealth) + (previousArmor - packet.PlayerArmor);
 
                 player.TriggerDamaged(
-                    damager, 
-                    (DamageType)(packet.DamageWeaponType ?? (byte?)DamageType.WEAPONTYPE_UNIDENTIFIED), 
+                    damager,
+                    (DamageType)(packet.DamageWeaponType ?? (byte?)DamageType.WEAPONTYPE_UNIDENTIFIED),
                     (BodyPart)(packet.DamageBodyPart ?? (byte?)BodyPart.Torso),
                     loss);
             }
@@ -111,7 +108,7 @@ public class VehiclePureSyncPacketHandler : IPacketHandler<VehiclePureSyncPacket
                     var previous = vehicle;
                     foreach (var trailer in packet.Trailers)
                     {
-                        var trailerElement = this.elementCollection.Get(trailer.Id) as Elements.Vehicle;
+                        var trailerElement = elementCollection.Get(trailer.Id) as Elements.Vehicle;
                         if (trailerElement == null)
                             break;
 
@@ -129,5 +126,34 @@ public class VehiclePureSyncPacketHandler : IPacketHandler<VehiclePureSyncPacket
                 }
             });
         }
+    }
+
+    private bool IsTimeSyncContextValid(IClient client, byte context)
+    {
+        if (context != client.Player.TimeContext && context > 0 && client.Player.TimeContext > 0)
+        {
+            lock (client.Player.TimeContextFailureCountLock)
+            {
+                client.Player.TimeContextFailureCount++;
+
+                if (client.Player.TimeContextFailureCount > 20)
+                {
+                    client.Player.TimeContextFailureCount = 0;
+                    logger.LogError("Received mismatching Vehicle Pure sync packet from {player} many times, local: {local}, remote: {remote}", client.Player.Name, client.Player.TimeContext, context);
+
+                    if (configuration.Debug.AutoResolveTimeSyncContextMismatches)
+                        client.Player.OverrideTimeContext(context);
+                }
+            }
+            logger.LogTrace("Received mismatching Vehicle Pure sync packet from {player}, local: {local}, remote: {remote}", client.Player.Name, client.Player.TimeContext, context);
+            return false;
+        }
+
+        lock (client.Player.TimeContextFailureCountLock)
+        {
+            client.Player.TimeContextFailureCount = 0;
+        }
+
+        return true;
     }
 }
