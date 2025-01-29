@@ -3,7 +3,7 @@ using SlipeServer.Packets.Enums;
 using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Weapons;
-public class SetWeaponPropertyRpcPacket : Packet
+public sealed class SetWeaponPropertyRpcPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
 

@@ -28,7 +28,7 @@ public struct LatentEventHeader
     public ushort ResourceNetId { get; set; }
 }
 
-public class LatentLuaEventPacket : Packet
+public sealed class LatentLuaEventPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LATENT_TRANSFER;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

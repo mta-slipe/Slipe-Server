@@ -5,7 +5,7 @@ using System.Drawing;
 
 namespace SlipeServer.Packets.Definitions.Lua.Rpc.World;
 
-public class SetWaterColorPacket : Packet
+public sealed class SetWaterColorPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

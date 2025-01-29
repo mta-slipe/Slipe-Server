@@ -4,7 +4,7 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Commands;
 
-public class ConsoleEchoPacket : Packet
+public sealed class ConsoleEchoPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_CONSOLE_ECHO;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

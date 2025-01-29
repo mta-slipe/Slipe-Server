@@ -5,7 +5,7 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Lua.Rpc.World;
 
-public class RestoreWorldModelPacket : Packet
+public sealed class RestoreWorldModelPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

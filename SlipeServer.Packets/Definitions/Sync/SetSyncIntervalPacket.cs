@@ -3,7 +3,7 @@ using SlipeServer.Packets.Builder;
 
 namespace SlipeServer.Packets.Definitions.Sync;
 
-public class SetSyncIntervalPacket : Packet
+public sealed class SetSyncIntervalPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.Unreliable;

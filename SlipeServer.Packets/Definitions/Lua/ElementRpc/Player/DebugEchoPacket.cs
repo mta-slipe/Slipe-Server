@@ -5,7 +5,7 @@ using System.Drawing;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
 
-public class DebugEchoPacket : Packet
+public sealed class DebugEchoPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_DEBUG_ECHO;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

@@ -9,7 +9,7 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Sync;
 
-public class KeySyncPacket : Packet
+public sealed class KeySyncPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_KEYSYNC;
     public override PacketReliability Reliability => PacketReliability.UnreliableSequenced;

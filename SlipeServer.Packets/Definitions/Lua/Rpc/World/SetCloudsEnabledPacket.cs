@@ -5,7 +5,7 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.Rpc.World;
 
-public class SetCloudsEnabledPacket : Packet
+public sealed class SetCloudsEnabledPacket : Packet
 
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;

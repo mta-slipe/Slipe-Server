@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace SlipeServer.Packets.Definitions.Player;
 
-public class PlayerDiagnosticPacket : Packet
+public sealed class PlayerDiagnosticPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_DIAGNOSTIC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

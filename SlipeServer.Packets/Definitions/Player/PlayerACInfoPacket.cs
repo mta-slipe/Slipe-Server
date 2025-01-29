@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SlipeServer.Packets.Definitions.Player;
 
-public class PlayerACInfoPacket : Packet
+public sealed class PlayerACInfoPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_ACINFO;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

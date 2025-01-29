@@ -5,7 +5,7 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Join;
 
-public class PlayerJoinDataPacket : Packet
+public sealed class PlayerJoinDataPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_JOINDATA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;

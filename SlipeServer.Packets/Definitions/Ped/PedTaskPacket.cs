@@ -5,7 +5,7 @@ using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Ped;
 
-public class PedTaskPacket : Packet
+public sealed class PedTaskPacket : Packet
 {
     public override PacketId PacketId { get; } = PacketId.PACKET_ID_PED_TASK;
     public override PacketReliability Reliability { get; } = PacketReliability.Reliable;

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SlipeServer.Packets.Definitions.Resources;
 
-public class ResourceStartPacket : Packet
+public sealed class ResourceStartPacket : Packet
 {
 
     public override PacketId PacketId => PacketId.PACKET_ID_RESOURCE_START;

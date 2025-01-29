@@ -6,7 +6,7 @@ using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Sync;
 
-public class ProjectileSyncPacket : Packet
+public sealed class ProjectileSyncPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_PROJECTILE;
     public override PacketReliability Reliability => PacketReliability.Reliable;

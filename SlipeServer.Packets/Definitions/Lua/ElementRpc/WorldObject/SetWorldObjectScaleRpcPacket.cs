@@ -6,7 +6,7 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.WorldObject;
 
-public class SetWorldObjectScaleRpcPacket : Packet
+public sealed class SetWorldObjectScaleRpcPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
 

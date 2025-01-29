@@ -4,7 +4,7 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Resources;
 
-public class PlayerResourceStartedPacket : Packet
+public sealed class PlayerResourceStartedPacket : Packet
 {
 
     public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_RESOURCE_START;

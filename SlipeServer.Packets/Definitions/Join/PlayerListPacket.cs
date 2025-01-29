@@ -7,7 +7,7 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Join;
 
-public class PlayerListPacket : Packet
+public sealed class PlayerListPacket : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_LIST;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
