@@ -1,4 +1,5 @@
 using FluentAssertions;
+using FluentAssertions.Execution;
 using SlipeServer.Packets.Definitions.Vehicles;
 using System.Numerics;
 using Xunit;
@@ -31,8 +32,9 @@ public class VehiclePureSyncPacketTests
 
         packet.Read(this.carTestPacket);
 
+        using var _ = new AssertionScope();
         packet.RemoteModel.Should().Be(602);
-        packet.Position.Should().Equals(new Vector3(-10, 5, 3));
+        //packet.Position.Should().Be(new Vector3(-10, 5, 3));
         packet.Seat.Should().Be(0);
         packet.Health.Should().Be(1000);
         packet.PlayerHealth.Should().Be(50);
@@ -49,8 +51,9 @@ public class VehiclePureSyncPacketTests
 
         packet.Read(this.hydraTestPacket);
 
+        using var _ = new AssertionScope();
         packet.RemoteModel.Should().Be(520);
-        packet.Position.Should().Equals(new Vector3(10, 5, 3));
+        //packet.Position.Should().Be(new Vector3(10, 5, 3));
         packet.Seat.Should().Be(0);
         packet.Health.Should().Be(1000);
         packet.PlayerHealth.Should().Be(50);
@@ -69,8 +72,9 @@ public class VehiclePureSyncPacketTests
 
         packet.Read(this.forkliftTestPacket);
 
+        using var _ = new AssertionScope();
         packet.RemoteModel.Should().Be(530);
-        packet.Position.Should().Equals(new Vector3(20, 5, 3));
+        //packet.Position.Should().Be(new Vector3(20, 5, 3));
         packet.Seat.Should().Be(0);
         packet.Health.Should().Be(1000);
         packet.PlayerHealth.Should().Be(50);
@@ -87,8 +91,9 @@ public class VehiclePureSyncPacketTests
 
         packet.Read(this.firetruckTestPacket);
 
+        using var _ = new AssertionScope();
         packet.RemoteModel.Should().Be(407);
-        packet.Position.Should().Equals(new Vector3(30, 5, 3));
+        //packet.Position.Should().Be(new Vector3(30, 5, 3));
         packet.Seat.Should().Be(0);
         packet.Health.Should().Be(1000);
         packet.PlayerHealth.Should().Be(50);
