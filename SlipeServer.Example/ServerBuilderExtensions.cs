@@ -9,6 +9,7 @@ public static class ServerBuilderExtensions
     {
         builder.AddLogic<ServerExampleLogic>();
         builder.AddLuaControllers();
+        builder.AddLogic<ResourcesLogic>();
 
         return builder;
     }
