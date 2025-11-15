@@ -1,4 +1,4 @@
-﻿using FluentAssertions.Execution;
+using FluentAssertions.Execution;
 using FluentAssertions.Primitives;
 using SlipeServer.Server.Elements;
 using System;
@@ -8,7 +8,7 @@ namespace SlipeServer.Server.TestTools.FluentAssertions;
 
 public class ElementAssertionsBase<T> : ObjectAssertions<T, ElementAssertionsBase<T>> where T : Element
 {
-    public ElementAssertionsBase(T element) : base(element)
+    public ElementAssertionsBase(T element) : base(element, null)
     {
     }
 
