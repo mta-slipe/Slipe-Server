@@ -14,21 +14,21 @@ public class ElementAssertionsBase<T> : ObjectAssertions<T, ElementAssertionsBas
 
     protected void AssertPropertyEquality<U>(Func<T, U> propertySelector, U expected, string propertyName, string because = "", params object[] becauseArgs)
     {
-        Execute.Assertion.BecauseOf(because, becauseArgs)
+        FluentAssertions.Execution.Execute.Assertion.BecauseOf(because, becauseArgs)
             .ForCondition(propertySelector(Subject).Equals(expected))
             .FailWith($"Expected {propertyName} to be {{0}}{because}, but found {{1}}.", expected, propertySelector(Subject));
     }
 
     protected void AssertPropertyEquality(Func<T, byte[]> propertySelector, byte[] expected, string propertyName, string because = "", params object[] becauseArgs)
     {
-        Execute.Assertion.BecauseOf(because, becauseArgs)
+        FluentAssertions.Execution.Execute.Assertion.BecauseOf(because, becauseArgs)
             .ForCondition(propertySelector(Subject).SequenceEqual(expected))
             .FailWith($"Expected {propertyName} to be {{0}}{because}, but found {{1}}.", expected, propertySelector(Subject));
     }
 
     protected void AssertPropertyEquality(Func<T, float[]> propertySelector, float[] expected, string propertyName, string because = "", params object[] becauseArgs)
     {
-        Execute.Assertion.BecauseOf(because, becauseArgs)
+        FluentAssertions.Execution.Execute.Assertion.BecauseOf(because, becauseArgs)
             .ForCondition(propertySelector(Subject).SequenceEqual(expected))
             .FailWith($"Expected {propertyName} to be {{0}}{because}, but found {{1}}.", expected, propertySelector(Subject));
     }
