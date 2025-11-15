@@ -81,10 +81,6 @@ public class AseUdpListener
 
     private void StartListening(ushort port)
     {
-        IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-        IPAddress ipAddress = ipHostInfo.AddressList[0];
-        IPEndPoint localEndPoint = new IPEndPoint(ipAddress, port);
-
         UdpClient socket = new UdpClient(port);
         socket.BeginReceive(new AsyncCallback(OnUdpData), socket);
     }

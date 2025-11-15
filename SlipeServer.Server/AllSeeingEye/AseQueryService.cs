@@ -128,7 +128,6 @@ public class AseQueryService : IAseQueryService
         return stream.ToArray();
     }
 
-
     public byte[] QueryLight(ushort port, VersionType version = VersionType.Release)
     {
         using MemoryStream stream = new MemoryStream();
@@ -140,7 +139,8 @@ public class AseQueryService : IAseQueryService
 
         var aseVersion = GetVersion(version == VersionType.Release ? this.aseVersion : AseVersion.v1_6n);
         var playerCount = playerNames.Count;
-        var strPlayerCount = playerCount + "/" + this.configuration.MaxPlayerCount;
+
+        var strPlayerCount = $"{playerCount} / {this.configuration.MaxPlayerCount}";
         var buildType = $"{(byte)version} ";
         var buildNumber = $"0";
         var pingStatus = Array.Empty<byte>()

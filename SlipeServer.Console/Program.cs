@@ -1,27 +1,21 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using SlipeServer.ConfigurationProviders;
 using SlipeServer.Console.AdditionalResources;
 using SlipeServer.Console.Logic;
 using SlipeServer.Console.PacketReplayer;
 using SlipeServer.Console.Proxy;
-using SlipeServer.Lua;
-using SlipeServer.LuaControllers;
-using SlipeServer.Packets.Definitions.Sync;
-using SlipeServer.Physics.Extensions;
-using SlipeServer.Server;
-using SlipeServer.Server.Behaviour;
-using SlipeServer.Server.Loggers;
-using SlipeServer.Server.PacketHandling.Handlers.Middleware;
-using SlipeServer.Server.ServerBuilders;
-using System;
-using System.IO;
-using System.Threading;
 using SlipeServer.Example;
 using SlipeServer.Example.Services;
+using SlipeServer.Lua;
+using SlipeServer.Packets.Definitions.Sync;
+using SlipeServer.Physics.Extensions;
 using SlipeServer.Scripting.Luau;
+using SlipeServer.Server;
+using SlipeServer.Server.Behaviour;
+using SlipeServer.Server.PacketHandling.Handlers.Middleware;
+using SlipeServer.Server.ServerBuilders;
 
 namespace SlipeServer.Console;
 
@@ -79,7 +73,7 @@ public partial class Program
             .AddUserSecrets<Program>()
             .Build();
 
-        if(ushort.TryParse(config.GetSection("HttpPort").Value, out var httpPort))
+        if (ushort.TryParse(config.GetSection("HttpPort").Value, out var httpPort))
         {
             this.configuration.HttpPort = httpPort;
         }
@@ -90,6 +84,8 @@ public partial class Program
                 builder.UseConfiguration(this.configuration);
 
 #if DEBUG
+                //this.configuration.MasterServerHost = "4.175.21.190";
+                //builder.AddDefaults();
                 builder.AddDefaults(exceptBehaviours: ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour);
 #else
                 builder.AddDefaults();
