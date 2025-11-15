@@ -1,4 +1,4 @@
-﻿using SlipeServer.Packets.Definitions.Resources;
+using SlipeServer.Packets.Definitions.Resources;
 using SlipeServer.Packets.Structs;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
@@ -132,7 +132,12 @@ public class Resource
 
     private byte[] CompressFile(byte[] input)
     {
-        var compressed = Ionic.Zlib.ZlibStream.CompressBuffer(input);
+        using var output = new System.IO.MemoryStream();
+        using (var compressor = new System.IO.Compression.DeflateStream(output, System.IO.Compression.CompressionLevel.Optimal, true))
+        {
+            compressor.Write(input, 0, input.Length);
+        }
+        var compressed = output.ToArray();
 
         var result = new byte[] {
                 (byte)((input.Length >> 24) & 0xFF),
