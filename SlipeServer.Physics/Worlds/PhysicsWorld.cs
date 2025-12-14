@@ -54,10 +54,10 @@ public class PhysicsWorld : IDisposable
         }
     }
 
-    public PhysicsElement<BodyDescription, BodyHandle> AddDynamicBody(ConvexPhysicsMesh mesh, Vector3 position, Quaternion rotation, float mass)
+    public PhysicsElement<BodyDescription, BodyHandle> AddDynamicBody(ConvexPhysicsMesh mesh, Vector3 position, Quaternion rotation, float mass, float friction = 0.1f)
     {
         mesh.ConvexShape.ComputeInertia(mass, out var inertia);
-        var collidable = new CollidableDescription(mesh.MeshIndex, 0.1f);
+        var collidable = new CollidableDescription(mesh.MeshIndex, friction);
         return AddDynamicBody(collidable, inertia, position, rotation);
     }
 

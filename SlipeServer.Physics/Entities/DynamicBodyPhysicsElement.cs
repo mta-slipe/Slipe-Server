@@ -18,7 +18,7 @@ public class DynamicBodyPhysicsElement : PhysicsElement<BodyDescription, BodyHan
         {
             var pose = this.simulation.Bodies.GetBodyReference(this.handle).Pose;
             this.CoupledElement.Position = pose.Position;
-            this.CoupledElement.Rotation = pose.Orientation.ToEuler();
+            this.CoupledElement.Rotation = pose.Orientation.ToEulerFromBeppu();
         }
     }
 }

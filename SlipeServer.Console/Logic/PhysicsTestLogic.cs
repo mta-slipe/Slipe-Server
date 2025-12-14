@@ -109,6 +109,7 @@ public class PhysicsTestLogic
             this.commandService.AddCommand("ray").Triggered += HandleRayCommand;
             this.commandService.AddCommand("rayme").Triggered += HandleRayMeCommand;
             this.commandService.AddCommand("ball").Triggered += HandleBallCommand;
+            this.commandService.AddCommand("cylinder").Triggered += HandleCylinderCommand;
             this.commandService.AddCommand("startsim").Triggered += HandleStartSimCommand;
             this.commandService.AddCommand("stopsim").Triggered += HandleStopSimCommand;
             this.commandService.AddCommand("heightmap").Triggered += (s, a) => GenerateRaycastedHeightMap();
@@ -152,6 +153,16 @@ public class PhysicsTestLogic
         var physicsBall = this.physicsWorld.AddDynamicBody(this.ball, e.Player.Position, Quaternion.Identity, 1);
         var ball = new WorldObject(2114, e.Player.Position + Vector3.UnitZ * 2).AssociateWith(this.server);
         physicsBall.CoupleWith(ball);
+    }
+
+    private void HandleCylinderCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
+    {
+        if (this.physicsWorld == null)
+            return;
+
+        var physicsCylinder = this.physicsWorld.AddDynamicBody(this.cylinder, e.Player.Position, Quaternion.Identity, 30, 0.35f);
+        var cylinder = new WorldObject(2062, e.Player.Position + Vector3.UnitZ * 2).AssociateWith(this.server);
+        physicsCylinder.CoupleWith(cylinder);
     }
 
     private void HandleStartSimCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
