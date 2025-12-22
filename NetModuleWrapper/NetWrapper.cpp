@@ -1,5 +1,10 @@
 #include "NetWrapper.h"
 
+// Suppress strcpy/strncpy warnings on Windows (MSVC)
+#if defined(_WIN32) && defined(_MSC_VER)
+#pragma warning(disable:4996)
+#endif
+
 bool staticPacketHandler(unsigned char ucPacketID, const NetServerPlayerID& Socket, NetBitStreamInterface* pBitStream, SNetExtraInfo* pNetExtraInfo)
 {
     return NetWrapper::getNetWrapper(Socket)->packetHandler(ucPacketID, Socket, pBitStream, pNetExtraInfo);
@@ -82,21 +87,31 @@ void NetWrapper::resendACPackets(uint64 address)
     network->ResendACPackets(sockets[address]);
 }
 
-SerialExtraAndVersion NetWrapper::getClientSerialAndVersion(uint64 address)
+void NetWrapper::getClientSerialAndVersion(uint64 address, char* serial, char* extra, char* version)
 {
-    auto socket = sockets[address];
+    NetServerPlayerID& socket = sockets[address];
 
-    SFixedString<32> strSerialTemp;
-    SFixedString<64> strExtraTemp;
-    SFixedString<32> strPlayerVersionTemp;
-    network->GetClientSerialAndVersion(socket, strSerialTemp, strExtraTemp, strPlayerVersionTemp);
+    // Use static buffers with placement new to avoid both heap allocation and destructor calls
+    // The destructors are never called, avoiding the stack corruption issue
 
-    std::string serial = (std::string)SStringX(strSerialTemp);
-    std::string extra = (std::string)SStringX(strExtraTemp);
-    std::string version = (std::string)SStringX(strPlayerVersionTemp);
-
-    SerialExtraAndVersion result = SerialExtraAndVersion(serial, extra, version);
-    return result;
+    static char serialBuffer[sizeof(SFixedString<32>)];
+    static char extraBuffer[sizeof(SFixedString<64>)];
+    static char versionBuffer[sizeof(SFixedString<32>)];
+    
+    // Placement new - constructs in-place without heap allocation
+    SFixedString<32>* strSerialTemp = new (serialBuffer) SFixedString<32>();
+    SFixedString<64>* strExtraTemp = new (extraBuffer) SFixedString<64>();
+    SFixedString<32>* strPlayerVersionTemp = new (versionBuffer) SFixedString<32>();
+    
+    network->GetClientSerialAndVersion(socket, *strSerialTemp, *strExtraTemp, *strPlayerVersionTemp);
+    
+    // Copy directly to output parameters
+    STRNCPY(serial, (const char*)*strSerialTemp, 48);
+    STRNCPY(extra, (const char*)*strExtraTemp, 48);
+    STRNCPY(version, (const char*)*strPlayerVersionTemp, 48);
+    
+    // Don't call destructors - they cause the crash
+    // The static buffers will be reused on next call
 }
 
 std::string NetWrapper::getIPAddress(uint64 address) {

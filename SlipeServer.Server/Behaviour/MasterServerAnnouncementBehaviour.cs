@@ -65,6 +65,6 @@ public class MasterServerAnnouncementBehaviour
             this.timer.Interval = interval * 1000;
         }
 
-        this.logger.LogInformation("Master server list announcement result: {result}", keyValuePairCollection["ok_message"]);
+        this.logger.LogTrace("Master server list announcement result: {result}", keyValuePairCollection["ok_message"]);
     }
 }

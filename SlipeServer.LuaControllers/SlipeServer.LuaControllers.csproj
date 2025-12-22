@@ -14,7 +14,7 @@
 	<RepositoryType>git</RepositoryType>
 	<PackageLicenseFile>LICENSE</PackageLicenseFile>
 	<Description>MVC Like controllers for Slipe Server</Description>
-	<Platforms>AnyCPU;x86;ARM64;ARM32</Platforms>
+	<Platforms>AnyCPU;x86;ARM64;ARM32;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
