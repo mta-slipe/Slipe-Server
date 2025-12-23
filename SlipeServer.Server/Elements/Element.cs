@@ -561,6 +561,7 @@ public class Element
             this.associations.Remove(association);
 
         server.PlayerJoined -= HandlePlayerJoin;
+        server.ElementCreated -= HandleElementCreation;
 
         server.RemoveElement(this);
         this.RemovedFrom?.Invoke(this, new ElementAssociatedWithEventArgs(this, server));
