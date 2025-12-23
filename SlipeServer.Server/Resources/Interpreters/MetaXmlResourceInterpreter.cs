@@ -55,9 +55,12 @@ public class MetaXmlResourceInterpreter : IResourceInterpreter
             PriorityGroup = (meta.Value.downloadPriorityGroup != null && meta.Value.downloadPriorityGroup.Length > 0) ? meta.Value.downloadPriorityGroup.First().Data : 0,
             Files = GetFilesForMetaXmlResource(meta.Value, files),
             Exports = GetExportsForMetaXmlResource(meta.Value).ToList(),
-            NoClientScripts = GetNoCacheFiles(meta.Value, files),
             IsOopEnabled = meta.Value.oops != null && meta.Value.oops.Any(x => x.Data.ToLower() == "true")
         };
+
+        foreach (var item in GetNoCacheFiles(meta.Value, files))
+            resource.AddNoClientScript(item.Key, item.Value);
+
         return resource;
     }
 
