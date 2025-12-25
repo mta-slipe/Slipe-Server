@@ -3,6 +3,7 @@ using SlipeServer.Physics.Worlds;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Extensions;
+using System;
 using System.Numerics;
 
 namespace SlipeServer.Physics.Entities;
@@ -67,6 +68,6 @@ public class PhysicsElement<TDescription, THandle>
 
     protected virtual void HandleCoupledElementRotationUpdate(Element sender, ElementChangedEventArgs<Vector3> args)
     {
-        this.Rotation = (args.NewValue + this.rotationOffset).ToQuaternion();
+        this.Rotation = this.rotationOffset.ToQuaternion() * args.NewValue.ToQuaternion();
     }
 }

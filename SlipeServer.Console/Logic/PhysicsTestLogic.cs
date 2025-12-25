@@ -6,16 +6,13 @@ using SlipeServer.Physics.Enum;
 using SlipeServer.Physics.Services;
 using SlipeServer.Physics.Worlds;
 using SlipeServer.Server;
+using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Extensions;
-using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Services;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.IO;
 using System.Numerics;
 using System.Runtime.InteropServices;
 
@@ -33,7 +30,8 @@ public class PhysicsTestLogic
     private StaticPhysicsElement? ufoInnMesh1;
     private StaticPhysicsElement? ufoInnMesh2;
     private StaticPhysicsElement? army;
-    private ConvexPhysicsMesh cylinder;
+    private CompoundPhysicsMesh cylinder;
+    private CompoundPhysicsMesh drum;
     private ConvexPhysicsMesh ball;
 
     public PhysicsTestLogic(
@@ -49,9 +47,17 @@ public class PhysicsTestLogic
         this.commandService = commandService;
         this.logger = logger;
 
+        this.commandService.AddCommand("physicsreset").Triggered += (source, args) => Reset();
         this.commandService.AddCommand("physics").Triggered += (source, args) => InitEmpty();
         this.commandService.AddCommand("physicshighres").Triggered += (source, args) => InitFullDff();
         this.commandService.AddCommand("physicslowres").Triggered += (source, args) => InitFullCol();
+    }
+
+    private void Reset()
+    {
+        this.physicsWorld?.Stop();
+        this.physicsWorld?.Dispose();
+        this.physicsWorld = null;
     }
 
     private void InitEmpty()
@@ -104,12 +110,15 @@ public class PhysicsTestLogic
             this.army = (StaticPhysicsElement)this.physicsWorld.AddStatic(armyMesh, new Vector3(54, -22.5f, 1), armyRotation);
 
             this.cylinder = this.physicsWorld.CreateCylinder(0.35f, 1.8f);
+            this.drum = this.physicsWorld.CreateCylinder(0.35f, 1.1f);
             this.ball = this.physicsWorld.CreateSphere(0.25f);
 
             this.commandService.AddCommand("ray").Triggered += HandleRayCommand;
             this.commandService.AddCommand("rayme").Triggered += HandleRayMeCommand;
+            this.commandService.AddCommand("raymedown").Triggered += HandleRayMeDownCommand;
             this.commandService.AddCommand("ball").Triggered += HandleBallCommand;
             this.commandService.AddCommand("cylinder").Triggered += HandleCylinderCommand;
+            this.commandService.AddCommand("cylinderstack").Triggered += HandleCylinderStackCommand;
             this.commandService.AddCommand("startsim").Triggered += HandleStartSimCommand;
             this.commandService.AddCommand("stopsim").Triggered += HandleStopSimCommand;
             this.commandService.AddCommand("heightmap").Triggered += (s, a) => GenerateRaycastedHeightMap();
@@ -130,7 +139,7 @@ public class PhysicsTestLogic
             return;
 
         var playerElement = this.physicsWorld.AddKinematicBody(this.cylinder, player.Position, player.Rotation.ToQuaternion());
-        playerElement.CoupleWith(player, Vector3.Zero, new Vector3(0, 90, 0));
+        playerElement.CoupleWith(player, Vector3.Zero, new Vector3(0, 0, 0));
 
         player.Disconnected += (_, _) => this.physicsWorld.Destroy(playerElement);
     }
@@ -143,6 +152,11 @@ public class PhysicsTestLogic
     private void HandleRayMeCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
     {
         GenerateRaycastedImage(e.Player.Position);
+    }
+
+    private void HandleRayMeDownCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
+    {
+        GenerateRaycastedHeightMap(e.Player.Position, new Vector2(25, 25), new Vector2(1024, 1024));
     }
 
     private void HandleBallCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
@@ -160,9 +174,22 @@ public class PhysicsTestLogic
         if (this.physicsWorld == null)
             return;
 
-        var physicsCylinder = this.physicsWorld.AddDynamicBody(this.cylinder, e.Player.Position, Quaternion.Identity, 30, 0.35f);
+        var physicsCylinder = this.physicsWorld.AddDynamicBody(this.drum, e.Player.Position, Quaternion.Identity, 30, 0.35f);
         var cylinder = new WorldObject(2062, e.Player.Position + Vector3.UnitZ * 2).AssociateWith(this.server);
         physicsCylinder.CoupleWith(cylinder);
+    }
+
+    private void HandleCylinderStackCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
+    {
+        if (this.physicsWorld == null)
+            return;
+
+        for (int i = 0; i < 10; i++)
+        {
+            var physicsCylinder = this.physicsWorld.AddDynamicBody(this.drum, e.Player.Position + Vector3.UnitZ * i * 2.0f, Quaternion.Identity, 30, 0.35f);
+            var cylinder = new WorldObject(2062, e.Player.Position + Vector3.UnitZ * (i * 2.0f + 2)).AssociateWith(this.server);
+            physicsCylinder.CoupleWith(cylinder);
+        }
     }
 
     private void HandleStartSimCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
@@ -249,7 +276,7 @@ public class PhysicsTestLogic
                 if (hit.HasValue)
                 {
                     var max = 256 * 3;
-                    var intensity = max - (hit.Value.distance / depth * max);
+                    var intensity = hit.Value.distance / depth * max;
                     var color = Color.FromArgb(255, (int)Math.Clamp(intensity, 0, 255), (int)Math.Clamp(intensity - 256, 0, 255), (int)Math.Clamp(intensity - 512, 0, 255));
                     output.SetPixel(x, height - y - 1, color);
                 }
@@ -258,6 +285,39 @@ public class PhysicsTestLogic
         this.logger.LogInformation($"Heightmap generated");
 
         output.Save("heightmap.png", ImageFormat.Png);
+    }
+
+    private void GenerateRaycastedHeightMap(Vector3 center, Vector2 dimensions, Vector2 resolution)
+    {
+        var width = resolution.X;
+        var height = resolution.Y;
+
+        var min = center.Z - 5;
+        var max = center.Z + 5;
+
+        var depth = max - min;
+
+        var direction = new Vector3(0, 0, -1);
+
+        using var output = new Bitmap((int)width, (int)height, PixelFormat.Format32bppArgb);
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                var from = center + new Vector3(x / width * dimensions.X * 2 - dimensions.X, y / height * dimensions.Y * 2 - dimensions.Y, max);
+                var hit = this.physicsWorld!.RayCast(from, direction, depth);
+                if (hit.HasValue)
+                {
+                    var level = from + hit.Value.distance * direction;
+                    var intensity = (level.Z - min) / (max - min) * 255 * 3;
+                    var color = Color.FromArgb(255, (int)Math.Clamp(intensity, 0, 255), (int)Math.Clamp(intensity - 256, 0, 255), (int)Math.Clamp(intensity - 512, 0, 255));
+                    output.SetPixel(x, (int)(height) - y - 1, color);
+                }
+            }
+        }
+        this.logger.LogInformation($"Heightmap generated");
+
+        output.Save("localheightmap.png", ImageFormat.Png);
     }
 
     private string? GetGtasaDirectory()

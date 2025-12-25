@@ -74,6 +74,17 @@ public static class NumericsExtensions
     }
 
     /// <summary>
+    /// Return the equivalent representation of a rotation in degrees, in quaternions
+    /// This respects the definitions of the Yaw / Pitch / Roll rotation order of GTA SA
+    /// </summary>
+    /// <param name="rotation"></param>
+    /// <returns></returns>
+    public static Quaternion ToSemanticQuaternion(this Vector3 rotation)
+    {
+        return Quaternion.CreateFromYawPitchRoll(ToRadians(rotation.Z), ToRadians(rotation.X), ToRadians(rotation.Y));
+    }
+
+    /// <summary>
     /// Returns the equivalent representation of a quaternion in euler angles
     /// </summary>
     /// <param name="quaternion"></param>
@@ -105,6 +116,6 @@ public static class NumericsExtensions
         rotZ *= 180.0 / Math.PI;
         rotY *= 180.0 / Math.PI;
 
-        return new Vector3((float)rotX, (float)rotY, (float)-rotZ);
+        return new Vector3((float)-rotY, (float)rotZ, (float)rotX);
     }
 }

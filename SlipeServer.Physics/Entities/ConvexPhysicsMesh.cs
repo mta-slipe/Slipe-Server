@@ -1,8 +1,9 @@
-﻿using BepuPhysics.Collidables;
+﻿using BepuPhysics;
+using BepuPhysics.Collidables;
 
 namespace SlipeServer.Physics.Entities;
 
-public struct ConvexPhysicsMesh : IPhysicsMesh
+public readonly struct ConvexPhysicsMesh : IPhysicsMesh
 {
     public IShape Shape => this.ConvexShape;
     public IConvexShape ConvexShape { get; }

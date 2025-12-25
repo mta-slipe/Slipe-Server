@@ -61,7 +61,7 @@ public class PhysicsWorld : IDisposable
         return AddDynamicBody(collidable, inertia, position, rotation);
     }
 
-    public PhysicsElement<BodyDescription, BodyHandle> AddDynamicBody(CompoundPhysicsMesh mesh, Vector3 position, Quaternion rotation, float mass)
+    public PhysicsElement<BodyDescription, BodyHandle> AddDynamicBody(CompoundPhysicsMesh mesh, Vector3 position, Quaternion rotation, float mass, float friction = 0.1f)
     {
         var collidable = new CollidableDescription(mesh.MeshIndex, 0.1f);
         return AddDynamicBody(collidable, mesh.Inertia, position, rotation);
@@ -142,13 +142,29 @@ public class PhysicsWorld : IDisposable
         }
     }
 
-    public ConvexPhysicsMesh CreateCylinder(float radius, float length)
+    public CompoundPhysicsMesh CreateCylinder(float radius, float length)
     {
         var cylinder = new Cylinder(radius, length);
         lock (this.stepLock)
         {
-            var shape = this.simulation.Shapes.Add(cylinder);
-            return new ConvexPhysicsMesh(cylinder, shape);
+            unsafe
+            {
+                var shape = this.simulation.Shapes.Add(cylinder);
+                var rotation = Quaternion.CreateFromAxisAngle(new Vector3(1, 0, 0), MathF.PI / 2);
+
+                this.pool.Take<CompoundChild>(1, out var buffer);
+                buffer[0] = new CompoundChild()
+                {
+                    ShapeIndex = shape,
+                    LocalPose = new RigidPose(Vector3.Zero, rotation)
+                };
+                var compound = new Compound(buffer);
+
+                var compoundShape = this.simulation.Shapes.Add(compound);
+
+                cylinder.ComputeInertia(30, out var inertia);
+                return new CompoundPhysicsMesh(compound, compoundShape, inertia);
+            }
         }
     }
 
