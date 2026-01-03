@@ -54,7 +54,12 @@ public class PlayerPureSyncPacketHandler(
             if (player.ContactElement != null)
                 player.Position = player.ContactElement.Position + packet.Position;
             else
-                player.Position = packet.Position;
+            {
+                var element = player.AssociatedElements
+                    .Get(packet.ContactElementId);
+
+                player.Position = (element?.Position + packet.Position) ?? packet.Position;
+            }
 
             var weaponChanged = player.CurrentWeaponSlot != (WeaponSlot)packet.WeaponSlot;
             player.CurrentWeaponSlot = (WeaponSlot)packet.WeaponSlot;
