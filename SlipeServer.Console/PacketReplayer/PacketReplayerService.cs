@@ -6,12 +6,19 @@ using SlipeServer.Server.Extensions;
 using SlipeServer.Server.Services;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace SlipeServer.Console.PacketReplayer;
 
 public class PacketReplayerService
 {
+    private readonly static JsonSerializerOptions jsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    };
+
     private readonly HashSet<Player> pureSyncCapturingPlayers;
     private readonly HashSet<Player> keySyncCapturingPlayers;
     private readonly ILogger logger;
@@ -84,7 +91,7 @@ public class PacketReplayerService
         var packets = System.IO.Directory.GetFiles("packetlog/puresync")
             .OrderBy(x => x)
             .Select(x => System.IO.File.ReadAllText(x))
-            .Select(x => Newtonsoft.Json.JsonConvert.DeserializeObject<PlayerPureSyncPacket>(x))
+            .Select(x => JsonSerializer.Deserialize<PlayerPureSyncPacket>(x, jsonOptions))
             .Where(x => x != null);
 
         foreach (var packet in packets)
@@ -101,7 +108,7 @@ public class PacketReplayerService
         var packets = System.IO.Directory.GetFiles("packetlog/keysync")
             .OrderBy(x => x)
             .Select(x => System.IO.File.ReadAllText(x))
-            .Select(x => Newtonsoft.Json.JsonConvert.DeserializeObject<KeySyncPacket>(x))
+            .Select(x => JsonSerializer.Deserialize<KeySyncPacket>(x, jsonOptions))
             .Where(x => x != null);
 
         foreach (var packet in packets)
