@@ -57,20 +57,20 @@ public class PhysicsWorld : IDisposable
         }
     }
 
-    public PhysicsElement<BodyDescription, BodyHandle> AddDynamicBody(ConvexPhysicsMesh mesh, Vector3 position, Quaternion rotation, float mass, float friction = 0.1f)
+    public DynamicBodyPhysicsElement AddDynamicBody(ConvexPhysicsMesh mesh, Vector3 position, Quaternion rotation, float mass, float friction = 0.1f)
     {
         mesh.ConvexShape.ComputeInertia(mass, out var inertia);
         var collidable = new CollidableDescription(mesh.MeshIndex, friction);
         return AddDynamicBody(collidable, inertia, position, rotation);
     }
 
-    public PhysicsElement<BodyDescription, BodyHandle> AddDynamicBody(CompoundPhysicsMesh mesh, Vector3 position, Quaternion rotation, float mass, float friction = 0.1f)
+    public DynamicBodyPhysicsElement AddDynamicBody(CompoundPhysicsMesh mesh, Vector3 position, Quaternion rotation, float mass, float friction = 0.1f)
     {
         var collidable = new CollidableDescription(mesh.MeshIndex, 0.1f);
         return AddDynamicBody(collidable, mesh.Inertia, position, rotation);
     }
 
-    private PhysicsElement<BodyDescription, BodyHandle> AddDynamicBody(CollidableDescription collidable, BodyInertia inertia, Vector3 position, Quaternion rotation)
+    private DynamicBodyPhysicsElement AddDynamicBody(CollidableDescription collidable, BodyInertia inertia, Vector3 position, Quaternion rotation)
     {
         var pose = new RigidPose(position, rotation);
         var activityDescription = new BodyActivityDescription(0.1f);
@@ -81,7 +81,7 @@ public class PhysicsWorld : IDisposable
         lock (this.stepLock)
         {
             var handle = this.simulation.Bodies.Add(description);
-            return new DynamicBodyPhysicsElement(handle, description, this, this.simulation);
+            return new DynamicBodyPhysicsElement(handle, description, this, this.simulation, activityDescription);
         }
     }
 

@@ -16,6 +16,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace SlipeServer.Console.Logic;
 
@@ -202,7 +203,7 @@ public class PhysicsTestLogic
         }
     }
 
-    private void HandleUfoInnCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
+    private async void HandleUfoInnCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
     {
         if (this.physicsWorld == null)
             return;
@@ -222,6 +223,13 @@ public class PhysicsTestLogic
 
         var inn = new WorldObject(Server.Enums.ObjectModel.Desufoinn, e.Player.Position + Vector3.UnitZ * 5).AssociateWith(this.server);
         physicsInn.CoupleWith(inn);
+
+        await Task.Delay(5000);
+        physicsInn.Apply(x =>
+        {
+            x.ApplyLinearImpulse(new Vector3(1500, 0, 1500));
+            x.ApplyAngularImpulse(new Vector3(1500, 0, 1500));
+        });
     }
 
     private void HandleStartSimCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)

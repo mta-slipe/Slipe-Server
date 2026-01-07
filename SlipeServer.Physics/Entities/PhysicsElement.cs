@@ -8,12 +8,12 @@ using System.Numerics;
 
 namespace SlipeServer.Physics.Entities;
 
-public class PhysicsElement<TDescription, THandle>
+public class PhysicsElement<TDescription, THandle>(THandle handle, TDescription description, PhysicsWorld physicsWorld, Simulation simulation)
 {
-    internal THandle handle;
-    internal TDescription description;
-    protected readonly PhysicsWorld physicsWorld;
-    protected readonly Simulation simulation;
+    internal THandle handle = handle;
+    internal TDescription description = description;
+    protected readonly PhysicsWorld physicsWorld = physicsWorld;
+    protected readonly Simulation simulation = simulation;
 
     protected virtual Vector3 Position { get; set; }
     protected virtual Quaternion Rotation { get; set; }
@@ -24,14 +24,6 @@ public class PhysicsElement<TDescription, THandle>
     protected object positionUpdateLock = new();
 
     public Element? CoupledElement { get; private set; }
-
-    public PhysicsElement(THandle handle, TDescription description, PhysicsWorld physicsWorld, Simulation simulation)
-    {
-        this.handle = handle;
-        this.description = description;
-        this.physicsWorld = physicsWorld;
-        this.simulation = simulation;
-    }
 
     public void CoupleWith(Element element, Vector3? positionOffset = null, Vector3? rotationOffset = null)
     {
