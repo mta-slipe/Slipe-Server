@@ -4,6 +4,7 @@ using BepuUtilities;
 using BepuUtilities.Memory;
 using Microsoft.Extensions.Logging;
 using RenderWareIo;
+using RenderWareIo.Structs.Dff;
 using SlipeServer.Physics.Assets;
 using SlipeServer.Physics.Callbacks;
 using SlipeServer.Physics.Entities;
@@ -13,6 +14,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
+using Sphere = BepuPhysics.Collidables.Sphere;
+using Triangle = BepuPhysics.Collidables.Triangle;
 
 namespace SlipeServer.Physics.Worlds;
 
@@ -129,8 +132,21 @@ public class PhysicsWorld : IDisposable
         return new PhysicsImg(path);
     }
 
-    public void Destroy(PhysicsElement<StaticDescription, StaticHandle> element) => this.simulation.Statics.Remove(element.handle);
-    public void Destroy(PhysicsElement<BodyDescription, BodyHandle> element) => this.simulation.Bodies.Remove(element.handle);
+    public void Destroy(PhysicsElement<StaticDescription, StaticHandle> element)
+    {
+        lock (this.stepLock)
+        {
+            this.simulation.Statics.Remove(element.handle);
+        }
+    }
+
+    public void Destroy(PhysicsElement<BodyDescription, BodyHandle> element)
+    {
+        lock (this.stepLock)
+        {
+            this.simulation.Bodies.Remove(element.handle);
+        }
+    }
 
     public ConvexPhysicsMesh CreateSphere(float radius)
     {
@@ -203,6 +219,137 @@ public class PhysicsWorld : IDisposable
         return (
             compound != null && inertia != null ? GetCompoundPhysicsMesh(compound.Value, inertia.Value) : (CompoundPhysicsMesh?)null,
             mesh != null ? GetPhysicsMesh(mesh.Value) : (PhysicsMesh?)null);
+    }
+
+    public ConvexPhysicsMesh CreateConvexMesh(PhysicsImg imgFile, string colFileName, string colName)
+    {
+        var img = imgFile.imgFile.Img;
+        var colFile = new ColFile(img.DataEntries[colFileName.ToLower()].Data);
+        var col = colFile.Col;
+        var combo = col.ColCombos.First(x =>
+        {
+            var fullString = string.Join("", x.Header.Name);
+            var name = fullString.Substring(0, fullString.IndexOf('\0'));
+            return name == colName;
+        });
+
+        return CreateConvexMesh(combo);
+    }
+
+    public ConvexPhysicsMesh CreateConvexMesh(PhysicsImg imgFile, string dffName)
+    {
+        var img = imgFile.imgFile.Img;
+        var dffFile = new DffFile(img.DataEntries[dffName.ToLower()].Data);
+
+        return CreateConvexMesh(dffFile.Dff);
+    }
+
+    public ConvexPhysicsMesh CreateConvexMesh(Dff dff)
+    {
+        lock (this.stepLock)
+        {
+            var vertices = dff.Clump.GeometryList.Geometries.SelectMany(x => x.MorphTargets.SelectMany(y => y.Vertices));
+            var hull = new ConvexHull(vertices.ToArray(), this.pool, out var center);
+
+            var shape = this.simulation.Shapes.Add(hull);
+
+            return new ConvexPhysicsMesh(hull, shape);
+        }
+    }
+
+    public ConvexPhysicsMesh CreateConvexMesh(RenderWareIo.Structs.Col.ColCombo combo)
+    {
+        lock (this.stepLock)
+        {
+            var meshVertices = combo.Body.Vertices
+            .Select(x => new Vector3(x.FirstFloat, x.SecondFloat, x.ThirdFloat));
+            var boxVertices = combo.Body.Boxes
+                .SelectMany(box =>
+                {
+                    var min = box.Min;
+                    var max = box.Max;
+                    return new List<Vector3>
+                    {
+                    new(min.X, min.Y, min.Z),
+                    new(max.X, min.Y, min.Z),
+                    new(min.X, max.Y, min.Z),
+                    new(max.X, max.Y, min.Z),
+                    new(min.X, min.Y, max.Z),
+                    new(max.X, min.Y, max.Z),
+                    new(min.X, max.Y, max.Z),
+                    new(max.X, max.Y, max.Z),
+                    };
+                });
+
+            var vertices = meshVertices.Concat(boxVertices);
+            var hull = new ConvexHull(vertices.ToArray(), this.pool, out var center);
+
+            var shape = this.simulation.Shapes.Add(hull);
+
+            return new ConvexPhysicsMesh(hull, shape);
+        }
+    }
+
+    public CompoundPhysicsMesh CreateConvexCompoundMesh(PhysicsImg imgFile, string colFileName, string colName)
+    {
+        var img = imgFile.imgFile.Img;
+        var colFile = new ColFile(img.DataEntries[colFileName.ToLower()].Data);
+        var col = colFile.Col;
+        var combo = col.ColCombos.First(x =>
+        {
+            var fullString = string.Join("", x.Header.Name);
+            var name = fullString.Substring(0, fullString.IndexOf('\0'));
+            return name == colName;
+        });
+
+        return CreateConvexCompoundMesh(combo);
+    }
+
+    public CompoundPhysicsMesh CreateConvexCompoundMesh(RenderWareIo.Structs.Col.ColCombo combo)
+    {
+        lock (this.stepLock)
+        {
+            var meshVertices = combo.Body.Vertices
+             .Select(x => new Vector3(x.FirstFloat, x.SecondFloat, x.ThirdFloat));
+
+            var hull = new ConvexHull(meshVertices.ToArray(), this.pool, out var center);
+            var hullShape = this.simulation.Shapes.Add(hull);
+
+            var inverseInertia = new Symmetric3x3() { XX = 1, YY = 1, ZZ = 1 };
+
+            var compoundBuilder = new CompoundBuilder(this.pool, this.simulation.Shapes, 1 + combo.Body.Boxes.Count + combo.Body.Spheres.Count);
+            hull.ComputeInertia(10, out var hullInertia);
+            Symmetric3x3.Invert(hullInertia.InverseInertiaTensor, out var hullLocalInertia);
+            compoundBuilder.Add(hullShape, new RigidPose(center), hullLocalInertia, 100);
+
+            foreach (var box in combo.Body.Boxes)
+            {
+                var size = box.Max - box.Min;
+                var boxShape = new Box(size.X, size.Y, size.Z);
+
+                var position = box.Min + size * 0.5f;
+
+                var shape = this.simulation.Shapes.Add(boxShape);
+                boxShape.ComputeInertia(10, out var boxInertia); 
+                Symmetric3x3.Invert(boxInertia.InverseInertiaTensor, out var boxLocalInertia);
+                compoundBuilder.Add(shape, new RigidPose(position), boxLocalInertia, 10);
+            }
+
+            foreach (var sphere in combo.Body.Spheres)
+            {
+                var sphereShape = new Sphere(sphere.Radius);
+                var shape = this.simulation.Shapes.Add(sphereShape); 
+                sphereShape.ComputeInertia(10, out var sphereInertia); 
+                Symmetric3x3.Invert(sphereInertia.InverseInertiaTensor, out var sphereLocalInertia);
+                compoundBuilder.Add(shape, new RigidPose(sphere.Center), sphereLocalInertia, 10);
+            }
+
+            compoundBuilder.BuildDynamicCompound(out var children, out var inertia);
+            var compound = new Compound(children);
+            var compoundShape = this.simulation.Shapes.Add(compound);
+
+            return new CompoundPhysicsMesh(compound, compoundShape, inertia);
+        }
     }
 
     public void Start(int sleepTime)
@@ -302,6 +449,8 @@ public class PhysicsWorld : IDisposable
 
     private (Compound?, Mesh?, BodyInertia?) GetMeshFromCollider(RenderWareIo.Structs.Col.ColCombo colCombo)
     {
+        var inverseInertia = new Symmetric3x3() { XX = 1, YY = 1, ZZ = 1 };
+
         unsafe
         {
             var colTriangles = colCombo.Body.Faces;
@@ -338,8 +487,8 @@ public class PhysicsWorld : IDisposable
                 {
                     lock (this.stepLock)
                     {
-                        var shape = this.simulation.Shapes.Add(new Sphere(sphere.Radius));
-                        builder.Add(shape, new RigidPose(sphere.Center), new Symmetric3x3(), 0);
+                        var shape = this.simulation.Shapes.Add(new BepuPhysics.Collidables.Sphere(sphere.Radius));
+                        builder.Add(shape, new RigidPose(sphere.Center), inverseInertia, 10);
                     }
                 }
 
@@ -349,7 +498,7 @@ public class PhysicsWorld : IDisposable
                     {
                         var size = box.Max - box.Min;
                         var shape = this.simulation.Shapes.Add(new Box(size.X, size.Y, size.Z));
-                        builder.Add(shape, new RigidPose(box.Min + size * 0.5f), new Symmetric3x3(), 0);
+                        builder.Add(shape, new RigidPose(box.Min + size * 0.5f), inverseInertia, 10);
                     }
                 }
 

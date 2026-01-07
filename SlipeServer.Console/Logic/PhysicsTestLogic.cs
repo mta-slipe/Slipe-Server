@@ -1,6 +1,7 @@
 ﻿using BepuPhysics.Collidables;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
+using RenderWareIo.Structs.Img;
 using SlipeServer.Physics.Entities;
 using SlipeServer.Physics.Enum;
 using SlipeServer.Physics.Services;
@@ -33,6 +34,10 @@ public class PhysicsTestLogic
     private CompoundPhysicsMesh cylinder;
     private CompoundPhysicsMesh drum;
     private ConvexPhysicsMesh ball;
+
+    private ConvexPhysicsMesh ufoInnHullCol;
+    private ConvexPhysicsMesh ufoInnHullDff;
+    private CompoundPhysicsMesh ufoInnHullCompoundCol;
 
     public PhysicsTestLogic(
         MtaServer server,
@@ -105,6 +110,10 @@ public class PhysicsTestLogic
             this.ufoInnMesh1.CoupleWith(inn);
             this.ufoInnMesh2.CoupleWith(inn);
 
+            this.ufoInnHullDff = this.physicsWorld.CreateConvexMesh(img, "des_ufoinn.dff");
+            this.ufoInnHullCol = this.physicsWorld.CreateConvexMesh(img, "countn2_20.col", "des_ufoinn");
+            this.ufoInnHullCompoundCol = this.physicsWorld.CreateConvexCompoundMesh(img, "countn2_20.col", "des_ufoinn");
+
             var armyMesh = this.physicsWorld.CreateMesh(img, "army.dff");
             var armyRotation = Quaternion.CreateFromAxisAngle(new Vector3(0, 1, 0), -0.5f * MathF.PI);
             this.army = (StaticPhysicsElement)this.physicsWorld.AddStatic(armyMesh, new Vector3(54, -22.5f, 1), armyRotation);
@@ -122,6 +131,7 @@ public class PhysicsTestLogic
             this.commandService.AddCommand("startsim").Triggered += HandleStartSimCommand;
             this.commandService.AddCommand("stopsim").Triggered += HandleStopSimCommand;
             this.commandService.AddCommand("heightmap").Triggered += (s, a) => GenerateRaycastedHeightMap();
+            this.commandService.AddCommand("ufoinn").Triggered += HandleUfoInnCommand;
 
             this.server.PlayerJoined += HandlePlayerJoin;
             foreach (var player in this.elementCollection.GetByType<Player>())
@@ -192,6 +202,28 @@ public class PhysicsTestLogic
         }
     }
 
+    private void HandleUfoInnCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
+    {
+        if (this.physicsWorld == null)
+            return;
+
+        var variant = e.Arguments.Length > 0 ? e.Arguments[0] : "compound";
+
+        var physicsInn = variant switch
+        {
+            "dff" => this.physicsWorld.AddDynamicBody(this.ufoInnHullDff, e.Player.Position + Vector3.UnitZ * 5, Quaternion.Identity, 500, 0.5f),
+            "col" => this.physicsWorld.AddDynamicBody(this.ufoInnHullCol, e.Player.Position + Vector3.UnitZ * 5, Quaternion.Identity, 500, 0.5f),
+            "compound" => this.physicsWorld.AddDynamicBody(this.ufoInnHullCompoundCol, e.Player.Position + Vector3.UnitZ * 5, Quaternion.Identity, 500, 0.5f),
+            _ => null
+        };
+
+        if (physicsInn == null)
+            return;
+
+        var inn = new WorldObject(Server.Enums.ObjectModel.Desufoinn, e.Player.Position + Vector3.UnitZ * 5).AssociateWith(this.server);
+        physicsInn.CoupleWith(inn);
+    }
+
     private void HandleStartSimCommand(object? sender, Server.Events.CommandTriggeredEventArgs e)
     {
         this.physicsWorld?.Start(5);
@@ -256,6 +288,13 @@ public class PhysicsTestLogic
         var time = stopwatch.Elapsed;
         this.logger.LogInformation("Raycast image generated in {time}ms", time.TotalMilliseconds);
         output.Save("rayresult.png", ImageFormat.Png);
+
+        var process = Process.Start(new ProcessStartInfo("rayresult.png")
+        {
+            UseShellExecute = true,
+            WorkingDirectory = Directory.GetCurrentDirectory(),
+        });
+
     }
 
     private void GenerateRaycastedHeightMap()
