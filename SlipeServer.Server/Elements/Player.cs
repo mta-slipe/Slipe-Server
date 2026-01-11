@@ -8,6 +8,7 @@ using SlipeServer.Server.Enums;
 using SlipeServer.Server.PacketHandling.Factories;
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Numerics;
 using SlipeServer.Packets.Constants;
@@ -100,8 +101,8 @@ public class Player : Ped
     public bool IsSyncingVelocity { get; set; }
     public bool IsStealthAiming { get; set; }
     public bool IsVoiceMuted { get; set; }
-    public List<Ped> SyncingPeds { get; set; }
-    public List<Vehicle> SyncingVehicles { get; set; }
+    public ConcurrentDictionary<Ped, byte> SyncingPeds { get; set; }
+    public ConcurrentDictionary<Vehicle, byte> SyncingVehicles { get; set; }
     public Controls Controls { get; private set; }
 
     private Team? team;

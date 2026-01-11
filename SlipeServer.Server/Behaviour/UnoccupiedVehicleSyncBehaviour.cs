@@ -73,7 +73,7 @@ public class UnoccupiedVehicleSyncBehaviour
 
     private void HandlePlayerDisconnect(Player player, Elements.Events.PlayerQuitEventArgs e)
     {
-        foreach (var vehicle in player.SyncingVehicles.ToArray())
+        foreach (var vehicle in player.SyncingVehicles.Keys.ToArray())
             StopSyncingVehicle(vehicle);
 
         player.Disconnected -= HandlePlayerDisconnect;
@@ -137,7 +137,7 @@ public class UnoccupiedVehicleSyncBehaviour
     private void StopSyncingVehicle(Vehicle vehicle)
     {
         vehicle.Syncer?.Client.SendPacket(new UnoccupiedVehicleSyncStopPacket(vehicle.Id));
-        vehicle.Syncer?.SyncingVehicles.Remove(vehicle);
+        vehicle.Syncer?.SyncingVehicles.TryRemove(vehicle, out var _);
         vehicle.Syncer = null;
     }
 
@@ -152,7 +152,7 @@ public class UnoccupiedVehicleSyncBehaviour
             TurnVelocity = vehicle.TurnVelocity,
             Health = vehicle.Health,
         });
-        player.SyncingVehicles.Add(vehicle);
+        player.SyncingVehicles.TryAdd(vehicle, 0);
         vehicle.Syncer = player;
     }
 
