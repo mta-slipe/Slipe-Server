@@ -67,7 +67,7 @@ public class ConsoleLogger : ILogger
         }
     }
 
-    public IDisposable BeginScope<TState>(TState state)
+    public IDisposable BeginScope<TState>(TState state) where TState : notnull
     {
         this.prefix += "  ";
         System.Console.WriteLine($"{this.prefix}{state}:");
@@ -87,7 +87,7 @@ public class ConsoleLogger : ILogger
         var prefix = this.prefix;
         this.logActions.Enqueue(() =>
         {
-            System.Console.Write($"[{DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}]");
+            System.Console.Write($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}]");
 
             System.Console.ForegroundColor = prefixes[logLevel].Item1;
             System.Console.Write($"{prefixes[logLevel].Item2}");

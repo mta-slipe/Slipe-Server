@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
+using System.Threading;
 using System.Threading.Tasks;
 using Sphere = BepuPhysics.Collidables.Sphere;
 using Triangle = BepuPhysics.Collidables.Triangle;
@@ -26,7 +27,7 @@ public class PhysicsWorld : IDisposable
     private readonly ILogger logger;
     private readonly AssetCollection assetCollection;
 
-    public readonly object stepLock = new();
+    public readonly ReaderWriterLockSlim physicsLock = new();
 
     private bool running;
     private int sleepTime;
@@ -50,10 +51,15 @@ public class PhysicsWorld : IDisposable
     {
         var description = new StaticDescription(position, mesh.MeshIndex, 0.1f);
         description.Pose.Orientation = rotation;
-        lock (this.stepLock)
+        this.physicsLock.EnterWriteLock();
+        try
         {
             var handle = this.simulation.Statics.Add(description);
             return new StaticPhysicsElement(handle, description, this, this.simulation);
+        }
+        finally
+        {
+            this.physicsLock.ExitWriteLock();
         }
     }
 
@@ -78,10 +84,15 @@ public class PhysicsWorld : IDisposable
         var description = BodyDescription.CreateDynamic(pose, inertia, collidable, activityDescription);
         description.Pose.Orientation = rotation;
 
-        lock (this.stepLock)
+        this.physicsLock.EnterWriteLock();
+        try
         {
             var handle = this.simulation.Bodies.Add(description);
             return new DynamicBodyPhysicsElement(handle, description, this, this.simulation, activityDescription);
+        }
+        finally
+        {
+            this.physicsLock.ExitWriteLock();
         }
     }
 
@@ -106,25 +117,44 @@ public class PhysicsWorld : IDisposable
         var description = BodyDescription.CreateKinematic(pose, velocity, collidable, activityDescription);
         description.Pose.Orientation = rotation;
 
-        lock (this.stepLock)
+        this.physicsLock.EnterWriteLock();
+        try
         {
             var handle = this.simulation.Bodies.Add(description);
             return new KinematicBodyPhysicsElement(handle, description, this, this.simulation);
+        }
+        finally
+        {
+            this.physicsLock.ExitWriteLock();
         }
     }
 
     public RayHit? RayCast(Vector3 from, Vector3 direction, float length)
     {
-        HitHandler handler = new();
-        this.simulation.RayCast(from, direction, length, ref handler);
-        return handler.Hit;
+        this.physicsLock.EnterReadLock();
+        try
+        {
+            HitHandler handler = new();
+            this.simulation.RayCast(from, direction, length, ref handler);
+            return handler.Hit;
+        } finally
+        {
+            this.physicsLock.ExitReadLock();
+        }
     }
 
     public IEnumerable<RayHit> MultiRayCast(Vector3 from, Vector3 direction, float length)
     {
-        MultiHitHandler handler = new();
-        this.simulation.RayCast(from, direction, length, ref handler);
-        return handler.Hits;
+        this.physicsLock.EnterReadLock();
+        try
+        {
+            MultiHitHandler handler = new();
+            this.simulation.RayCast(from, direction, length, ref handler);
+            return handler.Hits;
+        } finally
+        {
+            this.physicsLock.ExitReadLock();
+        }
     }
 
     public PhysicsImg LoadImg(string path)
@@ -134,34 +164,50 @@ public class PhysicsWorld : IDisposable
 
     public void Destroy(PhysicsElement<StaticDescription, StaticHandle> element)
     {
-        lock (this.stepLock)
+        this.physicsLock.EnterWriteLock();
+        try
         {
             this.simulation.Statics.Remove(element.handle);
+        }
+        finally
+        {
+            this.physicsLock.ExitWriteLock();
         }
     }
 
     public void Destroy(PhysicsElement<BodyDescription, BodyHandle> element)
     {
-        lock (this.stepLock)
+        this.physicsLock.EnterWriteLock();
+        try
         {
             this.simulation.Bodies.Remove(element.handle);
+        }
+        finally
+        {
+            this.physicsLock.ExitWriteLock();
         }
     }
 
     public ConvexPhysicsMesh CreateSphere(float radius)
     {
         var sphere = new Sphere(radius);
-        lock (this.stepLock)
+        this.physicsLock.EnterWriteLock();
+        try
         {
             var shape = this.simulation.Shapes.Add(sphere);
             return new ConvexPhysicsMesh(sphere, shape);
+        }
+        finally
+        {
+            this.physicsLock.ExitWriteLock();
         }
     }
 
     public CompoundPhysicsMesh CreateCylinder(float radius, float length)
     {
         var cylinder = new Cylinder(radius, length);
-        lock (this.stepLock)
+        this.physicsLock.EnterWriteLock();
+        try
         {
             unsafe
             {
@@ -181,6 +227,10 @@ public class PhysicsWorld : IDisposable
                 cylinder.ComputeInertia(30, out var inertia);
                 return new CompoundPhysicsMesh(compound, compoundShape, inertia);
             }
+        }
+        finally
+        {
+            this.physicsLock.ExitWriteLock();
         }
     }
 
@@ -246,7 +296,8 @@ public class PhysicsWorld : IDisposable
 
     public ConvexPhysicsMesh CreateConvexMesh(Dff dff)
     {
-        lock (this.stepLock)
+        this.physicsLock.EnterWriteLock();
+        try
         {
             var vertices = dff.Clump.GeometryList.Geometries.SelectMany(x => x.MorphTargets.SelectMany(y => y.Vertices));
             var hull = new ConvexHull(vertices.ToArray(), this.pool, out var center);
@@ -255,11 +306,16 @@ public class PhysicsWorld : IDisposable
 
             return new ConvexPhysicsMesh(hull, shape);
         }
+        finally
+        {
+            this.physicsLock.ExitWriteLock();
+        }
     }
 
     public ConvexPhysicsMesh CreateConvexMesh(RenderWareIo.Structs.Col.ColCombo combo)
     {
-        lock (this.stepLock)
+        this.physicsLock.EnterWriteLock();
+        try
         {
             var meshVertices = combo.Body.Vertices
             .Select(x => new Vector3(x.FirstFloat, x.SecondFloat, x.ThirdFloat));
@@ -288,6 +344,10 @@ public class PhysicsWorld : IDisposable
 
             return new ConvexPhysicsMesh(hull, shape);
         }
+        finally
+        {
+            this.physicsLock.ExitWriteLock();
+        }
     }
 
     public CompoundPhysicsMesh CreateConvexCompoundMesh(PhysicsImg imgFile, string colFileName, string colName)
@@ -307,7 +367,8 @@ public class PhysicsWorld : IDisposable
 
     public CompoundPhysicsMesh CreateConvexCompoundMesh(RenderWareIo.Structs.Col.ColCombo combo)
     {
-        lock (this.stepLock)
+        this.physicsLock.EnterWriteLock();
+        try
         {
             var meshVertices = combo.Body.Vertices
              .Select(x => new Vector3(x.FirstFloat, x.SecondFloat, x.ThirdFloat));
@@ -350,6 +411,10 @@ public class PhysicsWorld : IDisposable
 
             return new CompoundPhysicsMesh(compound, compoundShape, inertia);
         }
+        finally
+        {
+            this.physicsLock.ExitWriteLock();
+        }
     }
 
     public void Start(int sleepTime)
@@ -380,9 +445,14 @@ public class PhysicsWorld : IDisposable
                 {
                     stopwatch.Reset();
                     stopwatch.Start();
-                    lock (this.stepLock)
+                    this.physicsLock.EnterWriteLock();
+                    try
                     {
                         this.simulation.Timestep(deltaTime, null);
+                    }
+                    finally
+                    {
+                        this.physicsLock.ExitWriteLock();
                     }
                     this.Stepped?.Invoke();
                 }
@@ -397,28 +467,43 @@ public class PhysicsWorld : IDisposable
 
     private CompoundPhysicsMesh GetCompoundPhysicsMesh<T>(T mesh, BodyInertia inertia) where T : unmanaged, ICompoundShape
     {
-        lock (this.stepLock)
+        this.physicsLock.EnterWriteLock();
+        try
         {
             var shape = this.simulation.Shapes.Add(mesh);
             return new CompoundPhysicsMesh(mesh, shape, inertia);
+        }
+        finally
+        {
+            this.physicsLock.ExitWriteLock();
         }
     }
 
     private ConvexPhysicsMesh GetConvexPhysicsMesh<T>(T mesh) where T : unmanaged, IConvexShape
     {
-        lock (this.stepLock)
+        this.physicsLock.EnterWriteLock();
+        try
         {
             var shape = this.simulation.Shapes.Add(mesh);
             return new ConvexPhysicsMesh(mesh, shape);
+        }
+        finally
+        {
+            this.physicsLock.ExitWriteLock();
         }
     }
 
     private PhysicsMesh GetPhysicsMesh<T>(T mesh) where T : unmanaged, IShape
     {
-        lock (this.stepLock)
+        this.physicsLock.EnterWriteLock();
+        try
         {
             var shape = this.simulation.Shapes.Add(mesh);
             return new PhysicsMesh(mesh, shape);
+        }
+        finally
+        {
+            this.physicsLock.ExitWriteLock();
         }
     }
 
@@ -485,20 +570,30 @@ public class PhysicsWorld : IDisposable
             {
                 foreach (var sphere in colCombo.Body.Spheres)
                 {
-                    lock (this.stepLock)
+                    this.physicsLock.EnterWriteLock();
+                    try
                     {
                         var shape = this.simulation.Shapes.Add(new BepuPhysics.Collidables.Sphere(sphere.Radius));
                         builder.Add(shape, new RigidPose(sphere.Center), inverseInertia, 10);
+                    }
+                    finally
+                    {
+                        this.physicsLock.ExitWriteLock();
                     }
                 }
 
                 foreach (var box in colCombo.Body.Boxes)
                 {
-                    lock (this.stepLock)
+                    this.physicsLock.EnterWriteLock();
+                    try
                     {
                         var size = box.Max - box.Min;
                         var shape = this.simulation.Shapes.Add(new Box(size.X, size.Y, size.Z));
                         builder.Add(shape, new RigidPose(box.Min + size * 0.5f), inverseInertia, 10);
+                    }
+                    finally
+                    {
+                        this.physicsLock.ExitWriteLock();
                     }
                 }
 
