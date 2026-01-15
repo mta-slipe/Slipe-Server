@@ -45,16 +45,16 @@ public class Element
     }
 
     private readonly Lock childrenLock = new();
-    private readonly List<Element> children;
+    private readonly List<Element> children = [];
     /// <summary>
     /// The element's children as in the element tree.
     /// </summary>
     public IReadOnlyCollection<Element> Children => this.children.AsReadOnly();
 
-    private readonly List<ElementAssociation> associations;
+    private readonly List<ElementAssociation> associations = [];
     public IReadOnlyCollection<ElementAssociation> Associations => this.associations.AsReadOnly();
 
-    private readonly HashSet<Player> associatedPlayers;
+    private readonly HashSet<Player> associatedPlayers = [];
     /// <summary>
     /// Players the element is associated with. These are players that are aware of the existence of this element.
     /// </summary>
@@ -79,7 +79,7 @@ public class Element
     /// <summary>
     /// The time sync context, this is a value used to verify whether synchronisation packets are to be applied or ignored.
     /// </summary>
-    public byte TimeContext { get; private set; }
+    public byte TimeContext { get; private set; } = 1;
 
     /// <summary>
     /// This overwrites the current time sync context. 
@@ -343,17 +343,17 @@ public class Element
         set => this.UpdateContext = ElementUpdateContext.Sync;
     }
 
-    private readonly HashSet<Player> subscribers;
+    private readonly HashSet<Player> subscribers = [];
     /// <summary>
     /// Indicates which elements are subscribed to this element
     /// </summary>
     public IEnumerable<Player> Subscribers => this.subscribers;
 
-    private Dictionary<string, ElementData> ElementData { get; set; }
-    /// <summary>
-    /// Lists all the players that are subscribed to one (or more) element data entries on this element.
-    /// </summary>
-    public ConcurrentDictionary<Player, ConcurrentDictionary<string, bool>> ElementDataSubscriptions { get; set; }
+    private Dictionary<string, ElementData> ElementData { get; set; } = [];
+
+
+    private readonly ReaderWriterLockSlim elementDataSubscriptionReaderWriterLock = new();
+    private Dictionary<Player, HashSet<string>> elementDataSubscriptions = [];
 
     /// <summary>
     /// A read-only representation of all element data that is broadcastable
@@ -374,7 +374,7 @@ public class Element
     /// </summary>
     public ElementAttachment? Attachment { get; private set; }
 
-    private readonly List<ElementAttachment> attachedElements;
+    private readonly List<ElementAttachment> attachedElements = [];
     /// <summary>
     /// Elements that are attached to this element
     /// </summary>
@@ -394,16 +394,6 @@ public class Element
 
     public Element()
     {
-        this.children = [];
-        this.associations = [];
-        this.associatedPlayers = [];
-        this.subscribers = [];
-        this.attachedElements = [];
-        this.TimeContext = 1;
-
-        this.ElementData = [];
-        this.ElementDataSubscriptions = new();
-
         this.AddRelayers();
     }
 
@@ -711,12 +701,22 @@ public class Element
     /// <param name="key">The key of the data to subscribe to</param>
     public void SubscribeToData(Player player, string key)
     {
-        if (!this.ElementDataSubscriptions.ContainsKey(player))
+        this.elementDataSubscriptionReaderWriterLock.EnterWriteLock();
+
+        try
         {
-            this.ElementDataSubscriptions[player] = new();
-            player.Destroyed += HandleElementDataSubscriberDestruction;
+            if (!this.elementDataSubscriptions.TryGetValue(player, out var value))
+            {
+                value = [];
+                this.elementDataSubscriptions[player] = value;
+                player.Destroyed += HandleElementDataSubscriberDestruction;
+            }
+
+            value.Add(key);
+        } finally
+        {
+            this.elementDataSubscriptionReaderWriterLock.ExitWriteLock();
         }
-        this.ElementDataSubscriptions[player].TryAdd(key, true);
 
     }
 
@@ -733,11 +733,23 @@ public class Element
     /// <param name="key">The key of the data to unsubscribe from</param>
     public void UnsubscribeFromData(Player player, string key)
     {
-        if (this.ElementDataSubscriptions.TryGetValue(player, out var keys))
+        this.elementDataSubscriptionReaderWriterLock.EnterWriteLock();
+
+        try
         {
-            keys.Remove(key, out var _);
-            if (keys.IsEmpty)
-                UnsubscribeFromAllData(player);
+            if (this.elementDataSubscriptions.TryGetValue(player, out var keys))
+            {
+                keys.Remove(key);
+                if (keys.Count == 0)
+                {
+                    player.Destroyed -= HandleElementDataSubscriberDestruction;
+                    this.elementDataSubscriptions.Remove(player);
+                }
+            }
+        }
+        finally
+        {
+            this.elementDataSubscriptionReaderWriterLock.ExitWriteLock();
         }
     }
 
@@ -747,8 +759,17 @@ public class Element
     /// <param name="player"></param>
     public void UnsubscribeFromAllData(Player player)
     {
-        player.Destroyed -= HandleElementDataSubscriberDestruction;
-        this.ElementDataSubscriptions.Remove(player, out var keys);
+        this.elementDataSubscriptionReaderWriterLock.EnterWriteLock();
+
+        try
+        {
+            player.Destroyed -= HandleElementDataSubscriberDestruction;
+            this.elementDataSubscriptions.Remove(player);
+        }
+        finally
+        {
+            this.elementDataSubscriptionReaderWriterLock.ExitWriteLock();
+        }
     }
 
     /// <summary>
@@ -759,10 +780,19 @@ public class Element
     /// <returns></returns>
     public bool IsPlayerSubscribedToData(Player player, string key)
     {
-        if (this.ElementDataSubscriptions.TryGetValue(player, out var keys))
-            return keys.ContainsKey(key);
+        this.elementDataSubscriptionReaderWriterLock.EnterReadLock();
 
-        return false;
+        try
+        {
+            if (this.elementDataSubscriptions.TryGetValue(player, out var keys))
+                return keys.Contains(key);
+
+            return false;
+        }
+        finally
+        {
+            this.elementDataSubscriptionReaderWriterLock.ExitReadLock();
+        }
     }
 
     /// <summary>
@@ -771,8 +801,17 @@ public class Element
     /// <param name="key">The element data key</param>
     public IEnumerable<Player> GetPlayersSubcribedToData(string key)
     {
-        return this.ElementDataSubscriptions.Keys
-            .Where(x => this.ElementDataSubscriptions[x].ContainsKey(key));
+        this.elementDataSubscriptionReaderWriterLock.EnterReadLock();
+
+        try
+        {
+            return this.elementDataSubscriptions.Keys
+                .Where(x => this.elementDataSubscriptions[x].Contains(key));
+        }
+        finally
+        {
+            this.elementDataSubscriptionReaderWriterLock.ExitReadLock();
+        }
     }
 
     internal void AddElementAttachment(ElementAttachment attachment) => this.attachedElements.Add(attachment);
