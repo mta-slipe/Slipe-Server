@@ -19,6 +19,7 @@ public class ElementCollectionTests
     [InlineData(typeof(CompoundElementCollection))]
     [InlineData(typeof(BasicCompoundElementCollection))]
     [InlineData(typeof(RTreeCompoundElementCollection))]
+    [InlineData(typeof(SpatialHashElementCollection))]
     public void NewCollection_Count_ReturnsZero(Type type)
     {
         var collection = (IElementCollection)Activator.CreateInstance(type)!;
@@ -35,6 +36,7 @@ public class ElementCollectionTests
     [InlineData(typeof(CompoundElementCollection))]
     [InlineData(typeof(BasicCompoundElementCollection))]
     [InlineData(typeof(RTreeCompoundElementCollection))]
+    [InlineData(typeof(SpatialHashElementCollection))]
     public void CollectionWithOneItem_Count_ReturnsOne(Type type)
     {
         var collection = (IElementCollection)Activator.CreateInstance(type)!;
@@ -53,6 +55,7 @@ public class ElementCollectionTests
     [InlineData(typeof(CompoundElementCollection))]
     [InlineData(typeof(BasicCompoundElementCollection))]
     [InlineData(typeof(RTreeCompoundElementCollection))]
+    [InlineData(typeof(SpatialHashElementCollection))]
     public void CollectionWithTwoItems_Count_ReturnsTwo(Type type)
     {
         var collection = (IElementCollection)Activator.CreateInstance(type)!;
@@ -72,6 +75,7 @@ public class ElementCollectionTests
     [InlineData(typeof(CompoundElementCollection))]
     [InlineData(typeof(BasicCompoundElementCollection))]
     [InlineData(typeof(RTreeCompoundElementCollection))]
+    [InlineData(typeof(SpatialHashElementCollection))]
     public void CollectionWithOneItem_GetById_ReturnsElement(Type type)
     {
         var collection = (IElementCollection)Activator.CreateInstance(type)!;
@@ -97,6 +101,7 @@ public class ElementCollectionTests
     [InlineData(typeof(CompoundElementCollection))]
     [InlineData(typeof(BasicCompoundElementCollection))]
     [InlineData(typeof(RTreeCompoundElementCollection))]
+    [InlineData(typeof(SpatialHashElementCollection))]
     public void CollectionWithWithSeveralItems_GetByType_ReturnsCorrectElements(Type type)
     {
         var collection = (IElementCollection)Activator.CreateInstance(type)!;
@@ -128,6 +133,7 @@ public class ElementCollectionTests
     [InlineData(typeof(CompoundElementCollection))]
     [InlineData(typeof(BasicCompoundElementCollection))]
     [InlineData(typeof(RTreeCompoundElementCollection))]
+    [InlineData(typeof(SpatialHashElementCollection))]
     public void CollectionWithWithSeveralItems_GetAll_ReturnsAllElements(Type type)
     {
         var collection = (IElementCollection)Activator.CreateInstance(type)!;
@@ -158,6 +164,7 @@ public class ElementCollectionTests
     [InlineData(typeof(CompoundElementCollection))]
     [InlineData(typeof(BasicCompoundElementCollection))]
     [InlineData(typeof(RTreeCompoundElementCollection))]
+    [InlineData(typeof(SpatialHashElementCollection))]
     public void CollectionWithWithSeveralItems_GetWithinRange_ReturnsAllElementsWithinRange(Type type)
     {
         var collection = (IElementCollection)Activator.CreateInstance(type)!;
@@ -188,6 +195,7 @@ public class ElementCollectionTests
     [InlineData(typeof(CompoundElementCollection))]
     [InlineData(typeof(BasicCompoundElementCollection))]
     [InlineData(typeof(RTreeCompoundElementCollection))]
+    [InlineData(typeof(SpatialHashElementCollection))]
     public void CollectionWithWithSeveralItems_GetWithinRangeByType_ReturnsAllElementsWithinRangeByType(Type type)
     {
         var collection = (IElementCollection)Activator.CreateInstance(type)!;

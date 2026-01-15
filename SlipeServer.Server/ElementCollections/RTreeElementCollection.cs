@@ -10,20 +10,15 @@ using System.Threading;
 
 namespace SlipeServer.Server.ElementCollections;
 
-internal class RTreeRef : ISpatialData
+internal class RTreeRef(Element element, Vector3 position) : ISpatialData
 {
-    private readonly Envelope envelope;
-    public Element Element { get; }
-
-    public RTreeRef(Element element, Vector3 position)
-    {
-        this.Element = element;
-        this.envelope = new Envelope(
+    private readonly Envelope envelope = new(
             MinX: position.X,
             MinY: position.Y,
             MaxX: position.X,
             MaxY: position.Y);
-    }
+
+    public Element Element { get; } = element;
 
     public RTreeRef(Element element) : this(element, element.Position)
     {
