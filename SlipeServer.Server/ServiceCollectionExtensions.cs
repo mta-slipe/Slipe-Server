@@ -19,6 +19,7 @@ using SlipeServer.Server.AllSeeingEye;
 using SlipeServer.Server.Bans;
 using SlipeServer.Server.Behaviour;
 using SlipeServer.Server.ElementCollections;
+using SlipeServer.Server.ElementCollections.Concurrent;
 using SlipeServer.Server.Elements.IdGeneration;
 using SlipeServer.Server.Mappers;
 using SlipeServer.Server.PacketHandling.Handlers.AntiCheat;
@@ -48,7 +49,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddDefaultMtaServerServices(this IServiceCollection services)
     {
-        services.AddSingleton<IElementCollection, RTreeCompoundElementCollection>();
+        services.AddSingleton<IElementCollection, SpatialHashCompoundConcurrentElementCollection>();
         services.AddSingleton<IResourceProvider, FileSystemResourceProvider>();
         services.AddSingleton<IElementIdGenerator, CollectionBasedElementIdGenerator>();
         services.AddSingleton<IAseQueryService, AseQueryService>();
