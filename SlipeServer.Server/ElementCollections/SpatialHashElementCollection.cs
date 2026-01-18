@@ -10,21 +10,16 @@ using System.Threading;
 
 namespace SlipeServer.Server.ElementCollections;
 
-public class SpatialHashElementCollection : IElementCollection
+public class SpatialHashElementCollection(float cellSizeX = 20f, float cellSizeY = 200f, float cellSizeZ = 200f) : IElementCollection
 {
-    private readonly ConcurrentDictionary<CellCoordinate, ConcurrentDictionary<uint, Element>> cells;
-    private readonly ConcurrentDictionary<uint, CellCoordinate> elementCells;
-    private readonly Vector3 cellSize;
+    private readonly ConcurrentDictionary<CellCoordinate, ConcurrentDictionary<uint, Element>> cells = [];
+    private readonly ConcurrentDictionary<uint, CellCoordinate> elementCells = [];
+    private readonly ConcurrentDictionary<uint, Lock> locks = new();
+    private readonly ConcurrentDictionary<uint, byte> removing = new();
+    private readonly Vector3 cellSize = new(cellSizeX, cellSizeY, cellSizeZ);
     private int count;
 
     public int Count => this.count;
-
-    public SpatialHashElementCollection(float cellSizeX = 20f, float cellSizeY = 200f, float cellSizeZ = 200f)
-    {
-        this.cells = new ConcurrentDictionary<CellCoordinate, ConcurrentDictionary<uint, Element>>();
-        this.elementCells = new ConcurrentDictionary<uint, CellCoordinate>();
-        this.cellSize = new Vector3(cellSizeX, cellSizeY, cellSizeZ);
-    }
 
     public SpatialHashElementCollection()
         : this(20f, 200f, 200f) { }
@@ -41,13 +36,19 @@ public class SpatialHashElementCollection : IElementCollection
     public void Add(Element element)
     {
         element.PositionChanged += ReInsertElement;
-        var cell = GetCellCoordinate(element.Position);
 
-        var cellDict = this.cells.GetOrAdd(cell, _ => new ConcurrentDictionary<uint, Element>());
-        cellDict[element.Id.Value] = element;
-        this.elementCells[element.Id.Value] = cell;
+        var elementId = element.Id.Value;
+        var @lock = this.locks.GetOrAdd(elementId, _ => new Lock());
+        lock (@lock)
+        {
+            var cell = GetCellCoordinate(element.Position);
 
-        Interlocked.Increment(ref this.count);
+            var cellDict = this.cells.GetOrAdd(cell, _ => new ConcurrentDictionary<uint, Element>());
+            cellDict[elementId] = element;
+            this.elementCells[elementId] = cell;
+
+            Interlocked.Increment(ref this.count);
+        }
     }
 
     public Element? Get(uint id)
@@ -69,24 +70,35 @@ public class SpatialHashElementCollection : IElementCollection
     {
         element.PositionChanged -= ReInsertElement;
 
-        if (this.elementCells.TryRemove(element.Id.Value, out var cell))
+        var elementId = element.Id.Value;
+        var @lock = this.locks.GetOrAdd(elementId, _ => new Lock());
+        lock (@lock)
         {
-            if (this.cells.TryGetValue(cell, out var cellDict))
+            this.removing.TryAdd(elementId, 0);
+
+            if (this.elementCells.TryRemove(elementId, out var cell))
             {
-                if (cellDict.TryRemove(element.Id.Value, out _))
+                if (this.cells.TryGetValue(cell, out var cellDict))
                 {
-                    if (cellDict.IsEmpty && this.cells.TryRemove(cell, out var removedCell))
+                    if (cellDict.TryRemove(elementId, out _))
                     {
-                        // Double-check it's still empty after removal (race condition protection)
-                        if (!removedCell.IsEmpty)
+                        if (cellDict.IsEmpty && this.cells.TryRemove(cell, out var removedCell))
                         {
-                            this.cells.TryAdd(cell, removedCell);
+                            // Double-check it's still empty after removal
+                            if (!removedCell.IsEmpty)
+                            {
+                                this.cells.TryAdd(cell, removedCell);
+                            }
                         }
                     }
                 }
+                Interlocked.Decrement(ref this.count);
             }
-            Interlocked.Decrement(ref this.count);
+
+            this.removing.TryRemove(elementId, out _);
         }
+
+        this.locks.TryRemove(elementId, out _);
     }
 
     public IEnumerable<Element> GetAll()
@@ -156,33 +168,40 @@ public class SpatialHashElementCollection : IElementCollection
     }
 
     private void ReInsertElement(Element element, ElementChangedEventArgs<Vector3> args)
-    {
+    {       Thread.Sleep(1500);
+
         var oldCell = GetCellCoordinate(args.OldValue);
         var newCell = GetCellCoordinate(element.Position);
 
         if (!oldCell.Equals(newCell))
         {
             var elementId = element.Id.Value;
-
-            if (this.cells.TryGetValue(oldCell, out var oldCellDict))
+            var @lock = this.locks.GetOrAdd(elementId, _ => new Lock());
+            lock (@lock)
             {
-                if (oldCellDict.TryRemove(elementId, out _))
+                if (this.removing.ContainsKey(elementId))
+                    return;
+
+                if (this.cells.TryGetValue(oldCell, out var oldCellDict))
                 {
-                    if (oldCellDict.IsEmpty && this.cells.TryRemove(oldCell, out var removedCell))
+                    if (oldCellDict.TryRemove(elementId, out _))
                     {
-                        // Double-check it's still empty after removal (race condition protection)
-                        if (!removedCell.IsEmpty)
+                        if (oldCellDict.IsEmpty && this.cells.TryRemove(oldCell, out var removedCell))
                         {
-                            this.cells.TryAdd(oldCell, removedCell);
+                            // Double-check it's still empty after removal (race condition protection)
+                            if (!removedCell.IsEmpty)
+                            {
+                                this.cells.TryAdd(oldCell, removedCell);
+                            }
                         }
                     }
+
+                    var newCellDict = this.cells.GetOrAdd(newCell, _ => new ConcurrentDictionary<uint, Element>());
+                    newCellDict[elementId] = element;
+
+                    this.elementCells[elementId] = newCell;
                 }
             }
-
-            var newCellDict = this.cells.GetOrAdd(newCell, _ => new ConcurrentDictionary<uint, Element>());
-            newCellDict[elementId] = element;
-
-            this.elementCells[elementId] = newCell;
         }
     }
 
