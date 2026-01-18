@@ -105,19 +105,20 @@ public class Player : Ped
     public ConcurrentDictionary<Vehicle, byte> SyncingVehicles { get; set; }
     public Controls Controls { get; private set; }
 
-    private Team? team;
     public Team? Team
     {
-        get => this.team;
+        get;
         set
         {
-            if (this.team == value)
+            if (field == value)
                 return;
 
-            var previousTeam = this.team;
-            this.team = value;
+            var previousTeam = field;
+            previousTeam?.RemovePlayer(this);
+
+            field = value;
+            field?.AddPlayer(this);
             this.TeamChanged?.Invoke(this, new PlayerTeamChangedArgs(this, value, previousTeam));
-            this.team?.Players.Add(this);
         }
     }
 
@@ -275,6 +276,8 @@ public class Player : Ped
         if (this.IsSubscribedTo(element))
             return;
 
+        element.Destroyed += HandleSubscribedToElementDestroyed;
+
         this.subscriptionElements.Add(element);
         this.Subscribed?.Invoke(this, new PlayerSubscriptionEventArgs(this, element));
         element.AddSubscriber(this);
@@ -285,10 +288,14 @@ public class Player : Ped
         if (!this.IsSubscribedTo(element))
             return;
 
+        element.Destroyed -= HandleSubscribedToElementDestroyed;
+
         this.subscriptionElements.Remove(element);
         this.UnSubscribed?.Invoke(this, new PlayerSubscriptionEventArgs(this, element));
         element.RemoveSubscriber(this);
     }
+
+    private void HandleSubscribedToElementDestroyed(Element obj) => UnsubscribeFrom(obj);
 
     public bool IsSubscribedTo(Element element) => this.subscriptionElements.Contains(element);
 

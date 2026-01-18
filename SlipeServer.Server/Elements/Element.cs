@@ -411,6 +411,8 @@ public class Element
         if (this.subscribers.Contains(player))
             return;
 
+        player.Disconnected += HandleSubscriberDisconnect;
+
         this.subscribers.Add(player);
         player.SubscribeTo(this);
     }
@@ -424,9 +426,13 @@ public class Element
         if (!this.subscribers.Contains(player))
             return;
 
+        player.Disconnected -= HandleSubscriberDisconnect;
+
         this.subscribers.Remove(player);
         player.UnsubscribeFrom(this);
     }
+
+    private void HandleSubscriberDisconnect(Player sender, PlayerQuitEventArgs e) => RemoveSubscriber(sender);
 
     /// <summary>
     /// Returns a new time context, to be used when sync updates sent prior to this moment are meant to be invaldiated.
@@ -463,6 +469,8 @@ public class Element
         {
             if (this.IsDestroyed)
                 return false;
+
+            this.CleanupAssociations();
 
             this.IsDestroyed = true;
             this.Destroyed?.Invoke(this);
@@ -545,12 +553,15 @@ public class Element
     /// <param name="server"></param>
     public void RemoveFrom(MtaServer server)
     {
-        var associations = this.associations.Where(x => x.Element == this && x.Server == server);
+        var associations = this.associations
+            .Where(x => x.Element == this && x.Server == server)
+            .ToArray();
 
         foreach (var association in associations)
             this.associations.Remove(association);
 
         server.PlayerJoined -= HandlePlayerJoin;
+        server.ElementCreated -= HandleElementCreation;
 
         server.RemoveElement(this);
         this.RemovedFrom?.Invoke(this, new ElementAssociatedWithEventArgs(this, server));
@@ -574,12 +585,24 @@ public class Element
         obj.UpdateAssociatedPlayers();
     }
 
+    private void CleanupAssociations()
+    {
+        foreach (var association in this.associations.ToArray())
+        {
+            if (association.Server != null)
+                RemoveFrom(association.Server);
+            else if (association.Player != null)
+                RemoveFrom(association.Player);
+        }
+    }
+
     /// <summary>
     /// Associates an element with a player, causing the element to be created for this player
     /// </summary>
     /// <param name="server">The server to associate the element with</param>
     public Element AssociateWith(Player player)
     {
+        player.Disconnected += HandleAssociatedPlayerDisconnected;
         player.AssociateElement(this);
 
         this.associations.Add(new ElementAssociation(this, player));
@@ -589,12 +612,16 @@ public class Element
         return this;
     }
 
+    private void HandleAssociatedPlayerDisconnected(Player sender, PlayerQuitEventArgs e) => RemoveFrom(sender);
+
     /// <summary>
     /// Removes an element from being associated with the server, causing the elements to no longer be created for all players
     /// </summary>
     /// <param name="server"></param>
     public void RemoveFrom(Player player)
     {
+        player.Disconnected -= HandleAssociatedPlayerDisconnected;
+
         var associations = this.associations
             .Where(x => x.Element == this && x.Player == player)
             .ToArray();
@@ -846,6 +873,8 @@ public class Element
 
         this.Attached?.Invoke(this, new ElementAttachedEventArgs(this, element, position, rotation));
 
+        this.Destroyed += HandleDestructionWhenAttached;
+
         return attachment;
     }
 
@@ -874,8 +903,12 @@ public class Element
             this.Attachment.RotationOffsetChanged -= HandleAttachmentRotationOffsetChange;
 
             this.Attachment = null;
+
+            this.Destroyed -= HandleDestructionWhenAttached;
         }
     }
+
+    private void HandleDestructionWhenAttached(Element obj) => DetachFrom(this.Attachment?.Target);
 
     /// <summary>
     /// Sends packets to create an elementto a set of players
