@@ -168,8 +168,7 @@ public class SpatialHashElementCollection(float cellSizeX = 20f, float cellSizeY
     }
 
     private void ReInsertElement(Element element, ElementChangedEventArgs<Vector3> args)
-    {       Thread.Sleep(1500);
-
+    {
         var oldCell = GetCellCoordinate(args.OldValue);
         var newCell = GetCellCoordinate(element.Position);
 
