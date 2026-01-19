@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using SlipeServer.Example.LuaValues;
 using SlipeServer.Packets.Definitions.Entities.Structs;
 using SlipeServer.Packets.Definitions.Lua;
@@ -33,6 +32,7 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace SlipeServer.Console.Logic;
@@ -1699,7 +1699,7 @@ public class ServerTestLogic
         var sampleValue = new SampleLuaValue();
         sampleValue.Parse(luaEvent.Parameters.First());
 
-        this.logger.LogInformation("{event}", JsonConvert.SerializeObject(sampleValue));
+        this.logger.LogInformation("{event}", JsonSerializer.Serialize(sampleValue));
     }
 
     private void TriggerTestEvent(Player player)

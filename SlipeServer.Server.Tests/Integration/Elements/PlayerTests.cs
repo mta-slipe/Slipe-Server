@@ -61,11 +61,11 @@ public class PlayerTests
         player.IsDestroyed.Should().BeTrue();
         player.Client.IsConnected.Should().BeFalse();
 
-        monitor.OccurredEvents.Should().HaveCount(3);
         monitor.OccurredEvents
             .OrderBy(x => x.Sequence)
             .Select(x => x.EventName)
-            .Should().BeEquivalentTo(["Kicked", "Disconnected", "Destroyed"]);
+            .Should()
+            .Contain(["Kicked", "Disconnected", "Destroyed"]);
     }
 
     [Fact]

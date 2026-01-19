@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using SlipeServer.Packets;
 using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Clients;
@@ -13,32 +14,19 @@ using System.Linq;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Player.Sync;
 
-public class PlayerPureSyncPacketHandler : IPacketHandler<PlayerPureSyncPacket>
+public class PlayerPureSyncPacketHandler(
+    ILogger logger,
+    ISyncHandlerMiddleware<PlayerPureSyncPacket> pureSyncMiddleware,
+    IElementCollection elementCollection,
+    Configuration configuration
+    ) : IPacketHandler<PlayerPureSyncPacket>
 {
-    private readonly ILogger logger;
-    private readonly ISyncHandlerMiddleware<PlayerPureSyncPacket> pureSyncMiddleware;
-    private readonly IElementCollection elementCollection;
-
     public PacketId PacketId => PacketId.PACKET_ID_PLAYER_PURESYNC;
-
-    public PlayerPureSyncPacketHandler(
-        ILogger logger,
-        ISyncHandlerMiddleware<PlayerPureSyncPacket> pureSyncMiddleware,
-        IElementCollection elementCollection
-    )
-    {
-        this.logger = logger;
-        this.pureSyncMiddleware = pureSyncMiddleware;
-        this.elementCollection = elementCollection;
-    }
 
     public void HandlePacket(IClient client, PlayerPureSyncPacket packet)
     {
-        if (packet.TimeContext != client.Player.TimeContext && packet.TimeContext > 0 && client.Player.TimeContext > 0)
-        {
-            this.logger.LogTrace("Received mismatching Pure sync packet from {player}, local: {local}, remote: {remote}", client.Player.Name, client.Player.TimeContext, packet.TimeContext);
+        if (!IsTimeSyncContextValid(client, packet.TimeContext))
             return;
-        }
 
         var player = client.Player;
         if (player.Vehicle != null && player.VehicleAction != VehicleAction.Exiting)
@@ -62,11 +50,16 @@ public class PlayerPureSyncPacketHandler : IPacketHandler<PlayerPureSyncPacket>
             player.AimOrigin = packet.AimOrigin;
             player.AimDirection = packet.AimDirection;
 
-            player.ContactElement = this.elementCollection.Get(packet.ContactElementId);
+            player.ContactElement = elementCollection.Get(packet.ContactElementId);
             if (player.ContactElement != null)
                 player.Position = player.ContactElement.Position + packet.Position;
             else
-                player.Position = packet.Position;
+            {
+                var element = player.AssociatedElements
+                    .Get(packet.ContactElementId);
+
+                player.Position = (element?.Position + packet.Position) ?? packet.Position;
+            }
 
             var weaponChanged = player.CurrentWeaponSlot != (WeaponSlot)packet.WeaponSlot;
             player.CurrentWeaponSlot = (WeaponSlot)packet.WeaponSlot;
@@ -105,7 +98,7 @@ public class PlayerPureSyncPacketHandler : IPacketHandler<PlayerPureSyncPacket>
 
             if (packet.IsDamageChanged)
             {
-                var damager = this.elementCollection.Get(packet.DamagerId);
+                var damager = elementCollection.Get(packet.DamagerId);
                 var loss = (previousHealth - packet.Health) + (previousArmor - packet.Armor);
 
                 player.TriggerDamaged(damager, (DamageType)packet.DamageType, (BodyPart)packet.DamageBodypart, loss);
@@ -114,8 +107,37 @@ public class PlayerPureSyncPacketHandler : IPacketHandler<PlayerPureSyncPacket>
 
         player.TriggerSync();
 
-        var otherPlayers = this.pureSyncMiddleware.GetPlayersToSyncTo(client.Player, packet);
+        var otherPlayers = pureSyncMiddleware.GetPlayersToSyncTo(client.Player, packet);
         if (otherPlayers.Any())
             packet.SendTo(otherPlayers);
+    }
+
+    private bool IsTimeSyncContextValid(IClient client, byte context)
+    {
+        if (context != client.Player.TimeContext && context > 0 && client.Player.TimeContext > 0)
+        {
+            lock (client.Player.TimeContextFailureCountLock)
+            {
+                client.Player.TimeContextFailureCount++;
+
+                if (client.Player.TimeContextFailureCount > 100)
+                {
+                    client.Player.TimeContextFailureCount = 0;
+                    logger.LogError("Received mismatching Pure sync packet from {player} many times, local: {local}, remote: {remote}", client.Player.Name, client.Player.TimeContext, context);
+
+                    if (configuration.Debug.AutoResolveTimeSyncContextMismatches)
+                        client.Player.OverrideTimeContext(context);
+                }
+            }
+            logger.LogTrace("Received mismatching Pure sync packet from {player}, local: {local}, remote: {remote}", client.Player.Name, client.Player.TimeContext, context);
+            return false;
+        }
+
+        lock (client.Player.TimeContextFailureCountLock)
+        {
+            client.Player.TimeContextFailureCount = 0;
+        }
+
+        return true;
     }
 }

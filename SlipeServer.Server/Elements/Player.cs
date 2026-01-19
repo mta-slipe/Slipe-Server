@@ -8,6 +8,7 @@ using SlipeServer.Server.Enums;
 using SlipeServer.Server.PacketHandling.Factories;
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Numerics;
 using SlipeServer.Packets.Constants;
@@ -18,6 +19,7 @@ using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Clients;
 using System.Net;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
+using SlipeServer.Server.ElementCollections.Concurrent;
 
 namespace SlipeServer.Server.Elements;
 
@@ -66,7 +68,7 @@ public class Player : Ped
     /// <summary>
     /// Any elements that are specifically associated with this player. This does not include elements that are associated with the server as a whole.
     /// </summary>
-    public IElementCollection AssociatedElements { get; } = new RTreeCompoundElementCollection(); 
+    public IElementCollection AssociatedElements { get; } = new SpatialHashCompoundConcurrentElementCollection(); 
 
 
     private Element? contactElement;
@@ -100,23 +102,24 @@ public class Player : Ped
     public bool IsSyncingVelocity { get; set; }
     public bool IsStealthAiming { get; set; }
     public bool IsVoiceMuted { get; set; }
-    public List<Ped> SyncingPeds { get; set; }
-    public List<Vehicle> SyncingVehicles { get; set; }
+    public ConcurrentDictionary<Ped, byte> SyncingPeds { get; set; }
+    public ConcurrentDictionary<Vehicle, byte> SyncingVehicles { get; set; }
     public Controls Controls { get; private set; }
 
-    private Team? team;
     public Team? Team
     {
-        get => this.team;
+        get;
         set
         {
-            if (this.team == value)
+            if (field == value)
                 return;
 
-            var previousTeam = this.team;
-            this.team = value;
+            var previousTeam = field;
+            previousTeam?.RemovePlayer(this);
+
+            field = value;
+            field?.AddPlayer(this);
             this.TeamChanged?.Invoke(this, new PlayerTeamChangedArgs(this, value, previousTeam));
-            this.team?.Players.Add(this);
         }
     }
 
@@ -274,6 +277,8 @@ public class Player : Ped
         if (this.IsSubscribedTo(element))
             return;
 
+        element.Destroyed += HandleSubscribedToElementDestroyed;
+
         this.subscriptionElements.Add(element);
         this.Subscribed?.Invoke(this, new PlayerSubscriptionEventArgs(this, element));
         element.AddSubscriber(this);
@@ -284,10 +289,14 @@ public class Player : Ped
         if (!this.IsSubscribedTo(element))
             return;
 
+        element.Destroyed -= HandleSubscribedToElementDestroyed;
+
         this.subscriptionElements.Remove(element);
         this.UnSubscribed?.Invoke(this, new PlayerSubscriptionEventArgs(this, element));
         element.RemoveSubscriber(this);
     }
+
+    private void HandleSubscribedToElementDestroyed(Element obj) => UnsubscribeFrom(obj);
 
     public bool IsSubscribedTo(Element element) => this.subscriptionElements.Contains(element);
 

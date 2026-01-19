@@ -2,12 +2,11 @@
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Services;
-using System;
 using System.Drawing;
 using System.Numerics;
-using System.Threading.Tasks;
 
 namespace SlipeServer.Example.Elements;
+
 public class CustomPlayer : Player
 {
     private readonly ExplosionService explosionService;

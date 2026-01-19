@@ -13,8 +13,17 @@ public class StaticPhysicsElement : PhysicsElement<StaticDescription, StaticHand
         {
             this.description.Pose.Position = value;
             lock (this.positionUpdateLock)
-                lock (this.physicsWorld.stepLock)
+            {
+                this.physicsWorld.physicsLock.EnterWriteLock();
+                try
+                {
                     this.simulation.Statics.ApplyDescription(this.handle, this.description);
+                }
+                finally
+                {
+                    this.physicsWorld.physicsLock.ExitWriteLock();
+                }
+            }
         }
     }
 
@@ -25,8 +34,17 @@ public class StaticPhysicsElement : PhysicsElement<StaticDescription, StaticHand
         {
             this.description.Pose.Orientation = value;
             lock (this.positionUpdateLock)
-                lock (this.physicsWorld.stepLock)
+            {
+                this.physicsWorld.physicsLock.EnterWriteLock();
+                try
+                {
                     this.simulation.Statics.ApplyDescription(this.handle, this.description);
+                }
+                finally
+                {
+                    this.physicsWorld.physicsLock.ExitWriteLock();
+                }
+            }
         }
     }
 

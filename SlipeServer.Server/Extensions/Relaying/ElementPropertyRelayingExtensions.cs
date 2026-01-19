@@ -77,8 +77,13 @@ public static class ElementPropertyRelayingExtensions
         sender.CreateFor(sender.AssociatedPlayers);
     }
 
-    private static void RelayRemoval(Element sender, ElementAssociatedWithEventArgs e) =>
+    private static void RelayRemoval(Element sender, ElementAssociatedWithEventArgs e)
+    {
+        if (sender.IsDestroyed)
+            return;
+
         RelayElementDestroy(sender);
+    }
 
     private static void RelayPositionChange(Element sender, ElementChangedEventArgs<Vector3> args)
     {

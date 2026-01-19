@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
-using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Events;
 using SlipeServer.Server.Services;
 

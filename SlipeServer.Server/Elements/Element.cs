@@ -45,16 +45,16 @@ public class Element
     }
 
     private readonly Lock childrenLock = new();
-    private readonly List<Element> children;
+    private readonly List<Element> children = [];
     /// <summary>
     /// The element's children as in the element tree.
     /// </summary>
     public IReadOnlyCollection<Element> Children => this.children.AsReadOnly();
 
-    private readonly List<ElementAssociation> associations;
+    private readonly List<ElementAssociation> associations = [];
     public IReadOnlyCollection<ElementAssociation> Associations => this.associations.AsReadOnly();
 
-    private readonly HashSet<Player> associatedPlayers;
+    private readonly HashSet<Player> associatedPlayers = [];
     /// <summary>
     /// Players the element is associated with. These are players that are aware of the existence of this element.
     /// </summary>
@@ -79,7 +79,20 @@ public class Element
     /// <summary>
     /// The time sync context, this is a value used to verify whether synchronisation packets are to be applied or ignored.
     /// </summary>
-    public byte TimeContext { get; private set; }
+    public byte TimeContext { get; private set; } = 1;
+
+    /// <summary>
+    /// This overwrites the current time sync context. 
+    /// In normal usage this is not required, if you feel like it is, there is most likely something else going on.
+    /// </summary>
+    /// <param name="value"></param>
+    public void OverrideTimeContext(byte value)
+        => this.TimeContext = value;
+
+
+    public Lock TimeContextFailureCountLock = new();
+    public byte TimeContextFailureCount { get; set; }
+
 
 
     private string name = "";
@@ -330,17 +343,17 @@ public class Element
         set => this.UpdateContext = ElementUpdateContext.Sync;
     }
 
-    private readonly HashSet<Player> subscribers;
+    private readonly HashSet<Player> subscribers = [];
     /// <summary>
     /// Indicates which elements are subscribed to this element
     /// </summary>
     public IEnumerable<Player> Subscribers => this.subscribers;
 
-    private Dictionary<string, ElementData> ElementData { get; set; }
-    /// <summary>
-    /// Lists all the players that are subscribed to one (or more) element data entries on this element.
-    /// </summary>
-    public ConcurrentDictionary<Player, ConcurrentDictionary<string, bool>> ElementDataSubscriptions { get; set; }
+    private Dictionary<string, ElementData> ElementData { get; set; } = [];
+
+
+    private readonly ReaderWriterLockSlim elementDataSubscriptionReaderWriterLock = new();
+    private Dictionary<Player, HashSet<string>> elementDataSubscriptions = [];
 
     /// <summary>
     /// A read-only representation of all element data that is broadcastable
@@ -361,7 +374,7 @@ public class Element
     /// </summary>
     public ElementAttachment? Attachment { get; private set; }
 
-    private readonly List<ElementAttachment> attachedElements;
+    private readonly List<ElementAttachment> attachedElements = [];
     /// <summary>
     /// Elements that are attached to this element
     /// </summary>
@@ -381,16 +394,6 @@ public class Element
 
     public Element()
     {
-        this.children = [];
-        this.associations = [];
-        this.associatedPlayers = [];
-        this.subscribers = [];
-        this.attachedElements = [];
-        this.TimeContext = 1;
-
-        this.ElementData = [];
-        this.ElementDataSubscriptions = new();
-
         this.AddRelayers();
     }
 
@@ -408,6 +411,8 @@ public class Element
         if (this.subscribers.Contains(player))
             return;
 
+        player.Disconnected += HandleSubscriberDisconnect;
+
         this.subscribers.Add(player);
         player.SubscribeTo(this);
     }
@@ -421,9 +426,13 @@ public class Element
         if (!this.subscribers.Contains(player))
             return;
 
+        player.Disconnected -= HandleSubscriberDisconnect;
+
         this.subscribers.Remove(player);
         player.UnsubscribeFrom(this);
     }
+
+    private void HandleSubscriberDisconnect(Player sender, PlayerQuitEventArgs e) => RemoveSubscriber(sender);
 
     /// <summary>
     /// Returns a new time context, to be used when sync updates sent prior to this moment are meant to be invaldiated.
@@ -460,6 +469,8 @@ public class Element
         {
             if (this.IsDestroyed)
                 return false;
+
+            this.CleanupAssociations();
 
             this.IsDestroyed = true;
             this.Destroyed?.Invoke(this);
@@ -542,12 +553,15 @@ public class Element
     /// <param name="server"></param>
     public void RemoveFrom(MtaServer server)
     {
-        var associations = this.associations.Where(x => x.Element == this && x.Server == server);
+        var associations = this.associations
+            .Where(x => x.Element == this && x.Server == server)
+            .ToArray();
 
         foreach (var association in associations)
             this.associations.Remove(association);
 
         server.PlayerJoined -= HandlePlayerJoin;
+        server.ElementCreated -= HandleElementCreation;
 
         server.RemoveElement(this);
         this.RemovedFrom?.Invoke(this, new ElementAssociatedWithEventArgs(this, server));
@@ -571,12 +585,24 @@ public class Element
         obj.UpdateAssociatedPlayers();
     }
 
+    private void CleanupAssociations()
+    {
+        foreach (var association in this.associations.ToArray())
+        {
+            if (association.Server != null)
+                RemoveFrom(association.Server);
+            else if (association.Player != null)
+                RemoveFrom(association.Player);
+        }
+    }
+
     /// <summary>
     /// Associates an element with a player, causing the element to be created for this player
     /// </summary>
     /// <param name="server">The server to associate the element with</param>
     public Element AssociateWith(Player player)
     {
+        player.Disconnected += HandleAssociatedPlayerDisconnected;
         player.AssociateElement(this);
 
         this.associations.Add(new ElementAssociation(this, player));
@@ -586,12 +612,16 @@ public class Element
         return this;
     }
 
+    private void HandleAssociatedPlayerDisconnected(Player sender, PlayerQuitEventArgs e) => RemoveFrom(sender);
+
     /// <summary>
     /// Removes an element from being associated with the server, causing the elements to no longer be created for all players
     /// </summary>
     /// <param name="server"></param>
     public void RemoveFrom(Player player)
     {
+        player.Disconnected -= HandleAssociatedPlayerDisconnected;
+
         var associations = this.associations
             .Where(x => x.Element == this && x.Player == player)
             .ToArray();
@@ -698,12 +728,22 @@ public class Element
     /// <param name="key">The key of the data to subscribe to</param>
     public void SubscribeToData(Player player, string key)
     {
-        if (!this.ElementDataSubscriptions.ContainsKey(player))
+        this.elementDataSubscriptionReaderWriterLock.EnterWriteLock();
+
+        try
         {
-            this.ElementDataSubscriptions[player] = new();
-            player.Destroyed += HandleElementDataSubscriberDestruction;
+            if (!this.elementDataSubscriptions.TryGetValue(player, out var value))
+            {
+                value = [];
+                this.elementDataSubscriptions[player] = value;
+                player.Destroyed += HandleElementDataSubscriberDestruction;
+            }
+
+            value.Add(key);
+        } finally
+        {
+            this.elementDataSubscriptionReaderWriterLock.ExitWriteLock();
         }
-        this.ElementDataSubscriptions[player].TryAdd(key, true);
 
     }
 
@@ -720,11 +760,23 @@ public class Element
     /// <param name="key">The key of the data to unsubscribe from</param>
     public void UnsubscribeFromData(Player player, string key)
     {
-        if (this.ElementDataSubscriptions.TryGetValue(player, out var keys))
+        this.elementDataSubscriptionReaderWriterLock.EnterWriteLock();
+
+        try
         {
-            keys.Remove(key, out var _);
-            if (keys.IsEmpty)
-                UnsubscribeFromAllData(player);
+            if (this.elementDataSubscriptions.TryGetValue(player, out var keys))
+            {
+                keys.Remove(key);
+                if (keys.Count == 0)
+                {
+                    player.Destroyed -= HandleElementDataSubscriberDestruction;
+                    this.elementDataSubscriptions.Remove(player);
+                }
+            }
+        }
+        finally
+        {
+            this.elementDataSubscriptionReaderWriterLock.ExitWriteLock();
         }
     }
 
@@ -734,8 +786,17 @@ public class Element
     /// <param name="player"></param>
     public void UnsubscribeFromAllData(Player player)
     {
-        player.Destroyed -= HandleElementDataSubscriberDestruction;
-        this.ElementDataSubscriptions.Remove(player, out var keys);
+        this.elementDataSubscriptionReaderWriterLock.EnterWriteLock();
+
+        try
+        {
+            player.Destroyed -= HandleElementDataSubscriberDestruction;
+            this.elementDataSubscriptions.Remove(player);
+        }
+        finally
+        {
+            this.elementDataSubscriptionReaderWriterLock.ExitWriteLock();
+        }
     }
 
     /// <summary>
@@ -746,10 +807,19 @@ public class Element
     /// <returns></returns>
     public bool IsPlayerSubscribedToData(Player player, string key)
     {
-        if (this.ElementDataSubscriptions.TryGetValue(player, out var keys))
-            return keys.ContainsKey(key);
+        this.elementDataSubscriptionReaderWriterLock.EnterReadLock();
 
-        return false;
+        try
+        {
+            if (this.elementDataSubscriptions.TryGetValue(player, out var keys))
+                return keys.Contains(key);
+
+            return false;
+        }
+        finally
+        {
+            this.elementDataSubscriptionReaderWriterLock.ExitReadLock();
+        }
     }
 
     /// <summary>
@@ -758,8 +828,17 @@ public class Element
     /// <param name="key">The element data key</param>
     public IEnumerable<Player> GetPlayersSubcribedToData(string key)
     {
-        return this.ElementDataSubscriptions.Keys
-            .Where(x => this.ElementDataSubscriptions[x].ContainsKey(key));
+        this.elementDataSubscriptionReaderWriterLock.EnterReadLock();
+
+        try
+        {
+            return this.elementDataSubscriptions.Keys
+                .Where(x => this.elementDataSubscriptions[x].Contains(key));
+        }
+        finally
+        {
+            this.elementDataSubscriptionReaderWriterLock.ExitReadLock();
+        }
     }
 
     internal void AddElementAttachment(ElementAttachment attachment) => this.attachedElements.Add(attachment);
@@ -794,6 +873,8 @@ public class Element
 
         this.Attached?.Invoke(this, new ElementAttachedEventArgs(this, element, position, rotation));
 
+        this.Destroyed += HandleDestructionWhenAttached;
+
         return attachment;
     }
 
@@ -822,8 +903,12 @@ public class Element
             this.Attachment.RotationOffsetChanged -= HandleAttachmentRotationOffsetChange;
 
             this.Attachment = null;
+
+            this.Destroyed -= HandleDestructionWhenAttached;
         }
     }
+
+    private void HandleDestructionWhenAttached(Element obj) => DetachFrom(this.Attachment?.Target);
 
     /// <summary>
     /// Sends packets to create an elementto a set of players
@@ -844,14 +929,14 @@ public class Element
     /// Do note that the element will be required to have an id assigned for this to work properly
     /// </summary>
     public virtual void DestroyFor(IEnumerable<Player> players)
-        => RemoveEntityPacketFactory.CreateRemoveEntityPacket(new Element[] { this }).SendTo(players);
+        => RemoveEntityPacketFactory.CreateRemoveEntityPacket([this]).SendTo(players);
 
     /// <summary>
     /// Sends packets to destroy an elementto a set of players
     /// Do note that the element will be required to have an id assigned for this to work properly
     /// </summary>
     public virtual void DestroyFor(Player player)
-        => this.DestroyFor(new Player[] { player });
+        => this.DestroyFor([player]);
 
     public event ElementChangedEventHandler<Vector3>? PositionChanged;
     public event ElementChangedEventHandler<Vector3>? RotationChanged;

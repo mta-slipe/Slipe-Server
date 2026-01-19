@@ -21,36 +21,40 @@ public class NetWrapper : IDisposable, INetWrapper
 
 
 #pragma warning disable CA2101 // Specify marshaling for P/Invoke string arguments
-    [DllImport(wrapperDllpath, EntryPoint = "initNetWrapper")]
+    [DllImport(wrapperDllpath, EntryPoint = "initNetWrapper", CallingConvention = CallingConvention.StdCall)]
     private static extern int InitNetWrapper(string path, string idFile, string ip, ushort port, uint playerCount, string serverName, PacketCallback callback);
 
-    [DllImport(wrapperDllpath, EntryPoint = "destroyNetWrapper")]
+    [DllImport(wrapperDllpath, EntryPoint = "destroyNetWrapper", CallingConvention = CallingConvention.StdCall)]
     private static extern void DestroyNetWrapper(ushort id);
 
-    [DllImport(wrapperDllpath, EntryPoint = "startNetWrapper")]
+    [DllImport(wrapperDllpath, EntryPoint = "startNetWrapper", CallingConvention = CallingConvention.StdCall)]
     private static extern void StartNetWrapper(ushort id);
 
-    [DllImport(wrapperDllpath, EntryPoint = "stopNetWrapper")]
+    [DllImport(wrapperDllpath, EntryPoint = "stopNetWrapper", CallingConvention = CallingConvention.StdCall)]
     private static extern void StopNetWrapper(ushort id);
 
-    [DllImport(wrapperDllpath, EntryPoint = "sendPacket")]
+    [DllImport(wrapperDllpath, EntryPoint = "sendPacket", CallingConvention = CallingConvention.StdCall)]
     private static extern void SendPacket(ushort id, ulong binaryAddress, byte packetId, ushort bitStreamVersion, IntPtr payload, uint payloadSize, byte priority, byte ordering);
 
-    [DllImport(wrapperDllpath, EntryPoint = "setSocketVersion")]
+    [DllImport(wrapperDllpath, EntryPoint = "setSocketVersion", CallingConvention = CallingConvention.StdCall)]
     private static extern void SetSocketVersion(ushort id, ulong binaryAddress, ushort version);
 
     [DllImport(wrapperDllpath, EntryPoint = "getClientSerialAndVersion", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-    private static extern void GetClientSerialAndVersion(ushort id, ulong binaryAddress, StringBuilder serial, StringBuilder extra, StringBuilder version);
+    private static extern void GetClientSerialAndVersion(ushort id, ulong binaryAddress, 
+        [Out] StringBuilder serial, 
+        [Out] StringBuilder extra, 
+        [Out] StringBuilder version);
 
     [DllImport(wrapperDllpath, EntryPoint = "getPlayerIp", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
     private static extern void GetPlayerIp(ushort id, ulong binaryAddress, StringBuilder ip);
 
-    [DllImport(wrapperDllpath, EntryPoint = "setChecks")]
+    [DllImport(wrapperDllpath, EntryPoint = "setChecks", CallingConvention = CallingConvention.StdCall)]
     private static extern void SetChecks(ushort id, string szDisableComboACMap, string szDisableACMap, string szEnableSDMap, int iEnableClientChecks, bool bHideAC, string szImgMods);
 
-    [DllImport(wrapperDllpath, EntryPoint = "resendModPackets")]
+    [DllImport(wrapperDllpath, EntryPoint = "resendModPackets", CallingConvention = CallingConvention.StdCall)]
     private static extern void ResendModPackets(ushort id, ulong binaryAddress);
-    [DllImport(wrapperDllpath, EntryPoint = "resendPlayerACInfo")]
+    
+    [DllImport(wrapperDllpath, EntryPoint = "resendPlayerACInfo", CallingConvention = CallingConvention.StdCall)]
     private static extern void ResendPlayerACInfo(ushort id, ulong binaryAddress);
 
 #pragma warning restore CA2101 // Specify marshaling for P/Invoke string arguments

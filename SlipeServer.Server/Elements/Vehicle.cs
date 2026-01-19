@@ -581,8 +581,7 @@ public class Vehicle : Element
                 ped.Vehicle = null;
                 ped.EnteringVehicle = null;
 
-                if (ped.VehicleAction != VehicleAction.Jacked)
-                    this.PedLeft?.Invoke(this, new VehicleLeftEventArgs(ped, this, item.Key, warpsOut));
+                this.PedLeft?.Invoke(this, new VehicleLeftEventArgs(ped, this, item.Key, ped.VehicleAction == VehicleAction.Jacked ? false : warpsOut));
             }
         }
     }

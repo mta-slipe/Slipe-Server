@@ -49,8 +49,8 @@ public class PedSyncBehaviourTests
         timerCallback!();
 
         ped.Syncer.Should().Be(player1);
-        player1.SyncingPeds.Should().Contain(ped);
-        player2.SyncingPeds.Should().BeEmpty();
+        player1.SyncingPeds.Keys.Should().Contain(ped);
+        player2.SyncingPeds.Keys.Should().BeEmpty();
     }
 
     [Fact]
@@ -157,7 +157,7 @@ public class PedSyncBehaviourTests
             .AssociateWith(server);
 
         ped.Syncer = player;
-        player.SyncingPeds.Add(ped);
+        player.SyncingPeds.TryAdd(ped, 0);
 
         timerCallback!();
 
@@ -195,7 +195,7 @@ public class PedSyncBehaviourTests
             .AssociateWith(server);
 
         ped.Syncer = player;
-        player.SyncingPeds.Add(ped);
+        player.SyncingPeds.TryAdd(ped, 0);
 
         timerCallback!();
 
@@ -235,7 +235,7 @@ public class PedSyncBehaviourTests
             .AssociateWith(server);
 
         ped.Syncer = player1;
-        player1.SyncingPeds.Add(ped);
+        player1.SyncingPeds.TryAdd(ped, 0);
 
         timerCallback!();
 

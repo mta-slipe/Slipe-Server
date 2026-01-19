@@ -56,7 +56,7 @@ public class MasterServerAnnouncementBehaviour
         string version = "1.6.0-1.0";
         string extra = "0_0_0_0_0";
 
-        string url = $"{this.masterServerUrl}?g={this.configuration.Port}&a={this.configuration.Port + 123}&h={this.configuration.HttpPort}&v={version}&x={extra}&ip=0.0.0.0";
+        string url = $"{this.masterServerUrl}?g={this.configuration.Port}&a={this.configuration.Port + 123}&h={this.configuration.HttpPort}&v={version}&x={extra}&ip={this.configuration.MasterServerHost}";
         var response = await this.httpClient.PostAsync(url, new ByteArrayContent(data));
 
         var keyValuePairCollection = HttpUtility.ParseQueryString(await response.Content.ReadAsStringAsync());
@@ -65,6 +65,6 @@ public class MasterServerAnnouncementBehaviour
             this.timer.Interval = interval * 1000;
         }
 
-        this.logger.LogInformation("Master server list announcement result: {result}", keyValuePairCollection["ok_message"]);
+        this.logger.LogTrace("Master server list announcement result: {result}", keyValuePairCollection["ok_message"]);
     }
 }

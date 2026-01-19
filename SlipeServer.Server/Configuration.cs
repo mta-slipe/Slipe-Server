@@ -22,6 +22,13 @@ public class Configuration
     [MaxLength(15)]
     public string Host { get; set; } = "0.0.0.0";
 
+
+    /// <summary>
+    /// The host IP address communicated to the master server list
+    /// </summary>
+    [MaxLength(15)]
+    public string MasterServerHost { get; set; } = "0.0.0.0";
+
     /// <summary>
     /// Server UDP port players connect to
     /// Note: A server's ASE port will be this value + 123
@@ -159,6 +166,8 @@ public class Configuration
     /// Intervals for player sync
     /// </summary>
     public SyncIntervals SyncIntervals { get; set; } = new();
+
+    public DebugConfiguration Debug { get; set; } = new();
 }
 
 /// <summary>
@@ -187,4 +196,9 @@ public class SyncIntervals
     public int ObjectSync { get; set; } = 500;
     public int KeySyncRotation { get; set; } = 25;
     public int KeySyncAnalogMove { get; set; } = 25;
+}
+
+public class DebugConfiguration
+{
+    public bool AutoResolveTimeSyncContextMismatches { get; set; } = true;
 }

@@ -1,11 +1,11 @@
-﻿using Newtonsoft.Json;
-using SlipeServer.Packets.Structs;
+﻿using SlipeServer.Packets.Structs;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Resources.Providers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 
 namespace SlipeServer.Server.Resources.Interpreters;
 
@@ -18,6 +18,12 @@ internal struct Manifest
 
 public class SlipeLuaResourceInterpreter : IResourceInterpreter
 {
+    private readonly static JsonSerializerOptions jsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    };
+
     public bool IsFallback => false;
 
     public bool TryInterpretResource(
@@ -59,7 +65,7 @@ public class SlipeLuaResourceInterpreter : IResourceInterpreter
         var entrypoint = Encoding.Default.GetString(files["entrypoint.slipe"]);
 
         var coreSystemManifestText = Encoding.Default.GetString(files[Path.Combine("CoreSystem.Lua", "manifest.json")]);
-        var coreSystemManifest = JsonConvert.DeserializeObject<Manifest>(coreSystemManifestText);
+        var coreSystemManifest = JsonSerializer.Deserialize<Manifest>(coreSystemManifestText, jsonOptions);
         foreach (var module in coreSystemManifest.Modules)
         {
             resourceFiles.Add(GetResourceFileForPath(files, Path.Combine(
@@ -71,7 +77,7 @@ public class SlipeLuaResourceInterpreter : IResourceInterpreter
 
         var directory = Path.Combine(distLuaDirectory, entrypoint);
         var entryManifestText = Encoding.Default.GetString(files[Path.Join(directory, "manifest.json")]);
-        var entryManifest = JsonConvert.DeserializeObject<Manifest>(entryManifestText);
+        var entryManifest = JsonSerializer.Deserialize<Manifest>(entryManifestText, jsonOptions);
         foreach (var file in GetResourceFilesForManifest(files, entryManifest, distLuaDirectory, directory))
             resourceFiles.Add(file);
 
@@ -92,7 +98,7 @@ public class SlipeLuaResourceInterpreter : IResourceInterpreter
         {
             var directory = Path.Combine(distLuaDirectory, assembly);
             var manifestText = Encoding.Default.GetString(files[Path.Combine(directory, "manifest.json")]);
-            var subManifest = JsonConvert.DeserializeObject<Manifest>(manifestText);
+            var subManifest = JsonSerializer.Deserialize<Manifest>(manifestText, jsonOptions);
 
             foreach (var file in GetResourceFilesForManifest(files, subManifest, distLuaDirectory, directory))
                 resourceFiles.Add(file);

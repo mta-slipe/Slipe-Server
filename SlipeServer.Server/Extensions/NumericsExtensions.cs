@@ -72,4 +72,50 @@ public static class NumericsExtensions
 
         return new Vector3(ToDegrees((float)yaw), ToDegrees((float)pitch), ToDegrees((float)roll));
     }
+
+    /// <summary>
+    /// Return the equivalent representation of a rotation in degrees, in quaternions
+    /// This respects the definitions of the Yaw / Pitch / Roll rotation order of GTA SA
+    /// </summary>
+    /// <param name="rotation"></param>
+    /// <returns></returns>
+    public static Quaternion ToSemanticQuaternion(this Vector3 rotation)
+    {
+        return Quaternion.CreateFromYawPitchRoll(ToRadians(rotation.Z), ToRadians(rotation.X), ToRadians(rotation.Y));
+    }
+
+    /// <summary>
+    /// Returns the equivalent representation of a quaternion in euler angles
+    /// </summary>
+    /// <param name="quaternion"></param>
+    /// <returns></returns>
+    public static Vector3 ToEulerFromBeppu(this Quaternion quaternion)
+    {
+        double qx = quaternion.X;
+        double qy = quaternion.Y;
+        double qz = quaternion.Z;
+        double qw = quaternion.W;
+
+        double norm = Math.Sqrt(qx * qx + qy * qy + qz * qz + qw * qw);
+        qx /= norm; qy /= norm; qz /= norm; qw /= norm;
+
+        // ZXY extraction
+        double rotX, rotZ, rotY;
+
+        // rotX (pitch around X)
+        rotX = Math.Asin(Math.Clamp(2 * (qw * qx - qy * qz), -1.0, 1.0));
+
+        // rotY (roll around Y)
+        rotZ = Math.Atan2(2 * (qw * qy + qx * qz), 1 - 2 * (qx * qx + qy * qy));
+
+        // rotZ (yaw around Z)
+        rotY = Math.Atan2(2 * (qw * qz + qx * qy), 1 - 2 * (qx * qx + qz * qz));
+
+        // Convert to degrees
+        rotX *= 180.0 / Math.PI;
+        rotZ *= 180.0 / Math.PI;
+        rotY *= 180.0 / Math.PI;
+
+        return new Vector3((float)-rotY, (float)rotZ, (float)rotX);
+    }
 }
