@@ -19,6 +19,7 @@ using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Clients;
 using System.Net;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
+using SlipeServer.Server.ElementCollections.Concurrent;
 
 namespace SlipeServer.Server.Elements;
 
@@ -67,7 +68,7 @@ public class Player : Ped
     /// <summary>
     /// Any elements that are specifically associated with this player. This does not include elements that are associated with the server as a whole.
     /// </summary>
-    public IElementCollection AssociatedElements { get; } = new RTreeCompoundElementCollection(); 
+    public IElementCollection AssociatedElements { get; } = new SpatialHashCompoundConcurrentElementCollection(); 
 
 
     private Element? contactElement;
