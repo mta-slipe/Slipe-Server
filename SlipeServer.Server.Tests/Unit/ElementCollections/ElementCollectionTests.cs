@@ -9,7 +9,7 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SlipeServer.Server.Tests.Unit.ElementCollecions;
+namespace SlipeServer.Server.Tests.Unit.ElementCollections;
 
 public class ElementCollectionTests
 {
