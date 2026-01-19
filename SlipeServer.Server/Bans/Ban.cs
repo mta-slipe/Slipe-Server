@@ -32,4 +32,7 @@ public class Ban
             BannerName = bannerName
         };
     }
+
+    public bool IsActive
+        => this.ExpiryDateUtc == null || this.ExpiryDateUtc > DateTime.UtcNow;
 }

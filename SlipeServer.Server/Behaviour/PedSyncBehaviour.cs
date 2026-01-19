@@ -37,7 +37,7 @@ public class PedSyncBehaviour
 
     private void HandlePlayerDisconnect(Player player, Elements.Events.PlayerQuitEventArgs e)
     {
-        foreach (var ped in player.SyncingPeds.ToArray())
+        foreach (var ped in player.SyncingPeds.Keys.ToArray())
             StopSyncingPed(ped);
 
         player.Disconnected -= HandlePlayerDisconnect;
@@ -76,14 +76,14 @@ public class PedSyncBehaviour
     private void StopSyncingPed(Ped ped)
     {
         ped.Syncer?.Client.SendPacket(new PedStopSyncPacket(ped.Id));
-        ped.Syncer?.SyncingPeds.Remove(ped);
+        ped.Syncer?.SyncingPeds.TryRemove(ped, out var _);
         ped.Syncer = null;
     }
 
     private void StartSyncingPed(Player player, Ped ped)
     {
         player.Client.SendPacket(new PedStartSyncPacket(ped.Id, ped.Position, ped.PedRotation, ped.Velocity, ped.Health, ped.Armor));
-        player.SyncingPeds.Add(ped);
+        player.SyncingPeds.TryAdd(ped, 0);
         ped.Syncer = player;
     }
 

@@ -44,9 +44,7 @@ public class FlatElementCollection : IElementCollection
     public IEnumerable<Element> GetAll()
     {
         this.slimLock.EnterReadLock();
-        var value = this.elements
-            .Select(element => element)
-            .ToArray();
+        var value = this.elements.ToArray();
         this.slimLock.ExitReadLock();
         return value;
     }

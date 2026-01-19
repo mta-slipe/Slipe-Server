@@ -5,16 +5,11 @@ using SlipeServer.Server.Clients;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Connection;
 
-public class JoinedGamePacketHandler : IPacketHandler<JoinedGamePacket>
+public class JoinedGamePacketHandler(Configuration configuration) : IPacketHandler<JoinedGamePacket>
 {
     public PacketId PacketId => PacketId.PACKET_ID_PLAYER_JOIN;
 
-    private readonly ushort bitStreamVersion;
-
-    public JoinedGamePacketHandler(Configuration configuration)
-    {
-        this.bitStreamVersion = configuration.BitStreamVersion;
-    }
+    private readonly ushort bitStreamVersion = configuration.BitStreamVersion;
 
     public void HandlePacket(IClient client, JoinedGamePacket packet)
     {

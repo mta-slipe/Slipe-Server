@@ -17,7 +17,9 @@ using SlipeServer.Packets.Lua.Event;
 using SlipeServer.Packets.Rpc;
 using SlipeServer.Server.AllSeeingEye;
 using SlipeServer.Server.Bans;
+using SlipeServer.Server.Behaviour;
 using SlipeServer.Server.ElementCollections;
+using SlipeServer.Server.ElementCollections.Concurrent;
 using SlipeServer.Server.Elements.IdGeneration;
 using SlipeServer.Server.Mappers;
 using SlipeServer.Server.PacketHandling.Handlers.AntiCheat;
@@ -28,22 +30,18 @@ using SlipeServer.Server.PacketHandling.Handlers.CustomData;
 using SlipeServer.Server.PacketHandling.Handlers.Explosions;
 using SlipeServer.Server.PacketHandling.Handlers.Lua;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
-using SlipeServer.Server.PacketHandling.Handlers.Player.Sync;
 using SlipeServer.Server.PacketHandling.Handlers.Player;
+using SlipeServer.Server.PacketHandling.Handlers.Player.Sync;
 using SlipeServer.Server.PacketHandling.Handlers.Projectile;
 using SlipeServer.Server.PacketHandling.Handlers.Rpc;
 using SlipeServer.Server.PacketHandling.Handlers.Satchel;
-using SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync;
 using SlipeServer.Server.PacketHandling.Handlers.Vehicle;
+using SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync;
 using SlipeServer.Server.PacketHandling.Handlers.Voice;
 using SlipeServer.Server.PacketHandling.QueueHandlers;
 using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.ServerBuilders;
 using SlipeServer.Server.Services;
-using SlipeServer.Packets;
-using SlipeServer.Server.PacketHandling.Handlers.QueueHandlers;
-using SlipeServer.Server.PacketHandling.Handlers;
-using SlipeServer.Server.Behaviour;
 
 namespace SlipeServer.Server;
 
@@ -51,7 +49,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddDefaultMtaServerServices(this IServiceCollection services)
     {
-        services.AddSingleton<IElementCollection, RTreeCompoundElementCollection>();
+        services.AddSingleton<IElementCollection, SpatialHashCompoundConcurrentElementCollection>();
         services.AddSingleton<IResourceProvider, FileSystemResourceProvider>();
         services.AddSingleton<IElementIdGenerator, CollectionBasedElementIdGenerator>();
         services.AddSingleton<IAseQueryService, AseQueryService>();

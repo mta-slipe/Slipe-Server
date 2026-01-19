@@ -19,7 +19,7 @@ variables:
 jobs: 
 - job: 'windows_cpp_build'
   pool:
-    vmImage: 'windows-2022'
+    vmImage: 'windows-latest'
   steps:
   
   - task: VSBuild@1
@@ -113,12 +113,12 @@ jobs:
 - job: 'docfx_build'
   continueOnError: true
   pool:
-    vmImage: 'windows-2022'
+    vmImage: 'windows-latest'
   steps:
   - task: UseDotNet@2
     inputs:
       packageType: 'sdk'
-      version: '9.x'
+      version: '10.x'
   - task: DotNetCoreCLI@2
     displayName: 'Install docfx'
     inputs:
@@ -150,7 +150,7 @@ jobs:
   
 - job: 'dotnet_build'
   pool:
-    vmImage: 'windows-2022'
+    vmImage: 'windows-latest'
   dependsOn:
   - 'windows_cpp_build'
   - 'linux_cpp_build' 
@@ -223,7 +223,7 @@ jobs:
   - task: UseDotNet@2
     inputs:
       packageType: 'sdk'
-      version: '9.x'
+      version: '10.x'
 
   - task: DotNetCoreCLI@2
     displayName: 'dotnet restore'

@@ -32,7 +32,7 @@ public class VehiclePureSyncPacketTests
         packet.Read(this.carTestPacket);
 
         packet.RemoteModel.Should().Be(602);
-        packet.Position.Should().Equals(new Vector3(-10, 5, 3));
+        packet.Position.Should().BeEquivalentTo(new Vector3(-8.691406f, 7.7958984f, 2.9230642f));
         packet.Seat.Should().Be(0);
         packet.Health.Should().Be(1000);
         packet.PlayerHealth.Should().Be(50);
@@ -50,7 +50,7 @@ public class VehiclePureSyncPacketTests
         packet.Read(this.hydraTestPacket);
 
         packet.RemoteModel.Should().Be(520);
-        packet.Position.Should().Equals(new Vector3(10, 5, 3));
+        packet.Position.Should().BeEquivalentTo(new Vector3(10.00293f, 4.908203f, 3.834977f));
         packet.Seat.Should().Be(0);
         packet.Health.Should().Be(1000);
         packet.PlayerHealth.Should().Be(50);
@@ -70,7 +70,7 @@ public class VehiclePureSyncPacketTests
         packet.Read(this.forkliftTestPacket);
 
         packet.RemoteModel.Should().Be(530);
-        packet.Position.Should().Equals(new Vector3(20, 5, 3));
+        packet.Position.Should().BeEquivalentTo(new Vector3(20, 5.013672f, 2.8811896f));
         packet.Seat.Should().Be(0);
         packet.Health.Should().Be(1000);
         packet.PlayerHealth.Should().Be(50);
@@ -88,7 +88,7 @@ public class VehiclePureSyncPacketTests
         packet.Read(this.firetruckTestPacket);
 
         packet.RemoteModel.Should().Be(407);
-        packet.Position.Should().Equals(new Vector3(30, 5, 3));
+        packet.Position.Should().BeEquivalentTo(new Vector3(30.039062f, 5.013672f, 3.3355772f));
         packet.Seat.Should().Be(0);
         packet.Health.Should().Be(1000);
         packet.PlayerHealth.Should().Be(50);

@@ -11,6 +11,7 @@ using SlipeServer.Server.TestTools;
 using System;
 using System.Numerics;
 using Xunit;
+using SlipeServer.Server;
 
 namespace SlipeServer.Server.Tests.Unit.PacketHandlers;
 
@@ -30,7 +31,7 @@ public class PureSyncPacketHandlerTests
 
         Mock<IElementCollection> elementCollectionMock = new();
 
-        var handler = new PlayerPureSyncPacketHandler(loggerMock.Object, middlewareMock.Object, elementCollectionMock.Object);
+        var handler = new PlayerPureSyncPacketHandler(loggerMock.Object, middlewareMock.Object, elementCollectionMock.Object, new Configuration());
 
         handler.HandlePacket(sourcePlayer.Client, new PlayerPureSyncPacket()
         {
@@ -55,7 +56,7 @@ public class PureSyncPacketHandlerTests
 
         Mock<IElementCollection> elementCollectionMock = new();
 
-        var handler = new PlayerPureSyncPacketHandler(loggerMock.Object, middlewareMock.Object, elementCollectionMock.Object);
+        var handler = new PlayerPureSyncPacketHandler(loggerMock.Object, middlewareMock.Object, elementCollectionMock.Object, new Configuration());
 
         handler.HandlePacket(sourcePlayer.Client, new PlayerPureSyncPacket()
         {
@@ -75,7 +76,7 @@ public class PureSyncPacketHandlerTests
         Mock<ISyncHandlerMiddleware<PlayerPureSyncPacket>> middlewareMock = new();
         Mock<IElementCollection> elementCollectionMock = new();
 
-        var handler = new PlayerPureSyncPacketHandler(loggerMock.Object, middlewareMock.Object, elementCollectionMock.Object);
+        var handler = new PlayerPureSyncPacketHandler(loggerMock.Object, middlewareMock.Object, elementCollectionMock.Object, new Configuration());
 
         handler.HandlePacket(sourcePlayer.Client, new PlayerPureSyncPacket()
         {

@@ -9,18 +9,11 @@ using System.Numerics;
 
 namespace SlipeServer.Physics.Services;
 
-public partial class PhysicsService
+public partial class PhysicsService(ILogger logger)
 {
-    private readonly ILogger logger;
-
-    public PhysicsService(ILogger logger)
-    {
-        this.logger = logger;
-    }
-
     public PhysicsWorld CreateEmptyPhysicsWorld(Vector3? gravity = null)
     {
-        return new PhysicsWorld(this.logger, gravity ?? Vector3.Zero);
+        return new PhysicsWorld(logger, gravity ?? Vector3.Zero);
     }
 
     public PhysicsWorld CreatePhysicsWorldFromGtaDirectory(
@@ -64,7 +57,7 @@ public partial class PhysicsService
                 if (File.Exists(path))
                     builder.AddIde(Path.GetFileNameWithoutExtension(path), new IdeFile(path).Ide, loadMode);
                 else
-                    this.logger.LogWarning($"Unable to find .ide file {path}");
+                    logger.LogWarning($"Unable to find .ide file {path}");
             }
 
             foreach (var ipl in datFile.Dat.Ipls)
@@ -73,7 +66,7 @@ public partial class PhysicsService
                 if (File.Exists(path))
                     builder.AddIpl(new IplFile(path).Ipl, loadMode);
                 else
-                    this.logger.LogWarning($"Unable to find .ipl file {path}");
+                    logger.LogWarning($"Unable to find .ipl file {path}");
             }
 
             foreach (var ipl in imgFile.Img.IplFiles)
@@ -91,7 +84,7 @@ public partial class PhysicsService
 
     public PhysicsWorld CreateWorld(Action<PhysicsWorldBuilder> builderAction)
     {
-        var builder = new PhysicsWorldBuilder(this.logger);
+        var builder = new PhysicsWorldBuilder(logger);
 
         builderAction(builder);
 

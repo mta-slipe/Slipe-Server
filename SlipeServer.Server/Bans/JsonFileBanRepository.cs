@@ -24,9 +24,11 @@ public class JsonFileBanRepository : IBanRepository
         if (File.Exists(this.filepath))
         {
             var fileContents = File.ReadAllText(this.filepath);
-            var bans = JsonSerializer.Deserialize<IEnumerable<Ban>>(fileContents);
+            var bans = JsonSerializer.Deserialize<IEnumerable<JsonBan>>(fileContents)
+                ?.Select(x => (Ban)x);
+
             if (bans != null)
-                foreach (var ban in bans)
+                foreach (var ban in bans.Where(x => x.IsActive))
                     this.bans.Add(ban);
         }
     }
@@ -88,7 +90,24 @@ public class JsonFileBanRepository : IBanRepository
 
     private void SaveBans()
     {
-        var json = JsonSerializer.Serialize(this.bans);
+        var json = JsonSerializer.Serialize(this.bans.Where(x => x.IsActive).Select(x => (JsonBan)x));
         File.WriteAllText(this.filepath, json);
+    }
+
+    public record JsonBan(Guid Id, string? Serial, string? IPAddress, DateTime? ExpiryDateUtc, string? Reason, string? BannedPlayerName, string? BannerName)
+    {
+        public static implicit operator Ban(JsonBan ban) => new()
+        {
+            Id = ban.Id,
+            Serial = ban.Serial,
+            IPAddress = ban.IPAddress == null ? null : System.Net.IPAddress.Parse(ban.IPAddress),
+            ExpiryDateUtc = ban.ExpiryDateUtc,
+            Reason = ban.Reason,
+            BannedPlayerName = ban.BannedPlayerName,
+            BannerName = ban.BannerName,
+        };
+
+        public static explicit operator JsonBan(Ban ban)
+            => new(ban.Id, ban.Serial, ban.IPAddress?.ToString(), ban.ExpiryDateUtc, ban.Reason, ban.BannedPlayerName, ban.BannerName);
     }
 }

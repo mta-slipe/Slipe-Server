@@ -1,4 +1,5 @@
-﻿using FluentAssertions.Execution;
+using FluentAssertions;
+using FluentAssertions.Execution;
 using FluentAssertions.Primitives;
 using SlipeServer.Server.Elements;
 using System;
@@ -8,29 +9,32 @@ namespace SlipeServer.Server.TestTools.FluentAssertions;
 
 public class ElementAssertionsBase<T> : ObjectAssertions<T, ElementAssertionsBase<T>> where T : Element
 {
-    public ElementAssertionsBase(T element) : base(element)
+    public ElementAssertionsBase(T element) : base(element, null)
     {
     }
 
     protected void AssertPropertyEquality<U>(Func<T, U> propertySelector, U expected, string propertyName, string because = "", params object[] becauseArgs)
     {
-        Execute.Assertion.BecauseOf(because, becauseArgs)
-            .ForCondition(propertySelector(Subject).Equals(expected))
-            .FailWith($"Expected {propertyName} to be {{0}}{because}, but found {{1}}.", expected, propertySelector(Subject));
+        var actual = propertySelector(this.Subject);
+        actual.Should().Be(expected, because, becauseArgs);
     }
 
     protected void AssertPropertyEquality(Func<T, byte[]> propertySelector, byte[] expected, string propertyName, string because = "", params object[] becauseArgs)
     {
-        Execute.Assertion.BecauseOf(because, becauseArgs)
-            .ForCondition(propertySelector(Subject).SequenceEqual(expected))
-            .FailWith($"Expected {propertyName} to be {{0}}{because}, but found {{1}}.", expected, propertySelector(Subject));
+        var actual = propertySelector(this.Subject);
+        if (expected == null)
+            actual.Should().BeNull(because, becauseArgs);
+        else
+            actual.Should().Equal(expected, because, becauseArgs);
     }
 
     protected void AssertPropertyEquality(Func<T, float[]> propertySelector, float[] expected, string propertyName, string because = "", params object[] becauseArgs)
     {
-        Execute.Assertion.BecauseOf(because, becauseArgs)
-            .ForCondition(propertySelector(Subject).SequenceEqual(expected))
-            .FailWith($"Expected {propertyName} to be {{0}}{because}, but found {{1}}.", expected, propertySelector(Subject));
+        var actual = propertySelector(this.Subject);
+        if (expected == null)
+            actual.Should().BeNull(because, becauseArgs);
+        else
+            actual.Should().Equal(expected, because, becauseArgs);
     }
 
     public virtual void BeEquivalentTo(T element, string because = "", params object[] becauseArgs)

@@ -23,7 +23,7 @@ public sealed class SetObjectRotationRpcPacket : Packet
     public SetObjectRotationRpcPacket(ElementId elementId, Vector3 rotation)
     {
         this.ElementId = elementId;
-        this.Rotation = rotation;
+        this.Rotation = rotation * (float)(Math.PI / 180.0);
     }
 
     public override void Read(byte[] bytes)

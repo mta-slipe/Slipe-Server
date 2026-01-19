@@ -200,5 +200,5 @@ public class SyncIntervals
 
 public class DebugConfiguration
 {
-    public bool AutoResolveTimeSyncContextMismatches { get; set; }
+    public bool AutoResolveTimeSyncContextMismatches { get; set; } = true;
 }

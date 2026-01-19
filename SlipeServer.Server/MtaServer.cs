@@ -1,14 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using SlipeServer.Net.Wrappers;
 using SlipeServer.Packets;
-using SlipeServer.Packets.Definitions.Join;
 using SlipeServer.Packets.Definitions.Player;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Structs;
-using SlipeServer.Server.AllSeeingEye;
-using SlipeServer.Server.Bans;
 using SlipeServer.Server.Clients;
 using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
@@ -16,21 +12,15 @@ using SlipeServer.Server.Elements.IdGeneration;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Events;
 using SlipeServer.Server.Extensions;
-using SlipeServer.Server.Loggers;
-using SlipeServer.Server.Mappers;
 using SlipeServer.Server.PacketHandling;
 using SlipeServer.Server.PacketHandling.Handlers;
-using SlipeServer.Server.PacketHandling.Handlers.Connection;
-using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 using SlipeServer.Server.PacketHandling.Handlers.QueueHandlers;
 using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.Resources.Serving;
 using SlipeServer.Server.ServerBuilders;
-using SlipeServer.Server.Services;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace SlipeServer.Server;
@@ -307,14 +297,14 @@ public class MtaServer
     {
         RegisterPacketHandler<TPacket, ScalingPacketQueueHandler<TPacket>, TPacketHandler>();
     }
-        /// <summary>
-        /// Instantiates a type using the dependency injection container
-        /// </summary>
-        /// <param name="type">The type to instiantiate</param>
-        /// <param name="parameters">Any constructor parameters that are not supplied by the dependency injection container</param>
-        /// <returns></returns>
-        public object Instantiate(Type type, params object[] parameters)
-        => ActivatorUtilities.CreateInstance(this.serviceProvider, type, parameters);
+    /// <summary>
+    /// Instantiates a type using the dependency injection container
+    /// </summary>
+    /// <param name="type">The type to instiantiate</param>
+    /// <param name="parameters">Any constructor parameters that are not supplied by the dependency injection container</param>
+    /// <returns></returns>
+    public object Instantiate(Type type, params object[] parameters)
+    => ActivatorUtilities.CreateInstance(this.serviceProvider, type, parameters);
 
     /// <summary>
     /// Instantiates a type using the dependency injection container
@@ -472,7 +462,7 @@ public class MtaServer
     /// </summary>
     public void AddAdditionalResource(Resource resource, Dictionary<string, byte[]> files)
     {
-        if(this.resourceProvider == null)
+        if (this.resourceProvider == null)
         {
             this.resourceProvider = this.serviceProvider.GetRequiredService<IResourceProvider>();
         }
@@ -514,16 +504,31 @@ public class MtaServer
     /// </summary>
     /// <typeparam name="TElement">The type of element to execute the action for</typeparam>
     /// <param name="action">The action to be executed for every element of the type</param>
-    public void ForAny<TElement>(Action<TElement> action)
+    /// <param name="cleanup">Optional cleanup action to be executed for each element when the handler is removed</param>
+    /// <returns>An action that can be called to remove the handler, and  call potential cleanup</returns>
+    public Action ForAny<TElement>(Action<TElement> action, Action<TElement>? cleanup = null)
         where TElement : Element
     {
         foreach (var element in this.elementCollection.GetByType<TElement>())
             action(element);
 
-        this.ElementCreated += (element) =>
+        void handler(Element element)
         {
             if (element is TElement tElement)
                 action(tElement);
+        }
+
+        this.ElementCreated += handler;
+
+        return () =>
+        {
+            this.ElementCreated -= handler;
+
+            if (cleanup != null)
+            {
+                foreach (var element in this.elementCollection.GetByType<TElement>())
+                    cleanup(element);
+            }
         };
     }
 
@@ -540,7 +545,7 @@ public class MtaServer
         dependencyCallback?.Invoke(this.serviceCollection);
     }
 
-    private INetWrapper CreateNetWrapper(string directory, string netDllPath, string host, ushort port)
+    private INetWrapper CreateNetWrapper(String directory, String netDllPath, String host, UInt16 port)
     {
         INetWrapper netWrapper = new NetWrapper(directory, netDllPath, host, port);
         RegisterNetWrapper(netWrapper);

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Version>0.1.0</Version>
     <Authors>Slipe</Authors>
     <Company></Company>
@@ -19,8 +19,8 @@
     <ProjectReference Include="..\SlipeServer.Hosting\SlipeServer.Hosting.csproj" />
     <ProjectReference Include="..\SlipeServer.Server\SlipeServer.Server.csproj" />
     <PackageReference Include="AwesomeAssertions" Version="8.0.0" />
-	<PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-	<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
+	<PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
+	<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.0" />
   </ItemGroup>
 
   <ItemGroup>
