@@ -3,6 +3,7 @@ using SlipeServer.Packets.Structs;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -83,46 +84,62 @@ public class Resource
                 .SendTo(player);
     }
 
-    public Task StartForAsync(Player player, CancellationToken cancelationToken = default)
+    public async Task StartForAsync(Player player, CancellationToken cancelationToken = default)
     {
-        cancelationToken.ThrowIfCancellationRequested();
+        if (player.IsDestroyed || !player.Client.IsConnected)
+            throw new InvalidOperationException("Player is not connected to the server.");
 
+        using var cts = new CancellationTokenSource(300_000);
+        using var cts2 = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancelationToken);
         var source = new TaskCompletionSource();
 
-        cancelationToken.Register(() =>
+        cts2.Token.Register(() =>
         {
-            player.ResourceStarted -= HandleResourceStart;
-            player.Disconnected -= HandlePlayerDisconnected;
+            source.SetException(new TaskCanceledException());
         });
-
-        player.ResourceStarted += HandleResourceStart;
-        player.Disconnected += HandlePlayerDisconnected;
 
         void HandleResourceStart(Player sender, PlayerResourceStartedEventArgs e)
         {
-            if (e.NetId != this.NetId)
+            if (e.NetId != this.NetId || cts2.Token.IsCancellationRequested)
                 return;
-
-            player.ResourceStarted -= HandleResourceStart;
-            player.Disconnected -= HandlePlayerDisconnected;
 
             source.SetResult();
         }
 
         void HandlePlayerDisconnected(Player disconnectingPlayer, PlayerQuitEventArgs e)
         {
-            if(player != disconnectingPlayer)
+            if(player != disconnectingPlayer || cts2.Token.IsCancellationRequested)
                 return;
 
-            player.ResourceStarted -= HandleResourceStart;
-            player.Disconnected -= HandlePlayerDisconnected;
-
-            source.SetException(new System.Exception("Player disconnected."));
+            source.SetException(new Exception("Player disconnected."));
         }
+
+        void HandleDestroed(Element destroyedElement)
+        {
+            if(player != destroyedElement || cts2.Token.IsCancellationRequested)
+                return;
+
+            source.SetException(new Exception("Player destroyed."));
+        }
+
+        cts2.Token.ThrowIfCancellationRequested();
+
+        player.ResourceStarted += HandleResourceStart;
+        player.Disconnected += HandlePlayerDisconnected;
+        player.Destroyed += HandleDestroed;
 
         StartFor(player);
 
-        return source.Task;
+        try
+        {
+            await source.Task;
+        }
+        finally
+        {
+            player.ResourceStarted -= HandleResourceStart;
+            player.Disconnected -= HandlePlayerDisconnected;
+            player.Destroyed -= HandleDestroed;
+        }
     }
 
     public void StopFor(Player player)
