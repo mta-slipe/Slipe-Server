@@ -6,6 +6,7 @@ using SlipeServer.Packets.Definitions.Player;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Structs;
 using SlipeServer.Server.Clients;
+using SlipeServer.Server.Concepts;
 using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.IdGeneration;
@@ -22,6 +23,7 @@ using SlipeServer.Server.ServerBuilders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace SlipeServer.Server;
 
@@ -682,6 +684,17 @@ public class MtaServer
     /// <returns></returns>
     public static MtaServer<TPlayer> CreateWithDiSupport<TPlayer>(Action<ServerBuilder> builderAction) where TPlayer : Player
         => new MtaDiPlayerServer<TPlayer>(builderAction);
+
+    /// <summary>
+    /// Creates 
+    /// </summary>
+    /// <param name="player"></param>
+    /// <returns></returns>
+    public ClientTask CreateClientTask(Player player, CancellationToken cancellationToken = default)
+    {
+        var id = Guid.NewGuid().ToString();
+        return new ClientTask(this, player, id, cancellationToken);
+    }
 
     /// <summary>
     /// Triggered when any element is created on the server through the .AssociateElement method
