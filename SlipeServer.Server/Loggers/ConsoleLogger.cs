@@ -62,8 +62,11 @@ public class ConsoleLogger : ILogger
         while (true)
         {
             while (this.logActions.TryDequeue(out var action))
+            {
                 action();
-            await Task.Delay(10);
+                action = null;
+            }
+            await Task.Delay(10).ConfigureAwait(false);
         }
     }
 

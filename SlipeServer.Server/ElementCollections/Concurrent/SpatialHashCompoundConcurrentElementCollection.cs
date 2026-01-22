@@ -21,7 +21,7 @@ public class SpatialHashCompoundConcurrentElementCollection() : IElementCollecti
         this.flatElementCollection.Add(element);
         this.elementByIdCollection.Add(element);
         this.elementByTypeCollection.Add(element);
-        this.GetRTreeElementCollection(element.ElementType).Add(element);
+        this.GetSpatialHashCollectionForType(element.ElementType).Add(element);
     }
 
     public void Remove(Element element)
@@ -29,7 +29,7 @@ public class SpatialHashCompoundConcurrentElementCollection() : IElementCollecti
         this.flatElementCollection.Remove(element);
         this.elementByIdCollection.Remove(element);
         this.elementByTypeCollection.Remove(element);
-        this.GetRTreeElementCollection(element.ElementType).Remove(element);
+        this.GetSpatialHashCollectionForType(element.ElementType).Remove(element);
     }
 
     public Element? Get(uint id)
@@ -60,7 +60,7 @@ public class SpatialHashCompoundConcurrentElementCollection() : IElementCollecti
 
     public IEnumerable<TElement> GetWithinRange<TElement>(Vector3 position, float range, ElementType elementType) where TElement : Element
     {
-        return this.GetRTreeElementCollection(elementType).GetWithinRange<TElement>(position, range, elementType);
+        return this.GetSpatialHashCollectionForType(elementType).GetWithinRange<TElement>(position, range, elementType);
     }
 
     public IEnumerable<TElement> GetWithinRange<TElement>(Vector3 position, float range) where TElement : Element
@@ -68,7 +68,7 @@ public class SpatialHashCompoundConcurrentElementCollection() : IElementCollecti
         return GetWithinRange<TElement>(position, range, ElementTypeHelpers.GetElementType<TElement>());
     }
 
-    private SpatialHashElementCollection GetRTreeElementCollection(ElementType elementType)
+    private SpatialHashElementCollection GetSpatialHashCollectionForType(ElementType elementType)
     {
         if (this.spatialCollections.TryGetValue(elementType, out var value))
             return value;

@@ -10,7 +10,7 @@ using System.Threading;
 
 namespace SlipeServer.Server.ElementCollections;
 
-public class SpatialHashElementCollection(float cellSizeX = 20f, float cellSizeY = 200f, float cellSizeZ = 200f) : IElementCollection
+public class SpatialHashElementCollection(float cellSizeX = 20f, float cellSizeY = 20f, float cellSizeZ = 200f) : IElementCollection
 {
     private readonly ConcurrentDictionary<CellCoordinate, ConcurrentDictionary<uint, Element>> cells = [];
     private readonly ConcurrentDictionary<uint, CellCoordinate> elementCells = [];
@@ -196,7 +196,7 @@ public class SpatialHashElementCollection(float cellSizeX = 20f, float cellSizeY
                     }
 
                     var newCellDict = this.cells.GetOrAdd(newCell, _ => new ConcurrentDictionary<uint, Element>());
-                    newCellDict[elementId] = element;
+                    newCellDict.TryAdd(elementId, element);
 
                     this.elementCells[elementId] = newCell;
                 }

@@ -362,12 +362,43 @@ public class ElementCollectionTests
             collection.Add(element);
 
         foreach (var element in elements)
-            element.Position += new Vector3(100, 100, 100);
+            element.Position += new Vector3(1000, 1000, 1000);
 
-        var result = collection.GetWithinRange(new(100, 100, 100), 10);
+        var result = collection.GetWithinRange(new(1000, 1000, 1000), 10);
 
         collection.Count.Should().Be(elements.Count());
+        result.Count().Should().Be(elements.Count());
         result.Should().BeEquivalentTo(elements);
+    }
+
+    [Theory]
+    [InlineData(typeof(SpatialHashElementCollection))]
+    [InlineData(typeof(SpatialHashCompoundElementCollection))]
+    [InlineData(typeof(SpatialHashCompoundConcurrentElementCollection))]
+    public async Task Collection_WhenElementsWereMoved_ReturnsElementsAtNewPositionByType(Type type)
+    {
+        var collection = (IElementCollection)Activator.CreateInstance(type)!;
+
+        var elements = new Element[]
+        {
+            new WorldObject(321, new(0, 0, 3)) { Id = (ElementId)1 },
+            new WorldObject(321, new(0, 0, 3)) { Id = (ElementId)2 },
+            new WorldObject(321, new(5, 0, 3)) { Id = (ElementId)3 },
+            new Element() { Id = (ElementId)4, Position = new(0, 0, 3) },
+            new Marker(new(5, 0, 3), MarkerType.Arrow) { Id = (ElementId)5 }
+        };
+
+        foreach (var element in elements)
+            collection.Add(element);
+
+        foreach (var element in elements)
+            element.Position += new Vector3(1000, 1000, 1000);
+
+        var result = collection.GetWithinRange<WorldObject>(new(1000, 1000, 1000), 10);
+
+        collection.Count.Should().Be(elements.Length);
+        result.Count().Should().Be(elements.Where(x => x is WorldObject).Count());
+        result.Should().BeEquivalentTo(elements.Where(x => x is WorldObject));
     }
 
 }
