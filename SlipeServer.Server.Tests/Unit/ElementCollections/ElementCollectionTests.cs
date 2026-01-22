@@ -401,4 +401,42 @@ public class ElementCollectionTests
         result.Should().BeEquivalentTo(elements.Where(x => x is WorldObject));
     }
 
+    [Theory]
+    [InlineData(typeof(ElementByIdCollection))]
+    [InlineData(typeof(ElementByTypeCollection))]
+    [InlineData(typeof(FlatElementCollection))]
+    [InlineData(typeof(RTreeElementCollection))]
+    [InlineData(typeof(KdTreeElementCollection))]
+    [InlineData(typeof(CompoundElementCollection))]
+    [InlineData(typeof(BasicCompoundElementCollection))]
+    [InlineData(typeof(RTreeCompoundElementCollection))]
+    [InlineData(typeof(SpatialHashElementCollection))]
+    [InlineData(typeof(SpatialHashCompoundElementCollection))]
+    [InlineData(typeof(ConcurrentFlatElementCollection))]
+    [InlineData(typeof(ConcurrentElementByTypeCollection))]
+    [InlineData(typeof(ConcurrentElementByIdCollection))]
+    [InlineData(typeof(SpatialHashCompoundConcurrentElementCollection))]
+    public void Collection_GetWithinRange_ReturnsAtCorrectRange(Type type)
+    {
+        var collection = (IElementCollection)Activator.CreateInstance(type)!;
+
+        var elements = new Element[]
+        {
+            new WorldObject(321, new(250, -90, 3)) { Id = (ElementId)1 },
+            new WorldObject(321, new(250, -90, 3)) { Id = (ElementId)2 },
+            new WorldObject(321, new(255, -90, 3)) { Id = (ElementId)3 },
+            new Element() { Id = (ElementId)4, Position = new(250, -90, 3) },
+            new Marker(new(255, -90, 3), MarkerType.Arrow) { Id = (ElementId)5 }
+        };
+
+        foreach (var element in elements)
+            collection.Add(element);
+
+        foreach (var element in elements)
+        {
+            var elementResult = collection.GetWithinRange<Element>(element.Position + new Vector3(3, 4, 0), 5 + 1, element.ElementType);
+            elementResult.Should().Contain(element);
+        }
+    }
+
 }
