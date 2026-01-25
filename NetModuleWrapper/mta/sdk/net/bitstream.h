@@ -18,13 +18,27 @@
 #endif
 
 struct ISyncStructure;
-class NetBitStreamInterface;
 
-class NetBitStreamInterfaceNoVersion : public CRefCountable
+// eBitStreamVersion allows us to track what BitStream version is being used without placing magic numbers everywhere.
+// It also helps us know what code branches can be removed when we increment a major version of MTA.
+// Make sure you only add new items to the end of the list, above the "Latest" entry.
+enum class eBitStreamVersion : unsigned short
+{
+    Unk = 0x030,
+
+    // DESCRIPTION
+    // YYYY-MM-DD
+    // Name,
+
+    // This allows us to automatically increment the BitStreamVersion when things are added to this enum.
+    // Make sure you only add things above this comment.
+    Next,
+    Latest = Next - 1,
+};
+
+class NetBitStreamInterface : public CRefCountable
 {
 public:
-    virtual operator NetBitStreamInterface&() = 0;
-
     virtual int  GetReadOffsetAsBits() = 0;
     virtual void SetReadOffsetAsBits(int iOffset) = 0;
 
@@ -43,7 +57,7 @@ public:
     virtual void Write(const char* input, int numberOfBytes) = 0;
     virtual void Write(const ISyncStructure* syncStruct) = 0;
 
-public:            // Use char functions only when they will be 0 most times
+public:  // Use char functions only when they will be 0 most times
     virtual void WriteCompressed(const unsigned char& input) = 0;
     virtual void WriteCompressed(const char& input) = 0;
 
@@ -53,7 +67,7 @@ public:
     virtual void WriteCompressed(const unsigned int& input) = 0;
     virtual void WriteCompressed(const int& input) = 0;
 
-private:            // Float functions not used because they only cover -1 to +1 and are lossy
+private:  // Float functions not used because they only cover -1 to +1 and are lossy
     virtual void WriteCompressed(const float& input) = 0;
     virtual void WriteCompressed(const double& input) = 0;
 
@@ -85,7 +99,7 @@ public:
     virtual bool Read(char* output, int numberOfBytes) = 0;
     virtual bool Read(ISyncStructure* syncStruct) = 0;
 
-public:            // Use char functions only when they will be 0 most times
+public:  // Use char functions only when they will be 0 most times
     virtual bool ReadCompressed(unsigned char& output) = 0;
     virtual bool ReadCompressed(char& output) = 0;
 
@@ -95,7 +109,7 @@ public:
     virtual bool ReadCompressed(unsigned int& output) = 0;
     virtual bool ReadCompressed(int& output) = 0;
 
-private:            // Float functions not used because they only cover -1 to +1 and are lossy
+private:  // Float functions not used because they only cover -1 to +1 and are lossy
     virtual bool ReadCompressed(float& output) = 0;
     virtual bool ReadCompressed(double& output) = 0;
 
@@ -117,6 +131,10 @@ public:
     virtual void AlignReadToByteBoundary() const = 0;
 
     virtual unsigned char* GetData() const = 0;
+
+    virtual unsigned short Version() const = 0;
+
+    bool Can(eBitStreamVersion query) { return static_cast<eBitStreamVersion>(Version()) >= query; }
 
     // Force long types to use 4 bytes
     bool Read(unsigned long& e)
@@ -190,6 +208,42 @@ public:
     // Return true if enough bytes left in the bitstream
     bool CanReadNumberOfBytes(int iLength) const { return iLength >= 0 && iLength <= (GetNumberOfUnreadBits() + 7) / 8; }
 
+    // For whatever stupid reason sdk/net gets included in Multiplayer SA and Game SA
+    // And since those projects are c++14 we need this stuff.
+    // TODO: Rip sdk/net out of these projects...
+#ifdef __cpp_lib_string_view
+    // Write characters in `value`
+    void WriteStringCharacters(std::string_view value)
+    {
+        if (!value.empty())
+            Write(value.data(), (int)value.length());
+    }
+    // Write `n` characters from `value`
+    void WriteStringCharacters(std::string_view value, size_t n)
+    {
+        dassert(n <= value.length());
+        if (n)
+            Write(value.data(), (int)n);
+    }
+
+    // Write all characters in `value` (incl. length as `SizeType`)
+    template <typename SizeType = unsigned short>
+    void WriteString(std::string_view value)
+    {
+        // Write the length
+        Write(static_cast<SizeType>(value.length()));
+
+        // Write the characters
+        return WriteStringCharacters(value);
+    }
+
+    // Write a string (incl. variable size header)
+    void WriteStr(std::string_view value)
+    {
+        WriteLength(value.length());
+        return WriteStringCharacters(value, value.length());
+    }
+#else
     // Write characters from a std::string
     void WriteStringCharacters(const std::string& value, uint uiLength)
     {
@@ -198,6 +252,26 @@ public:
         if (uiLength)
             Write(&value.at(0), uiLength);
     }
+
+    // Write a string (incl. ushort size header)
+    template <typename SizeType = unsigned short>
+    void WriteString(const std::string& value)
+    {
+        // Write the length
+        auto length = static_cast<SizeType>(value.length());
+        Write(length);
+
+        // Write the characters
+        return WriteStringCharacters(value, length);
+    }
+
+    // Write a string (incl. variable size header)
+    void WriteStr(const std::string& value)
+    {
+        WriteLength(value.length());
+        return WriteStringCharacters(value, value.length());
+    }
+#endif
 
     // Read characters into a std::string
     bool ReadStringCharacters(std::string& result, uint uiLength)
@@ -218,20 +292,8 @@ public:
         return true;
     }
 
-    // Write a string (incl. ushort size header)
-    template<typename SizeType = unsigned short>
-    void WriteString(const std::string& value)
-    {
-        // Write the length
-        auto length = static_cast<SizeType>(value.length());
-        Write(length);
-
-        // Write the characters
-        return WriteStringCharacters(value, length);
-    }
-
     // Read a string (incl. ushort size header)
-    template<typename SizeType = unsigned short>
+    template <typename SizeType = unsigned short>
     bool ReadString(std::string& result)
     {
         result = "";
@@ -248,15 +310,15 @@ public:
     // Write variable size length
     void WriteLength(uint uiLength)
     {
-        if (uiLength <= 0x7F)            // One byte for length up to 127
+        if (uiLength <= 0x7F)  // One byte for length up to 127
             Write((uchar)uiLength);
         else if (uiLength <= 0x7EFF)
-        {            // Two bytes for length from 128 to 32511
+        {  // Two bytes for length from 128 to 32511
             Write((uchar)((uiLength >> 8) + 128));
             Write((uchar)(uiLength & 0xFF));
         }
         else
-        {            // Five bytes for length 32512 and up
+        {  // Five bytes for length 32512 and up
             Write((uchar)255);
             Write(uiLength);
         }
@@ -272,29 +334,22 @@ public:
             return false;
 
         if (ucValue <= 0x7F)
-        {            // One byte for length up to 127
+        {  // One byte for length up to 127
             uiOutLength = ucValue;
         }
         else if (ucValue != 255)
-        {            // Two bytes for length from 128 to 32511
+        {  // Two bytes for length from 128 to 32511
             uchar ucValue2 = 0;
             if (!Read(ucValue2))
                 return false;
             uiOutLength = ((ucValue - 128) << 8) + ucValue2;
         }
         else
-        {            // Five bytes for length 32512 and up
+        {  // Five bytes for length 32512 and up
             if (!Read(uiOutLength))
                 return false;
         }
         return true;
-    }
-
-    // Write a string (incl. variable size header)
-    void WriteStr(const std::string& value)
-    {
-        WriteLength(value.length());
-        return WriteStringCharacters(value, value.length());
     }
 
     // Read a string (incl. variable size header)
@@ -307,18 +362,18 @@ public:
         return ReadStringCharacters(result, uiLength);
     }
 
-    #ifdef MTA_CLIENT
-        #define MAX_ELEMENTS    MAX_CLIENT_ELEMENTS
-    #else
-        #define MAX_ELEMENTS    MAX_SERVER_ELEMENTS
-    #endif
+#ifdef MTA_CLIENT
+#define MAX_ELEMENTS MAX_CLIENT_ELEMENTS
+#else
+#define MAX_ELEMENTS MAX_SERVER_ELEMENTS
+#endif
 
     // Write an element ID
     void Write(const ElementID& ID)
     {
         static const unsigned int bitcount = NumberOfSignificantBits<(MAX_ELEMENTS - 1)>::COUNT;
-        const unsigned int&       IDref = ID.Value();
-        #ifdef MTA_CLIENT
+        const unsigned int& IDref = ID.Value();
+#ifdef MTA_CLIENT
         if (IDref != INVALID_ELEMENT_ID && IDref >= MAX_SERVER_ELEMENTS)
         {
             dassert("Sending client side element id to server" && 0);
@@ -326,7 +381,7 @@ public:
             WriteBits(reinterpret_cast<const unsigned char*>(&uiInvalidId), bitcount);
             return;
         }
-        #endif
+#endif
         WriteBits(reinterpret_cast<const unsigned char*>(&IDref), bitcount);
     }
 
@@ -334,7 +389,7 @@ public:
     bool Read(ElementID& ID)
     {
         static const unsigned int bitcount = NumberOfSignificantBits<(MAX_ELEMENTS - 1)>::COUNT;
-        unsigned int&             IDref = ID.Value();
+        unsigned int& IDref = ID.Value();
         IDref = 0;
         bool bResult = ReadBits(reinterpret_cast<unsigned char*>(&IDref), bitcount);
 
@@ -345,20 +400,6 @@ public:
 
         return bResult;
     }
-};
-
-class NetBitStreamInterface : public NetBitStreamInterfaceNoVersion
-{
-    NetBitStreamInterface(const NetBitStreamInterface&);
-    const NetBitStreamInterface& operator=(const NetBitStreamInterface&);
-
-protected:
-    NetBitStreamInterface() { DEBUG_CREATE_COUNT("NetBitStreamInterface"); }
-    virtual ~NetBitStreamInterface() { DEBUG_DESTROY_COUNT("NetBitStreamInterface"); }
-
-public:
-    virtual                operator NetBitStreamInterface&() { return *this; }
-    virtual unsigned short Version() const = 0;
 };
 
 // Interface for all sync structures
