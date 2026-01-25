@@ -34,7 +34,7 @@ public sealed class MapInfoPacket : Packet
 
     public (
         bool closeRangeDamage, bool quickReload, bool fastFire, bool fastMove, bool crouchBug,
-        bool hitAnimation, bool fastSprint, bool badDrivebyHitboxes, bool quickStand
+        bool hitAnimation, bool fastSprint, bool badDrivebyHitboxes, bool quickStand, bool rapidStop
     ) BugsEnabled
     { get; set; }
 
@@ -50,14 +50,13 @@ public sealed class MapInfoPacket : Packet
     public float? FogDistance { get; set; }
     public float AircraftMaxHeight { get; set; }
     public float AircraftMaxVelocity { get; set; }
-    public MapInfoWeaponProperty[] WeaponProperties { get; set; } = Array.Empty<MapInfoWeaponProperty>();
+    public MapInfoWeaponProperty[] WeaponProperties { get; set; } = [];
+    public bool[] SpecialProperties { get; set; } = new bool[20];
 
 
     public IEnumerable<WorldObjectRemoval> RemovedWorldModels { get; set; } = Array.Empty<WorldObjectRemoval>();
 
     public bool OcclusionsEnabled { get; set; }
-
-
 
 
     public MapInfoPacket()
@@ -106,7 +105,10 @@ public sealed class MapInfoPacket : Packet
             this.BugsEnabled.fastSprint,
             this.BugsEnabled.badDrivebyHitboxes,
             this.BugsEnabled.quickStand,
+            this.BugsEnabled.rapidStop,
         });
+
+        builder.Write(this.SpecialProperties);
 
         builder.Write(this.MaximumJetpackHeight);
 
@@ -160,7 +162,6 @@ public sealed class MapInfoPacket : Packet
 
     private void WriteWeather(PacketBuilder builder)
     {
-
         builder.Write(this.Weather);
         builder.Write(this.WeatherBlendingTo);
         builder.Write(this.BlendedWeatherHour);

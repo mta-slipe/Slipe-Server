@@ -117,26 +117,26 @@ public class Configuration
     /// <summary>
     /// Minimum version for connecting clients
     /// </summary>
-    public string MinVersion { get; set; } = "1.6.0-9.23779";
+    public string MinVersion { get; set; } = "1.6.0-9.23776";
 
     /// <summary>
     /// Weapon ids that will triggered bullet sync packets to be sent to the server.
     /// </summary>
     public WeaponId[] BulletSyncEnabledWeapons { get; set; } = new WeaponId[] {
-            WeaponId.Colt,
-            WeaponId.Silenced,
-            WeaponId.Deagle,
-            WeaponId.Shotgun,
-            WeaponId.CombatShotgun,
-            WeaponId.Sawnoff,
-            WeaponId.Tec9,
-            WeaponId.Uzi,
-            WeaponId.Mp5,
-            WeaponId.Ak47,
-            WeaponId.M4,
-            WeaponId.Rifle,
-            WeaponId.Sniper
-        };
+        WeaponId.Colt,
+        WeaponId.Silenced,
+        WeaponId.Deagle,
+        WeaponId.Shotgun,
+        WeaponId.CombatShotgun,
+        WeaponId.Sawnoff,
+        WeaponId.Tec9,
+        WeaponId.Uzi,
+        WeaponId.Mp5,
+        WeaponId.Ak47,
+        WeaponId.M4,
+        WeaponId.Rifle,
+        WeaponId.Sniper
+    };
 
     public short VehicleExtrapolationBaseMilliseconds { get; set; } = 5;
     public short VehicleExtrapolationPercentage { get; set; } = 0;

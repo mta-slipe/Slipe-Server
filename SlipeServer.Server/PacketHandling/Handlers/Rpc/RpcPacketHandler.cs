@@ -133,7 +133,6 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
         {
             if (version < parsedMinVersion)
             {
-
                 client.SendPacket(PlayerPacketFactory.CreateUpdateInfoPacket(this.configuration.MinVersion, true));
                 client.Player.Kick($"Disconnected: Minimum mta version required: {this.configuration.MinVersion}");
                 return;

@@ -57,7 +57,8 @@ public class MapInfoBehaviour
                 this.gameWorld.IsGlitchEnabled(GlitchType.GLITCH_HITANIM),
                 this.gameWorld.IsGlitchEnabled(GlitchType.GLITCH_FASTSPRINT),
                 this.gameWorld.IsGlitchEnabled(GlitchType.GLITCH_BADDRIVEBYHITBOX),
-                this.gameWorld.IsGlitchEnabled(GlitchType.GLITCH_QUICKSTAND)
+                this.gameWorld.IsGlitchEnabled(GlitchType.GLITCH_QUICKSTAND),
+                this.gameWorld.IsGlitchEnabled(GlitchType.GLITCH_VEHICLE_RAPID_STOP)
             ),
             MaximumJetpackHeight = this.gameWorld.MaxJetpackHeight,
             WaterColor = this.gameWorld.WaterColor,
@@ -82,7 +83,36 @@ public class MapInfoBehaviour
             }).ToArray(),
             RemovedWorldModels = this.gameWorld.WorldObjectRemovals,
             OcclusionsEnabled = this.gameWorld.OcclusionsEnabled,
+            SpecialProperties = GetSpecialPropertyEnableds(),
         }.SendTo(player);
+    }
+
+    private bool[] GetSpecialPropertyEnableds()
+    {
+        return [
+            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.UnderWorldWarp],
+            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.ExtraAirResistance],
+            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.SniperMoon],
+            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.RandomFoliage],
+            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.ExtraJump],
+            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.ExtraBunny],
+            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.Aircars],
+            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.Hovercars],
+
+            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.BurnFlippedCars],
+            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.WaterCreatures],
+            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.CoronaGlareDisabled],
+            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.VehicleSunGlare],
+
+            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.FireBallAircraftDestruction],
+            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.RoadSignText],
+            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.ExtendedWaterCannons],
+            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.TunnelWeatherBlending],
+            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.IgnoreFireState],
+            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.FlyingComponents],
+            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.VehicleBurnExplosions],
+            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.VehicleEngineAutoStart],
+        ];
     }
 
     private (byte intensity, byte randomShift, ushort speedMin, ushort speedMax, short scanSizeX, short scanSizeY, ushort renderSizeX, ushort renderSizeY, bool isInsideBuilder)? MapHeatHaze(HeatHaze? heatHaze)

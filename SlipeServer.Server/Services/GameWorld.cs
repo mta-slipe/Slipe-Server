@@ -1,4 +1,5 @@
 ﻿using SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
+using SlipeServer.Packets.Definitions.Lua.ElementRpc.World;
 using SlipeServer.Packets.Definitions.Lua.Rpc.World;
 using SlipeServer.Packets.Definitions.Map.Structs;
 using SlipeServer.Packets.Definitions.Sync;
@@ -10,7 +11,9 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
+using System.Threading;
 using System.Timers;
+using Timer = System.Timers.Timer;
 
 namespace SlipeServer.Server.Services;
 
@@ -37,6 +40,33 @@ public class GameWorld
 
     private byte hour = 0;
     private byte minute = 0;
+
+    private readonly Lock specialPropertyLock = new();
+    private readonly Dictionary<WorldSpecialProperty, bool> specialPropertyStates = new()
+    {
+        [WorldSpecialProperty.Hovercars] = false,
+        [WorldSpecialProperty.Aircars] = false,
+        [WorldSpecialProperty.ExtraBunny] = false,
+        [WorldSpecialProperty.ExtraJump] = false,
+        [WorldSpecialProperty.RandomFoliage] = false,
+        [WorldSpecialProperty.SniperMoon] = false,
+        [WorldSpecialProperty.ExtraAirResistance] = true,
+        [WorldSpecialProperty.UnderWorldWarp] = true,
+        [WorldSpecialProperty.VehicleSunGlare] = false,
+        [WorldSpecialProperty.CoronaGlareDisabled] = true,
+        [WorldSpecialProperty.WaterCreatures] = true,
+        [WorldSpecialProperty.BurnFlippedCars] = true,
+        [WorldSpecialProperty.FireBallAircraftDestruction] = true,
+        [WorldSpecialProperty.RoadSignText] = true,
+        [WorldSpecialProperty.ExtendedWaterCannons] = true,
+        [WorldSpecialProperty.TunnelWeatherBlending] = true,
+        [WorldSpecialProperty.IgnoreFireState] = false,
+        [WorldSpecialProperty.FlyingComponents] = true,
+        [WorldSpecialProperty.VehicleBurnExplosions] = true,
+        [WorldSpecialProperty.VehicleEngineAutoStart] = true
+    };
+
+    public IReadOnlyDictionary<WorldSpecialProperty, bool> SpecialPropertyStates => this.specialPropertyStates.AsReadOnly();
 
     #region Properties
 
@@ -537,5 +567,36 @@ public class GameWorld
         this.server.BroadcastPacket(new RestoreAllWorldModelsPacket());
     }
 
+    public void SetSpecialPropertyEnabled(WorldSpecialProperty property, bool enabled)
+    {
+        this.specialPropertyStates[property] = enabled;
+
+        this.server.BroadcastPacket(new SetWorldSpecialPropertyPacket((byte)property, enabled));
+    }
+
     #endregion
+
+    public enum WorldSpecialProperty
+    {
+        Hovercars,
+        Aircars,
+        ExtraBunny,
+        ExtraJump,
+        RandomFoliage,
+        SniperMoon,
+        ExtraAirResistance,
+        UnderWorldWarp,
+        VehicleSunGlare,
+        CoronaGlareDisabled,
+        WaterCreatures,
+        BurnFlippedCars,
+        FireBallAircraftDestruction,
+        RoadSignText,
+        ExtendedWaterCannons,
+        TunnelWeatherBlending,
+        IgnoreFireState,
+        FlyingComponents,
+        VehicleBurnExplosions,
+        VehicleEngineAutoStart
+    }
 }
