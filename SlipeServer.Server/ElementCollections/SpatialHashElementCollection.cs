@@ -169,18 +169,20 @@ public class SpatialHashElementCollection(float cellSizeX = 20f, float cellSizeY
 
     private void ReInsertElement(Element element, ElementChangedEventArgs<Vector3> args)
     {
-        var oldCell = GetCellCoordinate(args.OldValue);
-        var newCell = GetCellCoordinate(args.NewValue);
-
-        if (!oldCell.Equals(newCell))
+        var elementId = element.Id.Value;
+        var @lock = this.locks.GetOrAdd(elementId, _ => new Lock());
+        lock (@lock)
         {
-            var elementId = element.Id.Value;
-            var @lock = this.locks.GetOrAdd(elementId, _ => new Lock());
-            lock (@lock)
-            {
-                if (this.removing.ContainsKey(elementId))
-                    return;
+            if (this.removing.ContainsKey(elementId))
+                return;
 
+            if (!this.elementCells.TryGetValue(elementId, out var oldCell))
+                return;
+
+            var newCell = GetCellCoordinate(element.Position);
+
+            if (!oldCell.Equals(newCell))
+            {
                 if (this.cells.TryGetValue(oldCell, out var oldCellDict))
                 {
                     if (oldCellDict.TryRemove(elementId, out _))
