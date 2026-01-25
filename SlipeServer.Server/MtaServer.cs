@@ -444,7 +444,6 @@ public class MtaServer
     /// <param name="element"></param>
     public void RemoveElement(Element element)
     {
-        element.Destroy();
         element.Destroyed -= this.elementCollection.Remove;
     }
 

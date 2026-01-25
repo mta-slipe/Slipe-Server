@@ -3,6 +3,7 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.ColShapes;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.PacketHandling.Factories;
+using System.Linq;
 using System.Numerics;
 
 namespace SlipeServer.Server.Extensions.Relaying;
@@ -74,6 +75,26 @@ public static class ElementPropertyRelayingExtensions
         if (e.Server != null && !sender.IsVisibleToEveryone)
             return;
 
+        if (e.Player != null)
+        {
+            var isAlreadyKnown = sender.Associations.Any(x => x.Server?.Players.Contains(e.Player) == true);
+            if (isAlreadyKnown)
+                return;
+
+            sender.CreateFor([e.Player]);
+            return;
+        }
+
+        if (e.Server != null)
+        {
+            var newlyAddedPlayers = e.Server.Players
+                .Except(sender.Associations.Select(x => x.Player).Where(x => x is not null))
+                .Cast<Player>();
+
+            sender.CreateFor(newlyAddedPlayers);
+            return;
+        }
+
         sender.CreateFor(sender.AssociatedPlayers);
     }
 
@@ -81,6 +102,26 @@ public static class ElementPropertyRelayingExtensions
     {
         if (sender.IsDestroyed)
             return;
+
+        if (e.Player != null)
+        {
+            var isStillKnown = sender.Associations.Any(x => x.Server?.Players.Contains(e.Player) == true);
+            if (isStillKnown)
+                return;
+
+            sender.DestroyFor([e.Player]);
+            return;
+        }
+
+        if (e.Server != null)
+        {
+            var newlyRemovedPlayers = e.Server.Players
+                .Except(sender.Associations.Select(x => x.Player).Where(x => x is not null))
+                .Cast<Player>();
+
+            sender.DestroyFor(newlyRemovedPlayers);
+            return;
+        }
 
         RelayElementDestroy(sender);
     }
