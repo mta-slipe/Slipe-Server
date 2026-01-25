@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Server.Elements;
 using SlipeServer.Server.PacketHandling.Factories;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SlipeServer.Server.Extensions;
 
@@ -30,7 +31,11 @@ public static class ElementCollectionExtensions
     /// </summary>
     public static void DestroyFor(this IEnumerable<Element> elements, IEnumerable<Player> players)
     {
-        RemoveEntityPacketFactory.CreateRemoveEntityPacket(elements).SendTo(players);
+        var exceptPlayers = elements.Where(x => x is not Player);
+        if (!exceptPlayers.Any())
+            return;
+
+        RemoveEntityPacketFactory.CreateRemoveEntityPacket(exceptPlayers).SendTo(players);
     }
 
     /// <summary>

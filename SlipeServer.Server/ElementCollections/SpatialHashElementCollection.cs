@@ -35,19 +35,20 @@ public class SpatialHashElementCollection(float cellSizeX = 20f, float cellSizeY
 
     public void Add(Element element)
     {
-        element.PositionChanged += ReInsertElement;
-
         var elementId = element.Id.Value;
         var @lock = this.locks.GetOrAdd(elementId, _ => new Lock());
         lock (@lock)
         {
-            var cell = GetCellCoordinate(element.Position);
+            var position = element.Position;
+            var cell = GetCellCoordinate(position);
 
             var cellDict = this.cells.GetOrAdd(cell, _ => new ConcurrentDictionary<uint, Element>());
             cellDict[elementId] = element;
             this.elementCells[elementId] = cell;
 
             Interlocked.Increment(ref this.count);
+            
+            element.PositionChanged += ReInsertElement;
         }
     }
 
@@ -68,13 +69,13 @@ public class SpatialHashElementCollection(float cellSizeX = 20f, float cellSizeY
 
     public void Remove(Element element)
     {
-        element.PositionChanged -= ReInsertElement;
-
         var elementId = element.Id.Value;
         var @lock = this.locks.GetOrAdd(elementId, _ => new Lock());
         lock (@lock)
         {
             this.removing.TryAdd(elementId, 0);
+            
+            element.PositionChanged -= ReInsertElement;
 
             if (this.elementCells.TryRemove(elementId, out var cell))
             {
@@ -140,7 +141,8 @@ public class SpatialHashElementCollection(float cellSizeX = 20f, float cellSizeY
                     {
                         foreach (var element in cellDict.Values)
                         {
-                            var distanceSquared = Vector3.DistanceSquared(position, element.Position);
+                            var elementPosition = element.Position;
+                            var distanceSquared = Vector3.DistanceSquared(position, elementPosition);
                             if (distanceSquared <= rangeSquared)
                             {
                                 results.Add(element);
@@ -179,7 +181,8 @@ public class SpatialHashElementCollection(float cellSizeX = 20f, float cellSizeY
             if (!this.elementCells.TryGetValue(elementId, out var oldCell))
                 return;
 
-            var newCell = GetCellCoordinate(element.Position);
+            var currentPosition = element.Position;
+            var newCell = GetCellCoordinate(currentPosition);
 
             if (!oldCell.Equals(newCell))
             {

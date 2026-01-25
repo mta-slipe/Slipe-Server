@@ -929,7 +929,12 @@ public class Element
     /// Do note that the element will be required to have an id assigned for this to work properly
     /// </summary>
     public virtual void DestroyFor(IEnumerable<Player> players)
-        => RemoveEntityPacketFactory.CreateRemoveEntityPacket([this]).SendTo(players);
+    {
+        if (this is Player)
+            return;
+
+        RemoveEntityPacketFactory.CreateRemoveEntityPacket([this]).SendTo(players);
+    }
 
     /// <summary>
     /// Sends packets to destroy an elementto a set of players

@@ -7,6 +7,7 @@ using SlipeServer.Packets.Structs;
 using SlipeServer.Server.Behaviour;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Enums;
+using SlipeServer.Server.Extensions;
 using SlipeServer.Server.TestTools;
 using System.Numerics;
 using Xunit;
@@ -57,6 +58,30 @@ public class ElementTests
         element.Destroy();
 
         server.VerifyPacketSent(PacketId.PACKET_ID_ENTITY_REMOVE, player);
+    }
+
+    [Fact]
+    public void ElementDestroy_DoesNotSendEntityRemovePacketForPlayers()
+    {
+        var server = new TestingServer();
+        var player = server.AddFakePlayer();
+        var player2 = server.AddFakePlayer();
+
+        player2.Destroy();
+
+        server.VerifyPacketSent(PacketId.PACKET_ID_ENTITY_REMOVE, player, count: 0);
+    }
+
+    [Fact]
+    public void ElementCollectionDestroyFor_DoesNotSendEntityRemovePacketForPlayers()
+    {
+        var server = new TestingServer();
+        var player = server.AddFakePlayer();
+        var player2 = server.AddFakePlayer();
+
+        (new Element[] { player2 }).DestroyFor([ player ]);
+
+        server.VerifyPacketSent(PacketId.PACKET_ID_ENTITY_REMOVE, player, count: 0);
     }
 
     [Fact]
