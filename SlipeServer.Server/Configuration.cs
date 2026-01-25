@@ -102,7 +102,7 @@ public class Configuration
     /// Bitstream version used by the server.
     /// Only needs editing if you implement additional packet handling / packet changes that were implemented in a newer version of MTA
     /// </summary>
-    public ushort BitStreamVersion { get; set; } = 119;
+    public ushort BitStreamVersion { get; set; } = 48;
 
     /// <summary>
     /// Sets whether voice chat is enabled

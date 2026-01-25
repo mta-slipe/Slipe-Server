@@ -42,7 +42,7 @@ public class ProxyNetWrapper : INetWrapper
         return new Tuple<string, string, string>(
             Guid.NewGuid().ToString(),
             binaryAddress.ToString(),
-            "1.6.0-001"
+            "1.7.0-001"
         );
     }
 

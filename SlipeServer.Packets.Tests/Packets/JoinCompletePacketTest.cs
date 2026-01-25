@@ -14,7 +14,7 @@ public class JoinCompletePacketTest
     [Fact]
     public void WritePacket_MatchesExpectedByteArray()
     {
-        var packet = new JoinCompletePacket("C# Server", "1.6.0-01.0.0");
+        var packet = new JoinCompletePacket("C# Server", "1.7.0-01.0.0");
 
         var result = packet.Write();
 
@@ -29,7 +29,7 @@ public class JoinCompletePacketTest
     [Fact]
     public void WritePacket2_MatchesExpectedByteArray()
     {
-        var packet = new JoinCompletePacket("Slipe Server 0.1.0 [Windows]\0", "1.6.0-9.0.0");
+        var packet = new JoinCompletePacket("Slipe Server 0.1.0 [Windows]\0", "1.7.0-9.0.0");
 
         var result = packet.Write();
 

@@ -11,24 +11,15 @@ using System.Text;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Connection;
 
-public class JoinDataPacketHandler : IPacketHandler<PlayerJoinDataPacket>
+public class JoinDataPacketHandler(MtaServer mtaServer, IBanRepository banRepository) : IPacketHandler<PlayerJoinDataPacket>
 {
-    private readonly MtaServer mtaServer;
-    private readonly IBanRepository banRepository;
-
     public PacketId PacketId => PacketId.PACKET_ID_PLAYER_JOINDATA;
-
-    public JoinDataPacketHandler(MtaServer mtaServer, IBanRepository banRepository)
-    {
-        this.mtaServer = mtaServer;
-        this.banRepository = banRepository;
-    }
 
     public void HandlePacket(IClient client, PlayerJoinDataPacket packet)
     {
-        if (this.mtaServer.Password != null)
+        if (mtaServer.Password != null)
         {
-            var hash = MD5.HashData(Encoding.ASCII.GetBytes(this.mtaServer.Password));
+            var hash = MD5.HashData(Encoding.ASCII.GetBytes(mtaServer.Password));
             if (!hash.SequenceEqual(packet.Password))
             {
                 client.SendPacket(new PlayerDisconnectPacket(PlayerDisconnectType.INVALID_PASSWORD));
@@ -38,7 +29,7 @@ public class JoinDataPacketHandler : IPacketHandler<PlayerJoinDataPacket>
 
         client.FetchSerial();
         client.FetchIp();
-        if (this.banRepository.IsIpOrSerialBanned(client.Serial, client.IPAddress, out var ban))
+        if (banRepository.IsIpOrSerialBanned(client.Serial, client.IPAddress, out var ban))
         {
             var reason = ban?.Serial != null ? PlayerDisconnectType.BANNED_SERIAL : PlayerDisconnectType.BANNED_IP;
             client.SendPacket(new PlayerDisconnectPacket(reason, $"{ban?.Reason ?? "Unknown"}"));
@@ -53,7 +44,7 @@ public class JoinDataPacketHandler : IPacketHandler<PlayerJoinDataPacket>
             RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "Linux" :
             RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD) ? "Free BSD" :
             "Unknown";
-        client.SendPacket(new JoinCompletePacket($"Slipe Server 0.1.0 [{osName} {RuntimeInformation.ProcessArchitecture}]", "1.6.0-9.0.0"));
+        client.SendPacket(new JoinCompletePacket($"Slipe Server 0.1.0 [{osName} {RuntimeInformation.ProcessArchitecture}]", "1.7.0-9.0.0"));
 
         client.Player.RunAsSync(() =>
         {

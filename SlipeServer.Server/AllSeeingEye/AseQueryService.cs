@@ -15,7 +15,7 @@ namespace SlipeServer.Server.AllSeeingEye;
 /// </summary>
 public class AseQueryService(MtaServer mtaServer, Configuration configuration, IElementCollection elementCollection) : IAseQueryService
 {
-    private readonly AseVersion aseVersion = AseVersion.v1_6;
+    private readonly AseVersion aseVersion = AseVersion.v1_7;
     private readonly Dictionary<string, string> rules = [];
 
     public bool ShowPlayers { get; set; } = true;
@@ -125,7 +125,7 @@ public class AseQueryService(MtaServer mtaServer, Configuration configuration, I
             .Select(o => o.Name.StripColorCode())
             .ToList();
 
-        var aseVersion = GetVersion(version == VersionType.Release ? this.aseVersion : AseVersion.v1_6n);
+        var aseVersion = GetVersion(version == VersionType.Release ? this.aseVersion : AseVersion.v1_7n);
         var playerCount = playerNames.Count;
 
         var strPlayerCount = $"{playerCount} / {configuration.MaxPlayerCount}";
@@ -202,6 +202,8 @@ public class AseQueryService(MtaServer mtaServer, Configuration configuration, I
         {
             AseVersion.v1_6 => "1.6",
             AseVersion.v1_6n => "1.6n",
+            AseVersion.v1_7 => "1.7",
+            AseVersion.v1_7n => "1.7n",
             _ => throw new NotImplementedException(this.aseVersion.ToString()),
         };
     }
