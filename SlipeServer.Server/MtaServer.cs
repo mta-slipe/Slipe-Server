@@ -596,6 +596,8 @@ public class MtaServer
                 client.Player.TriggerDisconnected(quitReason);
                 client.SetDisconnected();
                 this.clients[netWrapper].Remove(binaryAddress);
+
+                this.elementCollection.Remove(client.Player);
             }
         }
     }
@@ -725,6 +727,8 @@ public class MtaServer
 /// <typeparam name="TPlayer">The player type</typeparam>
 public abstract class MtaServer<TPlayer> : MtaServer where TPlayer : Player
 {
+    public new IEnumerable<TPlayer> Players => this.elementCollection.GetByType<TPlayer>();
+
     public MtaServer(IServiceProvider serviceProvider, Action<ServerBuilder> builderAction) : base(serviceProvider, builderAction) { }
 
     public MtaServer(Action<ServerBuilder> builderAction) : base(builderAction) { }
