@@ -5,6 +5,15 @@
 #pragma warning(disable:4996)
 #endif
 
+// Debug logging - Set to 0 to disable all debug output
+#define DEBUG_LOGGING 0
+
+#if DEBUG_LOGGING
+#define Log(x) std::cout << x
+#else
+#define Log(x)
+#endif
+
 bool staticPacketHandler(unsigned char ucPacketID, const NetServerPlayerID& Socket, NetBitStreamInterface* pBitStream, SNetExtraInfo* pNetExtraInfo)
 {
     return NetWrapper::getNetWrapper(Socket)->packetHandler(ucPacketID, Socket, pBitStream, pNetExtraInfo);
@@ -127,9 +136,12 @@ std::string NetWrapper::getIPAddress(uint64 address) {
 }
 
 void NetWrapper::testMethod() {
-    NetBitStreamInterface* bitStream = network->AllocateNetServerBitStream(0);
+   NetBitStreamInterface* bitStream = network->AllocateNetServerBitStream(0);
+    Log("Bitstream allocated\n");
     if (bitStream)
     {
+        Log("Bitstream truthy\n");
+
         //bitStream->WriteCompressed((ulong)0);
         //bitStream->WriteNormVector(0.5, 0.5, 0.5);
         //bitStream->Write(128.56f);
@@ -137,17 +149,22 @@ void NetWrapper::testMethod() {
 
         int bitCount = bitStream->GetNumberOfBitsUsed();
 
+        Log("Bitstream number of bits used " << bitCount << "\n");
+
         bitStream->ResetReadPointer();
+        Log("Bitstream read pointer reset\n");
 
         for (int i = 0; i < bitCount; i++)
-            std::cout << (i % 8 == 0 ? ", 0b" : "") << bitStream->ReadBit();
+            Log((i % 8 == 0 ? ", 0b" : "") << bitStream->ReadBit());
 
+		Log("Bitstream read complete\n");
         network->DeallocateNetServerBitStream(bitStream);
+        Log("Bitstream de-allocating\n");
     }
 }
 
 int NetWrapper::init(const char* netDllFilePath, const char* idFile, const char* ip, unsigned short port,
-    unsigned int playerCount, const char* serverName, PacketCallback callback)
+    unsigned int playerCount, const char* serverName, PacketCallback callback, unsigned long expectedVersion, unsigned long expectedVersionType)
 {
     registeredCallback = callback;
 
@@ -165,12 +182,13 @@ int NetWrapper::init(const char* netDllFilePath, const char* idFile, const char*
     {
         return -1002;
     }
-    if (!isCompatible(0x0AB, (unsigned long*)0x09)) {
+
+    if (!isCompatible(expectedVersion, (unsigned long*)expectedVersionType)) {
 
         ulong actualVersion = 0;
-        if (isCompatible)
-            isCompatible(1, &actualVersion);
+        isCompatible(1, &actualVersion);
 
+		Log("Version mismatch on " << netDllFilePath << ", expected " << std::hex << expectedVersion << " but got " << actualVersion << std::dec << std::endl);
         return -1003;
     }
 
@@ -180,23 +198,36 @@ int NetWrapper::init(const char* netDllFilePath, const char* idFile, const char*
     {
         return -1004;
     }
-    ;
 
+    Log("Initting\n");
     this->network = pfnInitNetServerInterface();
+    Log("Initted\n");
 
 
     if (!this->network->InitServerId("server-id.keys")) {
         return -1005;
     }
+    Log("Initted ID\n");
+
     this->network->RegisterPacketHandler(staticPacketHandler);
+    Log("Handler registered\n");
     if (!this->network->StartNetwork(ip, port, playerCount, serverName)) {
         return -1006;
     }
+    Log("Network started\n");
 
-    testMethod();
+    try {
+        testMethod();
+        Log("Test method called\n");
+    }
+    catch (std::exception e) {
+        return -1007;
+    }
 
     binThread = std::thread(&NetWrapper::binPulseLoop, this);
+    Log("Thread started\n");
     SetChecks("12=&14=&15=&16=&20=&22=&23=&28=&31=&32=&33=&34=&35=&36=", "", "", 0, 0, "none");
+    Log("Checks set\n");
     return 0;
 }
 

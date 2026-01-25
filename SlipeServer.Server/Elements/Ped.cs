@@ -312,6 +312,20 @@ public class Ped : Element
         }
     }
 
+    public PedAnimation CurrentAnimation
+    {
+        get => field;
+        set
+        {
+            if (field == value)
+                return;
+
+            var args = new ElementChangedEventArgs<Ped, PedAnimation?>(this, field, value, this.IsSync);
+            field = value;
+            PedAnimationChanged?.Invoke(this, args);
+        }
+    }
+
     private readonly Dictionary<PedStat, float> stats;
 
 
@@ -527,6 +541,7 @@ public class Ped : Element
     public event ElementChangedEventHandler<Ped, Vehicle?>? JackingVehicleChanged;
     public event ElementChangedEventHandler<Ped, Vehicle?>? VehicleChanged;
     public event ElementChangedEventHandler<Ped, Vehicle?>? EnteringVehicleChanged;
+    public event ElementChangedEventHandler<Ped, PedAnimation?>? PedAnimationChanged;
     public event ElementEventHandler<Ped, PedStatChangedEventArgs>? StatChanged;
     public event ElementEventHandler<Ped, WeaponReceivedEventArgs>? WeaponReceived;
     public event ElementEventHandler<Ped, WeaponRemovedEventArgs>? WeaponRemoved;
@@ -538,4 +553,7 @@ public class Ped : Element
     public event ElementEventHandler<Ped, EventArgs>? WeaponReloaded;
     public event ElementEventHandler<Ped, PedWeaponOrAmmoChangedEventArgs>? WeaponOrAmmoChanged;
     public event ElementEventHandler<Ped, ClothingChangedEventArgs>? ClothingChanged;
+
+    public record PedAnimation(string BlockName, string AnimationName, int Time, bool IsLooped, bool UpdatesPosition, bool IsInterruptable, bool FreezesLastFrame, int BlendTime, bool RestoresTask, float ElapsedTime, float Speed);
+
 }

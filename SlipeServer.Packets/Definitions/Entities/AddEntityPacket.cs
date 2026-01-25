@@ -69,7 +69,7 @@ public sealed class AddEntityPacket : Packet
         byte timeContext, Vector3 position, Vector3 rotation, ushort model,
         byte alpha, bool isLowLod, ElementId? lowLodElementId, bool isDoubleSided, bool isBreakable,
         bool isVisibleInAllDimensions, PositionRotationAnimation? positionRotationAnimation,
-        Vector3 scale, bool isFrozen, float health
+        Vector3 scale, bool isFrozen, float health, bool isBroken, bool isRespawnable
     )
     {
         AddEntity(
@@ -110,6 +110,9 @@ public sealed class AddEntityPacket : Packet
 
         this.builder.Write(isFrozen);
         this.builder.WriteFloatFromBits(health, 11, 0, 1023.5f, true);
+
+        this.builder.Write(isBroken);
+        this.builder.Write(isRespawnable);
     }
 
     private void WritePositionRotationAnimation(PositionRotationAnimation positionRotationAnimation, bool resumeMode = true)
@@ -165,7 +168,7 @@ public sealed class AddEntityPacket : Packet
         bool instantReload, bool shootIfTargetBlocked, bool shootIfTargetOutOfRange,
         bool checkBuildings, bool checkCarTires, bool checkDummies, bool checkObjects,
         bool checkPeds, bool checkVehicles, bool ignoreSomeObjectForCamera, bool seeThroughStuff,
-        bool shootThroughStuff, byte weaponState, ushort ammo, ushort clipAmmo, ElementId ownerId
+        bool shootThroughStuff, byte weaponState, ushort ammo, ushort clipAmmo, ElementId ownerId, bool isBroken, bool isRespawnable
     )
     {
         AddObject(
@@ -174,7 +177,7 @@ public sealed class AddEntityPacket : Packet
             isCallPropagationEnabled, customData, name, timeContext,
             position, rotation, model, alpha, isLowLod,
             lowLodElementId, isDoubleSided, isBreakable, isVisibleInAllDimensions,
-            positionRotationAnimation, scale, isFrozen, health
+            positionRotationAnimation, scale, isFrozen, health, isBroken, isRespawnable
         );
 
         this.builder.WriteCapped(targetType, 3);
@@ -454,7 +457,8 @@ public sealed class AddEntityPacket : Packet
         ushort dimension, ElementAttachment? attachment, bool areCollisionsEnabled,
         bool isCallPropagationEnabled, CustomData customData, string name,
         byte timeContext, Vector3 position, byte markerType, float size,
-        Color color, Vector3? targetPosition
+        Color color, Vector3? targetPosition, Color? targetArrowColor, float? targetArrowSize,
+        bool ignoreAlphaLimits
     )
     {
         AddEntity(
@@ -475,7 +479,15 @@ public sealed class AddEntityPacket : Packet
             {
                 this.builder.WriteVector3WithZAsFloat(targetPosition.Value);
             }
+
+            if (markerType == 0)
+            {
+                this.builder.Write(targetArrowColor ?? Color.White, true);
+                this.builder.Write(targetArrowSize ?? 0.625f);
+            }
         }
+        
+        this.builder.Write(ignoreAlphaLimits);
     }
 
     public void AddBlip(
@@ -553,7 +565,7 @@ public sealed class AddEntityPacket : Packet
         float health, float armor, ElementId? vehicleId, byte? seat,
         bool hasJetpack, bool isSyncable, bool isHeadless, bool isFrozen,
         byte alpha, byte moveAnimation, PedClothing[] clothes,
-        PedWeapon[] weapons, byte currentSlot
+        PedWeapon[] weapons, byte currentSlot, PedAnimationData? animation
     )
     {
         AddEntity(
@@ -600,7 +612,25 @@ public sealed class AddEntityPacket : Packet
 
         this.builder.Write((byte)0xFF);
         this.builder.Write(currentSlot);
+
+        this.builder.Write(animation != null);
+        if (animation != null)
+        {
+            this.builder.Write(animation.BlockName);
+            this.builder.Write(animation.AnimationName);
+            this.builder.Write(animation.Time);
+            this.builder.Write(animation.IsLooped);
+            this.builder.Write(animation.UpdatesPosition);
+            this.builder.Write(animation.IsInterruptable);
+            this.builder.Write(animation.FreezesLastFrame);
+            this.builder.Write(animation.BlendTime);
+            this.builder.Write(animation.RestoresTask);
+            this.builder.Write(animation.ElapsedTime);
+            this.builder.Write(animation.Speed);
+        }
     }
+
+    public record PedAnimationData(string BlockName, string AnimationName, int Time, bool IsLooped, bool UpdatesPosition, bool IsInterruptable, bool FreezesLastFrame, int BlendTime, bool RestoresTask, float ElapsedTime, float Speed);
 
     public void AddDummy(
         ElementId elementId, byte elementType, ElementId? parentId, byte interior,

@@ -34,7 +34,8 @@ public class AddEntityPacketBuilder
         this.packet.AddObject(element.Id, (byte)element.ElementType, element.Parent?.Id ?? ElementId.Zero, element.Interior, element.Dimension,
             element.Attachment, element.AreCollisionsEnabled, element.IsCallPropagationEnabled, element.BroadcastableElementData, element.Name, element.TimeContext,
             element.Position, element.Rotation, element.Model, element.Alpha, element.IsLowLod, element.LowLodElement?.Id,
-            element.DoubleSided, element.IsBreakable, element.IsVisibleInAllDimensions, element.Movement, element.Scale, element.IsFrozen, element.Health
+            element.DoubleSided, element.IsBreakable, element.IsVisibleInAllDimensions, element.Movement, element.Scale, element.IsFrozen, element.Health,
+            element.IsBroken, element.IsRespawnable
         );
     }
 
@@ -101,7 +102,7 @@ public class AddEntityPacketBuilder
     {
         this.packet.AddMarker(element.Id, (byte)element.ElementType, element.Parent?.Id ?? ElementId.Zero, element.Interior, element.Dimension,
             element.Attachment, element.AreCollisionsEnabled, element.IsCallPropagationEnabled, element.BroadcastableElementData, element.Name, element.TimeContext,
-            element.Position, (byte)element.MarkerType, element.Size, element.Color, element.TargetPosition
+            element.Position, (byte)element.MarkerType, element.Size, element.Color, element.TargetPosition, element.TargetArrowColor, element.TargetArrowSize, element.IgnoreAlphaLimits
         );
     }
 
@@ -111,7 +112,11 @@ public class AddEntityPacketBuilder
             element.Attachment, element.AreCollisionsEnabled, element.IsCallPropagationEnabled, element.BroadcastableElementData, element.Name, element.TimeContext,
             element.Position, element.Model, element.PedRotation, element.Health, element.Armor, element.Vehicle?.Id, element.Seat,
             element.HasJetpack, element.IsSyncable, element.IsHeadless, element.IsFrozen, element.Alpha, (byte)element.MoveAnimation,
-            element.Clothing.GetClothing().ToArray(), element.Weapons.Select(x => (PedWeapon)x).ToArray(), (byte)(element.CurrentWeapon?.Slot ?? 0)
+            element.Clothing.GetClothing().ToArray(), element.Weapons.Select(x => (PedWeapon)x).ToArray(), (byte)(element.CurrentWeapon?.Slot ?? 0),
+            element.CurrentAnimation == null ? null : 
+                new (element.CurrentAnimation.BlockName, element.CurrentAnimation.AnimationName, element.CurrentAnimation.Time, element.CurrentAnimation.IsLooped, element.CurrentAnimation.UpdatesPosition, 
+                    element.CurrentAnimation.IsInterruptable, element.CurrentAnimation.FreezesLastFrame, element.CurrentAnimation.BlendTime, element.CurrentAnimation.RestoresTask, 
+                    element.CurrentAnimation.ElapsedTime, element.CurrentAnimation.Speed)
         );
     }
 
@@ -220,7 +225,8 @@ public class AddEntityPacketBuilder
             element.DamagePerHit, element.Accuracy, element.TargetRange, element.WeaponRange, element.DisableWeaponModel, element.InstantReload,
             element.ShootIfTargetBlocked, element.ShootIfTargetOutOfRange, element.CheckBuildings, element.CheckCarTires, element.CheckDummies,
             element.CheckObjects, element.CheckPeds, element.CheckVehicles, element.IgnoreSomeObjectForCamera, element.SeeThroughStuff,
-            element.ShootThroughStuff, (byte)element.WeaponState, element.Ammo, element.ClipAmmo, element.Owner?.Id ?? (ElementId)PacketConstants.InvalidElementId
+            element.ShootThroughStuff, (byte)element.WeaponState, element.Ammo, element.ClipAmmo, element.Owner?.Id ?? (ElementId)PacketConstants.InvalidElementId,
+            element.IsBroken, element.IsRespawnable
         );
     }
 

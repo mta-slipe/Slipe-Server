@@ -170,9 +170,10 @@ public static class DefaultServerBuilderExtensions
             "net",
             builder.Configuration.Host,
             builder.Configuration.Port,
-            builder.Configuration.AntiCheat);
+            0xAB,
+            antiCheatConfiguration: builder.Configuration.AntiCheat);
 
         if (builder.Configuration.DebugPort.HasValue && !Environment.Is64BitProcess)
-            builder.AddNetWrapper(dllPath: "net_d", port: builder.Configuration.DebugPort.Value);
+            builder.AddNetWrapper(dllPath: "net_d", port: builder.Configuration.DebugPort.Value, expectedVersion: 0xAB, expectedVersionType: 0x09);
     }
 }

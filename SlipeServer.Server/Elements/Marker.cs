@@ -89,6 +89,46 @@ public class Marker : Element
         }
     }
 
+    public Color? TargetArrowColor
+    {
+        get => field;
+        set
+        {
+            if (field == value)
+                return;
+
+            var args = new ElementChangedEventArgs<Marker, Color?>(this, field, value, this.IsSync);
+            field = value;
+            TargetArrowColorChanged?.Invoke(this, args);
+        }
+    }
+
+    public float TargetArrowSize
+    {
+        get => field;
+        set
+        {
+            if (field == value)
+                return;
+            var args = new ElementChangedEventArgs<Marker, float?>(this, field, value, this.IsSync);
+            field = value;
+            TargetArrowSizeChanged?.Invoke(this, args);
+        }
+    }
+
+    public bool IgnoreAlphaLimits
+    {
+        get => field;
+        set
+        {
+            if (field == value)
+                return;
+            var args = new ElementChangedEventArgs<Marker, bool>(this, field, value, this.IsSync);
+            field = value;
+            IgnoreAlphaLimitsChanged?.Invoke(this, args);
+        }
+    }
+
     public Marker(Vector3 position, MarkerType markerType)
     {
         this.Position = position;
@@ -106,4 +146,7 @@ public class Marker : Element
     public event ElementChangedEventHandler<Marker, float>? SizeChanged;
     public event ElementChangedEventHandler<Marker, Color>? ColorChanged;
     public event ElementChangedEventHandler<Marker, Vector3?>? TargetPositionChanged;
+    public event ElementChangedEventHandler<Marker, Color?>? TargetArrowColorChanged;
+    public event ElementChangedEventHandler<Marker, float?>? TargetArrowSizeChanged;
+    public event ElementChangedEventHandler<Marker, bool>? IgnoreAlphaLimitsChanged;
 }

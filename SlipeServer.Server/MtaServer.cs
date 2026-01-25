@@ -209,9 +209,9 @@ public class MtaServer
     /// <param name="port">UDP port for incoming traffic to the server, this is what port players connect to</param>
     /// <param name="configuration">anti cheat configuration to apply on this networking interface</param>
     /// <returns></returns>
-    public INetWrapper AddNetWrapper(string directory, string netDllPath, string host, ushort port, AntiCheatConfiguration? configuration = null)
+    public INetWrapper AddNetWrapper(string directory, string netDllPath, string host, ushort port, uint expectedVersion, uint expectedVersionType = 0x09, AntiCheatConfiguration? configuration = null)
     {
-        var wrapper = CreateNetWrapper(directory, netDllPath, host, port);
+        var wrapper = CreateNetWrapper(directory, netDllPath, host, port, expectedVersion, expectedVersionType);
         this.netWrappers.Add(wrapper);
 
         ConfigureAntiCheat(wrapper, configuration ?? new AntiCheatConfiguration());
@@ -544,9 +544,9 @@ public class MtaServer
         dependencyCallback?.Invoke(this.serviceCollection);
     }
 
-    private INetWrapper CreateNetWrapper(String directory, String netDllPath, String host, UInt16 port)
+    private INetWrapper CreateNetWrapper(string directory, string netDllPath, string host, ushort port, uint expectedVersion, uint expectedVersionType = 0x09)
     {
-        INetWrapper netWrapper = new NetWrapper(directory, netDllPath, host, port);
+        INetWrapper netWrapper = new NetWrapper(directory, netDllPath, host, port, expectedVersion, expectedVersionType);
         RegisterNetWrapper(netWrapper);
         return netWrapper;
     }

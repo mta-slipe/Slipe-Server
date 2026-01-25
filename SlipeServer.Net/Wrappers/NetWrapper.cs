@@ -22,7 +22,7 @@ public class NetWrapper : IDisposable, INetWrapper
 
 #pragma warning disable CA2101 // Specify marshaling for P/Invoke string arguments
     [DllImport(wrapperDllpath, EntryPoint = "initNetWrapper", CallingConvention = CallingConvention.StdCall)]
-    private static extern int InitNetWrapper(string path, string idFile, string ip, ushort port, uint playerCount, string serverName, PacketCallback callback);
+    private static extern int InitNetWrapper(string path, string idFile, string ip, ushort port, uint playerCount, string serverName, PacketCallback callback, uint expectedVersion, uint expectedVersionType);
 
     [DllImport(wrapperDllpath, EntryPoint = "destroyNetWrapper", CallingConvention = CallingConvention.StdCall)]
     private static extern void DestroyNetWrapper(ushort id);
@@ -62,7 +62,7 @@ public class NetWrapper : IDisposable, INetWrapper
     private readonly PacketCallback packetInterceptorDelegate;
     private readonly ushort id;
 
-    public NetWrapper(string directory, string netDllPath, string host, ushort port)
+    public NetWrapper(string directory, string netDllPath, string host, ushort port, uint expectedVersion, uint expectedVersionType = 0x09)
     {
         string idFile = Path.Join(directory, "id");
         Directory.SetCurrentDirectory(directory);
@@ -70,7 +70,7 @@ public class NetWrapper : IDisposable, INetWrapper
             throw new FileNotFoundException($"File {netDllPath} not found in {directory}.", netDllPath);
 
         this.packetInterceptorDelegate = PacketInterceptor;
-        int result = InitNetWrapper(Path.Join(directory, netDllPath), idFile, host, port, 1024, "C# server", this.packetInterceptorDelegate);
+        int result = InitNetWrapper(Path.Join(directory, netDllPath), idFile, host, port, 1024, "C# server", this.packetInterceptorDelegate, expectedVersion, expectedVersionType);
 
         if (result < 0)
         {

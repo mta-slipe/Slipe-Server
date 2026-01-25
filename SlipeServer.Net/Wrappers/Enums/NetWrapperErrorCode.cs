@@ -8,5 +8,6 @@ public enum NetWrapperErrorCode
     IsIncompatible = -1003,
     InterfaceUnavailable = -1004,
     UnableToInit = -1005,
-    UnableToStart = -1006
+    UnableToStart = -1006,
+    TestMethodFailed = -1007,
 }

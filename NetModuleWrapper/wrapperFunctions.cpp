@@ -47,10 +47,14 @@ EXPORT void __stdcall resendPlayerACInfo(ushort id, uint64 address)
 }
 
 EXPORT int __stdcall initNetWrapper(const char* netDllFilePath, const char* idFile, const char* ip, unsigned short port,
-    unsigned int playerCount, const char* serverName, PacketCallback callback)
+    unsigned int playerCount, const char* serverName, PacketCallback callback, unsigned long expectedVersion, unsigned long expectedVersionType)
 {
     NetWrapper* wrapper = new NetWrapper();
-    wrapper->init(netDllFilePath, idFile, ip, port, playerCount, serverName, callback);
+    int result = wrapper->init(netDllFilePath, idFile, ip, port, playerCount, serverName, callback, expectedVersion, expectedVersionType);
+    if (result != 0) {
+		delete wrapper;
+        return result;
+    }
     uint16_t id = wrapper->getId();
 
     return (int)id;

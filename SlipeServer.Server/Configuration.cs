@@ -102,7 +102,7 @@ public class Configuration
     /// Bitstream version used by the server.
     /// Only needs editing if you implement additional packet handling / packet changes that were implemented in a newer version of MTA
     /// </summary>
-    public ushort BitStreamVersion { get; set; } = 119;
+    public ushort BitStreamVersion { get; set; } = 144;
 
     /// <summary>
     /// Sets whether voice chat is enabled
@@ -117,7 +117,7 @@ public class Configuration
     /// <summary>
     /// Minimum version for connecting clients
     /// </summary>
-    public Version MinVersion { get; set; } = new Version(1, 5, 8);
+    public string MinVersion { get; set; } = "1.6.0-9.23779";
 
     /// <summary>
     /// Weapon ids that will triggered bullet sync packets to be sent to the server.

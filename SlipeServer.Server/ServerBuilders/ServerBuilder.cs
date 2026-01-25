@@ -183,6 +183,8 @@ public class ServerBuilder
         string dllPath = "net",
         string? host = null,
         ushort? port = null,
+        uint expectedVersion = 0xAD,
+        uint expectedVersionType = 0x09,
         AntiCheatConfiguration? antiCheatConfiguration = null)
     {
         AddBuildStep(server => server.AddNetWrapper(
@@ -190,6 +192,8 @@ public class ServerBuilder
             Path.GetFileNameWithoutExtension(dllPath) + (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".dll" : ".so"),
             host ?? this.Configuration.Host,
             port ?? this.Configuration.Port,
+            expectedVersion,
+            expectedVersionType,
             antiCheatConfiguration
         ));
     }

@@ -34,6 +34,8 @@ public class WorldObject : Element
     public WorldObject? LowLodElement { get; set; }
     public bool DoubleSided { get; set; } = false;
     public bool IsBreakable { get; set; } = false;
+    public bool IsBroken { get; set; } = false;
+    public bool IsRespawnable { get; set; } = false;
 
     private readonly object movementLock = new();
     public PositionRotationAnimation? Movement { get; private set; }

@@ -142,10 +142,10 @@ public static class PlayerPacketFactory
         return new ChangeNicknamePacket(player.Id, player.Name);
     }
 
-    public static UpdateInfoPacket CreateUpdateInfoPacket(Version version, bool mandatory = true)
+    public static UpdateInfoPacket CreateUpdateInfoPacket(string version, bool mandatory = true)
     {
         if (mandatory)
-            return new UpdateInfoPacket("Mandatory", version.ToString());
-        return new UpdateInfoPacket("Optional", version.ToString());
+            return new UpdateInfoPacket("Mandatory", version);
+        return new UpdateInfoPacket("Optional", version);
     }
 }

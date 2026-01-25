@@ -20,6 +20,7 @@ public sealed class PlayerPureSyncPacket : Packet
     public ushort Latency { get; set; }
     public FullKeySyncStructure KeySync { get; set; } = new FullKeySyncStructure();
     public PlayerPureSyncFlagsStructure SyncFlags { get; set; } = new PlayerPureSyncFlagsStructure();
+    public bool IsReloadingWeapon { get; set; }
     public ElementId ContactElementId { get; set; }
     public Vector3 Position { get; set; }
     public float Rotation { get; set; }
@@ -59,6 +60,7 @@ public sealed class PlayerPureSyncPacket : Packet
 
         this.KeySync.Read(reader);
         this.SyncFlags.Read(reader);
+        this.IsReloadingWeapon = reader.GetBit();
         if (this.SyncFlags.HasContact)
         {
             this.ContactElementId = reader.GetElementId();
@@ -119,6 +121,7 @@ public sealed class PlayerPureSyncPacket : Packet
 
         this.KeySync.Write(builder);
         this.SyncFlags.Write(builder);
+        builder.Write(this.IsReloadingWeapon);
         if (this.SyncFlags.HasContact)
         {
             builder.Write(this.ContactElementId);

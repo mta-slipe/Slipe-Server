@@ -122,18 +122,22 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
     {
         var players = this.elementCollection.GetByType<Elements.Player>(ElementType.Player);
 
-        var isVersionValid = Version.TryParse(string.Join(".", client.Version!.Replace("-", ".").Split(".").Take(4)), out Version? result);
+        var isVersionValid = TryParseVersionString(client.Version![..^2], out var version);
         if (!isVersionValid)
         {
             client.Player.Kick(PlayerDisconnectType.BAD_VERSION);
             return;
         }
 
-        if (result < this.configuration.MinVersion)
+        if (TryParseVersionString(this.configuration.MinVersion, out var parsedMinVersion))
         {
-            client.SendPacket(PlayerPacketFactory.CreateUpdateInfoPacket(this.configuration.MinVersion));
-            client.Player.Kick($"Disconnected: Minimum mta version required: {this.configuration.MinVersion}");
-            return;
+            if (version < parsedMinVersion)
+            {
+
+                client.SendPacket(PlayerPacketFactory.CreateUpdateInfoPacket(this.configuration.MinVersion, true));
+                client.Player.Kick($"Disconnected: Minimum mta version required: {this.configuration.MinVersion}");
+                return;
+            }
         }
 
         client.SendPacket(new JoinedGamePacket(
@@ -147,6 +151,15 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
             1,
             isVoiceEnabled: this.configuration.IsVoiceEnabled
         ));
+    }
+
+    private bool TryParseVersionString(string input, out Version? result)
+    {
+        var splits = input.Split('-');
+        var majorMinorPatch = splits[0];
+        var revision = splits[1].Replace(".", "");
+
+        return Version.TryParse($"{majorMinorPatch}.{revision}", out result);
     }
 
     private void HandlePlayerWeapon(IClient client, RpcPacket packet)

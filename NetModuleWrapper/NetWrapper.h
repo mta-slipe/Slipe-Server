@@ -66,7 +66,7 @@ public:
     void resendACPackets(uint64 address);
     void getClientSerialAndVersion(uint64 address, char* serial, char* extra, char* version);
     std::string getIPAddress(uint64 address);
-    int init(const char* netDllFilePath, const char* idFile, const char* ip, unsigned short port, unsigned int playerCount, const char* serverName, PacketCallback callback);
+    int init(const char* netDllFilePath, const char* idFile, const char* ip, unsigned short port, unsigned int playerCount, const char* serverName, PacketCallback callback, unsigned long expectedVersion, unsigned long expectedVersionType);
     void start();
     void stop();
     bool isValidSocket(NetServerPlayerID id);

@@ -9,4 +9,5 @@ public enum PedSyncFlags
     Armor = 0x10,
     IsOnFire = 0x20,
     IsInWater = 0x40,
+    IsReloading = 0x60,
 }
