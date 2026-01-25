@@ -41,12 +41,12 @@ public class ConsoleLogger : ILogger
         [LogLevel.None] = new Tuple<ConsoleColor, string>(ConsoleColor.White, "        "),
     };
     private readonly IElementCollection elementCollection;
-    private readonly DebugLog debugLog;
+    private readonly IDebugLog debugLog;
     private string prefix;
 
     private readonly ConcurrentQueue<Action> logActions;
 
-    public ConsoleLogger(IElementCollection elementCollection, DebugLog debugLog)
+    public ConsoleLogger(IElementCollection elementCollection, IDebugLog debugLog)
     {
         this.elementCollection = elementCollection;
         this.debugLog = debugLog;

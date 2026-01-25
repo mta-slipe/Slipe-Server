@@ -30,6 +30,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Numerics;
 using System.Text;
 using System.Text.Json;
@@ -50,19 +51,19 @@ public class ServerTestLogic
     private readonly MtaServer<CustomPlayer> server;
     private readonly IElementCollection elementCollection;
     private readonly RootElement root;
-    private readonly GameWorld worldService;
-    private readonly DebugLog debugLog;
+    private readonly IGameWorld worldService;
+    private readonly IDebugLog debugLog;
     private readonly ILogger logger;
-    private readonly ChatBox chatBox;
-    private readonly ClientConsole console;
-    private readonly LuaEventService luaService;
-    private readonly ExplosionService explosionService;
-    private readonly FireService fireService;
-    private readonly TextItemService textItemService;
+    private readonly IChatBox chatBox;
+    private readonly IClientConsole console;
+    private readonly ILuaEventService luaService;
+    private readonly IExplosionService explosionService;
+    private readonly IFireService fireService;
+    private readonly ITextItemService textItemService;
     private readonly IResourceProvider resourceProvider;
-    private readonly CommandService commandService;
-    private readonly WeaponConfigurationService weaponConfigurationService;
-    private readonly GameWorld gameWorld;
+    private readonly ICommandService commandService;
+    private readonly IWeaponConfigurationService weaponConfigurationService;
+    private readonly IGameWorld gameWorld;
     private readonly IElementIdGenerator elementIdGenerator;
     private Resource? testResource;
     private Resource? secondTestResource;
@@ -102,20 +103,21 @@ public class ServerTestLogic
         MtaServer<CustomPlayer> server,
         IElementCollection elementCollection,
         RootElement root,
-        GameWorld world,
-        DebugLog debugLog,
+        IGameWorld world,
+        IDebugLog debugLog,
         ILogger logger,
-        ChatBox chatBox,
-        ClientConsole console,
-        LuaEventService luaService,
-        ExplosionService explosionService,
-        FireService fireService,
-        TextItemService textItemService,
+        IChatBox chatBox,
+        IClientConsole console,
+        ILuaEventService luaService,
+        IExplosionService explosionService,
+        IFireService fireService,
+        ITextItemService textItemService,
         IResourceProvider resourceProvider,
-        CommandService commandService,
-        WeaponConfigurationService weaponConfigurationService,
-        GameWorld gameWorld,
-        IElementIdGenerator elementIdGenerator
+        ICommandService commandService,
+        IWeaponConfigurationService weaponConfigurationService,
+        IGameWorld gameWorld,
+        IElementIdGenerator elementIdGenerator,
+        IBanService banService
     )
     {
         this.server = server;
@@ -138,6 +140,8 @@ public class ServerTestLogic
 
         this.slipeDevsTeam = new Team("Slipe devs", Color.FromArgb(255, 255, 81, 81));
         this.SetupTestLogic();
+
+        banService.AddBan(null, IPAddress.Parse("100.100.100.100"), DateTime.UtcNow + TimeSpan.FromMinutes(5), "Test ban", "TestPlayer", "TestAdmin");
     }
 
     private void SetupTestLogic()

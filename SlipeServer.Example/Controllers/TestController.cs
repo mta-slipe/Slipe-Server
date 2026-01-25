@@ -1,13 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using SlipeServer.Example.Elements;
-using SlipeServer.Example.LuaValues;
-using SlipeServer.Example.Services;
+﻿using Microsoft.Extensions.Logging;
 using SlipeServer.LuaControllers;
 using SlipeServer.LuaControllers.Attributes;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Services;
-using System;
 using System.Numerics;
 
 namespace SlipeServer.Example.Controllers;
@@ -20,11 +15,11 @@ public class GenericDto<T> where T : class
 [LuaController("SlipeServer.Test.")]
 public class TestController : BaseLuaController<CustomPlayer>
 {
-    private readonly ChatBox chatBox;
+    private readonly IChatBox chatBox;
     private readonly TestService testService;
     private readonly ILogger logger;
 
-    public TestController(ChatBox chatBox, ILogger logger, TestService testService)
+    public TestController(IChatBox chatBox, ILogger logger, TestService testService)
     {
         this.chatBox = chatBox;
         this.testService = testService;

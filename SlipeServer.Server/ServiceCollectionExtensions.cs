@@ -55,6 +55,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IAseQueryService, AseQueryService>();
         services.AddSingleton(typeof(ISyncHandlerMiddleware<>), typeof(BasicSyncHandlerMiddleware<>));
 
+        // These are maintained for backwards compatibility, before the interfaces were defined
         services.AddSingleton<GameWorld>();
         services.AddSingleton<ChatBox>();
         services.AddSingleton<ClientConsole>();
@@ -69,6 +70,22 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<WeaponConfigurationService>();
         services.AddSingleton<CommandService>();
         services.AddSingleton<BanService>();
+
+        services.AddSingleton<IGameWorld, GameWorld>();
+        services.AddSingleton<IChatBox, ChatBox>();
+        services.AddSingleton<IClientConsole, ClientConsole>();
+        services.AddSingleton<IDebugLog, DebugLog>();
+        services.AddSingleton<IFromLuaValueMapper, FromLuaValueMapper>();
+        services.AddSingleton<ILuaValueMapper, LuaValueMapper>();
+        services.AddSingleton<ILuaEventService, LuaEventService>();
+        services.AddSingleton<ILatentPacketService, LatentPacketService>();
+        services.AddSingleton<IExplosionService, ExplosionService>();
+        services.AddSingleton<IFireService, FireService>();
+        services.AddSingleton<ITextItemService, TextItemService>();
+        services.AddSingleton<IWeaponConfigurationService, WeaponConfigurationService>();
+        services.AddSingleton<ICommandService, CommandService>();
+        services.AddSingleton<IBanService, BanService>();
+
         services.AddSingleton<ITimerService, TimerService>();
         services.TryAddSingleton<IBanRepository, JsonFileBanRepository>();
 

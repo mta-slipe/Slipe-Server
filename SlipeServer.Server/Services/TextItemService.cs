@@ -12,14 +12,9 @@ namespace SlipeServer.Server.Services;
 /// <summary>
 /// Allows you to create and delete text items to be displayed on a client's UI
 /// </summary>
-public class TextItemService
+public class TextItemService() : ITextItemService
 {
     private ulong textItemId;
-
-    public TextItemService()
-    {
-
-    }
 
     public TextItem CreateTextItemFor(
         IEnumerable<Player> players,

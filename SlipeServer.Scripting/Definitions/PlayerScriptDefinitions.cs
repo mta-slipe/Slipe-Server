@@ -10,7 +10,7 @@ using System.Numerics;
 
 namespace SlipeServer.Scripting.Definitions;
 
-public class PlayerScriptDefinitions(IElementCollection elementCollection, DebugLog debugLog)
+public class PlayerScriptDefinitions(IElementCollection elementCollection, IDebugLog debugLog)
 {
 
     [ScriptFunctionDefinition("getAlivePlayers")]

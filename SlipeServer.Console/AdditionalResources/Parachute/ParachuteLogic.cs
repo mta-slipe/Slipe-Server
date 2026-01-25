@@ -11,13 +11,13 @@ namespace SlipeServer.Console.AdditionalResources.Parachute;
 public class ParachuteLogic
 {
     private readonly MtaServer server;
-    private readonly LuaEventService luaEventService;
+    private readonly ILuaEventService luaEventService;
     private readonly ILogger logger;
     private readonly IElementCollection elementCollection;
     private readonly ParachuteResource resource;
 
     public ParachuteLogic(MtaServer server,
-        LuaEventService luaEventService,
+        ILuaEventService luaEventService,
         ILogger logger,
         IElementCollection elementCollection)
     {

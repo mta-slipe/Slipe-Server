@@ -6,18 +6,11 @@ namespace SlipeServer.Server.Services;
 /// <summary>
 /// Represents the F8 console on clients. 
 /// </summary>
-public class ClientConsole
+public class ClientConsole(MtaServer server) : IClientConsole
 {
-    private readonly MtaServer server;
-
-    public ClientConsole(MtaServer server)
-    {
-        this.server = server;
-    }
-
     public void Output(string message)
     {
-        this.server.BroadcastPacket(new ConsoleEchoPacket(message));
+        server.BroadcastPacket(new ConsoleEchoPacket(message));
     }
 
     public void OutputTo(Player player, string message)

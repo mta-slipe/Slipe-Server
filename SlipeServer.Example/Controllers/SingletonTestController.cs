@@ -11,18 +11,12 @@ namespace SlipeServer.Example.Controllers;
 [LuaController(usesScopedEvents: false)]
 public class SingletonTestController : BaseLuaController<CustomPlayer>
 {
-    private readonly ChatBox chatBox;
-    private readonly TestService testService;
     private readonly ILogger logger;
-    private readonly IServiceProvider serviceProvider;
     private readonly IServiceScope serviceScope;
 
-    public SingletonTestController(IServiceProvider serviceProvider, ChatBox chatBox, ILogger logger)
+    public SingletonTestController(IServiceProvider serviceProvider, ILogger logger)
     {
         this.serviceScope = serviceProvider.CreateScope();
-        this.serviceProvider = this.serviceScope.ServiceProvider;
-        this.chatBox = chatBox;
-        this.testService = this.serviceProvider.GetRequiredService<TestService>();
         this.logger = logger;
         this.logger.LogInformation("Instantiating {type}", typeof(SingletonTestController));
     }

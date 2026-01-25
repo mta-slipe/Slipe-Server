@@ -15,29 +15,25 @@ namespace SlipeServer.LuaControllers;
 public class LuaControllerLogic
 {
     private readonly MtaServer server;
-    private readonly LuaEventService luaEventService;
-    private readonly IElementCollection elementCollection;
-    private readonly LuaValueMapper luaValueMapper;
-    private readonly FromLuaValueMapper fromLuaValueMapper;
+    private readonly ILuaEventService luaEventService;
+    private readonly ILuaValueMapper luaValueMapper;
+    private readonly IFromLuaValueMapper fromLuaValueMapper;
     private readonly ITimerService timerService;
     private readonly IServiceProvider serviceProvider;
     private readonly ILogger logger;
-    private readonly Dictionary<string, List<BoundEvent>> handlers = new();
-    private readonly HashSet<object> timers = new();
+    private readonly Dictionary<string, List<BoundEvent>> handlers = [];
 
     public LuaControllerLogic(
         MtaServer server,
-        LuaEventService luaEventService,
-        IElementCollection elementCollection,
-        LuaValueMapper luaValueMapper,
-        FromLuaValueMapper fromLuaValueMapper,
+        ILuaEventService luaEventService,
+        ILuaValueMapper luaValueMapper,
+        IFromLuaValueMapper fromLuaValueMapper,
         ITimerService timerService,
         IServiceProvider serviceProvider,
         ILogger logger)
     {
         this.server = server;
         this.luaEventService = luaEventService;
-        this.elementCollection = elementCollection;
         this.luaValueMapper = luaValueMapper;
         this.fromLuaValueMapper = fromLuaValueMapper;
         this.timerService = timerService;

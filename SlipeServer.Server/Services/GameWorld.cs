@@ -13,6 +13,7 @@ using System.Drawing;
 using System.Numerics;
 using System.Threading;
 using System.Timers;
+using static SlipeServer.Server.Services.IGameWorld;
 using Timer = System.Timers.Timer;
 
 namespace SlipeServer.Server.Services;
@@ -21,7 +22,7 @@ namespace SlipeServer.Server.Services;
 /// Represents the ingame game world.
 /// This contains properties such as sky color, time, weather, traffic lights and more
 /// </summary>
-public class GameWorld
+public class GameWorld : IGameWorld
 {
     private readonly MtaServer server;
     private readonly Dictionary<GarageLocation, bool> garageStates;
@@ -575,28 +576,4 @@ public class GameWorld
     }
 
     #endregion
-
-    public enum WorldSpecialProperty
-    {
-        Hovercars,
-        Aircars,
-        ExtraBunny,
-        ExtraJump,
-        RandomFoliage,
-        SniperMoon,
-        ExtraAirResistance,
-        UnderWorldWarp,
-        VehicleSunGlare,
-        CoronaGlareDisabled,
-        WaterCreatures,
-        BurnFlippedCars,
-        FireBallAircraftDestruction,
-        RoadSignText,
-        ExtendedWaterCannons,
-        TunnelWeatherBlending,
-        IgnoreFireState,
-        FlyingComponents,
-        VehicleBurnExplosions,
-        VehicleEngineAutoStart
-    }
 }

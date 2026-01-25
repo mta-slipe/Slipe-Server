@@ -6,10 +6,10 @@ namespace SlipeServer.Example;
 
 public class ServerExampleLogic
 {
-    private readonly CommandService commandService;
-    private readonly ChatBox chatBox;
+    private readonly ICommandService commandService;
+    private readonly IChatBox chatBox;
 
-    public ServerExampleLogic(CommandService commandService, ChatBox chatBox, MtaServer mtaServer)
+    public ServerExampleLogic(ICommandService commandService, IChatBox chatBox, MtaServer mtaServer)
     {
         this.commandService = commandService;
         this.chatBox = chatBox;

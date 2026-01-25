@@ -9,19 +9,12 @@ namespace SlipeServer.Server.Services;
 /// <summary>
 /// Allows for the creation of fire
 /// </summary>
-public class FireService
+public class FireService(MtaServer server) : IFireService
 {
-    private readonly MtaServer server;
-
-    public FireService(MtaServer server)
-    {
-        this.server = server;
-    }
-
     public void CreateFire(Vector3 position, float size = 1.8f, Player? responsiblePlayer = null)
     {
         var packet = new FirePacket(position, size, responsiblePlayer?.Id, (ushort?)responsiblePlayer?.Client.Ping);
-        this.server.BroadcastPacket(packet);
+        server.BroadcastPacket(packet);
     }
 
     public void CreateFireFor(

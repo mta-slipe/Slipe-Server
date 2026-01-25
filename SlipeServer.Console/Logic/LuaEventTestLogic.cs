@@ -32,12 +32,12 @@ internal struct ExplicitStruct
 
 public class LuaEventTestLogic
 {
-    private readonly LuaEventService luaEventService;
+    private readonly ILuaEventService luaEventService;
 
     public LuaEventTestLogic(
-        CommandService commandService,
-        LuaEventService luaEventService,
-        LuaValueMapper mapper)
+        ICommandService commandService,
+        ILuaEventService luaEventService,
+        ILuaValueMapper mapper)
     {
         this.luaEventService = luaEventService;
 

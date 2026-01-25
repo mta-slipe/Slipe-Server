@@ -2,32 +2,30 @@
 using SlipeServer.Packets.Lua.Camera;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
-using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.Services;
-using SlipeServer.WebHostBuilderExample;
 using System.Numerics;
+
+namespace SlipeServer.WebHostBuilderExample;
 
 public class SampleHostedService : IHostedService
 {
     private readonly MtaServer mtaServer;
-    private readonly ChatBox chatBox;
-    private readonly IResourceProvider resourceProvider;
+    private readonly IChatBox chatBox;
 
-    public SampleHostedService(MtaServer mtaServer, ChatBox chatBox, CommandService commandService, IResourceProvider resourceProvider)
+    public SampleHostedService(MtaServer mtaServer, IChatBox chatBox, ICommandService commandService)
     {
         this.mtaServer = mtaServer;
         this.chatBox = chatBox;
-        this.resourceProvider = resourceProvider;
         commandService.AddCommand("startSample").Triggered += HandleStartSample;
         commandService.AddCommand("spawnVehicle").Triggered += HandleSpawnVehicleTriggered;
     }
 
-    private void HandleSpawnVehicleTriggered(object? sender, SlipeServer.Server.Events.CommandTriggeredEventArgs e)
+    private void HandleSpawnVehicleTriggered(object? sender, Server.Events.CommandTriggeredEventArgs e)
     {
         new Vehicle(404, e.Player.Position).AssociateWith(this.mtaServer);
     }
 
-    private void HandleStartSample(object? sender, SlipeServer.Server.Events.CommandTriggeredEventArgs e)
+    private void HandleStartSample(object? sender, Server.Events.CommandTriggeredEventArgs e)
     {
         this.chatBox.OutputTo(e.Player, "Starting sample resource");
         var resource = this.mtaServer.GetAdditionalResource<SampleResource>();

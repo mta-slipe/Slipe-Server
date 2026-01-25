@@ -34,7 +34,7 @@ class LatentTransfer
 /// Latent transfers mean sending data (triggering lua events) while limiting the data rate.
 /// This is useful when sending large amounts of data on limited bandwidth.
 /// </summary>
-public class LatentPacketService
+public class LatentPacketService : ILatentPacketService
 {
     private readonly MtaServer server;
     private readonly RootElement root;

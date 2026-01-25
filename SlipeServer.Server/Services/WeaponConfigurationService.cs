@@ -12,16 +12,15 @@ namespace SlipeServer.Server.Services;
 /// <summary>
 /// Service that allows you to get and change weapon configuration
 /// </summary>
-public class WeaponConfigurationService
+public class WeaponConfigurationService : IWeaponConfigurationService
 {
-    private readonly Dictionary<WeaponId, Dictionary<WeaponSkillLevel, WeaponConfiguration>> weaponConfigurations;
+    private readonly Dictionary<WeaponId, Dictionary<WeaponSkillLevel, WeaponConfiguration>> weaponConfigurations = [];
     private readonly MtaServer server;
 
     public WeaponConfigurationService(MtaServer server)
     {
         this.server = server;
 
-        this.weaponConfigurations = new();
         this.LoadDefaults();
     }
 

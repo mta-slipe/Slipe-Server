@@ -15,27 +15,26 @@ namespace SlipeServer.Server.Services;
 /// <summary>
 /// Allows you to trigger and handle lua events that are sent to, or received from clients.
 /// </summary>
-public class LuaEventService
+public class LuaEventService : ILuaEventService
 {
     private readonly MtaServer server;
     private readonly RootElement root;
-    private readonly LatentPacketService latentPacketService;
+    private readonly ILatentPacketService latentPacketService;
     private readonly IElementCollection elementCollection;
-    private readonly LuaValueMapper mapper;
-    private readonly Dictionary<string, List<Action<LuaEvent>>> eventHandlers;
+    private readonly ILuaValueMapper mapper;
+    private readonly Dictionary<string, List<Action<LuaEvent>>> eventHandlers = [];
 
     public LuaEventService(MtaServer server,
         RootElement root,
-        LatentPacketService latentPacketService,
+        ILatentPacketService latentPacketService,
         IElementCollection elementCollection,
-        LuaValueMapper mapper)
+        ILuaValueMapper mapper)
     {
         this.server = server;
         this.root = root;
         this.latentPacketService = latentPacketService;
         this.elementCollection = elementCollection;
         this.mapper = mapper;
-        this.eventHandlers = new Dictionary<string, List<Action<LuaEvent>>>();
 
         server.LuaEventTriggered += HandleLuaEvent;
     }

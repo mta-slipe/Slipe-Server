@@ -12,7 +12,7 @@ namespace SlipeServer.Server.Services;
 /// <summary>
 /// Allows you to ban IPs or serials
 /// </summary>
-public class BanService(IBanRepository banRepository, IElementCollection elementCollection)
+public class BanService(IBanRepository banRepository, IElementCollection elementCollection) : IBanService
 {
     public IEnumerable<Ban> GetBans() => banRepository.GetBans();
     public Ban AddBan(string? serial, IPAddress? ipAddress, DateTime? expiryTimeUtc = null, string? reason = null, string? bannedPlayerName = null, string? bannerName = null)

@@ -9,7 +9,7 @@ public class LatentPacketTestLogic
     private readonly ILogger logger;
 
     public LatentPacketTestLogic(
-        LuaEventService luaService,
+        ILuaEventService luaService,
         ILogger logger
     )
     {

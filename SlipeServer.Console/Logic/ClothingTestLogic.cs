@@ -1,24 +1,16 @@
-﻿using SlipeServer.Server;
-using SlipeServer.Server.Constants;
+﻿using SlipeServer.Server.Constants;
 using SlipeServer.Server.Services;
-using System;
 
 namespace SlipeServer.Console.Logic;
 
 public class ClothingTestLogic
 {
-    private readonly MtaServer<CustomPlayer> server;
-    private readonly ChatBox chatBox;
-    private readonly CommandService commandService;
+    private readonly ICommandService commandService;
 
     public ClothingTestLogic(
-        MtaServer<CustomPlayer> server,
-        ChatBox chatBox,
-        CommandService commandService
+        ICommandService commandService
     )
     {
-        this.server = server;
-        this.chatBox = chatBox;
         this.commandService = commandService;
         this.SetupTestCommands();
     }

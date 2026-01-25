@@ -9,12 +9,12 @@ namespace SlipeServer.Example.Elements;
 
 public class CustomPlayer : Player
 {
-    private readonly ExplosionService explosionService;
+    private readonly IExplosionService explosionService;
 
     public bool IsClickingVehicle { get; set; }
     public Blip Blip { get; }
 
-    public CustomPlayer(ExplosionService explosionService, MtaServer server) : base()
+    public CustomPlayer(IExplosionService explosionService, MtaServer server) : base()
     {
         this.explosionService = explosionService;
 

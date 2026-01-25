@@ -7,19 +7,14 @@ namespace SlipeServer.Console.Logic;
 
 public class PedTestLogic
 {
-    private readonly MtaServer<CustomPlayer> server;
-    private readonly ChatBox chatBox;
-    private readonly CommandService commandService;
+    private readonly ICommandService commandService;
     private readonly Ped ped;
 
     public PedTestLogic(
         MtaServer<CustomPlayer> server,
-        ChatBox chatBox,
-        CommandService commandService
+        ICommandService commandService
     )
     {
-        this.server = server;
-        this.chatBox = chatBox;
         this.commandService = commandService;
 
         this.ped = new Ped(Server.Elements.Enums.PedModel.Swat, new Vector3(12.5f, 0, 3))

@@ -2,25 +2,20 @@
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Services;
-using System;
 using System.Drawing;
-using System.Linq;
 
 namespace SlipeServer.Console.Logic;
 
 public class VehicleTestLogic
 {
-    private readonly MtaServer<CustomPlayer> server;
-    private readonly ChatBox chatBox;
-    private readonly CommandService commandService;
+    private readonly IChatBox chatBox;
+    private readonly ICommandService commandService;
 
     public VehicleTestLogic(
-        MtaServer<CustomPlayer> server,
-        ChatBox chatBox,
-        CommandService commandService
+        IChatBox chatBox,
+        ICommandService commandService
     )
     {
-        this.server = server;
         this.chatBox = chatBox;
         this.commandService = commandService;
         this.SetupTestCommands();

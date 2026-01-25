@@ -16,7 +16,7 @@ public static class LuaMapperBuilderExtensions
     {
         builder.AddBuildStep((x) =>
         {
-            x.GetRequiredService<LuaValueMapper>().DefineMapper<T>(mapper);
+            x.GetRequiredService<ILuaValueMapper>().DefineMapper<T>(mapper);
         }, ServerBuildStepPriority.Low);
     }
 
@@ -29,7 +29,7 @@ public static class LuaMapperBuilderExtensions
     {
         builder.AddBuildStep((x) =>
         {
-            x.GetRequiredService<LuaValueMapper>().DefineStructMapper<T>(mapper);
+            x.GetRequiredService<ILuaValueMapper>().DefineStructMapper<T>(mapper);
         }, ServerBuildStepPriority.Low);
     }
 
@@ -40,7 +40,7 @@ public static class LuaMapperBuilderExtensions
     {
         builder.AddBuildStep((x) =>
         {
-            x.GetRequiredService<LuaValueMapper>().DefineMapper(type, mapper);
+            x.GetRequiredService<ILuaValueMapper>().DefineMapper(type, mapper);
         }, ServerBuildStepPriority.Low);
     }
 
@@ -53,7 +53,7 @@ public static class LuaMapperBuilderExtensions
     {
         builder.AddBuildStep((x) =>
         {
-            x.GetRequiredService<FromLuaValueMapper>().DefineMapper<T>(mapper);
+            x.GetRequiredService<IFromLuaValueMapper>().DefineMapper<T>(mapper);
         }, ServerBuildStepPriority.Low);
     }
 
@@ -66,7 +66,7 @@ public static class LuaMapperBuilderExtensions
     {
         builder.AddBuildStep((x) =>
         {
-            x.GetRequiredService<FromLuaValueMapper>().DefineMapper(mapper, type);
+            x.GetRequiredService<IFromLuaValueMapper>().DefineMapper(mapper, type);
         }, ServerBuildStepPriority.Low);
     }
 

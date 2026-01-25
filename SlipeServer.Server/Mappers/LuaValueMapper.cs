@@ -13,16 +13,11 @@ namespace SlipeServer.Server.Mappers;
 /// Maps arbitrary C# types to Lua values
 /// Supports registring additional mappings for specified types
 /// </summary>
-public class LuaValueMapper
+public class LuaValueMapper : ILuaValueMapper
 {
-    private readonly Dictionary<Type, Func<object, LuaValue>> strictlyDefinedClassMappers;
-    private readonly Dictionary<Type, Func<object, LuaValue>> strictlyDefinedStructMappers;
+    private readonly Dictionary<Type, Func<object, LuaValue>> strictlyDefinedClassMappers = [];
+    private readonly Dictionary<Type, Func<object, LuaValue>> strictlyDefinedStructMappers = [];
 
-    public LuaValueMapper()
-    {
-        this.strictlyDefinedClassMappers = new();
-        this.strictlyDefinedStructMappers = new();
-    }
 
     public void DefineMapper(Type type, Func<object, LuaValue> mapper)
     {

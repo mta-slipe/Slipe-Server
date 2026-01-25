@@ -25,7 +25,7 @@ public class PhysicsTestLogic
     private readonly MtaServer server;
     private readonly IElementCollection elementCollection;
     private readonly PhysicsService physicsService;
-    private readonly CommandService commandService;
+    private readonly ICommandService commandService;
     private readonly ILogger logger;
 
     private PhysicsWorld? physicsWorld;
@@ -44,7 +44,7 @@ public class PhysicsTestLogic
         MtaServer server,
         IElementCollection elementCollection,
         PhysicsService physicsService,
-        CommandService commandService,
+        ICommandService commandService,
         ILogger logger)
     {
         this.server = server;

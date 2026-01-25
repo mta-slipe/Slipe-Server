@@ -12,17 +12,14 @@ namespace SlipeServer.Server.Mappers;
 /// Maps Lua values to any arbitrary C# class.
 /// Support registring additional mappings for any specified type.
 /// </summary>
-public class FromLuaValueMapper
+public class FromLuaValueMapper : IFromLuaValueMapper
 {
-    private readonly Dictionary<Type, Func<LuaValue, object>> strictlyDefinedMappers;
-    private readonly Dictionary<Type, Func<LuaValue, object>> implicitlyCastableTypes;
+    private readonly Dictionary<Type, Func<LuaValue, object>> strictlyDefinedMappers = [];
+    private readonly Dictionary<Type, Func<LuaValue, object>> implicitlyCastableTypes = [];
     private readonly IElementCollection elementCollection;
 
     public FromLuaValueMapper(IElementCollection elementCollection)
     {
-        this.strictlyDefinedMappers = new();
-        this.implicitlyCastableTypes = new();
-
         this.elementCollection = elementCollection;
 
         IndexImplicitlyCastableTypes();
@@ -64,9 +61,7 @@ public class FromLuaValueMapper
             var instance = (ILuaValue)Activator.CreateInstance(type)!;
             instance.Parse(value);
             return instance;
-        } 
-        
-        else if (type.IsAssignableTo(typeof(Element)) && value.ElementId.HasValue)
+        } else if (type.IsAssignableTo(typeof(Element)) && value.ElementId.HasValue)
             return this.elementCollection.Get(value.ElementId!.Value);
 
         else if (this.implicitlyCastableTypes.ContainsKey(type))
@@ -124,7 +119,7 @@ public class FromLuaValueMapper
                 return true;
 
         var baseType = givenType?.BaseType;
-        if (baseType == null) 
+        if (baseType == null)
             return false;
 
         return IsAssignableToGenericType(baseType, genericType);

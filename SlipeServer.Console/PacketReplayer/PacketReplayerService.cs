@@ -16,18 +16,15 @@ public class PacketReplayerService
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
-    private readonly HashSet<Player> pureSyncCapturingPlayers;
-    private readonly HashSet<Player> keySyncCapturingPlayers;
+    private readonly HashSet<Player> pureSyncCapturingPlayers = [];
+    private readonly HashSet<Player> keySyncCapturingPlayers = [];
     private readonly ILogger logger;
-    private readonly ChatBox chatBox;
+    private readonly IChatBox chatBox;
 
-    public PacketReplayerService(MtaServer server, ILogger logger, ChatBox chatBox)
+    public PacketReplayerService(MtaServer server, ILogger logger, IChatBox chatBox)
     {
         this.logger = logger;
         this.chatBox = chatBox;
-
-        this.pureSyncCapturingPlayers = new();
-        this.keySyncCapturingPlayers = new();
 
         server.ForAny<Player>(RegisterPlayerHandlers);
     }

@@ -5,22 +5,18 @@ using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Services;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SlipeServer.Example.Controllers;
 
 [CommandController()]
 public class TestCommandController : BaseCommandController<CustomPlayer>
 {
-    private readonly ChatBox chatBox;
+    private readonly IChatBox chatBox;
     private readonly IElementCollection elementCollection;
-    private readonly BanService banService;
+    private readonly IBanService banService;
     private readonly ILogger logger;
 
-    public TestCommandController(ChatBox chatBox, IElementCollection elementCollection, BanService banService, ILogger logger)
+    public TestCommandController(IChatBox chatBox, IElementCollection elementCollection, IBanService banService, ILogger logger)
     {
         this.chatBox = chatBox;
         this.elementCollection = elementCollection;

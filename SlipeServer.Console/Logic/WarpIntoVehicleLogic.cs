@@ -12,7 +12,7 @@ public class WarpIntoVehicleLogic
 
     public WarpIntoVehicleLogic(
         ILogger logger,
-        CommandService commandService)
+        ICommandService commandService)
     {
         this.logger = logger;
 

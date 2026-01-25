@@ -10,19 +10,12 @@ namespace SlipeServer.Server.Services;
 /// <summary>
 /// Allows for the creation of explosions
 /// </summary>
-public class ExplosionService
+public class ExplosionService(MtaServer server) : IExplosionService
 {
-    private readonly MtaServer server;
-
-    public ExplosionService(MtaServer server)
-    {
-        this.server = server;
-    }
-
     public void CreateExplosion(Vector3 position, ExplosionType type, Player? responsiblePlayer = null)
     {
         var packet = new ExplosionPacket(responsiblePlayer?.Id, null, position, (byte)type, (ushort)(responsiblePlayer?.Client.Ping ?? 0));
-        this.server.BroadcastPacket(packet);
+        server.BroadcastPacket(packet);
     }
 
     public void CreateExplosionFor(

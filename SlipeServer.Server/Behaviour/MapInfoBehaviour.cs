@@ -17,10 +17,10 @@ namespace SlipeServer.Server.Behaviour;
 /// </summary>
 public class MapInfoBehaviour
 {
-    private readonly GameWorld gameWorld;
-    private readonly WeaponConfigurationService weaponConfigurationService;
+    private readonly IGameWorld gameWorld;
+    private readonly IWeaponConfigurationService weaponConfigurationService;
 
-    public MapInfoBehaviour(MtaServer server, GameWorld gameWorld, WeaponConfigurationService weaponConfigurationService)
+    public MapInfoBehaviour(MtaServer server, IGameWorld gameWorld, IWeaponConfigurationService weaponConfigurationService)
     {
         this.gameWorld = gameWorld;
         this.weaponConfigurationService = weaponConfigurationService;
@@ -90,28 +90,28 @@ public class MapInfoBehaviour
     private bool[] GetSpecialPropertyEnableds()
     {
         return [
-            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.UnderWorldWarp],
-            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.ExtraAirResistance],
-            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.SniperMoon],
-            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.RandomFoliage],
-            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.ExtraJump],
-            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.ExtraBunny],
-            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.Aircars],
-            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.Hovercars],
+            this.gameWorld.SpecialPropertyStates[IGameWorld.WorldSpecialProperty.UnderWorldWarp],
+            this.gameWorld.SpecialPropertyStates[IGameWorld.WorldSpecialProperty.ExtraAirResistance],
+            this.gameWorld.SpecialPropertyStates[IGameWorld.WorldSpecialProperty.SniperMoon],
+            this.gameWorld.SpecialPropertyStates[IGameWorld.WorldSpecialProperty.RandomFoliage],
+            this.gameWorld.SpecialPropertyStates[IGameWorld.WorldSpecialProperty.ExtraJump],
+            this.gameWorld.SpecialPropertyStates[IGameWorld.WorldSpecialProperty.ExtraBunny],
+            this.gameWorld.SpecialPropertyStates[IGameWorld.WorldSpecialProperty.Aircars],
+            this.gameWorld.SpecialPropertyStates[IGameWorld.WorldSpecialProperty.Hovercars],
 
-            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.BurnFlippedCars],
-            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.WaterCreatures],
-            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.CoronaGlareDisabled],
-            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.VehicleSunGlare],
+            this.gameWorld.SpecialPropertyStates[IGameWorld.WorldSpecialProperty.BurnFlippedCars],
+            this.gameWorld.SpecialPropertyStates[IGameWorld.WorldSpecialProperty.WaterCreatures],
+            this.gameWorld.SpecialPropertyStates[IGameWorld.WorldSpecialProperty.CoronaGlareDisabled],
+            this.gameWorld.SpecialPropertyStates[IGameWorld.WorldSpecialProperty.VehicleSunGlare],
 
-            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.FireBallAircraftDestruction],
-            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.RoadSignText],
-            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.ExtendedWaterCannons],
-            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.TunnelWeatherBlending],
-            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.IgnoreFireState],
-            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.FlyingComponents],
-            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.VehicleBurnExplosions],
-            this.gameWorld.SpecialPropertyStates[GameWorld.WorldSpecialProperty.VehicleEngineAutoStart],
+            this.gameWorld.SpecialPropertyStates[IGameWorld.WorldSpecialProperty.FireBallAircraftDestruction],
+            this.gameWorld.SpecialPropertyStates[IGameWorld.WorldSpecialProperty.RoadSignText],
+            this.gameWorld.SpecialPropertyStates[IGameWorld.WorldSpecialProperty.ExtendedWaterCannons],
+            this.gameWorld.SpecialPropertyStates[IGameWorld.WorldSpecialProperty.TunnelWeatherBlending],
+            this.gameWorld.SpecialPropertyStates[IGameWorld.WorldSpecialProperty.IgnoreFireState],
+            this.gameWorld.SpecialPropertyStates[IGameWorld.WorldSpecialProperty.FlyingComponents],
+            this.gameWorld.SpecialPropertyStates[IGameWorld.WorldSpecialProperty.VehicleBurnExplosions],
+            this.gameWorld.SpecialPropertyStates[IGameWorld.WorldSpecialProperty.VehicleEngineAutoStart],
         ];
     }
 

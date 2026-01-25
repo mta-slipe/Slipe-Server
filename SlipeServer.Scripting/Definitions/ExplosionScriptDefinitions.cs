@@ -8,9 +8,9 @@ namespace SlipeServer.Scripting.Definitions;
 
 public class ExplosionScriptDefinitions
 {
-    private readonly ExplosionService explosionService;
+    private readonly IExplosionService explosionService;
 
-    public ExplosionScriptDefinitions(ExplosionService explosionService)
+    public ExplosionScriptDefinitions(IExplosionService explosionService)
     {
         this.explosionService = explosionService;
     }

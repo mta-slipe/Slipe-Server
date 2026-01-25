@@ -3,7 +3,6 @@ using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.PacketHandling;
 using SlipeServer.Server.Services;
-using System.Collections.Generic;
 using System.Numerics;
 
 namespace SlipeServer.Console.Logic;
@@ -15,7 +14,7 @@ public class ElementPoolingTestLogic
     private readonly ILogger logger;
     private readonly MtaServer server;
 
-    public ElementPoolingTestLogic(CommandService commandService, ILogger logger, MtaServer server)
+    public ElementPoolingTestLogic(ICommandService commandService, ILogger logger, MtaServer server)
     {
         this.logger = logger;
         this.server = server;
@@ -35,7 +34,8 @@ public class ElementPoolingTestLogic
 
         for (int i = 0; i < count; i++)
         {
-            var element = this.elementPool.GetOrCreateElement(() => {
+            var element = this.elementPool.GetOrCreateElement(() =>
+            {
                 this.logger.LogInformation("New element created");
                 return new WorldObject(321, Vector3.Zero);
             }).AssociateWith(this.server);

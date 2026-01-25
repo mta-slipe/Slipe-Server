@@ -2,9 +2,7 @@
 using SlipeServer.Server.Clients;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Services;
-using System;
 using System.Drawing;
-using System.Linq;
 
 namespace SlipeServer.Console.Logic;
 
@@ -12,9 +10,9 @@ public class NametagTestLogic
 {
     private readonly Player nametagPlayer;
 
-    public NametagTestLogic(MtaServer server, CommandService commandService)
+    public NametagTestLogic(MtaServer server, ICommandService commandService)
     {
-        this.nametagPlayer = new CustomPlayer(server.GetRequiredService<ExplosionService>(), server);
+        this.nametagPlayer = new CustomPlayer(server.GetRequiredService<IExplosionService>(), server);
         var client = new FakeClient(this.nametagPlayer)
         {
             Serial = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB",

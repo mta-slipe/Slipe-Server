@@ -9,25 +9,18 @@ namespace SlipeServer.Server.Services;
 /// <summary>
 /// Represents the ingame chat, allows you to send messages to (individual) players
 /// </summary>
-public class ChatBox
+public class ChatBox(MtaServer server) : IChatBox
 {
-    private readonly MtaServer server;
-    private readonly RootElement root;
-
-    public ChatBox(MtaServer server)
-    {
-        this.server = server;
-        this.root = server.RootElement;
-    }
+    private readonly RootElement root = server.RootElement;
 
     public void Output(string message, Color? color = null, bool isColorCoded = false, ChatEchoType type = ChatEchoType.Player, Element? source = null)
     {
-        this.server.BroadcastPacket(new ChatEchoPacket(source?.Id ?? this.root.Id, message, color ?? Color.White, type, isColorCoded));
+        server.BroadcastPacket(new ChatEchoPacket(source?.Id ?? this.root.Id, message, color ?? Color.White, type, isColorCoded));
     }
 
     public void Clear()
     {
-        this.server.BroadcastPacket(ClearChatPacket.Instance);
+        server.BroadcastPacket(ClearChatPacket.Instance);
     }
 
     public void OutputTo(Player player, string message, Color? color = null, bool isColorCoded = false, ChatEchoType type = ChatEchoType.Player, Element? source = null)
@@ -42,9 +35,9 @@ public class ChatBox
 
     public void SetVisible(bool visible, bool? inputBlocked = null)
     {
-        if(inputBlocked == null)
+        if (inputBlocked == null)
             inputBlocked = !visible;
-        this.server.BroadcastPacket(new ShowChatPacket(visible, inputBlocked.Value));
+        server.BroadcastPacket(new ShowChatPacket(visible, inputBlocked.Value));
     }
 
     public void SetVisibleFor(Player player, bool visible, bool? inputBlocked = null)

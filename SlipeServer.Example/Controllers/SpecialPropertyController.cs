@@ -1,12 +1,12 @@
 ﻿using SlipeServer.LuaControllers;
 using SlipeServer.LuaControllers.Attributes;
 using SlipeServer.Server.Services;
-using static SlipeServer.Server.Services.GameWorld;
+using static SlipeServer.Server.Services.IGameWorld;
 
 namespace SlipeServer.Example.Controllers;
 
 [CommandController()]
-public class SpecialPropertyController(GameWorld gameWorld) : BaseCommandController<CustomPlayer>
+public class SpecialPropertyController(IGameWorld gameWorld) : BaseCommandController<CustomPlayer>
 {
     [Command("specialprop")]
     public void Teleport(string property, bool state)
