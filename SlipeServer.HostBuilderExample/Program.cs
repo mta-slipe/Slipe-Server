@@ -5,6 +5,7 @@ using SlipeServer.Server.Resources.Serving;
 using SlipeServer.Example;
 using SlipeServer.Example.Services;
 using SlipeServer.Example.Elements;
+using SlipeServer.HostBuilderExample;
 
 
 Configuration? configuration = null;
