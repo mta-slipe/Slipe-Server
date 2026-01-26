@@ -6,7 +6,7 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Ped;
 
-public sealed class PedClothesPacket : Packet
+public sealed class PedClothesPacket(ElementId elementId, PedClothing[] clothing) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_PLAYER_CLOTHES;
 
@@ -14,14 +14,8 @@ public sealed class PedClothesPacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; set; }
-    public PedClothing[] Clothing { get; set; }
-
-    public PedClothesPacket(ElementId elementId, PedClothing[] clothing)
-    {
-        this.ElementId = elementId;
-        this.Clothing = clothing;
-    }
+    public ElementId ElementId { get; set; } = elementId;
+    public PedClothing[] Clothing { get; set; } = clothing;
 
     public override void Read(byte[] bytes)
     {

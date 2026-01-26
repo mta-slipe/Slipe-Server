@@ -4,27 +4,18 @@ using System.Reflection;
 
 namespace SlipeServer.LuaControllers.Commands;
 
-public class BoundCommand
+public class BoundCommand(
+    IServiceProvider serviceProvider,
+    string command,
+    Type controllerType,
+    MethodInfo method,
+    BaseCommandController? controllerInstance)
 {
-    public IServiceProvider ServiceProvider { get; }
-    public string Command { get; set; }
-    public Type ControllerType { get; set; }
-    public BaseCommandController? ControllerInstance { get; set; }
-    public MethodInfo Method { get; set; }
-
-    public BoundCommand(
-        IServiceProvider serviceProvider,
-        string command,
-        Type controllerType,
-        MethodInfo method,
-        BaseCommandController? controllerInstance)
-    {
-        this.ServiceProvider = serviceProvider;
-        this.Command = command;
-        this.ControllerType = controllerType;
-        this.Method = method;
-        this.ControllerInstance = controllerInstance;
-    }
+    public IServiceProvider ServiceProvider { get; } = serviceProvider;
+    public string Command { get; set; } = command;
+    public Type ControllerType { get; set; } = controllerType;
+    public BaseCommandController? ControllerInstance { get; set; } = controllerInstance;
+    public MethodInfo Method { get; set; } = method;
 
     public void HandleCommand(Player player, string command, IEnumerable<object?> args)
     {

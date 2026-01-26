@@ -10,13 +10,13 @@ namespace SlipeServer.Scripting;
 
 public class SimplifiedScriptEventRuntime : IScriptEventRuntime
 {
-    private readonly MtaServer server;
+    private readonly IMtaServer server;
     private readonly IElementCollection elementCollection;
 
     private readonly List<RegisteredEventHandler> registeredEventHandlers;
     private readonly Dictionary<string, RegisteredEvent> registeredEvents;
 
-    public SimplifiedScriptEventRuntime(MtaServer server, IElementCollection elementCollection)
+    public SimplifiedScriptEventRuntime(IMtaServer server, IElementCollection elementCollection)
     {
         this.server = server;
         this.elementCollection = elementCollection;

@@ -11,14 +11,8 @@ namespace SlipeServer.Server.ElementConcepts;
 /// <summary>
 /// Represents a player's clothing, only used when the player has the CJ model.
 /// </summary>
-public class Clothing
+public class Clothing(Ped ped)
 {
-    private readonly Ped ped;
-
-    public Clothing(Ped ped)
-    {
-        this.ped = ped;
-    }
 
     /// <summary>
     /// Returns an enumerable of the player's clothing. This will not include any slots that do not have a value.
@@ -223,11 +217,11 @@ public class Clothing
         get => this.shirt;
         set
         {
-            if (this.ped.Model == 0 && value != this.Shirt)
+            if (ped.Model == 0 && value != this.Shirt)
             {
                 if (value >= 0 && value <= ClothingConstants.ShirtsCount)
                 {
-                    Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.Shirt, this.Shirt, value));
+                    Changed?.Invoke(ped, new ClothingChangedEventArgs(ped, Enums.ClothingType.Shirt, this.Shirt, value));
                     this.shirt = value;
                 } else
                 {
@@ -243,11 +237,11 @@ public class Clothing
         get => this.head;
         set
         {
-            if (this.ped.Model == 0 && value != this.Head)
+            if (ped.Model == 0 && value != this.Head)
             {
                 if (value >= 0 && value <= ClothingConstants.HeadsCount)
                 {
-                    Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.Head, this.Head, value));
+                    Changed?.Invoke(ped, new ClothingChangedEventArgs(ped, Enums.ClothingType.Head, this.Head, value));
                     this.head = value;
                 } else
                 {
@@ -263,11 +257,11 @@ public class Clothing
         get => this.trousers;
         set
         {
-            if (this.ped.Model == 0 && value != this.Trousers)
+            if (ped.Model == 0 && value != this.Trousers)
             {
                 if (value >= 0 && value <= ClothingConstants.TrousersCount)
                 {
-                    Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.Trousers, this.Trousers, value));
+                    Changed?.Invoke(ped, new ClothingChangedEventArgs(ped, Enums.ClothingType.Trousers, this.Trousers, value));
                     this.trousers = value;
                 } else
                 {
@@ -283,11 +277,11 @@ public class Clothing
         get => this.shoes;
         set
         {
-            if (this.ped.Model == 0 && value != this.Shoes)
+            if (ped.Model == 0 && value != this.Shoes)
             {
                 if (value >= 0 && value <= ClothingConstants.ShoesCount)
                 {
-                    Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.Shoes, this.Shoes, value));
+                    Changed?.Invoke(ped, new ClothingChangedEventArgs(ped, Enums.ClothingType.Shoes, this.Shoes, value));
                     this.shoes = value;
                 } else
                 {
@@ -303,11 +297,11 @@ public class Clothing
         get => this.tattoosLeftUpperArm;
         set
         {
-            if (this.ped.Model == 0 && value != this.TattoosLeftUpperArm)
+            if (ped.Model == 0 && value != this.TattoosLeftUpperArm)
             {
                 if (value >= 0 && value <= ClothingConstants.TattoosLeftUpperArmCount || value == null)
                 {
-                    Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.TattoosLeftUpperArm, this.TattoosLeftUpperArm, value));
+                    Changed?.Invoke(ped, new ClothingChangedEventArgs(ped, Enums.ClothingType.TattoosLeftUpperArm, this.TattoosLeftUpperArm, value));
                     this.tattoosLeftUpperArm = value;
                 } else
                 {
@@ -323,11 +317,11 @@ public class Clothing
         get => this.tattoosLeftLowerArm;
         set
         {
-            if (this.ped.Model == 0 && value != this.TattoosLeftUpperArm)
+            if (ped.Model == 0 && value != this.TattoosLeftUpperArm)
             {
                 if (value >= 0 && value <= ClothingConstants.TattoosLeftLowerArmCount || value == null)
                 {
-                    Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.TattoosLeftLowerArm, this.TattoosLeftLowerArm, value));
+                    Changed?.Invoke(ped, new ClothingChangedEventArgs(ped, Enums.ClothingType.TattoosLeftLowerArm, this.TattoosLeftLowerArm, value));
                     this.tattoosLeftLowerArm = value;
                 } else
                 {
@@ -343,11 +337,11 @@ public class Clothing
         get => this.tattoosRightUpperArm;
         set
         {
-            if (this.ped.Model == 0 && value != this.TattoosRightUpperArm)
+            if (ped.Model == 0 && value != this.TattoosRightUpperArm)
             {
                 if (value >= 0 && value <= ClothingConstants.TattoosRightUpperArmCount || value == null)
                 {
-                    Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.TattoosRightUpperArm, this.TattoosRightUpperArm, value));
+                    Changed?.Invoke(ped, new ClothingChangedEventArgs(ped, Enums.ClothingType.TattoosRightUpperArm, this.TattoosRightUpperArm, value));
                     this.tattoosRightUpperArm = value;
                 } else
                 {
@@ -363,11 +357,11 @@ public class Clothing
         get => this.tattoosRightLowerArm;
         set
         {
-            if (this.ped.Model == 0 && value != this.TattoosRightLowerArm)
+            if (ped.Model == 0 && value != this.TattoosRightLowerArm)
             {
                 if (value >= 0 && value <= ClothingConstants.TattoosRightLowerArmCount || value == null)
                 {
-                    Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.TattoosRightLowerArm, this.TattoosRightLowerArm, value));
+                    Changed?.Invoke(ped, new ClothingChangedEventArgs(ped, Enums.ClothingType.TattoosRightLowerArm, this.TattoosRightLowerArm, value));
                     this.tattoosRightLowerArm = value;
                 } else
                 {
@@ -383,11 +377,11 @@ public class Clothing
         get => this.tattoosBack;
         set
         {
-            if (this.ped.Model == 0 && value != this.TattoosBack)
+            if (ped.Model == 0 && value != this.TattoosBack)
             {
                 if (value >= 0 && value <= ClothingConstants.TattoosBackCount || value == null)
                 {
-                    Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.TattoosBack, this.TattoosBack, value));
+                    Changed?.Invoke(ped, new ClothingChangedEventArgs(ped, Enums.ClothingType.TattoosBack, this.TattoosBack, value));
                     this.tattoosBack = value;
                 } else
                 {
@@ -403,11 +397,11 @@ public class Clothing
         get => this.tattoosLeftChest;
         set
         {
-            if (this.ped.Model == 0 && value != this.TattoosLeftChest)
+            if (ped.Model == 0 && value != this.TattoosLeftChest)
             {
                 if (value >= 0 && value <= ClothingConstants.TattoosLeftChestCount || value == null)
                 {
-                    Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.TattoosLeftChest, this.TattoosLeftChest, value));
+                    Changed?.Invoke(ped, new ClothingChangedEventArgs(ped, Enums.ClothingType.TattoosLeftChest, this.TattoosLeftChest, value));
                     this.tattoosLeftChest = value;
                 } else
                 {
@@ -423,11 +417,11 @@ public class Clothing
         get => this.tattoosRightChest;
         set
         {
-            if (this.ped.Model == 0 && value != this.TattoosRightChest)
+            if (ped.Model == 0 && value != this.TattoosRightChest)
             {
                 if (value >= 0 && value <= ClothingConstants.TattoosRightChestCount || value == null)
                 {
-                    Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.TattoosRightChest, this.TattoosRightChest, value));
+                    Changed?.Invoke(ped, new ClothingChangedEventArgs(ped, Enums.ClothingType.TattoosRightChest, this.TattoosRightChest, value));
                     this.tattoosRightChest = value;
                 } else
                 {
@@ -443,11 +437,11 @@ public class Clothing
         get => this.tattoosStomach;
         set
         {
-            if (this.ped.Model == 0 && value != this.TattoosStomach)
+            if (ped.Model == 0 && value != this.TattoosStomach)
             {
                 if (value >= 0 && value <= ClothingConstants.TattoosStomachCount || value == null)
                 {
-                    Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.TattoosStomach, this.TattoosStomach, value));
+                    Changed?.Invoke(ped, new ClothingChangedEventArgs(ped, Enums.ClothingType.TattoosStomach, this.TattoosStomach, value));
                     this.tattoosStomach = value;
                 } else
                 {
@@ -463,11 +457,11 @@ public class Clothing
         get => this.tattoosLowerBack;
         set
         {
-            if (this.ped.Model == 0 && value != this.TattoosLowerBack)
+            if (ped.Model == 0 && value != this.TattoosLowerBack)
             {
                 if (value >= 0 && value <= ClothingConstants.TattoosLowerBackCount || value == null)
                 {
-                    Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.TattoosLowerBack, this.TattoosLowerBack, value));
+                    Changed?.Invoke(ped, new ClothingChangedEventArgs(ped, Enums.ClothingType.TattoosLowerBack, this.TattoosLowerBack, value));
                     this.tattoosLowerBack = value;
                 } else
                 {
@@ -483,11 +477,11 @@ public class Clothing
         get => this.necklace;
         set
         {
-            if (this.ped.Model == 0 && value != this.Necklace)
+            if (ped.Model == 0 && value != this.Necklace)
             {
                 if (value >= 0 && value <= ClothingConstants.NecklaceCount || value == null)
                 {
-                    Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.Necklace, this.Necklace, value));
+                    Changed?.Invoke(ped, new ClothingChangedEventArgs(ped, Enums.ClothingType.Necklace, this.Necklace, value));
                     this.necklace = value;
                 } else
                 {
@@ -503,11 +497,11 @@ public class Clothing
         get => this.watch;
         set
         {
-            if (this.ped.Model == 0 && value != this.Watch)
+            if (ped.Model == 0 && value != this.Watch)
             {
                 if (value >= 0 && value <= ClothingConstants.WatchesCount || value == null)
                 {
-                    Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.Watches, this.Watch, value));
+                    Changed?.Invoke(ped, new ClothingChangedEventArgs(ped, Enums.ClothingType.Watches, this.Watch, value));
                     this.watch = value;
                 } else
                 {
@@ -523,11 +517,11 @@ public class Clothing
         get => this.glasses;
         set
         {
-            if (this.ped.Model == 0 && value != this.Glasses)
+            if (ped.Model == 0 && value != this.Glasses)
             {
                 if (value >= 0 && value <= ClothingConstants.GlassesCount || value == null)
                 {
-                    Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.Glasses, this.glasses, value));
+                    Changed?.Invoke(ped, new ClothingChangedEventArgs(ped, Enums.ClothingType.Glasses, this.glasses, value));
                     this.glasses = value;
                 } else
                 {
@@ -543,11 +537,11 @@ public class Clothing
         get => this.hat;
         set
         {
-            if (this.ped.Model == 0 && value != this.Hat)
+            if (ped.Model == 0 && value != this.Hat)
             {
                 if (value >= 0 && value <= ClothingConstants.HatsCount || value == null)
                 {
-                    Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.Hats, this.hat, value));
+                    Changed?.Invoke(ped, new ClothingChangedEventArgs(ped, Enums.ClothingType.Hats, this.hat, value));
                     this.hat = value;
                 } else
                 {
@@ -563,11 +557,11 @@ public class Clothing
         get => this.extra;
         set
         {
-            if (this.ped.Model == 0 && value != this.Extra)
+            if (ped.Model == 0 && value != this.Extra)
             {
                 if (value >= 0 && value <= ClothingConstants.ExtraCount || value == null)
                 {
-                    Changed?.Invoke(this.ped, new ClothingChangedEventArgs(this.ped, Enums.ClothingType.Extra, this.extra, value));
+                    Changed?.Invoke(ped, new ClothingChangedEventArgs(ped, Enums.ClothingType.Extra, this.extra, value));
                     this.extra = value;
                 } else
                 {

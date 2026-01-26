@@ -27,7 +27,7 @@ public class SlipeLuaResourceInterpreter : IResourceInterpreter
     public bool IsFallback => false;
 
     public bool TryInterpretResource(
-        MtaServer mtaServer,
+        IMtaServer mtaServer,
         RootElement rootElement,
         string name,
         string path,

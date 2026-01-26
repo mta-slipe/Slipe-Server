@@ -17,13 +17,13 @@ public class CommandArgumentList(IEnumerable<string> arguments) : IEnumerable<st
 
 public class CommandControllerLogic
 {
-    private readonly MtaServer server;
+    private readonly IMtaServer server;
     private readonly ICommandService commandService;
     private readonly ILogger logger;
     private readonly Dictionary<string, List<BoundCommand>> handlers = new();
 
     public CommandControllerLogic(
-        MtaServer server,
+        IMtaServer server,
         ICommandService commandService,
         ILogger logger)
     {

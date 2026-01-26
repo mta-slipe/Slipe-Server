@@ -5,20 +5,14 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.Rpc.World;
 
-public sealed class SetGarageOpenPacket : Packet
+public sealed class SetGarageOpenPacket(byte garageID, bool isOpen) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public byte GarageID { get; set; }
-    public bool IsOpen { get; set; }
-
-    public SetGarageOpenPacket(byte garageID, bool isOpen)
-    {
-        this.GarageID = garageID;
-        this.IsOpen = isOpen;
-    }
+    public byte GarageID { get; set; } = garageID;
+    public bool IsOpen { get; set; } = isOpen;
 
     public override void Read(byte[] bytes)
     {

@@ -5,19 +5,12 @@ using System.Numerics;
 
 namespace SlipeServer.Scripting.Definitions;
 
-public class RadarAreaScriptDefinitions
+public class RadarAreaScriptDefinitions(IMtaServer server)
 {
-    private readonly MtaServer server;
-
-    public RadarAreaScriptDefinitions(MtaServer server)
-    {
-        this.server = server;
-    }
-
     [ScriptFunctionDefinition("createRadarArea")]
     public RadarArea CreateRadarArea(Vector2 position, Vector2 size, Color? color = null, Player? visibleFor = null)
     {
-        var radarArea = new RadarArea(position, size, color ?? Color.FromArgb(255, 0, 0, 255)).AssociateWith(this.server);
+        var radarArea = new RadarArea(position, size, color ?? Color.FromArgb(255, 0, 0, 255)).AssociateWith(server);
         return radarArea;
     }
 

@@ -3,18 +3,10 @@ using System.Numerics;
 
 namespace SlipeServer.Server.Elements.Events;
 
-public sealed class ElementAttachOffsetsChangedArgs : EventArgs
+public sealed class ElementAttachOffsetsChangedArgs(Element source, Element target, Vector3 offsetPosition, Vector3 offsetRotation) : EventArgs
 {
-    public Element Source { get; }
-    public Element Target { get; }
-    public Vector3 OffsetPosition { get; }
-    public Vector3 OffsetRotation { get; }
-
-    public ElementAttachOffsetsChangedArgs(Element source, Element target, Vector3 offsetPosition, Vector3 offsetRotation)
-    {
-        this.Source = source;
-        this.Target = target;
-        this.OffsetPosition = offsetPosition;
-        this.OffsetRotation = offsetRotation;
-    }
+    public Element Source { get; } = source;
+    public Element Target { get; } = target;
+    public Vector3 OffsetPosition { get; } = offsetPosition;
+    public Vector3 OffsetRotation { get; } = offsetRotation;
 }

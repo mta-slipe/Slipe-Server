@@ -135,7 +135,7 @@ public class Marker : Element
         this.MarkerType = markerType;
     }
 
-    public new Marker AssociateWith(MtaServer server)
+    public new Marker AssociateWith(IMtaServer server)
     {
         base.AssociateWith(server);
         return this;

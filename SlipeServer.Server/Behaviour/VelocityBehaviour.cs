@@ -18,7 +18,7 @@ public class VelocityBehaviour
     private readonly Stopwatch stopwatch;
     private readonly float interval;
 
-    public VelocityBehaviour(MtaServer server, float interval = 50)
+    public VelocityBehaviour(IMtaServer server, float interval = 50)
     {
         this.factor = 20f / 1000 * interval;
 

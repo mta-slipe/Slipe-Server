@@ -6,20 +6,14 @@ using System.Drawing;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
 
-public sealed class SetVehicleColorRpcPacket : Packet
+public sealed class SetVehicleColorRpcPacket(ElementId elementId, Color[] colors) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; set; }
-    public Color[] Colors { get; set; }
-
-    public SetVehicleColorRpcPacket(ElementId elementId, Color[] colors)
-    {
-        this.ElementId = elementId;
-        this.Colors = colors;
-    }
+    public ElementId ElementId { get; set; } = elementId;
+    public Color[] Colors { get; set; } = colors;
 
     public override void Read(byte[] bytes)
     {

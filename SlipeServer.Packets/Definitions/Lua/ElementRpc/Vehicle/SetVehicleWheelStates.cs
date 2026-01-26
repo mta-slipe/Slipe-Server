@@ -4,20 +4,14 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
 
-public sealed class SetVehicleWheelStates : Packet
+public sealed class SetVehicleWheelStates(uint elementId, byte[] states) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint ElementId { get; set; }
-    public byte[] States { get; set; }
-
-    public SetVehicleWheelStates(uint elementId, byte[] states)
-    {
-        this.ElementId = elementId;
-        this.States = states;
-    }
+    public uint ElementId { get; set; } = elementId;
+    public byte[] States { get; set; } = states;
 
     public override void Read(byte[] bytes)
     {

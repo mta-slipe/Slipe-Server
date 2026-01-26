@@ -10,7 +10,7 @@ public class DummyElement : Element
 
     public string ElementTypeName { get; set; } = "dummy";
 
-    public new DummyElement AssociateWith(MtaServer server)
+    public new DummyElement AssociateWith(IMtaServer server)
     {
         base.AssociateWith(server);
         return this;

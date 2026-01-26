@@ -3,14 +3,9 @@ using System;
 
 namespace SlipeServer.Physics.Entities;
 
-public class PhysicsImg : IDisposable
+public class PhysicsImg(string path) : IDisposable
 {
-    internal ImgFile imgFile;
-
-    public PhysicsImg(string path)
-    {
-        this.imgFile = new ImgFile(path);
-    }
+    internal ImgFile imgFile = new ImgFile(path);
 
     public void Dispose()
     {

@@ -21,7 +21,7 @@ public class PacketReplayerService
     private readonly ILogger logger;
     private readonly IChatBox chatBox;
 
-    public PacketReplayerService(MtaServer server, ILogger logger, IChatBox chatBox)
+    public PacketReplayerService(IMtaServer server, ILogger logger, IChatBox chatBox)
     {
         this.logger = logger;
         this.chatBox = chatBox;

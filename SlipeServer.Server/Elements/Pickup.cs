@@ -5,6 +5,7 @@ using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Enums;
 using System;
 using System.Numerics;
+using System.Threading;
 
 namespace SlipeServer.Server.Elements;
 
@@ -32,7 +33,7 @@ public class Pickup : Element
     public uint RespawnTime { get; set; }
     public bool IsUsable { get; set; } = true;
 
-    private readonly object useLock = new();
+    private readonly Lock useLock = new();
 
 
     public Pickup(Vector3 position, PickupType type, float amount) : base()
@@ -198,7 +199,7 @@ public class Pickup : Element
         };
     }
 
-    public new Pickup AssociateWith(MtaServer server)
+    public new Pickup AssociateWith(IMtaServer server)
     {
         this.CollisionShape.AssociateWith(server);
         base.AssociateWith(server);

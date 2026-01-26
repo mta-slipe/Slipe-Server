@@ -37,7 +37,7 @@ public class CollisionCircle : CollisionShape
         return Vector3.Distance(this.Position, new Vector3(position.X, position.Y, 0)) < this.Radius;
     }
 
-    public new CollisionCircle AssociateWith(MtaServer server)
+    public new CollisionCircle AssociateWith(IMtaServer server)
     {
         base.AssociateWith(server);
         return this;

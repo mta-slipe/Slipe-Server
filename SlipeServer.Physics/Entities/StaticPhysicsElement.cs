@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace SlipeServer.Physics.Entities;
 
-public class StaticPhysicsElement : PhysicsElement<StaticDescription, StaticHandle>
+public class StaticPhysicsElement(StaticHandle handle, StaticDescription description, PhysicsWorld physicsWorld, Simulation simulation) : PhysicsElement<StaticDescription, StaticHandle>(handle, description, physicsWorld, simulation)
 {
     protected override Vector3 Position
     {
@@ -46,10 +46,5 @@ public class StaticPhysicsElement : PhysicsElement<StaticDescription, StaticHand
                 }
             }
         }
-    }
-
-    public StaticPhysicsElement(StaticHandle handle, StaticDescription description, PhysicsWorld physicsWorld, Simulation simulation) :
-        base(handle, description, physicsWorld, simulation)
-    {
     }
 }

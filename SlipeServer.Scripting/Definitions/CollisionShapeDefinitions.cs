@@ -7,7 +7,7 @@ using System.Numerics;
 
 namespace SlipeServer.Scripting.Definitions;
 
-public class CollisionShapeDefinitions(MtaServer server)
+public class CollisionShapeDefinitions(IMtaServer server)
 {
 
 

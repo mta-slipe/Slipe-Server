@@ -5,20 +5,14 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.Rpc.World;
 
-public sealed class SetGlitchEnabledPacket : Packet
+public sealed class SetGlitchEnabledPacket(byte glitchType, bool enabled) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public byte GlitchType { get; set; }
-    public byte Enabled { get; set; }
-
-    public SetGlitchEnabledPacket(byte glitchType, bool enabled)
-    {
-        this.GlitchType = glitchType;
-        this.Enabled = (byte)(enabled ? 1 : 0);
-    }
+    public byte GlitchType { get; set; } = glitchType;
+    public byte Enabled { get; set; } = (byte)(enabled ? 1 : 0);
 
     public override void Read(byte[] bytes)
     {

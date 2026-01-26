@@ -46,7 +46,7 @@ public class CollisionTube : CollisionShape
             position.Z > this.Position.Z && position.Z < this.Position.Z + this.Height;
     }
 
-    public new CollisionTube AssociateWith(MtaServer server)
+    public new CollisionTube AssociateWith(IMtaServer server)
     {
         base.AssociateWith(server);
         return this;

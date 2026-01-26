@@ -15,18 +15,11 @@ namespace SlipeServer.Server.Loggers;
 /// </summary>
 public class ConsoleLogger : ILogger
 {
-    private class ConsoleLoggerScope : IDisposable
+    private class ConsoleLoggerScope(Action onComplete) : IDisposable
     {
-        private readonly Action onComplete;
-
-        public ConsoleLoggerScope(Action onComplete)
-        {
-            this.onComplete = onComplete;
-        }
-
         public void Dispose()
         {
-            this.onComplete();
+            onComplete();
         }
     }
 

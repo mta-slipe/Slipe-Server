@@ -7,20 +7,13 @@ using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers;
 
-public class PedTaskPacketHandler : IPacketHandler<PedTaskPacket>
+public class PedTaskPacketHandler(ISyncHandlerMiddleware<PedTaskPacket?> middleware) : IPacketHandler<PedTaskPacket>
 {
-    private readonly ISyncHandlerMiddleware<PedTaskPacket?> middleware;
-
     public PacketId PacketId => PacketId.PACKET_ID_PED_TASK;
-
-    public PedTaskPacketHandler(ISyncHandlerMiddleware<PedTaskPacket?> middleware)
-    {
-        this.middleware = middleware;
-    }
 
     public void HandlePacket(IClient client, PedTaskPacket packet)
     {
-        var players = this.middleware.GetPlayersToSyncTo(client.Player, packet);
+        var players = middleware.GetPlayersToSyncTo(client.Player, packet);
         packet.SendTo(players);
     }
 }

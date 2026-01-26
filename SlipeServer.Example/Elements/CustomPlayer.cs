@@ -14,7 +14,7 @@ public class CustomPlayer : Player
     public bool IsClickingVehicle { get; set; }
     public Blip Blip { get; }
 
-    public CustomPlayer(IExplosionService explosionService, MtaServer server) : base()
+    public CustomPlayer(IExplosionService explosionService, IMtaServer server) : base()
     {
         this.explosionService = explosionService;
 

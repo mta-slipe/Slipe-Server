@@ -106,12 +106,6 @@ public class MalfunctionService : IHostedService
     public Task StopAsync(CancellationToken cancellationToken) => throw new Exception("oops");
 }
 
-public class DIPlayer : Player
+public class DIPlayer(IServiceProvider serviceProvider) : Player
 {
-    private readonly IServiceProvider serviceProvider;
-
-    public DIPlayer(IServiceProvider serviceProvider)
-    {
-        this.serviceProvider = serviceProvider;
-    }
 }

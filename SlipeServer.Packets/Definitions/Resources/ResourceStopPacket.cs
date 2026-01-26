@@ -3,20 +3,15 @@ using SlipeServer.Packets.Enums;
 
 namespace SlipeServer.Packets.Definitions.Resources;
 
-public sealed class ResourceStopPacket : Packet
+public sealed class ResourceStopPacket(
+    ushort netId
+    ) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_RESOURCE_STOP;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ushort NetId { get; }
-
-    public ResourceStopPacket(
-        ushort netId
-    )
-    {
-        this.NetId = netId;
-    }
+    public ushort NetId { get; } = netId;
 
     public override void Read(byte[] bytes)
     {

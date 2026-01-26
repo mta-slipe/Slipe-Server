@@ -3,12 +3,8 @@ using SlipeServer.Server.Elements;
 
 namespace SlipeServer.Server.TestTools.FluentAssertions;
 
-public class PlayerAssertions : ElementAssertionsBase<Player>
+public class PlayerAssertions(Player player) : ElementAssertionsBase<Player>(player)
 {
-    public PlayerAssertions(Player player) : base(player)
-    {
-    }
-
     public override void BeEquivalentTo(Player player, string because = "", params object[] becauseArgs)
     {
         using var _ = new AssertionScope();

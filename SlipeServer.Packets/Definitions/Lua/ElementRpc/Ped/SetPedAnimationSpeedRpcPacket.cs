@@ -4,7 +4,7 @@ using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 
-public sealed class SetPedAnimationSpeedRpcPacket : Packet
+public sealed class SetPedAnimationSpeedRpcPacket(ElementId elementId, string animation, float speed) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
 
@@ -12,16 +12,9 @@ public sealed class SetPedAnimationSpeedRpcPacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; }
-    public string Animation { get; }
-    public float Speed { get; }
-
-    public SetPedAnimationSpeedRpcPacket(ElementId elementId, string animation, float speed)
-    {
-        this.ElementId = elementId;
-        this.Animation = animation;
-        this.Speed = speed;
-    }
+    public ElementId ElementId { get; } = elementId;
+    public string Animation { get; } = animation;
+    public float Speed { get; } = speed;
 
     public override void Read(byte[] bytes)
     {

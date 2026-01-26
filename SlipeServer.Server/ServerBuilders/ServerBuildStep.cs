@@ -2,14 +2,8 @@
 
 namespace SlipeServer.Server.ServerBuilders;
 
-public struct ServerBuildStep
+public readonly struct ServerBuildStep(Action<IMtaServer> step, ServerBuildStepPriority priority)
 {
-    public Action<MtaServer> Step { get; init; }
-    public ServerBuildStepPriority Priority { get; init; }
-
-    public ServerBuildStep(Action<MtaServer> step, ServerBuildStepPriority priority)
-    {
-        this.Step = step;
-        this.Priority = priority;
-    }
+    public Action<IMtaServer> Step { get; init; } = step;
+    public ServerBuildStepPriority Priority { get; init; } = priority;
 }

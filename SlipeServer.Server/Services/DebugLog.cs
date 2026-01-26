@@ -8,7 +8,7 @@ namespace SlipeServer.Server.Services;
 /// <summary>
 /// Represents the ingame debug dialog (/debugscript 3)
 /// </summary>
-public class DebugLog(MtaServer server) : IDebugLog
+public class DebugLog(IMtaServer server) : IDebugLog
 {
     public void Output(string message, DebugLevel level = DebugLevel.Information, Color? color = null)
     {

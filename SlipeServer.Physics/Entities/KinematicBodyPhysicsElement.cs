@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace SlipeServer.Physics.Entities;
 
-public class KinematicBodyPhysicsElement : PhysicsElement<BodyDescription, BodyHandle>
+public class KinematicBodyPhysicsElement(BodyHandle handle, BodyDescription description, PhysicsWorld physicsWorld, Simulation simulation) : PhysicsElement<BodyDescription, BodyHandle>(handle, description, physicsWorld, simulation)
 {
     protected override Vector3 Position
     {
@@ -46,10 +46,5 @@ public class KinematicBodyPhysicsElement : PhysicsElement<BodyDescription, BodyH
                 }
             }
         }
-    }
-
-    public KinematicBodyPhysicsElement(BodyHandle handle, BodyDescription description, PhysicsWorld physicsWorld, Simulation simulation) :
-        base(handle, description, physicsWorld, simulation)
-    {
     }
 }

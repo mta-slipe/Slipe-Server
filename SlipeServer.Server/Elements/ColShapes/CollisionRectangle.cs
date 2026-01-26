@@ -41,7 +41,7 @@ public class CollisionRectangle : CollisionShape
             position.Y > this.Position.Y && position.Y < bounds.Y;
     }
 
-    public new CollisionRectangle AssociateWith(MtaServer server)
+    public new CollisionRectangle AssociateWith(IMtaServer server)
     {
         base.AssociateWith(server);
         return this;

@@ -5,22 +5,15 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
 
-public sealed class SetVehicleVariantPacket : Packet
+public sealed class SetVehicleVariantPacket(ElementId elementId, byte variant1, byte variant2) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; set; }
-    public byte Variant1 { get; set; }
-    public byte Variant2 { get; set; }
-
-    public SetVehicleVariantPacket(ElementId elementId, byte variant1, byte variant2)
-    {
-        this.ElementId = elementId;
-        this.Variant1 = variant1;
-        this.Variant2 = variant2;
-    }
+    public ElementId ElementId { get; set; } = elementId;
+    public byte Variant1 { get; set; } = variant1;
+    public byte Variant2 { get; set; } = variant2;
 
     public override void Read(byte[] bytes)
     {

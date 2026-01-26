@@ -5,18 +5,13 @@ using System.Collections.Generic;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
 
-public sealed class VehicleSpawnPacket : Packet
+public sealed class VehicleSpawnPacket(IEnumerable<VehicleSpawnInfo> vehiclesToRespawn) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_VEHICLE_SPAWN;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public IEnumerable<VehicleSpawnInfo> VehiclesToSpawn { get; set; }
-
-    public VehicleSpawnPacket(IEnumerable<VehicleSpawnInfo> vehiclesToRespawn)
-    {
-        this.VehiclesToSpawn = vehiclesToRespawn;
-    }
+    public IEnumerable<VehicleSpawnInfo> VehiclesToSpawn { get; set; } = vehiclesToRespawn;
 
     public override void Read(byte[] bytes)
     {

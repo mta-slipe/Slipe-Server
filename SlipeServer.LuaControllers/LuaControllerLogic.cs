@@ -13,7 +13,7 @@ namespace SlipeServer.LuaControllers;
 
 public class LuaControllerLogic
 {
-    private readonly MtaServer server;
+    private readonly IMtaServer server;
     private readonly ILuaEventService luaEventService;
     private readonly ILuaValueMapper luaValueMapper;
     private readonly IFromLuaValueMapper fromLuaValueMapper;
@@ -23,7 +23,7 @@ public class LuaControllerLogic
     private readonly Dictionary<string, List<BoundEvent>> handlers = [];
 
     public LuaControllerLogic(
-        MtaServer server,
+        IMtaServer server,
         ILuaEventService luaEventService,
         ILuaValueMapper luaValueMapper,
         IFromLuaValueMapper fromLuaValueMapper,

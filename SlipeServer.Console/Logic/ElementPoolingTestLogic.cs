@@ -12,9 +12,9 @@ public class ElementPoolingTestLogic
     private readonly ElementPool<WorldObject> elementPool;
     private readonly Stack<WorldObject> objects;
     private readonly ILogger logger;
-    private readonly MtaServer server;
+    private readonly IMtaServer server;
 
-    public ElementPoolingTestLogic(ICommandService commandService, ILogger logger, MtaServer server)
+    public ElementPoolingTestLogic(ICommandService commandService, ILogger logger, IMtaServer server)
     {
         this.logger = logger;
         this.server = server;

@@ -9,7 +9,7 @@ namespace SlipeServer.Server.Services;
 /// <summary>
 /// Allows for the creation of fire
 /// </summary>
-public class FireService(MtaServer server) : IFireService
+public class FireService(IMtaServer server) : IFireService
 {
     public void CreateFire(Vector3 position, float size = 1.8f, Player? responsiblePlayer = null)
     {

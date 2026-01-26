@@ -6,21 +6,14 @@ using System.Numerics;
 
 namespace SlipeServer.Scripting.Definitions;
 
-public class ExplosionScriptDefinitions
+public class ExplosionScriptDefinitions(IExplosionService explosionService)
 {
-    private readonly IExplosionService explosionService;
-
-    public ExplosionScriptDefinitions(IExplosionService explosionService)
-    {
-        this.explosionService = explosionService;
-    }
-
     [ScriptFunctionDefinition("createExplosion")]
     public bool CreateExplosion(Vector3 position, int type, Player? creator = null)
     {
         if (Enum.IsDefined(typeof(ExplosionType), type))
         {
-            this.explosionService.CreateExplosion(position, (ExplosionType)type, creator);
+            explosionService.CreateExplosion(position, (ExplosionType)type, creator);
             return true;
         }
         return false;

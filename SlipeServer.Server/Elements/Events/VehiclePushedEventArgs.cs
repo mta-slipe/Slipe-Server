@@ -2,12 +2,7 @@
 
 namespace SlipeServer.Server.Elements.Events;
 
-public sealed class VehiclePushedEventArgs : EventArgs
+public sealed class VehiclePushedEventArgs(Player pusher) : EventArgs
 {
-    public Player Pusher { get; }
-
-    public VehiclePushedEventArgs(Player pusher)
-    {
-        this.Pusher = pusher;
-    }
+    public Player Pusher { get; } = pusher;
 }

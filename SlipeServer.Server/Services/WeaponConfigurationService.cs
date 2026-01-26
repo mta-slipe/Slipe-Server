@@ -15,9 +15,9 @@ namespace SlipeServer.Server.Services;
 public class WeaponConfigurationService : IWeaponConfigurationService
 {
     private readonly Dictionary<WeaponId, Dictionary<WeaponSkillLevel, WeaponConfiguration>> weaponConfigurations = [];
-    private readonly MtaServer server;
+    private readonly IMtaServer server;
 
-    public WeaponConfigurationService(MtaServer server)
+    public WeaponConfigurationService(IMtaServer server)
     {
         this.server = server;
 

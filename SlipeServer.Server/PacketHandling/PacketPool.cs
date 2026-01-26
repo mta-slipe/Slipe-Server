@@ -7,16 +7,9 @@ namespace SlipeServer.Server.PacketHandling;
 /// Object pool for packets, allowing for packets to be reused instead of continuously be reallocated. 
 /// Using this reduces the amount of garbage collection invocations.
 /// </summary>
-public class PacketPool<T> where T : Packet, new()
+public class PacketPool<T>(int? maxPacketCount = -1) where T : Packet, new()
 {
-    private readonly int? maxPacketCount;
-    private readonly ConcurrentQueue<T> packets;
-
-    public PacketPool(int? maxPacketCount = -1)
-    {
-        this.maxPacketCount = maxPacketCount;
-        this.packets = new();
-    }
+    private readonly ConcurrentQueue<T> packets = new();
 
     public T GetPacket()
     {
@@ -28,7 +21,7 @@ public class PacketPool<T> where T : Packet, new()
 
     public void ReturnPacket(T packet)
     {
-        if (this.packets.Count < this.maxPacketCount || this.maxPacketCount == -1)
+        if (this.packets.Count < maxPacketCount || maxPacketCount == -1)
         {
             packet.Reset();
             this.packets.Enqueue(packet);

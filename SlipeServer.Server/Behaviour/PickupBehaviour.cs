@@ -10,10 +10,10 @@ namespace SlipeServer.Server.Behaviour;
 /// </summary>
 public class PickupBehaviour
 {
-    private readonly MtaServer server;
+    private readonly IMtaServer server;
     private readonly IElementCollection elementCollection;
 
-    public PickupBehaviour(MtaServer server, IElementCollection elementCollection)
+    public PickupBehaviour(IMtaServer server, IElementCollection elementCollection)
     {
         this.server = server;
         this.elementCollection = elementCollection;

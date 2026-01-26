@@ -5,18 +5,13 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
 
-public sealed class RemovePlayerNametagColorPacket : Packet
+public sealed class RemovePlayerNametagColorPacket(ElementId elementId) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; set; }
-
-    public RemovePlayerNametagColorPacket(ElementId elementId)
-    {
-        this.ElementId = elementId;
-    }
+    public ElementId ElementId { get; set; } = elementId;
 
     public override void Read(byte[] bytes)
     {

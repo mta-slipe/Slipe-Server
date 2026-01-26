@@ -4,20 +4,14 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
 
-public sealed class HudComponentVisiblePacket : Packet
+public sealed class HudComponentVisiblePacket(byte hudComponent, bool show) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public byte HudComponent { get; set; }
-    public bool Show { get; set; }
-
-    public HudComponentVisiblePacket(byte hudComponent, bool show)
-    {
-        this.HudComponent = hudComponent;
-        this.Show = show;
-    }
+    public byte HudComponent { get; set; } = hudComponent;
+    public bool Show { get; set; } = show;
 
     public override void Read(byte[] bytes)
     {

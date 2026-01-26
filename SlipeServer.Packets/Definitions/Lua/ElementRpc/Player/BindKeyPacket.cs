@@ -4,20 +4,14 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
 
-public sealed class BindKeyPacket : Packet
+public sealed class BindKeyPacket(string key, bool hitState) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public string Key { get; set; }
-    public bool HitState { get; set; }
-
-    public BindKeyPacket(string key, bool hitState)
-    {
-        this.Key = key;
-        this.HitState = hitState;
-    }
+    public string Key { get; set; } = key;
+    public bool HitState { get; set; } = hitState;
 
     public override void Read(byte[] bytes)
     {

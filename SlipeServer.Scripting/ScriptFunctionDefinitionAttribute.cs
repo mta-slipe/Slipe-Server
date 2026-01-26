@@ -3,12 +3,7 @@
 namespace SlipeServer.Scripting;
 
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-public class ScriptFunctionDefinitionAttribute : Attribute
+public class ScriptFunctionDefinitionAttribute(string niceName) : Attribute
 {
-    public string NiceName { get; }
-
-    public ScriptFunctionDefinitionAttribute(string niceName)
-    {
-        this.NiceName = niceName;
-    }
+    public string NiceName { get; } = niceName;
 }

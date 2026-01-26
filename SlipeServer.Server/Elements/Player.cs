@@ -266,7 +266,7 @@ public class Player : Ped
         EnteringVehicle = null;
     }
 
-    public new Player AssociateWith(MtaServer server)
+    public new Player AssociateWith(IMtaServer server)
     {
         base.AssociateWith(server);
         return this;

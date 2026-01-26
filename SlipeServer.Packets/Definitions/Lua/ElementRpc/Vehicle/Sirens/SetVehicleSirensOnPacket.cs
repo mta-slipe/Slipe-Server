@@ -5,20 +5,14 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle.Sirens;
 
-public sealed class SetVehicleSirensOnPacket : Packet
+public sealed class SetVehicleSirensOnPacket(ElementId elementId, bool isOn) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; set; }
-    public bool IsOn { get; }
-
-    public SetVehicleSirensOnPacket(ElementId elementId, bool isOn)
-    {
-        this.ElementId = elementId;
-        this.IsOn = isOn;
-    }
+    public ElementId ElementId { get; set; } = elementId;
+    public bool IsOn { get; } = isOn;
 
     public override void Read(byte[] bytes)
     {

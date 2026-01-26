@@ -42,7 +42,7 @@ public class TestLogic
 
 public class ServerTestLogic
 {
-    private readonly MtaServer<CustomPlayer> server;
+    private readonly IMtaServer<CustomPlayer> server;
     private readonly IElementCollection elementCollection;
     private readonly RootElement root;
     private readonly IGameWorld worldService;
@@ -94,7 +94,7 @@ public class ServerTestLogic
     private readonly Team slipeDevsTeam;
 
     public ServerTestLogic(
-        MtaServer<CustomPlayer> server,
+        IMtaServer<CustomPlayer> server,
         IElementCollection elementCollection,
         RootElement root,
         IGameWorld world,

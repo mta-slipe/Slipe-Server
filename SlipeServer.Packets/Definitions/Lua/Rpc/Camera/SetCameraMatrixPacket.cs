@@ -4,25 +4,17 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Lua.Camera;
 
-public sealed class SetCameraMatrixPacket : Packet
+public sealed class SetCameraMatrixPacket(Vector3 position, Vector3 lookAt, float roll, float fov, byte timeContext) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public Vector3 Position { get; set; }
-    public Vector3 LookAt { get; set; }
-    public float Roll { get; set; }
-    public float Fov { get; set; }
-    public byte TimeContext { get; set; }
-    public SetCameraMatrixPacket(Vector3 position, Vector3 lookAt, float roll, float fov, byte timeContext)
-    {
-        this.Position = position;
-        this.LookAt = lookAt;
-        this.Roll = roll;
-        this.Fov = fov;
-        this.TimeContext = timeContext;
-    }
+    public Vector3 Position { get; set; } = position;
+    public Vector3 LookAt { get; set; } = lookAt;
+    public float Roll { get; set; } = roll;
+    public float Fov { get; set; } = fov;
+    public byte TimeContext { get; set; } = timeContext;
 
     public override void Read(byte[] bytes)
     {

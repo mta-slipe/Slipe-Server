@@ -4,18 +4,13 @@ using SlipeServer.Packets.Enums;
 
 namespace SlipeServer.Packets.Definitions.Lua.Rpc.World;
 
-public sealed class SetAircraftMaxHeightPacket : Packet
+public sealed class SetAircraftMaxHeightPacket(float maxHeight) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public float MaxHeight { get; set; }
-
-    public SetAircraftMaxHeightPacket(float maxHeight)
-    {
-        this.MaxHeight = maxHeight;
-    }
+    public float MaxHeight { get; set; } = maxHeight;
 
     public override void Read(byte[] bytes)
     {

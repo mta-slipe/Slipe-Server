@@ -14,13 +14,8 @@ public class TestCustomPlayer : Player
 
 }
 
-public class TestingServerWithCustomPlayer : TestingServer<TestCustomPlayer>
+public class TestingServerWithCustomPlayer(Configuration configuration = null, Action<ServerBuilder>? configure = null) : TestingServer<TestCustomPlayer>(configuration, configure)
 {
-    public TestingServerWithCustomPlayer(Configuration configuration = null, Action<ServerBuilder>? configure = null) : base(configuration, configure)
-    {
-
-    }
-
     protected override IClient CreateClient(ulong binaryAddress, INetWrapper netWrapper)
     {
         var player = new TestCustomPlayer();

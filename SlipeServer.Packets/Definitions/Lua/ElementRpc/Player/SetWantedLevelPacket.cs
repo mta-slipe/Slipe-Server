@@ -4,18 +4,13 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
 
-public sealed class SetWantedLevelPacket : Packet
+public sealed class SetWantedLevelPacket(byte level) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ushort Level { get; set; }
-
-    public SetWantedLevelPacket(byte level)
-    {
-        this.Level = level;
-    }
+    public ushort Level { get; set; } = level;
 
     public override void Read(byte[] bytes)
     {

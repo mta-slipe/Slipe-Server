@@ -15,30 +15,15 @@ using System.Linq;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Rpc;
 
-public class RpcPacketHandler : IPacketHandler<RpcPacket>
+public class RpcPacketHandler(
+    ILogger logger,
+    IMtaServer server,
+    RootElement root,
+    IElementCollection elementCollection,
+    Configuration configuration
+    ) : IPacketHandler<RpcPacket>
 {
     public PacketId PacketId => PacketId.PACKET_ID_RPC;
-
-    private readonly IElementCollection elementCollection;
-    private readonly Configuration configuration;
-    private readonly ILogger logger;
-    private readonly MtaServer server;
-    private readonly RootElement root;
-
-    public RpcPacketHandler(
-        ILogger logger,
-        MtaServer server,
-        RootElement root,
-        IElementCollection elementCollection,
-        Configuration configuration
-    )
-    {
-        this.logger = logger;
-        this.server = server;
-        this.root = root;
-        this.elementCollection = elementCollection;
-        this.configuration = configuration;
-    }
 
     public void HandlePacket(IClient client, RpcPacket packet)
     {
@@ -69,20 +54,20 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
                 break;
 
             default:
-                this.logger.LogWarning("Received RPC of type {type}", packet.FunctionId);
+                logger.LogWarning("Received RPC of type {type}", packet.FunctionId);
                 break;
         }
     }
 
     private void HandleDataStream(IClient client)
     {
-        var players = this.elementCollection.GetByType<Elements.Player>(ElementType.Player);
+        var players = elementCollection.GetByType<Elements.Player>(ElementType.Player);
 
         var otherPlayers = players
             .Except(new Elements.Player[] { client.Player })
             .ToArray();
 
-        var elements = this.elementCollection
+        var elements = elementCollection
             .GetAll()
             .Where(x => x.Associations.ToArray().Any(y => y.IsGlobal))
             .Where(x => x.IsVisibleToEveryone);
@@ -103,8 +88,8 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
         var newPlayerListPacket = PlayerPacketFactory.CreatePlayerListPacket([client.Player], false);
         newPlayerListPacket.SendTo(otherPlayers);
 
-        SyncPacketFactory.CreateSyncSettingsPacket(this.configuration).SendTo(client.Player);
-        SyncPacketFactory.CreateSyncIntervalPacket(this.configuration).SendTo(client.Player);
+        SyncPacketFactory.CreateSyncSettingsPacket(configuration).SendTo(client.Player);
+        SyncPacketFactory.CreateSyncIntervalPacket(configuration).SendTo(client.Player);
 
         foreach (var player in otherPlayers)
         {
@@ -115,12 +100,12 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
                 PedPacketFactory.CreateFullClothesPacket(player).SendTo(client.Player);
         }
 
-        this.server.HandlePlayerJoin(client.Player);
+        server.HandlePlayerJoin(client.Player);
     }
 
     private void HandleIngameNotice(IClient client)
     {
-        var players = this.elementCollection.GetByType<Elements.Player>(ElementType.Player);
+        var players = elementCollection.GetByType<Elements.Player>(ElementType.Player);
 
         var isVersionValid = TryParseVersionString(client.Version![..^2], out var version);
         if (!isVersionValid)
@@ -129,12 +114,12 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
             return;
         }
 
-        if (TryParseVersionString(this.configuration.MinVersion, out var parsedMinVersion))
+        if (TryParseVersionString(configuration.MinVersion, out var parsedMinVersion))
         {
             if (version < parsedMinVersion)
             {
-                client.SendPacket(PlayerPacketFactory.CreateUpdateInfoPacket(this.configuration.MinVersion, true));
-                client.Player.Kick($"Disconnected: Minimum mta version required: {this.configuration.MinVersion}");
+                client.SendPacket(PlayerPacketFactory.CreateUpdateInfoPacket(configuration.MinVersion, true));
+                client.Player.Kick($"Disconnected: Minimum mta version required: {configuration.MinVersion}");
                 return;
             }
         }
@@ -142,13 +127,13 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
         client.SendPacket(new JoinedGamePacket(
             client.Player.Id,
             players.Count() + 1,
-            this.root.Id,
-            this.configuration.HttpUrl != null ? HttpDownloadType.HTTP_DOWNLOAD_ENABLED_URL : HttpDownloadType.HTTP_DOWNLOAD_ENABLED_PORT,
-            this.configuration.HttpPort,
-            this.configuration.HttpUrl ?? "",
-            this.configuration.HttpConnectionsPerClient,
+            root.Id,
+            configuration.HttpUrl != null ? HttpDownloadType.HTTP_DOWNLOAD_ENABLED_URL : HttpDownloadType.HTTP_DOWNLOAD_ENABLED_PORT,
+            configuration.HttpPort,
+            configuration.HttpUrl ?? "",
+            configuration.HttpConnectionsPerClient,
             1,
-            isVoiceEnabled: this.configuration.IsVoiceEnabled
+            isVoiceEnabled: configuration.IsVoiceEnabled
         ));
     }
 
@@ -192,7 +177,7 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
     private void HandlePlayerTarget(IClient client, RpcPacket packet)
     {
         var id = packet.Reader.GetElementId();
-        var element = this.elementCollection.Get(id);
+        var element = elementCollection.Get(id);
         client.Player.Target = element;
     }
 
@@ -214,7 +199,7 @@ public class RpcPacketHandler : IPacketHandler<RpcPacket>
         var worldPosition = packet.Reader.GetVector3WithZAsFloat();
         Element? element = null;
         if (packet.Reader.GetBit())
-            element = this.elementCollection.Get(packet.Reader.GetElementId());
+            element = elementCollection.Get(packet.Reader.GetElementId());
 
         CursorButton button;
         bool isDown;

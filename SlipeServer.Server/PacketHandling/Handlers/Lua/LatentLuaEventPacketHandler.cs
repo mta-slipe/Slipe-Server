@@ -8,38 +8,22 @@ using System.Linq;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Lua;
 
-struct LatentTransfer
+struct LatentTransfer(ushort id, IClient source, LatentEventCategory category)
 {
-    public ushort Id { get; set; }
-    public IClient Source { get; set; }
-    public LatentEventCategory Category { get; set; }
+    public ushort Id { get; set; } = id;
+    public IClient Source { get; set; } = source;
+    public LatentEventCategory Category { get; set; } = category;
     public List<byte> Data { get; set; } = new();
-
-    public LatentTransfer(ushort id, IClient source, LatentEventCategory category)
-    {
-        this.Id = id;
-        this.Source = source;
-        this.Category = category;
-    }
 }
 
-public class LatentLuaEventPacketHandler : IPacketHandler<LatentLuaEventPacket>
+public class LatentLuaEventPacketHandler(
+    ILogger logger,
+    IMtaServer server
+    ) : IPacketHandler<LatentLuaEventPacket>
 {
-    private readonly ILogger logger;
-    private readonly MtaServer server;
-    private readonly Dictionary<IClient, LatentTransfer> transfers;
+    private readonly Dictionary<IClient, LatentTransfer> transfers = new();
 
     public PacketId PacketId => PacketId.PACKET_ID_LATENT_TRANSFER;
-
-    public LatentLuaEventPacketHandler(
-        ILogger logger,
-        MtaServer server
-    )
-    {
-        this.logger = logger;
-        this.server = server;
-        this.transfers = new();
-    }
 
     public void HandlePacket(IClient client, LatentLuaEventPacket packet)
     {
@@ -76,7 +60,7 @@ public class LatentLuaEventPacketHandler : IPacketHandler<LatentLuaEventPacket>
                 var length = BitConverter.ToUInt32(data, 1);
                 this.transfers.Remove(client);
 
-                this.server.EnqueuePacketToClient(client, packetId, data.Skip(5).ToArray());
+                server.EnqueuePacketToClient(client, packetId, data.Skip(5).ToArray());
             }
         }
     }

@@ -3,6 +3,7 @@ using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Enums;
 using System;
 using System.Numerics;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SlipeServer.Server.Elements;
@@ -37,7 +38,7 @@ public class WorldObject : Element
     public bool IsBroken { get; set; } = false;
     public bool IsRespawnable { get; set; } = false;
 
-    private readonly object movementLock = new();
+    private readonly Lock movementLock = new();
     public PositionRotationAnimation? Movement { get; private set; }
 
     protected Vector3 scale = Vector3.One;
@@ -106,7 +107,7 @@ public class WorldObject : Element
         this.Position = position;
     }
 
-    public new WorldObject AssociateWith(MtaServer server)
+    public new WorldObject AssociateWith(IMtaServer server)
     {
         base.AssociateWith(server);
         return this;

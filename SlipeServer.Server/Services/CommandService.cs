@@ -13,7 +13,7 @@ public class CommandService : ICommandService
     private readonly Dictionary<string, HashSet<Command>> caseSensitiveHandlers = [];
     private readonly Dictionary<string, HashSet<Command>> caseInsensitiveHandlers = [];
 
-    public CommandService(MtaServer server)
+    public CommandService(IMtaServer server)
     {
         server.PlayerJoined += HandlePlayerJoin;
     }

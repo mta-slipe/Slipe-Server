@@ -12,31 +12,20 @@ using System.Linq;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle;
 
-public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
+public class VehicleInOutPacketHandler(
+    IElementCollection elementCollection,
+    IMtaServer server,
+    ILogger logger
+    ) : IPacketHandler<VehicleInOutPacket>
 {
-    private readonly IElementCollection elementCollection;
-    private readonly MtaServer server;
-    private readonly ILogger logger;
-
     public PacketId PacketId => PacketId.PACKET_ID_VEHICLE_INOUT;
-
-    public VehicleInOutPacketHandler(
-        IElementCollection elementCollection,
-        MtaServer server,
-        ILogger logger
-    )
-    {
-        this.elementCollection = elementCollection;
-        this.server = server;
-        this.logger = logger;
-    }
 
     public void HandlePacket(IClient client, VehicleInOutPacket packet)
     {
-        var element = this.elementCollection.Get(packet.VehicleId);
+        var element = elementCollection.Get(packet.VehicleId);
         if (element == null)
         {
-            this.logger.LogTrace("Attempt to enter non-existant vehicle by {player}", client.Player.Name);
+            logger.LogTrace("Attempt to enter non-existant vehicle by {player}", client.Player.Name);
             return;
         }
 
@@ -148,7 +137,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
                         Seat = 0,
                         OutActionId = VehicleInOutActionReturns.RequestInConfirmed,
                     };
-                    this.server.BroadcastPacket(replyPacket);
+                    server.BroadcastPacket(replyPacket);
                 }
             } else
             {
@@ -173,7 +162,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
                         Door = packet.Door,
                         OutActionId = VehicleInOutActionReturns.RequestJackConfirmed,
                     };
-                    this.server.BroadcastPacket(replyPacket);
+                    server.BroadcastPacket(replyPacket);
                 }
             }
         } else
@@ -212,7 +201,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
                     Door = packet.Door,
                     OutActionId = VehicleInOutActionReturns.RequestInConfirmed,
                 };
-                this.server.BroadcastPacket(replyPacket);
+                server.BroadcastPacket(replyPacket);
             }
         }
     }
@@ -250,7 +239,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
             Seat = client.Player.Seat ?? 0,
             OutActionId = VehicleInOutActionReturns.NotifyInReturn,
         };
-        this.server.BroadcastPacket(replyPacket);
+        server.BroadcastPacket(replyPacket);
     }
 
     private void HandleNotifyInAbort(IClient client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
@@ -272,7 +261,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
             DoorOpenRatio = packet.DoorOpenRatio,
             OutActionId = VehicleInOutActionReturns.NotifyInAbortReturn,
         };
-        this.server.BroadcastPacket(replyPacket);
+        server.BroadcastPacket(replyPacket);
     }
 
     private void HandleRequestOut(IClient client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
@@ -310,7 +299,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
             OutActionId = VehicleInOutActionReturns.RequestOutConfirmed,
             Door = packet.Door
         };
-        this.server.BroadcastPacket(replyPacket);
+        server.BroadcastPacket(replyPacket);
     }
 
     private void HandleNotifyOut(IClient client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
@@ -331,7 +320,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
             OutActionId = VehicleInOutActionReturns.NotifyOutReturn,
             Seat = packet.Seat
         };
-        this.server.BroadcastPacket(replyPacket);
+        server.BroadcastPacket(replyPacket);
     }
 
     private void HandleNotifyOutAbort(IClient client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
@@ -351,7 +340,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
             OutActionId = VehicleInOutActionReturns.NotifyOutAbortReturn,
             Seat = packet.Seat
         };
-        this.server.BroadcastPacket(replyPacket);
+        server.BroadcastPacket(replyPacket);
     }
 
     private void HandleNotifyFellOff(IClient client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
@@ -371,7 +360,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
             OutActionId = VehicleInOutActionReturns.NotifyFellOffReturn,
             Seat = packet.Seat
         };
-        this.server.BroadcastPacket(replyPacket);
+        server.BroadcastPacket(replyPacket);
     }
 
     private void HandleNotifyJack(IClient client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
@@ -398,7 +387,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
                 OutActionId = VehicleInOutActionReturns.NotifyInReturn,
                 Seat = packet.Seat
             };
-            this.server.BroadcastPacket(notifyInReturnPacked);
+            server.BroadcastPacket(notifyInReturnPacked);
 
             return;
         }
@@ -420,7 +409,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
             OutActionId = VehicleInOutActionReturns.NotifyJackReturn,
             Seat = packet.Seat
         };
-        this.server.BroadcastPacket(replyPacket);
+        server.BroadcastPacket(replyPacket);
     }
 
     private void HandleNotifyJackAbort(IClient client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
@@ -438,7 +427,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
             OutActionId = VehicleInOutActionReturns.NotifyInAbortReturn,
             Seat = packet.Seat
         };
-        this.server.BroadcastPacket(replyPacket);
+        server.BroadcastPacket(replyPacket);
 
         var jackedPlayer = vehicle.Driver;
         if (jackedPlayer == null)
@@ -456,7 +445,7 @@ public class VehicleInOutPacketHandler : IPacketHandler<VehicleInOutPacket>
                 OutActionId = VehicleInOutActionReturns.NotifyOutReturn,
                 Seat = packet.Seat
             };
-            this.server.BroadcastPacket(jackReplyPacket);
+            server.BroadcastPacket(jackReplyPacket);
         }
     }
 }

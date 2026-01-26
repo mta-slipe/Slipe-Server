@@ -14,7 +14,7 @@ public class NotVisibleToAllTestLogic
     public NotVisibleToAllTestLogic(
         ILogger logger,
         CommandService commandService,
-        MtaServer server)
+        IMtaServer server)
     {
         this.logger = logger;
 

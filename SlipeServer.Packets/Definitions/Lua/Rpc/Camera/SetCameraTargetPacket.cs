@@ -4,18 +4,13 @@ using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Lua.Camera;
 
-public sealed class SetCameraTargetPacket : Packet
+public sealed class SetCameraTargetPacket(ElementId elementId) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; set; }
-
-    public SetCameraTargetPacket(ElementId elementId)
-    {
-        this.ElementId = elementId;
-    }
+    public ElementId ElementId { get; set; } = elementId;
 
     public override void Read(byte[] bytes)
     {

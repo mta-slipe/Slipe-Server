@@ -3,14 +3,8 @@ using System;
 
 namespace SlipeServer.Server.Elements.Events;
 
-public sealed class CollisionPolygonPointRemovedChangedArgs : EventArgs
+public sealed class CollisionPolygonPointRemovedChangedArgs(CollisionPolygon polygon, int index) : EventArgs
 {
-    public CollisionPolygon Polygon { get; }
-    public int Index { get; }
-
-    public CollisionPolygonPointRemovedChangedArgs(CollisionPolygon polygon, int index)
-    {
-        this.Polygon = polygon;
-        this.Index = index;
-    }
+    public CollisionPolygon Polygon { get; } = polygon;
+    public int Index { get; } = index;
 }

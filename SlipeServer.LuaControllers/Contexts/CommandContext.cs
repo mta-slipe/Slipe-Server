@@ -3,24 +3,14 @@
 namespace SlipeServer.LuaControllers.Contexts;
 
 
-public class CommandContext
+public class CommandContext(Player player, string command)
 {
-    public Player Player { get; }
-    public string Command { get; }
-
-    public CommandContext(Player player, string command)
-    {
-        this.Player = player;
-        this.Command = command;
-    }
+    public Player Player { get; } = player;
+    public string Command { get; } = command;
 }
 
 
-public class CommandContext<TPlayer> : CommandContext where TPlayer : Player
+public class CommandContext<TPlayer>(TPlayer player, string command) : CommandContext(player, command) where TPlayer : Player
 {
     public new TPlayer Player => (base.Player as TPlayer)!;
-
-    public CommandContext(TPlayer player, string command) : base(player, command)
-    {
-    }
 }

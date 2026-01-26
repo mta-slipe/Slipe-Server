@@ -11,7 +11,7 @@ namespace SlipeServer.Server.Behaviour;
 /// </summary>
 public class VoiceBehaviour
 {
-    public VoiceBehaviour(MtaServer server, IElementCollection elementCollection)
+    public VoiceBehaviour(IMtaServer server, IElementCollection elementCollection)
     {
         server.PlayerJoined += (player) =>
         {

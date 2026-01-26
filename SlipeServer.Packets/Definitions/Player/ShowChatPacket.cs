@@ -3,20 +3,14 @@ using SlipeServer.Packets.Enums;
 
 namespace SlipeServer.Packets.Definitions.Player;
 
-public sealed class ShowChatPacket : Packet
+public sealed class ShowChatPacket(bool show, bool inputBlocked) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public bool Show { get; }
-    public bool InputBlocked { get; }
-
-    public ShowChatPacket(bool show, bool inputBlocked)
-    {
-        this.Show = show;
-        this.InputBlocked = inputBlocked;
-    }
+    public bool Show { get; } = show;
+    public bool InputBlocked { get; } = inputBlocked;
 
     public override void Read(byte[] bytes)
     {

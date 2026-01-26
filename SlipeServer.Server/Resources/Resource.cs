@@ -15,7 +15,7 @@ namespace SlipeServer.Server.Resources;
 /// </summary>
 public class Resource
 {
-    private readonly MtaServer server;
+    private readonly IMtaServer server;
 
     public DummyElement Root { get; }
     public DummyElement DynamicRoot { get; }
@@ -30,7 +30,7 @@ public class Resource
     public bool IsOopEnabled { get; set; }
 
     public Resource(
-        MtaServer server, 
+        IMtaServer server, 
         RootElement root, 
         string name, 
         string? path = null

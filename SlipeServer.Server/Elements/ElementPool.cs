@@ -9,24 +9,15 @@ namespace SlipeServer.Server.PacketHandling;
 /// Element pools can be used to reduce the amount of garbage collection needed by re-using existing elements instead of creating new ones.
 /// </summary>
 /// <typeparam name="TElement">The type of elements to be stored within this pool</typeparam>
-public class ElementPool<TElement>
+/// <remarks>
+/// Creates an element pool
+/// </remarks>
+/// <param name="maxElementCount">The maximum amount of elements to store within this element pool that are not in use</param>
+/// <param name="returnsWhenDestroyed">Whether or not an element should be returned to the element pool (marked as not in use) when it is destroyed</param>
+public class ElementPool<TElement>(int maxElementCount = 64, bool returnsWhenDestroyed = true)
     where TElement : Element
 {
-    private readonly ConcurrentQueue<TElement> elements;
-    private readonly bool returnsWhenDestroyed;
-    private readonly int maxElementCount;
-
-    /// <summary>
-    /// Creates an element pool
-    /// </summary>
-    /// <param name="maxElementCount">The maximum amount of elements to store within this element pool that are not in use</param>
-    /// <param name="returnsWhenDestroyed">Whether or not an element should be returned to the element pool (marked as not in use) when it is destroyed</param>
-    public ElementPool(int maxElementCount = 64, bool returnsWhenDestroyed = true)
-    {
-        this.elements = new();
-        this.maxElementCount = maxElementCount;
-        this.returnsWhenDestroyed = returnsWhenDestroyed;
-    }
+    private readonly ConcurrentQueue<TElement> elements = new();
 
     /// <summary>
     /// Gets an element from the pool, or a new element if there are none available within the pool.
@@ -43,7 +34,7 @@ public class ElementPool<TElement>
             return element;
         }
 
-        if (!this.returnsWhenDestroyed)
+        if (!returnsWhenDestroyed)
             return createCall();
 
         var createdElement = createCall();
@@ -57,7 +48,7 @@ public class ElementPool<TElement>
     /// </summary>
     public void ReturnElement(TElement element)
     {
-        if (this.elements.Count < this.maxElementCount)
+        if (this.elements.Count < maxElementCount)
            this.elements.Enqueue(element);
     }
 }

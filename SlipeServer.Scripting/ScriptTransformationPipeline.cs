@@ -9,14 +9,9 @@ public interface IScriptTransform
     Stream Transform(Stream data, string lang);
 }
 
-public sealed class ScriptTransformationPipeline
+public sealed class ScriptTransformationPipeline(IEnumerable<IScriptTransform> scriptTransforms)
 {
-    private readonly List<IScriptTransform> scriptTransforms;
-
-    public ScriptTransformationPipeline(IEnumerable<IScriptTransform> scriptTransforms)
-    {
-        this.scriptTransforms = scriptTransforms.ToList();
-    }
+    private readonly List<IScriptTransform> scriptTransforms = scriptTransforms.ToList();
 
     public void Add(IScriptTransform scriptTransform)
     {

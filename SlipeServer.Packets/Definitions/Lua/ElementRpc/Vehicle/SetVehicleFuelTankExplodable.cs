@@ -5,20 +5,14 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
 
-public sealed class SetVehicleFuelTankExplodable : Packet
+public sealed class SetVehicleFuelTankExplodable(ElementId elementId, bool enabled) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; set; }
-    public bool Enabled { get; set; }
-
-    public SetVehicleFuelTankExplodable(ElementId elementId, bool enabled)
-    {
-        this.ElementId = elementId;
-        this.Enabled = enabled;
-    }
+    public ElementId ElementId { get; set; } = elementId;
+    public bool Enabled { get; set; } = enabled;
 
     public override void Read(byte[] bytes)
     {

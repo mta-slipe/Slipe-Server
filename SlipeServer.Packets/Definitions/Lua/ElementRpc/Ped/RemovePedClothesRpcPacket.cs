@@ -6,7 +6,7 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Ped;
 
-public sealed class RemovePedClothesRpcPacket : Packet
+public sealed class RemovePedClothesRpcPacket(ElementId elementId, byte type) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
 
@@ -14,14 +14,8 @@ public sealed class RemovePedClothesRpcPacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; set; }
-    public byte Type { get; }
-
-    public RemovePedClothesRpcPacket(ElementId elementId, byte type)
-    {
-        this.ElementId = elementId;
-        this.Type = type;
-    }
+    public ElementId ElementId { get; set; } = elementId;
+    public byte Type { get; } = type;
 
     public override void Read(byte[] bytes)
     {

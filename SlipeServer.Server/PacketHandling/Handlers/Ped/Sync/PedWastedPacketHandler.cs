@@ -9,25 +9,18 @@ using SlipeServer.Server.Elements.Enums;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers;
 
-public class PedWastedPacketHandler : IPacketHandler<PedWastedPacket>
+public class PedWastedPacketHandler(IElementCollection elementCollection) : IPacketHandler<PedWastedPacket>
 {
-    private readonly IElementCollection elementCollection;
-
     public PacketId PacketId => PacketId.PACKET_ID_PED_WASTED;
-
-    public PedWastedPacketHandler(IElementCollection elementCollection)
-    {
-        this.elementCollection = elementCollection;
-    }
 
     public void HandlePacket(IClient client, PedWastedPacket packet)
     {
-        if (this.elementCollection.Get(packet.SourceElementId) is not Ped ped)
+        if (elementCollection.Get(packet.SourceElementId) is not Ped ped)
             return;
 
         ped.RunAsSync(() =>
         {
-            ped.Kill(this.elementCollection.Get(packet.KillerId), (DamageType)packet.KillerWeapon, (BodyPart)packet.BodyPart, packet.AnimGroup, packet.AnimId);
+            ped.Kill(elementCollection.Get(packet.KillerId), (DamageType)packet.KillerWeapon, (BodyPart)packet.BodyPart, packet.AnimGroup, packet.AnimId);
         });
     }
 }

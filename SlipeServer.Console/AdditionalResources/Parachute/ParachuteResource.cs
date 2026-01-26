@@ -16,7 +16,7 @@ public class ParachuteResource : Resource
         ["parachuteopen.mp3"] = ResourceFiles.ParachuteOpenMp3
     };
 
-    public ParachuteResource(MtaServer server)
+    public ParachuteResource(IMtaServer server)
         : base(server, server.RootElement, "Parachute")
     {
         using var md5 = MD5.Create();

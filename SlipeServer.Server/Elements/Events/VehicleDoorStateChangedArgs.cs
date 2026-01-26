@@ -3,18 +3,10 @@ using System;
 
 namespace SlipeServer.Server.Elements.Events;
 
-public sealed class VehicleDoorStateChangedArgs : EventArgs
+public sealed class VehicleDoorStateChangedArgs(Vehicle vehicle, VehicleDoor door, VehicleDoorState state, bool spawnFlyingComponent) : EventArgs
 {
-    public Vehicle Vehicle { get; }
-    public VehicleDoor Door { get; }
-    public VehicleDoorState State { get; }
-    public bool SpawnFlyingComponent { get; }
-
-    public VehicleDoorStateChangedArgs(Vehicle vehicle, VehicleDoor door, VehicleDoorState state, bool spawnFlyingComponent)
-    {
-        this.Vehicle = vehicle;
-        this.Door = door;
-        this.State = state;
-        this.SpawnFlyingComponent = spawnFlyingComponent;
-    }
+    public Vehicle Vehicle { get; } = vehicle;
+    public VehicleDoor Door { get; } = door;
+    public VehicleDoorState State { get; } = state;
+    public bool SpawnFlyingComponent { get; } = spawnFlyingComponent;
 }

@@ -7,19 +7,22 @@ namespace SlipeServer.Server.Concepts;
 /// <summary>
 /// Represents an element that is attached to another element.
 /// </summary>
-public class ElementAttachment
+public class ElementAttachment(Element source,
+    Element target,
+    Vector3? positionOffset = null,
+    Vector3? rotationOffset = null)
 {
     /// <summary>
     /// The element that is attached to another element
     /// </summary>
-    public Element Source { get; }
+    public Element Source { get; } = source;
 
     /// <summary>
     /// The element that the source is attached to
     /// </summary>
-    public Element Target { get; }
+    public Element Target { get; } = target;
 
-    private Vector3 positionOffset;
+    private Vector3 positionOffset = positionOffset ?? Vector3.Zero;
     /// <summary>
     /// The position offset between the source and the target
     /// </summary>
@@ -34,7 +37,7 @@ public class ElementAttachment
         }
     }
 
-    private Vector3 rotationOffset;
+    private Vector3 rotationOffset = rotationOffset ?? Vector3.Zero;
     /// <summary>
     /// The rotation offset between the source and the target
     /// </summary>
@@ -47,17 +50,6 @@ public class ElementAttachment
             this.RotationOffsetChanged?.Invoke(value);
             this.UpdateAttachedElement();
         }
-    }
-
-    public ElementAttachment(Element source,
-        Element target,
-        Vector3? positionOffset = null,
-        Vector3? rotationOffset = null)
-    {
-        this.Source = source;
-        this.Target = target;
-        this.positionOffset = positionOffset ?? Vector3.Zero;
-        this.rotationOffset = rotationOffset ?? Vector3.Zero;
     }
 
     /// <summary>

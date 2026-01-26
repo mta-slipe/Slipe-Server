@@ -7,22 +7,15 @@ using SlipeServer.Server.Elements.Enums;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Player;
 
-public class PlayerWastedPacketHandler : IPacketHandler<PlayerWastedPacket>
+public class PlayerWastedPacketHandler(
+    IElementCollection elementCollection
+    ) : IPacketHandler<PlayerWastedPacket>
 {
-    private readonly IElementCollection elementCollection;
-
     public PacketId PacketId => PacketId.PACKET_ID_PLAYER_WASTED;
-
-    public PlayerWastedPacketHandler(
-        IElementCollection elementCollection
-    )
-    {
-        this.elementCollection = elementCollection;
-    }
 
     public void HandlePacket(IClient client, PlayerWastedPacket packet)
     {
-        var damager = this.elementCollection.Get(packet.KillerId);
+        var damager = elementCollection.Get(packet.KillerId);
         client.Player.Kill(
             damager, (DamageType)packet.WeaponType, (BodyPart)packet.BodyPart,
             packet.AnimationGroup, packet.AnimationId

@@ -15,7 +15,7 @@ public class PlayerJoinElementBehaviour
     private readonly IElementCollection elementCollection;
     private readonly ILogger logger;
 
-    public PlayerJoinElementBehaviour(IElementCollection elementCollection, MtaServer server, ILogger logger)
+    public PlayerJoinElementBehaviour(IElementCollection elementCollection, IMtaServer server, ILogger logger)
     {
         this.elementCollection = elementCollection;
         this.logger = logger;

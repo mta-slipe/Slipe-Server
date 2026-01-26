@@ -5,24 +5,16 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
 
-public sealed class SetVehicleDoorOpenRatio : Packet
+public sealed class SetVehicleDoorOpenRatio(ElementId elementId, byte door, float ratio, uint time) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; set; }
-    public byte Door { get; set; }
-    public float Ratio { get; set; }
-    public uint Time { get; set; }
-
-    public SetVehicleDoorOpenRatio(ElementId elementId, byte door, float ratio, uint time)
-    {
-        this.ElementId = elementId;
-        this.Door = door;
-        this.Ratio = Math.Clamp(ratio, 0.0f, 1.0f);
-        this.Time = time;
-    }
+    public ElementId ElementId { get; set; } = elementId;
+    public byte Door { get; set; } = door;
+    public float Ratio { get; set; } = Math.Clamp(ratio, 0.0f, 1.0f);
+    public uint Time { get; set; } = time;
 
     public override void Read(byte[] bytes)
     {

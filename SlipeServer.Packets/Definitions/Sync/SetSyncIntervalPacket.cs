@@ -3,41 +3,29 @@ using SlipeServer.Packets.Builder;
 
 namespace SlipeServer.Packets.Definitions.Sync;
 
-public sealed class SetSyncIntervalPacket : Packet
+public sealed class SetSyncIntervalPacket(
+    int pureSync,
+    int lightSync,
+    int camSync,
+    int pedSync,
+    int unoccupiedVehicle,
+    int objectSync,
+    int keySyncRotation,
+    int keySyncAnalogMove
+    ) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.Unreliable;
     public override PacketPriority Priority => PacketPriority.Low;
 
-    public int PureSync { get; set; }
-    public int LightSync { get; set; }
-    public int CamSync { get; set; }
-    public int PedSync { get; set; }
-    public int UnoccupiedVehicle { get; set; }
-    public int ObjectSync { get; set; }
-    public int KeySyncRotation { get; set; }
-    public int KeySyncAnalogMove { get; set; }
-
-    public SetSyncIntervalPacket(
-        int pureSync,
-        int lightSync,
-        int camSync,
-        int pedSync,
-        int unoccupiedVehicle,
-        int objectSync,
-        int keySyncRotation,
-        int keySyncAnalogMove
-    )
-    {
-        this.PureSync = pureSync;
-        this.LightSync = lightSync;
-        this.CamSync = camSync;
-        this.PedSync = pedSync;
-        this.UnoccupiedVehicle = unoccupiedVehicle;
-        this.ObjectSync = objectSync;
-        this.KeySyncRotation = keySyncRotation;
-        this.KeySyncAnalogMove = keySyncAnalogMove;
-    }
+    public int PureSync { get; set; } = pureSync;
+    public int LightSync { get; set; } = lightSync;
+    public int CamSync { get; set; } = camSync;
+    public int PedSync { get; set; } = pedSync;
+    public int UnoccupiedVehicle { get; set; } = unoccupiedVehicle;
+    public int ObjectSync { get; set; } = objectSync;
+    public int KeySyncRotation { get; set; } = keySyncRotation;
+    public int KeySyncAnalogMove { get; set; } = keySyncAnalogMove;
 
     public override void Read(byte[] bytes)
     {

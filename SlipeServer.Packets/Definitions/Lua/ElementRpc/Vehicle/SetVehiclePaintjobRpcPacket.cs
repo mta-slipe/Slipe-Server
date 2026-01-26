@@ -5,20 +5,14 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
 
-public sealed class SetVehiclePaintjobRpcPacket : Packet
+public sealed class SetVehiclePaintjobRpcPacket(ElementId elementId, byte paintjob) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; set; }
-    public byte Paintjob { get; set; }
-
-    public SetVehiclePaintjobRpcPacket(ElementId elementId, byte paintjob)
-    {
-        this.ElementId = elementId;
-        this.Paintjob = paintjob;
-    }
+    public ElementId ElementId { get; set; } = elementId;
+    public byte Paintjob { get; set; } = paintjob;
 
     public override void Read(byte[] bytes)
     {

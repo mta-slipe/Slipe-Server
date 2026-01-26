@@ -20,7 +20,7 @@ public class MapInfoBehaviour
     private readonly IGameWorld gameWorld;
     private readonly IWeaponConfigurationService weaponConfigurationService;
 
-    public MapInfoBehaviour(MtaServer server, IGameWorld gameWorld, IWeaponConfigurationService weaponConfigurationService)
+    public MapInfoBehaviour(IMtaServer server, IGameWorld gameWorld, IWeaponConfigurationService weaponConfigurationService)
     {
         this.gameWorld = gameWorld;
         this.weaponConfigurationService = weaponConfigurationService;

@@ -9,7 +9,7 @@ public class ServerExampleLogic
     private readonly ICommandService commandService;
     private readonly IChatBox chatBox;
 
-    public ServerExampleLogic(ICommandService commandService, IChatBox chatBox, MtaServer mtaServer)
+    public ServerExampleLogic(ICommandService commandService, IChatBox chatBox, IMtaServer mtaServer)
     {
         this.commandService = commandService;
         this.chatBox = chatBox;

@@ -12,18 +12,9 @@ using SlipeServer.Server.Clients;
 
 namespace SlipeServer.Server.PacketHandling.QueueHandlers;
 
-public class PedSyncPacketHandler : IPacketHandler<PedSyncPacket>
+public class PedSyncPacketHandler(IElementCollection elementCollection, ISyncHandlerMiddleware<PedSyncPacket?> middleware) : IPacketHandler<PedSyncPacket>
 {
-    private readonly IElementCollection elementCollection;
-    private readonly ISyncHandlerMiddleware<PedSyncPacket?> middleware;
-
     public PacketId PacketId => PacketId.PACKET_ID_PED_SYNC;
-
-    public PedSyncPacketHandler(IElementCollection elementCollection, ISyncHandlerMiddleware<PedSyncPacket?> middleware)
-    {
-        this.elementCollection = elementCollection;
-        this.middleware = middleware;
-    }
 
     public void HandlePacket(IClient client, PedSyncPacket packet)
     {
@@ -31,7 +22,7 @@ public class PedSyncPacketHandler : IPacketHandler<PedSyncPacket>
 
         foreach (var syncData in packet.Syncs)
         {
-            Ped pedElement = (Ped)this.elementCollection.Get(syncData.SourceElementId)!;
+            Ped pedElement = (Ped)elementCollection.Get(syncData.SourceElementId)!;
 
             if (pedElement != null)
             {
@@ -66,7 +57,7 @@ public class PedSyncPacketHandler : IPacketHandler<PedSyncPacket>
             }
         }
 
-        var players = this.middleware.GetPlayersToSyncTo(client.Player, packet);
+        var players = middleware.GetPlayersToSyncTo(client.Player, packet);
         packet.Syncs = pedsToSync;
         packet.SendTo(players);
     }

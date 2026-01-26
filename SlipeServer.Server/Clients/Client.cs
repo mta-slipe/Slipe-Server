@@ -14,15 +14,19 @@ namespace SlipeServer.Server.Clients;
 /// Representation of a client connected to the server
 /// </summary>
 /// <typeparam name="TPlayer"></typeparam>
-public class Client<TPlayer>
+/// <remarks>
+/// Creates a client
+/// </remarks>
+/// <param name="binaryAddress">The identifier using within the networking interface for the client</param>
+/// <param name="netWrapper">The networking interface the client is connected to</param>
+/// <param name="player">The player this client is associated with</param>
+public class Client<TPlayer>(ulong binaryAddress, INetWrapper netWrapper, TPlayer player)
     : IClient, IClient<TPlayer>
     where TPlayer : Player
 {
-    private readonly INetWrapper netWrapper;
-    private readonly ulong binaryAddress;
     private ushort bitStreamVersion;
 
-    protected TPlayer Player { get; set; }
+    protected TPlayer Player { get; set; } = player;
     TPlayer IClient<TPlayer>.Player
     {
         get => this.Player;
@@ -62,7 +66,7 @@ public class Client<TPlayer>
     /// <summary>
     /// Indicates whether or not the client is currently connected
     /// </summary>
-    public bool IsConnected { get; set; }
+    public bool IsConnected { get; set; } = true;
 
     /// <summary>
     /// The client's current connection state, indicating where in the connection process the client currently is
@@ -75,20 +79,6 @@ public class Client<TPlayer>
     public uint Ping { get; set; }
 
     /// <summary>
-    /// Creates a client
-    /// </summary>
-    /// <param name="binaryAddress">The identifier using within the networking interface for the client</param>
-    /// <param name="netWrapper">The networking interface the client is connected to</param>
-    /// <param name="player">The player this client is associated with</param>
-    public Client(ulong binaryAddress, INetWrapper netWrapper, TPlayer player)
-    {
-        this.binaryAddress = binaryAddress;
-        this.netWrapper = netWrapper;
-        this.Player = player;
-        this.IsConnected = true;
-    }
-
-    /// <summary>
     /// Sends a single packet to the client
     /// </summary>
     /// <param name="packet"></param>
@@ -97,7 +87,7 @@ public class Client<TPlayer>
         if (!CanSendPacket(packet.PacketId))
             return;
 
-        this.netWrapper.SendPacket(this.binaryAddress, this.bitStreamVersion, packet);
+        netWrapper.SendPacket(binaryAddress, this.bitStreamVersion, packet);
         HandleSentPacket(packet.PacketId);
     }
 
@@ -111,7 +101,7 @@ public class Client<TPlayer>
         if (!CanSendPacket(packetId))
             return;
 
-        this.netWrapper.SendPacket(this.binaryAddress, packetId, this.bitStreamVersion, data, priority, reliability);
+        netWrapper.SendPacket(binaryAddress, packetId, this.bitStreamVersion, data, priority, reliability);
         HandleSentPacket(packetId);
     }
 
@@ -162,7 +152,7 @@ public class Client<TPlayer>
     {
         this.bitStreamVersion = version;
         if (this.IsConnected)
-            this.netWrapper.SetVersion(this.binaryAddress, version);
+            netWrapper.SetVersion(binaryAddress, version);
     }
 
     /// <summary>
@@ -171,7 +161,7 @@ public class Client<TPlayer>
     public void ResendModPackets()
     {
         if (this.IsConnected)
-            this.netWrapper.ResendModPackets(this.binaryAddress);
+            netWrapper.ResendModPackets(binaryAddress);
     }
 
     /// <summary>
@@ -180,7 +170,7 @@ public class Client<TPlayer>
     public void ResendPlayerACInfo()
     {
         if (this.IsConnected)
-            this.netWrapper.ResendPlayerACInfo(this.binaryAddress);
+            netWrapper.ResendPlayerACInfo(binaryAddress);
     }
 
     /// <summary>
@@ -188,7 +178,7 @@ public class Client<TPlayer>
     /// </summary>
     public void FetchSerial()
     {
-        var serialExtraAndVersion = this.netWrapper.GetClientSerialExtraAndVersion(this.binaryAddress);
+        var serialExtraAndVersion = netWrapper.GetClientSerialExtraAndVersion(binaryAddress);
         this.Serial = serialExtraAndVersion.Item1;
         this.Extra = serialExtraAndVersion.Item2;
         this.Version = serialExtraAndVersion.Item3;
@@ -199,18 +189,13 @@ public class Client<TPlayer>
     /// </summary>
     public void FetchIp()
     {
-        this.IPAddress = this.netWrapper.GetPlayerIp(this.binaryAddress);
+        this.IPAddress = netWrapper.GetPlayerIp(binaryAddress);
     }
 }
 
 /// <summary>
 /// Representation of a client connected to the server
 /// </summary>
-public class Client : Client<Player>
+public class Client(ulong binaryAddress, INetWrapper netWrapper, Player player) : Client<Player>(binaryAddress, netWrapper, player)
 {
-    public Client(ulong binaryAddress, INetWrapper netWrapper, Player player)
-        : base(binaryAddress, netWrapper, player)
-    {
-
-    }
 }

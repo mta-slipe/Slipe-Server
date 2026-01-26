@@ -6,24 +6,16 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 
-public sealed class AttachElementRpcPacket : Packet
+public sealed class AttachElementRpcPacket(ElementId elementId, ElementId attachedToElementId, Vector3 offsetPosition, Vector3 offsetRotation) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; set; }
-    public ElementId AttachedToElementId { get; set; }
-    public Vector3 OffsetPosition { get; set; }
-    public Vector3 OffsetRotation { get; set; }
-
-    public AttachElementRpcPacket(ElementId elementId, ElementId attachedToElementId, Vector3 offsetPosition, Vector3 offsetRotation)
-    {
-        this.ElementId = elementId;
-        this.AttachedToElementId = attachedToElementId;
-        this.OffsetPosition = offsetPosition;
-        this.OffsetRotation = offsetRotation;
-    }
+    public ElementId ElementId { get; set; } = elementId;
+    public ElementId AttachedToElementId { get; set; } = attachedToElementId;
+    public Vector3 OffsetPosition { get; set; } = offsetPosition;
+    public Vector3 OffsetRotation { get; set; } = offsetRotation;
 
     public override void Read(byte[] bytes)
     {

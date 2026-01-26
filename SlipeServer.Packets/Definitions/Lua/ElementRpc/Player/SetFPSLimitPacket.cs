@@ -4,18 +4,13 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
 
-public sealed class SetFPSLimitPacket : Packet
+public sealed class SetFPSLimitPacket(ushort limit) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ushort Limit { get; set; }
-
-    public SetFPSLimitPacket(ushort limit)
-    {
-        this.Limit = limit;
-    }
+    public ushort Limit { get; set; } = limit;
 
     public override void Read(byte[] bytes)
     {

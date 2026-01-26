@@ -5,51 +5,36 @@ using System.Collections.Generic;
 
 namespace SlipeServer.Packets.Definitions.Resources;
 
-public sealed class ResourceStartPacket : Packet
+public sealed class ResourceStartPacket(
+    string name,
+    ushort netId,
+    ElementId resourceElementId,
+    ElementId resourceDynamicElementId,
+    ushort uncachedScriptCount,
+    string? minServerVersion,
+    string? minClientVersion,
+    bool isOopEnabled,
+    int downloadPriorityGroup,
+    IEnumerable<ResourceFile> files,
+    IEnumerable<string> exportedFunctions
+    ) : Packet
 {
 
     public override PacketId PacketId => PacketId.PACKET_ID_RESOURCE_START;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public string Name { get; set; }
-    public ushort NetId { get; }
-    public ElementId ResourceDynamicElementId { get; set; }
-    public ushort UncachedScriptCount { get; }
-    public string MinServerVersion { get; }
-    public string MinClientVersion { get; }
-    public bool IsOopEnabled { get; }
-    public int DownloadPriorityGroup { get; }
-    public IEnumerable<ResourceFile> Files { get; }
-    public IEnumerable<string> ExportedFunctions { get; }
-    public ElementId ResourceElementId { get; }
-
-    public ResourceStartPacket(
-        string name,
-        ushort netId,
-        ElementId resourceElementId,
-        ElementId resourceDynamicElementId,
-        ushort uncachedScriptCount,
-        string? minServerVersion,
-        string? minClientVersion,
-        bool isOopEnabled,
-        int downloadPriorityGroup,
-        IEnumerable<ResourceFile> files,
-        IEnumerable<string> exportedFunctions
-    )
-    {
-        this.Name = name;
-        this.NetId = netId;
-        this.ResourceElementId = resourceElementId;
-        this.ResourceDynamicElementId = resourceDynamicElementId;
-        this.UncachedScriptCount = uncachedScriptCount;
-        this.MinServerVersion = minServerVersion ?? "";
-        this.MinClientVersion = minClientVersion ?? "";
-        this.IsOopEnabled = isOopEnabled;
-        this.DownloadPriorityGroup = downloadPriorityGroup;
-        this.Files = files;
-        this.ExportedFunctions = exportedFunctions;
-    }
+    public string Name { get; set; } = name;
+    public ushort NetId { get; } = netId;
+    public ElementId ResourceDynamicElementId { get; set; } = resourceDynamicElementId;
+    public ushort UncachedScriptCount { get; } = uncachedScriptCount;
+    public string MinServerVersion { get; } = minServerVersion ?? "";
+    public string MinClientVersion { get; } = minClientVersion ?? "";
+    public bool IsOopEnabled { get; } = isOopEnabled;
+    public int DownloadPriorityGroup { get; } = downloadPriorityGroup;
+    public IEnumerable<ResourceFile> Files { get; } = files;
+    public IEnumerable<string> ExportedFunctions { get; } = exportedFunctions;
+    public ElementId ResourceElementId { get; } = resourceElementId;
 
     public override void Read(byte[] bytes)
     {

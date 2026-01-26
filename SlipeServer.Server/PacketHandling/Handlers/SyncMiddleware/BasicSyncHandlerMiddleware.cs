@@ -5,18 +5,11 @@ using System.Linq;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Middleware;
 
-public class BasicSyncHandlerMiddleware<TData> : ISyncHandlerMiddleware<TData>
+public class BasicSyncHandlerMiddleware<TData>(IElementCollection elementCollection) : ISyncHandlerMiddleware<TData>
 {
-    private readonly IElementCollection elementCollection;
-
-    public BasicSyncHandlerMiddleware(IElementCollection elementCollection)
-    {
-        this.elementCollection = elementCollection;
-    }
-
     public IEnumerable<Elements.Player> GetPlayersToSyncTo(Elements.Player player, TData packet)
     {
-        return this.elementCollection
+        return elementCollection
             .GetByType<Elements.Player>(ElementType.Player)
             .Where(x => x != player);
     }

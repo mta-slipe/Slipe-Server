@@ -24,7 +24,7 @@ namespace SlipeServer.Server.Services;
 /// </summary>
 public class GameWorld : IGameWorld
 {
-    private readonly MtaServer server;
+    private readonly IMtaServer server;
     private readonly Dictionary<GarageLocation, bool> garageStates;
     private readonly Dictionary<WeaponId, bool> jetpackEnabledWeapons;
     private readonly Dictionary<GlitchType, bool> enabledGlitches;
@@ -352,7 +352,7 @@ public class GameWorld : IGameWorld
 
     #endregion
 
-    public GameWorld(MtaServer server)
+    public GameWorld(IMtaServer server)
     {
         this.server = server;
         this.garageStates = new Dictionary<GarageLocation, bool>();

@@ -5,18 +5,11 @@ using SlipeServer.Server.ElementCollections;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Player.Sync;
 
-public class CameraSyncPacketHandler : IPacketHandler<CameraSyncPacket>
+public class CameraSyncPacketHandler(
+    IElementCollection elementCollection
+    ) : IPacketHandler<CameraSyncPacket>
 {
     public PacketId PacketId => PacketId.PACKET_ID_CAMERA_SYNC;
-
-    private readonly IElementCollection elementCollection;
-
-    public CameraSyncPacketHandler(
-        IElementCollection elementCollection
-    )
-    {
-        this.elementCollection = elementCollection;
-    }
 
     public void HandlePacket(IClient client, CameraSyncPacket packet)
     {
@@ -29,7 +22,7 @@ public class CameraSyncPacketHandler : IPacketHandler<CameraSyncPacket>
                 player.Camera.LookAt = packet.LookAt;
             } else
             {
-                player.Camera.Target = this.elementCollection.Get(packet.TargetId);
+                player.Camera.Target = elementCollection.Get(packet.TargetId);
             }
         });
     }

@@ -6,7 +6,7 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.WorldObject;
 
-public sealed class SetWorldObjectScaleRpcPacket : Packet
+public sealed class SetWorldObjectScaleRpcPacket(ElementId elementId, Vector3 scale) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
 
@@ -14,14 +14,8 @@ public sealed class SetWorldObjectScaleRpcPacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; }
-    public Vector3 Scale { get; }
-
-    public SetWorldObjectScaleRpcPacket(ElementId elementId, Vector3 scale)
-    {
-        this.ElementId = elementId;
-        this.Scale = scale;
-    }
+    public ElementId ElementId { get; } = elementId;
+    public Vector3 Scale { get; } = scale;
 
     public override void Read(byte[] bytes)
     {

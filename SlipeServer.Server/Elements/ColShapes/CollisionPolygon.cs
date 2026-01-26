@@ -99,7 +99,7 @@ public class CollisionPolygon : CollisionShape
         return intersections % 2 == 1;
     }
 
-    public new CollisionPolygon AssociateWith(MtaServer server)
+    public new CollisionPolygon AssociateWith(IMtaServer server)
     {
         base.AssociateWith(server);
         return this;

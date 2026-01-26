@@ -3,39 +3,26 @@ using SlipeServer.Packets.Builder;
 
 namespace SlipeServer.Packets.Definitions.Sync;
 
-public sealed class SetSyncSettingsPacket : Packet
+public sealed class SetSyncSettingsPacket(
+    byte[] bulletSyncWeaponIds, bool extrapolationEnabled, short extrapolationBaseMilliSeconds,
+    short extrapolationPercentage, short extrapolationMaxMilliseconds,
+    bool useAlternativePulseOrder, bool allowFastSprintFix,
+    bool allowDriveByAnimationFix, bool allowShotgunDamageFix
+    ) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_SYNC_SETTINGS;
     public override PacketReliability Reliability => PacketReliability.Unreliable;
     public override PacketPriority Priority => PacketPriority.Low;
 
-    public byte[] BulletSyncWeaponIds { get; }
-    public bool ExtrapolationEnabled { get; }
-    public short ExtrapolationBaseMilliSeconds { get; }
-    public short ExtrapolationPercentage { get; }
-    public short ExtrapolationMaxMilliseconds { get; }
-    public bool UseAlternativePulseOrder { get; }
-    public bool AllowFastSprintFix { get; }
-    public bool AllowDriveByAnimationFix { get; }
-    public bool AllowShotgunDamageFix { get; }
-
-    public SetSyncSettingsPacket(
-        byte[] bulletSyncWeaponIds, bool extrapolationEnabled, short extrapolationBaseMilliSeconds,
-        short extrapolationPercentage, short extrapolationMaxMilliseconds,
-        bool useAlternativePulseOrder, bool allowFastSprintFix,
-        bool allowDriveByAnimationFix, bool allowShotgunDamageFix
-    )
-    {
-        this.BulletSyncWeaponIds = bulletSyncWeaponIds;
-        this.ExtrapolationEnabled = extrapolationEnabled;
-        this.ExtrapolationBaseMilliSeconds = extrapolationBaseMilliSeconds;
-        this.ExtrapolationPercentage = extrapolationPercentage;
-        this.ExtrapolationMaxMilliseconds = extrapolationMaxMilliseconds;
-        this.UseAlternativePulseOrder = useAlternativePulseOrder;
-        this.AllowFastSprintFix = allowFastSprintFix;
-        this.AllowDriveByAnimationFix = allowDriveByAnimationFix;
-        this.AllowShotgunDamageFix = allowShotgunDamageFix;
-    }
+    public byte[] BulletSyncWeaponIds { get; } = bulletSyncWeaponIds;
+    public bool ExtrapolationEnabled { get; } = extrapolationEnabled;
+    public short ExtrapolationBaseMilliSeconds { get; } = extrapolationBaseMilliSeconds;
+    public short ExtrapolationPercentage { get; } = extrapolationPercentage;
+    public short ExtrapolationMaxMilliseconds { get; } = extrapolationMaxMilliseconds;
+    public bool UseAlternativePulseOrder { get; } = useAlternativePulseOrder;
+    public bool AllowFastSprintFix { get; } = allowFastSprintFix;
+    public bool AllowDriveByAnimationFix { get; } = allowDriveByAnimationFix;
+    public bool AllowShotgunDamageFix { get; } = allowShotgunDamageFix;
 
     public override void Read(byte[] bytes)
     {

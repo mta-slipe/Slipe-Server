@@ -7,22 +7,15 @@ using System.Net;
 
 namespace SlipeServer.Server.Proxy;
 
-public class ProxyNetWrapper : INetWrapper
+public class ProxyNetWrapper(ProxyService proxyService) : INetWrapper
 {
-    private readonly ProxyService proxyService;
-
-    public ProxyNetWrapper(ProxyService proxyService)
-    {
-        this.proxyService = proxyService;
-    }
-
     public void Start() { }
 
     public void Stop() { }
 
     protected virtual void SendPacket(ulong binaryAddress, byte packetId, ushort bitStreamVersion, byte[] payload, PacketPriority priority, PacketReliability reliability)
     {
-        this.proxyService.SendMessage(RemoteMessageType.packet, packetId, binaryAddress, payload);
+        proxyService.SendMessage(RemoteMessageType.packet, packetId, binaryAddress, payload);
     }
 
     public void SendPacket(ulong binaryAddress, ushort bitStreamVersion, Packet packet)

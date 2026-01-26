@@ -10,21 +10,19 @@ namespace SlipeServer.Server.Resources;
 /// </summary>
 public class ResourceService
 {
-    private readonly MtaServer server;
+    private readonly IMtaServer server;
     private readonly RootElement root;
     private readonly IResourceProvider resourceProvider;
 
-    private readonly List<Resource> startedResources;
+    private readonly List<Resource> startedResources = [];
 
     public IReadOnlyCollection<Resource> StartedResources => this.startedResources.AsReadOnly();
 
-    public ResourceService(MtaServer server, RootElement root, IResourceProvider resourceProvider)
+    public ResourceService(IMtaServer server, RootElement root, IResourceProvider resourceProvider)
     {
         this.server = server;
         this.root = root;
         this.resourceProvider = resourceProvider;
-
-        this.startedResources = new List<Resource>();
 
         this.server.PlayerJoined += HandlePlayerJoin;
     }

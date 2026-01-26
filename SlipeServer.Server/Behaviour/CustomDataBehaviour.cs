@@ -10,9 +10,9 @@ namespace SlipeServer.Server.Behaviour;
 /// </summary>
 public class CustomDataBehaviour
 {
-    private readonly MtaServer server;
+    private readonly IMtaServer server;
 
-    public CustomDataBehaviour(MtaServer server, IElementCollection elementCollection)
+    public CustomDataBehaviour(IMtaServer server, IElementCollection elementCollection)
     {
         server.ElementCreated += HandleElementCreation;
         this.server = server;

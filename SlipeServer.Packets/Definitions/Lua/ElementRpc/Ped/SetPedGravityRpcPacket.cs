@@ -4,7 +4,7 @@ using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 
-public sealed class SetPedGravityRpcPacket : Packet
+public sealed class SetPedGravityRpcPacket(ElementId elementId, float gravity) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
 
@@ -12,14 +12,8 @@ public sealed class SetPedGravityRpcPacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; }
-    public float Gravity { get; }
-
-    public SetPedGravityRpcPacket(ElementId elementId, float gravity)
-    {
-        this.ElementId = elementId;
-        this.Gravity = gravity;
-    }
+    public ElementId ElementId { get; } = elementId;
+    public float Gravity { get; } = gravity;
 
     public override void Read(byte[] bytes)
     {

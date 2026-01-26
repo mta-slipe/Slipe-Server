@@ -6,7 +6,7 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 
-public sealed class SetRadarAreaSizePacket : Packet
+public sealed class SetRadarAreaSizePacket(ElementId elementId, Vector2 size) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
 
@@ -14,14 +14,8 @@ public sealed class SetRadarAreaSizePacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; }
-    public Vector2 Size { get; }
-
-    public SetRadarAreaSizePacket(ElementId elementId, Vector2 size)
-    {
-        this.ElementId = elementId;
-        this.Size = size;
-    }
+    public ElementId ElementId { get; } = elementId;
+    public Vector2 Size { get; } = size;
 
     public override void Read(byte[] bytes)
     {

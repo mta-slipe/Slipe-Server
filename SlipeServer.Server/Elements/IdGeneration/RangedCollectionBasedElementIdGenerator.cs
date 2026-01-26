@@ -1,23 +1,14 @@
 ﻿using SlipeServer.Server.ElementCollections;
+using System.Threading;
 
 namespace SlipeServer.Server.Elements.IdGeneration;
 
-public class RangedCollectionBasedElementIdGenerator : IElementIdGenerator
+public class RangedCollectionBasedElementIdGenerator(IElementCollection elementCollection, uint start, uint stop) : IElementIdGenerator
 {
-    private readonly IElementCollection elementCollection;
-    private readonly uint start;
-    private readonly uint stop;
-    private uint idCounter;
+    private readonly uint start = start;
+    private uint idCounter = start;
 
-    private readonly object idLock = new();
-
-    public RangedCollectionBasedElementIdGenerator(IElementCollection elementCollection, uint start, uint stop)
-    {
-        this.idCounter = start;
-        this.elementCollection = elementCollection;
-        this.start = start;
-        this.stop = stop;
-    }
+    private readonly Lock idLock = new();
 
     public uint GetId()
     {
@@ -25,10 +16,10 @@ public class RangedCollectionBasedElementIdGenerator : IElementIdGenerator
         {
             this.idCounter++;
             var start = this.idCounter;
-            while (this.elementCollection.Get(this.idCounter) != null)
+            while (elementCollection.Get(this.idCounter) != null)
             {
                 this.idCounter++;
-                if (this.idCounter > this.stop)
+                if (this.idCounter > stop)
                     this.idCounter = this.start;
                 if (this.idCounter == start)
                     throw new ElementIdsExhaustedException();

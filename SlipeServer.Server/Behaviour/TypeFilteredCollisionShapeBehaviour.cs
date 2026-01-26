@@ -14,14 +14,11 @@ namespace SlipeServer.Server.Behaviour;
 /// </summary>
 public class TypeFilteredCollisionShapeBehaviour
 {
-    private readonly HashSet<CollisionShape> collisionShapes;
-    private readonly HashSet<Type> types;
+    private readonly HashSet<CollisionShape> collisionShapes = [];
+    private readonly HashSet<Type> types = [];
 
-    public TypeFilteredCollisionShapeBehaviour(MtaServer server, IElementCollection elementCollection, IEnumerable<Type> types)
+    public TypeFilteredCollisionShapeBehaviour(IMtaServer server, IElementCollection elementCollection, IEnumerable<Type> types)
     {
-        this.types = new HashSet<Type>(types);
-
-        this.collisionShapes = new HashSet<CollisionShape>();
         foreach (var collisionShape in elementCollection.GetByType<CollisionShape>(ElementType.Colshape))
         {
             this.AddCollisionShape(collisionShape);

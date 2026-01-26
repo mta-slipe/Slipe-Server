@@ -37,7 +37,7 @@ public class CollisionCuboid : CollisionShape
             position.Z > this.Position.Z && position.Z < bounds.Z;
     }
 
-    public new CollisionCuboid AssociateWith(MtaServer server)
+    public new CollisionCuboid AssociateWith(IMtaServer server)
     {
         base.AssociateWith(server);
         return this;

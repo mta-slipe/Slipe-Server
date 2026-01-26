@@ -1,6 +1,6 @@
 ﻿namespace SlipeServer.Hosting;
 
-public class MtaServerHostedService<T> : IHostedLifecycleService where T : MtaServer
+public class MtaServerHostedService<T> : IHostedLifecycleService where T : IMtaServer
 {
     private readonly T server;
 

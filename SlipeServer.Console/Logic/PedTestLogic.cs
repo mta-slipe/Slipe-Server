@@ -11,7 +11,7 @@ public class PedTestLogic
     private readonly Ped ped;
 
     public PedTestLogic(
-        MtaServer<CustomPlayer> server,
+        IMtaServer<CustomPlayer> server,
         ICommandService commandService
     )
     {

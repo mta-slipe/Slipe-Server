@@ -1,15 +1,8 @@
 ﻿namespace SlipeServer.Server.Tests.Unit.Mappers;
 
-internal struct TestVector3
+internal struct TestVector3(float x, float y, float z)
 {
-    public float X { get; set; }
-    public float Y { get; set; }
-    public float Z { get; set; }
-
-    public TestVector3(float x, float y, float z)
-    {
-        this.X = x;
-        this.Y = y;
-        this.Z = z;
-    }
+    public float X { get; set; } = x;
+    public float Y { get; set; } = y;
+    public float Z { get; set; } = z;
 }

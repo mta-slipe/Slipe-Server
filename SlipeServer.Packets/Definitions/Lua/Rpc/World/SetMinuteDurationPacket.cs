@@ -4,18 +4,14 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.Rpc.World;
 
-public sealed class SetMinuteDurationPacket : Packet
+public sealed class SetMinuteDurationPacket(uint duration) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public uint Duration { get; set; }
+    public uint Duration { get; set; } = duration;
 
-    public SetMinuteDurationPacket(uint duration)
-    {
-        this.Duration = duration;
-    }
     public override void Read(byte[] bytes)
     {
         throw new NotImplementedException();

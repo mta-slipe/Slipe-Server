@@ -8,7 +8,7 @@ namespace SlipeServer.Server.Behaviour;
 /// </summary>
 public class EventLoggingBehaviour
 {
-    public EventLoggingBehaviour(MtaServer server, ILogger logger)
+    public EventLoggingBehaviour(IMtaServer server, ILogger logger)
     {
         server.LuaEventTriggered += (luaEvent) =>
         {

@@ -93,7 +93,7 @@ public static class ServiceCollectionExtensions
     }
 
     public static void AddDefaultBehaviours(
-        this MtaServer mtaServer,
+        this IMtaServer mtaServer,
         ServerBuilderDefaultBehaviours except = ServerBuilderDefaultBehaviours.None)
     {
         if ((except & ServerBuilderDefaultBehaviours.AseBehaviour) == 0)
@@ -132,7 +132,7 @@ public static class ServiceCollectionExtensions
             mtaServer.InstantiatePersistent<CustomDataBehaviour>();
     }
     public static void AddDefaultPacketHandlers(
-        this MtaServer mtaServer,
+        this IMtaServer mtaServer,
         ServerBuilderDefaultPacketHandlers except = ServerBuilderDefaultPacketHandlers.None)
     {
         if ((except & ServerBuilderDefaultPacketHandlers.JoinedGamePacketHandler) == 0)

@@ -3,19 +3,10 @@ using System;
 
 namespace SlipeServer.Lua;
 
-public class LuaArgumentException : LuaException
+public class LuaArgumentException(string name, Type expectedType, int index, DataType actualType) : LuaException($"Bad argument expected {expectedType.Name} got {actualType}")
 {
-    public string Name { get; }
-    public Type ExpectedType { get; }
-    public int Index { get; }
-    public DataType ActualType { get; }
-
-    public LuaArgumentException(string name, Type expectedType, int index, DataType actualType)
-        : base($"Bad argument expected {expectedType.Name} got {actualType}")
-    {
-        Name = name;
-        ExpectedType = expectedType;
-        Index = index;
-        ActualType = actualType;
-    }
+    public string Name { get; } = name;
+    public Type ExpectedType { get; } = expectedType;
+    public int Index { get; } = index;
+    public DataType ActualType { get; } = actualType;
 }

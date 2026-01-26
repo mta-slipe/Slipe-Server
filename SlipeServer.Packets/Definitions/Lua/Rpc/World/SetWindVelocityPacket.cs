@@ -5,18 +5,13 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Lua.Rpc.World;
 
-public sealed class SetWindVelocityPacket : Packet
+public sealed class SetWindVelocityPacket(Vector3 velocity) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public Vector3 WindVelocity { get; set; }
-
-    public SetWindVelocityPacket(Vector3 velocity)
-    {
-        this.WindVelocity = velocity;
-    }
+    public Vector3 WindVelocity { get; set; } = velocity;
 
     public override void Read(byte[] bytes)
     {

@@ -2,14 +2,8 @@
 
 namespace SlipeServer.Server.Elements.Events;
 
-public sealed class PlayerVoiceStartArgs : EventArgs
+public sealed class PlayerVoiceStartArgs(Player source, byte[] dataBuffer) : EventArgs
 {
-    public Player Source { get; }
-    public byte[] DataBuffer { get; }
-
-    public PlayerVoiceStartArgs(Player source, byte[] dataBuffer)
-    {
-        this.Source = source;
-        this.DataBuffer = dataBuffer;
-    }
+    public Player Source { get; } = source;
+    public byte[] DataBuffer { get; } = dataBuffer;
 }

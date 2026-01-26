@@ -3,12 +3,8 @@ using Nett;
 
 namespace SlipeServer.ConfigurationProviders.Configurations;
 
-public class TomlConfigurationProvider : IConfigurationProvider
+public class TomlConfigurationProvider(string fileName) : IConfigurationProvider
 {
-    public Configuration Configuration { private set; get; }
+    public Configuration Configuration { private set; get; } = Toml.ReadFile<Configuration>(fileName);
     public Configuration GetConfiguration() => this.Configuration;
-    public TomlConfigurationProvider(string fileName)
-    {
-        this.Configuration = Toml.ReadFile<Configuration>(fileName);
-    }
 }

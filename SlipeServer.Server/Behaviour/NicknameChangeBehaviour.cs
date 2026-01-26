@@ -10,7 +10,7 @@ namespace SlipeServer.Server.Behaviour;
 /// </summary>
 public class NicknameChangeBehaviour
 {
-    public NicknameChangeBehaviour(MtaServer server, ChatBox chatBox, ILogger? logger)
+    public NicknameChangeBehaviour(IMtaServer server, ChatBox chatBox, ILogger? logger)
     {
         server.PlayerJoined += (player) =>
         {

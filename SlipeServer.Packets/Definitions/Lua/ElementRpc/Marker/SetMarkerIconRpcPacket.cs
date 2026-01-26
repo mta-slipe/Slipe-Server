@@ -5,19 +5,14 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Marker;
 
-public sealed class SetMarkerIconRpcPacket : Packet
+public sealed class SetMarkerIconRpcPacket(ElementId elementId, byte markerType) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; set; }
-    public byte MarkerType { get; set; }
-    public SetMarkerIconRpcPacket(ElementId elementId, byte markerType)
-    {
-        this.ElementId = elementId;
-        this.MarkerType = markerType;
-    }
+    public ElementId ElementId { get; set; } = elementId;
+    public byte MarkerType { get; set; } = markerType;
 
     public override void Read(byte[] bytes)
     {

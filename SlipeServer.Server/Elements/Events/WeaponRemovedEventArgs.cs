@@ -3,16 +3,9 @@ using System;
 
 namespace SlipeServer.Server.Elements.Events;
 
-public sealed class WeaponRemovedEventArgs : EventArgs
+public sealed class WeaponRemovedEventArgs(Ped ped, WeaponId weaponId, ushort? ammoCount) : EventArgs
 {
-    public Ped Ped { get; }
-    public WeaponId WeaponId { get; }
-    public ushort? AmmoCount { get; }
-
-    public WeaponRemovedEventArgs(Ped ped, WeaponId weaponId, ushort? ammoCount)
-    {
-        this.Ped = ped;
-        this.WeaponId = weaponId;
-        this.AmmoCount = ammoCount == 0 ? null : ammoCount;
-    }
+    public Ped Ped { get; } = ped;
+    public WeaponId WeaponId { get; } = weaponId;
+    public ushort? AmmoCount { get; } = ammoCount == 0 ? null : ammoCount;
 }

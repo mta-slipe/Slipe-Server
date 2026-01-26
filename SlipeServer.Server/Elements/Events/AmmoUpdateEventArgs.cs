@@ -3,20 +3,11 @@ using System;
 
 namespace SlipeServer.Server.Elements.Events;
 
-public sealed class AmmoUpdateEventArgs : EventArgs
+public sealed class AmmoUpdateEventArgs(Ped ped, WeaponId weaponId, ushort ammoCount, ushort? ammoInClipCount, bool isSync = false) : EventArgs
 {
-    public Ped Ped { get; set; }
-    public WeaponId WeaponId { get; }
-    public ushort AmmoCount { get; }
-    public ushort? AmmoInClipCount { get; }
-    public bool IsSync { get; }
-
-    public AmmoUpdateEventArgs(Ped ped, WeaponId weaponId, ushort ammoCount, ushort? ammoInClipCount, bool isSync = false)
-    {
-        this.Ped = ped;
-        this.WeaponId = weaponId;
-        this.AmmoCount = ammoCount;
-        this.AmmoInClipCount = ammoInClipCount;
-        this.IsSync = isSync;
-    }
+    public Ped Ped { get; set; } = ped;
+    public WeaponId WeaponId { get; } = weaponId;
+    public ushort AmmoCount { get; } = ammoCount;
+    public ushort? AmmoInClipCount { get; } = ammoInClipCount;
+    public bool IsSync { get; } = isSync;
 }

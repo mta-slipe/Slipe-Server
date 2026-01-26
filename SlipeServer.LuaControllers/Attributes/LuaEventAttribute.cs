@@ -1,12 +1,7 @@
 ﻿namespace SlipeServer.LuaControllers.Attributes;
 
 [AttributeUsage(AttributeTargets.Method)]
-public class LuaEventAttribute : Attribute
+public class LuaEventAttribute(string eventName) : Attribute
 {
-    public string EventName { get; }
-
-    public LuaEventAttribute(string eventName)
-    {
-        this.EventName = eventName;
-    }
+    public string EventName { get; } = eventName;
 }

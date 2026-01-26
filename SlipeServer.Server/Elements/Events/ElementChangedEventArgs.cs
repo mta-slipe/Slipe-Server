@@ -2,26 +2,14 @@
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class ElementChangedEventArgs<TSource, TValue> : EventArgs
+public class ElementChangedEventArgs<TSource, TValue>(TSource source, TValue oldValue, TValue newValue, bool isSync = false) : EventArgs
 {
-    public TSource Source { get; }
-    public TValue OldValue { get; }
-    public TValue NewValue { get; }
-    public bool IsSync { get; }
-
-    public ElementChangedEventArgs(TSource source, TValue oldValue, TValue newValue, bool isSync = false)
-    {
-        this.Source = source;
-        this.OldValue = oldValue;
-        this.NewValue = newValue;
-        this.IsSync = isSync;
-    }
+    public TSource Source { get; } = source;
+    public TValue OldValue { get; } = oldValue;
+    public TValue NewValue { get; } = newValue;
+    public bool IsSync { get; } = isSync;
 }
 
-public sealed class ElementChangedEventArgs<T> : ElementChangedEventArgs<Element, T>
+public sealed class ElementChangedEventArgs<T>(Element source, T oldValue, T newValue, bool isSync = false) : ElementChangedEventArgs<Element, T>(source, oldValue, newValue, isSync)
 {
-    public ElementChangedEventArgs(Element source, T oldValue, T newValue, bool isSync = false)
-        : base(source, oldValue, newValue, isSync)
-    {
-    }
 }

@@ -6,7 +6,7 @@ namespace SlipeServer.Server.Services;
 /// <summary>
 /// Represents the F8 console on clients. 
 /// </summary>
-public class ClientConsole(MtaServer server) : IClientConsole
+public class ClientConsole(IMtaServer server) : IClientConsole
 {
     public void Output(string message)
     {

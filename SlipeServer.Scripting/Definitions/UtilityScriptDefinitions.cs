@@ -6,19 +6,12 @@ using System.Text;
 
 namespace SlipeServer.Scripting.Definitions;
 
-public class UtilityScriptDefinitions
+public class UtilityScriptDefinitions(IMtaServer server)
 {
-    private readonly MtaServer server;
-
-    public UtilityScriptDefinitions(MtaServer server)
-    {
-        this.server = server;
-    }
-
     [ScriptFunctionDefinition("getTickCount")]
     public double GetTickCount()
     {
-        return Math.Floor(this.server.Uptime.TotalMilliseconds + 0.5);
+        return Math.Floor(server.Uptime.TotalMilliseconds + 0.5);
     }
 
     [ScriptFunctionDefinition("base64Encode")]

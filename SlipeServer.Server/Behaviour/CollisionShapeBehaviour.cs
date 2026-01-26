@@ -15,7 +15,7 @@ public class CollisionShapeBehaviour
 {
     private readonly ConcurrentDictionary<CollisionShape, byte> collisionShapes;
 
-    public CollisionShapeBehaviour(MtaServer server, IElementCollection elementCollection)
+    public CollisionShapeBehaviour(IMtaServer server, IElementCollection elementCollection)
     {
         this.collisionShapes = new();
         foreach (var collisionShape in elementCollection.GetByType<CollisionShape>(ElementType.Colshape))

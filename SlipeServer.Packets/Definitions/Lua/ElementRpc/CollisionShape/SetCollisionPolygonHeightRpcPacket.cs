@@ -6,20 +6,14 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.CollisionShape;
 
-public sealed class SetCollisionPolygonHeightRpcPacket : Packet
+public sealed class SetCollisionPolygonHeightRpcPacket(ElementId elementId, Vector2 height) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; set; }
-    public Vector2 Height { get; set; }
-
-    public SetCollisionPolygonHeightRpcPacket(ElementId elementId, Vector2 height)
-    {
-        this.ElementId = elementId;
-        this.Height = height;
-    }
+    public ElementId ElementId { get; set; } = elementId;
+    public Vector2 Height { get; set; } = height;
 
     public override void Read(byte[] bytes)
     {

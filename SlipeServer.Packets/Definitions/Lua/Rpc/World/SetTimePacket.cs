@@ -4,20 +4,15 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.Rpc.World;
 
-public sealed class SetTimePacket : Packet
+public sealed class SetTimePacket(byte hour, byte minute) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public byte Hour { get; set; }
-    public byte Minute { get; set; }
+    public byte Hour { get; set; } = hour;
+    public byte Minute { get; set; } = minute;
 
-    public SetTimePacket(byte hour, byte minute)
-    {
-        this.Hour = hour;
-        this.Minute = minute;
-    }
     public override void Read(byte[] bytes)
     {
         throw new NotImplementedException();

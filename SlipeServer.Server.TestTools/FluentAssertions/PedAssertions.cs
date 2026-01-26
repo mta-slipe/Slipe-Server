@@ -3,12 +3,8 @@ using SlipeServer.Server.Elements;
 
 namespace SlipeServer.Server.TestTools.FluentAssertions;
 
-public class PedAssertions : ElementAssertionsBase<Ped>
+public class PedAssertions(Ped ped) : ElementAssertionsBase<Ped>(ped)
 {
-    public PedAssertions(Ped ped) : base(ped)
-    {
-    }
-
     public override void BeEquivalentTo(Ped ped, string because = "", params object[] becauseArgs)
     {
         using var _ = new AssertionScope();

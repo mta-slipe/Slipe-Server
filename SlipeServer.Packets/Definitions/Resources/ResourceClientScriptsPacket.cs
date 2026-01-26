@@ -4,24 +4,18 @@ using System.Collections.Generic;
 
 namespace SlipeServer.Packets.Definitions.Resources;
 
-public sealed class ResourceClientScriptsPacket : Packet
+public sealed class ResourceClientScriptsPacket(
+    ushort netId,
+    Dictionary<string, byte[]> files
+    ) : Packet
 {
 
     public override PacketId PacketId => PacketId.PACKET_ID_RESOURCE_CLIENT_SCRIPTS;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ushort NetId { get; }
-    public Dictionary<string, byte[]> Files { get; }
-
-    public ResourceClientScriptsPacket(
-        ushort netId,
-        Dictionary<string, byte[]> files
-    )
-    {
-        this.NetId = netId;
-        this.Files = files;
-    }
+    public ushort NetId { get; } = netId;
+    public Dictionary<string, byte[]> Files { get; } = files;
 
     public override void Read(byte[] bytes)
     {

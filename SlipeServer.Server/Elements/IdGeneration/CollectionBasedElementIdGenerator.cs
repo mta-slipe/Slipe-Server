@@ -1,12 +1,13 @@
 ﻿using SlipeServer.Server.Constants;
 using SlipeServer.Server.ElementCollections;
+using System.Threading;
 
 namespace SlipeServer.Server.Elements.IdGeneration;
 
 public class CollectionBasedElementIdGenerator(IElementCollection elementCollection) : IElementIdGenerator
 {
     private uint idCounter = 1;
-    private readonly object idLock = new();
+    private readonly Lock idLock = new();
 
     public uint GetId()
     {

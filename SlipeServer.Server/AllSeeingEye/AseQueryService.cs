@@ -13,7 +13,7 @@ namespace SlipeServer.Server.AllSeeingEye;
 /// <summary>
 /// Service responsible for generating the response to the ASE queries
 /// </summary>
-public class AseQueryService(MtaServer mtaServer, Configuration configuration, IElementCollection elementCollection) : IAseQueryService
+public class AseQueryService(IMtaServer mtaServer, Configuration configuration, IElementCollection elementCollection) : IAseQueryService
 {
     private readonly AseVersion aseVersion = AseVersion.v1_6;
     private readonly Dictionary<string, string> rules = [];

@@ -5,29 +5,18 @@ using System.Text;
 
 namespace SlipeServer.Packets.Reader;
 
-public class PacketReader
+public class PacketReader(byte[] data)
 {
-    private readonly byte[] data;
-    private int dataIndex;
-    private byte byteIndex;
+    private int dataIndex = 0;
+    private byte byteIndex = 128;
 
-    public int Counter { get; private set; }
-    public int Size { get; private set; }
+    public int Counter { get; private set; } = 0;
+    public int Size { get; private set; } = data.Length * 8;
     public bool IsFinishedReading => this.Counter == this.Size;
-
-    public PacketReader(byte[] data)
-    {
-        this.data = data;
-        this.Counter = 0;
-        this.Size = data.Length * 8;
-
-        this.dataIndex = 0;
-        this.byteIndex = 128;
-    }
 
     private bool GetBitFromData()
     {
-        var current = this.data[this.dataIndex];
+        var current = data[this.dataIndex];
         var bit = (current & this.byteIndex) > 0;
         this.byteIndex >>= 1;
         if (this.byteIndex == 0)
@@ -44,7 +33,7 @@ public class PacketReader
         if ((this.Counter % 8) == 0)
         {
             this.Counter += 8;
-            return this.data[this.dataIndex++];
+            return data[this.dataIndex++];
         }
 
         byte value = 0;

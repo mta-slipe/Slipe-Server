@@ -6,7 +6,7 @@ using System.Drawing;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 
-public sealed class SetRadarAreaColorPacket : Packet
+public sealed class SetRadarAreaColorPacket(ElementId elementId, Color color) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
 
@@ -14,14 +14,8 @@ public sealed class SetRadarAreaColorPacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; }
-    public Color Color { get; }
-
-    public SetRadarAreaColorPacket(ElementId elementId, Color color)
-    {
-        this.ElementId = elementId;
-        this.Color = color;
-    }
+    public ElementId ElementId { get; } = elementId;
+    public Color Color { get; } = color;
 
     public override void Read(byte[] bytes)
     {

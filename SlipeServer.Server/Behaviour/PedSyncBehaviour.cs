@@ -17,7 +17,7 @@ public class PedSyncBehaviour
     private readonly Configuration configuration;
 
     public PedSyncBehaviour(
-        MtaServer server,
+        IMtaServer server,
         IElementCollection elementCollection,
         Configuration configuration,
         ITimerService timerService)

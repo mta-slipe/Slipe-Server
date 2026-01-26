@@ -89,14 +89,10 @@ public class TestingServerHosting<TPlayer> : IDisposable where TPlayer : Player
     public T GetRequiredService<T>() where T : class => this.host.Services.GetRequiredService<T>();
 }
 
-public class TestingServerHosting : TestingServerHosting<TestingPlayer>
+public class TestingServerHosting(
+    Configuration configuration,
+    Action<HostApplicationBuilder>? applicationBuilder = null,
+    Action<ServerBuilder> serverBuilder = null
+    ) : TestingServerHosting<TestingPlayer>(configuration, applicationBuilder, serverBuilder)
 {
-    public TestingServerHosting(
-        Configuration configuration, 
-        Action<HostApplicationBuilder>? applicationBuilder = null, 
-        Action<ServerBuilder> serverBuilder = null
-    ) : base(configuration, applicationBuilder, serverBuilder)
-    {
-
-    }
 }

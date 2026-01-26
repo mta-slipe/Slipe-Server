@@ -10,23 +10,17 @@ using System.Timers;
 
 namespace SlipeServer.Server.Services;
 
-class LatentTransfer
+class LatentTransfer(Player player)
 {
     public ushort Id { get; set; }
     public int Index { get; set; }
     public int Rate { get; set; } = 50000;
-    public Player Player { get; set; }
+    public Player Player { get; set; } = player;
     public byte[] Data { get; set; } = Array.Empty<byte>();
     public PacketId PacketId { get; set; }
     public PacketPriority Priority { get; set; }
     public PacketReliability Reliability { get; set; }
     public ushort ResourceNetId { get; set; }
-
-    public LatentTransfer(Player player)
-    {
-        this.Player = player;
-    }
-
 }
 
 /// <summary>
@@ -36,21 +30,19 @@ class LatentTransfer
 /// </summary>
 public class LatentPacketService : ILatentPacketService
 {
-    private readonly MtaServer server;
+    private readonly IMtaServer server;
     private readonly RootElement root;
-    private readonly HashSet<LatentTransfer> transfers;
-    private readonly HashSet<Player> activeTransferPlayers;
+    private readonly HashSet<LatentTransfer> transfers = [];
+    private readonly HashSet<Player> activeTransferPlayers = [];
 
     private readonly Timer sendTimer;
     private readonly uint bytesPerSend;
     private ushort index;
 
-    public LatentPacketService(MtaServer server, RootElement root, Configuration configuration)
+    public LatentPacketService(IMtaServer server, RootElement root, Configuration configuration)
     {
         this.server = server;
         this.root = root;
-        this.transfers = new();
-        this.activeTransferPlayers = new();
 
         this.bytesPerSend = configuration.LatentBandwidthLimit / 1000 * configuration.LatentSendInterval;
 

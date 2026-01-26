@@ -6,12 +6,12 @@ using System;
 
 namespace SlipeServer.Server.Elements.Structs;
 
-public class Weapon
+public class Weapon(WeaponId weaponId, ushort ammo, ushort? ammoInClip = null)
 {
-    public WeaponSlot Slot { get; }
-    public WeaponId Type { get; }
+    public WeaponSlot Slot { get; } = WeaponConstants.SlotPerWeapon[weaponId];
+    public WeaponId Type { get; } = weaponId;
 
-    private ushort ammo;
+    private ushort ammo = ammo;
     public ushort Ammo
     {
         get => this.ammo;
@@ -25,7 +25,7 @@ public class Weapon
         }
     }
 
-    private ushort ammoInClip;
+    private ushort ammoInClip = ammoInClip ?? WeaponConstants.ClipCountsPerWeapon[weaponId];
     public ushort AmmoInClip
     {
         get => this.ammoInClip;
@@ -37,14 +37,6 @@ public class Weapon
             this.ammoInClip = value;
             this.AmmoInClipUpdated?.Invoke(this, new AmmoUpdateEventArgs(this, this.ammo, this.ammoInClip));
         }
-    }
-
-    public Weapon(WeaponId weaponId, ushort ammo, ushort? ammoInClip = null)
-    {
-        this.Type = weaponId;
-        this.Slot = WeaponConstants.SlotPerWeapon[weaponId];
-        this.ammo = ammo;
-        this.ammoInClip = ammoInClip ?? WeaponConstants.ClipCountsPerWeapon[weaponId];
     }
 
     public void UpdateAmmoCountWithoutTriggerEvent(ushort ammo, ushort? ammoInClip)

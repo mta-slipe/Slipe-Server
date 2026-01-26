@@ -2,9 +2,6 @@
 
 namespace SlipeServer.Server.Bans;
 
-public class InvalidBanException : Exception
+public class InvalidBanException(string? message) : Exception(message)
 {
-    public InvalidBanException(string? message) : base(message)
-    {
-    }
 }

@@ -8,16 +8,8 @@ namespace SlipeServer.Server.ElementConcepts;
 /// <summary>
 /// Represents a vehicle's upgrades
 /// </summary>
-public class VehicleUpgrades
+public class VehicleUpgrades(Vehicle vehicle)
 {
-    private readonly Vehicle vehicle;
-
-    public VehicleUpgrades(Vehicle vehicle)
-    {
-        this.vehicle = vehicle;
-    }
-
-
     private VehicleUpgradeHood hood = VehicleUpgradeHood.None;
     public VehicleUpgradeHood Hood
     {
@@ -26,9 +18,9 @@ public class VehicleUpgrades
         {
             if (this.Hood != value && CanHave(value))
             {
-                var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.Hood, (ushort)this.Hood, (ushort)value);
+                var args = new VehicleUpgradeChanged(vehicle, VehicleUpgradeSlot.Hood, (ushort)this.Hood, (ushort)value);
                 this.hood = value;
-                UpgradeChanged?.Invoke(this.vehicle, args);
+                UpgradeChanged?.Invoke(vehicle, args);
             }
         }
     }
@@ -41,9 +33,9 @@ public class VehicleUpgrades
         {
             if (this.Vent != value && CanHave(value))
             {
-                var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.Vent, (ushort)this.Vent, (ushort)value);
+                var args = new VehicleUpgradeChanged(vehicle, VehicleUpgradeSlot.Vent, (ushort)this.Vent, (ushort)value);
                 this.vent = value;
-                UpgradeChanged?.Invoke(this.vehicle, args);
+                UpgradeChanged?.Invoke(vehicle, args);
             }
         }
     }
@@ -56,9 +48,9 @@ public class VehicleUpgrades
         {
             if (this.Spoiler != value && CanHave(value))
             {
-                var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.Spoiler, (ushort)this.Spoiler, (ushort)value);
+                var args = new VehicleUpgradeChanged(vehicle, VehicleUpgradeSlot.Spoiler, (ushort)this.Spoiler, (ushort)value);
                 this.spoiler = value;
-                UpgradeChanged?.Invoke(this.vehicle, args);
+                UpgradeChanged?.Invoke(vehicle, args);
             }
         }
     }
@@ -71,9 +63,9 @@ public class VehicleUpgrades
         {
             if (this.Sideskirt != value && CanHave(value))
             {
-                var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.Sideskirt, (ushort)this.Sideskirt, (ushort)value);
+                var args = new VehicleUpgradeChanged(vehicle, VehicleUpgradeSlot.Sideskirt, (ushort)this.Sideskirt, (ushort)value);
                 this.sideskirt = value;
-                UpgradeChanged?.Invoke(this.vehicle, args);
+                UpgradeChanged?.Invoke(vehicle, args);
             }
         }
     }
@@ -86,9 +78,9 @@ public class VehicleUpgrades
         {
             if (this.FrontBullbar != value && CanHave(value))
             {
-                var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.FrontBullbars, (ushort)this.FrontBullbar, (ushort)value);
+                var args = new VehicleUpgradeChanged(vehicle, VehicleUpgradeSlot.FrontBullbars, (ushort)this.FrontBullbar, (ushort)value);
                 this.frontBullbar = value;
-                UpgradeChanged?.Invoke(this.vehicle, args);
+                UpgradeChanged?.Invoke(vehicle, args);
             }
         }
     }
@@ -101,9 +93,9 @@ public class VehicleUpgrades
         {
             if (this.RearBullbar != value && CanHave(value))
             {
-                var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.RearBullbars, (ushort)this.RearBullbar, (ushort)value);
+                var args = new VehicleUpgradeChanged(vehicle, VehicleUpgradeSlot.RearBullbars, (ushort)this.RearBullbar, (ushort)value);
                 this.rearBullbar = value;
-                UpgradeChanged?.Invoke(this.vehicle, args);
+                UpgradeChanged?.Invoke(vehicle, args);
             }
         }
     }
@@ -117,9 +109,9 @@ public class VehicleUpgrades
         {
             if (this.Lamps != value && CanHave(value))
             {
-                var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.Lamps, (ushort)this.Lamps, (ushort)value);
+                var args = new VehicleUpgradeChanged(vehicle, VehicleUpgradeSlot.Lamps, (ushort)this.Lamps, (ushort)value);
                 this.lamps = value;
-                UpgradeChanged?.Invoke(this.vehicle, args);
+                UpgradeChanged?.Invoke(vehicle, args);
             }
         }
     }
@@ -132,9 +124,9 @@ public class VehicleUpgrades
         {
             if (this.Roof != value && CanHave(value))
             {
-                var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.Roof, (ushort)this.Roof, (ushort)value);
+                var args = new VehicleUpgradeChanged(vehicle, VehicleUpgradeSlot.Roof, (ushort)this.Roof, (ushort)value);
                 this.roof = value;
-                UpgradeChanged?.Invoke(this.vehicle, args);
+                UpgradeChanged?.Invoke(vehicle, args);
             }
         }
     }
@@ -147,9 +139,9 @@ public class VehicleUpgrades
         {
             if (this.Nitro != value && CanHave(value))
             {
-                var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.Nitro, (ushort)this.Nitro, (ushort)value);
+                var args = new VehicleUpgradeChanged(vehicle, VehicleUpgradeSlot.Nitro, (ushort)this.Nitro, (ushort)value);
                 this.nitro = value;
-                UpgradeChanged?.Invoke(this.vehicle, args);
+                UpgradeChanged?.Invoke(vehicle, args);
             }
         }
     }
@@ -163,9 +155,9 @@ public class VehicleUpgrades
         {
             if (this.HasHydraulics != value && CanHaveHydraulics())
             {
-                var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.Hydraulics, (ushort)(this.HasHydraulics ? 0 : 1087), (ushort)(value ? 1087 : 0));
+                var args = new VehicleUpgradeChanged(vehicle, VehicleUpgradeSlot.Hydraulics, (ushort)(this.HasHydraulics ? 0 : 1087), (ushort)(value ? 1087 : 0));
                 this.hasHydraulics = value;
-                UpgradeChanged?.Invoke(this.vehicle, args);
+                UpgradeChanged?.Invoke(vehicle, args);
             }
         }
     }
@@ -178,9 +170,9 @@ public class VehicleUpgrades
         {
             if (this.HasStereo != value && CanHaveStereo())
             {
-                var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.Stereo, (ushort)(this.HasStereo ? 0 : 1086), (ushort)(value ? 1086 : 0));
+                var args = new VehicleUpgradeChanged(vehicle, VehicleUpgradeSlot.Stereo, (ushort)(this.HasStereo ? 0 : 1086), (ushort)(value ? 1086 : 0));
                 this.hasStereo = value;
-                UpgradeChanged?.Invoke(this.vehicle, args);
+                UpgradeChanged?.Invoke(vehicle, args);
             }
         }
     }
@@ -195,9 +187,9 @@ public class VehicleUpgrades
         {
             if (this.Wheels != value && CanHave(value))
             {
-                var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.Wheels, (ushort)this.Wheels, (ushort)value);
+                var args = new VehicleUpgradeChanged(vehicle, VehicleUpgradeSlot.Wheels, (ushort)this.Wheels, (ushort)value);
                 this.wheel = value;
-                UpgradeChanged?.Invoke(this.vehicle, args);
+                UpgradeChanged?.Invoke(vehicle, args);
             }
         }
     }
@@ -210,9 +202,9 @@ public class VehicleUpgrades
         {
             if (this.Exhaust != value && CanHave(value))
             {
-                var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.Exhaust, (ushort)this.Exhaust, (ushort)value);
+                var args = new VehicleUpgradeChanged(vehicle, VehicleUpgradeSlot.Exhaust, (ushort)this.Exhaust, (ushort)value);
                 this.exhaust = value;
-                UpgradeChanged?.Invoke(this.vehicle, args);
+                UpgradeChanged?.Invoke(vehicle, args);
             }
         }
     }
@@ -225,9 +217,9 @@ public class VehicleUpgrades
         {
             if (this.FrontBumper != value && CanHave(value))
             {
-                var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.FrontBumper, (ushort)this.FrontBumper, (ushort)value);
+                var args = new VehicleUpgradeChanged(vehicle, VehicleUpgradeSlot.FrontBumper, (ushort)this.FrontBumper, (ushort)value);
                 this.frontBumper = value;
-                UpgradeChanged?.Invoke(this.vehicle, args);
+                UpgradeChanged?.Invoke(vehicle, args);
             }
         }
     }
@@ -240,9 +232,9 @@ public class VehicleUpgrades
         {
             if (this.RearBumper != value && CanHave(value))
             {
-                var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.RearBumper, (ushort)this.RearBumper, (ushort)value);
+                var args = new VehicleUpgradeChanged(vehicle, VehicleUpgradeSlot.RearBumper, (ushort)this.RearBumper, (ushort)value);
                 this.rearBumper = value;
-                UpgradeChanged?.Invoke(this.vehicle, args);
+                UpgradeChanged?.Invoke(vehicle, args);
             }
         }
     }
@@ -256,91 +248,91 @@ public class VehicleUpgrades
         {
             if (this.Misc != value && CanHave(value))
             {
-                var args = new VehicleUpgradeChanged(this.vehicle, VehicleUpgradeSlot.Misc, (ushort)this.Misc, (ushort)value);
+                var args = new VehicleUpgradeChanged(vehicle, VehicleUpgradeSlot.Misc, (ushort)this.Misc, (ushort)value);
                 this.misc = value;
-                UpgradeChanged?.Invoke(this.vehicle, args);
+                UpgradeChanged?.Invoke(vehicle, args);
             }
         }
     }
 
     public bool CanHave(VehicleUpgradeHood hood)
     {
-        return hood == VehicleUpgradeHood.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeHood), this.vehicle.Model, (ushort)hood) != null;
+        return hood == VehicleUpgradeHood.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeHood), vehicle.Model, (ushort)hood) != null;
     }
 
     public bool CanHave(VehicleUpgradeSpoiler spoiler)
     {
-        return spoiler == VehicleUpgradeSpoiler.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeSpoiler), this.vehicle.Model, (ushort)spoiler) != null;
+        return spoiler == VehicleUpgradeSpoiler.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeSpoiler), vehicle.Model, (ushort)spoiler) != null;
     }
 
     public bool CanHave(VehicleUpgradeVent vent)
     {
-        return vent == VehicleUpgradeVent.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeVent), this.vehicle.Model, (ushort)vent) != null;
+        return vent == VehicleUpgradeVent.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeVent), vehicle.Model, (ushort)vent) != null;
     }
 
     public bool CanHave(VehicleUpgradeSideskirt sideskirt)
     {
-        return sideskirt == VehicleUpgradeSideskirt.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeSideskirt), this.vehicle.Model, (ushort)sideskirt) != null;
+        return sideskirt == VehicleUpgradeSideskirt.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeSideskirt), vehicle.Model, (ushort)sideskirt) != null;
     }
 
     public bool CanHave(VehicleUpgradeFrontBullbar bullbar)
     {
-        return bullbar == VehicleUpgradeFrontBullbar.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeFrontBullbar), this.vehicle.Model, (ushort)bullbar) != null;
+        return bullbar == VehicleUpgradeFrontBullbar.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeFrontBullbar), vehicle.Model, (ushort)bullbar) != null;
     }
 
     public bool CanHave(VehicleUpgradeRearBullbar bullbar)
     {
-        return bullbar == VehicleUpgradeRearBullbar.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeRearBullbar), this.vehicle.Model, (ushort)bullbar) != null;
+        return bullbar == VehicleUpgradeRearBullbar.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeRearBullbar), vehicle.Model, (ushort)bullbar) != null;
     }
 
     public bool CanHave(VehicleUpgradeLamp lamps)
     {
-        return lamps == VehicleUpgradeLamp.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeLamp), this.vehicle.Model, (ushort)lamps) != null;
+        return lamps == VehicleUpgradeLamp.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeLamp), vehicle.Model, (ushort)lamps) != null;
     }
 
     public bool CanHave(VehicleUpgradeRoof bullbar)
     {
-        return bullbar == VehicleUpgradeRoof.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeRoof), this.vehicle.Model, (ushort)bullbar) != null;
+        return bullbar == VehicleUpgradeRoof.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeRoof), vehicle.Model, (ushort)bullbar) != null;
     }
 
     public bool CanHave(VehicleUpgradeNitro nitro)
     {
-        return nitro == VehicleUpgradeNitro.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeNitro), this.vehicle.Model, (ushort)nitro) != null;
+        return nitro == VehicleUpgradeNitro.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeNitro), vehicle.Model, (ushort)nitro) != null;
     }
 
     public bool CanHave(VehicleUpgradeWheel wheel)
     {
-        return wheel == VehicleUpgradeWheel.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeWheel), this.vehicle.Model, (ushort)wheel) != null;
+        return wheel == VehicleUpgradeWheel.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeWheel), vehicle.Model, (ushort)wheel) != null;
     }
 
     public bool CanHave(VehicleUpgradeExhaust exhaust)
     {
-        return exhaust == VehicleUpgradeExhaust.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeExhaust), this.vehicle.Model, (ushort)exhaust) != null;
+        return exhaust == VehicleUpgradeExhaust.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeExhaust), vehicle.Model, (ushort)exhaust) != null;
     }
 
     public bool CanHave(VehicleUpgradeFrontBumper frontBumper)
     {
-        return frontBumper == VehicleUpgradeFrontBumper.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeFrontBumper), this.vehicle.Model, (ushort)frontBumper) != null;
+        return frontBumper == VehicleUpgradeFrontBumper.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeFrontBumper), vehicle.Model, (ushort)frontBumper) != null;
     }
 
     public bool CanHave(VehicleUpgradeRearBumper rearBumper)
     {
-        return rearBumper  == VehicleUpgradeRearBumper.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeRearBumper), this.vehicle.Model, (ushort)rearBumper) != null;
+        return rearBumper  == VehicleUpgradeRearBumper.None || VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeRearBumper), vehicle.Model, (ushort)rearBumper) != null;
     }
 
     public bool CanHaveStereo()
     {
-        return VehicleUpgradesPerModel.AvailiableUpgradesPerVehicleModel[this.vehicle.Model].Contains(1086);
+        return VehicleUpgradesPerModel.AvailiableUpgradesPerVehicleModel[vehicle.Model].Contains(1086);
     }
 
     public bool CanHaveHydraulics()
     {
-        return VehicleUpgradesPerModel.AvailiableUpgradesPerVehicleModel[this.vehicle.Model].Contains(1087);
+        return VehicleUpgradesPerModel.AvailiableUpgradesPerVehicleModel[vehicle.Model].Contains(1087);
     }
 
     public bool CanHave(VehicleUpgradeMisc misc)
     {
-        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeMisc), this.vehicle.Model, (ushort)misc) != null;
+        return VehicleUpgradeConstants.GetUpgradeIdForVehicle(typeof(VehicleUpgradeMisc), vehicle.Model, (ushort)misc) != null;
     }
 
     public event ElementEventHandler<Vehicle, VehicleUpgradeChanged>? UpgradeChanged;

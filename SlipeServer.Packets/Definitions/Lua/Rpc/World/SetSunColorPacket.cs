@@ -5,20 +5,14 @@ using System.Drawing;
 
 namespace SlipeServer.Packets.Definitions.Lua.Rpc.World;
 
-public sealed class SetSunColorPacket : Packet
+public sealed class SetSunColorPacket(Color coreColor, Color coronaColor) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public Color CoreSun { get; set; }
-    public Color CoronaSun { get; set; }
-
-    public SetSunColorPacket(Color coreColor, Color coronaColor)
-    {
-        this.CoreSun = coreColor;
-        this.CoronaSun = coronaColor;
-    }
+    public Color CoreSun { get; set; } = coreColor;
+    public Color CoronaSun { get; set; } = coronaColor;
 
     public override void Read(byte[] bytes)
     {

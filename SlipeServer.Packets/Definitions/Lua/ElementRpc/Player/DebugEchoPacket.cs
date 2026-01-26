@@ -5,22 +5,15 @@ using System.Drawing;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
 
-public sealed class DebugEchoPacket : Packet
+public sealed class DebugEchoPacket(string message, byte level, Color color) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_DEBUG_ECHO;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public string Message { get; set; }
-    public byte Level { get; set; }
-    public Color Color { get; set; }
-
-    public DebugEchoPacket(string message, byte level, Color color)
-    {
-        this.Message = message;
-        this.Level = level;
-        this.Color = color;
-    }
+    public string Message { get; set; } = message;
+    public byte Level { get; set; } = level;
+    public Color Color { get; set; } = color;
 
     public override void Read(byte[] bytes)
     {

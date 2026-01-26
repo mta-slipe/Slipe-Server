@@ -5,7 +5,7 @@ namespace SlipeServer.Console.Logic;
 
 public class ServiceUsageTestLogic
 {
-    public ServiceUsageTestLogic(MtaServer server)
+    public ServiceUsageTestLogic(IMtaServer server)
     {
         server.ForAny<CustomPlayer>(player => 
         {

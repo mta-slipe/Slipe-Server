@@ -5,20 +5,14 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
 
-public sealed class SetVehicleOverrideLightsPacket : Packet
+public sealed class SetVehicleOverrideLightsPacket(ElementId elementId, byte overrideLights) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; set; }
-    public byte OverrideLights { get; set; }
-
-    public SetVehicleOverrideLightsPacket(ElementId elementId, byte overrideLights)
-    {
-        this.ElementId = elementId;
-        this.OverrideLights = overrideLights;
-    }
+    public ElementId ElementId { get; set; } = elementId;
+    public byte OverrideLights { get; set; } = overrideLights;
 
     public override void Read(byte[] bytes)
     {

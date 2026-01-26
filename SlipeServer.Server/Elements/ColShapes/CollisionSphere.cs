@@ -33,7 +33,7 @@ public class CollisionSphere : CollisionShape
         return Vector3.DistanceSquared(this.Position, position) <= this.radiusSquared;
     }
 
-    public new CollisionSphere AssociateWith(MtaServer server)
+    public new CollisionSphere AssociateWith(IMtaServer server)
     {
         base.AssociateWith(server);
         return this;

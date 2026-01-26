@@ -3,16 +3,9 @@ using System;
 
 namespace SlipeServer.Server.Elements.Events;
 
-public sealed class PlayerBindKeyArgs : EventArgs
+public sealed class PlayerBindKeyArgs(Player player, string key, KeyState keyState) : EventArgs
 {
-    public Player Player { get; }
-    public string Key { get; }
-    public KeyState KeyState { get; }
-
-    public PlayerBindKeyArgs(Player player, string key, KeyState keyState)
-    {
-        this.Player = player;
-        this.Key = key;
-        this.KeyState = keyState;
-    }
+    public Player Player { get; } = player;
+    public string Key { get; } = key;
+    public KeyState KeyState { get; } = keyState;
 }

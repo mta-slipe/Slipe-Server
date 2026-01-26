@@ -5,7 +5,7 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 
-public sealed class SetPedFightingStyleRpcPacket : Packet
+public sealed class SetPedFightingStyleRpcPacket(ElementId elementId, byte fightingStyle) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
 
@@ -13,14 +13,8 @@ public sealed class SetPedFightingStyleRpcPacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; }
-    public byte FightingStyle { get; }
-
-    public SetPedFightingStyleRpcPacket(ElementId elementId, byte fightingStyle)
-    {
-        this.ElementId = elementId;
-        this.FightingStyle = fightingStyle;
-    }
+    public ElementId ElementId { get; } = elementId;
+    public byte FightingStyle { get; } = fightingStyle;
 
     public override void Read(byte[] bytes)
     {

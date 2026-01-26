@@ -1,13 +1,8 @@
 ﻿namespace SlipeServer.LuaControllers.Results;
 
-public class LuaResult
+public class LuaResult(string eventSuffix)
 {
-    public string EventSuffix { get; }
-
-    public LuaResult(string eventSuffix)
-    {
-        this.EventSuffix = eventSuffix;
-    }
+    public string EventSuffix { get; } = eventSuffix;
 
     public static LuaResult Success() => new(".Success");
     public static LuaResult Warning() => new(".Warning");
@@ -16,14 +11,9 @@ public class LuaResult
 }
 
 
-public class LuaResult<T> : LuaResult
+public class LuaResult<T>(string eventSuffix, T data) : LuaResult(eventSuffix)
 {
-    public T Data { get; }
-
-    public LuaResult(string eventSuffix, T data) : base(eventSuffix)
-    {
-        this.Data = data;
-    }
+    public T Data { get; } = data;
 
     public static LuaResult<T> Success(T data) => new(".Success", data);
     public static LuaResult<T> Warning(T data) => new(".Warning", data);

@@ -58,7 +58,7 @@ public abstract class CollisionShape : Element
         this.ElementLeft?.Invoke(this, new(this, element));
     }
 
-    public new CollisionShape AssociateWith(MtaServer server)
+    public new CollisionShape AssociateWith(IMtaServer server)
     {
         base.AssociateWith(server);
         return this;

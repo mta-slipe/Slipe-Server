@@ -11,7 +11,7 @@ namespace SlipeServer.Server.Behaviour;
 /// </summary>
 public class DefaultChatBehaviour
 {
-    public DefaultChatBehaviour(MtaServer server, IChatBox chatBox, ILogger? logger)
+    public DefaultChatBehaviour(IMtaServer server, IChatBox chatBox, ILogger? logger)
     {
         server.PlayerJoined += (player) =>
         {

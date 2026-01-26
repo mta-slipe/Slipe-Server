@@ -4,20 +4,14 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
 
-public sealed class ToggleControlAbility : Packet
+public sealed class ToggleControlAbility(string control, bool enabled) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public string Control { get; set; }
-    public bool Enabled { get; set; }
-
-    public ToggleControlAbility(string control, bool enabled)
-    {
-        this.Control = control;
-        this.Enabled = enabled;
-    }
+    public string Control { get; set; } = control;
+    public bool Enabled { get; set; } = enabled;
 
     public override void Read(byte[] bytes)
     {

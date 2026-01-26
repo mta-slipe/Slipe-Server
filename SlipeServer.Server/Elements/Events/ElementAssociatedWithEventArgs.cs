@@ -6,7 +6,7 @@ public sealed class ElementAssociatedWithEventArgs : EventArgs
 {
     public Element Source { get; }
     public Player? Player { get; }
-    public MtaServer? Server { get; }
+    public IMtaServer? Server { get; }
 
     public ElementAssociatedWithEventArgs(Element source, Player player)
     {
@@ -14,7 +14,7 @@ public sealed class ElementAssociatedWithEventArgs : EventArgs
         this.Player = player;
     }
 
-    public ElementAssociatedWithEventArgs(Element source, MtaServer server)
+    public ElementAssociatedWithEventArgs(Element source, IMtaServer server)
     {
         this.Source = source;
         this.Server = server;

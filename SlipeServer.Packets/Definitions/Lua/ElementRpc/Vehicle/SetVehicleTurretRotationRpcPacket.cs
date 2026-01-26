@@ -6,20 +6,14 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
 
-public sealed class SetVehicleTurretRotationRpcPacket : Packet
+public sealed class SetVehicleTurretRotationRpcPacket(ElementId elementId, Vector2 rotation) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; set; }
-    public Vector2 Rotation { get; set; }
-
-    public SetVehicleTurretRotationRpcPacket(ElementId elementId, Vector2 rotation)
-    {
-        this.ElementId = elementId;
-        this.Rotation = rotation;
-    }
+    public ElementId ElementId { get; set; } = elementId;
+    public Vector2 Rotation { get; set; } = rotation;
 
     public override void Read(byte[] bytes)
     {

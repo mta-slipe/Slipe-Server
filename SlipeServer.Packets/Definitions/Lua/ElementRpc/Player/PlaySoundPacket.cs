@@ -4,18 +4,13 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
 
-public sealed class PlaySoundPacket : Packet
+public sealed class PlaySoundPacket(byte sound) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ushort Sound { get; set; }
-
-    public PlaySoundPacket(byte sound)
-    {
-        this.Sound = sound;
-    }
+    public ushort Sound { get; set; } = sound;
 
     public override void Read(byte[] bytes)
     {

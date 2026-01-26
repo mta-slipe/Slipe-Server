@@ -3,26 +3,15 @@
 namespace SlipeServer.LuaControllers.Contexts;
 
 
-public class LuaEventContext
+public class LuaEventContext(Player player, Element source, string eventName)
 {
-    public Player Player { get; }
-    public Element Source { get; }
-    public string EventName { get; }
-
-    public LuaEventContext(Player player, Element source, string eventName)
-    {
-        this.Player = player;
-        this.Source = source;
-        this.EventName = eventName;
-    }
+    public Player Player { get; } = player;
+    public Element Source { get; } = source;
+    public string EventName { get; } = eventName;
 }
 
 
-public class LuaEventContext<TPlayer> : LuaEventContext where TPlayer: Player
+public class LuaEventContext<TPlayer>(TPlayer player, Element source, string eventName) : LuaEventContext(player, source, eventName) where TPlayer: Player
 {
     public new TPlayer Player => (base.Player as TPlayer)!;
-
-    public LuaEventContext(TPlayer player, Element source, string eventName) : base(player, source, eventName)
-    {
-    }
 }

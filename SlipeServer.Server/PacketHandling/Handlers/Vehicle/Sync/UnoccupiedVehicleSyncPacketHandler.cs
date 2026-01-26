@@ -8,21 +8,12 @@ using SlipeServer.Server.Clients;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync;
 
-public class UnoccupiedVehicleSyncPacketHandler : IPacketHandler<UnoccupiedVehicleSyncPacket>
+public class UnoccupiedVehicleSyncPacketHandler(
+    ISyncHandlerMiddleware<UnoccupiedVehicleSyncPacket> middleware,
+    IElementCollection elementCollection
+    ) : IPacketHandler<UnoccupiedVehicleSyncPacket>
 {
-    private readonly ISyncHandlerMiddleware<UnoccupiedVehicleSyncPacket> middleware;
-    private readonly IElementCollection elementCollection;
-
     public PacketId PacketId => PacketId.PACKET_ID_UNOCCUPIED_VEHICLE_SYNC;
-
-    public UnoccupiedVehicleSyncPacketHandler(
-        ISyncHandlerMiddleware<UnoccupiedVehicleSyncPacket> middleware,
-        IElementCollection elementCollection
-    )
-    {
-        this.middleware = middleware;
-        this.elementCollection = elementCollection;
-    }
 
     public void HandlePacket(IClient client, UnoccupiedVehicleSyncPacket packet)
     {
@@ -30,7 +21,7 @@ public class UnoccupiedVehicleSyncPacketHandler : IPacketHandler<UnoccupiedVehic
 
         foreach (var vehicle in packet.Vehicles)
         {
-            Elements.Vehicle vehicleElement = (Elements.Vehicle)this.elementCollection.Get(vehicle.Id)!;
+            Elements.Vehicle vehicleElement = (Elements.Vehicle)elementCollection.Get(vehicle.Id)!;
 
             if (vehicleElement != null)
             {
@@ -55,7 +46,7 @@ public class UnoccupiedVehicleSyncPacketHandler : IPacketHandler<UnoccupiedVehic
 
                         if (vehicle.Trailer != null)
                         {
-                            var trailer = this.elementCollection.Get(vehicle.Trailer.Value) as Elements.Vehicle;
+                            var trailer = elementCollection.Get(vehicle.Trailer.Value) as Elements.Vehicle;
                             if (trailer != null)
                             {
                                 vehicleElement.AttachTrailer(trailer, true);
@@ -76,7 +67,7 @@ public class UnoccupiedVehicleSyncPacketHandler : IPacketHandler<UnoccupiedVehic
             }
         }
 
-        var players = this.middleware.GetPlayersToSyncTo(client.Player, packet);
+        var players = middleware.GetPlayersToSyncTo(client.Player, packet);
         packet.Vehicles = vehiclesToSync;
         packet.SendTo(players);
     }

@@ -2,14 +2,8 @@
 
 namespace SlipeServer.Server.Elements.Events;
 
-public sealed class ElementDetachedEventArgs : EventArgs
+public sealed class ElementDetachedEventArgs(Element source, Element attachedTo) : EventArgs
 {
-    public Element Source { get; }
-    public Element AttachedTo { get; }
-
-    public ElementDetachedEventArgs(Element source, Element attachedTo)
-    {
-        this.Source = source;
-        this.AttachedTo = attachedTo;
-    }
+    public Element Source { get; } = source;
+    public Element AttachedTo { get; } = attachedTo;
 }

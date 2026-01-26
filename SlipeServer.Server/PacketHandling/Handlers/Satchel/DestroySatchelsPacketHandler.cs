@@ -6,24 +6,17 @@ using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Satchel;
 
-public class DestroySatchelsPacketHandler : IPacketHandler<DestroySatchelsPacket>
+public class DestroySatchelsPacketHandler(
+    ISyncHandlerMiddleware<DestroySatchelsPacket> middleware
+    ) : IPacketHandler<DestroySatchelsPacket>
 {
-    private readonly ISyncHandlerMiddleware<DestroySatchelsPacket> middleware;
-
     public PacketId PacketId => PacketId.PACKET_ID_DESTROY_SATCHELS;
-
-    public DestroySatchelsPacketHandler(
-        ISyncHandlerMiddleware<DestroySatchelsPacket> middleware
-    )
-    {
-        this.middleware = middleware;
-    }
 
     public void HandlePacket(IClient client, DestroySatchelsPacket packet)
     {
         packet.ElementId = client.Player.Id;
 
-        var otherPlayers = this.middleware.GetPlayersToSyncTo(client.Player, packet);
+        var otherPlayers = middleware.GetPlayersToSyncTo(client.Player, packet);
         packet.SendTo(otherPlayers);
     }
 }

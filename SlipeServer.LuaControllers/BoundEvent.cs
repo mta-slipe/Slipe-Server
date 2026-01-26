@@ -5,27 +5,18 @@ using System.Reflection;
 
 namespace SlipeServer.LuaControllers;
 
-public class BoundEvent
+public class BoundEvent(
+    IServiceProvider serviceProvider,
+    string eventName,
+    Type controllerType,
+    MethodInfo method,
+    BaseLuaController? controllerInstance)
 {
-    public IServiceProvider ServiceProvider { get; }
-    public string EventName { get; set; }
-    public Type ControllerType { get; set; }
-    public BaseLuaController? ControllerInstance { get; set; }
-    public MethodInfo Method { get; set; }
-
-    public BoundEvent(
-        IServiceProvider serviceProvider,
-        string eventName,
-        Type controllerType,
-        MethodInfo method,
-        BaseLuaController? controllerInstance)
-    {
-        this.ServiceProvider = serviceProvider;
-        this.EventName = eventName;
-        this.ControllerType = controllerType;
-        this.Method = method;
-        this.ControllerInstance = controllerInstance;
-    }
+    public IServiceProvider ServiceProvider { get; } = serviceProvider;
+    public string EventName { get; set; } = eventName;
+    public Type ControllerType { get; set; } = controllerType;
+    public BaseLuaController? ControllerInstance { get; set; } = controllerInstance;
+    public MethodInfo Method { get; set; } = method;
 
     public LuaResult? HandleEvent(LuaEvent luaEvent, object?[] parameters)
     {

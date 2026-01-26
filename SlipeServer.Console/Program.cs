@@ -52,7 +52,7 @@ public partial class Program
     }
 
     private readonly EventWaitHandle waitHandle = new(false, EventResetMode.AutoReset);
-    private readonly MtaServer server;
+    private readonly IMtaServer server;
     private readonly Configuration configuration;
 
     public ILogger Logger { get; }

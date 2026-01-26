@@ -6,24 +6,16 @@ namespace SlipeServer.Server.AllSeeingEye;
 /// Cache to handle ASE query responses
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public class Cache<T>
+public class Cache<T>(Func<T> updateFunc, int cachePeriod)
 {
-    private T? Data { get; set; }
+    private T? Data { get; set; } = default;
     private long CacheTime { get; set; } = 0;
-    private int CachePeriod { get; } = 0;
-    private Func<T> UpdateFunc { get; }
+    private int CachePeriod { get; } = cachePeriod * 10000;
 
     private void UpdateCache()
     {
-        this.Data = this.UpdateFunc();
+        this.Data = updateFunc();
         this.CacheTime = DateTime.Now.Ticks;
-    }
-
-    public Cache(Func<T> updateFunc, int cachePeriod)
-    {
-        this.UpdateFunc = updateFunc;
-        this.CachePeriod = cachePeriod * 10000;
-        this.Data = default;
     }
 
     public T? Get(bool forceUpdate = false)

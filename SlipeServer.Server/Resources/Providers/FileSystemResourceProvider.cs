@@ -3,31 +3,22 @@ using SlipeServer.Server.Resources.Interpreters;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 
 namespace SlipeServer.Server.Resources.Providers;
 
 /// <summary>
 /// Basic resource provider that provides resources based on the files within the resource directory (as configured in the server's configuration)
 /// </summary>
-public class FileSystemResourceProvider : IResourceProvider
+public class FileSystemResourceProvider(IMtaServer mtaServer) : IResourceProvider
 {
-    private readonly MtaServer mtaServer;
-    private readonly RootElement rootElement;
-    private readonly Configuration configuration;
-    private readonly Dictionary<string, Resource> resources;
-    private readonly List<IResourceInterpreter> resourceInterpreters;
+    private readonly RootElement rootElement = mtaServer.RootElement;
+    private readonly Configuration configuration = mtaServer.Configuration;
+    private readonly Dictionary<string, Resource> resources = new();
+    private readonly List<IResourceInterpreter> resourceInterpreters = new();
 
-    private readonly object netIdLock = new();
+    private readonly Lock netIdLock = new();
     private ushort netId = 0;
-
-    public FileSystemResourceProvider(MtaServer mtaServer)
-    {
-        this.mtaServer = mtaServer;
-        this.rootElement = mtaServer.RootElement;
-        this.configuration = mtaServer.Configuration;
-        this.resources = new();
-        this.resourceInterpreters = new();
-    }
 
     public Resource GetResource(string name)
     {
@@ -71,7 +62,7 @@ public class FileSystemResourceProvider : IResourceProvider
                 Resource? resource = null;
                 foreach (var resourceInterpreter in this.resourceInterpreters)
                 {
-                    if (resourceInterpreter.TryInterpretResource(this.mtaServer, this.rootElement, name, subDirectory, this, out resource))
+                    if (resourceInterpreter.TryInterpretResource(mtaServer, this.rootElement, name, subDirectory, this, out resource))
                     {
                         resource!.NetId = this.ReserveNetId();
                         resources.Add(resource);

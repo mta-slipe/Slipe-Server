@@ -5,41 +5,29 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle.Sirens;
 
-public sealed class GiveVehicleSirensPacket : Packet
+public sealed class GiveVehicleSirensPacket(
+    ElementId elementId,
+    bool isOverride,
+    VehicleSirenType sirenType,
+    byte sirenCount,
+    bool is360Degrees,
+    bool doLineOfSightCheck,
+    bool useRandomiser,
+    bool enableSilent
+    ) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; set; }
-    public bool IsOverride { get; }
-    public byte SirenType { get; }
-    public byte SirenCount { get; }
-    public bool Is360Degrees { get; }
-    public bool DoLineOfSightCheck { get; }
-    public bool UseRandomiser { get; }
-    public bool EnableSilent { get; }
-
-    public GiveVehicleSirensPacket(
-        ElementId elementId,
-        bool isOverride,
-        VehicleSirenType sirenType,
-        byte sirenCount,
-        bool is360Degrees,
-        bool doLineOfSightCheck,
-        bool useRandomiser,
-        bool enableSilent
-    )
-    {
-        this.ElementId = elementId;
-        this.IsOverride = isOverride;
-        this.SirenType = (byte)sirenType;
-        this.SirenCount = sirenCount;
-        this.Is360Degrees = is360Degrees;
-        this.DoLineOfSightCheck = doLineOfSightCheck;
-        this.UseRandomiser = useRandomiser;
-        this.EnableSilent = enableSilent;
-    }
+    public ElementId ElementId { get; set; } = elementId;
+    public bool IsOverride { get; } = isOverride;
+    public byte SirenType { get; } = (byte)sirenType;
+    public byte SirenCount { get; } = sirenCount;
+    public bool Is360Degrees { get; } = is360Degrees;
+    public bool DoLineOfSightCheck { get; } = doLineOfSightCheck;
+    public bool UseRandomiser { get; } = useRandomiser;
+    public bool EnableSilent { get; } = enableSilent;
 
     public override void Read(byte[] bytes)
     {

@@ -5,24 +5,17 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Lua.Rpc.World;
 
-public sealed class RemoveWorldModelPacket : Packet
+public sealed class RemoveWorldModelPacket(ushort model, float radius, Vector3 position, byte interior) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ushort ModelID { get; set; }
-    public float Radius { get; set; }
-    public Vector3 Position { get; set; }
-    public byte Interior { get; set; }
+    public ushort ModelID { get; set; } = model;
+    public float Radius { get; set; } = radius;
+    public Vector3 Position { get; set; } = position;
+    public byte Interior { get; set; } = interior;
 
-    public RemoveWorldModelPacket(ushort model, float radius, Vector3 position, byte interior)
-    {
-        this.ModelID = model;
-        this.Radius = radius;
-        this.Position = position;
-        this.Interior = interior;
-    }
     public override void Read(byte[] bytes)
     {
         throw new NotImplementedException();

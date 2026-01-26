@@ -4,18 +4,11 @@ using System.Collections.Generic;
 
 namespace SlipeServer.Server.Tests.Unit.Mappers;
 
-internal struct LuaMappableVector3 : ILuaMappable
+internal struct LuaMappableVector3(float x, float y, float z) : ILuaMappable
 {
-    public float X { get; set; }
-    public float Y { get; set; }
-    public float Z { get; set; }
-
-    public LuaMappableVector3(float x, float y, float z)
-    {
-        this.X = x;
-        this.Y = y;
-        this.Z = z;
-    }
+    public float X { get; set; } = x;
+    public float Y { get; set; } = y;
+    public float Z { get; set; } = z;
 
     public LuaValue ToLuaValue() => new Dictionary<LuaValue, LuaValue>()
     {

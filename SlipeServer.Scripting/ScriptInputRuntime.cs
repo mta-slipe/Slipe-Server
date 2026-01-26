@@ -9,9 +9,9 @@ namespace SlipeServer.Scripting;
 public class ScriptInputRuntime : IScriptInputRuntime
 {
     private readonly List<RegisteredCommandHandler> registeredCommandHandlers;
-    private readonly MtaServer server;
+    private readonly IMtaServer server;
 
-    public ScriptInputRuntime(MtaServer server, IElementCollection elementCollection)
+    public ScriptInputRuntime(IMtaServer server, IElementCollection elementCollection)
     {
         this.registeredCommandHandlers = new List<RegisteredCommandHandler>();
 

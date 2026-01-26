@@ -5,20 +5,14 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
 
-public sealed class SetPlayerNametagTextPacket : Packet
+public sealed class SetPlayerNametagTextPacket(ElementId elementId, string nametagText) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; set; }
-    public string NametagText { get; set; }
-
-    public SetPlayerNametagTextPacket(ElementId elementId, string nametagText)
-    {
-        this.ElementId = elementId;
-        this.NametagText = nametagText;
-    }
+    public ElementId ElementId { get; set; } = elementId;
+    public string NametagText { get; set; } = nametagText;
 
     public override void Read(byte[] bytes)
     {

@@ -6,19 +6,14 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Marker;
 
-public sealed class SetMarkerTargetPositionRpcPacket : Packet
+public sealed class SetMarkerTargetPositionRpcPacket(ElementId elementId, Vector3? target = null) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; set; }
-    public Vector3? Target { get; set; }
-    public SetMarkerTargetPositionRpcPacket(ElementId elementId, Vector3? target = null)
-    {
-        this.ElementId = elementId;
-        this.Target = target;
-    }
+    public ElementId ElementId { get; set; } = elementId;
+    public Vector3? Target { get; set; } = target;
 
     public override void Read(byte[] bytes)
     {

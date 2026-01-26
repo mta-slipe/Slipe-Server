@@ -9,7 +9,7 @@ namespace SlipeServer.Server.Services;
 /// <summary>
 /// Represents the ingame chat, allows you to send messages to (individual) players
 /// </summary>
-public class ChatBox(MtaServer server) : IChatBox
+public class ChatBox(IMtaServer server) : IChatBox
 {
     private readonly RootElement root = server.RootElement;
 

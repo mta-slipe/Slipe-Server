@@ -5,19 +5,14 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.Rpc.World;
 
-public sealed class SetCloudsEnabledPacket : Packet
+public sealed class SetCloudsEnabledPacket(bool cloudsEnabled) : Packet
 
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public bool CloudsEnabled { get; set; }
-
-    public SetCloudsEnabledPacket(bool cloudsEnabled)
-    {
-        this.CloudsEnabled = cloudsEnabled;
-    }
+    public bool CloudsEnabled { get; set; } = cloudsEnabled;
 
     public override void Read(byte[] bytes)
     {

@@ -5,18 +5,13 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.Rpc.World;
 
-public sealed class SetGravityPacket : Packet
+public sealed class SetGravityPacket(float gravity) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public float Gravity { get; set; }
-
-    public SetGravityPacket(float gravity)
-    {
-        this.Gravity = gravity;
-    }
+    public float Gravity { get; set; } = gravity;
 
     public override void Read(byte[] bytes)
     {

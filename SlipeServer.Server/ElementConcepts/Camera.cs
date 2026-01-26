@@ -9,10 +9,8 @@ namespace SlipeServer.Server.Concepts;
 /// <summary>
 /// Represents the player's camera view.
 /// </summary>
-public class Camera
+public class Camera(Player player)
 {
-    private readonly Player player;
-
     private Element? target;
     /// <summary>
     /// The camera target, when set the camera follows this element.
@@ -23,8 +21,8 @@ public class Camera
         get => this.target;
         set
         {
-            if (!this.player.IsSync)
-                this.player.Client.SendPacket(new SetCameraTargetPacket(value?.Id ?? this.player.Id));
+            if (!player.IsSync)
+                player.Client.SendPacket(new SetCameraTargetPacket(value?.Id ?? player.Id));
 
             this.target = value;
             this.Position = null;
@@ -51,17 +49,11 @@ public class Camera
         get => this.interior;
         set
         {
-            if (!this.player.IsSync)
-                this.player.Client.SendPacket(new SetCameraInteriorPacket(value));
+            if (!player.IsSync)
+                player.Client.SendPacket(new SetCameraInteriorPacket(value));
 
             this.interior = value;
         }
-    }
-
-
-    public Camera(Player player)
-    {
-        this.player = player;
     }
 
     /// <summary>
@@ -72,7 +64,7 @@ public class Camera
     /// <param name="color">color to fade (out) to</param>
     public void Fade(CameraFade fade, float fadeTime = 1, Color? color = null)
     {
-        this.player.Client.SendPacket(new FadeCameraPacket(fade, fadeTime, color));
+        player.Client.SendPacket(new FadeCameraPacket(fade, fadeTime, color));
     }
 
     /// <summary>
@@ -87,6 +79,6 @@ public class Camera
         this.target = null;
         this.Position = position;
         this.LookAt = lookAt;
-        this.player.Client.SendPacket(new SetCameraMatrixPacket(position, lookAt, roll, fov, this.player.GetAndIncrementTimeContext()));
+        player.Client.SendPacket(new SetCameraMatrixPacket(position, lookAt, roll, fov, player.GetAndIncrementTimeContext()));
     }
 }

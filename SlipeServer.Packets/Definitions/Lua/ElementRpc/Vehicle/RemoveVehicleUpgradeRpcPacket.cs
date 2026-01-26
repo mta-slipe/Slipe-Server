@@ -5,20 +5,14 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
 
-public sealed class RemoveVehicleUpgradeRpcPacket : Packet
+public sealed class RemoveVehicleUpgradeRpcPacket(ElementId elementId, ushort upgradeId) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; set; }
-    public byte UpgradeId { get; set; }
-
-    public RemoveVehicleUpgradeRpcPacket(ElementId elementId, ushort upgradeId)
-    {
-        this.ElementId = elementId;
-        this.UpgradeId = (byte)(upgradeId - 1000);
-    }
+    public ElementId ElementId { get; set; } = elementId;
+    public byte UpgradeId { get; set; } = (byte)(upgradeId - 1000);
 
     public override void Read(byte[] bytes)
     {

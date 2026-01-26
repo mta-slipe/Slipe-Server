@@ -6,20 +6,13 @@ using System.Text.Json;
 
 namespace SlipeServer.Console.PacketReplayer;
 
-public class KeySyncReplayerPacketHandler : IPacketHandler<KeySyncPacket>
+public class KeySyncReplayerPacketHandler(PacketReplayerService packetReplayerService) : IPacketHandler<KeySyncPacket>
 {
-    private readonly PacketReplayerService packetReplayerService;
-
     public PacketId PacketId => PacketId.PACKET_ID_PLAYER_KEYSYNC;
-
-    public KeySyncReplayerPacketHandler(PacketReplayerService packetReplayerService)
-    {
-        this.packetReplayerService = packetReplayerService;
-    }
 
     public void HandlePacket(IClient client, KeySyncPacket packet)
     {
-        if (!this.packetReplayerService.ShouldPlayerCaptureKeySyncPackets(client.Player))
+        if (!packetReplayerService.ShouldPlayerCaptureKeySyncPackets(client.Player))
             return;
 
         System.IO.Directory.CreateDirectory("packetlog/keysync");
@@ -27,20 +20,13 @@ public class KeySyncReplayerPacketHandler : IPacketHandler<KeySyncPacket>
     }
 }
 
-public class PureSyncReplayerPacketHandler : IPacketHandler<PlayerPureSyncPacket>
+public class PureSyncReplayerPacketHandler(PacketReplayerService packetReplayerService) : IPacketHandler<PlayerPureSyncPacket>
 {
-    private readonly PacketReplayerService packetReplayerService;
-
     public PacketId PacketId => PacketId.PACKET_ID_PLAYER_PURESYNC;
-
-    public PureSyncReplayerPacketHandler(PacketReplayerService packetReplayerService)
-    {
-        this.packetReplayerService = packetReplayerService;
-    }
 
     public void HandlePacket(IClient client, PlayerPureSyncPacket packet)
     {
-        if (!this.packetReplayerService.ShouldPlayerCapturePureSyncPackets(client.Player))
+        if (!packetReplayerService.ShouldPlayerCapturePureSyncPackets(client.Player))
             return;
 
         System.IO.Directory.CreateDirectory("packetlog/puresync");

@@ -5,18 +5,14 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.Rpc.World;
 
-public sealed class SetFogDistancePacket : Packet
+public sealed class SetFogDistancePacket(float fogDistance) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public float Distance { get; set; }
+    public float Distance { get; set; } = fogDistance;
 
-    public SetFogDistancePacket(float fogDistance)
-    {
-        this.Distance = fogDistance;
-    }
     public override void Read(byte[] bytes)
     {
         throw new NotImplementedException();

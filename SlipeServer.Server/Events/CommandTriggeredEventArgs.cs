@@ -3,14 +3,8 @@ using System;
 
 namespace SlipeServer.Server.Events;
 
-public sealed class CommandTriggeredEventArgs : EventArgs
+public sealed class CommandTriggeredEventArgs(Player player, string[] arguments) : EventArgs
 {
-    public Player Player { get; }
-    public string[] Arguments { get; }
-
-    public CommandTriggeredEventArgs(Player player, string[] arguments)
-    {
-        this.Player = player;
-        this.Arguments = arguments;
-    }
+    public Player Player { get; } = player;
+    public string[] Arguments { get; } = arguments;
 }

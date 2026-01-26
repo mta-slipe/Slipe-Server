@@ -6,16 +6,10 @@ using System.Collections.Generic;
 
 namespace SlipeServer.Packets.Definitions.Pickups;
 
-public struct PickupIdAndModel
+public struct PickupIdAndModel(ElementId id, ushort model)
 {
-    public ElementId Id { get; set; }
-    public ushort Model { get; set; }
-
-    public PickupIdAndModel(ElementId id, ushort model)
-    {
-        this.Id = id;
-        this.Model = model;
-    }
+    public ElementId Id { get; set; } = id;
+    public ushort Model { get; set; } = model;
 }
 
 public sealed class PickupHideShowPacket : Packet

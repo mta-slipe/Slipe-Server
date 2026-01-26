@@ -4,20 +4,14 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
 
-public sealed class SetMoneyPacket : Packet
+public sealed class SetMoneyPacket(int money, bool instant) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public int Money { get; set; }
-    public bool Instant { get; set; }
-
-    public SetMoneyPacket(int money, bool instant)
-    {
-        this.Money = money;
-        this.Instant = instant;
-    }
+    public int Money { get; set; } = money;
+    public bool Instant { get; set; } = instant;
 
     public override void Read(byte[] bytes)
     {

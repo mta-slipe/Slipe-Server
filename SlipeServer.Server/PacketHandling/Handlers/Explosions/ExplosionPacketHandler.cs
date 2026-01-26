@@ -7,21 +7,12 @@ using SlipeServer.Server.Clients;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Explosions;
 
-public class ExplosionPacketHandler : IPacketHandler<ExplosionPacket>
+public class ExplosionPacketHandler(
+    ISyncHandlerMiddleware<ExplosionPacket> middleware,
+    IElementCollection elementCollection
+    ) : IPacketHandler<ExplosionPacket>
 {
-    private readonly ISyncHandlerMiddleware<ExplosionPacket> middleware;
-    private readonly IElementCollection elementCollection;
-
     public PacketId PacketId => PacketId.PACKET_ID_EXPLOSION;
-
-    public ExplosionPacketHandler(
-        ISyncHandlerMiddleware<ExplosionPacket> middleware,
-        IElementCollection elementCollection
-    )
-    {
-        this.middleware = middleware;
-        this.elementCollection = elementCollection;
-    }
 
     public void HandlePacket(IClient client, ExplosionPacket packet)
     {
@@ -30,7 +21,7 @@ public class ExplosionPacketHandler : IPacketHandler<ExplosionPacket>
 
         if (packet.OriginId != null)
         {
-            var explosionorigin = this.elementCollection.Get(packet.OriginId.Value);
+            var explosionorigin = elementCollection.Get(packet.OriginId.Value);
             if (explosionorigin != null)
             {
                 if (explosionorigin is Elements.Vehicle vehicle)
@@ -40,7 +31,7 @@ public class ExplosionPacketHandler : IPacketHandler<ExplosionPacket>
             }
         }
 
-        var nearbyPlayers = this.middleware.GetPlayersToSyncTo(client.Player, packet);
+        var nearbyPlayers = middleware.GetPlayersToSyncTo(client.Player, packet);
 
         packet.SendTo(nearbyPlayers);
     }

@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace SlipeServer.HostBuilderExample;
 
-public class SampleHostedService(MtaServer mtaServer, IChatBox chatBox) : IHostedService
+public class SampleHostedService(IMtaServer mtaServer, IChatBox chatBox) : IHostedService
 {
     public Task StartAsync(CancellationToken cancellationToken)
     {

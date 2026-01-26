@@ -1,27 +1,20 @@
-﻿namespace SlipeServer.Server.Elements.IdGeneration;
+﻿using System.Threading;
 
-public class RangedElementIdGenerator : IElementIdGenerator
+namespace SlipeServer.Server.Elements.IdGeneration;
+
+public class RangedElementIdGenerator(uint start, uint stop) : IElementIdGenerator
 {
-    private readonly uint start;
-    private readonly uint stop;
-    private uint idCounter;
+    private uint idCounter = start;
 
-    private readonly object idLock = new();
-
-    public RangedElementIdGenerator(uint start, uint stop)
-    {
-        this.idCounter = start;
-        this.start = start;
-        this.stop = stop;
-    }
+    private readonly Lock idLock = new();
 
     public uint GetId()
     {
         lock (this.idLock)
         {
             this.idCounter++;
-            if (this.idCounter > this.stop)
-                this.idCounter = this.start;
+            if (this.idCounter > stop)
+                this.idCounter = start;
 
             return this.idCounter;
         }

@@ -8,9 +8,8 @@ namespace SlipeServer.Server.Tests.Integration;
 
 public sealed class MtaServerTests
 {
-    public class TestResource : Resource
+    public class TestResource(MtaServer server) : Resource(server, server.RootElement, "test", null)
     {
-        public TestResource(MtaServer server) : base(server, server.RootElement, "test", null) { }
     }
 
     [Fact]

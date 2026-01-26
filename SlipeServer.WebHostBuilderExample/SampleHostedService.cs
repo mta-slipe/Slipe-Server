@@ -9,10 +9,10 @@ namespace SlipeServer.WebHostBuilderExample;
 
 public class SampleHostedService : IHostedService
 {
-    private readonly MtaServer mtaServer;
+    private readonly IMtaServer mtaServer;
     private readonly IChatBox chatBox;
 
-    public SampleHostedService(MtaServer mtaServer, IChatBox chatBox, ICommandService commandService)
+    public SampleHostedService(IMtaServer mtaServer, IChatBox chatBox, ICommandService commandService)
     {
         this.mtaServer = mtaServer;
         this.chatBox = chatBox;

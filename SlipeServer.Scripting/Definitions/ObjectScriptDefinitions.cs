@@ -4,15 +4,8 @@ using System.Numerics;
 
 namespace SlipeServer.Scripting.Definitions;
 
-public class ObjectScriptDefinitions
+public class ObjectScriptDefinitions(IMtaServer server)
 {
-    private readonly MtaServer server;
-
-    public ObjectScriptDefinitions(MtaServer server)
-    {
-        this.server = server;
-    }
-
     [ScriptFunctionDefinition("createObject")]
     public WorldObject CreateObject(ushort model, Vector3 position, Vector3? rotation = null, bool isLowLod = false)
     {
@@ -20,8 +13,6 @@ public class ObjectScriptDefinitions
         {
             Rotation = rotation ?? Vector3.Zero,
             IsLowLod = isLowLod
-        }.AssociateWith(this.server);
+        }.AssociateWith(server);
     }
-
-
 }

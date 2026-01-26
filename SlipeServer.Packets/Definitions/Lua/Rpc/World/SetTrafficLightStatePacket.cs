@@ -4,20 +4,14 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.Rpc.World;
 
-public sealed class SetTrafficLightStatePacket : Packet
+public sealed class SetTrafficLightStatePacket(byte state, bool forced) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public byte State { get; set; }
-    public bool Forced { get; set; }
-
-    public SetTrafficLightStatePacket(byte state, bool forced)
-    {
-        this.State = state;
-        this.Forced = forced;
-    }
+    public byte State { get; set; } = state;
+    public bool Forced { get; set; } = forced;
 
     public override void Read(byte[] bytes)
     {

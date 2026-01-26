@@ -13,23 +13,11 @@ using System.Threading.Tasks;
 
 namespace SlipeServer.Lua;
 
-public class LuaService
+public class LuaService(IMtaServer server, ILogger logger, RootElement root, ScriptTransformationPipeline scriptTransformationPipeline)
 {
-    private readonly MtaServer server;
-    private readonly ILogger logger;
-    private readonly RootElement root;
-    private readonly ScriptTransformationPipeline scriptTransformationPipeline;
     private readonly Dictionary<string, Script> scripts = [];
     private readonly Dictionary<string, LuaMethod> methods = [];
     private readonly LuaTranslator translator = new();
-
-    public LuaService(MtaServer server, ILogger logger, RootElement root, ScriptTransformationPipeline scriptTransformationPipeline)
-    {
-        this.server = server;
-        this.logger = logger;
-        this.root = root;
-        this.scriptTransformationPipeline = scriptTransformationPipeline;
-    }
 
     public void LoadDefinitions(object methodSet)
     {
@@ -111,7 +99,7 @@ public class LuaService
 
     public void LoadDefinitions<T>()
     {
-        LoadDefinitions(this.server.Instantiate<T>()!);
+        LoadDefinitions(server.Instantiate<T>()!);
     }
 
     public void LoadDefaultDefinitions()
@@ -121,21 +109,21 @@ public class LuaService
                 .Any(method => method.CustomAttributes
                     .Any(attribute => attribute.AttributeType == typeof(ScriptFunctionDefinitionAttribute)))))
         {
-            LoadDefinitions(this.server.Instantiate(type));
+            LoadDefinitions(server.Instantiate(type));
         }
     }
 
     public void LoadScript(string identifier, string code)
     {
         var script = new Script(CoreModules.Preset_SoftSandbox);
-        script.Options.DebugPrint = (value) => this.logger.LogInformation(value);
+        script.Options.DebugPrint = (value) => logger.LogInformation(value);
         this.scripts[identifier] = script;
 
         LoadGlobals(script);
         LoadDefinitions(script);
 
         using var ms = new MemoryStream(System.Text.UTF8Encoding.UTF8.GetBytes(code));
-        var stream = this.scriptTransformationPipeline.Transform(ms, "lua");
+        var stream = scriptTransformationPipeline.Transform(ms, "lua");
 
         script.DoStream(stream, codeFriendlyName: identifier);
     }
@@ -145,8 +133,8 @@ public class LuaService
         var script = new Script(CoreModules.Preset_SoftSandbox);
         script.Options.DebugPrint = (value) =>
         {
-            using var scope = this.logger.BeginScope(script);
-            this.logger.LogDebug("{value}", value);
+            using var scope = logger.BeginScope(script);
+            logger.LogDebug("{value}", value);
         };
         this.scripts[identifier] = script;
 
@@ -183,7 +171,7 @@ public class LuaService
 
     private void LoadGlobals(Script script)
     {
-        script.Globals["root"] = this.translator.ToDynValues(this.root).First();
+        script.Globals["root"] = this.translator.ToDynValues(root).First();
         script.Globals["isSlipeServer"] = this.translator.ToDynValues(true).First();
     }
 

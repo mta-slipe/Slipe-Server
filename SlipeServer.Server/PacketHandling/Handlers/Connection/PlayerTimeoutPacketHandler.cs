@@ -10,21 +10,14 @@ using SlipeServer.Server.Clients;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Connection;
 
-public class PlayerTimeoutPacketHandler : IPacketHandler<PlayerTimeoutPacket>
+public class PlayerTimeoutPacketHandler(IElementCollection elementCollection) : IPacketHandler<PlayerTimeoutPacket>
 {
-    private readonly IElementCollection elementCollection;
-
     public PacketId PacketId => PacketId.PACKET_ID_PLAYER_TIMEOUT;
-
-    public PlayerTimeoutPacketHandler(IElementCollection elementCollection)
-    {
-        this.elementCollection = elementCollection;
-    }
 
     public void HandlePacket(IClient client, PlayerTimeoutPacket packet)
     {
         var returnPacket = PlayerPacketFactory.CreateQuitPacket(client.Player, QuitReason.Timeout);
-        returnPacket.SendTo(this.elementCollection.GetByType<Elements.Player>(ElementType.Player).Except(new Elements.Player[] { client.Player }));
+        returnPacket.SendTo(elementCollection.GetByType<Elements.Player>(ElementType.Player).Except(new Elements.Player[] { client.Player }));
 
         client.Player.Destroy();
     }

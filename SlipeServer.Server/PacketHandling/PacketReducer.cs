@@ -5,31 +5,22 @@ using SlipeServer.Server.Clients;
 using SlipeServer.Server.PacketHandling.Handlers;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace SlipeServer.Server.PacketHandling;
 
 /// <summary>
 /// Class responsible for routing packets to the appropriate queues
 /// </summary>
-public class PacketReducer : IDisposable
+public class PacketReducer(ILogger logger) : IDisposable
 {
-    private readonly object @lock = new();
-    private readonly List<IPacketQueueHandlerBase> packetQueueHandlers;
-    private readonly List<IQueueHandler> queueHandlers;
-    private readonly Dictionary<PacketId, List<IQueueHandler>> registeredQueueHandlers;
-    private readonly Dictionary<PacketId, List<Action<IClient, byte[]>>> registeredPacketHandlerActions;
-    private readonly ILogger logger;
+    private readonly Lock @lock = new();
+    private readonly List<IPacketQueueHandlerBase> packetQueueHandlers = new();
+    private readonly List<IQueueHandler> queueHandlers = new();
+    private readonly Dictionary<PacketId, List<IQueueHandler>> registeredQueueHandlers = new();
+    private readonly Dictionary<PacketId, List<Action<IClient, byte[]>>> registeredPacketHandlerActions = new();
 
     public IEnumerable<IQueueHandler> RegisteredQueueHandlers => this.queueHandlers;
-
-    public PacketReducer(ILogger logger)
-    {
-        this.packetQueueHandlers = new();
-        this.queueHandlers = new();
-        this.registeredQueueHandlers = new();
-        this.registeredPacketHandlerActions = new();
-        this.logger = logger;
-    }
 
     public void UnregisterQueueHandler(PacketId packetId, IQueueHandler queueHandler)
     {
@@ -54,11 +45,11 @@ public class PacketReducer : IDisposable
                 }
                 catch (Exception e)
                 {
-                    this.logger.LogError("Enqueueing packet ({packetId}) failed.\n{message}\n{stackTrace}", packetId, e.Message, e.StackTrace);
+                    logger.LogError("Enqueueing packet ({packetId}) failed.\n{message}\n{stackTrace}", packetId, e.Message, e.StackTrace);
                 }
         } else if (packetId != PacketId.PACKET_ID_PLAYER_NO_SOCKET)
         {
-            this.logger.LogWarning("Received unregistered packet {packetId}", packetId);
+            logger.LogWarning("Received unregistered packet {packetId}", packetId);
         }
 
         lock (this.@lock)
@@ -68,7 +59,7 @@ public class PacketReducer : IDisposable
                 foreach (IQueueHandler queueHandler in value)
                 {
                     queueHandler.EnqueuePacket(client, packetId, data);
-                    this.logger.LogWarning("Use of deprecated queue handler {packetId} {queueHandler}", packetId, queueHandler);
+                    logger.LogWarning("Use of deprecated queue handler {packetId} {queueHandler}", packetId, queueHandler);
                 }
             }
         }

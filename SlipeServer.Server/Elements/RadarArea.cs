@@ -92,7 +92,7 @@ public class RadarArea : Element
         return false;
     }
 
-    public new RadarArea AssociateWith(MtaServer server)
+    public new RadarArea AssociateWith(IMtaServer server)
     {
         base.AssociateWith(server);
         return this;

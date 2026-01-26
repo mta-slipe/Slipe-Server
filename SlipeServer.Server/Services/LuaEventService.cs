@@ -17,14 +17,14 @@ namespace SlipeServer.Server.Services;
 /// </summary>
 public class LuaEventService : ILuaEventService
 {
-    private readonly MtaServer server;
+    private readonly IMtaServer server;
     private readonly RootElement root;
     private readonly ILatentPacketService latentPacketService;
     private readonly IElementCollection elementCollection;
     private readonly ILuaValueMapper mapper;
     private readonly Dictionary<string, List<Action<LuaEvent>>> eventHandlers = [];
 
-    public LuaEventService(MtaServer server,
+    public LuaEventService(IMtaServer server,
         RootElement root,
         ILatentPacketService latentPacketService,
         IElementCollection elementCollection,

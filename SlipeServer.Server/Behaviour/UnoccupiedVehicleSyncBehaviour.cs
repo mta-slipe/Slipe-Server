@@ -19,7 +19,7 @@ public class UnoccupiedVehicleSyncBehaviour
     private readonly Timer timer;
 
     public UnoccupiedVehicleSyncBehaviour(
-        MtaServer server,
+        IMtaServer server,
         IElementCollection elementCollection,
         Configuration configuration)
     {

@@ -5,20 +5,14 @@ using System.Drawing;
 
 namespace SlipeServer.Packets.Definitions.Lua.Rpc.World;
 
-public sealed class SetSkyGradientPacket : Packet
+public sealed class SetSkyGradientPacket(Color? topColor = null, Color? bottomColor = null) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public Color Top { get; set; }
-    public Color Bottom { get; set; }
-
-    public SetSkyGradientPacket(Color? topColor = null, Color? bottomColor = null)
-    {
-        this.Top = topColor ?? Color.FromArgb(0, 0, 0);
-        this.Bottom = bottomColor ?? Color.FromArgb(0, 0, 0);
-    }
+    public Color Top { get; set; } = topColor ?? Color.FromArgb(0, 0, 0);
+    public Color Bottom { get; set; } = bottomColor ?? Color.FromArgb(0, 0, 0);
 
     public override void Read(byte[] bytes)
     {

@@ -10,7 +10,7 @@ public class BasicResourceInterpreter : IResourceInterpreter
     public bool IsFallback => true;
 
     public bool TryInterpretResource(
-        MtaServer mtaServer,
+        IMtaServer mtaServer,
         RootElement rootElement,
         string name,
         string path,

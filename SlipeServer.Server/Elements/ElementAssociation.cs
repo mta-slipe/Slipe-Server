@@ -4,7 +4,7 @@ public class ElementAssociation
 {
     public Element Element { get; }
     public Player? Player { get; }
-    public MtaServer? Server { get; set; }
+    public IMtaServer? Server { get; set; }
     public bool IsGlobal => this.Server != null;
 
     public ElementAssociation(Element element, Player player)
@@ -13,7 +13,7 @@ public class ElementAssociation
         this.Player = player;
     }
 
-    public ElementAssociation(Element element, MtaServer server)
+    public ElementAssociation(Element element, IMtaServer server)
     {
         this.Element = element;
         this.Server = server;

@@ -5,7 +5,7 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 
-public sealed class SetRadarAreaFlashingPacket : Packet
+public sealed class SetRadarAreaFlashingPacket(ElementId elementId, bool flashing) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
 
@@ -13,14 +13,8 @@ public sealed class SetRadarAreaFlashingPacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; }
-    public bool Flashing { get; }
-
-    public SetRadarAreaFlashingPacket(ElementId elementId, bool flashing)
-    {
-        this.ElementId = elementId;
-        this.Flashing = flashing;
-    }
+    public ElementId ElementId { get; } = elementId;
+    public bool Flashing { get; } = flashing;
 
     public override void Read(byte[] bytes)
     {

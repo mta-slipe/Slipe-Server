@@ -538,7 +538,7 @@ public class Vehicle : Element
 
     }
 
-    public new Vehicle AssociateWith(MtaServer server)
+    public new Vehicle AssociateWith(IMtaServer server)
     {
         base.AssociateWith(server);
         return this;

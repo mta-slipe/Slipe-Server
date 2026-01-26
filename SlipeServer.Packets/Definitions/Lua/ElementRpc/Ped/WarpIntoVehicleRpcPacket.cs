@@ -4,7 +4,7 @@ using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 
-public sealed class WarpIntoVehicleRpcPacket : Packet
+public sealed class WarpIntoVehicleRpcPacket(ElementId elementId, ElementId vehicleId, byte seat, byte timeContext) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
 
@@ -12,18 +12,10 @@ public sealed class WarpIntoVehicleRpcPacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; }
-    public ElementId VehicleId { get; }
-    public byte Seat { get; }
-    public byte TimeContext { get; }
-
-    public WarpIntoVehicleRpcPacket(ElementId elementId, ElementId vehicleId, byte seat, byte timeContext)
-    {
-        this.ElementId = elementId;
-        this.VehicleId = vehicleId;
-        this.Seat = seat;
-        this.TimeContext = timeContext;
-    }
+    public ElementId ElementId { get; } = elementId;
+    public ElementId VehicleId { get; } = vehicleId;
+    public byte Seat { get; } = seat;
+    public byte TimeContext { get; } = timeContext;
 
     public override void Read(byte[] bytes)
     {

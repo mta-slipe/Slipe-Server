@@ -17,32 +17,16 @@ using System.Numerics;
 
 namespace SlipeServer.Physics.Builders;
 
-public class PhysicsWorldBuilder
+public class PhysicsWorldBuilder(ILogger logger)
 {
-    private readonly ILogger logger;
-
-    private readonly AssetCollection assetCollection;
-    private readonly List<Action<PhysicsWorld>> actions;
-    private readonly List<Img> imgs;
-    private readonly Dictionary<Dff, IPhysicsMesh> dffMeshes;
-    private readonly Dictionary<ColCombo, IPhysicsMesh[]> colMeshes;
-    private readonly Dictionary<string, ColCombo> namedColCombos;
-    private PhysicsModelLoadMode loadMode;
+    private readonly AssetCollection assetCollection = new();
+    private readonly List<Action<PhysicsWorld>> actions = new();
+    private readonly List<Img> imgs = new();
+    private readonly Dictionary<Dff, IPhysicsMesh> dffMeshes = new();
+    private readonly Dictionary<ColCombo, IPhysicsMesh[]> colMeshes = new();
+    private readonly Dictionary<string, ColCombo> namedColCombos = new();
+    private PhysicsModelLoadMode loadMode = PhysicsModelLoadMode.Col;
     private Vector3 gravity;
-
-    public PhysicsWorldBuilder(ILogger logger)
-    {
-        this.logger = logger;
-
-        this.assetCollection = new();
-        this.actions = new();
-        this.imgs = new();
-        this.dffMeshes = new();
-        this.colMeshes = new();
-        this.namedColCombos = new();
-
-        this.loadMode = PhysicsModelLoadMode.Col;
-    }
 
     public void SetMode(PhysicsModelLoadMode loadMode)
     {
@@ -77,7 +61,7 @@ public class PhysicsWorldBuilder
                     }
                     catch (Exception)
                     {
-                        this.logger.LogTrace($"Unable to locate col {entry.Value.Data}");
+                        logger.LogTrace($"Unable to locate col {entry.Value.Data}");
                     }
                 }
             }
@@ -102,12 +86,12 @@ public class PhysicsWorldBuilder
                         }
                         catch (Exception)
                         {
-                            this.logger.LogTrace($"Unable to locate dff {obj.ModelName}");
+                            logger.LogTrace($"Unable to locate dff {obj.ModelName}");
                         }
                     });
                 } else
                 {
-                    this.logger.LogTrace($"Unable to get dff {obj.ModelName} from img");
+                    logger.LogTrace($"Unable to get dff {obj.ModelName} from img");
                 }
             }
         } else
@@ -138,13 +122,13 @@ public class PhysicsWorldBuilder
                             }
                             catch (Exception)
                             {
-                                this.logger.LogTrace($"Unable to locate col {obj.ModelName.ToLower()} in {ideName}");
+                                logger.LogTrace($"Unable to locate col {obj.ModelName.ToLower()} in {ideName}");
                             }
                         });
                     }
                 } else
                 {
-                    this.logger.LogTrace($"Unable to find col {obj.ModelName.ToLower()} in {ideName}");
+                    logger.LogTrace($"Unable to find col {obj.ModelName.ToLower()} in {ideName}");
                 }
             }
         }
@@ -201,7 +185,7 @@ public class PhysicsWorldBuilder
                         world.AddStatic(mesh, inst.Position, euler.ToQuaternion());
                     } else
                     {
-                        this.logger.LogTrace("Dff not found for {dff}", inst.Id);
+                        logger.LogTrace("Dff not found for {dff}", inst.Id);
                     }
                 });
             } else
@@ -219,7 +203,7 @@ public class PhysicsWorldBuilder
                         }
                     } else
                     {
-                        this.logger.LogTrace("Col not found for {col}", inst.Id);
+                        logger.LogTrace("Col not found for {col}", inst.Id);
                     }
                 });
             }
@@ -228,7 +212,7 @@ public class PhysicsWorldBuilder
 
     public PhysicsWorld Build()
     {
-        var world = new PhysicsWorld(this.logger, this.gravity, this.assetCollection);
+        var world = new PhysicsWorld(logger, this.gravity, this.assetCollection);
 
         foreach (var action in this.actions)
             action(world);

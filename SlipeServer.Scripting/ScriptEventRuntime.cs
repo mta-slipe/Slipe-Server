@@ -5,6 +5,7 @@ using SlipeServer.Server.ElementCollections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace SlipeServer.Scripting;
 
@@ -12,12 +13,12 @@ public class ScriptEventRuntime : IScriptEventRuntime
 {
     private readonly List<RegisteredEventHandler> registeredEventHandlers = [];
     private readonly Dictionary<string, RegisteredEvent> registeredEvents = [];
-    private readonly MtaServer server;
+    private readonly IMtaServer server;
     private readonly IElementCollection elementCollection;
 
-    private readonly object handlerLock = new();
+    private readonly Lock handlerLock = new();
 
-    public ScriptEventRuntime(MtaServer server, IElementCollection elementCollection)
+    public ScriptEventRuntime(IMtaServer server, IElementCollection elementCollection)
     {
         this.server = server;
         this.elementCollection = elementCollection;

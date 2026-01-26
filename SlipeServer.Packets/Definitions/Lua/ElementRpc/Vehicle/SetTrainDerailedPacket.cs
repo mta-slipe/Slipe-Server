@@ -5,20 +5,14 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
 
-public sealed class SetTrainDerailedPacket : Packet
+public sealed class SetTrainDerailedPacket(ElementId elementId, bool isDerailed) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; set; }
-    public bool IsDerailed { get; set; }
-
-    public SetTrainDerailedPacket(ElementId elementId, bool isDerailed)
-    {
-        this.ElementId = elementId;
-        this.IsDerailed = isDerailed;
-    }
+    public ElementId ElementId { get; set; } = elementId;
+    public bool IsDerailed { get; set; } = isDerailed;
 
     public override void Read(byte[] bytes)
     {

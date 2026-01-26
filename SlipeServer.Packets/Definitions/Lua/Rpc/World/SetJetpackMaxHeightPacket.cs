@@ -4,18 +4,13 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.Rpc.World;
 
-public sealed class SetJetpackMaxHeightPacket : Packet
+public sealed class SetJetpackMaxHeightPacket(float maxHeight) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public float MaxHeight { get; }
-
-    public SetJetpackMaxHeightPacket(float maxHeight)
-    {
-        this.MaxHeight = maxHeight;
-    }
+    public float MaxHeight { get; } = maxHeight;
 
     public override void Read(byte[] bytes)
     {

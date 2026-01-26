@@ -4,22 +4,15 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
 
-public sealed class ToggleAllControlsPacket : Packet
+public sealed class ToggleAllControlsPacket(bool enabled, bool gtaControls, bool mtaControls) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public bool GTAControls { get; set; }
-    public bool MTAControls { get; set; }
-    public bool Enabled { get; set; }
-
-    public ToggleAllControlsPacket(bool enabled, bool gtaControls, bool mtaControls)
-    {
-        this.Enabled = enabled;
-        this.GTAControls = gtaControls;
-        this.MTAControls = mtaControls;
-    }
+    public bool GTAControls { get; set; } = gtaControls;
+    public bool MTAControls { get; set; } = mtaControls;
+    public bool Enabled { get; set; } = enabled;
 
     public override void Read(byte[] bytes)
     {

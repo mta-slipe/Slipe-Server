@@ -4,7 +4,7 @@ using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 
-public sealed class RemovePedJetpackRpcPacket : Packet
+public sealed class RemovePedJetpackRpcPacket(ElementId elementId) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
 
@@ -12,12 +12,7 @@ public sealed class RemovePedJetpackRpcPacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; }
-
-    public RemovePedJetpackRpcPacket(ElementId elementId)
-    {
-        this.ElementId = elementId;
-    }
+    public ElementId ElementId { get; } = elementId;
 
     public override void Read(byte[] bytes)
     {

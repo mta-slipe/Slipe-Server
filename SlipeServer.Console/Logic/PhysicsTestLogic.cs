@@ -20,7 +20,7 @@ namespace SlipeServer.Console.Logic;
 
 public class PhysicsTestLogic
 {
-    private readonly MtaServer server;
+    private readonly IMtaServer server;
     private readonly IElementCollection elementCollection;
     private readonly PhysicsService physicsService;
     private readonly ICommandService commandService;
@@ -39,7 +39,7 @@ public class PhysicsTestLogic
     private CompoundPhysicsMesh ufoInnHullCompoundCol;
 
     public PhysicsTestLogic(
-        MtaServer server,
+        IMtaServer server,
         IElementCollection elementCollection,
         PhysicsService physicsService,
         ICommandService commandService,

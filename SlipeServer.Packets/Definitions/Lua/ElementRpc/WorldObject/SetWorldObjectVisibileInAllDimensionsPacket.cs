@@ -5,7 +5,7 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.WorldObject;
 
-public sealed class SetWorldObjectVisibileInAllDimensionsPacket : Packet
+public sealed class SetWorldObjectVisibileInAllDimensionsPacket(ElementId elementId, bool isVisibleInAllDimensions) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
 
@@ -13,14 +13,8 @@ public sealed class SetWorldObjectVisibileInAllDimensionsPacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; }
-    public bool IsVisibleInAllDimensions { get; }
-
-    public SetWorldObjectVisibileInAllDimensionsPacket(ElementId elementId, bool isVisibleInAllDimensions)
-    {
-        this.ElementId = elementId;
-        this.IsVisibleInAllDimensions = isVisibleInAllDimensions;
-    }
+    public ElementId ElementId { get; } = elementId;
+    public bool IsVisibleInAllDimensions { get; } = isVisibleInAllDimensions;
 
     public override void Read(byte[] bytes)
     {

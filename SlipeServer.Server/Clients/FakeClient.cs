@@ -11,9 +11,9 @@ namespace SlipeServer.Server.Clients;
 /// There is no point in using this in production, since players do not yield any additional values over using peds
 /// And the MTA master server list will not include fake clients in the player count
 /// </summary>
-public class FakeClient : IClient
+public class FakeClient(Player player) : IClient
 {
-    public Player Player { get; set; }
+    public Player Player { get; set; } = player;
 
     public string? Serial { get; set; }
 
@@ -27,11 +27,6 @@ public class FakeClient : IClient
     public ClientConnectionState ConnectionState { get; set; }
 
     public uint Ping { get; set; }
-
-    public FakeClient(Player player)
-    {
-        this.Player = player;
-    }
 
     public void FetchSerial() { }
     public void FetchIp() { }

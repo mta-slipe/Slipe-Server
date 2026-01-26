@@ -10,7 +10,7 @@ namespace SlipeServer.Server.Services;
 /// <summary>
 /// Allows for the creation of explosions
 /// </summary>
-public class ExplosionService(MtaServer server) : IExplosionService
+public class ExplosionService(IMtaServer server) : IExplosionService
 {
     public void CreateExplosion(Vector3 position, ExplosionType type, Player? responsiblePlayer = null)
     {

@@ -5,20 +5,14 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Vehicle;
 
-public sealed class SetTrainDirectionPacket : Packet
+public sealed class SetTrainDirectionPacket(ElementId elementId, bool direction) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; set; }
-    public bool Direction { get; set; }
-
-    public SetTrainDirectionPacket(ElementId elementId, bool direction)
-    {
-        this.ElementId = elementId;
-        this.Direction = direction;
-    }
+    public ElementId ElementId { get; set; } = elementId;
+    public bool Direction { get; set; } = direction;
 
     public override void Read(byte[] bytes)
     {

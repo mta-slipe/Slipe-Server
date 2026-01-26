@@ -529,7 +529,7 @@ public class Element
     /// Associates an element with the server, causing the element to be created for all players on the server
     /// </summary>
     /// <param name="server">The server to associate the element with</param>
-    public Element AssociateWith(MtaServer server)
+    public Element AssociateWith(IMtaServer server)
     {
         this.associations.Add(new ElementAssociation(this, server));
         server.AssociateElement(this);
@@ -549,7 +549,7 @@ public class Element
     /// Removes an element from being associated with the server, causing the elements to no longer be created for all players
     /// </summary>
     /// <param name="server"></param>
-    public void RemoveFrom(MtaServer server)
+    public void RemoveFrom(IMtaServer server)
     {
         var associations = this.associations
             .Where(x => x.Element == this && x.Server == server)

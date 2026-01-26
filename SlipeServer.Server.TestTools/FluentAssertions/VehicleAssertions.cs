@@ -3,12 +3,8 @@ using SlipeServer.Server.Elements;
 
 namespace SlipeServer.Server.TestTools.FluentAssertions;
 
-public class VehicleAssertions : ElementAssertionsBase<Vehicle>
+public class VehicleAssertions(Vehicle vehicle) : ElementAssertionsBase<Vehicle>(vehicle)
 {
-    public VehicleAssertions(Vehicle vehicle) : base(vehicle)
-    {
-    }
-
     public override void BeEquivalentTo(Vehicle vehicle, string because = "", params object[] becauseArgs)
     {
         using var _ = new AssertionScope();

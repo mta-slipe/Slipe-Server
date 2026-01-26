@@ -2,14 +2,8 @@
 
 namespace SlipeServer.Server.Elements.Events;
 
-public sealed class VehicleBlownEventArgs : EventArgs
+public sealed class VehicleBlownEventArgs(Vehicle vehicle, bool createExplosion) : EventArgs
 {
-    public Vehicle Vehicle { get; }
-    public bool CreateExplosion { get; }
-
-    public VehicleBlownEventArgs(Vehicle vehicle, bool createExplosion)
-    {
-        this.Vehicle = vehicle;
-        this.CreateExplosion = createExplosion;
-    }
+    public Vehicle Vehicle { get; } = vehicle;
+    public bool CreateExplosion { get; } = createExplosion;
 }

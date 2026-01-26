@@ -2,12 +2,7 @@
 
 namespace SlipeServer.Server.Elements.Events;
 
-public class VehicleFixedEventArgs : EventArgs
+public class VehicleFixedEventArgs(Vehicle vehicle) : EventArgs
 {
-    public Vehicle Vehicle { get; }
-
-    public VehicleFixedEventArgs(Vehicle vehicle)
-    {
-        this.Vehicle = vehicle;
-    }
+    public Vehicle Vehicle { get; } = vehicle;
 }

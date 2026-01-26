@@ -5,22 +5,15 @@ using SlipeServer.Server.ElementCollections;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync;
 
-public class VehiclePushSyncPacketHandler : IPacketHandler<VehiclePushSyncPacket>
+public class VehiclePushSyncPacketHandler(
+    IElementCollection elementCollection
+    ) : IPacketHandler<VehiclePushSyncPacket>
 {
-    private readonly IElementCollection elementCollection;
-
     public PacketId PacketId => PacketId.PACKET_ID_VEHICLE_PUSH_SYNC;
-
-    public VehiclePushSyncPacketHandler(
-        IElementCollection elementCollection
-    )
-    {
-        this.elementCollection = elementCollection;
-    }
 
     public void HandlePacket(IClient client, VehiclePushSyncPacket packet)
     {
-        if (this.elementCollection.Get(packet.ElementId) is Elements.Vehicle vehicle)
+        if (elementCollection.Get(packet.ElementId) is Elements.Vehicle vehicle)
         {
             vehicle.TriggerPushed(client.Player);
         }

@@ -5,18 +5,13 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.Rpc.World;
 
-public sealed class SetGameSpeedPacket : Packet
+public sealed class SetGameSpeedPacket(float gameSpeed) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public float GameSpeed { get; set; }
-
-    public SetGameSpeedPacket(float gameSpeed)
-    {
-        this.GameSpeed = gameSpeed;
-    }
+    public float GameSpeed { get; set; } = gameSpeed;
 
     public override void Read(byte[] bytes)
     {

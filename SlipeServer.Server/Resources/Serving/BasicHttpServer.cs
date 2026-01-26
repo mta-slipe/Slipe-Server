@@ -18,13 +18,16 @@ public class BasicHttpServer : IResourceServer
     private readonly Configuration configuration;
     private readonly ILogger logger;
     private readonly string httpAddress;
+    private readonly string listenerHost;
     private readonly Dictionary<string, byte[]> additionalFiles;
 
     private bool isRunning;
 
     public BasicHttpServer(Configuration configuration, ILogger logger)
     {
-        this.httpAddress = $"http://{configuration.HttpHost}:{configuration.HttpPort}/";
+        // If the configured host is '*' or '0.0.0.0', HttpListener requires the '+' wildcard for prefixes
+        this.listenerHost = configuration.HttpHost == "*" || configuration.HttpHost == "0.0.0.0" ? "+" : configuration.HttpHost;
+        this.httpAddress = $"http://{this.listenerHost}:{configuration.HttpPort}/";
         this.httpListener = new HttpListener();
         this.httpListener.Prefixes.Add(this.httpAddress);
         this.additionalFiles = new();
@@ -49,7 +52,7 @@ public class BasicHttpServer : IResourceServer
         {
             if (exception.ErrorCode == 5 && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                string command = $@"netsh http add urlacl url=http://{this.configuration.HttpHost}:{this.configuration.HttpPort}/ sddl=D:(A;;GX;;;S-1-1-0)";
+                string command = $@"netsh http add urlacl url=http://{this.listenerHost}:{this.configuration.HttpPort}/ sddl=D:(A;;GX;;;S-1-1-0)";
                 throw new Exception($"Could not start http server on address {this.httpAddress}\n{exception.Message}\nYou might need to run the following command in an administrator command prompt: \n{command}", exception);
             } else
             {
@@ -80,6 +83,8 @@ public class BasicHttpServer : IResourceServer
         var path = Path.Join(this.rootDirectory, localPath);
 
         var fullPath = Path.GetFullPath(Path.Combine(this.rootDirectory, localPath.TrimStart('/')));
+
+        context.Response.AddHeader("Server", "SlipeServer BasicHttpServer");
 
         if (!fullPath.StartsWith(Path.GetFullPath(this.rootDirectory)))
         {

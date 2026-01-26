@@ -7,7 +7,7 @@ namespace SlipeServer.Console.Logic;
 public class VehicleEntityAddTestLogic
 {
     public VehicleEntityAddTestLogic(
-        MtaServer<CustomPlayer> server
+        IMtaServer<CustomPlayer> server
     )
     {
         int index = 0;

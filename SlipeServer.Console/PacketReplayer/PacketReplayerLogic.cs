@@ -10,7 +10,7 @@ public class PacketReplayerLogic
     private readonly PacketReplayerService packetReplayerService;
     private readonly Player replayer;
 
-    public PacketReplayerLogic(MtaServer server, ICommandService commandService, PacketReplayerService packetReplayerService)
+    public PacketReplayerLogic(IMtaServer server, ICommandService commandService, PacketReplayerService packetReplayerService)
     {
         this.packetReplayerService = packetReplayerService;
 

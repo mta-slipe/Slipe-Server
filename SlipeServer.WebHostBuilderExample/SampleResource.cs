@@ -51,7 +51,7 @@ internal class SampleResource : Resource
         ["Sample.lua"] = ResourceFiles.Sample,
     };
 
-    internal SampleResource(MtaServer server) : base(server, server.RootElement, "Sample")
+    internal SampleResource(IMtaServer server) : base(server, server.RootElement, "Sample")
     {
         this.NoClientScripts["foo.lua"] = System.Text.UTF8Encoding.UTF8.GetBytes("outputChatBox('sample')");
 

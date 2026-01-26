@@ -10,7 +10,7 @@ public class NametagTestLogic
 {
     private readonly Player nametagPlayer;
 
-    public NametagTestLogic(MtaServer server, ICommandService commandService)
+    public NametagTestLogic(IMtaServer server, ICommandService commandService)
     {
         this.nametagPlayer = new CustomPlayer(server.GetRequiredService<IExplosionService>(), server);
         var client = new FakeClient(this.nametagPlayer)

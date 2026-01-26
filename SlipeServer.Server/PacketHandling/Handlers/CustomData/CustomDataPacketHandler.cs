@@ -5,23 +5,16 @@ using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Clients;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.CustomData;
-public class CustomDataPacketHandler : IPacketHandler<CustomDataPacket>
+public class CustomDataPacketHandler(
+    IElementCollection elementCollection
+    ) : IPacketHandler<CustomDataPacket>
 {
-    private readonly IElementCollection elementCollection;
-
     public PacketId PacketId => PacketId.PACKET_ID_CUSTOM_DATA;
-
-    public CustomDataPacketHandler(
-        IElementCollection elementCollection
-    )
-    {
-        this.elementCollection = elementCollection;
-    }
 
     public void HandlePacket(IClient client, CustomDataPacket packet)
     {
         var player = client.Player;
-        var element = this.elementCollection.Get(packet.ElementId);
+        var element = elementCollection.Get(packet.ElementId);
         element?.RunAsSync(() =>
         {
             element.SetData(packet.Key, packet.Value, DataSyncType.Local);

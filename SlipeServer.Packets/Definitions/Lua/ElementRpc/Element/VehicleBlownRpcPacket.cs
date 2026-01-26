@@ -5,22 +5,15 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 
-public sealed class VehicleBlownRpcPacket : Packet
+public sealed class VehicleBlownRpcPacket(ElementId elementId, byte timeContext, bool createExplosion) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; set; }
-    public byte TimeContext { get; set; }
-    public bool CreateExplosion { get; set; }
-
-    public VehicleBlownRpcPacket(ElementId elementId, byte timeContext, bool createExplosion)
-    {
-        this.ElementId = elementId;
-        this.TimeContext = timeContext;
-        this.CreateExplosion = createExplosion;
-    }
+    public ElementId ElementId { get; set; } = elementId;
+    public byte TimeContext { get; set; } = timeContext;
+    public bool CreateExplosion { get; set; } = createExplosion;
 
     public override void Read(byte[] bytes)
     {

@@ -4,7 +4,7 @@ using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Vehicles;
 
-public sealed class UnoccupiedVehicleSyncStopPacket : Packet
+public sealed class UnoccupiedVehicleSyncStopPacket(ElementId id) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_UNOCCUPIED_VEHICLE_STOPSYNC;
 
@@ -12,12 +12,7 @@ public sealed class UnoccupiedVehicleSyncStopPacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId Id { get; set; }
-
-    public UnoccupiedVehicleSyncStopPacket(ElementId id)
-    {
-        this.Id = id;
-    }
+    public ElementId Id { get; set; } = id;
 
     public override void Read(byte[] bytes)
     {

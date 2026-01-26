@@ -28,7 +28,7 @@ namespace SlipeServer.Server;
 /// <summary>
 /// A highly-configurable implementation of an MTA Server. 
 /// </summary>
-public class MtaServer
+public class MtaServer : IMtaServer
 {
     private readonly List<INetWrapper> netWrappers;
     protected readonly List<IResourceServer> resourceServers;
@@ -540,6 +540,7 @@ public class MtaServer
         this.serviceCollection.AddSingleton<Configuration>(this.configuration);
         this.serviceCollection.AddSingleton<RootElement>(this.root);
         this.serviceCollection.AddSingleton<MtaServer>(this);
+        this.serviceCollection.AddSingleton<IMtaServer>(this);
 
         dependencyCallback?.Invoke(this.serviceCollection);
     }
@@ -558,7 +559,7 @@ public class MtaServer
     public void RegisterNetWrapper(INetWrapper netWrapper)
     {
         netWrapper.PacketReceived += EnqueueIncomingPacket;
-        this.clients[netWrapper] = new();
+        this.clients[netWrapper] = [];
     }
 
     private void EnqueueIncomingPacket(INetWrapper netWrapper, ulong binaryAddress, PacketId packetId, byte[] data, uint? ping)
@@ -712,12 +713,12 @@ public class MtaServer
     /// <summary>
     /// Triggered when the server started
     /// </summary>
-    public event Action<MtaServer>? Started;
+    public event Action<IMtaServer>? Started;
 
     /// <summary>
     /// Triggered when the server stopped
     /// </summary>
-    public event Action<MtaServer>? Stopped;
+    public event Action<IMtaServer>? Stopped;
 }
 
 /// <summary>
@@ -725,7 +726,7 @@ public class MtaServer
 /// This class can not be instantiated
 /// </summary>
 /// <typeparam name="TPlayer">The player type</typeparam>
-public abstract class MtaServer<TPlayer> : MtaServer where TPlayer : Player
+public abstract class MtaServer<TPlayer> : MtaServer, IMtaServer<TPlayer> where TPlayer : Player
 {
     public new IEnumerable<TPlayer> Players => this.elementCollection.GetByType<TPlayer>();
 
@@ -740,6 +741,7 @@ public abstract class MtaServer<TPlayer> : MtaServer where TPlayer : Player
 
         base.SetupDependencies(dependencyCallback);
         this.serviceCollection.AddSingleton<MtaServer<TPlayer>>(this);
+        this.serviceCollection.AddSingleton<IMtaServer<TPlayer>>(this);
     }
 
     public override void HandlePlayerJoin(Player player)

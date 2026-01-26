@@ -3,18 +3,10 @@ using System;
 
 namespace SlipeServer.Server.Elements.Events;
 
-public sealed class WeaponReceivedEventArgs : EventArgs
+public sealed class WeaponReceivedEventArgs(Ped ped, WeaponId weaponId, ushort ammoCount, bool setAsCurrent) : EventArgs
 {
-    public Ped Ped { get; }
-    public WeaponId WeaponId { get; }
-    public ushort AmmoCount { get; }
-    public bool SetAsCurrent { get; }
-
-    public WeaponReceivedEventArgs(Ped ped, WeaponId weaponId, ushort ammoCount, bool setAsCurrent)
-    {
-        this.Ped = ped;
-        this.WeaponId = weaponId;
-        this.AmmoCount = ammoCount;
-        this.SetAsCurrent = setAsCurrent;
-    }
+    public Ped Ped { get; } = ped;
+    public WeaponId WeaponId { get; } = weaponId;
+    public ushort AmmoCount { get; } = ammoCount;
+    public bool SetAsCurrent { get; } = setAsCurrent;
 }

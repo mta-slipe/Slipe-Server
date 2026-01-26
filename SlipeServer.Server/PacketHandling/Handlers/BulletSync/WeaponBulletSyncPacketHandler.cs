@@ -6,23 +6,16 @@ using SlipeServer.Server.PacketHandling.Handlers.Middleware;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.BulletSync;
 
-public class WeaponBulletSyncPacketHandler : IPacketHandler<WeaponBulletSyncPacket>
+public class WeaponBulletSyncPacketHandler(
+    ISyncHandlerMiddleware<WeaponBulletSyncPacket> middleware
+    ) : IPacketHandler<WeaponBulletSyncPacket>
 {
-    private readonly ISyncHandlerMiddleware<WeaponBulletSyncPacket> middleware;
-
     public PacketId PacketId => PacketId.PACKET_ID_WEAPON_BULLETSYNC;
-
-    public WeaponBulletSyncPacketHandler(
-        ISyncHandlerMiddleware<WeaponBulletSyncPacket> middleware
-    )
-    {
-        this.middleware = middleware;
-    }
 
     public void HandlePacket(IClient client, WeaponBulletSyncPacket packet)
     {
         packet.SourceElementId = client.Player.Id;
-        var otherPlayers = this.middleware.GetPlayersToSyncTo(client.Player, packet);
+        var otherPlayers = middleware.GetPlayersToSyncTo(client.Player, packet);
         packet.SendTo(otherPlayers);
     }
 }

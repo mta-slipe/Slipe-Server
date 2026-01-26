@@ -1,24 +1,18 @@
 ﻿namespace SlipeServer.Packets.Definitions.Lua;
 
-internal class LuaValueDebuggingView
+internal class LuaValueDebuggingView(LuaValue luaValue)
 {
-    private readonly LuaValue luaValue;
+    public LuaType Type => luaValue.LuaType;
 
-    public LuaValueDebuggingView(LuaValue luaValue)
-    {
-        this.luaValue = luaValue;
-    }
-    public LuaType Type => this.luaValue.LuaType;
-
-    public object? Value => this.luaValue.LuaType switch
+    public object? Value => luaValue.LuaType switch
     {
         LuaType.None => "none",
         LuaType.Nil => "nil",
-        LuaType.Boolean => this.luaValue.BoolValue,
-        LuaType.Number => this.luaValue.IntegerValue ?? this.luaValue.FloatValue ?? this.luaValue.DoubleValue,
-        LuaType.Userdata => this.luaValue.ElementId,
-        LuaType.String or LuaType.LongString => this.luaValue.StringValue,
-        LuaType.Table => this.luaValue.TableValue,
-        _ => $"Unsupported Lua value type: {this.luaValue.LuaType}.",
+        LuaType.Boolean => luaValue.BoolValue,
+        LuaType.Number => luaValue.IntegerValue ?? luaValue.FloatValue ?? luaValue.DoubleValue,
+        LuaType.Userdata => luaValue.ElementId,
+        LuaType.String or LuaType.LongString => luaValue.StringValue,
+        LuaType.Table => luaValue.TableValue,
+        _ => $"Unsupported Lua value type: {luaValue.LuaType}.",
     };
 }

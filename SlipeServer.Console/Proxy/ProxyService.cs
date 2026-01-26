@@ -17,12 +17,12 @@ public enum RemoteMessageType : byte
 
 public class ProxyService
 {
-    private readonly MtaServer server;
+    private readonly IMtaServer server;
     private readonly ILogger logger;
     private readonly NamedPipeClientStream namedPipe;
     private readonly ProxyNetWrapper proxyNetWrapper;
 
-    public ProxyService(MtaServer server, ILogger logger)
+    public ProxyService(IMtaServer server, ILogger logger)
     {
         this.server = server;
         this.logger = logger;

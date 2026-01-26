@@ -5,31 +5,20 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Player;
 
-public sealed class TakePlayerScreenshotPacket : Packet
+public sealed class TakePlayerScreenshotPacket(ushort sizeX, ushort sizeY, string tag, byte quality, uint maxBandwith, ushort maxPacketSize, ushort resourceId) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ushort SizeX { get; set; }
-    public ushort SizeY { get; set; }
-    public string Tag { get; set; }
-    public byte Quality { get; set; }
-    public uint MaxBandwith { get; set; }
-    public ushort MaxPacketSize { get; set; }
-    public ushort ResourceId { get; set; }
+    public ushort SizeX { get; set; } = sizeX;
+    public ushort SizeY { get; set; } = sizeY;
+    public string Tag { get; set; } = tag;
+    public byte Quality { get; set; } = quality;
+    public uint MaxBandwith { get; set; } = maxBandwith;
+    public ushort MaxPacketSize { get; set; } = maxPacketSize;
+    public ushort ResourceId { get; set; } = resourceId;
     public string ResourceName { get; set; } = "unknown";
-
-    public TakePlayerScreenshotPacket(ushort sizeX, ushort sizeY, string tag, byte quality, uint maxBandwith, ushort maxPacketSize, ushort resourceId)
-    {
-        this.SizeX = sizeX;
-        this.SizeY = sizeY;
-        this.Tag = tag;
-        this.Quality = quality;
-        this.MaxBandwith = maxBandwith;
-        this.MaxPacketSize = maxPacketSize;
-        this.ResourceId = resourceId;
-    }
 
     public override void Read(byte[] bytes)
     {

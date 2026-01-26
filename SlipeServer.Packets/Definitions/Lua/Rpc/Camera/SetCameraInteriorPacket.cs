@@ -4,18 +4,13 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.Rpc.Camera;
 
-public sealed class SetCameraInteriorPacket : Packet
+public sealed class SetCameraInteriorPacket(byte interior) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public byte Interior { get; set; }
-
-    public SetCameraInteriorPacket(byte interior)
-    {
-        this.Interior = interior;
-    }
+    public byte Interior { get; set; } = interior;
 
     public override void Read(byte[] bytes)
     {

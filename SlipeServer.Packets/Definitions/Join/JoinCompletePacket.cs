@@ -5,20 +5,14 @@ using System;
 
 namespace MTAServerWrapper.Packets.Outgoing.Connection;
 
-public sealed class JoinCompletePacket : Packet
+public sealed class JoinCompletePacket(string welcomeMessage, string version) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_SERVER_JOIN_COMPLETE;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public string WelcomeMessage { get; }
-    public string Version { get; }
-
-    public JoinCompletePacket(string welcomeMessage, string version)
-    {
-        this.WelcomeMessage = welcomeMessage;
-        this.Version = version;
-    }
+    public string WelcomeMessage { get; } = welcomeMessage;
+    public string Version { get; } = version;
 
     public override byte[] Write()
     {

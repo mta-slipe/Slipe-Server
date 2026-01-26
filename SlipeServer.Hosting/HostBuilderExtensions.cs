@@ -31,6 +31,7 @@ public static class HostBuilderExtensions
         host.Services.AddDefaultMiddlewares();
 
         host.Services.AddSingleton<MtaServer>(x => new MtaServer(x, buildAction));
+        host.Services.AddSingleton<IMtaServer>(x => x.GetRequiredService<MtaServer>());
         host.Services.AddHostedService<MtaServerHostedService<MtaServer>>();
 
         host.Services.AddMtaServerCore();
@@ -47,7 +48,9 @@ public static class HostBuilderExtensions
             services.AddDefaultMiddlewares();
 
             services.AddSingleton<MtaServer<T>>(x => new MtaNewPlayerServer<T>(x, buildAction));
+            services.AddSingleton<IMtaServer<T>>(x => x.GetRequiredService<MtaServer<T>>());
             services.AddSingleton<MtaServer>(x => x.GetRequiredService<MtaServer<T>>());
+            services.AddSingleton<IMtaServer>(x => x.GetRequiredService<MtaServer>());
             services.AddHostedService<MtaServerHostedService<MtaServer>>();
 
             services.AddMtaServerCore();
@@ -62,7 +65,9 @@ public static class HostBuilderExtensions
         host.Services.AddDefaultMiddlewares();
 
         host.Services.AddSingleton<MtaServer<T>>(x => new MtaNewPlayerServer<T>(x, buildAction));
+        host.Services.AddSingleton<IMtaServer<T>>(x => x.GetRequiredService<MtaServer<T>>());
         host.Services.AddSingleton<MtaServer>(x => x.GetRequiredService<MtaServer<T>>());
+        host.Services.AddSingleton<IMtaServer>(x => x.GetRequiredService<MtaServer>());
         host.Services.AddHostedService<MtaServerHostedService<MtaServer>>();
 
         host.Services.AddMtaServerCore();
@@ -79,7 +84,9 @@ public static class HostBuilderExtensions
             services.AddDefaultMiddlewares();
 
             services.AddSingleton<MtaDiPlayerServer<T>>(x => new MtaDiPlayerServer<T>(x, buildAction));
-            services.AddSingleton<MtaServer>(x => x.GetRequiredService<MtaDiPlayerServer<T>>());
+            services.AddSingleton<IMtaServer<T>>(x => x.GetRequiredService<MtaServer<T>>());
+            services.AddSingleton<MtaServer>(x => x.GetRequiredService<MtaDiPlayerServer<T>>()); ;
+            services.AddSingleton<IMtaServer>(x => x.GetRequiredService<MtaServer>());
             services.AddHostedService<MtaServerHostedService<MtaServer>>();
 
             services.AddMtaServerCore();
@@ -94,7 +101,9 @@ public static class HostBuilderExtensions
         host.Services.AddDefaultMiddlewares();
 
         host.Services.AddSingleton<MtaDiPlayerServer<T>>(x => new MtaDiPlayerServer<T>(x, buildAction));
+        host.Services.AddSingleton<IMtaServer<T>>(x => x.GetRequiredService<MtaServer<T>>());
         host.Services.AddSingleton<MtaServer>(x => x.GetRequiredService<MtaDiPlayerServer<T>>());
+        host.Services.AddSingleton<IMtaServer>(x => x.GetRequiredService<MtaServer>());
         host.Services.AddHostedService<MtaServerHostedService<MtaServer>>();
 
         host.Services.AddMtaServerCore();
@@ -109,6 +118,7 @@ public static class HostBuilderExtensions
 
         host.Services.AddSingleton<T>(x => factory(x));
         host.Services.AddSingleton<MtaServer>(x => x.GetRequiredService<T>());
+        host.Services.AddSingleton<IMtaServer>(x => x.GetRequiredService<MtaServer>());
         host.Services.AddHostedService<MtaServerHostedService<MtaServer>>();
 
         host.Services.AddMtaServerCore();
@@ -125,6 +135,7 @@ public static class HostBuilderExtensions
             services.AddDefaultMiddlewares();
 
             services.AddSingleton<MtaServer>(server);
+            services.AddSingleton<IMtaServer>(x => x.GetRequiredService<MtaServer>());
             services.AddHostedService<MtaServerHostedService<MtaServer>>();
 
             services.AddMtaServerCore();
@@ -139,6 +150,7 @@ public static class HostBuilderExtensions
         host.Services.AddDefaultMiddlewares();
 
         host.Services.AddSingleton<MtaServer>(server);
+        host.Services.AddSingleton<IMtaServer>(x => x.GetRequiredService<MtaServer>());
         host.Services.AddHostedService<MtaServerHostedService<MtaServer>>();
 
         host.Services.AddMtaServerCore();
@@ -155,6 +167,7 @@ public static class HostBuilderExtensions
             services.AddDefaultMiddlewares();
 
             services.AddSingleton<MtaServer>(server);
+            services.AddSingleton<IMtaServer>(x => x.GetRequiredService<MtaServer>());
             services.AddSingleton<T>(server);
             services.AddHostedService<MtaServerHostedService<MtaServer>>();
 
@@ -171,6 +184,7 @@ public static class HostBuilderExtensions
 
         host.Services.AddSingleton<T>(server);
         host.Services.AddSingleton<MtaServer>(x => x.GetRequiredService<T>());
+        host.Services.AddSingleton<IMtaServer>(x => x.GetRequiredService<MtaServer>());
         host.Services.AddHostedService<MtaServerHostedService<MtaServer>>();
 
         host.Services.AddMtaServerCore();

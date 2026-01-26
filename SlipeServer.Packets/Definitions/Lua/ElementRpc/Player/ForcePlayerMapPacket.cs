@@ -4,18 +4,13 @@ using System;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Player;
 
-public sealed class ForcePlayerMapPacket : Packet
+public sealed class ForcePlayerMapPacket(bool visible) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public bool Visible { get; set; }
-
-    public ForcePlayerMapPacket(bool visible)
-    {
-        this.Visible = visible;
-    }
+    public bool Visible { get; set; } = visible;
 
     public override void Read(byte[] bytes)
     {

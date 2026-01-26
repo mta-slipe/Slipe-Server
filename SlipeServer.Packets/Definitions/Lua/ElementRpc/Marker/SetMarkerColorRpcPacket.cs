@@ -6,19 +6,14 @@ using System.Drawing;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Marker;
 
-public sealed class SetMarkerColorRpcPacket : Packet
+public sealed class SetMarkerColorRpcPacket(ElementId elementId, Color color) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; set; }
-    public Color Color { get; set; }
-    public SetMarkerColorRpcPacket(ElementId elementId, Color color)
-    {
-        this.ElementId = elementId;
-        this.Color = color;
-    }
+    public ElementId ElementId { get; set; } = elementId;
+    public Color Color { get; set; } = color;
 
     public override void Read(byte[] bytes)
     {

@@ -4,7 +4,7 @@ using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 
-public sealed class TakeWeaponRpcPacket : Packet
+public sealed class TakeWeaponRpcPacket(ElementId elementId, byte weaponType, ushort? ammo) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
 
@@ -12,16 +12,9 @@ public sealed class TakeWeaponRpcPacket : Packet
 
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId ElementId { get; }
-    public byte WeaponType { get; }
-    public ushort? Ammo { get; }
-
-    public TakeWeaponRpcPacket(ElementId elementId, byte weaponType, ushort? ammo)
-    {
-        this.ElementId = elementId;
-        this.WeaponType = weaponType;
-        this.Ammo = ammo;
-    }
+    public ElementId ElementId { get; } = elementId;
+    public byte WeaponType { get; } = weaponType;
+    public ushort? Ammo { get; } = ammo;
 
     public override void Read(byte[] bytes)
     {

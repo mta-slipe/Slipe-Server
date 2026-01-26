@@ -2,12 +2,7 @@
 
 namespace SlipeServer.Server.Elements.Events;
 
-public sealed class PlayerVoiceEndArgs : EventArgs
+public sealed class PlayerVoiceEndArgs(Player source) : EventArgs
 {
-    public Player Source { get; }
-
-    public PlayerVoiceEndArgs(Player source)
-    {
-        this.Source = source;
-    }
+    public Player Source { get; } = source;
 }

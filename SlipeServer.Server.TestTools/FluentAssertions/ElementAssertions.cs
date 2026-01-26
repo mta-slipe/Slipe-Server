@@ -5,12 +5,8 @@ using System;
 
 namespace SlipeServer.Server.TestTools.FluentAssertions;
 
-public class ElementAssertionsBase<T> : ObjectAssertions<T, ElementAssertionsBase<T>> where T : Element
+public class ElementAssertionsBase<T>(T element) : ObjectAssertions<T, ElementAssertionsBase<T>>(element, null) where T : Element
 {
-    public ElementAssertionsBase(T element) : base(element, null)
-    {
-    }
-
     protected void AssertPropertyEquality<U>(Func<T, U> propertySelector, U expected, string propertyName, string because = "", params object[] becauseArgs)
     {
         var actual = propertySelector(this.Subject);
@@ -53,9 +49,6 @@ public class ElementAssertionsBase<T> : ObjectAssertions<T, ElementAssertionsBas
     }
 }
 
-public class ElementAssertions : ElementAssertionsBase<Element>
+public class ElementAssertions(Element element) : ElementAssertionsBase<Element>(element)
 {
-    public ElementAssertions(Element element) : base(element)
-    {
-    }
 }

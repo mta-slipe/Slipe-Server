@@ -12,18 +12,11 @@ using System.Runtime.InteropServices;
 
 namespace SlipeServer.Server.ServerBuilders;
 
-public class ServerBuilder
+public class ServerBuilder(bool withDependencyLoaders = true)
 {
-    private readonly List<ServerBuildStep> buildSteps;
-    public Configuration Configuration { get; private set; }
-    private readonly List<Action<IServiceCollection>>? dependencyLoaders;
-
-    public ServerBuilder(bool withDependencyLoaders = true)
-    {
-        this.Configuration = new();
-        this.buildSteps = new();
-        this.dependencyLoaders = withDependencyLoaders ? new() : null;
-    }
+    private readonly List<ServerBuildStep> buildSteps = new();
+    public Configuration Configuration { get; private set; } = new();
+    private readonly List<Action<IServiceCollection>>? dependencyLoaders = withDependencyLoaders ? new() : null;
 
     /// <summary>
     /// Specifies the `Configuration` instance to be used.
@@ -47,7 +40,7 @@ public class ServerBuilder
     /// </summary>
     /// <param name="step">Build step</param>
     /// <param name="priority">Priority of the build step, determining in what order the build steps are executed. For fine control you can cast any integer to ServerBuildStepPriority</param>
-    public void AddBuildStep(Action<MtaServer> step, ServerBuildStepPriority priority = ServerBuildStepPriority.Default)
+    public void AddBuildStep(Action<IMtaServer> step, ServerBuildStepPriority priority = ServerBuildStepPriority.Default)
     {
         this.buildSteps.Add(new ServerBuildStep(step, priority));
     }
@@ -202,7 +195,7 @@ public class ServerBuilder
     /// Applies the build steps to the MTA server
     /// </summary>
     /// <param name="server"></param>
-    public void ApplyTo(MtaServer server)
+    public void ApplyTo(IMtaServer server)
     {
         var steps = this.buildSteps
             .OrderByDescending(x => (int)x.Priority)
