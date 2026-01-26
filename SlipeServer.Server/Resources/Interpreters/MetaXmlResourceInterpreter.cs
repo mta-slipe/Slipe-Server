@@ -36,7 +36,7 @@ public class MetaXmlResourceInterpreter : IResourceInterpreter
         return true;
     }
 
-    private Resource GetResource(MtaServer mtaServer, RootElement rootElement, IResourceProvider resourceProvider, string name, string path, IEnumerable<string> fileNames)
+    private Resource GetResource(IMtaServer mtaServer, RootElement rootElement, IResourceProvider resourceProvider, string name, string path, IEnumerable<string> fileNames)
     {
         var files = fileNames.ToDictionary(x => x.Replace(Path.DirectorySeparatorChar, '/'), file => resourceProvider.GetFileContent(name, file));
 
