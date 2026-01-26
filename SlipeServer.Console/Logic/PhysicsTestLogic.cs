@@ -1,7 +1,6 @@
 ﻿using BepuPhysics.Collidables;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
-using RenderWareIo.Structs.Img;
 using SlipeServer.Physics.Entities;
 using SlipeServer.Physics.Enum;
 using SlipeServer.Physics.Services;
@@ -16,7 +15,6 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 
 namespace SlipeServer.Console.Logic;
 

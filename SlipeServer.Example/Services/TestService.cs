@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using SlipeServer.Example.Elements;
 
 namespace SlipeServer.Example.Services;
 

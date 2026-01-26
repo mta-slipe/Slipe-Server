@@ -4,7 +4,6 @@ using SlipeServer.Console.LuaDefinitions;
 using SlipeServer.Lua;
 using SlipeServer.Scripting;
 using SlipeServer.Server.Services;
-using System.IO;
 
 namespace SlipeServer.Console.Logic;
 

@@ -1,5 +1,4 @@
 ﻿using SlipeServer.Packets.Builder;
-using SlipeServer.Packets.Definitions.Entities.Structs;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Structs;
 using System;

@@ -1,5 +1,4 @@
 ﻿using SlipeServer.Packets.Enums;
-using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Services;
 using System.Drawing;

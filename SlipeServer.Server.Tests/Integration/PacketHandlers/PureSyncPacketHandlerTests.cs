@@ -11,7 +11,6 @@ using SlipeServer.Server.TestTools;
 using System;
 using System.Numerics;
 using Xunit;
-using SlipeServer.Server;
 
 namespace SlipeServer.Server.Tests.Unit.PacketHandlers;
 

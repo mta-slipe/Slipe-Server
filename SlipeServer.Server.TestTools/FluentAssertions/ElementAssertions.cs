@@ -1,9 +1,7 @@
 using FluentAssertions;
-using FluentAssertions.Execution;
 using FluentAssertions.Primitives;
 using SlipeServer.Server.Elements;
 using System;
-using System.Linq;
 
 namespace SlipeServer.Server.TestTools.FluentAssertions;
 

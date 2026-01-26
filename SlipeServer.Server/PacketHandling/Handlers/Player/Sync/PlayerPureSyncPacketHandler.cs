@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using SlipeServer.Packets;
 using SlipeServer.Packets.Definitions.Sync;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Clients;

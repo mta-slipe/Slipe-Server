@@ -2,7 +2,6 @@
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Structs;
 using System;
-using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Pickups;
 

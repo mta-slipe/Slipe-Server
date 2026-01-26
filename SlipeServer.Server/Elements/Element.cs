@@ -7,13 +7,11 @@ using SlipeServer.Server.Extensions;
 using SlipeServer.Server.Extensions.Relaying;
 using SlipeServer.Server.PacketHandling.Factories;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace SlipeServer.Server.Elements;
 

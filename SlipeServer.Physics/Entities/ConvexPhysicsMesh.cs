@@ -1,5 +1,4 @@
-﻿using BepuPhysics;
-using BepuPhysics.Collidables;
+﻿using BepuPhysics.Collidables;
 
 namespace SlipeServer.Physics.Entities;
 

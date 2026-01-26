@@ -1,10 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SlipeServer.Example.Elements;
-using SlipeServer.Example.Services;
 using SlipeServer.LuaControllers;
 using SlipeServer.LuaControllers.Attributes;
-using SlipeServer.Server.Services;
 
 namespace SlipeServer.Example.Controllers;
 

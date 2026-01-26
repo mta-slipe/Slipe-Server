@@ -4,7 +4,6 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Events;
 using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Services;
-using System.Linq;
 
 namespace SlipeServer.Console.AdditionalResources.Parachute;
 

@@ -3,8 +3,6 @@ using SlipeServer.Net.Wrappers;
 using SlipeServer.Net.Wrappers.Enums;
 using SlipeServer.Packets;
 using SlipeServer.Packets.Enums;
-using System;
-using System.Collections.Generic;
 using System.Net;
 
 namespace SlipeServer.Server.Proxy;

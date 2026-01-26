@@ -3,7 +3,6 @@ using SlipeServer.Physics.Worlds;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Extensions;
-using System;
 using System.Numerics;
 
 namespace SlipeServer.Physics.Entities;

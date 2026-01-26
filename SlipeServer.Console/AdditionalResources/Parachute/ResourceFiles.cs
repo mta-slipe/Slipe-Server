@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace SlipeServer.Console.AdditionalResources.Parachute;
 public static class ResourceFiles

@@ -1,5 +1,4 @@
-﻿using SlipeServer.Packets;
-using SlipeServer.Server.Clients;
+﻿using SlipeServer.Server.Clients;
 using System.Threading;
 
 namespace SlipeServer.Server.PacketHandling;

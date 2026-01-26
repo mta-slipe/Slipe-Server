@@ -4,9 +4,7 @@ using SlipeServer.Packets.Structs;
 using SlipeServer.Server;
 using SlipeServer.Server.Clients;
 using SlipeServer.Server.Proxy;
-using System;
 using System.IO.Pipes;
-using System.Linq;
 
 namespace SlipeServer.Console.Proxy;
 

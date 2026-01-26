@@ -1,6 +1,5 @@
 ﻿using SlipeServer.Packets.Builder;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc;
-using SlipeServer.Packets.Definitions.Player;
 using SlipeServer.Packets.Enums;
 using System;
 

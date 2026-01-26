@@ -4,7 +4,6 @@ using SlipeServer.LuaControllers.Attributes;
 using SlipeServer.LuaControllers.Results;
 using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Server;
-using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Events;
 using SlipeServer.Server.Mappers;
 using SlipeServer.Server.Services;

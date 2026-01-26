@@ -2,7 +2,6 @@
 using SlipeServer.Example.LuaValues;
 using SlipeServer.Packets.Definitions.Entities.Structs;
 using SlipeServer.Packets.Definitions.Lua;
-using SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Enums.VehicleUpgrades;
 using SlipeServer.Packets.Lua.Camera;
@@ -24,17 +23,12 @@ using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.Services;
 using SlipeServer.Server.Structs;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.IO;
-using System.Linq;
 using System.Net;
 using System.Numerics;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace SlipeServer.Console.Logic;
 
