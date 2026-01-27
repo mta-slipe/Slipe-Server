@@ -13,14 +13,9 @@ public struct PacketQueueEntry<T>
 
 public abstract class BasePacketQueueHandler<T> : IPacketQueueHandler<T> where T : Packet
 {
-    protected readonly ConcurrentQueue<PacketQueueEntry<T>> packetQueue;
+    protected readonly ConcurrentQueue<PacketQueueEntry<T>> packetQueue = [];
 
     public virtual int QueuedPacketCount => this.packetQueue.Count;
-
-    public BasePacketQueueHandler()
-    {
-        this.packetQueue = new();
-    }
 
     public virtual void EnqueuePacket(IClient client, T packet)
     {
@@ -37,8 +32,10 @@ public abstract class BasePacketQueueHandler<T> : IPacketQueueHandler<T> where T
     {
         this.packetQueue.Clear();
         Disposed?.Invoke();
+
+        GC.SuppressFinalize(this);
     }
 
     public event Action<T>? PacketHandled;
-    public event Action Disposed;
+    public event Action? Disposed;
 }

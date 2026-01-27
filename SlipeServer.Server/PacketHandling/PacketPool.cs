@@ -4,7 +4,7 @@ using System.Collections.Concurrent;
 namespace SlipeServer.Server.PacketHandling;
 
 /// <summary>
-/// Object pool for packets, allowing for packets to be reused instead of continuously be reallocated. 
+/// Object pool for packets, allowing for packets to be reused instead of continuously being reallocated. 
 /// Using this reduces the amount of garbage collection invocations.
 /// </summary>
 public class PacketPool<T>(int? maxPacketCount = -1) where T : Packet, new()

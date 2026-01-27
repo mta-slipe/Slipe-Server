@@ -12,9 +12,9 @@ using SlipeServer.Server.Elements.IdGeneration;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Events;
 using SlipeServer.Server.Extensions;
-using SlipeServer.Server.PacketHandling;
 using SlipeServer.Server.PacketHandling.Handlers;
 using SlipeServer.Server.PacketHandling.Handlers.QueueHandlers;
+using SlipeServer.Server.PacketHandling.Reducing;
 using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.Resources.Serving;
@@ -33,7 +33,7 @@ public class MtaServer : IMtaServer
     private readonly List<INetWrapper> netWrappers;
     protected readonly List<IResourceServer> resourceServers;
     private readonly List<Resource> additionalResources;
-    protected PacketReducer packetReducer;
+    protected IPacketReducer packetReducer;
     protected readonly Dictionary<INetWrapper, Dictionary<ulong, IClient>> clients;
     protected readonly IServiceCollection? serviceCollection;
     protected readonly IServiceProvider serviceProvider;
@@ -117,7 +117,8 @@ public class MtaServer : IMtaServer
 
         this.elementCollection = this.serviceProvider.GetRequiredService<IElementCollection>();
         this.elementIdGenerator = this.serviceProvider.GetService<IElementIdGenerator>();
-        this.packetReducer = new(this.serviceProvider.GetRequiredService<ILogger>());
+        this.packetReducer = this.serviceProvider.GetService<IPacketReducer>() ?? 
+            ActivatorUtilities.CreateInstance<ConcurrentPacketReducer>(this.serviceProvider);
 
         this.root.AssociateWith(this);
 
@@ -147,7 +148,8 @@ public class MtaServer : IMtaServer
 
         this.elementCollection = this.serviceProvider.GetRequiredService<IElementCollection>();
         this.elementIdGenerator = this.serviceProvider.GetService<IElementIdGenerator>();
-        this.packetReducer = new(this.serviceProvider.GetRequiredService<ILogger>());
+        this.packetReducer = this.serviceProvider.GetService<IPacketReducer>() ??
+            ActivatorUtilities.CreateInstance<ConcurrentPacketReducer>(this.serviceProvider);
 
         this.root.AssociateWith(this);
 

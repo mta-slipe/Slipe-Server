@@ -146,5 +146,7 @@ public class ScalingPacketQueueHandler<T> : BasePacketQueueHandler<T> where T : 
         while (TryRemoveWorker()) { }
         this.stopCancellationTokenSource.Cancel();
         base.Dispose();
+
+        GC.SuppressFinalize(this);
     }
 }

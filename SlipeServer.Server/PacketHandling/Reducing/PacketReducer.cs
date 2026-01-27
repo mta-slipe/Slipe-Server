@@ -16,7 +16,7 @@ namespace SlipeServer.Server.PacketHandling;
 /// Class responsible for routing packets to the appropriate queues
 /// </summary>
 [Obsolete("PacketReducer is deprecated, consider using ConcurrentPacketRouter instead.", false)]
-public class PacketReducer(ILogger logger) : IPacketReducer
+public class PacketReducer(ILogger<PacketReducer> logger) : IPacketReducer
 {
     private readonly Lock @lock = new();
     private readonly Dictionary<PacketId, List<IRegisteredHandler>> registeredPacketHandlerActions = new();

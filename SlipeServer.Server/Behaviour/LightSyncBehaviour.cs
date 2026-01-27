@@ -1,10 +1,11 @@
 ﻿using SlipeServer.Packets.Definitions.Sync;
+using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
-using SlipeServer.Server.ElementCollections;
+using SlipeServer.Server.Services;
+using System;
 using System.Linq;
-using System.Timers;
 
 namespace SlipeServer.Server.Behaviour;
 
@@ -16,22 +17,16 @@ public class LightSyncBehaviour
     private readonly IElementCollection elementCollection;
     private readonly ISyncHandlerMiddleware<LightSyncBehaviour?> middleware;
 
-    private readonly Timer timer;
-
     public LightSyncBehaviour(
         IElementCollection elementCollection,
         ISyncHandlerMiddleware<LightSyncBehaviour?> middleware,
+        ITimerService timerService,
         Configuration configuration)
     {
         this.elementCollection = elementCollection;
         this.middleware = middleware;
 
-        this.timer = new Timer(configuration.SyncIntervals.LightSync)
-        {
-            AutoReset = true,
-        };
-        this.timer.Start();
-        this.timer.Elapsed += (sender, args) => SendLightSyncs();
+        timerService.CreateTimer(SendLightSyncs, TimeSpan.FromMilliseconds(configuration.SyncIntervals.LightSync));
     }
 
     private void SendLightSyncs()

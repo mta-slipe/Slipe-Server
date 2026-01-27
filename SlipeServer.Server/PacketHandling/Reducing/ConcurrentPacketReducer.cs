@@ -11,7 +11,7 @@ namespace SlipeServer.Server.PacketHandling.Reducing;
 /// <summary>
 /// Class responsible for routing packets to the appropriate queues
 /// </summary>
-public class ConcurrentPacketReducer(ILogger logger) : IPacketReducer
+public class ConcurrentPacketReducer(ILogger<PacketReducer> logger) : IPacketReducer
 {
     private readonly ConcurrentDictionary<PacketId, ConcurrentDictionary<IRegisteredHandler, byte>> registeredPacketHandlerActions = [];
 

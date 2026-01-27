@@ -3,15 +3,16 @@
 
 
 #ifndef WIN32
-#define __cdecl
-#define __stdcall
-#define BSTR char*
+    #define __cdecl
+    #define __stdcall
+    #define BSTR char*
 #endif
+
 #if defined _WIN32
-#define EXPORT extern "C" __declspec(dllexport)
-#pragma warning(disable:4996)
+    #define EXPORT extern "C" __declspec(dllexport)
+    #pragma warning(disable:4996)
 #else
-#define EXPORT extern "C" __attribute__ ((visibility ("default")))
+    #define EXPORT extern "C" __attribute__ ((visibility ("default")))
 #endif
 
 EXPORT void __stdcall sendPacket(ushort id, uint64 address, unsigned char packetId, unsigned short bitStreamVersion, unsigned char* payload, unsigned long payloadSize, unsigned char priority, unsigned char reliability)
