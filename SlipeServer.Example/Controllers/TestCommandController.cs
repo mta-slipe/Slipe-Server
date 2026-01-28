@@ -70,4 +70,10 @@ public class TestCommandController : BaseCommandController<CustomPlayer>
             this.banService.AddBan(player.Client.Serial, null, DateTime.UtcNow + TimeSpan.FromSeconds(30), "Testing purposes.");
         }
     }
+
+    [Command("SetMyData")]
+    public void SetMyData(string key, string value)
+    {
+        this.Context.Player.SetData(key, value, Server.Elements.Enums.DataSyncType.Broadcast);
+    }
 }

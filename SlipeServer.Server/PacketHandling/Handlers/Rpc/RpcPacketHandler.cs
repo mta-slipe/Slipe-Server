@@ -64,7 +64,7 @@ public class RpcPacketHandler(
         var players = elementCollection.GetByType<Elements.Player>(ElementType.Player);
 
         var otherPlayers = players
-            .Except(new Elements.Player[] { client.Player })
+            .Except([client.Player])
             .ToArray();
 
         var elements = elementCollection
@@ -72,11 +72,11 @@ public class RpcPacketHandler(
             .Where(x => x.Associations.ToArray().Any(y => y.IsGlobal))
             .Where(x => x.IsVisibleToEveryone);
 
-        var packet = AddEntityPacketFactory.CreateAddEntityPacket(elements);
-        client.SendPacket(packet);
-
         var existingPlayersListPacket = PlayerPacketFactory.CreatePlayerListPacket(otherPlayers, true);
         client.SendPacket(existingPlayersListPacket);
+
+        var packet = AddEntityPacketFactory.CreateAddEntityPacket([.. elements, .. otherPlayers]);
+        client.SendPacket(packet);
 
         using (var scope = new ClientPacketScope(client.Player))
         {

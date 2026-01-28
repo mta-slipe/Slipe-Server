@@ -414,7 +414,7 @@ public class MtaServer : IMtaServer
     /// <param name="packet"></param>
     public void BroadcastPacket(Packet packet)
     {
-        packet.SendTo(this.clients.SelectMany(x => x.Value.Values));
+        packet.SendTo(this.clients.Values.SelectMany(x => x.Values).Where(x => x.ConnectionState == ClientConnectionState.Joined));
     }
 
     /// <summary>

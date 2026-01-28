@@ -23,7 +23,7 @@ public static class PlayerPacketFactory
     {
         var packet = new PlayerListPacket(showInChat);
 
-        foreach (var player in players)
+        foreach (var player in players.Where(x => x.Client.ConnectionState == ClientConnectionState.Joined))
         {
             packet.AddPlayer(
                 playerId: player.Id,

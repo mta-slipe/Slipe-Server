@@ -106,6 +106,13 @@ public class AddEntityPacketBuilder
         );
     }
 
+    public void AddPlayer(Player element)
+    {
+        this.packet.AddPlayer(element.Id, (byte)element.ElementType, element.Parent?.Id ?? ElementId.Zero, element.Interior, element.Dimension,
+            element.Attachment, element.AreCollisionsEnabled, element.IsCallPropagationEnabled, element.BroadcastableElementData, element.Name, element.TimeContext
+        );
+    }
+
     public void AddPed(Ped element)
     {
         this.packet.AddPed(element.Id, (byte)element.ElementType, element.Parent?.Id ?? ElementId.Zero, element.Interior, element.Dimension,
@@ -113,9 +120,9 @@ public class AddEntityPacketBuilder
             element.Position, element.Model, element.PedRotation, element.Health, element.Armor, element.Vehicle?.Id, element.Seat,
             element.HasJetpack, element.IsSyncable, element.IsHeadless, element.IsFrozen, element.Alpha, (byte)element.MoveAnimation,
             element.Clothing.GetClothing().ToArray(), element.Weapons.Select(x => (PedWeapon)x).ToArray(), (byte)(element.CurrentWeapon?.Slot ?? 0),
-            element.CurrentAnimation == null ? null : 
-                new (element.CurrentAnimation.BlockName, element.CurrentAnimation.AnimationName, element.CurrentAnimation.Time, element.CurrentAnimation.IsLooped, element.CurrentAnimation.UpdatesPosition, 
-                    element.CurrentAnimation.IsInterruptable, element.CurrentAnimation.FreezesLastFrame, element.CurrentAnimation.BlendTime, element.CurrentAnimation.RestoresTask, 
+            element.CurrentAnimation == null ? null :
+                new(element.CurrentAnimation.BlockName, element.CurrentAnimation.AnimationName, element.CurrentAnimation.Time, element.CurrentAnimation.IsLooped, element.CurrentAnimation.UpdatesPosition,
+                    element.CurrentAnimation.IsInterruptable, element.CurrentAnimation.FreezesLastFrame, element.CurrentAnimation.BlendTime, element.CurrentAnimation.RestoresTask,
                     element.CurrentAnimation.ElapsedTime, element.CurrentAnimation.Speed)
         );
     }

@@ -557,6 +557,18 @@ public sealed class AddEntityPacket : Packet
         }
     }
 
+    public void AddPlayer(ElementId elementId, byte elementType, ElementId? parentId, byte interior,
+        ushort dimension, ElementAttachment? attachment, bool areCollisionsEnabled,
+        bool isCallPropagationEnabled, CustomData customData, string name,
+        byte timeContext)
+    {
+        AddEntity(
+            elementId, elementType, parentId, interior,
+            dimension, attachment, areCollisionsEnabled,
+            isCallPropagationEnabled, customData, name, timeContext
+        );
+    }
+
     public void AddPed(
         ElementId elementId, byte elementType, ElementId? parentId, byte interior,
         ushort dimension, ElementAttachment? attachment, bool areCollisionsEnabled,

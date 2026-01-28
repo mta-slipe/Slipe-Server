@@ -46,8 +46,13 @@ public static class AddEntityPacketFactory
                         builder.AddMarker(marker);
                     break;
 
+                case ElementType.Player:
+                    if (element is Player player)
+                        builder.AddPlayer(player);
+                    break;
+
                 case ElementType.Ped:
-                    if (element is Ped ped && element is not Player)
+                    if (element is Ped ped)
                         builder.AddPed(ped);
                     break;
 
