@@ -28,7 +28,7 @@ public class SlipeLuaResourceInterpreter : IResourceInterpreter
 
     public bool TryInterpretResource(
         IMtaServer mtaServer,
-        RootElement rootElement,
+        IRootElement rootElement,
         string name,
         string path,
         IResourceProvider resourceProvider,

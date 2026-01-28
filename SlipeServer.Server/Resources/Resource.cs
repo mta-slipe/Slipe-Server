@@ -31,7 +31,7 @@ public class Resource
 
     public Resource(
         IMtaServer server, 
-        RootElement root, 
+        IRootElement root, 
         string name, 
         string? path = null
     )

@@ -5,7 +5,7 @@
 /// The root element is a special type of element that exists at the top of the element tree.
 /// This element does not have any special logic other than that it is the (grand)parent of all elements
 /// </summary>
-public class RootElement : Element
+public class RootElement : Element, IRootElement
 {
     public override ElementType ElementType => ElementType.Root;
 

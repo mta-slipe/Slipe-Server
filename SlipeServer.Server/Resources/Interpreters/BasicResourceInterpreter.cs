@@ -11,7 +11,7 @@ public class BasicResourceInterpreter : IResourceInterpreter
 
     public bool TryInterpretResource(
         IMtaServer mtaServer,
-        RootElement rootElement,
+        IRootElement rootElement,
         string name,
         string path,
         IResourceProvider resourceProvider,

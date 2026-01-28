@@ -9,13 +9,11 @@ namespace SlipeServer.Server.Services;
 /// <summary>
 /// Represents the ingame chat, allows you to send messages to (individual) players
 /// </summary>
-public class ChatBox(IMtaServer server) : IChatBox
+public class ChatBox(IMtaServer server, IRootElement root) : IChatBox
 {
-    private readonly RootElement root = server.RootElement;
-
     public void Output(string message, Color? color = null, bool isColorCoded = false, ChatEchoType type = ChatEchoType.Player, Element? source = null)
     {
-        server.BroadcastPacket(new ChatEchoPacket(source?.Id ?? this.root.Id, message, color ?? Color.White, type, isColorCoded));
+        server.BroadcastPacket(new ChatEchoPacket(source?.Id ?? root.Id, message, color ?? Color.White, type, isColorCoded));
     }
 
     public void Clear()
@@ -25,7 +23,7 @@ public class ChatBox(IMtaServer server) : IChatBox
 
     public void OutputTo(Player player, string message, Color? color = null, bool isColorCoded = false, ChatEchoType type = ChatEchoType.Player, Element? source = null)
     {
-        player.Client.SendPacket(new ChatEchoPacket(source?.Id ?? this.root.Id, message, color ?? Color.White, type, isColorCoded));
+        player.Client.SendPacket(new ChatEchoPacket(source?.Id ?? root.Id, message, color ?? Color.White, type, isColorCoded));
     }
 
     public void ClearFor(Player player)

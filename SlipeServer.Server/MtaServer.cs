@@ -88,7 +88,7 @@ public class MtaServer : IMtaServer
     public IServiceProvider Services => this.serviceProvider;
 
     public IEnumerable<Player> Players => this.elementCollection.GetByType<Player>();
-    public RootElement RootElement => this.root;
+    public virtual RootElement RootElement => this.root;
     public Configuration Configuration => this.configuration;
 
     public MtaServer(
@@ -541,6 +541,7 @@ public class MtaServer : IMtaServer
         this.serviceCollection.AddDefaultMtaServerServices();
         this.serviceCollection.AddSingleton<Configuration>(this.configuration);
         this.serviceCollection.AddSingleton<RootElement>(this.root);
+        this.serviceCollection.AddSingleton<IRootElement>(this.root);
         this.serviceCollection.AddSingleton<MtaServer>(this);
         this.serviceCollection.AddSingleton<IMtaServer>(this);
 

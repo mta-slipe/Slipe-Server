@@ -18,7 +18,7 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Rpc;
 public class RpcPacketHandler(
     ILogger logger,
     IMtaServer server,
-    RootElement root,
+    IRootElement root,
     IElementCollection elementCollection,
     Configuration configuration
     ) : IPacketHandler<RpcPacket>

@@ -42,7 +42,7 @@ public static class ElementTypeHelpers
             return ElementType.Water;
         if (IsClassAssignableTo(type, typeof(WeaponObject), ElementType.Weapon))
             return ElementType.Weapon;
-        if (IsClassAssignableTo(type, typeof(RootElement), ElementType.Root))
+        if (IsClassAssignableTo(type, typeof(RootElement), ElementType.Root) || IsClassAssignableTo(type, typeof(IRootElement), ElementType.Root))
             return ElementType.Root;
 
         return ElementType.Unknown;

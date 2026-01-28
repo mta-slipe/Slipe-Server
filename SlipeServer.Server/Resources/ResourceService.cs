@@ -11,14 +11,14 @@ namespace SlipeServer.Server.Resources;
 public class ResourceService
 {
     private readonly IMtaServer server;
-    private readonly RootElement root;
+    private readonly IRootElement root;
     private readonly IResourceProvider resourceProvider;
 
     private readonly List<Resource> startedResources = [];
 
     public IReadOnlyCollection<Resource> StartedResources => this.startedResources.AsReadOnly();
 
-    public ResourceService(IMtaServer server, RootElement root, IResourceProvider resourceProvider)
+    public ResourceService(IMtaServer server, IRootElement root, IResourceProvider resourceProvider)
     {
         this.server = server;
         this.root = root;

@@ -5,11 +5,11 @@ namespace SlipeServer.Server.Resources.Interpreters;
 
 public interface IResourceInterpreter
 {
-    public bool IsFallback { get; }
+    bool IsFallback { get; }
 
-    public bool TryInterpretResource(
+    bool TryInterpretResource(
         IMtaServer mtaServer,
-        RootElement rootElement,
+        IRootElement rootElement,
         string name,
         string path,
         IResourceProvider resourceProvider,

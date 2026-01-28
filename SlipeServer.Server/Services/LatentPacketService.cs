@@ -6,7 +6,6 @@ using SlipeServer.Server.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Timers;
 
 namespace SlipeServer.Server.Services;
 
@@ -30,28 +29,17 @@ class LatentTransfer(Player player)
 /// </summary>
 public class LatentPacketService : ILatentPacketService
 {
-    private readonly IMtaServer server;
-    private readonly RootElement root;
     private readonly HashSet<LatentTransfer> transfers = [];
     private readonly HashSet<Player> activeTransferPlayers = [];
 
-    private readonly Timer sendTimer;
     private readonly uint bytesPerSend;
     private ushort index;
 
-    public LatentPacketService(IMtaServer server, RootElement root, Configuration configuration)
+    public LatentPacketService(Configuration configuration, ITimerService timerService)
     {
-        this.server = server;
-        this.root = root;
-
         this.bytesPerSend = configuration.LatentBandwidthLimit / 1000 * configuration.LatentSendInterval;
 
-        this.sendTimer = new Timer(configuration.LatentSendInterval)
-        {
-            AutoReset = false,
-        };
-        this.sendTimer.Start();
-        this.sendTimer.Elapsed += (sender, args) => SendPackets();
+        timerService.CreateTimer(SendPackets, TimeSpan.FromMilliseconds(configuration.LatentSendInterval));
     }
 
     private void SendPackets()
@@ -63,7 +51,6 @@ public class LatentPacketService : ILatentPacketService
         {
             bytesToSend -= TrySendLatentPacket(transfer);
         }
-        this.sendTimer.Start();
     }
 
     private int TrySendLatentPacket(LatentTransfer transfer)
@@ -71,7 +58,8 @@ public class LatentPacketService : ILatentPacketService
         if (this.activeTransferPlayers.Contains(transfer.Player) && transfer.Index == 0)
             return 0;
 
-        var finalPosition = Math.Min(transfer.Index + transfer.Rate, transfer.Data.Length);
+        var rate = Math.Min(transfer.Rate, this.bytesPerSend);
+        var finalPosition = (int)Math.Min(transfer.Index + rate, transfer.Data.Length);
         var section = transfer.Data[transfer.Index..finalPosition];
 
         var packet = new LatentLuaEventPacket()
@@ -94,7 +82,7 @@ public class LatentPacketService : ILatentPacketService
         transfer.Index = finalPosition;
         packet.SendTo(transfer.Player);
 
-        return transfer.Rate;
+        return section.Length;
     }
 
     private void EnrichPacketWithHeader(LatentLuaEventPacket packet, LatentTransfer transfer)

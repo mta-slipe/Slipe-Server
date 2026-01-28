@@ -18,14 +18,14 @@ namespace SlipeServer.Server.Services;
 public class LuaEventService : ILuaEventService
 {
     private readonly IMtaServer server;
-    private readonly RootElement root;
+    private readonly IRootElement root;
     private readonly ILatentPacketService latentPacketService;
     private readonly IElementCollection elementCollection;
     private readonly ILuaValueMapper mapper;
     private readonly Dictionary<string, List<Action<LuaEvent>>> eventHandlers = [];
 
     public LuaEventService(IMtaServer server,
-        RootElement root,
+        IRootElement root,
         ILatentPacketService latentPacketService,
         IElementCollection elementCollection,
         ILuaValueMapper mapper)
@@ -39,99 +39,99 @@ public class LuaEventService : ILuaEventService
         server.LuaEventTriggered += HandleLuaEvent;
     }
 
-    public void TriggerEvent(string eventName, Element? source = null, params LuaValue[] parameters)
+    public void TriggerEvent(string eventName, IElement? source = null, params LuaValue[] parameters)
     {
-        this.server.BroadcastPacket(new LuaEventPacket(eventName, (source ?? this.root).Id, parameters));
+        this.server.BroadcastPacket(new LuaEventPacket(eventName, ((IElement?)source ?? this.root).Id, parameters));
     }
 
-    public void TriggerEvent(string eventName, Element? source = null, params object[] parameters)
+    public void TriggerEvent(string eventName, IElement? source = null, params object[] parameters)
     {
         TriggerEvent(eventName, source, parameters.Select(x => this.mapper.Map(x)).ToArray());
     }
 
-    public void TriggerEvent(string eventName, Element? source = null)
+    public void TriggerEvent(string eventName, IElement? source = null)
     {
         TriggerEvent(eventName, source, Array.Empty<LuaValue>());
     }
 
 
-    public void TriggerEventFor(Player player, string eventName, Element? source = null, params LuaValue[] parameters)
+    public void TriggerEventFor(Player player, string eventName, IElement? source = null, params LuaValue[] parameters)
     {
-        new LuaEventPacket(eventName, (source ?? this.root).Id, parameters).SendTo(player);
+        new LuaEventPacket(eventName, ((IElement?)source ?? this.root).Id, parameters).SendTo(player);
     }
 
-    public void TriggerEventFor(Player player, string eventName, Element? source = null, params object[] parameters)
+    public void TriggerEventFor(Player player, string eventName, IElement? source = null, params object[] parameters)
     {
         TriggerEventFor(player, eventName, source, parameters.Select(x => this.mapper.Map(x)).ToArray());
     }
 
-    public void TriggerEventFor(Player player, string eventName, Element? source = null)
+    public void TriggerEventFor(Player player, string eventName, IElement? source = null)
     {
         TriggerEventFor(player, eventName, source, Array.Empty<LuaValue>());
     }
 
 
-    public void TriggerEventForMany(IEnumerable<Player> players, string eventName, Element? source = null, params LuaValue[] parameters)
+    public void TriggerEventForMany(IEnumerable<Player> players, string eventName, IElement? source = null, params LuaValue[] parameters)
     {
-        new LuaEventPacket(eventName, (source ?? this.root).Id, parameters).SendTo(players);
+        new LuaEventPacket(eventName, ((IElement?)source ?? this.root).Id, parameters).SendTo(players);
     }
 
-    public void TriggerEventForMany(IEnumerable<Player> players, string eventName, Element? source = null, params object[] parameters)
+    public void TriggerEventForMany(IEnumerable<Player> players, string eventName, IElement? source = null, params object[] parameters)
     {
         TriggerEventForMany(players, eventName, source, parameters.Select(x => this.mapper.Map(x)).ToArray());
     }
 
-    public void TriggerEventForMany(IEnumerable<Player> players, string eventName, Element? source = null)
+    public void TriggerEventForMany(IEnumerable<Player> players, string eventName, IElement? source = null)
     {
         TriggerEventForMany(players, eventName, source, Array.Empty<LuaValue>());
     }
 
 
-    public void TriggerLatentEvent(string eventName, Resource sourceResource, Element? source = null, int rate = 50000, params LuaValue[] parameters)
+    public void TriggerLatentEvent(string eventName, Resource sourceResource, IElement? source = null, int rate = 50000, params LuaValue[] parameters)
     {
         TriggerLatentEventForMany(this.elementCollection.GetByType<Player>(ElementType.Player), eventName, sourceResource, source, rate, parameters);
     }
 
-    public void TriggerLatentEvent(string eventName, Resource sourceResource, Element? source = null, int rate = 50000, params object[] parameters)
+    public void TriggerLatentEvent(string eventName, Resource sourceResource, IElement? source = null, int rate = 50000, params object[] parameters)
     {
         TriggerLatentEvent(eventName, sourceResource, source, rate, parameters.Select(x => this.mapper.Map(x)).ToArray());
     }
 
-    public void TriggerLatentEvent(string eventName, Resource sourceResource, Element? source = null, int rate = 50000)
+    public void TriggerLatentEvent(string eventName, Resource sourceResource, IElement? source = null, int rate = 50000)
     {
         TriggerLatentEvent(eventName, sourceResource, source, rate, Array.Empty<LuaValue>());
     }
 
 
-    public void TriggerLatentEventFor(Player player, string eventName, Resource sourceResource, Element? source = null, int rate = 50000, params LuaValue[] parameters)
+    public void TriggerLatentEventFor(Player player, string eventName, Resource sourceResource, IElement? source = null, int rate = 50000, params LuaValue[] parameters)
     {
-        var packet = new LuaEventPacket(eventName, (source ?? this.root).Id, parameters);
-        this.latentPacketService.EnqueueLatentPacket(new Player[] { player }, packet, sourceResource.NetId, rate);
+        var packet = new LuaEventPacket(eventName, ((IElement?)source ?? this.root).Id, parameters);
+        this.latentPacketService.EnqueueLatentPacket([player], packet, sourceResource.NetId, rate);
     }
 
-    public void TriggerLatentEventFor(Player player, string eventName, Resource sourceResource, Element? source = null, int rate = 50000, params object[] parameters)
+    public void TriggerLatentEventFor(Player player, string eventName, Resource sourceResource, IElement? source = null, int rate = 50000, params object[] parameters)
     {
         TriggerLatentEventFor(player, eventName, sourceResource, source, rate, parameters.Select(x => this.mapper.Map(x)).ToArray());
     }
 
-    public void TriggerLatentEventFor(Player player, string eventName, Resource sourceResource, Element? source = null, int rate = 50000)
+    public void TriggerLatentEventFor(Player player, string eventName, Resource sourceResource, IElement? source = null, int rate = 50000)
     {
         TriggerLatentEventFor(player, eventName, sourceResource, source, rate, Array.Empty<LuaValue>());
     }
 
 
-    public void TriggerLatentEventForMany(IEnumerable<Player> players, string eventName, Resource sourceResource, Element? source = null, int rate = 50000, params LuaValue[] parameters)
+    public void TriggerLatentEventForMany(IEnumerable<Player> players, string eventName, Resource sourceResource, IElement? source = null, int rate = 50000, params LuaValue[] parameters)
     {
-        var packet = new LuaEventPacket(eventName, (source ?? this.root).Id, parameters);
+        var packet = new LuaEventPacket(eventName, ((IElement?)source ?? this.root).Id, parameters);
         this.latentPacketService.EnqueueLatentPacket(players, packet, sourceResource.NetId, rate);
     }
 
-    public void TriggerLatentEventForMany(IEnumerable<Player> players, string eventName, Resource sourceResource, Element? source = null, int rate = 50000, params object[] parameters)
+    public void TriggerLatentEventForMany(IEnumerable<Player> players, string eventName, Resource sourceResource, IElement? source = null, int rate = 50000, params object[] parameters)
     {
         TriggerLatentEventForMany(players, eventName, sourceResource, source, rate, parameters.Select(x => this.mapper.Map(x)).ToArray());
     }
 
-    public void TriggerLatentEventForMany(IEnumerable<Player> players, string eventName, Resource sourceResource, Element? source = null, int rate = 50000)
+    public void TriggerLatentEventForMany(IEnumerable<Player> players, string eventName, Resource sourceResource, IElement? source = null, int rate = 50000)
     {
         TriggerLatentEventForMany(players, eventName, sourceResource, source, rate, Array.Empty<LuaValue>());
     }

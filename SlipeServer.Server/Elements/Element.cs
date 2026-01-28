@@ -18,36 +18,33 @@ namespace SlipeServer.Server.Elements;
 /// <summary>
 /// The base class for any and all elements
 /// </summary>
-public class Element
+public class Element : IElement
 {
     /// <summary>
     /// The element type as per MTA's specifications. Multiple C# types can share the same MTA element type.
     /// </summary>
     public virtual ElementType ElementType => ElementType.Unknown;
 
-    private Element? parent;
     /// <summary>
     /// The element's parent as in the element tree.
     /// </summary>
-    public Element? Parent
+    public IElement? Parent
     {
-        get => this.parent;
+        get => field;
         set
         {
-            this.parent?.RemoveChild(this);
-
-            this.parent = value;
-
+            field?.RemoveChild(this);
+            field = value;
             value?.AddChild(this);
         }
     }
 
     private readonly Lock childrenLock = new();
-    private readonly List<Element> children = [];
+    private readonly List<IElement> children = [];
     /// <summary>
     /// The element's children as in the element tree.
     /// </summary>
-    public IReadOnlyCollection<Element> Children => this.children.AsReadOnly();
+    public IReadOnlyCollection<IElement> Children => this.children.AsReadOnly();
 
     private readonly List<ElementAssociation> associations = [];
     public IReadOnlyCollection<ElementAssociation> Associations => this.associations.AsReadOnly();
@@ -653,7 +650,7 @@ public class Element
     /// Adds a child in the element tree to this element
     /// </summary>
     /// <param name="element">The child to add</param>
-    public void AddChild(Element element)
+    public void AddChild(IElement element)
     {
         lock (this.childrenLock)
         {
@@ -666,7 +663,7 @@ public class Element
     /// Removes a child from this tree in the element tree
     /// </summary>
     /// <param name="element">The child to remove</param>
-    public void RemoveChild(Element element)
+    public void RemoveChild(IElement element)
     {
         lock (this.childrenLock)
         {
@@ -679,9 +676,9 @@ public class Element
     /// Indicates whether the element is an (indirect) child of another element, this includes grandchildren.
     /// </summary>
     /// <param name="element">The element to check against</param>
-    public bool IsChildOf(Element element)
+    public bool IsChildOf(IElement element)
     {
-        return element != null && (this.parent == element || (this.parent != null && this.parent.IsChildOf(element)));
+        return element != null && (this.Parent == element || (this.Parent != null && this.Parent.IsChildOf(element)));
     }
 
     /// <summary>
@@ -714,7 +711,7 @@ public class Element
             return value.Value;
 
         if (inherit)
-            return this.parent?.GetData(dataName, inherit);
+            return this.Parent?.GetData(dataName, inherit);
 
         return null;
     }
@@ -738,7 +735,8 @@ public class Element
             }
 
             value.Add(key);
-        } finally
+        }
+        finally
         {
             this.elementDataSubscriptionReaderWriterLock.ExitWriteLock();
         }

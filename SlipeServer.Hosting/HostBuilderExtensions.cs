@@ -6,6 +6,7 @@ public static class HostBuilderExtensions
     {
         services.AddSingleton<Configuration>(x => x.GetRequiredService<MtaServer>().Configuration);
         services.AddSingleton<RootElement>(x => x.GetRequiredService<MtaServer>().RootElement);
+        services.AddSingleton<IRootElement>(x => x.GetRequiredService<MtaServer>().RootElement);
         return services;
     }
 

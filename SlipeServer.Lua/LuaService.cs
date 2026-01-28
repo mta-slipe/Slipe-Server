@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace SlipeServer.Lua;
 
-public class LuaService(IMtaServer server, ILogger logger, RootElement root, ScriptTransformationPipeline scriptTransformationPipeline)
+public class LuaService(IMtaServer server, ILogger logger, IRootElement root, ScriptTransformationPipeline scriptTransformationPipeline)
 {
     private readonly Dictionary<string, Script> scripts = [];
     private readonly Dictionary<string, LuaMethod> methods = [];

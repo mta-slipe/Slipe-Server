@@ -10,12 +10,11 @@ namespace SlipeServer.Server.Resources.Providers;
 /// <summary>
 /// Basic resource provider that provides resources based on the files within the resource directory (as configured in the server's configuration)
 /// </summary>
-public class FileSystemResourceProvider(IMtaServer mtaServer) : IResourceProvider
+public class FileSystemResourceProvider(IMtaServer mtaServer, IRootElement rootElement) : IResourceProvider
 {
-    private readonly RootElement rootElement = mtaServer.RootElement;
     private readonly Configuration configuration = mtaServer.Configuration;
-    private readonly Dictionary<string, Resource> resources = new();
-    private readonly List<IResourceInterpreter> resourceInterpreters = new();
+    private readonly Dictionary<string, Resource> resources = [];
+    private readonly List<IResourceInterpreter> resourceInterpreters = [];
 
     private readonly Lock netIdLock = new();
     private ushort netId = 0;
@@ -62,7 +61,7 @@ public class FileSystemResourceProvider(IMtaServer mtaServer) : IResourceProvide
                 Resource? resource = null;
                 foreach (var resourceInterpreter in this.resourceInterpreters)
                 {
-                    if (resourceInterpreter.TryInterpretResource(mtaServer, this.rootElement, name, subDirectory, this, out resource))
+                    if (resourceInterpreter.TryInterpretResource(mtaServer, rootElement, name, subDirectory, this, out resource))
                     {
                         resource!.NetId = this.ReserveNetId();
                         resources.Add(resource);

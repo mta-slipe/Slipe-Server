@@ -44,7 +44,7 @@ public class ServerTestLogic
 {
     private readonly IMtaServer<CustomPlayer> server;
     private readonly IElementCollection elementCollection;
-    private readonly RootElement root;
+    private readonly IRootElement root;
     private readonly IGameWorld worldService;
     private readonly IDebugLog debugLog;
     private readonly ILogger logger;
@@ -96,7 +96,7 @@ public class ServerTestLogic
     public ServerTestLogic(
         IMtaServer<CustomPlayer> server,
         IElementCollection elementCollection,
-        RootElement root,
+        IRootElement root,
         IGameWorld world,
         IDebugLog debugLog,
         ILogger logger,
