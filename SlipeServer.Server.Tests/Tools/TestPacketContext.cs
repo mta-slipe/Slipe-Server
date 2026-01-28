@@ -26,4 +26,7 @@ public class TestPacketContext(LightTestNetWrapper netWrapper)
         => netWrapper.SimulatePacketReceived(binaryAddress, packetId, data, timestamp);
 
     public void VerifyNoPacketsSent() => netWrapper.VerifyNoPacketsSent();
+
+    public int GetPacketCount(PacketId packetId, Player? forPlayer = null)
+        => netWrapper.GetPacketCount(packetId, forPlayer);
 }

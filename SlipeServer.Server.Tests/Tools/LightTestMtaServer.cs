@@ -19,14 +19,20 @@ public class LightTestMtaServer : MtaServer<LightTestPlayer>
     {
         this.AddNetWrapper(wrapper);
         this.wrapper = wrapper;
+
+        this.clients.Add(wrapper, []);
     }
 
     public LightTestPlayer CreatePlayer()
     {
-        return new LightTestPlayer(this.wrapper, this.address++)
+        var player =  new LightTestPlayer(this.wrapper, this.address++)
         {
             Name = $"TestPlayer_{this.address}"
         };
+
+        this.clients[this.wrapper].Add(player.Address, player.Client);
+
+        return player;
     }
 
 

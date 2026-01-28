@@ -25,6 +25,7 @@ public class AutoDomainDataAttribute() : AutoDataAttribute(CreateFixture)
         fixture.Customize(new AutoMoqCustomization { ConfigureMembers = true, GenerateDelegates = true });
 
         var elementCollectionMock = new Mock<IElementCollection>();
+        var rootMock = new Mock<IRootElement>();
 
 
         var wrapper = new LightTestNetWrapper();
@@ -34,12 +35,21 @@ public class AutoDomainDataAttribute() : AutoDataAttribute(CreateFixture)
         fixture.Register<INetWrapper>(() => wrapper);
         fixture.Register<IMtaServer<LightTestPlayer>>(() => server);
         fixture.Register<IMtaServer>(() => server);
+        fixture.Register<LightTestMtaServer>(() => server);
         fixture.Register<Player>(server.CreatePlayer);
         fixture.Register<LightTestPlayer>(server.CreatePlayer);
         fixture.Register<TestPacketContext>(() => context);
         fixture.Register<IElementCollection>(() => elementCollectionMock.Object);
         fixture.Register<Mock<IElementCollection>>(() => elementCollectionMock);
+        fixture.Register<IRootElement>(() => rootMock.Object);
+        fixture.Register<Mock<IRootElement>>(() => rootMock);
 
+        var configuration = new Configuration
+        {
+            LatentBandwidthLimit = 10000,
+            LatentSendInterval = 100
+        };
+        fixture.Register<Configuration>(() => configuration);
 
         var timer = new TestTimerService();
         fixture.Register<ITimerService>(() => timer);

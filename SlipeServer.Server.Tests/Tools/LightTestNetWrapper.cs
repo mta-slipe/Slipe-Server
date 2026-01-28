@@ -125,6 +125,14 @@ public class LightTestNetWrapper : INetWrapper
         this.sentPackets.Should().BeEmpty();
     }
 
+    public int GetPacketCount(PacketId packetId, Player? forPlayer = null)
+    {
+        return this.sentPackets.Count(x =>
+            x.PacketId == packetId &&
+            (forPlayer == null || x.Address == forPlayer.GetAddress())
+        );
+    }
+
     public void ResetPacketCountVerification() => this.sentPackets.Clear();
 
     public void SimulatePacketReceived(ulong binaryAddress, PacketId packetId, byte[] data, uint? timestamp = null)
