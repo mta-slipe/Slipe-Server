@@ -9,6 +9,7 @@
 #include <bitset>
 #include <map>
 #include <iomanip>
+#include <atomic>
 #include <queue>
 #include <mutex>
 
@@ -39,12 +40,13 @@ private:
     static std::map<NetServerPlayerID, NetWrapper*> netWrappersPerSocket;
 
 	std::map<uint64, NetServerPlayerID> sockets;
-	bool running;
+	std::atomic<bool> running{false};
 	PacketCallback registeredCallback;
 	std::thread runThread;
 	std::thread binThread;
     std::queue<QueuedPacket> packetQueue;
     std::mutex mutex;
+    std::mutex socketsMutex;
 
     CDynamicLibrary networkLibrary;
 

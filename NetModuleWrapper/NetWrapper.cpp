@@ -16,7 +16,10 @@
 
 bool staticPacketHandler(unsigned char ucPacketID, const NetServerPlayerID& Socket, NetBitStreamInterface* pBitStream, SNetExtraInfo* pNetExtraInfo)
 {
-    return NetWrapper::getNetWrapper(Socket)->packetHandler(ucPacketID, Socket, pBitStream, pNetExtraInfo);
+    NetWrapper* wrapper = NetWrapper::getNetWrapper(Socket);
+    if (wrapper == nullptr)
+        return false;
+    return wrapper->packetHandler(ucPacketID, Socket, pBitStream, pNetExtraInfo);
 }
 
 uint16_t NetWrapper::nextId;
@@ -43,7 +46,10 @@ void NetWrapper::destroy()
 
 bool NetWrapper::packetHandler(unsigned char ucPacketID, const NetServerPlayerID& Socket, NetBitStreamInterface* pBitStream, SNetExtraInfo* pNetExtraInfo)
 {
-    sockets[Socket.GetIdentifier()] = Socket;
+    {
+        std::lock_guard<std::mutex> lock(socketsMutex);
+        sockets[Socket.GetIdentifier()] = Socket;
+    }
 
     if (registeredCallback != nullptr && running)
     {
@@ -70,42 +76,68 @@ bool NetWrapper::packetHandler(unsigned char ucPacketID, const NetServerPlayerID
 
 void NetWrapper::sendPacket(uint64 address, unsigned char packetId, unsigned short bitStreamVersion, unsigned char* payload, unsigned long payloadSize, unsigned char priority, unsigned char reliability)
 {
+    NetServerPlayerID socket;
+    {
+        std::lock_guard<std::mutex> sockLock(socketsMutex);
+        auto it = sockets.find(address);
+        if (it == sockets.end())
+            return;
+        socket = it->second;
+    }
+
     NetBitStreamInterface* bitStream = network->AllocateNetServerBitStream(bitStreamVersion);
     if (bitStream)
     {
         bitStream->Write(reinterpret_cast<const char*>(payload), payloadSize);
-        NetServerPlayerID& socket = sockets[address];
-        mutex.lock();
+        std::lock_guard<std::mutex> queueLock(mutex);
         packetQueue.push(QueuedPacket(socket, packetId, bitStream, priority, reliability));
-        mutex.unlock();
     }
 }
 
 void NetWrapper::setSocketVersion(uint64 address, unsigned short version)
 {
-    network->SetClientBitStreamVersion(sockets[address], version);
+    std::lock_guard<std::mutex> lock(socketsMutex);
+    auto it = sockets.find(address);
+    if (it == sockets.end())
+        return;
+    network->SetClientBitStreamVersion(it->second, version);
 }
 
 void NetWrapper::resendModPackets(uint64 address)
 {
-    network->ResendModPackets(sockets[address]);
+    std::lock_guard<std::mutex> lock(socketsMutex);
+    auto it = sockets.find(address);
+    if (it == sockets.end())
+        return;
+    network->ResendModPackets(it->second);
 }
 
 void NetWrapper::resendACPackets(uint64 address)
 {
-    network->ResendACPackets(sockets[address]);
+    std::lock_guard<std::mutex> lock(socketsMutex);
+    auto it = sockets.find(address);
+    if (it == sockets.end())
+        return;
+    network->ResendACPackets(it->second);
 }
 
 void NetWrapper::getClientSerialAndVersion(uint64 address, char* serial, char* extra, char* version)
 {
-    NetServerPlayerID& socket = sockets[address];
+    NetServerPlayerID socket;
+    {
+        std::lock_guard<std::mutex> lock(socketsMutex);
+        auto it = sockets.find(address);
+        if (it == sockets.end())
+            return;
+        socket = it->second;
+    }
 
-    // Use static buffers with placement new to avoid both heap allocation and destructor calls
+    // Use thread_local buffers with placement new to avoid both heap allocation and destructor calls
     // The destructors are never called, avoiding the stack corruption issue
 
-    static char serialBuffer[sizeof(SFixedString<32>)];
-    static char extraBuffer[sizeof(SFixedString<64>)];
-    static char versionBuffer[sizeof(SFixedString<32>)];
+    thread_local char serialBuffer[sizeof(SFixedString<32>)];
+    thread_local char extraBuffer[sizeof(SFixedString<64>)];
+    thread_local char versionBuffer[sizeof(SFixedString<32>)];
     
     // Placement new - constructs in-place without heap allocation
     SFixedString<32>* strSerialTemp = new (serialBuffer) SFixedString<32>();
@@ -116,15 +148,22 @@ void NetWrapper::getClientSerialAndVersion(uint64 address, char* serial, char* e
     
     // Copy directly to output parameters
     STRNCPY(serial, (const char*)*strSerialTemp, 48);
-    STRNCPY(extra, (const char*)*strExtraTemp, 48);
+    STRNCPY(extra, (const char*)*strExtraTemp, 64);
     STRNCPY(version, (const char*)*strPlayerVersionTemp, 48);
     
     // Don't call destructors - they cause the crash
-    // The static buffers will be reused on next call
+    // The thread_local buffers will be reused on the next call from the same thread
 }
 
 std::string NetWrapper::getIPAddress(uint64 address) {
-    auto socket = sockets[address];
+    NetServerPlayerID socket;
+    {
+        std::lock_guard<std::mutex> lock(socketsMutex);
+        auto it = sockets.find(address);
+        if (it == sockets.end())
+            return "";
+        socket = it->second;
+    }
 
     unsigned short port;
     char ipBytes[22];
@@ -204,7 +243,7 @@ int NetWrapper::init(const char* netDllFilePath, const char* idFile, const char*
     Log("Initted\n");
 
 
-    if (!this->network->InitServerId("server-id.keys")) {
+    if (!this->network->InitServerId(idFile)) {
         return -1005;
     }
     Log("Initted ID\n");
@@ -220,7 +259,7 @@ int NetWrapper::init(const char* netDllFilePath, const char* idFile, const char*
         testMethod();
         Log("Test method called\n");
     }
-    catch (std::exception e) {
+    catch (const std::exception&) {
         return -1007;
     }
 
@@ -269,6 +308,13 @@ void NetWrapper::start() {
 void NetWrapper::stop() {
     running = false;
     runThread.join();
+    {
+        std::lock_guard<std::mutex> lock(mutex);
+        while (!packetQueue.empty()) {
+            network->DeallocateNetServerBitStream(packetQueue.front().bitStream);
+            packetQueue.pop();
+        }
+    }
     binThread = std::thread(&NetWrapper::binPulseLoop, this);
 }
 
@@ -285,7 +331,10 @@ void NetWrapper::SetChecks(const char* szDisableComboACMap, const char* szDisabl
 
 NetWrapper* NetWrapper::getNetWrapper(int id)
 {
-    return NetWrapper::netWrappers[id];
+    auto it = NetWrapper::netWrappers.find(id);
+    if (it == NetWrapper::netWrappers.end())
+        return nullptr;
+    return it->second;
 }
 
 NetWrapper* NetWrapper::getNetWrapper(NetServerPlayerID id)
