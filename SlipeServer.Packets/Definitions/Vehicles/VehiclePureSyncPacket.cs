@@ -65,6 +65,12 @@ public sealed class VehiclePureSyncPacket : Packet
     public byte[] PanelStates { get; set; } = Array.Empty<byte>();
     public byte[] LightStates { get; set; } = Array.Empty<byte>();
 
+    public bool SyncDoors { get; set; }
+    public bool SyncWheels { get; set; }
+    public bool SyncPanels { get; set; }
+    public bool SyncLights { get; set; }
+    public bool IsOnFire { get; set; }
+
     public VehiclePureSyncPacket()
     {
         this.Trailers = new List<TrailerSync>();
@@ -180,6 +186,8 @@ public sealed class VehiclePureSyncPacket : Packet
             this.LeftShoulder2 = reader.GetBit() ? (ushort)255 : (ushort)0;
             this.RightShoulder2 = reader.GetBit() ? (ushort)255 : (ushort)0;
         }
+
+        this.IsOnFire = reader.GetBit();
     }
 
     public override byte[] Write()
@@ -195,7 +203,7 @@ public sealed class VehiclePureSyncPacket : Packet
         if (this.Seat == 0)
         {
             builder.WriteVector3WithZAsFloat(this.Position);
-            bool isTrain = false;
+            bool isTrain = VehicleConstants.Trains.Contains(this.RemoteModel);
             if (isTrain)
             {
                 builder.Write(this.TrainPosition);
@@ -263,7 +271,7 @@ public sealed class VehiclePureSyncPacket : Packet
                     } else
                     {
                         builder.Write(true);
-                        builder.WriteFloatFromBits(ratio, 12, 0.0f, 1.0f, true);
+                        builder.WriteFloatFromBits(ratio, 10, 0.0f, 1.0f, true);
                     }
                 }
             }
@@ -275,22 +283,27 @@ public sealed class VehiclePureSyncPacket : Packet
             builder.Write(this.RightShoulder2 != 0);
         }
 
-        builder.Write(true);
-        builder.Write(true);
-        builder.Write(true);
-        builder.Write(true);
+        builder.Write(this.SyncDoors);
+        builder.Write(this.SyncWheels);
+        builder.Write(this.SyncPanels);
+        builder.Write(this.SyncLights);
 
-        WriteComponentStates(builder, this.DoorStates, 3);
-        WriteComponentStates(builder, this.WheelStates, 2);
-        WriteComponentStates(builder, this.PanelStates, 2);
-        WriteComponentStates(builder, this.LightStates, 2);
+        if (this.SyncDoors)
+            WriteComponentStates(builder, this.DoorStates, 3);
+        if (this.SyncWheels)
+            WriteComponentStates(builder, this.WheelStates, 2);
+        if (this.SyncPanels)
+            WriteComponentStates(builder, this.PanelStates, 2);
+        if (this.SyncLights)
+            WriteComponentStates(builder, this.LightStates, 2);
+
+        builder.Write(this.IsOnFire);
 
         return builder.Build();
     }
 
     private void WriteComponentStates(PacketBuilder builder, byte[] data, int bits)
     {
-        builder.Write(true);
         foreach (var d in data)
             builder.WriteCapped(d, bits);
     }
@@ -341,6 +354,12 @@ public sealed class VehiclePureSyncPacket : Packet
         this.WheelStates = Array.Empty<byte>();
         this.PanelStates = Array.Empty<byte>();
         this.LightStates = Array.Empty<byte>();
+
+        this.SyncDoors = default;
+        this.SyncWheels = default;
+        this.SyncPanels = default;
+        this.SyncLights = default;
+        this.IsOnFire = default;
     }
 }
 
