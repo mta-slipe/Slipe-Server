@@ -17,6 +17,7 @@ public class LuaService(IMtaServer server, ILogger logger, IRootElement root, Sc
 {
     private readonly Dictionary<string, Script> scripts = [];
     private readonly Dictionary<string, LuaMethod> methods = [];
+    private readonly Dictionary<string, object> globalValues = [];
     private readonly LuaTranslator translator = new();
 
     public void LoadDefinitions(object methodSet)
@@ -128,6 +129,11 @@ public class LuaService(IMtaServer server, ILogger logger, IRootElement root, Sc
         script.DoStream(stream, codeFriendlyName: identifier);
     }
 
+    public void AddGlobal(string key, object value)
+    {
+        this.globalValues[key] = value;
+    }
+
     public void LoadScript(string identifier, string[] codes)
     {
         var script = new Script(CoreModules.Preset_SoftSandbox);
@@ -173,6 +179,8 @@ public class LuaService(IMtaServer server, ILogger logger, IRootElement root, Sc
     {
         script.Globals["root"] = this.translator.ToDynValues(root).First();
         script.Globals["isSlipeServer"] = this.translator.ToDynValues(true).First();
+        foreach (var (key, value) in this.globalValues)
+            script.Globals[key] = this.translator.ToDynValues(value).First();
     }
 
     public delegate DynValue[] LuaMethod(params DynValue[] values);

@@ -9,8 +9,6 @@ namespace SlipeServer.Scripting.Definitions;
 
 public class CollisionShapeDefinitions(IMtaServer server)
 {
-
-
     [ScriptFunctionDefinition("createColCircle")]
     public CollisionShape CreateColCircle(Vector2 position, float radius)
     {

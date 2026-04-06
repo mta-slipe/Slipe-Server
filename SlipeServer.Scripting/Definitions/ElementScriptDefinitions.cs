@@ -25,4 +25,34 @@ public class ElementScriptDefinitions
 
     [ScriptFunctionDefinition("getElementType")]
     public string GetElementType(Element element) => element.ElementType.ToString().ToLower();
+
+
+    [ScriptFunctionDefinition("getElementModel")]
+    public ushort GetElementModel(Element element) => element switch
+    {
+        WorldObject worldObject => worldObject.Model,
+        Vehicle vehicle => vehicle.Model,
+        Ped ped => ped.Model,
+        _ => throw new System.Exception("Unsupported element")
+    };
+
+    [ScriptFunctionDefinition("setElementModel")]
+    public bool SetElementModel(Element element, ushort model)
+    {
+        switch (element)
+        {
+            case WorldObject worldObject:
+                worldObject.Model = model;
+                return true;
+            case Vehicle vehicle:
+                vehicle.Model = model;
+                return true;
+            case Ped ped:
+                ped.Model = model;
+                return true;
+            default:
+                return false;
+        }
+    }
 }
+

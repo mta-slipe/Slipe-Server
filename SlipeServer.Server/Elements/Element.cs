@@ -717,6 +717,13 @@ public class Element : IElement
     }
 
     /// <summary>
+    /// Gets all element data stored on this element
+    /// </summary>
+    /// <returns>A read-only dictionary of all key-value pairs stored on this element</returns>
+    public IReadOnlyDictionary<string, LuaValue> GetAllData()
+        => this.ElementData.ToDictionary(x => x.Key, x => x.Value.Value);
+
+    /// <summary>
     /// Subscribes a player to changes to a specific element data value
     /// </summary>
     /// <param name="player">The player to subscribe</param>

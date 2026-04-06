@@ -1,4 +1,5 @@
 ﻿using MoonSharp.Interpreter;
+using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Scripting;
 using SlipeServer.Server.Elements;
 using System;
@@ -77,6 +78,8 @@ public class LuaTranslator
             return new DynValue[] { DynValue.NewTable(table) };
         if (obj is DynValue dynValue)
             return new DynValue[] { dynValue };
+        if (obj is LuaValue luaValue)
+            return new DynValue[] { LuaValueToDynValue(luaValue) };
 
         if (obj is IEnumerable<string> stringEnumerable)
         {
@@ -97,6 +100,45 @@ public class LuaTranslator
         }
 
         throw new NotImplementedException($"Conversion to Lua for {obj.GetType()} not implemented");
+    }
+
+    private DynValue LuaValueToDynValue(LuaValue luaValue)
+    {
+        if (luaValue.IsNil)
+            return DynValue.Nil;
+        if (luaValue.BoolValue.HasValue)
+            return DynValue.NewBoolean(luaValue.BoolValue.Value);
+        if (luaValue.StringValue != null)
+            return DynValue.NewString(luaValue.StringValue);
+        if (luaValue.IntegerValue.HasValue)
+            return DynValue.NewNumber(luaValue.IntegerValue.Value);
+        if (luaValue.FloatValue.HasValue)
+            return DynValue.NewNumber(luaValue.FloatValue.Value);
+        if (luaValue.DoubleValue.HasValue)
+            return DynValue.NewNumber(luaValue.DoubleValue.Value);
+        if (luaValue.TableValue != null)
+        {
+            var table = new Table(null);
+            foreach (var kvp in luaValue.TableValue)
+                table.Set(LuaValueToDynValue(kvp.Key), LuaValueToDynValue(kvp.Value));
+            return DynValue.NewTable(table);
+        }
+        return DynValue.Nil;
+    }
+
+    private LuaValue DynValueToLuaValue(DynValue dynValue)
+    {
+        return dynValue.Type switch
+        {
+            DataType.Boolean => new LuaValue(dynValue.Boolean),
+            DataType.String => new LuaValue(dynValue.String),
+            DataType.Number => new LuaValue(dynValue.Number),
+            DataType.Table => new LuaValue(dynValue.Table.Pairs
+                .ToDictionary(
+                    p => DynValueToLuaValue(p.Key),
+                    p => DynValueToLuaValue(p.Value))),
+            _ => LuaValue.Nil
+        };
     }
 
     public float GetSingleFromDynValue(DynValue dynValue) => (float)dynValue.Number;
@@ -186,6 +228,9 @@ public class LuaTranslator
                 callback.OwnerScript.Globals.Remove("source");
             });
         }
+
+        if (targetType == typeof(LuaValue))
+            return DynValueToLuaValue(dynValues.Dequeue());
 
         throw new NotImplementedException($"Conversion from Lua for {targetType} not implemented");
     }

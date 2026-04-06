@@ -45,5 +45,27 @@ public class LuaTestLogic
         {
             this.logger.LogInformation("Failed to load script\n\t{message}", ex.DecoratedMessage);
         }
+
+        InitGate();
+    }
+
+    private void InitGate()
+    {
+        this.luaService.LoadScript("gate.lua", """
+            local object = createObject(321, 10, 0, 5)
+            local colshape = createColSphere(10, 0, 5, 5)
+            
+            addEventHandler("onColShapeHit", colshape, function(hitElement)
+                if getElementType(hitElement) == "player" then
+                    moveObject(object, 1000, 10, 0, 10)
+                end
+            end)
+            
+            addEventHandler("onColShapeLeave", colshape, function(leftElement)
+                if getElementType(leftElement) == "player" then
+                    moveObject(object, 1000, 10, 0, 5)
+                end
+            end)
+            """);
     }
 }

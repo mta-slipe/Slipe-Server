@@ -118,6 +118,9 @@ public class WorldObject : Element
         PositionRotationAnimation movement;
         lock (this.movementLock)
         {
+            if (this.Movement != null)
+                CancelMovement(false, false);
+
             movement = new PositionRotationAnimation()
             {
                 SourcePosition = this.position,
@@ -145,7 +148,7 @@ public class WorldObject : Element
         return task;
     }
 
-    public void CancelMovement(bool resetPosition = false)
+    public void CancelMovement(bool resetPosition = false, bool raiseEvents = true)
     {
         lock (this.movementLock)
         {
@@ -158,7 +161,8 @@ public class WorldObject : Element
                 this.rotation = this.ApproximatedMidMovementRotation;
             }
 
-            this.MovementCancelled?.Invoke(this, new (this.position, this.rotation));
+            if (raiseEvents)
+                this.MovementCancelled?.Invoke(this, new (this.position, this.rotation));
             this.Movement = null;
         }
     }
