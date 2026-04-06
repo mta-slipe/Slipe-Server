@@ -6,10 +6,7 @@ using System.Drawing;
 
 namespace SlipeServer.Scripting.Definitions;
 
-/// <summary>
-/// https://wiki.multitheftauto.com/wiki/Server_Scripting_Functions#Output_functions
-/// </summary>
-public class OutputScriptDefinitions(IDebugLog debugLog, ILogger logger, IChatBox chatBox)
+public class OutputScriptDefinitions(IDebugLog debugLog, ILogger logger, IChatBox chatBox, IClientConsole clientConsole)
 {
     [ScriptFunctionDefinition("outputDebugString")]
     public void OutputDebugString(string message, DebugLevel level = DebugLevel.Information, int red = 255, int green = 255, int blue = 255)
@@ -63,5 +60,22 @@ public class OutputScriptDefinitions(IDebugLog debugLog, ILogger logger, IChatBo
         {
             chatBox.OutputTo(player, text, color, colorCoded);
         }
+    }
+
+    [ScriptFunctionDefinition("showChat")]
+    public bool ShowChat(Player thePlayer, bool show, bool? inputBlocked = null)
+    {
+        chatBox.SetVisibleFor(thePlayer, show, inputBlocked);
+        return true;
+    }
+
+    [ScriptFunctionDefinition("outputConsole")]
+    public bool OutputConsole(string text, Player? visibleTo = null)
+    {
+        if (visibleTo == null)
+            clientConsole.Output(text);
+        else
+            clientConsole.OutputTo(visibleTo, text);
+        return true;
     }
 }

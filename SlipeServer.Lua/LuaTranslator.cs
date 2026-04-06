@@ -276,6 +276,12 @@ public class LuaTranslator
         if (targetType == typeof(LuaValue))
             return DynValueToLuaValue(dynValues.Dequeue());
 
+        if (targetType.IsGenericType && targetType.GetGenericTypeDefinition() == typeof(Nullable<>))
+        {
+            var innerType = Nullable.GetUnderlyingType(targetType)!;
+            return FromDynValue(innerType, dynValues);
+        }
+
         throw new NotImplementedException($"Conversion from Lua for {targetType} not implemented");
     }
 }

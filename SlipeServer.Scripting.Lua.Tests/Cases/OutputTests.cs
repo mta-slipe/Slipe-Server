@@ -80,4 +80,60 @@ public class OutputTests
 
         act.Should().NotThrow();
     }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void ShowChat_DoesNotThrow(
+        LightTestPlayer player,
+        IMtaServer sut)
+    {
+        sut.AddGlobal("testPlayer", player);
+
+        var act = () => sut.RunLuaScript("""
+            showChat(testPlayer, false)
+            """);
+
+        act.Should().NotThrow();
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void ShowChat_WithInputBlocked_DoesNotThrow(
+        LightTestPlayer player,
+        IMtaServer sut)
+    {
+        sut.AddGlobal("testPlayer", player);
+
+        var act = () => sut.RunLuaScript("""
+            showChat(testPlayer, false, true)
+            """);
+
+        act.Should().NotThrow();
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void OutputConsole_DoesNotThrow(IMtaServer sut)
+    {
+        var act = () => sut.RunLuaScript("""
+            outputConsole("hello console")
+            """);
+
+        act.Should().NotThrow();
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void OutputConsole_ToPlayer_DoesNotThrow(
+        LightTestPlayer player,
+        IMtaServer sut)
+    {
+        sut.AddGlobal("testPlayer", player);
+
+        var act = () => sut.RunLuaScript("""
+            outputConsole("hello player console", testPlayer)
+            """);
+
+        act.Should().NotThrow();
+    }
 }
