@@ -1,30 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
 
-    <IsPackable>false</IsPackable>
-    <Nullable>enable</Nullable>
+		<IsPackable>false</IsPackable>
+		<Nullable>enable</Nullable>
 
-    <Platforms>AnyCPU;x86;x64;ARM64;ARM32</Platforms>
-  </PropertyGroup>
+		<Platforms>AnyCPU;x86;x64;ARM64;ARM32</Platforms>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="AutoFixture" Version="4.18.1" />
-    <PackageReference Include="AutoFixture.AutoMoq" Version="4.18.1" />
-    <PackageReference Include="AutoFixture.Xunit2" Version="4.18.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.2" />
-    <PackageReference Include="Moq" Version="4.15.2" />
-    <PackageReference Include="xunit" Version="2.4.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
-    <PackageReference Include="coverlet.collector" Version="1.2.0" />
-    <PackageReference Include="FluentAssertions" Version="6.12.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="AutoFixture" Version="4.18.1" />
+		<PackageReference Include="AutoFixture.AutoMoq" Version="4.18.1" />
+		<PackageReference Include="AutoFixture.Xunit2" Version="4.18.1" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.2" />
+		<PackageReference Include="Moq" Version="4.15.2" />
+		<PackageReference Include="xunit" Version="2.9.3" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+		<PackageReference Include="coverlet.collector" Version="1.2.0" />
+		<PackageReference Include="FluentAssertions" Version="6.12.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\SlipeServer.Hosting\SlipeServer.Hosting.csproj" />
-    <ProjectReference Include="..\SlipeServer.Server.TestTools\SlipeServer.Server.TestTools.csproj" />
-    <ProjectReference Include="..\SlipeServer.Server\SlipeServer.Server.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\SlipeServer.Hosting\SlipeServer.Hosting.csproj" />
+		<ProjectReference Include="..\SlipeServer.Server.TestTools\SlipeServer.Server.TestTools.csproj" />
+		<ProjectReference Include="..\SlipeServer.Server\SlipeServer.Server.csproj" />
+	</ItemGroup>
 
 </Project>

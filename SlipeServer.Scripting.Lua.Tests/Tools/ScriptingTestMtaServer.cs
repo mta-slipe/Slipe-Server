@@ -6,6 +6,7 @@ using SlipeServer.Net.Wrappers;
 using SlipeServer.Server;
 using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Resources.Serving;
+using SlipeServer.Server.Services;
 using SlipeServer.Server.Tests.Tools;
 
 namespace SlipeServer.Scripting.Lua.Tests.Tools;
@@ -15,9 +16,9 @@ public class ScriptingTestMtaServer : MtaServer<LightTestPlayer>
     private readonly INetWrapper wrapper;
     private ulong address;
 
-    public ScriptingTestMtaServer(INetWrapper wrapper, IElementCollection elementCollection, ScriptingAssertDefinitions definitions) : base(builder =>
+    public ScriptingTestMtaServer(INetWrapper wrapper, IElementCollection elementCollection, ScriptingAssertDefinitions definitions, ITextItemService textItemService) : base(builder =>
     {
-        builder.ConfigureServices(x => ConfigureOverrides(x, elementCollection));
+        builder.ConfigureServices(x => ConfigureOverrides(x, elementCollection, textItemService));
     })
     {
         this.AddNetWrapper(wrapper);
@@ -44,7 +45,7 @@ public class ScriptingTestMtaServer : MtaServer<LightTestPlayer>
     }
 
 
-    public static void ConfigureOverrides(IServiceCollection services, IElementCollection elementCollection)
+    public static void ConfigureOverrides(IServiceCollection services, IElementCollection elementCollection, ITextItemService textItemService)
     {
         var httpServerMock = new Mock<IResourceServer>();
         services.AddSingleton<IResourceServer>(httpServerMock.Object);
@@ -54,5 +55,6 @@ public class ScriptingTestMtaServer : MtaServer<LightTestPlayer>
 
         services.AddScripting();
         services.AddLua();
+        services.AddSingleton<ITextItemService>(textItemService);
     }
 }

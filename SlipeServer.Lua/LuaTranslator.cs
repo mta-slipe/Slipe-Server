@@ -2,6 +2,7 @@
 using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Scripting;
 using SlipeServer.Scripting.Definitions;
+using SlipeServer.Server.Concepts;
 using SlipeServer.Server.Elements;
 using System;
 using System.Collections;
@@ -23,16 +24,22 @@ public class LuaTranslator
         UserData.RegisterType<AclGroup>(InteropAccessMode.Hardwired);
         UserData.RegisterType<DbConnectionHandle>(InteropAccessMode.Hardwired);
         UserData.RegisterType<DbQueryHandle>(InteropAccessMode.Hardwired);
+        UserData.RegisterType<TextItem>(InteropAccessMode.Hardwired);
+        UserData.RegisterType<TextDisplay>(InteropAccessMode.Hardwired);
     }
 
     public IEnumerable<DynValue> ToDynValues(object? obj)
     {
         if (obj == null)
-            return new DynValue[] { DynValue.Nil };
+            return [DynValue.Nil];
         if (obj is DbConnectionHandle dbConnection)
-            return new DynValue[] { UserData.Create(dbConnection) };
+            return [UserData.Create(dbConnection)];
         if (obj is DbQueryHandle dbQueryHandle)
-            return new DynValue[] { UserData.Create(dbQueryHandle) };
+            return [UserData.Create(dbQueryHandle)];
+        if (obj is TextItem textItem)
+            return [UserData.Create(textItem)];
+        if (obj is TextDisplay textDisplay)
+            return [UserData.Create(textDisplay)];
         if (obj is DbQueryResult queryResult)
         {
             var rowsTable = new Table(null);
@@ -46,62 +53,62 @@ public class LuaTranslator
             return [DynValue.NewTable(rowsTable), DynValue.NewNumber(queryResult.AffectedRows), DynValue.NewNumber(queryResult.LastInsertId)];
         }
         if (obj is ScriptFile scriptFile)
-            return new DynValue[] { UserData.Create(scriptFile) };
+            return [UserData.Create(scriptFile)];
         if (obj is AclEntry aclEntry)
-            return new DynValue[] { UserData.Create(aclEntry) };
+            return [UserData.Create(aclEntry)];
         if (obj is AclGroup aclGroup)
-            return new DynValue[] { UserData.Create(aclGroup) };
+            return [UserData.Create(aclGroup)];
         if (obj is Element element)
-            return new DynValue[] { UserData.Create(element) };
+            return [UserData.Create(element)];
         if (obj is byte int8)
-            return new DynValue[] { DynValue.NewNumber(int8) };
+            return [DynValue.NewNumber(int8)];
         if (obj is short int16)
-            return new DynValue[] { DynValue.NewNumber(int16) };
+            return [DynValue.NewNumber(int16)];
         if (obj is int int32)
-            return new DynValue[] { DynValue.NewNumber(int32) };
+            return [DynValue.NewNumber(int32)];
         if (obj is long int64)
-            return new DynValue[] { DynValue.NewNumber(int64) };
+            return [DynValue.NewNumber(int64)];
         if (obj is ushort uint16)
-            return new DynValue[] { DynValue.NewNumber(uint16) };
+            return [DynValue.NewNumber(uint16)];
         if (obj is uint uint32)
-            return new DynValue[] { DynValue.NewNumber(uint32) };
+            return [DynValue.NewNumber(uint32)];
         if (obj is ulong uint64)
-            return new DynValue[] { DynValue.NewNumber(uint64) };
+            return [DynValue.NewNumber(uint64)];
         if (obj is float single)
-            return new DynValue[] { DynValue.NewNumber(single) };
+            return [DynValue.NewNumber(single)];
         if (obj is double dub)
-            return new DynValue[] { DynValue.NewNumber(dub) };
+            return [DynValue.NewNumber(dub)];
         if (obj is bool boolean)
-            return new DynValue[] { DynValue.NewBoolean(boolean) };
+            return [DynValue.NewBoolean(boolean)];
         if (obj is string str)
-            return new DynValue[] { DynValue.NewString(str) };
+            return [DynValue.NewString(str)];
         if (obj is Color color)
-            return new DynValue[]
-            {
+            return
+            [
                     DynValue.NewNumber(color.R),
                     DynValue.NewNumber(color.G),
                     DynValue.NewNumber(color.B),
                     DynValue.NewNumber(color.A),
-            };
+            ];
         if (obj is Vector2 vector2)
-            return new DynValue[]
-            {
+            return
+            [
                     DynValue.NewNumber(vector2.X),
                     DynValue.NewNumber(vector2.Y)
-            };
+            ];
         if (obj is Point point)
-            return new DynValue[]
-            {
+            return
+            [
                     DynValue.NewNumber(point.X),
                     DynValue.NewNumber(point.Y)
-            };
+            ];
         if (obj is Vector3 vector3)
-            return new DynValue[]
-            {
+            return
+            [
                     DynValue.NewNumber(vector3.X),
                     DynValue.NewNumber(vector3.Y),
                     DynValue.NewNumber(vector3.Z)
-            };
+            ];
         if (obj is CameraMatrix cameraMatrix)
             return
             [
@@ -130,13 +137,13 @@ public class LuaTranslator
                 DynValue.NewString(pedClothingInfo.Model),
             ];
         if (obj is Delegate del)
-            return new DynValue[] { DynValue.NewCallback((context, arguments) => ToDynValues(del.DynamicInvoke(arguments.GetArray())!).First()) };
+            return [DynValue.NewCallback((context, arguments) => ToDynValues(del.DynamicInvoke(arguments.GetArray())!).First())];
         if (obj is Table table)
-            return new DynValue[] { DynValue.NewTable(table) };
+            return [DynValue.NewTable(table)];
         if (obj is DynValue dynValue)
-            return new DynValue[] { dynValue };
+            return [dynValue];
         if (obj is LuaValue luaValue)
-            return new DynValue[] { LuaValueToDynValue(luaValue) };
+            return [LuaValueToDynValue(luaValue)];
 
         if (obj is IEnumerable<string> stringEnumerable)
         {
@@ -324,6 +331,10 @@ public class LuaTranslator
             return dynValues.Dequeue()?.UserData?.Object as DbConnectionHandle;
         if (targetType == typeof(DbQueryHandle))
             return dynValues.Dequeue()?.UserData?.Object as DbQueryHandle;
+        if (targetType == typeof(TextItem))
+            return dynValues.Dequeue()?.UserData?.Object as TextItem;
+        if (targetType == typeof(TextDisplay))
+            return dynValues.Dequeue()?.UserData?.Object as TextDisplay;
 
         if (targetType.IsGenericType && targetType.GetGenericTypeDefinition() == typeof(Nullable<>))
         {

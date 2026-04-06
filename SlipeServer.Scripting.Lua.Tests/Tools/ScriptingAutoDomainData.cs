@@ -38,7 +38,8 @@ public class ScriptingAutoDomainData(bool mockElementCollection = true) : AutoDa
         var customDefinitions = new ScriptingAssertDefinitions(assertDataProvider);
 
         var wrapper = new LightTestNetWrapper();
-        var server = new ScriptingTestMtaServer(wrapper, elementCollection, customDefinitions);
+        var textItemService = new TextItemService();
+        var server = new ScriptingTestMtaServer(wrapper, elementCollection, customDefinitions, textItemService);
         var context = new TestPacketContext(wrapper);
 
 
@@ -56,6 +57,8 @@ public class ScriptingAutoDomainData(bool mockElementCollection = true) : AutoDa
 
         fixture.Register<IRootElement>(() => rootMock.Object);
         fixture.Register<Mock<IRootElement>>(() => rootMock);
+        fixture.Register<ITextItemService>(() => textItemService);
+        fixture.Register<TextItemService>(() => textItemService);
 
         fixture.Register<AssertDataProvider>(() => assertDataProvider);
 
