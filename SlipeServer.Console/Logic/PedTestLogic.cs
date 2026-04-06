@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Server;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Services;
 using System.Numerics;
 
@@ -86,6 +87,60 @@ public class PedTestLogic
         this.commandService.AddCommand("reload").Triggered += (source, args) =>
         {
             args.Player.ReloadWeapon();
+        };
+
+        this.commandService.AddCommand("pedheadless").Triggered += (source, args) =>
+        {
+            this.ped.IsHeadless = !this.ped.IsHeadless;
+        };
+
+        this.commandService.AddCommand("pedmoveanim").Triggered += (source, args) =>
+        {
+            if (args.Arguments.Length < 1 || !int.TryParse(args.Arguments[0], out int animId))
+                return;
+
+            this.ped.MoveAnimation = (PedMoveAnimation)animId;
+        };
+
+        this.commandService.AddCommand("pedchoking").Triggered += (source, args) =>
+        {
+            this.ped.IsChoking = !this.ped.IsChoking;
+        };
+
+        this.commandService.AddCommand("pedonfire").Triggered += (source, args) =>
+        {
+            this.ped.IsOnFire = !this.ped.IsOnFire;
+        };
+
+        this.commandService.AddCommand("pedgangdriveby").Triggered += (source, args) =>
+        {
+            if (args.Player.Vehicle == null)
+                return;
+
+            if (this.ped.Vehicle == null)
+                this.ped.WarpIntoVehicle(args.Player.Vehicle, 1);
+
+            this.ped.AddWeapon(Server.Enums.WeaponId.M4, 1000, true);
+            this.ped.IsDoingGangDriveby = !this.ped.IsDoingGangDriveby;
+        };
+
+        this.commandService.AddCommand("driveby").Triggered += (source, args) =>
+        {
+            if (args.Player.Vehicle == null)
+                return;
+
+            args.Player.IsDoingGangDriveby = !args.Player.IsDoingGangDriveby;
+        };
+
+        this.commandService.AddCommand("walkstyle").Triggered += (source, args) =>
+        {
+            if (args.Arguments.Length < 1)
+                return;
+
+            if (!Enum.TryParse<PedMoveAnimation>(args.Arguments[0], out var value))
+                return;
+
+            args.Player.MoveAnimation = value;
         };
     }
 }

@@ -97,7 +97,6 @@ public class Player : Ped
     public bool IsDucked { get; set; }
     public bool WearsGoggles { get; set; }
     public bool HasContact { get; set; }
-    public bool IsChoking { get; set; }
     public bool AkimboTargetUp { get; set; }
     public bool IsSyncingVelocity { get; set; }
     public bool IsStealthAiming { get; set; }

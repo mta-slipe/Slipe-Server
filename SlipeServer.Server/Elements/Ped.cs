@@ -216,8 +216,34 @@ public class Ped : Element
         }
     }
     public bool IsSyncable { get; set; } = true;
-    public bool IsHeadless { get; set; } = false;
-    public PedMoveAnimation MoveAnimation { get; set; } = 0;
+    private bool isHeadless = false;
+    public bool IsHeadless
+    {
+        get => this.isHeadless;
+        set
+        {
+            if (this.isHeadless == value)
+                return;
+
+            var args = new ElementChangedEventArgs<Ped, bool>(this, this.isHeadless, value, this.IsSync);
+            this.isHeadless = value;
+            IsHeadlessChanged?.Invoke(this, args);
+        }
+    }
+    private PedMoveAnimation moveAnimation = 0;
+    public PedMoveAnimation MoveAnimation
+    {
+        get => this.moveAnimation;
+        set
+        {
+            if (this.moveAnimation == value)
+                return;
+
+            var args = new ElementChangedEventArgs<Ped, PedMoveAnimation>(this, this.moveAnimation, value, this.IsSync);
+            this.moveAnimation = value;
+            MoveAnimationChanged?.Invoke(this, args);
+        }
+    }
     public WeaponCollection Weapons { get; set; }
     public bool IsAlive => this.health > 0;
     public Clothing Clothing { get; init; }
@@ -264,6 +290,36 @@ public class Ped : Element
             var args = new ElementChangedEventArgs<Ped, bool>(this, this.isInWater, value, this.IsSync);
             this.isInWater = value;
             IsInWaterChanged?.Invoke(this, args);
+        }
+    }
+
+    private bool isChoking = false;
+    public bool IsChoking
+    {
+        get => this.isChoking;
+        set
+        {
+            if (this.isChoking == value)
+                return;
+
+            var args = new ElementChangedEventArgs<Ped, bool>(this, this.isChoking, value, this.IsSync);
+            this.isChoking = value;
+            IsChokingChanged?.Invoke(this, args);
+        }
+    }
+
+    private bool isDoingGangDriveby = false;
+    public bool IsDoingGangDriveby
+    {
+        get => this.isDoingGangDriveby;
+        set
+        {
+            if (this.isDoingGangDriveby == value)
+                return;
+
+            var args = new ElementChangedEventArgs<Ped, bool>(this, this.isDoingGangDriveby, value, this.IsSync);
+            this.isDoingGangDriveby = value;
+            IsDoingGangDrivebyChanged?.Invoke(this, args);
         }
     }
 
@@ -537,6 +593,10 @@ public class Ped : Element
     public event ElementChangedEventHandler<Ped, float>? GravityChanged;
     public event ElementChangedEventHandler<Ped, bool>? IsOnFireChanged;
     public event ElementChangedEventHandler<Ped, bool>? IsInWaterChanged;
+    public event ElementChangedEventHandler<Ped, bool>? IsChokingChanged;
+    public event ElementChangedEventHandler<Ped, bool>? IsDoingGangDrivebyChanged;
+    public event ElementChangedEventHandler<Ped, bool>? IsHeadlessChanged;
+    public event ElementChangedEventHandler<Ped, PedMoveAnimation>? MoveAnimationChanged;
     public event ElementChangedEventHandler<Ped, VehicleAction>? VehicleActionChanged;
     public event ElementChangedEventHandler<Ped, Vehicle?>? JackingVehicleChanged;
     public event ElementChangedEventHandler<Ped, Vehicle?>? VehicleChanged;

@@ -4,6 +4,7 @@ using SlipeServer.Scripting;
 using SlipeServer.Scripting.Definitions;
 using SlipeServer.Server.Elements;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -98,6 +99,12 @@ public class LuaTranslator
                 DynValue.NewNumber(arrowProps.Color.A),
                 DynValue.NewNumber(arrowProps.Size),
             ];
+        if (obj is PedClothingInfo pedClothingInfo)
+            return
+            [
+                DynValue.NewString(pedClothingInfo.Texture),
+                DynValue.NewString(pedClothingInfo.Model),
+            ];
         if (obj is Delegate del)
             return new DynValue[] { DynValue.NewCallback((context, arguments) => ToDynValues(del.DynamicInvoke(arguments.GetArray())!).First()) };
         if (obj is Table table)
@@ -122,7 +129,14 @@ public class LuaTranslator
                 enumerableTable.Append(value);
 
             return [DynValue.NewTable(enumerableTable)];
+        }
+        if (obj is IEnumerable nonGenericEnumerable)
+        {
+            var enumerableTable = new Table(null);
+            foreach (var value in nonGenericEnumerable.Cast<object>().Select(ToDynValues).SelectMany(x => x))
+                enumerableTable.Append(value);
 
+            return [DynValue.NewTable(enumerableTable)];
         }
 
         throw new NotImplementedException($"Conversion to Lua for {obj.GetType()} not implemented");

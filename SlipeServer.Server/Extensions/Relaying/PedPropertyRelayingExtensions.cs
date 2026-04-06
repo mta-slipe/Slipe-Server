@@ -29,6 +29,11 @@ public static class PedPropertyRelayingExtensions
         ped.AnimationSpeedChanged += RelayPedAnimationSpeed;
         ped.GravityChanged += RelayPedGravityChange;
         ped.WeaponReloaded += RelayWeaponReload;
+        ped.IsChokingChanged += RelayPedChokingChanged;
+        ped.IsOnFireChanged += RelayPedOnFireChanged;
+        ped.IsDoingGangDrivebyChanged += RelayPedDoingGangDrivebyChanged;
+        ped.IsHeadlessChanged += RelayPedHeadlessChanged;
+        ped.MoveAnimationChanged += RelayPedMoveAnimChanged;
 
         if (ped is not Player)
         {
@@ -151,5 +156,30 @@ public static class PedPropertyRelayingExtensions
     private static void RelayWeaponReload(Ped sender, System.EventArgs e)
     {
         sender.RelayChange(new ReloadPedWeaponRpcPacket(sender.Id));
+    }
+
+    private static void RelayPedChokingChanged(Ped sender, ElementChangedEventArgs<Ped, bool> args)
+    {
+        sender.RelayChange(new SetPedChokingRpcPacket(sender.Id, args.NewValue));
+    }
+
+    private static void RelayPedOnFireChanged(Ped sender, ElementChangedEventArgs<Ped, bool> args)
+    {
+        sender.RelayChange(new SetPedOnFireRpcPacket(sender.Id, args.NewValue));
+    }
+
+    private static void RelayPedDoingGangDrivebyChanged(Ped sender, ElementChangedEventArgs<Ped, bool> args)
+    {
+        sender.RelayChange(new SetPedDoingGangDrivebyRpcPacket(sender.Id, args.NewValue, sender.GetAndIncrementTimeContext()));
+    }
+
+    private static void RelayPedHeadlessChanged(Ped sender, ElementChangedEventArgs<Ped, bool> args)
+    {
+        sender.RelayChange(new SetPedHeadlessRpcPacket(sender.Id, args.NewValue));
+    }
+
+    private static void RelayPedMoveAnimChanged(Ped sender, ElementChangedEventArgs<Ped, PedMoveAnimation> args)
+    {
+        sender.RelayChange(new SetPedMoveAnimRpcPacket(sender.Id, (uint)args.NewValue));
     }
 }
