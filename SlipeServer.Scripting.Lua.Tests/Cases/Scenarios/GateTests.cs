@@ -51,10 +51,10 @@ public class GateTests
 
         player.Position = new Vector3(7, 0, 0);
         worldObject.Movement.Should().NotBeNull();
-        worldObject.Movement.TargetPosition.Should().Be(new Vector3(0, 0, 10));
+        worldObject.Movement.TargetPosition.Should().Be(new Vector3(10, 0, 10));
 
         player.Position = new Vector3(0, 0, 0);
         worldObject.Movement.Should().NotBeNull();
-        worldObject.Movement.TargetPosition.Should().Be(new Vector3(0, 0, 0));
+        worldObject.Movement.TargetPosition.Should().Be(new Vector3(10, 0, 0));
     }
 }
