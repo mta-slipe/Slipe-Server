@@ -64,8 +64,18 @@ public partial class Program
         this.configuration = configurationProvider?.GetConfiguration() ?? new Configuration()
         {
             IsVoiceEnabled = true,
+            Port = 50666,
+
+            MinVersion = "1.6.0-0.0",
+
+            SyncIntervals = new SyncIntervals()
+            {
+                PureSync = 20,
+                KeySyncAnalogMove = 20,
+                KeySyncRotation = 20,
+            },
 #if DEBUG
-            DebugPort = 50667
+            DebugPort = 50867
 #endif
         };
 
@@ -84,7 +94,6 @@ public partial class Program
                 builder.UseConfiguration(this.configuration);
 
 #if DEBUG
-                //this.configuration.MasterServerHost = "4.175.21.190";
                 //builder.AddDefaults();
                 builder.AddDefaults(exceptBehaviours: ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour);
 #else
@@ -93,6 +102,8 @@ public partial class Program
 
                 builder.ConfigureServices(services =>
                 {
+                    //services.AddSingleton<IPacketReducer, LoggingConcurrentPacketReducer>();
+
                     services.AddSingleton<ISyncHandlerMiddleware<PlayerPureSyncPacket>, SubscriptionSyncHandlerMiddleware<PlayerPureSyncPacket>>();
                     services.AddSingleton<ISyncHandlerMiddleware<KeySyncPacket>, SubscriptionSyncHandlerMiddleware<KeySyncPacket>>();
 
