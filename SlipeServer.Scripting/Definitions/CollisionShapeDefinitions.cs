@@ -12,43 +12,55 @@ public class CollisionShapeDefinitions(IMtaServer server)
     [ScriptFunctionDefinition("createColCircle")]
     public CollisionShape CreateColCircle(Vector2 position, float radius)
     {
-        return new CollisionCircle(position, radius)
-            .AssociateWith(server);
+        var shape = new CollisionCircle(position, radius).AssociateWith(server);
+        if (ScriptExecutionContext.Current?.Owner != null)
+            shape.Parent = ScriptExecutionContext.Current.Owner?.DynamicRoot;
+        return shape;
     }
 
     [ScriptFunctionDefinition("createColCuboid")]
     public CollisionShape CreateColCuboid(Vector3 position, Vector3 dimensions)
     {
-        return new CollisionCuboid(position, dimensions)
-            .AssociateWith(server);
+        var shape = new CollisionCuboid(position, dimensions).AssociateWith(server);
+        if (ScriptExecutionContext.Current?.Owner != null)
+            shape.Parent = ScriptExecutionContext.Current.Owner?.DynamicRoot;
+        return shape;
     }
 
     [ScriptFunctionDefinition("createColPolygon")]
     public CollisionShape CreateColPolygon(Vector2 position, params Vector2[] vertices)
     {
-        return new CollisionPolygon(new Vector3(position.X, position.Y, 0), vertices)
-            .AssociateWith(server);
+        var shape = new CollisionPolygon(new Vector3(position.X, position.Y, 0), vertices).AssociateWith(server);
+        if (ScriptExecutionContext.Current?.Owner != null)
+            shape.Parent = ScriptExecutionContext.Current.Owner?.DynamicRoot;
+        return shape;
     }
 
     [ScriptFunctionDefinition("createColRectangle")]
     public CollisionShape CreateCollisionRectangle(Vector2 position, Vector2 dimensions)
     {
-        return new CollisionRectangle(position, dimensions)
-            .AssociateWith(server);
+        var shape = new CollisionRectangle(position, dimensions).AssociateWith(server);
+        if (ScriptExecutionContext.Current?.Owner != null)
+            shape.Parent = ScriptExecutionContext.Current.Owner?.DynamicRoot;
+        return shape;
     }
 
     [ScriptFunctionDefinition("createColSphere")]
     public CollisionShape CreateCollisionSphere(Vector3 position, float radius)
     {
-        return new CollisionSphere(position, radius)
-            .AssociateWith(server);
+        var shape = new CollisionSphere(position, radius).AssociateWith(server);
+        if (ScriptExecutionContext.Current?.Owner != null)
+            shape.Parent = ScriptExecutionContext.Current.Owner?.DynamicRoot;
+        return shape;
     }
 
     [ScriptFunctionDefinition("createColTube")]
     public CollisionShape CreateCollisionTube(Vector3 position, float radius, float height)
     {
-        return new CollisionTube(position, radius, height)
-            .AssociateWith(server);
+        var shape = new CollisionTube(position, radius, height).AssociateWith(server);
+        if (ScriptExecutionContext.Current?.Owner != null)
+            shape.Parent = ScriptExecutionContext.Current.Owner?.DynamicRoot;
+        return shape;
     }
 
 

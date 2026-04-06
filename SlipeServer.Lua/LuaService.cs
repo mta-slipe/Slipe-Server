@@ -3,6 +3,7 @@ using MoonSharp.Interpreter;
 using SlipeServer.Scripting;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Resources;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace SlipeServer.Lua;
 
-public class LuaService(IMtaServer server, ILogger logger, IRootElement root, ScriptTransformationPipeline scriptTransformationPipeline)
+public class LuaService(IMtaServer server, ILogger logger, IRootElement root, ScriptTransformationPipeline scriptTransformationPipeline, IScriptEventRuntime scriptEventRuntime)
 {
     private readonly Dictionary<string, Script> scripts = [];
     private readonly Dictionary<string, LuaMethod> methods = [];
@@ -107,7 +108,7 @@ public class LuaService(IMtaServer server, ILogger logger, IRootElement root, Sc
         }
     }
 
-    public void LoadScript(string identifier, string code)
+    public void LoadScript(string identifier, string code, Resource? runningResource = null)
     {
         var script = new Script(CoreModules.Preset_SoftSandbox);
         script.Options.DebugPrint = (value) => logger.LogInformation(value);
@@ -116,10 +117,12 @@ public class LuaService(IMtaServer server, ILogger logger, IRootElement root, Sc
         LoadGlobals(script);
         LoadDefinitions(script);
 
-        using var ms = new MemoryStream(System.Text.UTF8Encoding.UTF8.GetBytes(code));
+        using var ms = new MemoryStream(Encoding.UTF8.GetBytes(code));
         var stream = scriptTransformationPipeline.Transform(ms, "lua");
 
+        Scripting.ScriptExecutionContext.Current = new(runningResource);
         script.DoStream(stream, codeFriendlyName: identifier);
+        Scripting.ScriptExecutionContext.Current = null;
     }
 
     public void AddGlobal(string key, object value)
@@ -127,7 +130,7 @@ public class LuaService(IMtaServer server, ILogger logger, IRootElement root, Sc
         this.globalValues[key] = value;
     }
 
-    public void LoadScript(string identifier, string[] codes)
+    public void LoadScript(string identifier, string[] codes, Resource? runningResource = null)
     {
         var script = new Script(CoreModules.Preset_SoftSandbox);
         script.Options.DebugPrint = (value) =>
@@ -140,21 +143,43 @@ public class LuaService(IMtaServer server, ILogger logger, IRootElement root, Sc
         LoadGlobals(script);
         LoadDefinitions(script);
 
+        Scripting.ScriptExecutionContext.Current = new(runningResource);
+
         foreach (var code in codes)
             script.DoString(code, codeFriendlyName: identifier);
+
+        Scripting.ScriptExecutionContext.Current = null;
     }
 
-    public async Task LoadScriptFromPath(string path) => LoadScript(path, await File.ReadAllTextAsync(path));
-    public async Task LoadScriptFromPaths(string identifier, string[] paths)
+    public async Task LoadScriptFromPath(string path, Resource? runningResource = null) => LoadScript(path, await File.ReadAllTextAsync(path), runningResource);
+    public async Task LoadScriptFromPaths(string identifier, string[] paths, Resource? runningResource = null)
     {
         var codeTasks = paths.Select(path => File.ReadAllTextAsync(path));
         await Task.WhenAll(codeTasks);
-        LoadScript(identifier, codeTasks.Select(task => task.Result).ToArray());
+        LoadScript(identifier, codeTasks.Select(task => task.Result).ToArray(), runningResource);
     }
 
     public void UnloadScript(string identifier)
     {
         this.scripts.Remove(identifier);
+    }
+
+    public void UnloadScriptsFor(Resource runningResource)
+    {
+        scriptEventRuntime.RemoveEventHandlersWithContext(runningResource);
+
+        static void DestroyChildren(IElement parent)
+        {
+            foreach (var child in parent.Children.ToArray())
+            {
+                DestroyChildren(child);
+            }
+
+            parent.Destroy();
+        }
+
+        foreach (var element in runningResource.DynamicRoot.Children.ToArray() ?? [])
+            DestroyChildren(element);
     }
 
     private void LoadDefinitions(Script script)

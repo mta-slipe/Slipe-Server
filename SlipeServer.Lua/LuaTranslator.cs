@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using MarkerArrowProperties = SlipeServer.Scripting.Definitions.MarkerArrowProperties;
 
 namespace SlipeServer.Lua;
 
@@ -87,6 +88,15 @@ public class LuaTranslator
                 DynValue.NewNumber(cameraMatrix.LookAt.Z),
                 DynValue.NewNumber(cameraMatrix.Roll),
                 DynValue.NewNumber(cameraMatrix.Fov),
+            ];
+        if (obj is MarkerArrowProperties arrowProps)
+            return
+            [
+                DynValue.NewNumber(arrowProps.Color.R),
+                DynValue.NewNumber(arrowProps.Color.G),
+                DynValue.NewNumber(arrowProps.Color.B),
+                DynValue.NewNumber(arrowProps.Color.A),
+                DynValue.NewNumber(arrowProps.Size),
             ];
         if (obj is Delegate del)
             return new DynValue[] { DynValue.NewCallback((context, arguments) => ToDynValues(del.DynamicInvoke(arguments.GetArray())!).First()) };
@@ -221,17 +231,27 @@ public class LuaTranslator
         if (targetType == typeof(ScriptCallbackDelegateWrapper))
         {
             var callback = dynValues.Dequeue().Function;
+            var context = Scripting.ScriptExecutionContext.Current;
+
             return new ScriptCallbackDelegateWrapper(parameters => {
                 var values = parameters
                     .Select(ToDynValues)
                     .SelectMany(x => x)
                     .ToArray();
+
+                var previous = Scripting.ScriptExecutionContext.Current;
+                Scripting.ScriptExecutionContext.Current = context;
+
                 callback.Call(values);
+
+                Scripting.ScriptExecutionContext.Current = previous;
             }, callback);
         }
         if (targetType == typeof(EventDelegate))
         {
             var callback = dynValues.Dequeue().Function;
+            var context = Scripting.ScriptExecutionContext.Current;
+
             return (EventDelegate)((element, parameters) => {
                 var source = UserData.Create(element);
 
@@ -241,7 +261,13 @@ public class LuaTranslator
                     .Select(ToDynValues)
                     .SelectMany(x => x)
                     .ToArray();
+
+                var previous = Scripting.ScriptExecutionContext.Current;
+                Scripting.ScriptExecutionContext.Current = context;
+
                 callback.Call(values);
+
+                Scripting.ScriptExecutionContext.Current = previous;
 
                 callback.OwnerScript.Globals.Remove("source");
             });

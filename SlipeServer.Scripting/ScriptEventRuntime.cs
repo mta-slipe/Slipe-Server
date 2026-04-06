@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using SlipeServer.Server.Resources;
 
 namespace SlipeServer.Scripting;
 
@@ -103,7 +104,8 @@ public class ScriptEventRuntime : IScriptEventRuntime
                         EventName = eventName,
                         AttachedTo = attachedTo,
                         Delegate = callbackDelegate,
-                        Owner = owner
+                        Owner = owner,
+                        ExecutionContext = ScriptExecutionContext.Current
                     });
                 }
                 return;
@@ -140,7 +142,8 @@ public class ScriptEventRuntime : IScriptEventRuntime
                 Delegate = callbackDelegate,
                 AttachedTo = attachedTo,
                 Actions = [],
-                Owner = owner
+                Owner = owner,
+                ExecutionContext = ScriptExecutionContext.Current 
             };
 
             this.registeredEventHandlers.Add(registeredEventHandler);
@@ -209,6 +212,31 @@ public class ScriptEventRuntime : IScriptEventRuntime
 
             var customHandlers = this.customEventHandlers
                 .Where(x => x.Owner == owner)
+                .ToArray();
+
+            foreach (var handler in customHandlers)
+                this.customEventHandlers.Remove(handler);
+        }
+    }
+
+    public void RemoveEventHandlersWithContext(Resource? owningResource)
+    {
+        lock (this.handlerLock)
+        {
+            var handlers = this.registeredEventHandlers
+                .Where(x => x.ExecutionContext?.Owner == owningResource)
+                .ToArray();
+
+            foreach (var handler in handlers)
+            {
+                foreach (var action in handler.Actions)
+                    action.Remove();
+
+                this.registeredEventHandlers.Remove(handler);
+            }
+
+            var customHandlers = this.customEventHandlers
+                .Where(x => x.ExecutionContext?.Owner == owningResource)
                 .ToArray();
 
             foreach (var handler in customHandlers)
@@ -309,6 +337,7 @@ internal readonly struct RegisteredEventHandler
     public List<RegisteredEventHandlerElement> Actions { get; init; }
 
     public object? Owner { get; init; }
+    public ScriptExecutionContext? ExecutionContext { get; init; }
 }
 
 
@@ -326,4 +355,5 @@ internal readonly struct CustomEventHandlerEntry
     public Element AttachedTo { get; init; }
     public EventDelegate Delegate { get; init; }
     public object? Owner { get; init; }
+    public required ScriptExecutionContext? ExecutionContext { get; init; }
 }

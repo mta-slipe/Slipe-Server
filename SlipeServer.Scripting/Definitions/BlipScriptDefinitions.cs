@@ -10,12 +10,17 @@ public class BlipScriptDefinition(MtaServer server)
     [ScriptFunctionDefinition("createBlip")]
     public Blip CreateBlip(Vector3 position, BlipIcon icon, byte size = 2, int red = 255, int green = 0, int blue = 0, int alpha = 255, short ordering = 0, ushort visibleDistance = 16383)
     {
-        return new Blip(position, icon, visibleDistance)
+        var blip = new Blip(position, icon, visibleDistance)
         {
             Color = Color.FromArgb(alpha, red, green, blue),
             Size = size,
             Ordering = ordering
         }.AssociateWith(server);
+
+        if (ScriptExecutionContext.Current?.Owner != null)
+            blip.Parent = ScriptExecutionContext.Current.Owner?.DynamicRoot;
+
+        return blip;
     }
 
     [ScriptFunctionDefinition("createBlipAttachedTo")]
@@ -29,6 +34,9 @@ public class BlipScriptDefinition(MtaServer server)
         }.AssociateWith(server);
 
         blip.AttachTo(element);
+
+        if (ScriptExecutionContext.Current?.Owner != null)
+            blip.Parent = ScriptExecutionContext.Current.Owner?.DynamicRoot;
 
         return blip;
     }

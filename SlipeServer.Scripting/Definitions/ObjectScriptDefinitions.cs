@@ -10,11 +10,16 @@ public class ObjectScriptDefinitions(IMtaServer server)
     [ScriptFunctionDefinition("createObject")]
     public WorldObject CreateObject(ushort model, Vector3 position, Vector3? rotation = null, bool isLowLod = false)
     {
-        return new WorldObject(model, position)
+        var worldObject = new WorldObject(model, position)
         {
             Rotation = rotation ?? Vector3.Zero,
             IsLowLod = isLowLod
         }.AssociateWith(server);
+
+        if (ScriptExecutionContext.Current?.Owner != null)
+            worldObject.Parent = ScriptExecutionContext.Current.Owner?.DynamicRoot;
+
+        return worldObject;
     }
 
     [ScriptFunctionDefinition("moveObject")]

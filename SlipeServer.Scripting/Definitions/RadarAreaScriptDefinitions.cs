@@ -11,6 +11,10 @@ public class RadarAreaScriptDefinitions(IMtaServer server)
     public RadarArea CreateRadarArea(Vector2 position, Vector2 size, Color? color = null, Player? visibleFor = null)
     {
         var radarArea = new RadarArea(position, size, color ?? Color.FromArgb(255, 0, 0, 255)).AssociateWith(server);
+
+        if (ScriptExecutionContext.Current?.Owner != null)
+            radarArea.Parent = ScriptExecutionContext.Current.Owner?.DynamicRoot;
+
         return radarArea;
     }
 

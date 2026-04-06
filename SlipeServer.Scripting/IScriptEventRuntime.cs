@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Scripting.EventDefinitions;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Resources;
 using System;
 using System.Collections.Generic;
 
@@ -10,6 +11,7 @@ public interface IScriptEventRuntime
     void AddEventHandler(string eventName, Element attachedTo, EventDelegate callbackDelegate, object? owner = null);
     void RemoveEventHandler(string eventName, Element attachedTo, EventDelegate callbackDelegate);
     void RemoveEventHandlersOwnedBy(object owner);
+    void RemoveEventHandlersWithContext(Resource? owningResource);
     void LoadEvents(IEventDefinitions eventDefinitions);
     void LoadDefaultEvents();
     void RegisterEvent<T>(string eventName, EventRegistrationDelegate<T> eventDelegate) where T : Element;

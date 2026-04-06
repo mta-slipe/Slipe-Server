@@ -5,6 +5,7 @@ using SlipeServer.Server.ElementCollections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SlipeServer.Server.Resources;
 
 namespace SlipeServer.Scripting;
 
@@ -119,6 +120,7 @@ public class SimplifiedScriptEventRuntime : IScriptEventRuntime
     public bool WasEventCancelled() => throw new NotImplementedException();
     public string GetCancelReason() => throw new NotImplementedException();
     public System.Collections.Generic.IEnumerable<EventDelegate> GetEventHandlers(string eventName, Element attachedTo) => throw new NotImplementedException();
+    public void RemoveEventHandlersWithContext(Resource? owningResource) => throw new NotImplementedException();
 }
 
 public delegate void HandleEventDelegate(Element element, string eventName, params object[] parameters);
