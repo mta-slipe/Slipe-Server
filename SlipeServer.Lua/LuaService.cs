@@ -33,6 +33,10 @@ public class LuaService(IMtaServer server, ILogger logger, IRootElement root, Sc
                 throw new Exception($"Lua name conflict for '{attribute.NiceName}'");
 
             var methodParameters = method.GetParameters();
+
+            var nullContext = new NullabilityInfoContext();
+            var nullabilityInfos = methodParameters.Select(p => nullContext.Create(p)).ToArray();
+
             this.methods[attribute.NiceName] = (values) =>
             {
                 var valueQueue = new Queue<DynValue>(values.AsEnumerable());
@@ -57,7 +61,8 @@ public class LuaService(IMtaServer server, ILogger logger, IRootElement root, Sc
                             }
                         } else if (valueQueue.Any())
                         {
-                            parameters[i] = this.translator.FromDynValue(methodParameters[i].ParameterType, valueQueue);
+                            var isNullable = nullabilityInfos[i].ReadState == NullabilityState.Nullable;
+                            parameters[i] = this.translator.FromDynValue(methodParameters[i].ParameterType, valueQueue, isNullable);
                         } else
                         {
                             if (methodParameters[i].IsOptional)

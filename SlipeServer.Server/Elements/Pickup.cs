@@ -109,10 +109,10 @@ public class Pickup : Element
 
     public void ChangeToOrUpdateWeaponPickup(WeaponId weapon, ushort ammo)
     {
-        this.Position = position;
         this.Ammo = ammo;
         this.WeaponType = weapon;
         this.Model = WeaponConstants.ModelsPerWeapon[weapon];
+        this.PickupType = PickupType.Weapon;
         this.PickupTypeChanged?.Invoke(this, EventArgs.Empty);
     }
 

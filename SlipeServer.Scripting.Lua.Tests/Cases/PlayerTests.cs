@@ -375,4 +375,197 @@ public class PlayerTests
         assertDataProvider.AssertPrints.Should().ContainSingle().Which.Should().Be("true");
         player.Controls.IsControlStateSet("forward").Should().BeTrue();
     }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void GivePlayerMoney_IncreasesMoney(
+        AssertDataProvider assertDataProvider,
+        LightTestPlayer player,
+        IMtaServer sut)
+    {
+        sut.AddGlobal("testPlayer", player);
+
+        sut.RunLuaScript("""
+            setPlayerMoney(testPlayer, 200)
+            givePlayerMoney(testPlayer, 300)
+            assertPrint(tostring(getPlayerMoney(testPlayer)))
+            """);
+
+        assertDataProvider.AssertPrints.Should().ContainSingle().Which.Should().Be("500");
+        player.Money.Should().Be(500);
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void IsPlayerNametagShowing_ReturnsTrueByDefault(
+        AssertDataProvider assertDataProvider,
+        LightTestPlayer player,
+        IMtaServer sut)
+    {
+        sut.AddGlobal("testPlayer", player);
+
+        sut.RunLuaScript("""
+            assertPrint(tostring(isPlayerNametagShowing(testPlayer)))
+            """);
+
+        assertDataProvider.AssertPrints.Should().ContainSingle().Which.Should().Be("true");
+        player.IsNametagShowing.Should().BeTrue();
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void SetPlayerNametagShowing_UpdatesNametagShowing(
+        AssertDataProvider assertDataProvider,
+        LightTestPlayer player,
+        IMtaServer sut)
+    {
+        sut.AddGlobal("testPlayer", player);
+
+        sut.RunLuaScript("""
+            setPlayerNametagShowing(testPlayer, false)
+            assertPrint(tostring(isPlayerNametagShowing(testPlayer)))
+            """);
+
+        assertDataProvider.AssertPrints.Should().ContainSingle().Which.Should().Be("false");
+        player.IsNametagShowing.Should().BeFalse();
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void IsVoiceEnabled_ReturnsFalseByDefault(
+        AssertDataProvider assertDataProvider,
+        IMtaServer sut)
+    {
+        sut.RunLuaScript("""
+            assertPrint(tostring(isVoiceEnabled()))
+            """);
+
+        assertDataProvider.AssertPrints.Should().ContainSingle().Which.Should().Be("false");
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void IsVoiceEnabled_ReturnsTrueWhenEnabled(
+        AssertDataProvider assertDataProvider,
+        IMtaServer sut)
+    {
+        sut.Configuration.IsVoiceEnabled = true;
+
+        sut.RunLuaScript("""
+            assertPrint(tostring(isVoiceEnabled()))
+            """);
+
+        assertDataProvider.AssertPrints.Should().ContainSingle().Which.Should().Be("true");
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void SetPlayerName_UpdatesPlayerName(
+        AssertDataProvider assertDataProvider,
+        LightTestPlayer player,
+        IMtaServer sut)
+    {
+        sut.AddGlobal("testPlayer", player);
+
+        sut.RunLuaScript("""
+            setPlayerName(testPlayer, "NewName")
+            assertPrint(getPlayerName(testPlayer))
+            """);
+
+        assertDataProvider.AssertPrints.Should().ContainSingle().Which.Should().Be("NewName");
+        player.Name.Should().Be("NewName");
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void KickPlayer_KicksPlayer(
+        LightTestPlayer player,
+        IMtaServer sut)
+    {
+        sut.AddGlobal("testPlayer", player);
+
+        var kicked = false;
+        player.Kicked += (_, _) => kicked = true;
+
+        sut.RunLuaScript("""kickPlayer(testPlayer, "rule violation")""");
+
+        kicked.Should().BeTrue();
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void GetPlayerAnnounceValue_ReturnsNilForUnsetKey(
+        AssertDataProvider assertDataProvider,
+        LightTestPlayer player,
+        IMtaServer sut)
+    {
+        sut.AddGlobal("testPlayer", player);
+
+        sut.RunLuaScript("""
+            assertPrint(tostring(getPlayerAnnounceValue(testPlayer, "score")))
+            """);
+
+        assertDataProvider.AssertPrints.Should().ContainSingle().Which.Should().Be("nil");
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void SetPlayerAnnounceValue_StoresValue(
+        AssertDataProvider assertDataProvider,
+        LightTestPlayer player,
+        IMtaServer sut)
+    {
+        sut.AddGlobal("testPlayer", player);
+
+        sut.RunLuaScript("""
+            setPlayerAnnounceValue(testPlayer, "score", "1000")
+            assertPrint(getPlayerAnnounceValue(testPlayer, "score"))
+            """);
+
+        assertDataProvider.AssertPrints.Should().ContainSingle().Which.Should().Be("1000");
+        player.AnnounceValues["score"].Should().Be("1000");
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void SetPlayerVoiceBroadcastTo_SetsProperty(
+        LightTestPlayer player,
+        LightTestPlayer targetPlayer,
+        IMtaServer sut)
+    {
+        sut.AddGlobal("testPlayer", player);
+        sut.AddGlobal("targetPlayer", targetPlayer);
+
+        sut.RunLuaScript("""setPlayerVoiceBroadcastTo(testPlayer, targetPlayer)""");
+
+        player.VoiceBroadcastTo.Should().Be(targetPlayer);
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void SetPlayerVoiceIgnoreFrom_SetsProperty(
+        LightTestPlayer player,
+        LightTestPlayer ignoredPlayer,
+        IMtaServer sut)
+    {
+        sut.AddGlobal("testPlayer", player);
+        sut.AddGlobal("ignoredPlayer", ignoredPlayer);
+
+        sut.RunLuaScript("""setPlayerVoiceIgnoreFrom(testPlayer, ignoredPlayer)""");
+
+        player.VoiceIgnoreFrom.Should().Be(ignoredPlayer);
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void SetPlayerHudComponentVisible_DoesNotThrow(
+        LightTestPlayer player,
+        IMtaServer sut)
+    {
+        sut.AddGlobal("testPlayer", player);
+
+        var act = () => sut.RunLuaScript("""setPlayerHudComponentVisible(testPlayer, "health", false)""");
+
+        act.Should().NotThrow();
+    }
 }

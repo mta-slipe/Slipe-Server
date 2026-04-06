@@ -1,5 +1,7 @@
-﻿using SlipeServer.Server.ElementCollections;
+﻿using SlipeServer.Server;
+using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Services;
 using System;
 using System.Collections.Generic;
@@ -10,7 +12,7 @@ using System.Numerics;
 
 namespace SlipeServer.Scripting.Definitions;
 
-public class PlayerScriptDefinitions(IElementCollection elementCollection, IDebugLog debugLog)
+public class PlayerScriptDefinitions(IElementCollection elementCollection, IDebugLog debugLog, Configuration configuration)
 {
 
     [ScriptFunctionDefinition("getAlivePlayers")]
@@ -321,5 +323,101 @@ public class PlayerScriptDefinitions(IElementCollection elementCollection, IDebu
     public bool GetControlState(Player player, string control)
     {
         return player.Controls.IsControlStateSet(control);
+    }
+
+
+    [ScriptFunctionDefinition("givePlayerMoney")]
+    public void GivePlayerMoney(Player player, int amount)
+    {
+        lock (player.ExternalMoneyLock)
+        {
+            player.SetMoney(player.Money + amount);
+        }
+    }
+
+
+    [ScriptFunctionDefinition("isPlayerNametagShowing")]
+    public bool IsPlayerNametagShowing(Player player)
+    {
+        return player.IsNametagShowing;
+    }
+
+    [ScriptFunctionDefinition("setPlayerNametagShowing")]
+    public void SetPlayerNametagShowing(Player player, bool showing)
+    {
+        player.IsNametagShowing = showing;
+    }
+
+
+    [ScriptFunctionDefinition("setPlayerHudComponentVisible")]
+    public void SetPlayerHudComponentVisible(Player player, string component, bool visible)
+    {
+        var hudComponent = component switch
+        {
+            "all" => HudComponent.All,
+            "ammo" => HudComponent.Ammo,
+            "area_name" => HudComponent.AreaName,
+            "armour" => HudComponent.Armour,
+            "breath" => HudComponent.Breath,
+            "clock" => HudComponent.Clock,
+            "crosshair" => HudComponent.Crosshair,
+            "health" => HudComponent.Health,
+            "money" => HudComponent.Money,
+            "radar" => HudComponent.Radar,
+            "radio" => HudComponent.Radio,
+            "vehicle_name" => HudComponent.VehicleName,
+            "wanted" => HudComponent.Wanted,
+            "weapon" => HudComponent.Weapon,
+            _ => throw new ArgumentException($"Unknown HUD component: {component}", nameof(component))
+        };
+
+        player.ShowHudComponent(hudComponent, visible);
+    }
+
+
+    [ScriptFunctionDefinition("isVoiceEnabled")]
+    public bool IsVoiceEnabled()
+    {
+        return configuration.IsVoiceEnabled;
+    }
+
+
+    [ScriptFunctionDefinition("setPlayerName")]
+    public void SetPlayerName(Player player, string name)
+    {
+        player.Name = name;
+    }
+
+
+    [ScriptFunctionDefinition("kickPlayer")]
+    public void KickPlayer(Player player, string reason = "", Player? responsiblePlayer = null)
+    {
+        player.Kick(reason, responsibleElement: responsiblePlayer);
+    }
+
+
+    [ScriptFunctionDefinition("getPlayerAnnounceValue")]
+    public string? GetPlayerAnnounceValue(Player player, string key)
+    {
+        return player.AnnounceValues.GetValueOrDefault(key);
+    }
+
+    [ScriptFunctionDefinition("setPlayerAnnounceValue")]
+    public void SetPlayerAnnounceValue(Player player, string key, string value)
+    {
+        player.AnnounceValues[key] = value;
+    }
+
+
+    [ScriptFunctionDefinition("setPlayerVoiceBroadcastTo")]
+    public void SetPlayerVoiceBroadcastTo(Player player, Element? broadcastTo)
+    {
+        player.VoiceBroadcastTo = broadcastTo;
+    }
+
+    [ScriptFunctionDefinition("setPlayerVoiceIgnoreFrom")]
+    public void SetPlayerVoiceIgnoreFrom(Player player, Element? ignoreFrom)
+    {
+        player.VoiceIgnoreFrom = ignoreFrom;
     }
 }

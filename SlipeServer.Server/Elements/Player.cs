@@ -101,6 +101,10 @@ public class Player : Ped
     public bool IsSyncingVelocity { get; set; }
     public bool IsStealthAiming { get; set; }
     public bool IsVoiceMuted { get; set; }
+
+    public Element? VoiceBroadcastTo { get; set; }
+    public Element? VoiceIgnoreFrom { get; set; }
+
     public ConcurrentDictionary<Ped, byte> SyncingPeds { get; set; } = [];
     public ConcurrentDictionary<Vehicle, byte> SyncingVehicles { get; set; } = [];
     public Controls Controls { get; private set; }
@@ -123,6 +127,7 @@ public class Player : Ped
     }
 
     public Dictionary<int, PlayerPendingScreenshot> PendingScreenshots { get; } = new();
+    public Dictionary<string, string> AnnounceValues { get; } = new();
 
     private readonly HashSet<Element> subscriptionElements = [];
     private readonly Dictionary<string, KeyState> boundKeys = [];

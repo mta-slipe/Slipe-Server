@@ -19,14 +19,38 @@ public class LuaTranslator
     {
         UserData.RegisterType<Element>(InteropAccessMode.Hardwired);
         UserData.RegisterType<ScriptFile>(InteropAccessMode.Hardwired);
+        UserData.RegisterType<AclEntry>(InteropAccessMode.Hardwired);
+        UserData.RegisterType<AclGroup>(InteropAccessMode.Hardwired);
+        UserData.RegisterType<DbConnectionHandle>(InteropAccessMode.Hardwired);
+        UserData.RegisterType<DbQueryHandle>(InteropAccessMode.Hardwired);
     }
 
     public IEnumerable<DynValue> ToDynValues(object? obj)
     {
         if (obj == null)
             return new DynValue[] { DynValue.Nil };
+        if (obj is DbConnectionHandle dbConnection)
+            return new DynValue[] { UserData.Create(dbConnection) };
+        if (obj is DbQueryHandle dbQueryHandle)
+            return new DynValue[] { UserData.Create(dbQueryHandle) };
+        if (obj is DbQueryResult queryResult)
+        {
+            var rowsTable = new Table(null);
+            for (int idx = 0; idx < queryResult.Rows.Count; idx++)
+            {
+                var rowTable = new Table(null);
+                foreach (var pair in queryResult.Rows[idx])
+                    rowTable.Set(pair.Key, pair.Value == null ? DynValue.Nil : ToDynValues(pair.Value).First());
+                rowsTable.Set(idx + 1, DynValue.NewTable(rowTable));
+            }
+            return [DynValue.NewTable(rowsTable), DynValue.NewNumber(queryResult.AffectedRows), DynValue.NewNumber(queryResult.LastInsertId)];
+        }
         if (obj is ScriptFile scriptFile)
             return new DynValue[] { UserData.Create(scriptFile) };
+        if (obj is AclEntry aclEntry)
+            return new DynValue[] { UserData.Create(aclEntry) };
+        if (obj is AclGroup aclGroup)
+            return new DynValue[] { UserData.Create(aclGroup) };
         if (obj is Element element)
             return new DynValue[] { UserData.Create(element) };
         if (obj is byte int8)
@@ -194,8 +218,11 @@ public class LuaTranslator
     public bool GetBooleanFromDynValue(DynValue dynValue) => dynValue.Boolean;
     public Table GetTableFromDynValue(DynValue dynValue) => dynValue.Table;
 
-    public object? FromDynValue(Type targetType, Queue<DynValue> dynValues)
+    public object? FromDynValue(Type targetType, Queue<DynValue> dynValues, bool isNullable = false)
     {
+        if (isNullable && dynValues.Count > 0 && !IsCompatibleWith(targetType, dynValues.Peek()))
+            return null;
+
         if (targetType == typeof(Color) || targetType == typeof(Color?))
         {
             byte red = GetByteFromDynValue(dynValues.Dequeue());
@@ -238,6 +265,10 @@ public class LuaTranslator
             return GetTableFromDynValue(dynValues.Dequeue());
         if (targetType == typeof(ScriptFile))
             return dynValues.Dequeue()?.UserData?.Object as ScriptFile;
+        if (targetType == typeof(AclEntry))
+            return dynValues.Dequeue()?.UserData?.Object as AclEntry;
+        if (targetType == typeof(AclGroup))
+            return dynValues.Dequeue()?.UserData?.Object as AclGroup;
         if (typeof(Player).IsAssignableFrom(targetType))
             return dynValues.Dequeue()?.UserData?.Object;
         if (typeof(Element).IsAssignableFrom(targetType))
@@ -289,6 +320,10 @@ public class LuaTranslator
 
         if (targetType == typeof(LuaValue))
             return DynValueToLuaValue(dynValues.Dequeue());
+        if (targetType == typeof(DbConnectionHandle))
+            return dynValues.Dequeue()?.UserData?.Object as DbConnectionHandle;
+        if (targetType == typeof(DbQueryHandle))
+            return dynValues.Dequeue()?.UserData?.Object as DbQueryHandle;
 
         if (targetType.IsGenericType && targetType.GetGenericTypeDefinition() == typeof(Nullable<>))
         {
@@ -297,5 +332,34 @@ public class LuaTranslator
         }
 
         throw new NotImplementedException($"Conversion from Lua for {targetType} not implemented");
+    }
+
+    private static bool IsCompatibleWith(Type targetType, DynValue value)
+    {
+        if (targetType == typeof(ScriptCallbackDelegateWrapper)) 
+            return value.Type == DataType.Function;
+
+        if (targetType == typeof(Table)) 
+            return value.Type == DataType.Table;
+
+        if (targetType == typeof(string)) 
+            return value.Type == DataType.String;
+
+        if (targetType == typeof(bool)) 
+            return value.Type == DataType.Boolean;
+
+        if (targetType == typeof(float) || targetType == typeof(double) ||
+            targetType == typeof(int) || targetType == typeof(long) ||
+            targetType == typeof(uint) || targetType == typeof(ulong) ||
+            targetType == typeof(short) || targetType == typeof(ushort) ||
+            targetType == typeof(byte)) 
+            return value.Type == DataType.Number;
+
+        if (targetType == typeof(ScriptFile) || targetType == typeof(DbConnectionHandle) ||
+            targetType == typeof(DbQueryHandle) || targetType == typeof(AclEntry) ||
+            targetType == typeof(AclGroup) || typeof(Element).IsAssignableFrom(targetType))
+            return value.Type == DataType.UserData;
+
+        return true;
     }
 }
