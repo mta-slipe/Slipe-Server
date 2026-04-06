@@ -93,4 +93,78 @@ public class ElementTests
         var worldObject = captures.Single();
         worldObject.Model.Should().Be(400);
     }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void DestroyElement_DestroysElement(
+        [Frozen] Mock<IElementCollection> elementCollectionMock,
+        IMtaServer sut)
+    {
+        List<WorldObject> captures = [];
+        elementCollectionMock.Setup(x => x.Add(Capture.In(captures)));
+
+        sut.RunLuaScript("""
+            local object = createObject(321, 3, 4, 5)
+            destroyElement(object)
+            """);
+
+        var worldObject = captures.Single();
+        worldObject.IsDestroyed.Should().BeTrue();
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void SetElementRotation_RotatesElement(
+        [Frozen] Mock<IElementCollection> elementCollectionMock,
+        IMtaServer sut)
+    {
+        List<WorldObject> captures = [];
+        elementCollectionMock.Setup(x => x.Add(Capture.In(captures)));
+
+        sut.RunLuaScript("""
+            local object = createObject(321, 3, 4, 5)
+            setElementRotation(object, 10, 20, 30)
+            """);
+
+        var worldObject = captures.Single();
+        worldObject.Rotation.Should().Be(new Vector3(10, 20, 30));
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void GetElementRotation_ReturnsCurrentRotation(
+        [Frozen] Mock<IElementCollection> elementCollectionMock,
+        AssertDataProvider assertDataProvider,
+        IMtaServer sut)
+    {
+        List<WorldObject> captures = [];
+        elementCollectionMock.Setup(x => x.Add(Capture.In(captures)));
+
+        sut.RunLuaScript("""
+            local object = createObject(321, 3, 4, 5)
+            setElementRotation(object, 10, 20, 30)
+            local rx, ry, rz = getElementRotation(object)
+            assertPrint(rx .. ", " .. ry .. ", " .. rz)
+            """);
+
+        assertDataProvider.AssertPrints.Should().ContainSingle().Which.Should().Be("10, 20, 30");
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void GetElementType_ReturnsCorrectType(
+        [Frozen] Mock<IElementCollection> elementCollectionMock,
+        AssertDataProvider assertDataProvider,
+        IMtaServer sut)
+    {
+        List<WorldObject> captures = [];
+        elementCollectionMock.Setup(x => x.Add(Capture.In(captures)));
+
+        sut.RunLuaScript("""
+            local object = createObject(321, 3, 4, 5)
+            assertPrint(getElementType(object))
+            """);
+
+        assertDataProvider.AssertPrints.Should().ContainSingle().Which.Should().Be("object");
+    }
 }
