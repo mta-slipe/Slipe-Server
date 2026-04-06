@@ -2,6 +2,7 @@
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.ElementCollections;
+using SlipeServer.Server.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,8 +14,13 @@ public class ScriptEventRuntime : IScriptEventRuntime
 {
     private readonly List<RegisteredEventHandler> registeredEventHandlers = [];
     private readonly Dictionary<string, RegisteredEvent> registeredEvents = [];
+    private readonly Dictionary<string, bool> customEvents = [];
+    private readonly List<CustomEventHandlerEntry> customEventHandlers = [];
     private readonly IMtaServer server;
     private readonly IElementCollection elementCollection;
+
+    private bool lastEventCancelled = false;
+    private string lastCancelReason = string.Empty;
 
     private readonly Lock handlerLock = new();
 
@@ -23,6 +29,15 @@ public class ScriptEventRuntime : IScriptEventRuntime
         this.server = server;
         this.elementCollection = elementCollection;
         this.server.ElementCreated += HandleElementCreation;
+        this.server.LuaEventTriggered += HandleRemoteLuaEvent;
+    }
+
+    private void HandleRemoteLuaEvent(LuaEvent luaEvent)
+    {
+        if (!this.customEvents.TryGetValue(luaEvent.Name, out bool allowRemoteTrigger) || !allowRemoteTrigger)
+            return;
+
+        TriggerCustomEvent(luaEvent.Name, luaEvent.Source, luaEvent.Parameters.Cast<object>().ToArray());
     }
 
     private void HandleElementCreation(Element element)
@@ -78,7 +93,23 @@ public class ScriptEventRuntime : IScriptEventRuntime
     public void AddEventHandler(string eventName, Element attachedTo, EventDelegate callbackDelegate, object? owner = null)
     {
         if (!this.registeredEvents.TryGetValue(eventName, out var registeredEvent))
+        {
+            if (this.customEvents.ContainsKey(eventName))
+            {
+                lock (this.handlerLock)
+                {
+                    this.customEventHandlers.Add(new CustomEventHandlerEntry
+                    {
+                        EventName = eventName,
+                        AttachedTo = attachedTo,
+                        Delegate = callbackDelegate,
+                        Owner = owner
+                    });
+                }
+                return;
+            }
             throw new Exception($"Attempt to add event handler for non-existent event {eventName}");
+        }
 
         lock (this.handlerLock)
         {
@@ -135,6 +166,16 @@ public class ScriptEventRuntime : IScriptEventRuntime
     {
         lock (this.handlerLock)
         {
+            if (this.customEvents.ContainsKey(eventName))
+            {
+                var customHandlers = this.customEventHandlers
+                    .Where(x => x.EventName == eventName && x.Delegate == callbackDelegate && x.AttachedTo == attachedTo)
+                    .ToArray();
+                foreach (var handler in customHandlers)
+                    this.customEventHandlers.Remove(handler);
+                return;
+            }
+
             var registeredEvent = this.registeredEvents[eventName];
             var handlers = this.registeredEventHandlers
                 .Where(x => x.EventName == eventName && x.Delegate == callbackDelegate && x.AttachedTo == attachedTo)
@@ -165,6 +206,13 @@ public class ScriptEventRuntime : IScriptEventRuntime
 
                 this.registeredEventHandlers.Remove(handler);
             }
+
+            var customHandlers = this.customEventHandlers
+                .Where(x => x.Owner == owner)
+                .ToArray();
+
+            foreach (var handler in customHandlers)
+                this.customEventHandlers.Remove(handler);
         }
     }
 
@@ -194,6 +242,55 @@ public class ScriptEventRuntime : IScriptEventRuntime
             LoadEvents((this.server.Instantiate(type) as IEventDefinitions)!);
         }
     }
+
+    public void AddCustomEvent(string eventName, bool allowRemoteTrigger = false)
+    {
+        lock (this.handlerLock)
+        {
+            this.customEvents[eventName] = allowRemoteTrigger;
+        }
+    }
+
+    public bool TriggerCustomEvent(string eventName, Element element, params object[] arguments)
+    {
+        this.lastEventCancelled = false;
+        this.lastCancelReason = string.Empty;
+
+        CustomEventHandlerEntry[] handlers;
+        lock (this.handlerLock)
+        {
+            handlers = this.customEventHandlers
+                .Where(h => h.EventName == eventName &&
+                    (h.AttachedTo == element || element.IsChildOf(h.AttachedTo)))
+                .ToArray();
+        }
+
+        foreach (var handler in handlers)
+            handler.Delegate(element, arguments);
+
+        return !this.lastEventCancelled;
+    }
+
+    public void CancelEvent(bool cancel = true, string reason = "")
+    {
+        this.lastEventCancelled = cancel;
+        this.lastCancelReason = reason;
+    }
+
+    public bool WasEventCancelled() => this.lastEventCancelled;
+
+    public string GetCancelReason() => this.lastCancelReason;
+
+    public IEnumerable<EventDelegate> GetEventHandlers(string eventName, Element attachedTo)
+    {
+        lock (this.handlerLock)
+        {
+            return this.customEventHandlers
+                .Where(h => h.EventName == eventName && h.AttachedTo == attachedTo)
+                .Select(h => h.Delegate)
+                .ToList();
+        }
+    }
 }
 
 internal struct RegisteredEvent
@@ -203,7 +300,7 @@ internal struct RegisteredEvent
     public Delegate Delegate { get; set; }
 }
 
-internal struct RegisteredEventHandler
+internal readonly struct RegisteredEventHandler
 {
     public string EventName { get; init; }
     public RegisteredEvent RegisteredEvent { get; init; }
@@ -221,4 +318,12 @@ internal readonly struct RegisteredEventHandlerElement
     public IEventHandlerActions Actions { get; init; }
 
     public readonly void Remove() => this.Actions.Remove(this.Element);
+}
+
+internal readonly struct CustomEventHandlerEntry
+{
+    public string EventName { get; init; }
+    public Element AttachedTo { get; init; }
+    public EventDelegate Delegate { get; init; }
+    public object? Owner { get; init; }
 }

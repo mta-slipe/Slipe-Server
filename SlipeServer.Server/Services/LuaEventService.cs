@@ -136,7 +136,6 @@ public class LuaEventService : ILuaEventService
         TriggerLatentEventForMany(players, eventName, sourceResource, source, rate, Array.Empty<LuaValue>());
     }
 
-
     public void AddEventHandler(string eventName, Action<LuaEvent> handler)
     {
         if (!this.eventHandlers.ContainsKey(eventName))

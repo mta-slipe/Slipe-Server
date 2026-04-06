@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Scripting.EventDefinitions;
 using SlipeServer.Server.Elements;
 using System;
+using System.Collections.Generic;
 
 namespace SlipeServer.Scripting;
 
@@ -12,6 +13,13 @@ public interface IScriptEventRuntime
     void LoadEvents(IEventDefinitions eventDefinitions);
     void LoadDefaultEvents();
     void RegisterEvent<T>(string eventName, EventRegistrationDelegate<T> eventDelegate) where T : Element;
+
+    void AddCustomEvent(string eventName, bool allowRemoteTrigger = false);
+    bool TriggerCustomEvent(string eventName, Element element, params object[] arguments);
+    void CancelEvent(bool cancel = true, string reason = "");
+    bool WasEventCancelled();
+    string GetCancelReason();
+    IEnumerable<EventDelegate> GetEventHandlers(string eventName, Element attachedTo);
 }
 
 public delegate void EventDelegate(Element element, params object[] parameters);

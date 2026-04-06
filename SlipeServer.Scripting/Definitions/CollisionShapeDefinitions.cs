@@ -67,7 +67,7 @@ public class CollisionShapeDefinitions(IMtaServer server)
     [ScriptFunctionDefinition("getColPolygonPointPosition")]
     public Vector2 GetColPolygonPointPosition(CollisionPolygon collisionShape, int index)
     {
-        return collisionShape.GetVertices().ElementAt(index);
+        return collisionShape.GetVertices().ElementAt(index - 1);
     }
 
     [ScriptFunctionDefinition("getColShapeType")]

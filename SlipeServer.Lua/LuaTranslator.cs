@@ -16,12 +16,15 @@ public class LuaTranslator
     public LuaTranslator()
     {
         UserData.RegisterType<Element>(InteropAccessMode.Hardwired);
+        UserData.RegisterType<ScriptFile>(InteropAccessMode.Hardwired);
     }
 
     public IEnumerable<DynValue> ToDynValues(object? obj)
     {
         if (obj == null)
             return new DynValue[] { DynValue.Nil };
+        if (obj is ScriptFile scriptFile)
+            return new DynValue[] { UserData.Create(scriptFile) };
         if (obj is Element element)
             return new DynValue[] { UserData.Create(element) };
         if (obj is byte int8)
@@ -209,6 +212,8 @@ public class LuaTranslator
             return GetBooleanFromDynValue(dynValues.Dequeue());
         if (targetType == typeof(Table))
             return GetTableFromDynValue(dynValues.Dequeue());
+        if (targetType == typeof(ScriptFile))
+            return dynValues.Dequeue()?.UserData?.Object as ScriptFile;
         if (typeof(Player).IsAssignableFrom(targetType))
             return dynValues.Dequeue()?.UserData?.Object;
         if (typeof(Element).IsAssignableFrom(targetType))

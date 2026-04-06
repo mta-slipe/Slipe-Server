@@ -113,6 +113,12 @@ public class SimplifiedScriptEventRuntime : IScriptEventRuntime
 
     public void AddEventHandler(string eventName, Element attachedTo, EventDelegate callbackDelegate, object? owner = null) => throw new NotImplementedException();
     public void RemoveEventHandlersOwnedBy(object owner) => throw new NotImplementedException();
+    public void AddCustomEvent(string eventName, bool allowRemoteTrigger = false) => throw new NotImplementedException();
+    public bool TriggerCustomEvent(string eventName, Element element, params object[] arguments) => throw new NotImplementedException();
+    public void CancelEvent(bool cancel = true, string reason = "") => throw new NotImplementedException();
+    public bool WasEventCancelled() => throw new NotImplementedException();
+    public string GetCancelReason() => throw new NotImplementedException();
+    public System.Collections.Generic.IEnumerable<EventDelegate> GetEventHandlers(string eventName, Element attachedTo) => throw new NotImplementedException();
 }
 
 public delegate void HandleEventDelegate(Element element, string eventName, params object[] parameters);

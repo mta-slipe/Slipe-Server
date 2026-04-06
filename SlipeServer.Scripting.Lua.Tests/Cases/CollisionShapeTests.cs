@@ -119,8 +119,7 @@ public class CollisionShapeTests
             """);
 
         var polygon = captures.Single();
-        // The position Vector2 is included as the first vertex due to params-array parsing
-        polygon.GetPointsCount().Should().Be(4);
+        polygon.GetPointsCount().Should().Be(3);
     }
 
     [Theory]
@@ -344,8 +343,8 @@ public class CollisionShapeTests
             addColPolygonPoint(poly, 2, 2)
             """);
 
-        // Starts at 4 vertices (position included), adding 1 gives 5
-        captures.Single().GetPointsCount().Should().Be(5);
+        // Starts at 3 vertices, adding 1 gives 4
+        captures.Single().GetPointsCount().Should().Be(4);
     }
 
     [Theory]
@@ -362,7 +361,7 @@ public class CollisionShapeTests
             removeColPolygonPoint(poly, 1)
             """);
 
-        // Starts at 5 vertices (position + 4 args), removing 1 gives 4
-        captures.Single().GetPointsCount().Should().Be(4);
+        // Starts at 4 vertices, removing 1 gives 3
+        captures.Single().GetPointsCount().Should().Be(3);
     }
 }

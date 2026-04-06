@@ -41,29 +41,22 @@ public class LuaService(IMtaServer server, ILogger logger, IRootElement root, Sc
                 {
                     try
                     {
-                        if (valueQueue.Any())
+                        if (methodParameters[i].IsDefined(typeof(ParamArrayAttribute), false))
                         {
-                            if (methodParameters[i].IsDefined(typeof(ParamArrayAttribute), false))
+                            var paramType = methodParameters[i].ParameterType.GetElementType();
+                            if (paramType != null)
                             {
-                                var paramIndex = i;
-                                var paramType = methodParameters[i].ParameterType.GetElementType();
+                                var extraParams = new List<object?>();
+                                while (valueQueue.Any())
+                                    extraParams.Add(this.translator.FromDynValue(paramType, valueQueue));
 
-                                if (paramType != null)
-                                {
-                                    var newParameters = new List<object?>(parameters.Take(parameters.Length - 1));
-
-                                    while (valueQueue.Any())
-                                        newParameters.Add(this.translator.FromDynValue(paramType, valueQueue));
-
-                                    var typedArray = Array.CreateInstance(paramType, newParameters.Count);
-                                    Array.Copy(newParameters.ToArray(), typedArray, newParameters.Count);
-                                    parameters[i] = typedArray;
-                                }
-                            } else
-                            {
-                                parameters[i] = this.translator.FromDynValue(methodParameters[i].ParameterType, valueQueue);
+                                var typedArray = Array.CreateInstance(paramType, extraParams.Count);
+                                Array.Copy(extraParams.ToArray(), typedArray, extraParams.Count);
+                                parameters[i] = typedArray;
                             }
-
+                        } else if (valueQueue.Any())
+                        {
+                            parameters[i] = this.translator.FromDynValue(methodParameters[i].ParameterType, valueQueue);
                         } else
                         {
                             if (methodParameters[i].IsOptional)
