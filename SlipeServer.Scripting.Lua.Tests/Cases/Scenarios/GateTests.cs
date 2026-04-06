@@ -1,6 +1,5 @@
 using AutoFixture.Xunit2;
 using FluentAssertions;
-using Moq;
 using SlipeServer.Scripting.Lua.Tests.Tools;
 using SlipeServer.Server;
 using SlipeServer.Server.Behaviour;

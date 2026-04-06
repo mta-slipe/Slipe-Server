@@ -26,4 +26,29 @@ public static class WorldObjectPacketFactory
     {
         return new SetWorldObjectVisibileInAllDimensionsPacket(worldObject.Id, worldObject.IsVisibleInAllDimensions);
     }
+
+    public static SetWorldObjectLowLodElementRpcPacket CreateSetLowLodElementPacket(WorldObject worldObject)
+    {
+        return new SetWorldObjectLowLodElementRpcPacket(worldObject.Id, worldObject.LowLodElement?.Id);
+    }
+
+    public static SetWorldObjectDoubleSidedRpcPacket CreateSetDoubleSidedPacket(WorldObject worldObject)
+    {
+        return new SetWorldObjectDoubleSidedRpcPacket(worldObject.Id, worldObject.DoubleSided);
+    }
+
+    public static SetWorldObjectIsBreakableRpcPacket CreateSetIsBreakablePacket(WorldObject worldObject)
+    {
+        return new SetWorldObjectIsBreakableRpcPacket(worldObject.Id, worldObject.IsBreakable);
+    }
+
+    public static SetWorldObjectIsBrokenRpcPacket CreateSetIsBrokenPacket(WorldObject worldObject)
+    {
+        return new SetWorldObjectIsBrokenRpcPacket(worldObject.Id, worldObject.IsBroken);
+    }
+
+    public static SetWorldObjectIsRespawnableRpcPacket CreateSetIsRespawnablePacket(WorldObject worldObject)
+    {
+        return new SetWorldObjectIsRespawnableRpcPacket(worldObject.Id, worldObject.IsRespawnable);
+    }
 }

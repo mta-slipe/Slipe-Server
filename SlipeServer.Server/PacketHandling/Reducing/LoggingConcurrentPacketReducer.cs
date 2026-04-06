@@ -7,7 +7,6 @@ using SlipeServer.Server.PacketHandling.Handlers;
 using System;
 using System.Collections.Concurrent;
 using System.IO;
-using System.Net.Sockets;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;

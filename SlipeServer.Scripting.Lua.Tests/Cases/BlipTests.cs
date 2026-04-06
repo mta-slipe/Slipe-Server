@@ -5,7 +5,6 @@ using SlipeServer.Scripting.Lua.Tests.Tools;
 using SlipeServer.Server;
 using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
-using SlipeServer.Server.Elements.Enums;
 using System.Drawing;
 using System.Numerics;
 

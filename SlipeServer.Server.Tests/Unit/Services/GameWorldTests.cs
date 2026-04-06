@@ -1,7 +1,6 @@
 using FluentAssertions;
 using SlipeServer.Server.Services;
 using SlipeServer.Server.Tests.Tools;
-using System.Numerics;
 using Xunit;
 
 namespace SlipeServer.Server.Tests.Unit.Services;

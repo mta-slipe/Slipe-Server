@@ -68,6 +68,16 @@ public class Camera(Player player)
     }
 
     /// <summary>
+    /// Camera roll in degrees, last set via SetMatrix
+    /// </summary>
+    public float Roll { get; private set; } = 0;
+
+    /// <summary>
+    /// Camera field of view in degrees, last set via SetMatrix
+    /// </summary>
+    public float Fov { get; private set; } = 70;
+
+    /// <summary>
     /// Sets the camera's position, direction, roll and field of view
     /// </summary>
     /// <param name="position">Position of the camera</param>
@@ -79,6 +89,8 @@ public class Camera(Player player)
         this.target = null;
         this.Position = position;
         this.LookAt = lookAt;
+        this.Roll = roll;
+        this.Fov = fov;
         player.Client.SendPacket(new SetCameraMatrixPacket(position, lookAt, roll, fov, player.GetAndIncrementTimeContext()));
     }
 }

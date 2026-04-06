@@ -1,11 +1,8 @@
 using FluentAssertions;
-using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Lua.Event;
 using SlipeServer.Server.Services;
 using SlipeServer.Server.Tests.Tools;
-using System;
-using System.Linq;
 using Xunit;
 
 namespace SlipeServer.Server.Tests.Unit.Services;

@@ -1,6 +1,7 @@
 ﻿using MoonSharp.Interpreter;
 using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Scripting;
+using SlipeServer.Scripting.Definitions;
 using SlipeServer.Server.Elements;
 using System;
 using System.Collections.Generic;
@@ -72,6 +73,18 @@ public class LuaTranslator
                     DynValue.NewNumber(vector3.Y),
                     DynValue.NewNumber(vector3.Z)
             };
+        if (obj is CameraMatrix cameraMatrix)
+            return
+            [
+                DynValue.NewNumber(cameraMatrix.Position.X),
+                DynValue.NewNumber(cameraMatrix.Position.Y),
+                DynValue.NewNumber(cameraMatrix.Position.Z),
+                DynValue.NewNumber(cameraMatrix.LookAt.X),
+                DynValue.NewNumber(cameraMatrix.LookAt.Y),
+                DynValue.NewNumber(cameraMatrix.LookAt.Z),
+                DynValue.NewNumber(cameraMatrix.Roll),
+                DynValue.NewNumber(cameraMatrix.Fov),
+            ];
         if (obj is Delegate del)
             return new DynValue[] { DynValue.NewCallback((context, arguments) => ToDynValues(del.DynamicInvoke(arguments.GetArray())!).First()) };
         if (obj is Table table)
@@ -199,7 +212,7 @@ public class LuaTranslator
         if (typeof(Player).IsAssignableFrom(targetType))
             return dynValues.Dequeue()?.UserData?.Object;
         if (typeof(Element).IsAssignableFrom(targetType))
-            return dynValues.Dequeue().UserData.Object;
+            return dynValues.Dequeue()?.UserData?.Object;
         if (targetType == typeof(ScriptCallbackDelegateWrapper))
         {
             var callback = dynValues.Dequeue().Function;

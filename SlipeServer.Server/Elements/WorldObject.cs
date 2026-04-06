@@ -31,12 +31,82 @@ public class WorldObject : Element
         }
     }
 
-    public bool IsLowLod { get; set; } = false;
-    public WorldObject? LowLodElement { get; set; }
-    public bool DoubleSided { get; set; } = false;
-    public bool IsBreakable { get; set; } = false;
-    public bool IsBroken { get; set; } = false;
-    public bool IsRespawnable { get; set; } = false;
+    public bool IsLowLod { get; init; } = false;
+
+    private WorldObject? lowLodElement;
+    public WorldObject? LowLodElement
+    {
+        get => this.lowLodElement;
+        set
+        {
+            if (this.lowLodElement == value)
+                return;
+
+            var args = new ElementChangedEventArgs<WorldObject, WorldObject?>(this, this.lowLodElement, value, this.IsSync);
+            this.lowLodElement = value;
+            LowLodElementChanged?.Invoke(this, args);
+        }
+    }
+
+    private bool doubleSided;
+    public bool DoubleSided
+    {
+        get => this.doubleSided;
+        set
+        {
+            if (this.doubleSided == value)
+                return;
+
+            var args = new ElementChangedEventArgs<WorldObject, bool>(this, this.doubleSided, value, this.IsSync);
+            this.doubleSided = value;
+            DoubleSidedChanged?.Invoke(this, args);
+        }
+    }
+
+    private bool isBreakable;
+    public bool IsBreakable
+    {
+        get => this.isBreakable;
+        set
+        {
+            if (this.isBreakable == value)
+                return;
+
+            var args = new ElementChangedEventArgs<WorldObject, bool>(this, this.isBreakable, value, this.IsSync);
+            this.isBreakable = value;
+            IsBreakableChanged?.Invoke(this, args);
+        }
+    }
+
+    private bool isBroken;
+    public bool IsBroken
+    {
+        get => this.isBroken;
+        set
+        {
+            if (this.isBroken == value)
+                return;
+
+            var args = new ElementChangedEventArgs<WorldObject, bool>(this, this.isBroken, value, this.IsSync);
+            this.isBroken = value;
+            IsBrokenChanged?.Invoke(this, args);
+        }
+    }
+
+    private bool isRespawnable;
+    public bool IsRespawnable
+    {
+        get => this.isRespawnable;
+        set
+        {
+            if (this.isRespawnable == value)
+                return;
+
+            var args = new ElementChangedEventArgs<WorldObject, bool>(this, this.isRespawnable, value, this.IsSync);
+            this.isRespawnable = value;
+            IsRespawnableChanged?.Invoke(this, args);
+        }
+    }
 
     private readonly Lock movementLock = new();
     public PositionRotationAnimation? Movement { get; private set; }
@@ -183,6 +253,11 @@ public class WorldObject : Element
 
     public event ElementChangedEventHandler<WorldObject, ushort>? ModelChanged;
     public event ElementChangedEventHandler<WorldObject, Vector3>? ScaleChanged;
+    public event ElementChangedEventHandler<WorldObject, WorldObject?>? LowLodElementChanged;
+    public event ElementChangedEventHandler<WorldObject, bool>? DoubleSidedChanged;
+    public event ElementChangedEventHandler<WorldObject, bool>? IsBreakableChanged;
+    public event ElementChangedEventHandler<WorldObject, bool>? IsBrokenChanged;
+    public event ElementChangedEventHandler<WorldObject, bool>? IsRespawnableChanged;
     public event ElementChangedEventHandler<WorldObject, bool>? IsVisibleInAllDimensionsChanged;
     public event ElementEventHandler<WorldObject, WorldObjectMovedEventArgs>? Moved;
     public event ElementEventHandler<WorldObject, WorldObjectMovementCancelledEventArgs>? MovementCancelled;

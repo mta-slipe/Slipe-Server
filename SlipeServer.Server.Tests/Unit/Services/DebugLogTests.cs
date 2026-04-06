@@ -1,4 +1,3 @@
-using FluentAssertions;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Services;
 using SlipeServer.Server.Tests.Tools;

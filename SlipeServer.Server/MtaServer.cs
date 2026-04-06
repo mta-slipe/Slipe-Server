@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using SlipeServer.Net.Wrappers;
 using SlipeServer.Packets;
 using SlipeServer.Packets.Definitions.Player;

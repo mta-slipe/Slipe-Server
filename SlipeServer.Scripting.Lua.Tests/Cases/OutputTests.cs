@@ -1,4 +1,3 @@
-using AutoFixture.Xunit2;
 using FluentAssertions;
 using SlipeServer.Scripting.Lua.Tests.Tools;
 using SlipeServer.Server;
