@@ -791,6 +791,128 @@ public class Controls(Player player)
         }
     }
 
+    public bool IsEnabled(string controlName) => controlName switch
+    {
+        "fire" => this.FireEnabled,
+        "aim_weapon" => this.AimWeaponEnabled,
+        "next_weapon" => this.NextWeaponEnabled,
+        "previous_weapon" => this.PreviousWeaponEnabled,
+        "forwards" => this.ForwardsEnabled,
+        "backwards" => this.BackwardsEnabled,
+        "left" => this.LeftEnabled,
+        "right" => this.RightEnabled,
+        "zoom_in" => this.ZoomInEnabled,
+        "zoom_out" => this.ZoomOutEnabled,
+        "change_camera" => this.ChangeCameraEnabled,
+        "jump" => this.JumpEnabled,
+        "sprint" => this.SprintEnabled,
+        "look_behind" => this.LookBehindEnabled,
+        "crouch" => this.CrouchEnabled,
+        "action" => this.ActionEnabled,
+        "walk" => this.WalkEnabled,
+        "conversation_yes" => this.ConversationYesEnabled,
+        "conversation_no" => this.ConversationNoEnabled,
+        "group_control_forwards" => this.GroupControlForwardsEnabled,
+        "group_control_back" => this.GroupControlBackEnabled,
+        "enter_exit" => this.EnterExitEnabled,
+        "vehicle_fire" => this.VehicleFireEnabled,
+        "vehicle_secondary_fire" => this.VehicleSecondaryFireEnabled,
+        "vehicle_left" => this.VehicleLeftEnabled,
+        "vehicle_right" => this.VehicleRightEnabled,
+        "steer_forward" => this.SteerForwardEnabled,
+        "steer_back" => this.SteerBackEnabled,
+        "accelerate" => this.AccelerateEnabled,
+        "brake_reverse" => this.BrakeReverseEnabled,
+        "radio_next" => this.RadioNextEnabled,
+        "radio_previous" => this.RadioPreviousEnabled,
+        "radio_user_track_skip" => this.RadioUserTrackSkipEnabled,
+        "horn" => this.HornEnabled,
+        "sub_mission" => this.SubMissionEnabled,
+        "handbrake" => this.HandbrakeEnabled,
+        "vehicle_look_left" => this.VehicleLookLeftEnabled,
+        "vehicle_look_right" => this.VehicleLookRightEnabled,
+        "vehicle_look_behind" => this.VehicleLookBehindEnabled,
+        "vehicle_mouse_look" => this.VehicleMouseLookEnabled,
+        "special_control_left" => this.SpecialControlLeftEnabled,
+        "special_control_right" => this.SpecialControlRightEnabled,
+        "special_control_down" => this.SpecialControlDownEnabled,
+        "special_control_up" => this.SpecialControlUpEnabled,
+        "enter_passenger" => this.EnterPassengerEnabled,
+        "screenshot" => this.ScreenshotEnabled,
+        "chatbox" => this.ChatboxEnabled,
+        "radar" => this.RadarEnabled,
+        "radar_zoom_in" => this.RadarZoomInEnabled,
+        "radar_zoom_out" => this.RadarZoomOutEnabled,
+        "radar_move_north" => this.RadarMoveNorthEnabled,
+        "radar_move_south" => this.RadarMoveSouthEnabled,
+        "radar_move_east" => this.RadarMoveEastEnabled,
+        "radar_move_west" => this.RadarMoveWestEnabled,
+        "radar_attach" => this.RadarAttachEnabled,
+        _ => true
+    };
+
+    public void SetEnabled(string controlName, bool enabled)
+    {
+        switch (controlName)
+        {
+            case "fire": this.FireEnabled = enabled; break;
+            case "aim_weapon": this.AimWeaponEnabled = enabled; break;
+            case "next_weapon": this.NextWeaponEnabled = enabled; break;
+            case "previous_weapon": this.PreviousWeaponEnabled = enabled; break;
+            case "forwards": this.ForwardsEnabled = enabled; break;
+            case "backwards": this.BackwardsEnabled = enabled; break;
+            case "left": this.LeftEnabled = enabled; break;
+            case "right": this.RightEnabled = enabled; break;
+            case "zoom_in": this.ZoomInEnabled = enabled; break;
+            case "zoom_out": this.ZoomOutEnabled = enabled; break;
+            case "change_camera": this.ChangeCameraEnabled = enabled; break;
+            case "jump": this.JumpEnabled = enabled; break;
+            case "sprint": this.SprintEnabled = enabled; break;
+            case "look_behind": this.LookBehindEnabled = enabled; break;
+            case "crouch": this.CrouchEnabled = enabled; break;
+            case "action": this.ActionEnabled = enabled; break;
+            case "walk": this.WalkEnabled = enabled; break;
+            case "conversation_yes": this.ConversationYesEnabled = enabled; break;
+            case "conversation_no": this.ConversationNoEnabled = enabled; break;
+            case "group_control_forwards": this.GroupControlForwardsEnabled = enabled; break;
+            case "group_control_back": this.GroupControlBackEnabled = enabled; break;
+            case "enter_exit": this.EnterExitEnabled = enabled; break;
+            case "vehicle_fire": this.VehicleFireEnabled = enabled; break;
+            case "vehicle_secondary_fire": this.VehicleSecondaryFireEnabled = enabled; break;
+            case "vehicle_left": this.VehicleLeftEnabled = enabled; break;
+            case "vehicle_right": this.VehicleRightEnabled = enabled; break;
+            case "steer_forward": this.SteerForwardEnabled = enabled; break;
+            case "steer_back": this.SteerBackEnabled = enabled; break;
+            case "accelerate": this.AccelerateEnabled = enabled; break;
+            case "brake_reverse": this.BrakeReverseEnabled = enabled; break;
+            case "radio_next": this.RadioNextEnabled = enabled; break;
+            case "radio_previous": this.RadioPreviousEnabled = enabled; break;
+            case "radio_user_track_skip": this.RadioUserTrackSkipEnabled = enabled; break;
+            case "horn": this.HornEnabled = enabled; break;
+            case "sub_mission": this.SubMissionEnabled = enabled; break;
+            case "handbrake": this.HandbrakeEnabled = enabled; break;
+            case "vehicle_look_left": this.VehicleLookLeftEnabled = enabled; break;
+            case "vehicle_look_right": this.VehicleLookRightEnabled = enabled; break;
+            case "vehicle_look_behind": this.VehicleLookBehindEnabled = enabled; break;
+            case "vehicle_mouse_look": this.VehicleMouseLookEnabled = enabled; break;
+            case "special_control_left": this.SpecialControlLeftEnabled = enabled; break;
+            case "special_control_right": this.SpecialControlRightEnabled = enabled; break;
+            case "special_control_down": this.SpecialControlDownEnabled = enabled; break;
+            case "special_control_up": this.SpecialControlUpEnabled = enabled; break;
+            case "enter_passenger": this.EnterPassengerEnabled = enabled; break;
+            case "screenshot": this.ScreenshotEnabled = enabled; break;
+            case "chatbox": this.ChatboxEnabled = enabled; break;
+            case "radar": this.RadarEnabled = enabled; break;
+            case "radar_zoom_in": this.RadarZoomInEnabled = enabled; break;
+            case "radar_zoom_out": this.RadarZoomOutEnabled = enabled; break;
+            case "radar_move_north": this.RadarMoveNorthEnabled = enabled; break;
+            case "radar_move_south": this.RadarMoveSouthEnabled = enabled; break;
+            case "radar_move_east": this.RadarMoveEastEnabled = enabled; break;
+            case "radar_move_west": this.RadarMoveWestEnabled = enabled; break;
+            case "radar_attach": this.RadarAttachEnabled = enabled; break;
+        }
+    }
+
     private readonly HashSet<string> enabledControlStates = [];
 
     public void SetControlState(string control, bool state)

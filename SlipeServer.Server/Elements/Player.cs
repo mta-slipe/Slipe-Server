@@ -102,8 +102,8 @@ public class Player : Ped
     public bool IsSyncingVelocity { get; set; }
     public bool IsStealthAiming { get; set; }
     public bool IsVoiceMuted { get; set; }
-    public ConcurrentDictionary<Ped, byte> SyncingPeds { get; set; }
-    public ConcurrentDictionary<Vehicle, byte> SyncingVehicles { get; set; }
+    public ConcurrentDictionary<Ped, byte> SyncingPeds { get; set; } = [];
+    public ConcurrentDictionary<Vehicle, byte> SyncingVehicles { get; set; } = [];
     public Controls Controls { get; private set; }
 
     public Team? Team
@@ -125,8 +125,9 @@ public class Player : Ped
 
     public Dictionary<int, PlayerPendingScreenshot> PendingScreenshots { get; } = new();
 
-    private readonly HashSet<Element> subscriptionElements;
-    private Dictionary<string, KeyState> BoundKeys { get; }
+    private readonly HashSet<Element> subscriptionElements = [];
+    private readonly Dictionary<string, KeyState> boundKeys = [];
+    public IReadOnlyDictionary<string, KeyState> BoundKeys => this.boundKeys;
 
     /// <summary>
     /// This object can be used in a lock statement to ensure thread-safety when handling money
@@ -249,10 +250,6 @@ public class Player : Ped
     public Player() : base(0, Vector3.Zero)
     {
         this.Camera = new Camera(this);
-        this.subscriptionElements = new();
-        this.SyncingPeds = new();
-        this.SyncingVehicles = new();
-        this.BoundKeys = new();
         this.Controls = new(this);
         this.UpdateAssociatedPlayers();
 
@@ -263,7 +260,8 @@ public class Player : Ped
     {
         if (this.Vehicle != null)
             this.Vehicle.RunAsSync(() => this.Vehicle.RemovePassenger(this));
-        EnteringVehicle = null;
+
+        this.EnteringVehicle = null;
     }
 
     public new Player AssociateWith(IMtaServer server)
@@ -450,7 +448,7 @@ public class Player : Ped
             return;
         }
 
-        this.BoundKeys[key] = keyState;
+        this.boundKeys[key] = keyState;
         this.KeyBound?.Invoke(this, new PlayerBindKeyArgs(this, key, keyState));
     }
 
@@ -459,7 +457,7 @@ public class Player : Ped
         if (!KeyConstants.IsValid(key))
             throw new ArgumentException($"Key '{key}' is not valid.", key);
 
-        this.BoundKeys.Remove(key);
+        this.boundKeys.Remove(key);
         this.KeyUnbound?.Invoke(this, new PlayerBindKeyArgs(this, key, keyState));
     }
 
