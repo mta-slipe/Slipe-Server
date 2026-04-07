@@ -72,6 +72,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<BanService>();
 
         services.AddSingleton<IGameWorld, GameWorld>();
+        services.AddSingleton<IZoneService, ZoneService>();
         services.AddSingleton<IChatBox, ChatBox>();
         services.AddSingleton<IClientConsole, ClientConsole>();
         services.AddSingleton<IDebugLog, DebugLog>();

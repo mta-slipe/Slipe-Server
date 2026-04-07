@@ -10,6 +10,7 @@ using SlipeServer.Server.Structs;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Numerics;
 using System.Threading;
 using System.Timers;
@@ -37,7 +38,10 @@ public class GameWorld : IGameWorld
     private Color? sunCoronaColor;
 
     private TrafficLightState trafficLightState;
-    private bool trafficLightStateForced;
+    public TrafficLightState TrafficLightState => this.trafficLightState;
+
+    private bool areTrafficLightStateForced;
+    public bool AreTrafficLightsForced => this.areTrafficLightStateForced;
 
     private byte hour = 0;
     private byte minute = 0;
@@ -433,7 +437,7 @@ public class GameWorld : IGameWorld
 
         player.Client.SendPacket(new SetSunSizePacket(this.sunSize));
         player.Client.SendPacket(new SetTimePacket(this.hour, this.minute));
-        player.Client.SendPacket(new SetTrafficLightStatePacket((byte)this.trafficLightState, this.trafficLightStateForced));
+        player.Client.SendPacket(new SetTrafficLightStatePacket((byte)this.trafficLightState, this.areTrafficLightStateForced));
         player.Client.SendPacket(new SetWeatherPacket(this.Weather));
         player.Client.SendPacket(new SetWindVelocityPacket(this.windVelocity));
         foreach (var item in this.enabledGlitches)
@@ -515,9 +519,10 @@ public class GameWorld : IGameWorld
     public void SetTrafficLightState(TrafficLightState state, bool forced = false)
     {
         this.trafficLightState = state;
-        this.trafficLightStateForced = forced;
+        this.areTrafficLightStateForced = forced;
         this.server.BroadcastPacket(new SetTrafficLightStatePacket((byte)state, forced));
     }
+
 
     public void SetTime(byte hour, byte minute)
     {
@@ -573,6 +578,48 @@ public class GameWorld : IGameWorld
         this.specialPropertyStates[property] = enabled;
 
         this.server.BroadcastPacket(new SetWorldSpecialPropertyPacket((byte)property, enabled));
+    }
+
+    public void ResetSpecialProperties()
+    {
+        var defaults = new Dictionary<WorldSpecialProperty, bool>
+        {
+            [WorldSpecialProperty.Hovercars] = false,
+            [WorldSpecialProperty.Aircars] = false,
+            [WorldSpecialProperty.ExtraBunny] = false,
+            [WorldSpecialProperty.ExtraJump] = false,
+            [WorldSpecialProperty.RandomFoliage] = false,
+            [WorldSpecialProperty.SniperMoon] = false,
+            [WorldSpecialProperty.ExtraAirResistance] = true,
+            [WorldSpecialProperty.UnderWorldWarp] = true,
+            [WorldSpecialProperty.VehicleSunGlare] = false,
+            [WorldSpecialProperty.CoronaGlareDisabled] = true,
+            [WorldSpecialProperty.WaterCreatures] = true,
+            [WorldSpecialProperty.BurnFlippedCars] = true,
+            [WorldSpecialProperty.FireBallAircraftDestruction] = true,
+            [WorldSpecialProperty.RoadSignText] = true,
+            [WorldSpecialProperty.ExtendedWaterCannons] = true,
+            [WorldSpecialProperty.TunnelWeatherBlending] = true,
+            [WorldSpecialProperty.IgnoreFireState] = false,
+            [WorldSpecialProperty.FlyingComponents] = true,
+            [WorldSpecialProperty.VehicleBurnExplosions] = true,
+            [WorldSpecialProperty.VehicleEngineAutoStart] = true,
+        };
+        foreach (var kvp in defaults)
+            SetSpecialPropertyEnabled(kvp.Key, kvp.Value);
+    }
+
+    public void ResetGlitches()
+    {
+        foreach (var key in this.enabledGlitches.Keys.ToArray())
+            SetGlitchEnabled(key, false);
+    }
+
+    public void ResetJetpackWeapons()
+    {
+        foreach (var key in this.jetpackEnabledWeapons.Keys.ToArray())
+            SetJetpackWeaponEnabled(key, false);
+        this.jetpackEnabledWeapons.Clear();
     }
 
     #endregion

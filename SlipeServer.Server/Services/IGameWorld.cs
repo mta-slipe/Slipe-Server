@@ -56,11 +56,17 @@ public interface IGameWorld
     void SetSpecialPropertyEnabled(WorldSpecialProperty property, bool enabled);
     void SetSunColor(Color core, Color corona);
     void SetTime(byte hour, byte minute);
+    TrafficLightState TrafficLightState { get; }
+    bool AreTrafficLightsForced { get; }
+
     void SetTrafficLightState(TrafficLightState state, bool forced = false);
     void SetWeather(byte weather);
     void SetWeather(Weather weather);
     void SetWeatherBlended(byte weather, byte hours = 1);
     void SetWeatherBlended(Weather weather, byte hours = 1);
+    void ResetSpecialProperties();
+    void ResetGlitches();
+    void ResetJetpackWeapons();
 
 
     public enum WorldSpecialProperty
