@@ -20,6 +20,7 @@ public class LuaTranslator
     {
         UserData.RegisterType<Element>(InteropAccessMode.Hardwired);
         UserData.RegisterType<ScriptFile>(InteropAccessMode.Hardwired);
+        UserData.RegisterType<ScriptXmlNode>(InteropAccessMode.Hardwired);
         UserData.RegisterType<AclEntry>(InteropAccessMode.Hardwired);
         UserData.RegisterType<AclGroup>(InteropAccessMode.Hardwired);
         UserData.RegisterType<DbConnectionHandle>(InteropAccessMode.Hardwired);
@@ -61,6 +62,8 @@ public class LuaTranslator
             }
             return [DynValue.NewTable(rowsTable), DynValue.NewNumber(queryResult.AffectedRows), DynValue.NewNumber(queryResult.LastInsertId)];
         }
+        if (obj is ScriptXmlNode xmlNode)
+            return [UserData.Create(xmlNode)];
         if (obj is ScriptFile scriptFile)
             return [UserData.Create(scriptFile)];
         if (obj is AclEntry aclEntry)
@@ -287,6 +290,8 @@ public class LuaTranslator
             return GetBooleanFromDynValue(dynValues.Dequeue());
         if (targetType == typeof(Table))
             return GetTableFromDynValue(dynValues.Dequeue());
+        if (targetType == typeof(ScriptXmlNode))
+            return dynValues.Dequeue()?.UserData?.Object as ScriptXmlNode;
         if (targetType == typeof(ScriptFile))
             return dynValues.Dequeue()?.UserData?.Object as ScriptFile;
         if (targetType == typeof(AclEntry))
@@ -398,9 +403,10 @@ public class LuaTranslator
             targetType == typeof(byte)) 
             return value.Type == DataType.Number;
 
-        if (targetType == typeof(ScriptFile) || targetType == typeof(DbConnectionHandle) ||
-            targetType == typeof(DbQueryHandle) || targetType == typeof(AclEntry) ||
-            targetType == typeof(AclGroup) || typeof(Element).IsAssignableFrom(targetType))
+        if (targetType == typeof(ScriptFile) || targetType == typeof(ScriptXmlNode) ||
+            targetType == typeof(DbConnectionHandle) || targetType == typeof(DbQueryHandle) ||
+            targetType == typeof(AclEntry) || targetType == typeof(AclGroup) ||
+            typeof(Element).IsAssignableFrom(targetType))
             return value.Type == DataType.UserData;
 
         if (targetType == typeof(ScriptTimer))
