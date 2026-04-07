@@ -163,16 +163,13 @@ public partial class WorldScriptDefinitions
     }
 
     [ScriptFunctionDefinition("getWindVelocity")]
-    public (float, float, float) GetWindVelocity()
-    {
-        var v = gameWorld.WindVelocity;
-        return (v.X, v.Y, v.Z);
-    }
+    public Vector3 GetWindVelocity()
+        => gameWorld.WindVelocity;
 
     [ScriptFunctionDefinition("setWindVelocity")]
-    public bool SetWindVelocity(float x, float y, float z)
+    public bool SetWindVelocity(Vector3 velocity)
     {
-        gameWorld.WindVelocity = new Vector3(x, y, z);
+        gameWorld.WindVelocity = velocity;
         return true;
     }
 
