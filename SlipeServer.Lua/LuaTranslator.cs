@@ -154,6 +154,14 @@ public class LuaTranslator
         if (obj is LuaValue luaValue)
             return [LuaValueToDynValue(luaValue)];
 
+        if (obj is System.Runtime.CompilerServices.ITuple tuple)
+        {
+            var results = new List<DynValue>();
+            for (int i = 0; i < tuple.Length; i++)
+                results.AddRange(ToDynValues(tuple[i]));
+            return results;
+        }
+
         if (obj is IEnumerable<string> stringEnumerable)
         {
             var enumerableTable = new Table(null);

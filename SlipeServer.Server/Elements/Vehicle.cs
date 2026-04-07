@@ -109,6 +109,84 @@ public class Vehicle : Element
     public Vector3 RespawnRotation { get; set; }
     public float RespawnHealth { get; set; } = 1000;
 
+    private uint respawnDelay = 10000;
+    public uint RespawnDelay
+    {
+        get => this.respawnDelay;
+        set
+        {
+            if (this.respawnDelay == value)
+                return;
+
+            var args = new ElementChangedEventArgs<Vehicle, uint>(this, this.respawnDelay, value, this.IsSync);
+            this.respawnDelay = value;
+            RespawnDelayChanged?.Invoke(this, args);
+        }
+    }
+
+    private uint idleRespawnDelay = 60000;
+    public uint IdleRespawnDelay
+    {
+        get => this.idleRespawnDelay;
+        set
+        {
+            if (this.idleRespawnDelay == value)
+                return;
+
+            var args = new ElementChangedEventArgs<Vehicle, uint>(this, this.idleRespawnDelay, value, this.IsSync);
+            this.idleRespawnDelay = value;
+            IdleRespawnDelayChanged?.Invoke(this, args);
+        }
+    }
+
+    private bool isRespawnable = false;
+    public bool IsRespawnable
+    {
+        get => this.isRespawnable;
+        set
+        {
+            if (this.isRespawnable == value)
+                return;
+
+            var args = new ElementChangedEventArgs<Vehicle, bool>(this, this.isRespawnable, value, this.IsSync);
+            this.isRespawnable = value;
+            IsRespawnableChanged?.Invoke(this, args);
+        }
+    }
+
+    public DateTime LastMovedAtUtc { get; private set; } = DateTime.UtcNow;
+    internal DateTime? BlownAtUtc { get; private set; }
+
+    private float trainPosition = 0;
+    public float TrainPosition
+    {
+        get => this.trainPosition;
+        set
+        {
+            if (this.trainPosition == value)
+                return;
+
+            var args = new ElementChangedEventArgs<Vehicle, float>(this, this.trainPosition, value, this.IsSync);
+            this.trainPosition = value;
+            TrainPositionChanged?.Invoke(this, args);
+        }
+    }
+
+    private float trainSpeed = 0;
+    public float TrainSpeed
+    {
+        get => this.trainSpeed;
+        set
+        {
+            if (this.trainSpeed == value)
+                return;
+
+            var args = new ElementChangedEventArgs<Vehicle, float>(this, this.trainSpeed, value, this.IsSync);
+            this.trainSpeed = value;
+            TrainSpeedChanged?.Invoke(this, args);
+        }
+    }
+
     private Vector2? turretRotation;
     public Vector2? TurretRotation
     {
@@ -508,6 +586,21 @@ public class Vehicle : Element
         }
     }
 
+    private bool isNitroActivated = false;
+    public bool IsNitroActivated
+    {
+        get => this.isNitroActivated;
+        set
+        {
+            if (this.isNitroActivated == value)
+                return;
+
+            var args = new ElementChangedEventArgs<Vehicle, bool>(this, this.isNitroActivated, value, this.IsSync);
+            this.isNitroActivated = value;
+            NitroActivatedChanged?.Invoke(this, args);
+        }
+    }
+
     public VehicleType VehicleType => VehicleConstants.VehicleTypesPerModel[(VehicleModel)this.model];
 
     private string DebuggerDisplay => $"{(VehicleModel)this.model} ({this.Id})";
@@ -531,6 +624,7 @@ public class Vehicle : Element
 
         this.Colors.ColorChanged += (source, args) => this.ColorChanged?.Invoke(this, args);
         this.Upgrades.UpgradeChanged+= (source, args) => this.UpgradeChanged?.Invoke(this, args);
+        this.PositionChanged += (_, _) => this.LastMovedAtUtc = DateTime.UtcNow;
     }
 
     public Vehicle(VehicleModel model, Vector3 position) : this((ushort)model, position)
@@ -564,6 +658,7 @@ public class Vehicle : Element
             ped.EnteringVehicle = null;
             ped.Seat = seat;
             ped.Vehicle = this;
+            this.LastMovedAtUtc = DateTime.UtcNow;
 
             this.PedEntered?.Invoke(this, new VehicleEnteredEventsArgs(ped, this, seat, warpsIn));
         }
@@ -580,6 +675,7 @@ public class Vehicle : Element
                 this.occupants.Remove(item.Key, out var _);
                 ped.Vehicle = null;
                 ped.EnteringVehicle = null;
+                this.LastMovedAtUtc = DateTime.UtcNow;
 
                 this.PedLeft?.Invoke(this, new VehicleLeftEventArgs(ped, this, item.Key, ped.VehicleAction == VehicleAction.Jacked ? false : warpsOut));
             }
@@ -610,15 +706,27 @@ public class Vehicle : Element
         this.Health = 0;
         this.IsEngineOn = false;
         this.BlownState = VehicleBlownState.BlownUp;
+        this.BlownAtUtc = DateTime.UtcNow;
         this.Blown?.Invoke(this, new VehicleBlownEventArgs(this, createExplosion));
     }
 
     public void Fix()
     {
         this.BlownState = VehicleBlownState.Intact;
+        this.BlownAtUtc = null;
         this.Health = 1000;
         ResetDoorsWheelsPanelsLights();
         this.Fixed?.Invoke(this, new VehicleFixedEventArgs(this));
+    }
+
+    public void ResetExplosionTime()
+    {
+        this.BlownAtUtc = null;
+    }
+
+    public void ResetIdleTime()
+    {
+        this.LastMovedAtUtc = DateTime.UtcNow;
     }
 
     public void SetDoorState(VehicleDoor door, VehicleDoorState state, bool spawnFlyingComponent = false)
@@ -693,6 +801,7 @@ public class Vehicle : Element
 
     internal void RespawnAt(Vector3 position, Vector3 rotation)
     {
+        this.BlownAtUtc = null;
         ResetDoorsWheelsPanelsLights();
 
         this.IsLandingGearDown = true;
@@ -826,4 +935,10 @@ public class Vehicle : Element
     public event ElementEventHandler<Vehicle, VehicleJackedEventArgs>? Jacked;
     public event ElementChangedEventHandler<Vehicle, bool>? IsInWaterChanged;
     public event ElementEventHandler<VehicleFixedEventArgs>? Fixed;
+    public event ElementChangedEventHandler<Vehicle, float>? TrainPositionChanged;
+    public event ElementChangedEventHandler<Vehicle, float>? TrainSpeedChanged;
+    public event ElementChangedEventHandler<Vehicle, uint>? RespawnDelayChanged;
+    public event ElementChangedEventHandler<Vehicle, uint>? IdleRespawnDelayChanged;
+    public event ElementChangedEventHandler<Vehicle, bool>? IsRespawnableChanged;
+    public event ElementChangedEventHandler<Vehicle, bool>? NitroActivatedChanged;
 }

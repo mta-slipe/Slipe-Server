@@ -130,6 +130,8 @@ public static class ServiceCollectionExtensions
             mtaServer.InstantiatePersistent<UnoccupiedVehicleSyncBehaviour>();
         if ((except & ServerBuilderDefaultBehaviours.CustomDataBehaviour) == 0)
             mtaServer.InstantiatePersistent<CustomDataBehaviour>();
+        if ((except & ServerBuilderDefaultBehaviours.VehicleRespawnBehaviour) == 0)
+            mtaServer.InstantiatePersistent<VehicleRespawnBehaviour>();
     }
     public static void AddDefaultPacketHandlers(
         this IMtaServer mtaServer,

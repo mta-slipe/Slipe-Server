@@ -41,6 +41,8 @@ public static class VehiclePropertyRelayingExtensions
         vehicle.IsDerailedChanged += RelayIsDerailedChanged;
         vehicle.IsDerailableChanged += RelayIsDerailableChanged;
         vehicle.TrainDirectionChanged += RelayTrainDirectionChanged;
+        vehicle.TrainSpeedChanged += RelayTrainSpeedChanged;
+        vehicle.TrainPositionChanged += RelayTrainPositionChanged;
         vehicle.SirensChanged += RelaySirensChanged;
         vehicle.SirenUpdated += RelaySirenUpdated;
         vehicle.AreSirensOnChanged += RelayAreSirensOn;
@@ -51,6 +53,7 @@ public static class VehiclePropertyRelayingExtensions
         vehicle.PedLeft += RelayeLeft;
         vehicle.Blown += RelayBlown;
         vehicle.Fixed += HandleFixed;
+        vehicle.NitroActivatedChanged += RelayNitroActivatedChanged;
     }
 
     private static void RelayOverrideLights(Vehicle sender, ElementChangedEventArgs<Vehicle, VehicleOverrideLights> args)
@@ -210,6 +213,23 @@ public static class VehiclePropertyRelayingExtensions
     private static void RelayTrainDirectionChanged(Vehicle sender, ElementChangedEventArgs<Vehicle, TrainDirection> args)
     {
         sender.RelayChange(new SetTrainDirectionPacket(sender.Id, args.NewValue == TrainDirection.Clockwise));
+    }
+
+    private static void RelayTrainSpeedChanged(Vehicle sender, ElementChangedEventArgs<Vehicle, float> args)
+    {
+        if (!args.IsSync)
+            sender.RelayChange(new SetTrainSpeedPacket(sender.Id, args.NewValue));
+    }
+
+    private static void RelayTrainPositionChanged(Vehicle sender, ElementChangedEventArgs<Vehicle, float> args)
+    {
+        if (!args.IsSync)
+            sender.RelayChange(new SetTrainPositionPacket(sender.Id, args.NewValue));
+    }
+
+    private static void RelayNitroActivatedChanged(Vehicle sender, ElementChangedEventArgs<Vehicle, bool> args)
+    {
+        sender.RelayChange(new SetVehicleNitroActivatedPacket(sender.Id, args.NewValue));
     }
 
     private static void RelaySirensChanged(Vehicle sender, ElementChangedEventArgs<Vehicle, Packets.Definitions.Entities.Structs.VehicleSirenSet?> args)

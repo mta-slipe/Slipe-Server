@@ -81,6 +81,7 @@ public enum ServerBuilderDefaultBehaviours : ulong
     PedSyncBehaviour = 0x2000,
     UnoccupiedVehicleSyncBehaviour = 0x4000,
     CustomDataBehaviour = 0x8000,
+    VehicleRespawnBehaviour = 0x10000,
 }
 
 [Flags]
