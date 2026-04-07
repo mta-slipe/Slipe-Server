@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Formats.Tar;
 using System.IO.Compression;
+using NetDllUpdater;
 using SharpCompress.Archives;
 using SharpCompress.Common;
 using SharpCompress.Readers;
@@ -355,16 +356,3 @@ record BuildSource(
     string BinDir,
     ArchiveFormat Format,
     string[] Files);
-
-static class BuildUrls
-{
-    public const string LinuxX64   = "https://nightly.multitheftauto.com/multitheftauto_linux_x64-1.6.0-rc-23975.tar.gz";
-    public const string LinuxX86   = "https://nightly.multitheftauto.com/multitheftauto_linux-1.6.0-rc-23967.tar.gz";
-    public const string LinuxArm64 = "https://nightly.multitheftauto.com/multitheftauto_linux_arm64-1.6.0-rc-23832.tar.gz";
-    public const string LinuxArm32 = "https://nightly.multitheftauto.com/multitheftauto_linux_arm-1.6.0-rc-23757.tar.gz";
-    public const string WinArm64   = "https://nightly.multitheftauto.com/mtasa_windows_arm64-1.6.0-rc-24025.rar";
-    public const string WinX64      = "https://nightly.multitheftauto.com/mtasa_x64-1.6-rc-24025-20260402.exe";
-    public const string WinX86      = "https://nightly.multitheftauto.com/mtasa-1.6-rc-24034-20260404.exe";
-    public const string WinX64Debug = "https://mirror-cdn.multitheftauto.com/bdata/net_64.dll";
-    public const string WinX86Debug = "https://mirror-cdn.multitheftauto.com/bdata/net.dll";
-}

@@ -26,12 +26,21 @@ public class LuaTranslator
         UserData.RegisterType<DbQueryHandle>(InteropAccessMode.Hardwired);
         UserData.RegisterType<TextItem>(InteropAccessMode.Hardwired);
         UserData.RegisterType<TextDisplay>(InteropAccessMode.Hardwired);
+        UserData.RegisterType<ScriptTimer>(InteropAccessMode.Hardwired);
     }
 
     public IEnumerable<DynValue> ToDynValues(object? obj)
     {
         if (obj == null)
             return [DynValue.Nil];
+        if (obj is ScriptTimer scriptTimer)
+            return [UserData.Create(scriptTimer)];
+        if (obj is ScriptTimerDetails td)
+            return [DynValue.NewNumber(td.Remaining), DynValue.NewNumber(td.ExecutesRemaining), DynValue.NewNumber(td.Interval)];
+        if (obj is KeyPairResult kp)
+            return [DynValue.NewString(kp.PublicKey), DynValue.NewString(kp.PrivateKey)];
+        if (obj is PerformanceStatsResult ps)
+            return [.. ToDynValues(ps.Columns), .. ToDynValues(ps.Rows)];
         if (obj is DbConnectionHandle dbConnection)
             return [UserData.Create(dbConnection)];
         if (obj is DbQueryHandle dbQueryHandle)
@@ -327,6 +336,21 @@ public class LuaTranslator
 
         if (targetType == typeof(LuaValue))
             return DynValueToLuaValue(dynValues.Dequeue());
+        if (targetType == typeof(ScriptTimer))
+            return dynValues.Dequeue()?.UserData?.Object as ScriptTimer;
+        if (targetType == typeof(object))
+        {
+            var val = dynValues.Dequeue();
+            return val.Type switch
+            {
+                DataType.UserData => val.UserData?.Object,
+                DataType.String => val.String,
+                DataType.Number => val.Number,
+                DataType.Boolean => val.Boolean,
+                DataType.Table => val.Table,
+                _ => null
+            };
+        }
         if (targetType == typeof(DbConnectionHandle))
             return dynValues.Dequeue()?.UserData?.Object as DbConnectionHandle;
         if (targetType == typeof(DbQueryHandle))
@@ -370,6 +394,12 @@ public class LuaTranslator
             targetType == typeof(DbQueryHandle) || targetType == typeof(AclEntry) ||
             targetType == typeof(AclGroup) || typeof(Element).IsAssignableFrom(targetType))
             return value.Type == DataType.UserData;
+
+        if (targetType == typeof(ScriptTimer))
+            return value.Type == DataType.UserData;
+
+        if (targetType == typeof(object))
+            return true;
 
         return true;
     }

@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace SlipeServer.Lua;
 
-public class LuaService(IMtaServer server, ILogger logger, IRootElement root, ScriptTransformationPipeline scriptTransformationPipeline, IScriptEventRuntime scriptEventRuntime)
+public class LuaService(IMtaServer server, ILogger logger, IRootElement root, ScriptTransformationPipeline scriptTransformationPipeline, IScriptEventRuntime scriptEventRuntime, ScriptTimerService scriptTimerService)
 {
     private readonly Dictionary<string, Script> scripts = [];
     private readonly Dictionary<string, LuaMethod> methods = [];
@@ -172,6 +172,7 @@ public class LuaService(IMtaServer server, ILogger logger, IRootElement root, Sc
     public void UnloadScriptsFor(Resource runningResource)
     {
         scriptEventRuntime.RemoveEventHandlersWithContext(runningResource);
+        scriptTimerService.KillTimersWithContext(runningResource);
 
         static void DestroyChildren(IElement parent)
         {
