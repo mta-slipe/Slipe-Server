@@ -56,4 +56,48 @@ public class GateTests
         worldObject.Movement.Should().NotBeNull();
         worldObject.Movement.TargetPosition.Should().Be(new Vector3(10, 0, 0));
     }
+
+
+    [Theory]
+    [ScriptingAutoDomainData(false)]
+    public void GateWithColshapeHandlingEventOnRootWorksAsIntended(
+        [Frozen] IElementCollection elementCollection,
+        CollisionShapeBehaviour _,
+        LightTestPlayer player,
+        IMtaServer sut)
+    {
+        player.Position = new Vector3(0, 0, 0);
+        elementCollection.Add(player);
+
+        sut.AddGlobal("testPlayer", player);
+
+        sut.RunLuaScript("""
+            local object = createObject(321, 10, 0, 0)
+            local colshape = createColSphere(10, 0, 0, 5)
+
+            addEventHandler("onColShapeHit", root, function(hitElement)
+                if hitElement == testPlayer then
+                    moveObject(object, 1000, 10, 0, 10)
+                end
+            end)
+
+            addEventHandler("onColShapeLeave", root, function(leftElement)
+                if leftElement == testPlayer then
+                    moveObject(object, 1000, 10, 0, 0)
+                end
+            end)
+            """);
+
+        var worldObject = elementCollection.GetByType<WorldObject>().Single();
+        var colShape = elementCollection.GetByType<CollisionSphere>().Single();
+        worldObject.Movement.Should().BeNull();
+
+        player.Position = new Vector3(7, 0, 0);
+        worldObject.Movement.Should().NotBeNull();
+        worldObject.Movement.TargetPosition.Should().Be(new Vector3(10, 0, 10));
+
+        player.Position = new Vector3(0, 0, 0);
+        worldObject.Movement.Should().NotBeNull();
+        worldObject.Movement.TargetPosition.Should().Be(new Vector3(10, 0, 0));
+    }
 }

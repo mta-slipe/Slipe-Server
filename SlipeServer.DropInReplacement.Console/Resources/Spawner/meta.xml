@@ -1,0 +1,6 @@
+﻿<meta>
+	<script src="client.lua" type="client"/>
+	<script src="gate.lua" type="server"/>
+	<script src="server.lua" type="server"/>
+</meta>
+

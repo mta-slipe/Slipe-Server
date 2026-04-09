@@ -1,0 +1,146 @@
+﻿using SlipeServer.Packets.Structs;
+using SlipeServer.Server;
+using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements.Enums;
+using SlipeServer.Server.Resources;
+using SlipeServer.Server.Resources.Interpreters;
+using SlipeServer.Server.Resources.Interpreters.Meta;
+using SlipeServer.Server.Resources.Providers;
+using System.Text;
+using System.Xml;
+using System.Xml.Serialization;
+using static SlipeServer.DropInReplacement.MixedResources.MixedResource;
+
+namespace SlipeServer.DropInReplacement.MixedResources;
+
+public class DropInReplacementResourceInterpreter : IResourceInterpreter
+{
+    public bool IsFallback => false;
+
+    public bool TryInterpretResource(
+        IMtaServer mtaServer,
+        IRootElement rootElement,
+        string name,
+        string path,
+        IResourceProvider resourceProvider,
+        out Resource? resource
+    )
+    {
+        var files = resourceProvider.GetFilesForResource(name);
+        if (!files.Contains("meta.xml"))
+        {
+            resource = null;
+            return false;
+        }
+
+        resource = GetResource(mtaServer, rootElement, resourceProvider, name, path, files);
+
+        return true;
+    }
+
+    private Resource GetResource(IMtaServer mtaServer, IRootElement rootElement, IResourceProvider resourceProvider, string name, string path, IEnumerable<string> fileNames)
+    {
+        var files = fileNames.ToDictionary(x => x.Replace(Path.DirectorySeparatorChar, '/'), file => resourceProvider.GetFileContent(name, file));
+
+        var resourceFiles = new List<ResourceFile>();
+
+        var metaFile = files["meta.xml"];
+        using var ms = new MemoryStream(metaFile);
+        using var xmlReader = XmlReader.Create(ms);
+        var serializer = new XmlSerializer(typeof(MetaXml));
+        var meta = (MetaXml?)serializer.Deserialize(xmlReader);
+
+        if (meta == null)
+            throw new Exception($"Unable to parse meta file for resource {name}");
+
+        var resource = new MixedResource(mtaServer, rootElement, name, path)
+        {
+            PriorityGroup = (meta.Value.downloadPriorityGroup != null && meta.Value.downloadPriorityGroup.Length > 0) ? meta.Value.downloadPriorityGroup.First().Data : 0,
+            Files = GetFilesForMetaXmlResource(meta.Value, files),
+            ServerFiles = GetServerFilesForMetaXmlResource(meta.Value, files),
+            Exports = [.. GetExportsForMetaXmlResource(meta.Value)],
+            ServerExports = [.. GetServerExportsForMetaXmlResource(meta.Value)],
+            NoClientScripts = GetNoCacheFiles(meta.Value, files),
+            IsOopEnabled = meta.Value.oops != null && meta.Value.oops.Any(x => x.Data.ToLower() == "true")
+        };
+        return resource;
+    }
+
+    private List<ResourceFile> GetFilesForMetaXmlResource(MetaXml meta, Dictionary<string, byte[]> files)
+    {
+        var resourceFiles = new List<ResourceFile>();
+
+        if (meta.files != null)
+        {
+            foreach (var file in meta.files)
+            {
+                resourceFiles.Add(ResourceFileFactory.FromBytes(files[file.Source], file.Source, ResourceFileType.ClientFile));
+            }
+        }
+
+        if (meta.scripts != null)
+        {
+            foreach (var file in meta.scripts.Where(x => x.Type == "client" && x.Cache != "false"))
+            {
+                resourceFiles.Add(ResourceFileFactory.FromBytes(files[file.Source], file.Source, ResourceFileType.ClientScript));
+            }
+        }
+
+        if (meta.configs != null)
+        {
+            foreach (var file in meta.configs.Where(x => x.Type == "client"))
+            {
+                resourceFiles.Add(ResourceFileFactory.FromBytes(files[file.Source], file.Source, ResourceFileType.ClientConfig));
+            }
+        }
+
+        return resourceFiles;
+    }
+
+    private List<ServerResourceFile> GetServerFilesForMetaXmlResource(MetaXml meta, Dictionary<string, byte[]> files)
+    {
+        var resourceFiles = new List<ServerResourceFile>();
+
+        if (meta.scripts != null)
+        {
+            foreach (var file in meta.scripts.Where(x => x.Type == "server"))
+            {
+                resourceFiles.Add(new ServerResourceFile() 
+                { 
+                    Content = files[file.Source],
+                    FileType = ResourceFileType.Script,
+                    Name = file.Source
+                });
+            }
+        }
+
+        return resourceFiles;
+    }
+
+    private Dictionary<string, byte[]> GetNoCacheFiles(MetaXml meta, Dictionary<string, byte[]> files)
+    {
+        return meta.scripts
+            .Where(x => x.Type == "client" && x.Cache == "false")
+            .ToDictionary(x => x.Source, x => files[x.Source]);
+    }
+
+    private IEnumerable<string> GetExportsForMetaXmlResource(MetaXml meta)
+    {
+        if (meta.exports == null)
+            return [];
+
+        return meta.exports
+            .Where(x => x.Type == "client" || x.Type == "shared")
+            .Select(x => x.Function);
+    }
+
+    private IEnumerable<string> GetServerExportsForMetaXmlResource(MetaXml meta)
+    {
+        if (meta.exports == null)
+            return [];
+
+        return meta.exports
+            .Where(x => x.Type == "server" || x.Type == "shared")
+            .Select(x => x.Function);
+    }
+}

@@ -11,6 +11,23 @@ public class PlayerEventDefinitions : IEventDefinitions
     public void LoadInto(IScriptEventRuntime eventRuntime)
     {
         eventRuntime.RegisterEvent<Player>(
+            "onPlayerJoin",
+            (callback) =>
+            {
+                void callbackProxy(Player sender, EventArgs e)
+                {
+                    callback.CallbackDelegate(sender);
+                }
+
+                return new EventHandlerActions<Player>()
+                {
+                    Add = (element) => element.Joined += callbackProxy,
+                    Remove = (element) => element.Joined -= callbackProxy
+                };
+            }
+        );
+
+        eventRuntime.RegisterEvent<Player>(
             "onPlayerWasted",
             (callback) =>
             {

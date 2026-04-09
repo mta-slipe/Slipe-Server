@@ -43,28 +43,28 @@ public class SimplifiedScriptEventRuntime : IScriptEventRuntime
 
     public void AddEventHandler(string eventName, Element attachedTo, EventDelegate callbackDelegate)
     {
-        if (!this.registeredEvents.ContainsKey(eventName))
-            return;
+        //if (!this.registeredEvents.ContainsKey(eventName))
+        //    return;
 
-        var registeredEvent = this.registeredEvents[eventName];
-        var registeredEventHandler = new RegisteredEventHandler()
-        {
-            EventName = eventName,
-            RegisteredEvent = registeredEvent,
-            Delegate = callbackDelegate,
-            AttachedTo = attachedTo,
-        };
+        //var registeredEvent = this.registeredEvents[eventName];
+        //var registeredEventHandler = new RegisteredEventHandler()
+        //{
+        //    EventName = eventName,
+        //    RegisteredEvent = registeredEvent,
+        //    Delegate = callbackDelegate,
+        //    AttachedTo = attachedTo,
+        //};
 
-        this.registeredEventHandlers.Add(registeredEventHandler);
+        //this.registeredEventHandlers.Add(registeredEventHandler);
 
-        foreach (var element in this.elementCollection.GetAll())
-        {
-            if (registeredEvent.ElementType.IsAssignableFrom(element.GetType()))
-            {
-                var actions = (EventHandlerActions<Element>)registeredEvent.Delegate.DynamicInvoke(element, callbackDelegate)!;
-                actions.Add(element);
-            }
-        }
+        //foreach (var element in this.elementCollection.GetAll())
+        //{
+        //    if (registeredEvent.ElementType.IsAssignableFrom(element.GetType()))
+        //    {
+        //        var actions = (EventHandlerActions<Element>)registeredEvent.Delegate.DynamicInvoke(element, callbackDelegate)!;
+        //        actions.Add(element);
+        //    }
+        //}
     }
 
     public void RemoveEventHandler(string eventName, Element attachedTo, EventDelegate callbackDelegate)

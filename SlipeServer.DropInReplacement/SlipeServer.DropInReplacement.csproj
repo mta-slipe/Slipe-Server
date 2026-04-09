@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SlipeServer.LuaControllers\SlipeServer.LuaControllers.csproj" />
+    <ProjectReference Include="..\SlipeServer.Lua\SlipeServer.Lua.csproj" />
+    <ProjectReference Include="..\SlipeServer.Scripting\SlipeServer.Scripting.csproj" />
+    <ProjectReference Include="..\SlipeServer.Server\SlipeServer.Server.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Acl\" />
+  </ItemGroup>
+
+</Project>

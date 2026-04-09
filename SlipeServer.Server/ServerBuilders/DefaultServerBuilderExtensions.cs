@@ -82,6 +82,7 @@ public static class DefaultServerBuilderExtensions
         ServerBuilderDefaultServices exceptServices = ServerBuilderDefaultServices.None,
         ServerBuilderDefaultMiddleware exceptMiddleware = ServerBuilderDefaultMiddleware.None,
         ServerBuilderDefaultResourceInterpreters exceptResourceInterpreters = ServerBuilderDefaultResourceInterpreters.None,
+        bool includeResourceServer = true,
         bool includeLogging = true)
     {
         builder.AddDefaultPacketHandler(exceptPacketHandlers);
@@ -89,7 +90,9 @@ public static class DefaultServerBuilderExtensions
         builder.AddDefaultServices(exceptServices, exceptMiddleware);
         builder.AddDefaultLuaMappings();
 
-        builder.AddResourceServer<BasicHttpServer>();
+        if (includeResourceServer)
+            builder.AddResourceServer<BasicHttpServer>();
+
         builder.AddDefaultResourceInterpreters(exceptResourceInterpreters);
 
         builder.AddDefaultNetWrapper();

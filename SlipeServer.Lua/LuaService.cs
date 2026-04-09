@@ -77,11 +77,11 @@ public class LuaService(IMtaServer server, ILogger logger, IRootElement root, Sc
                     catch (NotImplementedException e)
                     {
                         valueQueue.TryDequeue(out DynValue? valueType);
-                        throw new LuaException($"Unsupported Lua value translation for {methodParameters[i].ParameterType}. {e.Message}\n{e.StackTrace}");
+                        throw new ScriptRuntimeException($"Unsupported Lua value translation for {methodParameters[i].ParameterType}. {e.Message}\n{e.StackTrace}");
                     }
                     catch (Exception e)
                     {
-                        throw new LuaException($"Error when converting Lua value to {methodParameters[i].ParameterType}. {e.Message}\n{e.StackTrace}", e);
+                        throw new ScriptRuntimeException($"Error when converting Lua value to {methodParameters[i].ParameterType}. {e.Message}\n{e.StackTrace}");
                     }
                 }
                 try
@@ -91,7 +91,7 @@ public class LuaService(IMtaServer server, ILogger logger, IRootElement root, Sc
                     return this.translator.ToDynValues(result).ToArray();
                 } catch (Exception e)
                 {
-                    throw new Exception($"Failed to load definitions for {attribute?.NiceName} {e.Message}\n {e.StackTrace}", e);
+                    throw new ScriptRuntimeException($"Failed to load definitions for {attribute?.NiceName} {e.Message}\n {e.StackTrace}", e);
                 }
             };
         }
@@ -115,19 +115,29 @@ public class LuaService(IMtaServer server, ILogger logger, IRootElement root, Sc
 
     public void LoadScript(string identifier, string code, Resource? runningResource = null)
     {
-        var script = new Script(CoreModules.Preset_SoftSandbox);
-        script.Options.DebugPrint = (value) => logger.LogInformation(value);
-        this.scripts[identifier] = script;
+        Script? script = null;
+        try
+        {
+            script = new Script(CoreModules.Preset_SoftSandbox);
+            script.Options.DebugPrint = (value) => logger.LogInformation(value);
+            this.scripts[identifier] = script;
 
-        LoadGlobals(script);
-        LoadDefinitions(script);
+            LoadGlobals(script);
+            LoadDefinitions(script);
 
-        using var ms = new MemoryStream(Encoding.UTF8.GetBytes(code));
-        var stream = scriptTransformationPipeline.Transform(ms, "lua");
+            using var ms = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            var stream = scriptTransformationPipeline.Transform(ms, "lua");
 
-        Scripting.ScriptExecutionContext.Current = new(runningResource);
-        script.DoStream(stream, codeFriendlyName: identifier);
-        Scripting.ScriptExecutionContext.Current = null;
+            Scripting.ScriptExecutionContext.Current = new(runningResource);
+            script.DoStream(stream, codeFriendlyName: identifier);
+            Scripting.ScriptExecutionContext.Current = null;
+        } catch (ScriptRuntimeException exception)
+        {
+            logger.LogError("{Lua error}", FormatLuaError(exception, script));
+        } catch (LuaException exception)
+        {
+            logger.LogError("{Lua error}", exception.Message);
+        }
     }
 
     public void AddGlobal(string key, object value)
@@ -135,25 +145,41 @@ public class LuaService(IMtaServer server, ILogger logger, IRootElement root, Sc
         this.globalValues[key] = value;
     }
 
+    public void RemoveGlobal(string key)
+    {
+        this.globalValues.Remove(key);
+    }
+
     public void LoadScript(string identifier, string[] codes, Resource? runningResource = null)
     {
-        var script = new Script(CoreModules.Preset_SoftSandbox);
-        script.Options.DebugPrint = (value) =>
+        Script? script = null;
+        try
         {
-            using var scope = logger.BeginScope(script);
-            logger.LogDebug("{value}", value);
-        };
-        this.scripts[identifier] = script;
+            script = new Script(CoreModules.Preset_SoftSandbox);
+            script.Options.DebugPrint = (value) =>
+            {
+                using var scope = logger.BeginScope(script);
+                logger.LogDebug("{value}", value);
+            };
+            this.scripts[identifier] = script;
 
-        LoadGlobals(script);
-        LoadDefinitions(script);
+            LoadGlobals(script);
+            LoadDefinitions(script);
 
-        Scripting.ScriptExecutionContext.Current = new(runningResource);
+            Scripting.ScriptExecutionContext.Current = new(runningResource);
 
-        foreach (var code in codes)
-            script.DoString(code, codeFriendlyName: identifier);
+            foreach (var code in codes)
+                script.DoString(code, codeFriendlyName: identifier);
 
-        Scripting.ScriptExecutionContext.Current = null;
+            Scripting.ScriptExecutionContext.Current = null;
+        } catch (ScriptRuntimeException exception)
+        {
+            logger.LogError("{Lua error}", FormatLuaError(exception, script));
+        }
+        catch (LuaException exception)
+        {
+            logger.LogError("{Lua error}", exception.Message);
+        }
     }
 
     public async Task LoadScriptFromPath(string path, Resource? runningResource = null) => LoadScript(path, await File.ReadAllTextAsync(path), runningResource);
@@ -205,6 +231,29 @@ public class LuaService(IMtaServer server, ILogger logger, IRootElement root, Sc
         script.Globals["isSlipeServer"] = this.translator.ToDynValues(true).First();
         foreach (var (key, value) in this.globalValues)
             script.Globals[key] = this.translator.ToDynValues(value).First();
+    }
+
+    private static string FormatLuaError(ScriptRuntimeException exception, Script? script)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine(exception.DecoratedMessage);
+
+        if (exception.CallStack is { Count: > 0 })
+        {
+            foreach (var frame in exception.CallStack.Where(x => x.Name?.Contains("<LoadDefinitions>") != true))
+            {
+                if (frame.Location is { IsClrLocation: true })
+                    continue;
+
+                var location = script != null
+                    ? frame.Location?.FormatLocation(script) ?? "?"
+                    : frame.Location != null ? $":{frame.Location.FromLine}" : "?";
+
+                sb.AppendLine($"\t{location}: in {frame.Name ?? "main chunk"}");
+            }
+        }
+
+        return sb.ToString().TrimEnd();
     }
 
     public delegate DynValue[] LuaMethod(params DynValue[] values);

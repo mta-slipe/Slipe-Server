@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using SlipeServer.Server.Resources;
+using Microsoft.Extensions.Logging;
 
 namespace SlipeServer.Scripting;
 
@@ -19,18 +20,26 @@ public class ScriptEventRuntime : IScriptEventRuntime
     private readonly List<CustomEventHandlerEntry> customEventHandlers = [];
     private readonly IMtaServer server;
     private readonly IElementCollection elementCollection;
-
+    private readonly ILogger<ScriptEventRuntime> logger;
     private bool lastEventCancelled = false;
     private string lastCancelReason = string.Empty;
 
     private readonly Lock handlerLock = new();
 
-    public ScriptEventRuntime(IMtaServer server, IElementCollection elementCollection)
+    public ScriptEventRuntime(IMtaServer server, IElementCollection elementCollection, ILogger<ScriptEventRuntime> logger)
     {
         this.server = server;
         this.elementCollection = elementCollection;
+        this.logger = logger;
         this.server.ElementCreated += HandleElementCreation;
         this.server.LuaEventTriggered += HandleRemoteLuaEvent;
+
+        this.server.PlayerJoined += HandlePlayerJoin;
+    }
+
+    private void HandlePlayerJoin(Player player)
+    {
+        HandleElementCreation(player);
     }
 
     private void HandleRemoteLuaEvent(LuaEvent luaEvent)
@@ -45,10 +54,16 @@ public class ScriptEventRuntime : IScriptEventRuntime
     {
         lock (this.handlerLock)
         {
-            var handlers = this.registeredEventHandlers.Where(handler => handler.GetType().IsAssignableFrom(element.GetType()));
+            //var handlers = this.registeredEventHandlers
+            //    .Where(handler => handler.GetType().IsAssignableFrom(element.GetType()));
+
+            var handlers = this.registeredEventHandlers
+                .Where(x => element == x.AttachedTo || (element.IsChildOf(x.AttachedTo) && x.AllowPropagation))
+                .Where(x => x.RegisteredEvent.ElementType.IsAssignableFrom(element.GetType()));
+
             foreach (var handler in handlers)
             {
-                var actions = (IEventHandlerActions)handler.RegisteredEvent.Delegate.DynamicInvoke(handler.Delegate)!;
+                var actions = (IEventHandlerActions)handler.RegisteredEvent.Delegate.DynamicInvoke(handler.CallbackWrapper)!;
                 actions.Add(element);
 
                 handler.Actions.Add(new RegisteredEventHandlerElement()
@@ -110,6 +125,9 @@ public class ScriptEventRuntime : IScriptEventRuntime
                 }
                 return;
             }
+
+            this.logger.LogError("Attempt to add event handler for non-existent event {eventName}", eventName);
+
             throw new Exception($"Attempt to add event handler for non-existent event {eventName}");
         }
 
@@ -143,7 +161,8 @@ public class ScriptEventRuntime : IScriptEventRuntime
                 AttachedTo = attachedTo,
                 Actions = [],
                 Owner = owner,
-                ExecutionContext = ScriptExecutionContext.Current 
+                ExecutionContext = ScriptExecutionContext.Current,
+                CallbackWrapper = wrapper
             };
 
             this.registeredEventHandlers.Add(registeredEventHandler);
@@ -330,11 +349,19 @@ internal struct RegisteredEvent
 
 internal readonly struct RegisteredEventHandler
 {
-    public string EventName { get; init; }
-    public RegisteredEvent RegisteredEvent { get; init; }
-    public EventDelegate Delegate { get; init; }
-    public Element AttachedTo { get; init; }
-    public List<RegisteredEventHandlerElement> Actions { get; init; }
+    public RegisteredEventHandler()
+    {
+
+    }
+
+    public required string EventName { get; init; }
+    public required RegisteredEvent RegisteredEvent { get; init; }
+    public required EventDelegate Delegate { get; init; }
+    public required Element AttachedTo { get; init; }
+    public List<RegisteredEventHandlerElement> Actions { get; init; } = [];
+    public required ScriptCallbackDelegateWrapper CallbackWrapper { get; init; }
+
+    public bool AllowPropagation { get; init; } = true;
 
     public object? Owner { get; init; }
     public ScriptExecutionContext? ExecutionContext { get; init; }

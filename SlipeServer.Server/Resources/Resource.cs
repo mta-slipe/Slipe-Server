@@ -17,13 +17,13 @@ public class Resource
 {
     private readonly IMtaServer server;
 
-    public DummyElement Root { get; }
-    public DummyElement DynamicRoot { get; }
+    public DummyElement Root { get; init; }
+    public DummyElement DynamicRoot { get; init; }
     public ushort NetId { get; set; }
     public int PriorityGroup { get; set; }
-    public List<string> Exports { get; init; }
-    public List<ResourceFile> Files { get; init; }
-    public Dictionary<string, byte[]> NoClientScripts { get; init; }
+    public List<string> Exports { get; init; } = [];
+    public List<ResourceFile> Files { get; init; } = [];
+    public Dictionary<string, byte[]> NoClientScripts { get; init; } = [];
     private Dictionary<string, byte[]> SanitisedNoClientScripts => this.NoClientScripts.Where(x => x.Value.Length > 0).ToDictionary(x => x.Key, x => x.Value);
     public string Name { get; }
     public string Path { get; }
@@ -40,8 +40,6 @@ public class Resource
         this.Name = name;
         this.Path = path ?? $"./{name}";
 
-        this.Files = new();
-        this.NoClientScripts = new();
 
         this.Root = new DummyElement()
         {
@@ -53,8 +51,6 @@ public class Resource
             Parent = this.Root,
             ElementTypeName = "map",
         }.AssociateWith(server);
-
-        this.Exports = new List<string>();
     }
 
     public void Start()
