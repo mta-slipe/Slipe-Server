@@ -64,7 +64,9 @@ public class WeaponScriptDefinitions(IWeaponConfigurationService weaponConfigura
 
     private static Dictionary<string, int> BuildWeaponIdsByName()
     {
-        return weaponNames.ToDictionary(x => x.Value, x => x.Key);
+        return weaponNames
+            .GroupBy(x => x.Value)
+            .ToDictionary(g => g.Key, g => g.First().Key);
     }
 
     [ScriptFunctionDefinition("giveWeapon")]
