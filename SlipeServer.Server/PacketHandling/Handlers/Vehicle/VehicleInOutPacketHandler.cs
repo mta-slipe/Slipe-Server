@@ -138,6 +138,7 @@ public class VehicleInOutPacketHandler(
                         OutActionId = VehicleInOutActionReturns.RequestInConfirmed,
                     };
                     server.BroadcastPacket(replyPacket);
+                    vehicle.TriggerPedStartedEntering(client.Player, 0, null, packet.Door);
                 }
             } else
             {
@@ -163,6 +164,7 @@ public class VehicleInOutPacketHandler(
                         OutActionId = VehicleInOutActionReturns.RequestJackConfirmed,
                     };
                     server.BroadcastPacket(replyPacket);
+                    vehicle.TriggerPedStartedEntering(client.Player, 0, currentDriver, packet.Door);
                 }
             }
         } else
@@ -202,6 +204,7 @@ public class VehicleInOutPacketHandler(
                     OutActionId = VehicleInOutActionReturns.RequestInConfirmed,
                 };
                 server.BroadcastPacket(replyPacket);
+                vehicle.TriggerPedStartedEntering(client.Player, seat.Value, null, packet.Door);
             }
         }
     }
@@ -300,6 +303,7 @@ public class VehicleInOutPacketHandler(
             Door = packet.Door
         };
         server.BroadcastPacket(replyPacket);
+        vehicle.TriggerPedStartedExiting(client.Player, client.Player.Seat ?? 0, null, packet.Door);
     }
 
     private void HandleNotifyOut(IClient client, Elements.Vehicle vehicle, VehicleInOutPacket packet)

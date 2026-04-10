@@ -9,7 +9,9 @@ var server = MtaServer.Create(x =>
         HttpPort = 22005,
 
 #if DEBUG
-        ResourceDirectory = Path.Join(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.Parent.FullName, "SlipeServer.DropInReplacement.Console", "Resources"),
+        ResourceDirectory = Path.Join(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.Parent.FullName, "SlipeServer.DropInReplacement.Console", "Resources")
+#else
+        ResourceDirectory = "./mods/deathmatch/resources"
 #endif
     });
 

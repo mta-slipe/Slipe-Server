@@ -3,6 +3,7 @@ using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
+using SlipeServer.Server.Resources;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -64,7 +65,8 @@ public class ScriptInputRuntime : IScriptInputRuntime
             b.Key == e.Key &&
             (b.KeyState == e.KeyState || b.KeyState == KeyState.Both)))
         {
-            binding.Delegate.CallbackDelegate.Invoke(player, e.Key, keyState);
+            object?[] args = [player, e.Key, keyState, .. binding.ExtraArguments];
+            binding.Delegate.CallbackDelegate.Invoke(args);
         }
     }
 
@@ -74,6 +76,7 @@ public class ScriptInputRuntime : IScriptInputRuntime
         {
             CommandName = commandName,
             Delegate = callbackDelegate,
+            ExecutionContext = ScriptExecutionContext.Current,
         });
     }
 
@@ -83,6 +86,28 @@ public class ScriptInputRuntime : IScriptInputRuntime
             this.registeredCommandHandlers.RemoveAll(x => x.CommandName == commandName);
         else
             this.registeredCommandHandlers.RemoveAll(x => x.CommandName == commandName && x.Delegate.Equals(callbackDelegate));
+    }
+
+    public void RemoveCommandHandlersWithContext(Resource? owningResource)
+    {
+        this.registeredCommandHandlers.RemoveAll(x => x.ExecutionContext?.Owner == owningResource);
+    }
+
+    public void RemoveKeyBindingsWithContext(Resource? owningResource)
+    {
+        foreach (var (player, bindings) in this.keyBindings)
+        {
+            var affectedKeys = bindings
+                .Where(b => b.ExecutionContext?.Owner == owningResource)
+                .Select(b => b.Key)
+                .Distinct()
+                .ToList();
+
+            bindings.RemoveAll(b => b.ExecutionContext?.Owner == owningResource);
+
+            foreach (var key in affectedKeys)
+                UpdateClientKeyState(player, key);
+        }
     }
 
     public void ExecuteCommandHandler(string commandName, Player player, string? args = null)
@@ -99,7 +124,7 @@ public class ScriptInputRuntime : IScriptInputRuntime
         return this.registeredCommandHandlers.Select(x => x.CommandName).Distinct();
     }
 
-    public void BindKey(Player player, string key, KeyState keyState, ScriptCallbackDelegateWrapper callback)
+    public void BindKey(Player player, string key, KeyState keyState, ScriptCallbackDelegateWrapper callback, params object?[] arguments)
     {
         if (!this.keyBindings.TryGetValue(player, out var bindings))
         {
@@ -107,8 +132,19 @@ public class ScriptInputRuntime : IScriptInputRuntime
             this.keyBindings[player] = bindings;
         }
 
-        bindings.Add(new RegisteredKeyBinding { Key = key, KeyState = keyState, Delegate = callback });
+        bindings.Add(new RegisteredKeyBinding { Key = key, KeyState = keyState, Delegate = callback, ExecutionContext = ScriptExecutionContext.Current, ExtraArguments = arguments });
         UpdateClientKeyState(player, key);
+    }
+
+    public void BindKeyCommand(Player player, string key, KeyState keyState, string commandName, string? args = null)
+    {
+        var wrapper = new ScriptCallbackDelegateWrapper(parameters =>
+        {
+            var pressingPlayer = parameters.Length > 0 ? parameters[0] as Player ?? player : player;
+            ExecuteCommandHandler(commandName, pressingPlayer, args);
+        }, commandName);
+
+        BindKey(player, key, keyState, wrapper);
     }
 
     public void UnbindKey(Player player, string key, KeyState? keyState = null, ScriptCallbackDelegateWrapper? callback = null)
@@ -185,6 +221,7 @@ internal struct RegisteredCommandHandler
 {
     public string CommandName { get; set; }
     public ScriptCallbackDelegateWrapper Delegate { get; set; }
+    public ScriptExecutionContext? ExecutionContext { get; set; }
 }
 
 internal struct RegisteredKeyBinding
@@ -192,4 +229,6 @@ internal struct RegisteredKeyBinding
     public string Key { get; set; }
     public KeyState KeyState { get; set; }
     public ScriptCallbackDelegateWrapper Delegate { get; set; }
+    public ScriptExecutionContext? ExecutionContext { get; set; }
+    public object?[] ExtraArguments { get; set; }
 }

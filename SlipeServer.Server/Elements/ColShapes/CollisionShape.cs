@@ -39,14 +39,18 @@ public abstract class CollisionShape : Element
             if (this.elementsWithin.TryAdd(element, 0))
             {
                 this.elementsWithin[element] = 0;
-                this.ElementEntered?.Invoke(this, new(this, element));
+                var hitArgs = new CollisionShapeHitEventArgs(this, element);
+                this.ElementEntered?.Invoke(this, hitArgs);
+                element.TriggerColShapeEntered(hitArgs);
                 element.Destroyed += OnElementDestroyed;
             }
         } else
         {
             if (this.elementsWithin.Remove(element, out var _))
             {
-                this.ElementLeft?.Invoke(this, new(this, element));
+                var leftArgs = new CollisionShapeLeftEventArgs(this, element);
+                this.ElementLeft?.Invoke(this, leftArgs);
+                element.TriggerColShapeLeft(leftArgs);
                 element.Destroyed -= OnElementDestroyed;
             }
         }
@@ -55,7 +59,9 @@ public abstract class CollisionShape : Element
     private void OnElementDestroyed(Element element)
     {
         this.elementsWithin.Remove(element, out var _);
-        this.ElementLeft?.Invoke(this, new(this, element));
+        var leftArgs = new CollisionShapeLeftEventArgs(this, element);
+        this.ElementLeft?.Invoke(this, leftArgs);
+        element.TriggerColShapeLeft(leftArgs);
     }
 
     public new CollisionShape AssociateWith(IMtaServer server)
@@ -72,7 +78,9 @@ public abstract class CollisionShape : Element
             {
                 if (this.elementsWithin.Remove(pair.Key, out var _))
                 {
-                    this.ElementLeft?.Invoke(this, new(this, pair.Key));
+                    var leftArgs = new CollisionShapeLeftEventArgs(this, pair.Key);
+                    this.ElementLeft?.Invoke(this, leftArgs);
+                    pair.Key.TriggerColShapeLeft(leftArgs);
                     pair.Key.Destroyed -= OnElementDestroyed;
                 }
             }

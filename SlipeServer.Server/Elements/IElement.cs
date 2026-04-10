@@ -74,6 +74,9 @@ public interface IElement
     event ElementChangedEventHandler<Vector3>? RotationChanged;
     event ElementChangedEventHandler<Vector3>? TurnVelocityChanged;
     event ElementChangedEventHandler<Vector3>? VelocityChanged;
+    event ElementEventHandler<Element, CollisionShapeHitEventArgs>? ColShapeEntered;
+    event ElementEventHandler<Element, CollisionShapeLeftEventArgs>? ColShapeLeft;
+    event ElementEventHandler<Element, ElementClickedEventArgs>? Clicked;
 
     void AddSubscriber(Player player);
     Element AssociateWith(Player player);

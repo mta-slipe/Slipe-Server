@@ -17,6 +17,8 @@ public class DetonateSatchelsPacketHandler(
         packet.ElementId = client.Player.Id;
         packet.Latency = (ushort)client.Ping;
 
+        client.Player.TriggerSatchelsDetonated();
+
         var otherPlayers = middleware.GetPlayersToSyncTo(client.Player, packet);
         packet.SendTo(otherPlayers);
     }

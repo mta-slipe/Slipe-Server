@@ -965,6 +965,18 @@ public class Element : IElement
     public event ElementEventHandler<Element, ElementDetachedEventArgs>? Detached;
     public event ElementEventHandler<Element, ElementAttachOffsetsChangedArgs>? AttachedOffsetChanged;
     public event Action<Element>? Destroyed;
+    public event ElementEventHandler<Element, CollisionShapeHitEventArgs>? ColShapeEntered;
+    public event ElementEventHandler<Element, CollisionShapeLeftEventArgs>? ColShapeLeft;
+    public event ElementEventHandler<Element, ElementClickedEventArgs>? Clicked;
+
+    public void TriggerColShapeEntered(CollisionShapeHitEventArgs args)
+        => ColShapeEntered?.Invoke(this, args);
+
+    public void TriggerColShapeLeft(CollisionShapeLeftEventArgs args)
+        => ColShapeLeft?.Invoke(this, args);
+
+    public void TriggerClicked(ElementClickedEventArgs args)
+        => Clicked?.Invoke(this, args);
 
     /// <summary>
     /// Returns a Lua value for the element, this is used for any lua event communication.

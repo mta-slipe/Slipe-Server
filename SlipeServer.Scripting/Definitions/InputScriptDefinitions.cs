@@ -1,6 +1,7 @@
 ﻿using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Enums;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SlipeServer.Scripting.Definitions;
 
@@ -40,10 +41,19 @@ public class InputScriptDefinitions(IScriptInputRuntime inputRuntime)
     }
 
     [ScriptFunctionDefinition("bindKey")]
-    public bool BindKey(Player player, string key, string keyState, ScriptCallbackDelegateWrapper callback)
+    public bool BindKey(Player player, string key, string keyState, object? callbackOrCommand, params object?[] arguments)
     {
-        inputRuntime.BindKey(player, key, ParseKeyState(keyState), callback);
-        return true;
+        if (callbackOrCommand is ScriptCallbackDelegateWrapper callback)
+        {
+            inputRuntime.BindKey(player, key, ParseKeyState(keyState), callback, arguments);
+            return true;
+        }
+        if (callbackOrCommand is string commandName)
+        {
+            inputRuntime.BindKeyCommand(player, key, ParseKeyState(keyState), commandName, arguments.FirstOrDefault() as string);
+            return true;
+        }
+        return false;
     }
 
     [ScriptFunctionDefinition("unbindKey")]

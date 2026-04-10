@@ -1,4 +1,3 @@
-using SlipeServer.Packets.Definitions.Lua;
 using System;
 using System.Linq;
 using System.Timers;
@@ -11,7 +10,7 @@ public class ScriptTimer
 
     public int Id { get; } = nextId++;
     public ScriptCallbackDelegateWrapper Callback { get; }
-    public LuaValue[] Arguments { get; }
+    public object?[] Arguments { get; }
     public int IntervalMs { get; }
     public int TimesToExecute { get; }
     public int ExecutionsRemaining { get; private set; }
@@ -23,7 +22,7 @@ public class ScriptTimer
     private double pausedRemainingMs;
     private DateTime lastFireTime;
 
-    public ScriptTimer(ScriptCallbackDelegateWrapper callback, int intervalMs, int timesToExecute, LuaValue[] arguments)
+    public ScriptTimer(ScriptCallbackDelegateWrapper callback, int intervalMs, int timesToExecute, object?[] arguments)
     {
         this.Callback = callback;
         this.IntervalMs = intervalMs;

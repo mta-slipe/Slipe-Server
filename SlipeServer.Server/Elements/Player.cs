@@ -508,6 +508,7 @@ public class Player : Ped
         Element? element)
     {
         this.CursorClicked?.Invoke(this, new PlayerCursorClickedEventArgs(button, isDown, position, worldPosition, element));
+        element?.TriggerClicked(new ElementClickedEventArgs(this, button, isDown, worldPosition));
     }
 
     public void TriggerJoined()
@@ -570,13 +571,28 @@ public class Player : Ped
         return this.pureSyncPacketsCount++ % 4 == 0;
     }
 
+    public void RaisePickupHit(PlayerPickupHitEventArgs args) 
+        => this.PickupHit?.Invoke(this, args);
+
+    public void RaisePickupLeft(PlayerPickupLeftEventArgs args)
+        => this.PickupLeft?.Invoke(this, args);
+
+    public void RaisePickupUsed(PlayerPickupUsedEventArgs args) 
+        => this.PickupUsed?.Invoke(this, args);
+
+    public void TriggerWeaponFired(WeaponId weapon, Vector3 startPosition, Vector3 endPosition, Element? hitElement)
+        => this.WeaponFired?.Invoke(this, new PlayerWeaponFiredEventArgs(this, weapon, startPosition, endPosition, hitElement));
+
+    public void TriggerSatchelsDetonated()
+        => this.SatchelsDetonated?.Invoke(this, EventArgs.Empty);
+
     public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
     public event ElementChangedEventHandler<Player, string>? NametagTextChanged;
     public event ElementChangedEventHandler<Player, bool>? IsNametagShowingChanged;
     public event ElementChangedEventHandler<Player, Color?>? NametagColorChanged;
     public event ElementChangedEventHandler<Player, Element?>? ContactElementChanged;
     public event ElementChangedEventHandler<Player, bool>? IsChatMutedChanged;
-    public event ElementEventHandler<Player, PlayerDamagedEventArgs>? Damaged;
+    public new event ElementEventHandler<Player, PlayerDamagedEventArgs>? Damaged;
     public event ElementEventHandler<Player, PlayerSpawnedEventArgs>? Spawned;
     public event ElementEventHandler<Player, PlayerCommandEventArgs>? CommandEntered;
     public event ElementEventHandler<Player, PlayerVoiceStartArgs>? VoiceDataReceived;
@@ -599,4 +615,9 @@ public class Player : Ped
     public event ElementEventHandler<Player, PlayerBindExecutedEventArgs>? BindExecuted;
     public event ElementEventHandler<Player, PlayerCursorClickedEventArgs>? CursorClicked;
     public event ElementEventHandler<Player, EventArgs>? Joined;
+    public event ElementEventHandler<Player, PlayerPickupHitEventArgs>? PickupHit;
+    public event ElementEventHandler<Player, PlayerPickupLeftEventArgs>? PickupLeft;
+    public event ElementEventHandler<Player, PlayerPickupUsedEventArgs>? PickupUsed;
+    public event ElementEventHandler<Player, PlayerWeaponFiredEventArgs>? WeaponFired;
+    public event ElementEventHandler<Player, EventArgs>? SatchelsDetonated;
 }

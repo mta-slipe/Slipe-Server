@@ -1,4 +1,3 @@
-using SlipeServer.Packets.Definitions.Lua;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,7 +8,7 @@ public readonly record struct ScriptTimerDetails(double Remaining, int ExecutesR
 public class TimerScriptDefinitions(ScriptTimerService timerService)
 {
     [ScriptFunctionDefinition("setTimer")]
-    public ScriptTimer SetTimer(ScriptCallbackDelegateWrapper callback, int intervalMs, int timesToExecute, params LuaValue[] arguments)
+    public ScriptTimer SetTimer(ScriptCallbackDelegateWrapper callback, int intervalMs, int timesToExecute, params object?[] arguments)
     {
         return timerService.CreateTimer(callback, intervalMs, timesToExecute, arguments);
     }

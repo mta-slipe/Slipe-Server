@@ -14,12 +14,12 @@ using System.Threading.Tasks;
 
 namespace SlipeServer.Lua;
 
-public class LuaService(IMtaServer server, ILogger logger, IRootElement root, ScriptTransformationPipeline scriptTransformationPipeline, IScriptEventRuntime scriptEventRuntime, ScriptTimerService scriptTimerService)
+public class LuaService(IMtaServer server, ILogger logger, IRootElement root, ScriptTransformationPipeline scriptTransformationPipeline, IScriptEventRuntime scriptEventRuntime, ScriptTimerService scriptTimerService, IScriptInputRuntime scriptInputRuntime)
 {
     private readonly Dictionary<string, Script> scripts = [];
     private readonly Dictionary<string, LuaMethod> methods = [];
     private readonly Dictionary<string, object> globalValues = [];
-    private readonly LuaTranslator translator = new();
+    private readonly LuaTranslator translator = new(logger);
 
     public void LoadDefinitions(object methodSet)
     {
@@ -199,6 +199,8 @@ public class LuaService(IMtaServer server, ILogger logger, IRootElement root, Sc
     {
         scriptEventRuntime.RemoveEventHandlersWithContext(runningResource);
         scriptTimerService.KillTimersWithContext(runningResource);
+        scriptInputRuntime.RemoveCommandHandlersWithContext(runningResource);
+        scriptInputRuntime.RemoveKeyBindingsWithContext(runningResource);
 
         static void DestroyChildren(IElement parent)
         {
@@ -216,13 +218,20 @@ public class LuaService(IMtaServer server, ILogger logger, IRootElement root, Sc
 
     private void LoadDefinitions(Script script)
     {
-        StringBuilder stringBuilder = new StringBuilder();
         foreach (var definition in this.methods)
         {
-            script.Globals["slipe_" + definition.Key] = definition.Value;
-            stringBuilder.AppendLine($"function {definition.Key}(...) return table.unpack(slipe_{definition.Key}({{...}})) end");
+            var method = definition.Value;
+            script.Globals[definition.Key] = DynValue.NewCallback((ctx, args) =>
+            {
+                var results = method(args.GetArray());
+                return results.Length switch
+                {
+                    0 => DynValue.Void,
+                    1 => results[0],
+                    _ => DynValue.NewTuple(results)
+                };
+            });
         }
-        script.DoString(stringBuilder.ToString(), codeFriendlyName: "SlipeDefinitions");
     }
 
     private void LoadGlobals(Script script)

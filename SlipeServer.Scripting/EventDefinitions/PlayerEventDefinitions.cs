@@ -1,8 +1,10 @@
 ﻿using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Enums;
+using SlipeServer.Server.Elements.Enums;
 using System;
 using System.IO;
+using System.Linq;
 
 namespace SlipeServer.Scripting.EventDefinitions;
 
@@ -194,14 +196,6 @@ public class PlayerEventDefinitions : IEventDefinitions
         //    "onPlayerStealthKill",
         //    (callback) =>
         //    {
-        //        void callbackProxy(Player sender, PlayerSpawnedEventArgs e)
-        //            => callback.CallbackDelegate(sender, e.Position, e.Rotation, e.Team, e.Model, e.Interior, e.Dimension);
-
-        //        return new EventHandlerActions<Player>()
-        //        {
-        //            Add = (element) => element.Spawned += callbackProxy,
-        //            Remove = (element) => element.Spawned -= callbackProxy
-        //        };
         //    }
         //);
 
@@ -216,21 +210,6 @@ public class PlayerEventDefinitions : IEventDefinitions
                 {
                     Add = (element) => element.TargetChanged += callbackProxy,
                     Remove = (element) => element.TargetChanged -= callbackProxy
-                };
-            }
-        );
-
-        eventRuntime.RegisterEvent<Player>(
-            "onPlayerTeamChange",
-            (callback) =>
-            {
-                void callbackProxy(Player sender, PlayerTeamChangedArgs e)
-                    => callback.CallbackDelegate(sender, e.PreviousTeam, e.NewTeam);
-
-                return new EventHandlerActions<Player>()
-                {
-                    Add = (element) => element.TeamChanged += callbackProxy,
-                    Remove = (element) => element.TeamChanged -= callbackProxy
                 };
             }
         );
@@ -274,7 +253,7 @@ public class PlayerEventDefinitions : IEventDefinitions
             {
                 void callbackProxy(Player sender, ElementChangedEventArgs<Player, bool> e)
                 {
-                    if (e.NewValue == true)
+                    if (e.NewValue == false)
                         callback.CallbackDelegate(sender);
                 }
 
@@ -286,22 +265,253 @@ public class PlayerEventDefinitions : IEventDefinitions
             }
         );
 
-        //eventRuntime.RegisterEvent<Player>(
-        //    "onPlayerVehicleEnter",
-        //    (callback) =>
-        //    {
-        //        //void callbackProxy(Ped sender, ElementChangedEventArgs<Ped, Vehicle> e)
-        //        //{
-        //        //    if (e.NewValue == true)
-        //        //        callback.CallbackDelegate(sender);
-        //        //}
+        eventRuntime.RegisterEvent<Player>(
+            "onPlayerVehicleEnter",
+            (callback) =>
+            {
+                void callbackProxy(Ped sender, ElementChangedEventArgs<Ped, Vehicle?> e)
+                {
+                    if (e.NewValue == null)
+                        return;
 
-        //        //return new EventHandlerActions<Player>()
-        //        //{
-        //        //    Add = (element) => element.VehicleChanged += callbackProxy,
-        //        //    Remove = (element) => element.VehicleChanged -= callbackProxy
-        //        //};
-        //    }
-        //);
+                    var vehicle = e.NewValue;
+                    var seat = sender.Seat ?? 0;
+                    Ped? jacked = seat == 0 && vehicle.Driver != null && vehicle.Driver != sender ? vehicle.Driver : null;
+                    callback.CallbackDelegate(sender, vehicle, seat, jacked);
+                }
+
+                return new EventHandlerActions<Player>()
+                {
+                    Add = (element) => element.VehicleChanged += callbackProxy,
+                    Remove = (element) => element.VehicleChanged -= callbackProxy
+                };
+            }
+        );
+
+        eventRuntime.RegisterEvent<Player>(
+            "onPlayerVehicleExit",
+            (callback) =>
+            {
+                void callbackProxy(Ped sender, ElementChangedEventArgs<Ped, Vehicle?> e)
+                {
+                    if (e.OldValue == null)
+                        return;
+
+                    var vehicle = e.OldValue;
+                    var seat = sender.Seat ?? 0;
+                    Ped? jacker = sender.VehicleAction == VehicleAction.Jacked ? vehicle.Driver : null;
+                    callback.CallbackDelegate(sender, vehicle, seat, jacker, false);
+                }
+
+                return new EventHandlerActions<Player>()
+                {
+                    Add = (element) => element.VehicleChanged += callbackProxy,
+                    Remove = (element) => element.VehicleChanged -= callbackProxy
+                };
+            }
+        );
+
+        eventRuntime.RegisterEvent<Player>(
+            "onPlayerPickupHit",
+            (callback) =>
+            {
+                void callbackProxy(Player sender, PlayerPickupHitEventArgs e)
+                    => callback.CallbackDelegate(sender, e.Pickup, sender.Dimension == e.Pickup.Dimension);
+                return new EventHandlerActions<Player>()
+                {
+                    Add = (player) => player.PickupHit += callbackProxy,
+                    Remove = (player) => player.PickupHit -= callbackProxy
+                };
+            }
+        );
+
+        eventRuntime.RegisterEvent<Player>(
+            "onPlayerPickupLeave",
+            (callback) =>
+            {
+                void callbackProxy(Player sender, PlayerPickupLeftEventArgs e)
+                    => callback.CallbackDelegate(sender, e.Pickup, sender.Dimension == e.Pickup.Dimension);
+                return new EventHandlerActions<Player>()
+                {
+                    Add = (player) => player.PickupLeft += callbackProxy,
+                    Remove = (player) => player.PickupLeft -= callbackProxy
+                };
+            }
+        );
+
+        eventRuntime.RegisterEvent<Player>(
+            "onPlayerPickupUse",
+            (callback) =>
+            {
+                void callbackProxy(Player sender, PlayerPickupUsedEventArgs e)
+                    => callback.CallbackDelegate(sender, e.Pickup);
+                return new EventHandlerActions<Player>()
+                {
+                    Add = (player) => player.PickupUsed += callbackProxy,
+                    Remove = (player) => player.PickupUsed -= callbackProxy
+                };
+            }
+        );
+
+        eventRuntime.RegisterEvent<Player>(
+            "onPlayerVoiceStart",
+            (callback) =>
+            {
+                void callbackProxy(Player sender, PlayerVoiceStartArgs e)
+                    => callback.CallbackDelegate(sender);
+
+                return new EventHandlerActions<Player>()
+                {
+                    Add = (element) => element.VoiceDataReceived += callbackProxy,
+                    Remove = (element) => element.VoiceDataReceived -= callbackProxy
+                };
+            }
+        );
+
+        eventRuntime.RegisterEvent<Player>(
+            "onPlayerVoiceStop",
+            (callback) =>
+            {
+                void callbackProxy(Player sender, PlayerVoiceEndArgs e)
+                    => callback.CallbackDelegate(sender);
+
+                return new EventHandlerActions<Player>()
+                {
+                    Add = (element) => element.VoiceDataEnded += callbackProxy,
+                    Remove = (element) => element.VoiceDataEnded -= callbackProxy
+                };
+            }
+        );
+
+        eventRuntime.RegisterEvent<Player>(
+            "onPlayerACInfo",
+            (callback) =>
+            {
+                void callbackProxy(Player sender, PlayerACInfoArgs e)
+                    => callback.CallbackDelegate(sender, e.DetectedACList.ToList(), e.D3D9Size, e.D3D9MD5, e.D3D9SHA256);
+
+                return new EventHandlerActions<Player>()
+                {
+                    Add = (element) => element.AcInfoReceived += callbackProxy,
+                    Remove = (element) => element.AcInfoReceived -= callbackProxy
+                };
+            }
+        );
+
+        eventRuntime.RegisterEvent<Player>(
+            "onPlayerModInfo",
+            (callback) =>
+            {
+                void callbackProxy(Player sender, PlayerModInfoArgs e)
+                    => callback.CallbackDelegate(sender, e.InfoType, e.ModInfoItems.ToList());
+
+                return new EventHandlerActions<Player>()
+                {
+                    Add = (element) => element.ModInfoReceived += callbackProxy,
+                    Remove = (element) => element.ModInfoReceived -= callbackProxy
+                };
+            }
+        );
+
+        eventRuntime.RegisterEvent<Player>(
+            "onPlayerNetworkStatus",
+            (callback) =>
+            {
+                void callbackProxy(Player sender, PlayerNetworkStatusArgs e)
+                    => callback.CallbackDelegate(sender, (int)e.PlayerNetworkStatus, e.Ticks);
+
+                return new EventHandlerActions<Player>()
+                {
+                    Add = (element) => element.NetworkStatusReceived += callbackProxy,
+                    Remove = (element) => element.NetworkStatusReceived -= callbackProxy
+                };
+            }
+        );
+
+        eventRuntime.RegisterEvent<Player>(
+            "onPlayerWeaponSwitch",
+            (callback) =>
+            {
+                void callbackProxy(Ped sender, ElementChangedEventArgs<Ped, WeaponSlot> e)
+                {
+                    var previousWeaponId = (int)(sender.Weapons.Get(e.OldValue)?.Type ?? WeaponId.Fist);
+                    var currentWeaponId = (int)(sender.Weapons.Get(e.NewValue)?.Type ?? WeaponId.Fist);
+                    callback.CallbackDelegate(sender, previousWeaponId, currentWeaponId);
+                }
+
+                return new EventHandlerActions<Player>()
+                {
+                    Add = (element) => element.WeaponSlotChanged += callbackProxy,
+                    Remove = (element) => element.WeaponSlotChanged -= callbackProxy
+                };
+            }
+        );
+
+        eventRuntime.RegisterEvent<Player>(
+            "onPlayerWeaponReload",
+            (callback) =>
+            {
+                void callbackProxy(Ped sender, EventArgs e)
+                {
+                    var weapon = sender.CurrentWeapon;
+                    if (weapon != null)
+                        callback.CallbackDelegate(sender, (int)weapon.Type, weapon.AmmoInClip, weapon.Ammo);
+                }
+
+                return new EventHandlerActions<Player>()
+                {
+                    Add = (element) => element.WeaponReloaded += callbackProxy,
+                    Remove = (element) => element.WeaponReloaded -= callbackProxy
+                };
+            }
+        );
+
+        eventRuntime.RegisterEvent<Player>(
+            "onPlayerWeaponFire",
+            (callback) =>
+            {
+                void callbackProxy(Player sender, PlayerWeaponFiredEventArgs e)
+                    => callback.CallbackDelegate(sender, (int)e.Weapon, e.EndPosition.X, e.EndPosition.Y, e.EndPosition.Z, e.HitElement, e.StartPosition.X, e.StartPosition.Y, e.StartPosition.Z);
+
+                return new EventHandlerActions<Player>()
+                {
+                    Add = (element) => element.WeaponFired += callbackProxy,
+                    Remove = (element) => element.WeaponFired -= callbackProxy
+                };
+            }
+        );
+
+        eventRuntime.RegisterEvent<Player>(
+            "onPlayerDetonateSatchels",
+            (callback) =>
+            {
+                void callbackProxy(Player sender, EventArgs e)
+                    => callback.CallbackDelegate(sender);
+
+                return new EventHandlerActions<Player>()
+                {
+                    Add = (element) => element.SatchelsDetonated += callbackProxy,
+                    Remove = (element) => element.SatchelsDetonated -= callbackProxy
+                };
+            }
+        );
+
+        eventRuntime.RegisterEvent<Player>(
+            "onPlayerChat",
+            (callback) =>
+            {
+                void callbackProxy(Element sender, PlayerCommandEventArgs e)
+                {
+                    if (e.Command == "say")
+                        callback.CallbackDelegate(sender, string.Join(' ', e.Arguments), 0);
+                }
+
+                return new EventHandlerActions<Player>()
+                {
+                    Add = (element) => element.CommandEntered += callbackProxy,
+                    Remove = (element) => element.CommandEntered -= callbackProxy
+                };
+            }
+        );
     }
 }

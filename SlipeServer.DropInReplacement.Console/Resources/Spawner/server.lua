@@ -9,9 +9,10 @@ addEventHandler("onPlayerJoin", root, handlePlayerJoin)
 
 
 function handlePlayerWasted()
+	local player = source
 	setTimer(function()
 	
-		spawnPlayer(source, 0, 0, 3, 0, 7)
+		spawnPlayer(player, 0, 0, 3, 0, 7)
 
 	end, 1000, 1)
 end

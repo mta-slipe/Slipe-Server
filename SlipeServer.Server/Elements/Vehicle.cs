@@ -801,6 +801,7 @@ public class Vehicle : Element
 
     internal void RespawnAt(Vector3 position, Vector3 rotation)
     {
+        bool wasExploded = this.BlownAtUtc != null;
         this.BlownAtUtc = null;
         ResetDoorsWheelsPanelsLights();
 
@@ -813,7 +814,7 @@ public class Vehicle : Element
         this.Health = this.RespawnHealth;
         this.BlownState = VehicleBlownState.Intact;
 
-        this.Respawned?.Invoke(this, new VehicleRespawnEventArgs(this, position, rotation));
+        this.Respawned?.Invoke(this, new VehicleRespawnEventArgs(this, position, rotation, wasExploded));
     }
 
     public void Spawn(Vector3 position, Vector3 rotation)
@@ -892,12 +893,20 @@ public class Vehicle : Element
         return false;
     }
 
+    public void TriggerPedStartedEntering(Ped enteringPed, byte seat, Ped? jacked, byte door)
+        => this.PedStartedEntering?.Invoke(this, new VehicleStartEnterEventArgs(enteringPed, seat, jacked, door));
+
+    public void TriggerPedStartedExiting(Ped exitingPed, byte seat, Ped? jacker, byte door)
+        => this.PedStartedExiting?.Invoke(this, new VehicleStartExitEventArgs(exitingPed, seat, jacker, door));
+
     public Func<Ped, Vehicle, byte, bool>? CanEnter;
     public Func<Ped, Vehicle, byte, bool>? CanExit;
 
     public event ElementEventHandler<VehicleBlownEventArgs>? Blown;
     public event ElementEventHandler<VehicleLeftEventArgs>? PedLeft;
     public event ElementEventHandler<VehicleEnteredEventsArgs>? PedEntered;
+    public event ElementEventHandler<VehicleStartEnterEventArgs>? PedStartedEntering;
+    public event ElementEventHandler<VehicleStartExitEventArgs>? PedStartedExiting;
     public event ElementChangedEventHandler<Vehicle, ushort>? ModelChanged;
     public event ElementEventHandler<Vehicle, VehicleColorChangedEventsArgs>? ColorChanged;
     public event ElementChangedEventHandler<Vehicle, bool>? LandingGearChanged;

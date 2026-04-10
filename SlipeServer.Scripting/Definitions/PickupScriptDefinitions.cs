@@ -80,6 +80,13 @@ public class PickupScriptDefinitions(IMtaServer server)
     [ScriptFunctionDefinition("isPickupSpawned")]
     public bool IsPickupSpawned(Pickup pickup) => pickup.IsVisible;
 
+    [ScriptFunctionDefinition("spawnPickup")]
+    public bool SpawnPickup(Pickup pickup)
+    {
+        pickup.Respawn();
+        return true;
+    }
+
     [ScriptFunctionDefinition("usePickup")]
     public bool UsePickup(Pickup pickup, Player player)
     {

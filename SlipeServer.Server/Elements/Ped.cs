@@ -581,7 +581,11 @@ public class Ped : Element
     public void TriggerWeaponAmmoUpdate(WeaponId weapon, ushort ammo, ushort ammoInClip)
         => this.WeaponOrAmmoChanged?.Invoke(this, new(this, weapon, ammo, ammoInClip));
 
+    public void TriggerDamaged(float loss)
+        => this.Damaged?.Invoke(this, new PedDamagedEventArgs(this, loss));
+
     public event ElementEventHandler<Ped, PedWastedEventArgs>? Wasted;
+    public event ElementEventHandler<Ped, PedDamagedEventArgs>? Damaged;
     public event ElementChangedEventHandler<Ped, ushort>? ModelChanged;
     public event ElementChangedEventHandler<Ped, float>? HealthChanged;
     public event ElementChangedEventHandler<Ped, float>? ArmourChanged;

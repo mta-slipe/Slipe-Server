@@ -1,4 +1,3 @@
-using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Server.Resources;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +8,7 @@ public class ScriptTimerService
 {
     private readonly List<ScriptTimer> timers = [];
 
-    public ScriptTimer CreateTimer(ScriptCallbackDelegateWrapper callback, int intervalMs, int timesToExecute, LuaValue[] arguments)
+    public ScriptTimer CreateTimer(ScriptCallbackDelegateWrapper callback, int intervalMs, int timesToExecute, object?[] arguments)
     {
         var timer = new ScriptTimer(callback, intervalMs, timesToExecute, arguments)
         {

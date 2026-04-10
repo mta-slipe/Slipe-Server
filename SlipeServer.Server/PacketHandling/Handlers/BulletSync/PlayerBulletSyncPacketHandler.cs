@@ -5,13 +5,15 @@ using SlipeServer.Server.Clients;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
+using SlipeServer.Server.ElementCollections;
 using System.Linq;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.BulletSync;
 
 public class PlayerBulletSyncPacketHandler(
     ISyncHandlerMiddleware<PlayerBulletSyncPacket> middleware,
-    ILogger logger
+    ILogger logger,
+    IElementCollection elementCollection
     ) : IPacketHandler<PlayerBulletSyncPacket>
 {
     public PacketId PacketId => PacketId.PACKET_ID_PLAYER_BULLETSYNC;
@@ -26,6 +28,10 @@ public class PlayerBulletSyncPacketHandler(
             logger.LogWarning("Potential cheating, player {player} attempt to fire a {weapon} that they do not posess", client.Player.Name, (WeaponId)packet.WeaponType);
             return;
         }
+
+        var hitElement = packet.DamagedElementId.HasValue ? elementCollection.Get(packet.DamagedElementId.Value) : null;
+        client.Player.TriggerWeaponFired((WeaponId)packet.WeaponType, packet.Start, packet.End, hitElement);
+
         packet.SendTo(otherPlayers);
     }
 }

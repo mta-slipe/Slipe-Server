@@ -54,6 +54,7 @@ public class Pickup : Element
 
         this.CollisionShape = new CollisionSphere(position, 2);
         this.CollisionShape.ElementEntered += HandleCollisionHit;
+        this.CollisionShape.ElementLeft += HandleCollisionLeft;
 
         this.PositionChanged += UpdatePosition;
     }
@@ -69,9 +70,10 @@ public class Pickup : Element
 
         this.CollisionShape = new CollisionSphere(position, 2);
         this.CollisionShape.ElementEntered += HandleCollisionHit;
+        this.CollisionShape.ElementLeft += HandleCollisionLeft;
     }
 
-    public Pickup(Vector3 position, ushort model) : base()
+    public Pickup(Vector3 position, ushort model)
     {
         this.Position = position;
         this.Model = model;
@@ -79,9 +81,10 @@ public class Pickup : Element
 
         this.CollisionShape = new CollisionSphere(position, 2);
         this.CollisionShape.ElementEntered += HandleCollisionHit;
+        this.CollisionShape.ElementLeft += HandleCollisionLeft;
     }
 
-    public Pickup(Vector3 position, PickupModel model) : base()
+    public Pickup(Vector3 position, PickupModel model)
     {
         this.Position = position;
         this.Model = (ushort)model;
@@ -89,6 +92,7 @@ public class Pickup : Element
 
         this.CollisionShape = new CollisionSphere(position, 2);
         this.CollisionShape.ElementEntered += HandleCollisionHit;
+        this.CollisionShape.ElementLeft += HandleCollisionLeft;
     }
 
     public void ChangeToOrUpdateHealthPickup(float amount)
@@ -134,11 +138,22 @@ public class Pickup : Element
     {
         if (args.Element is Player player)
         {
+            this.Hit?.Invoke(this, new PickupHitEventArgs(player));
+            player.RaisePickupHit(new PlayerPickupHitEventArgs(this));
             lock (this.useLock)
             {
                 if (CanBeUsedBy(player) && this.IsVisible)
                     Use(player);
             }
+        }
+    }
+
+    private void HandleCollisionLeft(CollisionShape collisionShape, CollisionShapeLeftEventArgs args)
+    {
+        if (args.Element is Player player)
+        {
+            this.Left?.Invoke(this, new PickupLeftEventArgs(player));
+            player.RaisePickupLeft(new PlayerPickupLeftEventArgs(this));
         }
     }
 
@@ -172,14 +187,20 @@ public class Pickup : Element
                 Enabled = true,
                 AutoReset = false,
             };
-            timer.Elapsed += ResetPickup;
+            timer.Elapsed += HandlePickupTimerElapsed;
             timer.Start();
         }
 
         this.Used?.Invoke(this, new(player, this.IsVisible));
+        player.RaisePickupUsed(new PlayerPickupUsedEventArgs(this));
     }
 
-    private void ResetPickup(object? sender, System.Timers.ElapsedEventArgs e)
+    private void HandlePickupTimerElapsed(object? sender, System.Timers.ElapsedEventArgs e)
+    {
+        Respawn();
+    }
+
+    public void Respawn()
     {
         this.IsVisible = true;
         this.Reset?.Invoke(this, EventArgs.Empty);
@@ -212,6 +233,8 @@ public class Pickup : Element
     }
 
     public event ElementEventHandler<Pickup, EventArgs>? PickupTypeChanged;
+    public event ElementEventHandler<Pickup, PickupHitEventArgs>? Hit;
+    public event ElementEventHandler<Pickup, PickupLeftEventArgs>? Left;
     public event ElementEventHandler<Pickup, PickupUsedEventArgs>? Used;
     public event ElementEventHandler<Pickup, EventArgs>? Reset;
 }

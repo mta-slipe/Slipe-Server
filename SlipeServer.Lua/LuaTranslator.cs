@@ -1,4 +1,5 @@
-﻿using MoonSharp.Interpreter;
+﻿using Microsoft.Extensions.Logging;
+using MoonSharp.Interpreter;
 using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Scripting;
 using SlipeServer.Scripting.Definitions;
@@ -16,8 +17,12 @@ namespace SlipeServer.Lua;
 
 public class LuaTranslator
 {
-    public LuaTranslator()
+    private readonly ILogger logger;
+
+    public LuaTranslator(ILogger logger)
     {
+        this.logger = logger;
+
         UserData.RegisterType<Element>(InteropAccessMode.Hardwired);
         UserData.RegisterType<ScriptFile>(InteropAccessMode.Hardwired);
         UserData.RegisterType<ScriptXmlNode>(InteropAccessMode.Hardwired);
@@ -193,6 +198,36 @@ public class LuaTranslator
         throw new NotImplementedException($"Conversion to Lua for {obj.GetType()} not implemented");
     }
 
+    private ScriptCallbackDelegateWrapper CreateCallbackWrapper(DynValue callbackValue)
+    {
+        var callback = callbackValue.Function;
+        var context = Scripting.ScriptExecutionContext.Current;
+
+        return new ScriptCallbackDelegateWrapper(parameters =>
+        {
+            var values = parameters
+                .Select(ToDynValues)
+                .SelectMany(x => x)
+                .ToArray();
+
+            var previous = Scripting.ScriptExecutionContext.Current;
+            Scripting.ScriptExecutionContext.Current = context;
+
+            try
+            {
+                callback.Call(values);
+            }
+            catch (ScriptRuntimeException e)
+            {
+                this.logger.LogError(e, "Error while executing Lua callback: {decoratedMessage}", e.DecoratedMessage);
+            }
+            finally
+            {
+                Scripting.ScriptExecutionContext.Current = previous;
+            }
+        }, callback);
+    }
+
     private DynValue LuaValueToDynValue(LuaValue luaValue)
     {
         if (luaValue.IsNil)
@@ -255,7 +290,9 @@ public class LuaTranslator
             byte red = GetByteFromDynValue(dynValues.Dequeue());
             byte green = GetByteFromDynValue(dynValues.Dequeue());
             byte blue = GetByteFromDynValue(dynValues.Dequeue());
-            byte alpha = GetByteFromDynValue(dynValues.Dequeue());
+            byte alpha = dynValues.Count > 0 && dynValues.Peek().Type == DataType.Number
+                ? GetByteFromDynValue(dynValues.Dequeue())
+                : (byte)255;
             return Color.FromArgb(alpha, red, green, blue);
         }
         if (targetType == typeof(Vector3))
@@ -304,26 +341,19 @@ public class LuaTranslator
             return dynValues.Dequeue()?.UserData?.Object;
         if (targetType == typeof(ScriptCallbackDelegateWrapper))
         {
-            var callback = dynValues.Dequeue().Function;
-            var context = Scripting.ScriptExecutionContext.Current;
+            var callbackValue = dynValues.Dequeue();
+            if (callbackValue.Type != DataType.Function)
+                throw new ScriptRuntimeException($"Expected a function for callback argument, got {callbackValue.Type}");
 
-            return new ScriptCallbackDelegateWrapper(parameters => {
-                var values = parameters
-                    .Select(ToDynValues)
-                    .SelectMany(x => x)
-                    .ToArray();
-
-                var previous = Scripting.ScriptExecutionContext.Current;
-                Scripting.ScriptExecutionContext.Current = context;
-
-                callback.Call(values);
-
-                Scripting.ScriptExecutionContext.Current = previous;
-            }, callback);
+            return CreateCallbackWrapper(callbackValue);
         }
         if (targetType == typeof(EventDelegate))
         {
-            var callback = dynValues.Dequeue().Function;
+            var callbackValue = dynValues.Dequeue();
+            if (callbackValue.Type != DataType.Function)
+                throw new ScriptRuntimeException($"Expected a function for event handler argument, got {callbackValue.Type}");
+
+            var callback = callbackValue.Function;
             var context = Scripting.ScriptExecutionContext.Current;
 
             return (EventDelegate)((element, parameters) => {
@@ -339,9 +369,18 @@ public class LuaTranslator
                 var previous = Scripting.ScriptExecutionContext.Current;
                 Scripting.ScriptExecutionContext.Current = context;
 
-                callback.Call(values);
-
-                Scripting.ScriptExecutionContext.Current = previous;
+                try
+                {
+                    callback.Call(values);
+                }
+                catch (ScriptRuntimeException e)
+                {
+                    this.logger.LogError(e, "Error while executing Lua event callback: {decoratedMessage}", e.DecoratedMessage);
+                }
+                finally
+                {
+                    Scripting.ScriptExecutionContext.Current = previous;
+                }
 
                 callback.OwnerScript.Globals.Remove("source");
             });
@@ -361,6 +400,7 @@ public class LuaTranslator
                 DataType.Number => val.Number,
                 DataType.Boolean => val.Boolean,
                 DataType.Table => val.Table,
+                DataType.Function => CreateCallbackWrapper(val),
                 _ => null
             };
         }
