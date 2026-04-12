@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using SlipeServer.Scripting.Definitions;
 
 namespace SlipeServer.Scripting;
 
@@ -15,6 +16,7 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<ITransferBoxService, TransferBoxService>();
         services.AddSingleton<IScriptEventRuntime, ScriptEventRuntime>();
         services.AddSingleton<IScriptInputRuntime, ScriptInputRuntime>();
+        services.TryAddSingleton<IAccountService, SqliteAccountService>();
     }
 
     public static void AddScripting<T>(this IServiceCollection services) where T : class, IScriptEventRuntime

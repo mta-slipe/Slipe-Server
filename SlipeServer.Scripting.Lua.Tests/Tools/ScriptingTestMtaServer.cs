@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using SlipeServer.Lua;
 using SlipeServer.Net.Wrappers;
+using SlipeServer.Scripting.Definitions;
 using SlipeServer.Server;
 using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Resources.Serving;
@@ -40,6 +41,8 @@ public class ScriptingTestMtaServer : MtaServer<LightTestPlayer>
 
         this.clients[this.wrapper].Add(player.Address, player.Client);
         player.AssociateWith(this);
+        player.Client.FetchSerial();
+        player.Client.FetchIp();
 
         return player;
     }
@@ -53,6 +56,7 @@ public class ScriptingTestMtaServer : MtaServer<LightTestPlayer>
         services.AddSingleton<ILogger>(x => x.GetRequiredService<ILogger<MtaServer>>());
         services.AddSingleton<IElementCollection>(elementCollection);
 
+        services.AddSingleton<IAccountService>(new SqliteAccountService(":memory:"));
         services.AddScripting();
         services.AddLua();
         services.AddSingleton<ITextItemService>(textItemService);

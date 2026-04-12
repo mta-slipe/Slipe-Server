@@ -30,6 +30,7 @@ public class LuaTranslator
         UserData.RegisterType<AclGroup>(InteropAccessMode.Hardwired);
         UserData.RegisterType<DbConnectionHandle>(InteropAccessMode.Hardwired);
         UserData.RegisterType<DbQueryHandle>(InteropAccessMode.Hardwired);
+        UserData.RegisterType<AccountHandle>(InteropAccessMode.Hardwired);
         UserData.RegisterType<TextItem>(InteropAccessMode.Hardwired);
         UserData.RegisterType<TextDisplay>(InteropAccessMode.Hardwired);
         UserData.RegisterType<ScriptTimer>(InteropAccessMode.Hardwired);
@@ -51,6 +52,8 @@ public class LuaTranslator
             return [UserData.Create(dbConnection)];
         if (obj is DbQueryHandle dbQueryHandle)
             return [UserData.Create(dbQueryHandle)];
+        if (obj is AccountHandle accountHandle)
+            return [UserData.Create(accountHandle)];
         if (obj is TextItem textItem)
             return [UserData.Create(textItem)];
         if (obj is TextDisplay textDisplay)
@@ -170,6 +173,13 @@ public class LuaTranslator
             return results;
         }
 
+        if (obj is System.Collections.Generic.IDictionary<string, string?> stringStringDict)
+        {
+            var dictTable = new Table(null);
+            foreach (var (key, val) in stringStringDict)
+                dictTable.Set(key, val == null ? DynValue.Nil : DynValue.NewString(val));
+            return [DynValue.NewTable(dictTable)];
+        }
         if (obj is IEnumerable<string> stringEnumerable)
         {
             var enumerableTable = new Table(null);
@@ -408,6 +418,8 @@ public class LuaTranslator
             return dynValues.Dequeue()?.UserData?.Object as DbConnectionHandle;
         if (targetType == typeof(DbQueryHandle))
             return dynValues.Dequeue()?.UserData?.Object as DbQueryHandle;
+        if (targetType == typeof(AccountHandle))
+            return dynValues.Dequeue()?.UserData?.Object as AccountHandle;
         if (targetType == typeof(TextItem))
             return dynValues.Dequeue()?.UserData?.Object as TextItem;
         if (targetType == typeof(TextDisplay))
@@ -446,6 +458,7 @@ public class LuaTranslator
         if (targetType == typeof(ScriptFile) || targetType == typeof(ScriptXmlNode) ||
             targetType == typeof(DbConnectionHandle) || targetType == typeof(DbQueryHandle) ||
             targetType == typeof(AclEntry) || targetType == typeof(AclGroup) ||
+            targetType == typeof(AccountHandle) ||
             typeof(Element).IsAssignableFrom(targetType))
             return value.Type == DataType.UserData;
 
