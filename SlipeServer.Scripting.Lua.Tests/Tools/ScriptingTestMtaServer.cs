@@ -17,9 +17,9 @@ public class ScriptingTestMtaServer : MtaServer<LightTestPlayer>
     private readonly INetWrapper wrapper;
     private ulong address;
 
-    public ScriptingTestMtaServer(INetWrapper wrapper, IElementCollection elementCollection, ScriptingAssertDefinitions definitions, ITextItemService textItemService) : base(builder =>
+    public ScriptingTestMtaServer(INetWrapper wrapper, IElementCollection elementCollection, ScriptingAssertDefinitions definitions, ITextItemService textItemService, IAclService? aclService = null) : base(builder =>
     {
-        builder.ConfigureServices(x => ConfigureOverrides(x, elementCollection, textItemService));
+        builder.ConfigureServices(x => ConfigureOverrides(x, elementCollection, textItemService, aclService));
     })
     {
         this.AddNetWrapper(wrapper);
@@ -48,7 +48,7 @@ public class ScriptingTestMtaServer : MtaServer<LightTestPlayer>
     }
 
 
-    public static void ConfigureOverrides(IServiceCollection services, IElementCollection elementCollection, ITextItemService textItemService)
+    public static void ConfigureOverrides(IServiceCollection services, IElementCollection elementCollection, ITextItemService textItemService, IAclService? aclService = null)
     {
         var httpServerMock = new Mock<IResourceServer>();
         services.AddSingleton<IResourceServer>(httpServerMock.Object);
@@ -57,7 +57,9 @@ public class ScriptingTestMtaServer : MtaServer<LightTestPlayer>
         services.AddSingleton<IElementCollection>(elementCollection);
 
         services.AddSingleton<IAccountService>(new SqliteAccountService(":memory:"));
-        services.AddScripting();
+        if (aclService != null)
+            services.AddSingleton<IAclService>(aclService);
+        services.AddScripting(withAcl: aclService != null);
         services.AddLua();
         services.AddSingleton<ITextItemService>(textItemService);
     }
