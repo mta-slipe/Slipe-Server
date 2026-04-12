@@ -1,8 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SlipeServer.DropInReplacement.MixedResources;
 using SlipeServer.DropInReplacement.MixedResources.Behaviour;
+using SlipeServer.DropInReplacement.PacketHandlers;
 using SlipeServer.Lua;
 using SlipeServer.LuaControllers;
+using SlipeServer.Packets.Definitions.Commands;
+using SlipeServer.Packets.Definitions.Join;
+using SlipeServer.Packets.Definitions.Vehicles;
 using SlipeServer.Scripting;
 using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.ServerBuilders;
@@ -16,12 +20,24 @@ public static class DropInReplacementExtensions
         public ServerBuilder AddDropInReplacementServer()
         {
             builder.AddDefaults(
-                exceptResourceInterpreters: 
-                    ServerBuilderDefaultResourceInterpreters.MetaXml | 
-                    ServerBuilderDefaultResourceInterpreters.SlipeLua | 
+                exceptResourceInterpreters:
+                    ServerBuilderDefaultResourceInterpreters.MetaXml |
+                    ServerBuilderDefaultResourceInterpreters.SlipeLua |
                     ServerBuilderDefaultResourceInterpreters.Basic,
-                exceptBehaviours: ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour,
+                exceptBehaviours:
+                    ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour |
+                    ServerBuilderDefaultBehaviours.DefaultChatBehaviour |
+                    ServerBuilderDefaultBehaviours.PickupBehaviour,
+                exceptPacketHandlers:
+                    ServerBuilderDefaultPacketHandlers.VehicleInOutPacketHandler |
+                    ServerBuilderDefaultPacketHandlers.CommandPacketHandler |
+                    ServerBuilderDefaultPacketHandlers.JoinDataPacketHandler,
                 includeResourceServer: false);
+
+            builder.AddPacketHandler<ScriptingVehicleInOutPacketHandler, VehicleInOutPacket>();
+            builder.AddPacketHandler<ScriptingCommandPacketHandler, CommandPacket>();
+            builder.AddPacketHandler<ScriptingJoinDataPacketHandler, PlayerJoinDataPacket>();
+            builder.AddBehaviour<ScriptingPickupBehaviour>();
 
             builder.ConfigureServices((services) =>
             {

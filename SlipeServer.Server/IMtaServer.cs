@@ -3,6 +3,7 @@ using SlipeServer.Packets;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Clients;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Events;
 using SlipeServer.Server.PacketHandling.Handlers;
 using SlipeServer.Server.Resources;
@@ -31,6 +32,7 @@ public interface IMtaServer
     event Action<Element>? ElementCreated;
     event Action<LuaEvent>? LuaEventTriggered;
     event Action<ushort>? MaxPlayerCountChanged;
+    event Action<PlayerConnectingEventArgs>? PlayerConnecting;
     event Action<Player>? PlayerJoined;
     event Action<IMtaServer>? Started;
     event Action<IMtaServer>? Stopped;
@@ -49,6 +51,7 @@ public interface IMtaServer
     T? GetService<T>();
     void HandleLuaEvent(LuaEvent luaEvent);
     void HandlePlayerJoin(Player player);
+    void TriggerPlayerConnecting(string name, string ip, string serial, string version);
     object Instantiate(Type type, params object[] parameters);
     T Instantiate<T>(params object[] parameters);
     object InstantiatePersistent(Type type, params object[] parameters);

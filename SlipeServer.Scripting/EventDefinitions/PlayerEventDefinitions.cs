@@ -1,4 +1,5 @@
-﻿using SlipeServer.Server.Elements;
+﻿using SlipeServer.Server;
+using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Elements.Enums;
@@ -8,7 +9,7 @@ using System.Linq;
 
 namespace SlipeServer.Scripting.EventDefinitions;
 
-public class PlayerEventDefinitions : IEventDefinitions
+public class PlayerEventDefinitions(IMtaServer server) : IEventDefinitions
 {
     public void LoadInto(IScriptEventRuntime eventRuntime)
     {
@@ -510,6 +511,21 @@ public class PlayerEventDefinitions : IEventDefinitions
                 {
                     Add = (element) => element.CommandEntered += callbackProxy,
                     Remove = (element) => element.CommandEntered -= callbackProxy
+                };
+            }
+        );
+
+        eventRuntime.RegisterEvent<RootElement>(
+            "onPlayerConnect",
+            (callback) =>
+            {
+                void callbackProxy(PlayerConnectingEventArgs e)
+                    => callback.CallbackDelegate(server.RootElement, e.Name, e.IP, e.Serial, e.Version, e.Version);
+
+                return new EventHandlerActions<RootElement>()
+                {
+                    Add = (_) => server.PlayerConnecting += callbackProxy,
+                    Remove = (_) => server.PlayerConnecting -= callbackProxy
                 };
             }
         );

@@ -14,10 +14,12 @@ public class ScriptInputRuntime : IScriptInputRuntime
     private readonly List<RegisteredCommandHandler> registeredCommandHandlers = [];
     private readonly Dictionary<Player, List<RegisteredKeyBinding>> keyBindings = [];
     private readonly IMtaServer server;
+    private readonly IScriptEventRuntime? eventRuntime;
 
-    public ScriptInputRuntime(IMtaServer server, IElementCollection elementCollection)
+    public ScriptInputRuntime(IMtaServer server, IElementCollection elementCollection, IScriptEventRuntime? eventRuntime = null)
     {
         this.server = server;
+        this.eventRuntime = eventRuntime;
         this.server.PlayerJoined += HandlePlayerJoined;
 
         foreach (var player in elementCollection.GetByType<Player>())
@@ -45,6 +47,9 @@ public class ScriptInputRuntime : IScriptInputRuntime
 
     private void CommandEntered(Player player, PlayerCommandEventArgs e)
     {
+        if (this.eventRuntime?.WasEventCancelled() == true)
+            return;
+
         foreach (var commandHandler in this.registeredCommandHandlers)
         {
             if (commandHandler.CommandName == e.Command)

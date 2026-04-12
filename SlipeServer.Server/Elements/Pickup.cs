@@ -162,6 +162,11 @@ public class Pickup : Element
         if (!this.IsUsable)
             return;
 
+        var beforeUsedArgs = new CancellablePickupUseEventArgs(player);
+        this.BeforeUsed?.Invoke(this, beforeUsedArgs);
+        if (beforeUsedArgs.Cancel)
+            return;
+
         switch (this.PickupType)
         {
             case PickupType.Health:
@@ -235,6 +240,7 @@ public class Pickup : Element
     public event ElementEventHandler<Pickup, EventArgs>? PickupTypeChanged;
     public event ElementEventHandler<Pickup, PickupHitEventArgs>? Hit;
     public event ElementEventHandler<Pickup, PickupLeftEventArgs>? Left;
+    public event ElementEventHandler<Pickup, CancellablePickupUseEventArgs>? BeforeUsed;
     public event ElementEventHandler<Pickup, PickupUsedEventArgs>? Used;
     public event ElementEventHandler<Pickup, EventArgs>? Reset;
 }

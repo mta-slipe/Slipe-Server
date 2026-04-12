@@ -17,6 +17,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\SlipeServer.Lua\SlipeServer.Lua.csproj" />
 		<ProjectReference Include="..\SlipeServer.Server.Tests\SlipeServer.Server.Tests.csproj" />
+		<ProjectReference Include="..\SlipeServer.DropInReplacement\SlipeServer.DropInReplacement.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

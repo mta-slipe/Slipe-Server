@@ -19,6 +19,7 @@ public class VehicleInOutPacketHandler(
     ) : IPacketHandler<VehicleInOutPacket>
 {
     public PacketId PacketId => PacketId.PACKET_ID_VEHICLE_INOUT;
+    protected IMtaServer Server => server;
 
     public void HandlePacket(IClient client, VehicleInOutPacket packet)
     {
@@ -64,7 +65,7 @@ public class VehicleInOutPacketHandler(
         }
     }
 
-    private void HandleRequestIn(IClient client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
+    protected virtual void HandleRequestIn(IClient client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
     {
         VehicleEnterFailReason failReason = VehicleEnterFailReason.Invalid;
         if (vehicle.IsTrailer)
@@ -209,7 +210,7 @@ public class VehicleInOutPacketHandler(
         }
     }
 
-    private void SendInRequestFailResponse(IClient client, Elements.Vehicle vehicle, VehicleEnterFailReason failReason)
+    protected void SendInRequestFailResponse(IClient client, Elements.Vehicle vehicle, VehicleEnterFailReason failReason)
     {
         var replyPacket = new VehicleInOutPacket()
         {
@@ -267,7 +268,7 @@ public class VehicleInOutPacketHandler(
         server.BroadcastPacket(replyPacket);
     }
 
-    private void HandleRequestOut(IClient client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
+    protected virtual void HandleRequestOut(IClient client, Elements.Vehicle vehicle, VehicleInOutPacket packet)
     {
         if (client.Player.VehicleAction != VehicleAction.None)
         {

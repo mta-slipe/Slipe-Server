@@ -7,6 +7,7 @@ using SlipeServer.Packets.Structs;
 using SlipeServer.Server.Clients;
 using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Elements.IdGeneration;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Events;
@@ -635,6 +636,15 @@ public class MtaServer : IMtaServer
     }
 
     /// <summary>
+    /// Fires the <see cref="PlayerConnecting"/> event. Called from the scripting join handler
+    /// so Lua scripts can cancel the connection via <c>cancelEvent()</c>.
+    /// </summary>
+    public void TriggerPlayerConnecting(string name, string ip, string serial, string version)
+    {
+        PlayerConnecting?.Invoke(new PlayerConnectingEventArgs(name, ip, serial, version));
+    }
+
+    /// <summary>
     /// Handles a lua event, and triggers the appropriate event.
     /// This method is generally intended to be called from packet handlers.
     /// </summary>
@@ -696,6 +706,12 @@ public class MtaServer : IMtaServer
     /// Triggered when any player joins the server
     /// </summary>
     public event Action<Player>? PlayerJoined;
+
+    /// <summary>
+    /// Triggered when a player is attempting to connect, before they are confirmed.
+    /// Scripts can cancel this event to refuse the connection.
+    /// </summary>
+    public event Action<PlayerConnectingEventArgs>? PlayerConnecting;
 
     /// <summary>
     /// Triggered when a client connects to the server

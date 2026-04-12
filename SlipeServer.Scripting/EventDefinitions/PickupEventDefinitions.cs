@@ -54,12 +54,16 @@ public class PickupEventDefinitions : IEventDefinitions
             "onPickupUse",
             (callback) =>
             {
-                void callbackProxy(Pickup sender, PickupUsedEventArgs e)
-                    => callback.CallbackDelegate(sender, e.Player);
+                void callbackProxy(Pickup sender, CancellablePickupUseEventArgs e)
+                {
+                    callback.CallbackDelegate(sender, e.Player);
+                    if (eventRuntime.WasEventCancelled())
+                        e.Cancel = true;
+                }
                 return new EventHandlerActions<Pickup>()
                 {
-                    Add = (pickup) => pickup.Used += callbackProxy,
-                    Remove = (pickup) => pickup.Used -= callbackProxy
+                    Add = (pickup) => pickup.BeforeUsed += callbackProxy,
+                    Remove = (pickup) => pickup.BeforeUsed -= callbackProxy
                 };
             }
         );
