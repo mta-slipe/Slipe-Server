@@ -130,7 +130,9 @@ public class SqliteAccountService : IAccountService, IDisposable
             cmd.Parameters.AddWithValue("@name", name);
             cmd.Parameters.AddWithValue("@password", hash);
             var id = Convert.ToInt32(cmd.ExecuteScalar()!);
-            return new AccountHandle(id, name, null, null);
+            var account = new AccountHandle(id, name, null, null);
+            this.AccountCreated?.Invoke(this, new AccountEventArgs(account));
+            return account;
         }
     }
 
@@ -281,7 +283,10 @@ public class SqliteAccountService : IAccountService, IDisposable
             using var cmd = this.connection.CreateCommand();
             cmd.CommandText = "DELETE FROM accounts WHERE id = @id";
             cmd.Parameters.AddWithValue("@id", account.Id);
-            return cmd.ExecuteNonQuery() > 0;
+            var removed = cmd.ExecuteNonQuery() > 0;
+            if (removed)
+                this.AccountRemoved?.Invoke(this, new AccountEventArgs(account));
+            return removed;
         }
     }
 
@@ -341,6 +346,17 @@ public class SqliteAccountService : IAccountService, IDisposable
     public bool SetAccountData(AccountHandle account, string key, LuaValue value)
     {
         var (strValue, luaType) = LuaValueToStorable(value);
+        LuaValue oldValue;
+        lock (this.dbLock)
+        {
+            using var getCmd = this.connection.CreateCommand();
+            getCmd.CommandText = "SELECT value, type FROM userdata WHERE userid = @id AND key = @key";
+            getCmd.Parameters.AddWithValue("@id", account.Id);
+            getCmd.Parameters.AddWithValue("@key", key);
+            using var reader = getCmd.ExecuteReader();
+            oldValue = reader.Read() ? StorableToLuaValue(reader.GetString(0), reader.GetInt32(1)) : LuaValue.Nil;
+        }
+
         lock (this.dbLock)
         {
             using var cmd = this.connection.CreateCommand();
@@ -363,8 +379,10 @@ public class SqliteAccountService : IAccountService, IDisposable
                 cmd.Parameters.AddWithValue("@type", luaType);
             }
             cmd.ExecuteNonQuery();
-            return true;
         }
+
+        this.AccountDataChanged?.Invoke(this, new AccountDataChangedEventArgs(account, key, value, oldValue));
+        return true;
     }
 
     public Dictionary<string, string?> GetAllAccountData(AccountHandle account)
@@ -447,4 +465,8 @@ public class SqliteAccountService : IAccountService, IDisposable
     {
         this.connection.Dispose();
     }
+
+    public event EventHandler<AccountEventArgs>? AccountCreated;
+    public event EventHandler<AccountEventArgs>? AccountRemoved;
+    public event EventHandler<AccountDataChangedEventArgs>? AccountDataChanged;
 }

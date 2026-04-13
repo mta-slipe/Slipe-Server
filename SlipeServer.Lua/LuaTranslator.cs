@@ -5,12 +5,14 @@ using SlipeServer.Scripting;
 using SlipeServer.Scripting.Definitions;
 using SlipeServer.Server.Concepts;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Resources;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using MarkerArrowProperties = SlipeServer.Scripting.Definitions.MarkerArrowProperties;
 
 namespace SlipeServer.Lua;
@@ -18,12 +20,14 @@ namespace SlipeServer.Lua;
 public class LuaTranslator
 {
     private readonly ILogger logger;
+    private readonly ConditionalWeakTable<Closure, EventDelegate> eventDelegateCache = [];
 
     public LuaTranslator(ILogger logger)
     {
         this.logger = logger;
 
         UserData.RegisterType<Element>(InteropAccessMode.Hardwired);
+        UserData.RegisterType<Resource>(InteropAccessMode.HideMembers);
         UserData.RegisterType<ScriptFile>(InteropAccessMode.Hardwired);
         UserData.RegisterType<ScriptXmlNode>(InteropAccessMode.Hardwired);
         UserData.RegisterType<AclEntry>(InteropAccessMode.Hardwired);
@@ -78,6 +82,8 @@ public class LuaTranslator
             return [UserData.Create(aclEntry)];
         if (obj is AclGroup aclGroup)
             return [UserData.Create(aclGroup)];
+        if (obj is Resource resource)
+            return [UserData.Create(resource)];
         if (obj is Element element)
             return [UserData.Create(element)];
         if (obj is byte int8)
@@ -162,6 +168,8 @@ public class LuaTranslator
             return [DynValue.NewTable(table)];
         if (obj is DynValue dynValue)
             return [dynValue];
+        if (obj is DynValue[] dynValues)
+            return dynValues;
         if (obj is LuaValue luaValue)
             return [LuaValueToDynValue(luaValue)];
 
@@ -363,13 +371,17 @@ public class LuaTranslator
             if (callbackValue.Type != DataType.Function)
                 throw new ScriptRuntimeException($"Expected a function for event handler argument, got {callbackValue.Type}");
 
-            var callback = callbackValue.Function;
+            var closure = callbackValue.Function;
+
+            if (this.eventDelegateCache.TryGetValue(closure, out var cached))
+                return cached;
+
             var context = Scripting.ScriptExecutionContext.Current;
 
-            return (EventDelegate)((element, parameters) => {
+            EventDelegate eventDelegate = (element, parameters) => {
                 var source = UserData.Create(element);
 
-                callback.OwnerScript.Globals["source"] = source;
+                closure.OwnerScript.Globals["source"] = source;
 
                 var values = parameters
                     .Select(ToDynValues)
@@ -381,7 +393,7 @@ public class LuaTranslator
 
                 try
                 {
-                    callback.Call(values);
+                    closure.Call(values);
                 }
                 catch (ScriptRuntimeException e)
                 {
@@ -392,8 +404,11 @@ public class LuaTranslator
                     Scripting.ScriptExecutionContext.Current = previous;
                 }
 
-                callback.OwnerScript.Globals.Remove("source");
-            });
+                closure.OwnerScript.Globals.Remove("source");
+            };
+
+            this.eventDelegateCache.Add(closure, eventDelegate);
+            return eventDelegate;
         }
 
         if (targetType == typeof(LuaValue))
@@ -424,6 +439,10 @@ public class LuaTranslator
             return dynValues.Dequeue()?.UserData?.Object as TextItem;
         if (targetType == typeof(TextDisplay))
             return dynValues.Dequeue()?.UserData?.Object as TextDisplay;
+        if (targetType == typeof(Resource))
+            return dynValues.Dequeue()?.UserData?.Object as Resource;
+        if (targetType == typeof(DynValue))
+            return dynValues.Dequeue();
 
         if (targetType.IsGenericType && targetType.GetGenericTypeDefinition() == typeof(Nullable<>))
         {
@@ -455,6 +474,10 @@ public class LuaTranslator
             targetType == typeof(byte)) 
             return value.Type == DataType.Number;
 
+        if (targetType == typeof(Resource))
+            return value.Type == DataType.UserData;
+        if (targetType == typeof(DynValue))
+            return true;
         if (targetType == typeof(ScriptFile) || targetType == typeof(ScriptXmlNode) ||
             targetType == typeof(DbConnectionHandle) || targetType == typeof(DbQueryHandle) ||
             targetType == typeof(AclEntry) || targetType == typeof(AclGroup) ||

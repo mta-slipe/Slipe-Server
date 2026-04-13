@@ -38,13 +38,38 @@ public class BanService(IBanRepository banRepository, IElementCollection element
             player.player.Kick(ban.Reason ?? "Unknown", disconnectType);
         }
 
+        this.BanAdded?.Invoke(this, new BanEventArgs(ban));
+
         return ban;
 
     }
 
-    public void RemoveBans(string? serial, IPAddress? ipAddress) => banRepository.RemoveBans(serial, ipAddress);
-    public void RemoveBan(Ban ban) => banRepository.RemoveBan(ban);
-    public void RemoveBan(Guid id) => banRepository.RemoveBan(id);
+    public void RemoveBans(string? serial, IPAddress? ipAddress)
+    {
+        var bansToRemove = GetBans()
+            .Where(x => (serial != null && x.Serial == serial) || (ipAddress != null && x.IPAddress?.Equals(ipAddress) == true))
+            .ToArray();
+        banRepository.RemoveBans(serial, ipAddress);
+        foreach (var ban in bansToRemove)
+            this.BanRemoved?.Invoke(this, new BanEventArgs(ban));
+    }
+
+    public void RemoveBan(Ban ban)
+    {
+        banRepository.RemoveBan(ban);
+        this.BanRemoved?.Invoke(this, new BanEventArgs(ban));
+    }
+
+    public void RemoveBan(Guid id)
+    {
+        var ban = GetBans().FirstOrDefault(x => x.Id == id);
+        banRepository.RemoveBan(id);
+        if (ban != null)
+            this.BanRemoved?.Invoke(this, new BanEventArgs(ban));
+    }
 
     public bool IsIpOrSerialBanned(string? serial, IPAddress? ipAddress, out Ban? ban) => banRepository.IsIpOrSerialBanned(serial, ipAddress, out ban);
+
+    public event EventHandler<BanEventArgs>? BanAdded;
+    public event EventHandler<BanEventArgs>? BanRemoved;
 }

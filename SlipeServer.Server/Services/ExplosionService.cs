@@ -2,6 +2,7 @@
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 
@@ -16,6 +17,7 @@ public class ExplosionService(IMtaServer server) : IExplosionService
     {
         var packet = new ExplosionPacket(responsiblePlayer?.Id, null, position, (byte)type, (ushort)(responsiblePlayer?.Client.Ping ?? 0));
         server.BroadcastPacket(packet);
+        this.ExplosionCreated?.Invoke(this, new ExplosionEventArgs(position, type, responsiblePlayer));
     }
 
     public void CreateExplosionFor(
@@ -28,4 +30,6 @@ public class ExplosionService(IMtaServer server) : IExplosionService
         var packet = new ExplosionPacket(responsiblePlayer?.Id, null, position, (byte)type, (ushort)(responsiblePlayer?.Client.Ping ?? 0));
         packet.SendTo(players);
     }
+
+    public event EventHandler<ExplosionEventArgs>? ExplosionCreated;
 }

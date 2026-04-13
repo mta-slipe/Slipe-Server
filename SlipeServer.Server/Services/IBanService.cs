@@ -13,4 +13,7 @@ public interface IBanService
     void RemoveBan(Ban ban);
     void RemoveBan(Guid id);
     void RemoveBans(string? serial, IPAddress? ipAddress);
+
+    event EventHandler<BanEventArgs>? BanAdded;
+    event EventHandler<BanEventArgs>? BanRemoved;
 }

@@ -1,9 +1,10 @@
 ﻿using SlipeServer.Packets.Definitions.Explosions;
 using SlipeServer.Packets.Enums;
+using SlipeServer.Server.Clients;
+using SlipeServer.Server.ElementCollections;
+using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
 using SlipeServer.Server.PacketHandling.Handlers.Middleware;
-using SlipeServer.Server.ElementCollections;
-using SlipeServer.Server.Clients;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.Explosions;
 
@@ -32,6 +33,8 @@ public class ExplosionPacketHandler(
         }
 
         var nearbyPlayers = middleware.GetPlayersToSyncTo(client.Player, packet);
+
+        player.TriggerExplosionCreated(packet.Position, (ExplosionType)packet.ExplosionType);
 
         packet.SendTo(nearbyPlayers);
     }

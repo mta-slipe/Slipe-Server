@@ -586,6 +586,9 @@ public class Player : Ped
     public void TriggerSatchelsDetonated()
         => this.SatchelsDetonated?.Invoke(this, EventArgs.Empty);
 
+    public void TriggerExplosionCreated(Vector3 position, ExplosionType explosionType)
+        => this.ExplosionCreated?.Invoke(this, new PlayerExplosionEventArgs(this, position, explosionType));
+
     public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
     public event ElementChangedEventHandler<Player, string>? NametagTextChanged;
     public event ElementChangedEventHandler<Player, bool>? IsNametagShowingChanged;
@@ -620,4 +623,5 @@ public class Player : Ped
     public event ElementEventHandler<Player, PlayerPickupUsedEventArgs>? PickupUsed;
     public event ElementEventHandler<Player, PlayerWeaponFiredEventArgs>? WeaponFired;
     public event ElementEventHandler<Player, EventArgs>? SatchelsDetonated;
+    public event ElementEventHandler<Player, PlayerExplosionEventArgs>? ExplosionCreated;
 }

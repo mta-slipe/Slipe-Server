@@ -1,4 +1,5 @@
 using SlipeServer.Packets.Definitions.Lua;
+using System;
 using System.Collections.Generic;
 
 namespace SlipeServer.Scripting.Definitions;
@@ -22,4 +23,8 @@ public interface IAccountService
     bool VerifyPassword(AccountHandle account, string password);
     void UpdateSerial(AccountHandle account, string? serial);
     void UpdateIp(AccountHandle account, string? ip);
+
+    event EventHandler<AccountEventArgs>? AccountCreated;
+    event EventHandler<AccountEventArgs>? AccountRemoved;
+    event EventHandler<AccountDataChangedEventArgs>? AccountDataChanged;
 }

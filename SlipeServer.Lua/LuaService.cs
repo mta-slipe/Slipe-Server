@@ -14,12 +14,21 @@ using System.Threading.Tasks;
 
 namespace SlipeServer.Lua;
 
-public class LuaService(IMtaServer server, ILogger logger, IRootElement root, ScriptTransformationPipeline scriptTransformationPipeline, IScriptEventRuntime scriptEventRuntime, ScriptTimerService scriptTimerService, IScriptInputRuntime scriptInputRuntime)
+public class LuaService(
+    IMtaServer server,
+    ILogger logger,
+    IRootElement root,
+    ScriptTransformationPipeline scriptTransformationPipeline,
+    IScriptEventRuntime scriptEventRuntime,
+    ScriptTimerService scriptTimerService,
+    IScriptInputRuntime scriptInputRuntime,
+    LuaEnvironmentService environmentService,
+    LuaCallDefinitions callDefinitions)
 {
-    private readonly Dictionary<string, Script> scripts = [];
     private readonly Dictionary<string, LuaMethod> methods = [];
     private readonly Dictionary<string, object> globalValues = [];
     private readonly LuaTranslator translator = new(logger);
+    private bool callDefinitionsLoaded;
 
     public void LoadDefinitions(object methodSet)
     {
@@ -113,31 +122,32 @@ public class LuaService(IMtaServer server, ILogger logger, IRootElement root, Sc
         }
     }
 
+    public LuaEnvironment CreateEnvironment(string identifier, Resource? resource = null)
+    {
+        if (!callDefinitionsLoaded)
+        {
+            LoadDefinitions(callDefinitions);
+            callDefinitionsLoaded = true;
+        }
+
+        var script = new Script(CoreModules.Preset_SoftSandbox);
+        script.Options.DebugPrint = (value) => logger.LogInformation(value);
+
+        LoadGlobals(script);
+        LoadDefinitions(script);
+        callDefinitions.LoadExports(script);
+
+        var context = new Scripting.ScriptExecutionContext(resource);
+        var environment = new LuaEnvironment(identifier, script, context, this.translator, logger, scriptTransformationPipeline, scriptEventRuntime, scriptTimerService, scriptInputRuntime);
+
+        environmentService.RegisterEnvironment(environment);
+        return environment;
+    }
+
     public void LoadScript(string identifier, string code, Resource? runningResource = null)
     {
-        Script? script = null;
-        try
-        {
-            script = new Script(CoreModules.Preset_SoftSandbox);
-            script.Options.DebugPrint = (value) => logger.LogInformation(value);
-            this.scripts[identifier] = script;
-
-            LoadGlobals(script);
-            LoadDefinitions(script);
-
-            using var ms = new MemoryStream(Encoding.UTF8.GetBytes(code));
-            var stream = scriptTransformationPipeline.Transform(ms, "lua");
-
-            Scripting.ScriptExecutionContext.Current = new(runningResource);
-            script.DoStream(stream, codeFriendlyName: identifier);
-            Scripting.ScriptExecutionContext.Current = null;
-        } catch (ScriptRuntimeException exception)
-        {
-            logger.LogError("{Lua error}", FormatLuaError(exception, script));
-        } catch (LuaException exception)
-        {
-            logger.LogError("{Lua error}", exception.Message);
-        }
+        var environment = CreateEnvironment(identifier, runningResource);
+        environment.LoadString(code, identifier);
     }
 
     public void AddGlobal(string key, object value)
@@ -152,34 +162,9 @@ public class LuaService(IMtaServer server, ILogger logger, IRootElement root, Sc
 
     public void LoadScript(string identifier, string[] codes, Resource? runningResource = null)
     {
-        Script? script = null;
-        try
-        {
-            script = new Script(CoreModules.Preset_SoftSandbox);
-            script.Options.DebugPrint = (value) =>
-            {
-                using var scope = logger.BeginScope(script);
-                logger.LogDebug("{value}", value);
-            };
-            this.scripts[identifier] = script;
-
-            LoadGlobals(script);
-            LoadDefinitions(script);
-
-            Scripting.ScriptExecutionContext.Current = new(runningResource);
-
-            foreach (var code in codes)
-                script.DoString(code, codeFriendlyName: identifier);
-
-            Scripting.ScriptExecutionContext.Current = null;
-        } catch (ScriptRuntimeException exception)
-        {
-            logger.LogError("{Lua error}", FormatLuaError(exception, script));
-        }
-        catch (LuaException exception)
-        {
-            logger.LogError("{Lua error}", exception.Message);
-        }
+        var environment = CreateEnvironment(identifier, runningResource);
+        foreach (var code in codes)
+            environment.LoadString(code, identifier);
     }
 
     public async Task LoadScriptFromPath(string path, Resource? runningResource = null) => LoadScript(path, await File.ReadAllTextAsync(path), runningResource);
@@ -192,15 +177,26 @@ public class LuaService(IMtaServer server, ILogger logger, IRootElement root, Sc
 
     public void UnloadScript(string identifier)
     {
-        this.scripts.Remove(identifier);
+        var environment = environmentService.GetEnvironment(identifier);
+        environment?.Unload();
+        environmentService.UnregisterEnvironment(identifier);
     }
 
     public void UnloadScriptsFor(Resource runningResource)
     {
-        scriptEventRuntime.RemoveEventHandlersWithContext(runningResource);
-        scriptTimerService.KillTimersWithContext(runningResource);
-        scriptInputRuntime.RemoveCommandHandlersWithContext(runningResource);
-        scriptInputRuntime.RemoveKeyBindingsWithContext(runningResource);
+        var environment = environmentService.GetEnvironment(runningResource);
+        if (environment != null)
+        {
+            environment.Unload();
+            environmentService.UnregisterEnvironment(environment.Identifier);
+        }
+        else
+        {
+            scriptEventRuntime.RemoveEventHandlersWithContext(runningResource);
+            scriptTimerService.KillTimersWithContext(runningResource);
+            scriptInputRuntime.RemoveCommandHandlersWithContext(runningResource);
+            scriptInputRuntime.RemoveKeyBindingsWithContext(runningResource);
+        }
 
         static void DestroyChildren(IElement parent)
         {
