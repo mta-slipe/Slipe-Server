@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading;
 using SlipeServer.Server.Resources;
 using Microsoft.Extensions.Logging;
+using SlipeServer.Packets.Definitions.Lua;
 
 namespace SlipeServer.Scripting;
 
@@ -34,13 +35,6 @@ public class ScriptEventRuntime : IScriptEventRuntime
         this.logger = logger;
         this.server.ElementCreated += HandleElementCreation;
         this.server.LuaEventTriggered += HandleRemoteLuaEvent;
-
-        this.server.PlayerJoined += HandlePlayerJoin;
-    }
-
-    private void HandlePlayerJoin(Player player)
-    {
-        HandleElementCreation(player);
     }
 
     private void HandleRemoteLuaEvent(LuaEvent luaEvent)
@@ -48,7 +42,7 @@ public class ScriptEventRuntime : IScriptEventRuntime
         if (!this.customEvents.TryGetValue(luaEvent.Name, out bool allowRemoteTrigger) || !allowRemoteTrigger)
             return;
 
-        TriggerCustomEvent(luaEvent.Name, luaEvent.Source, luaEvent.Parameters.Cast<object>().ToArray());
+        TriggerCustomEventFromClient(luaEvent.Name, luaEvent.Source, luaEvent.Player, luaEvent.Parameters.Cast<object>().ToArray());
     }
 
     private void HandleElementCreation(Element element)
@@ -319,6 +313,45 @@ public class ScriptEventRuntime : IScriptEventRuntime
 
         foreach (var handler in handlers)
             handler.Delegate(element, arguments);
+
+        return !this.lastEventCancelled;
+    }
+
+    public bool TriggerCustomEventFromClient(string eventName, Element element, Player client, params object[] arguments)
+    {
+        this.lastEventCancelled = false;
+        this.lastCancelReason = string.Empty;
+
+        CustomEventHandlerEntry[] handlers;
+        lock (this.handlerLock)
+        {
+            handlers = this.customEventHandlers
+                .Where(h => h.EventName == eventName &&
+                    (h.AttachedTo == element || element.IsChildOf(h.AttachedTo)))
+                .ToArray();
+        }
+
+        arguments = arguments
+            .Select(x =>
+            {
+                if (x is LuaValue luaValue && luaValue.ElementId is not null)
+                    return this.elementCollection.Get(luaValue.ElementId.Value) ?? x;
+
+                return x;
+            }).ToArray();
+
+        foreach (var handler in handlers)
+        {
+            handler.ExecutionContext?.SetGlobal?.Invoke("client", client);
+            try
+            {
+                handler.Delegate(element, arguments);
+            }
+            finally
+            {
+                handler.ExecutionContext?.RemoveGlobal?.Invoke("client");
+            }
+        }
 
         return !this.lastEventCancelled;
     }

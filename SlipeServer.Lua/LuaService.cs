@@ -270,4 +270,10 @@ public class LuaService(
     }
 
     public delegate DynValue[] LuaMethod(params DynValue[] values);
+
+    public event Action<string>? ScriptErrored
+    {
+        add => this.translator.ScriptErrored += value;
+        remove => this.translator.ScriptErrored -= value;
+    }
 }

@@ -114,10 +114,11 @@ public class PlayerScriptDefinitions(IElementCollection elementCollection, IDebu
 
 
     [ScriptFunctionDefinition("spawnPlayer")]
-    public void SpawnPlayer(Player player, Vector3 position, int rotation, int model = 0, int interior = 0, int dimension = 0, Team? team = null)
+    public bool SpawnPlayer(Player player, Vector3 position, int rotation, int model = 0, int interior = 0, int dimension = 0, Team? team = null)
     {
         player.Spawn(position, rotation, (ushort)model, (byte)interior, (ushort)dimension);
         player.Team = team;
+        return true;
     }
 
     [ScriptFunctionDefinition("takePlayerScreenShot")]

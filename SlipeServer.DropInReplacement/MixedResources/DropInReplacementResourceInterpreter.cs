@@ -80,7 +80,7 @@ public class DropInReplacementResourceInterpreter : IResourceInterpreter
 
         if (meta.scripts != null)
         {
-            foreach (var file in meta.scripts.Where(x => x.Type == "client" && x.Cache != "false"))
+            foreach (var file in meta.scripts.Where(x => (x.Type == "client" || x.Type == "shared") && x.Cache != "false"))
             {
                 resourceFiles.Add(ResourceFileFactory.FromBytes(files[file.Source], file.Source, ResourceFileType.ClientScript));
             }
@@ -88,7 +88,7 @@ public class DropInReplacementResourceInterpreter : IResourceInterpreter
 
         if (meta.configs != null)
         {
-            foreach (var file in meta.configs.Where(x => x.Type == "client"))
+            foreach (var file in meta.configs.Where(x => (x.Type == "client" || x.Type == "shared")))
             {
                 resourceFiles.Add(ResourceFileFactory.FromBytes(files[file.Source], file.Source, ResourceFileType.ClientConfig));
             }
@@ -103,7 +103,7 @@ public class DropInReplacementResourceInterpreter : IResourceInterpreter
 
         if (meta.scripts != null)
         {
-            foreach (var file in meta.scripts.Where(x => x.Type == "server"))
+            foreach (var file in meta.scripts.Where(x => (x.Type == "server" || x.Type == "shared")))
             {
                 resourceFiles.Add(new ServerResourceFile() 
                 { 
@@ -120,7 +120,7 @@ public class DropInReplacementResourceInterpreter : IResourceInterpreter
     private Dictionary<string, byte[]> GetNoCacheFiles(MetaXml meta, Dictionary<string, byte[]> files)
     {
         return meta.scripts
-            .Where(x => x.Type == "client" && x.Cache == "false")
+            .Where(x => (x.Type == "client" || x.Type == "shared") && x.Cache == "false")
             .ToDictionary(x => x.Source, x => files[x.Source]);
     }
 

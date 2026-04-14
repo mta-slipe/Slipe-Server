@@ -16,7 +16,7 @@ namespace SlipeServer.Scripting.Lua.Tests.Cases.Scenarios;
 public class CommandCancellationTests
 {
     [Theory]
-    [ScriptingAutoDomainData]
+    [ScriptingAutoDomainData(false)]
     public void CancelEvent_InOnPlayerCommand_OnSpecificPlayer_PreventsCommandHandler(
         AssertDataProvider assertDataProvider,
         LightTestPlayer player,
@@ -41,7 +41,7 @@ public class CommandCancellationTests
     }
 
     [Theory]
-    [ScriptingAutoDomainData]
+    [ScriptingAutoDomainData(false)]
     public void CancelEvent_InOnPlayerCommand_OnRoot_PreventsCommandHandler(
         AssertDataProvider assertDataProvider,
         LightTestPlayer player,
@@ -64,7 +64,7 @@ public class CommandCancellationTests
     }
 
     [Theory]
-    [ScriptingAutoDomainData]
+    [ScriptingAutoDomainData(false)]
     public void NoCancelEvent_InOnPlayerCommand_OnSpecificPlayer_AllowsCommandHandler(
         AssertDataProvider assertDataProvider,
         LightTestPlayer player,
@@ -90,7 +90,7 @@ public class CommandCancellationTests
     }
 
     [Theory]
-    [ScriptingAutoDomainData]
+    [ScriptingAutoDomainData(false)]
     public void NoCancelEvent_InOnPlayerCommand_OnRoot_AllowsCommandHandler(
         AssertDataProvider assertDataProvider,
         LightTestPlayer player,
@@ -114,7 +114,7 @@ public class CommandCancellationTests
     }
 
     [Theory]
-    [ScriptingAutoDomainData]
+    [ScriptingAutoDomainData(false)]
     public void CancelEvent_InOnPlayerCommand_DoesNotAffectOtherCommands(
         AssertDataProvider assertDataProvider,
         LightTestPlayer player,

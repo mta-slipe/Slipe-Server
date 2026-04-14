@@ -8,6 +8,7 @@ using SlipeServer.Packets.Definitions.Commands;
 using SlipeServer.Packets.Definitions.Join;
 using SlipeServer.Packets.Definitions.Vehicles;
 using SlipeServer.Scripting;
+using SlipeServer.Server.Behaviour;
 using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.ServerBuilders;
@@ -39,6 +40,8 @@ public static class DropInReplacementExtensions
             builder.AddPacketHandler<ScriptingCommandPacketHandler, CommandPacket>();
             builder.AddPacketHandler<ScriptingJoinDataPacketHandler, PlayerJoinDataPacket>();
             builder.AddBehaviour<ScriptingPickupBehaviour>();
+
+            builder.AddBehaviour<EventLoggingBehaviour>();
 
             builder.ConfigureServices((services) =>
             {

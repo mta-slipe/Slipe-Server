@@ -18,6 +18,7 @@ public interface IScriptEventRuntime
 
     void AddCustomEvent(string eventName, bool allowRemoteTrigger = false);
     bool TriggerCustomEvent(string eventName, Element element, params object[] arguments);
+    bool TriggerCustomEventFromClient(string eventName, Element element, Player client, params object[] arguments);
     void CancelEvent(bool cancel = true, string reason = "");
     bool WasEventCancelled();
     string GetCancelReason();

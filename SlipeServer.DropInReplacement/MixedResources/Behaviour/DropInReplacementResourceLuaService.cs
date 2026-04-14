@@ -18,11 +18,10 @@ public class DropInReplacementResourceLuaService : IDropInReplacementResourceLua
 
     public void StartLuaResource(MixedResource resource)
     {
+        var environment = this.luaService.CreateEnvironment(resource.Name, resource);
         foreach (var file in resource.ServerFiles.Where(x => x.FileType == Server.Elements.Enums.ResourceFileType.Script))
         {
-            this.luaService.AddGlobal("resourceRoot", resource.DynamicRoot);
-            this.luaService.LoadScript($"{resource.Name}/{file.Name}", Encoding.UTF8.GetString(file.Content), resource);
-            this.luaService.RemoveGlobal("resourceRoot");
+            environment.LoadString(Encoding.UTF8.GetString(file.Content), $"{resource.Name}/{file.Name}");
         }
     }
 

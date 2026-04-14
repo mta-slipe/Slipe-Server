@@ -56,7 +56,10 @@ public class DropInReplacementTestingServer : MtaServer<LightTestPlayer>
         this.netWrapper = new LightTestNetWrapper();
         this.AddNetWrapper(this.netWrapper);
         this.clients.Add(this.netWrapper, []);
+        this.GetRequiredService<LuaService>().ScriptErrored += message => ScriptErrors.Add(message);
     }
+
+    public List<string> ScriptErrors { get; } = [];
 
     /// <summary>
     /// Creates a new player and fires the PlayerJoined event, simulating a full join.

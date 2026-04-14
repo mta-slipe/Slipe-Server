@@ -1,3 +1,4 @@
+using FluentAssertions;
 using SlipeServer.DropInReplacement.MixedResources.Behaviour;
 using SlipeServer.Scripting.Lua.Tests.Tools;
 using System;
@@ -44,5 +45,32 @@ public class FreeroamResourceTests
             throw new Exception(
                 $"Player joining after 'freeroam' started failed with {joinException.GetType().Name}: {joinException.Message}",
                 joinException);
+    }
+
+    [Fact]
+    public void StartFreeroamResource_WithPlayerJoining_HasNoScriptErrors()
+    {
+        var server = new DropInReplacementTestingServer(ResourceDirectory);
+        var service = server.GetRequiredService<IDropInReplacementResourceService>();
+        service.StartResource("freeroam");
+
+        server.JoinFakePlayer();
+
+        server.ScriptErrors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void StartFreeroamResource_WithPlayerJoining_SetsNametagColor()
+    {
+        var server = new DropInReplacementTestingServer(ResourceDirectory);
+        var service = server.GetRequiredService<IDropInReplacementResourceService>();
+        service.StartResource("freeroam");
+
+        var player = server.JoinFakePlayer();
+
+        player.NametagColor.Should().NotBeNull();
+        player.NametagColor!.Value.R.Should().BeInRange(50, 255);
+        player.NametagColor!.Value.G.Should().BeInRange(50, 255);
+        player.NametagColor!.Value.B.Should().BeInRange(50, 255);
     }
 }

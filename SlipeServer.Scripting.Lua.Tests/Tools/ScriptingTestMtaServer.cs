@@ -31,6 +31,7 @@ public class ScriptingTestMtaServer : MtaServer<LightTestPlayer>
         this.GetRequiredService<IScriptEventRuntime>().LoadDefaultEvents();
         this.GetRequiredService<LuaService>().LoadDefaultDefinitions();
         this.GetRequiredService<LuaService>().LoadDefinitions(definitions);
+        this.GetRequiredService<LuaService>().ScriptErrored += message => definitions.DataProvider.ScriptErrors.Add(message);
     }
 
     public LightTestPlayer CreatePlayer()

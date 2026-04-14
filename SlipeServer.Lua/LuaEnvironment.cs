@@ -34,8 +34,8 @@ public class LuaEnvironment
         IScriptInputRuntime scriptInputRuntime
     )
     {
-        Identifier = identifier;
-        ExecutionContext = executionContext;
+        this.Identifier = identifier;
+        this.ExecutionContext = executionContext;
         this.script = script;
         this.translator = translator;
         this.logger = logger;
@@ -45,7 +45,12 @@ public class LuaEnvironment
         this.scriptInputRuntime = scriptInputRuntime;
 
         if (executionContext.Owner != null)
-            SetGlobal("resourceRoot", executionContext.Owner.DynamicRoot);
+            SetGlobal("resourceRoot", executionContext.Owner.Root);
+
+        executionContext.SetGlobal = (key, value) => SetGlobal(key, value);
+        executionContext.RemoveGlobal = (key) => RemoveGlobal(key);
+
+        this.script.DoString(MtaOopPrelude.Full, null, "mta-oop-prelude");
     }
 
     public void LoadString(string code, string? codeFriendlyName = null)

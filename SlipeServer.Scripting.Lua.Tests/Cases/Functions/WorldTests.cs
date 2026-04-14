@@ -517,6 +517,78 @@ public class WorldTests
 
     [Theory]
     [ScriptingAutoDomainData]
+    public void SetTrafficLightState_IntOverload_PreservesLockedState(IMtaServer sut)
+    {
+        var gameWorld = sut.GetRequiredService<IGameWorld>();
+        gameWorld.SetTrafficLightState(TrafficLightState.GreenRed, true);
+
+        sut.RunLuaScript("setTrafficLightState(2)");
+
+        gameWorld.TrafficLightState.Should().Be(TrafficLightState.AllRed);
+        gameWorld.AreTrafficLightsForced.Should().BeTrue();
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void SetTrafficLightState_AutoString_UnlocksAndSetsStateZero(IMtaServer sut)
+    {
+        var gameWorld = sut.GetRequiredService<IGameWorld>();
+        gameWorld.SetTrafficLightState(TrafficLightState.AllOff, true);
+
+        sut.RunLuaScript("setTrafficLightState('auto')");
+
+        gameWorld.AreTrafficLightsForced.Should().BeFalse();
+        gameWorld.TrafficLightState.Should().Be(TrafficLightState.GreenRed);
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void SetTrafficLightState_DisabledString_LocksAndSetsAllOff(IMtaServer sut)
+    {
+        var gameWorld = sut.GetRequiredService<IGameWorld>();
+
+        sut.RunLuaScript("setTrafficLightState('disabled')");
+
+        gameWorld.AreTrafficLightsForced.Should().BeTrue();
+        gameWorld.TrafficLightState.Should().Be(TrafficLightState.AllOff);
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void SetTrafficLightState_TwoColorStrings_LocksAndComputesState(IMtaServer sut)
+    {
+        var gameWorld = sut.GetRequiredService<IGameWorld>();
+
+        sut.RunLuaScript("setTrafficLightState('red', 'green')");
+
+        gameWorld.AreTrafficLightsForced.Should().BeTrue();
+        gameWorld.TrafficLightState.Should().Be(TrafficLightState.RedGreen);
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void SetTrafficLightState_TwoColorStrings_AllCombinations(IMtaServer sut)
+    {
+        var gameWorld = sut.GetRequiredService<IGameWorld>();
+
+        sut.RunLuaScript("""
+            assert(setTrafficLightState('green',  'red')    == true)
+            assert(setTrafficLightState('yellow', 'red')    == true)
+            assert(setTrafficLightState('red',    'red')    == true)
+            assert(setTrafficLightState('red',    'green')  == true)
+            assert(setTrafficLightState('red',    'yellow') == true)
+            assert(setTrafficLightState('green',  'green')  == true)
+            assert(setTrafficLightState('yellow', 'yellow') == true)
+            assert(setTrafficLightState('yellow', 'green')  == true)
+            assert(setTrafficLightState('green',  'yellow') == true)
+            """);
+
+        gameWorld.TrafficLightState.Should().Be(TrafficLightState.GreenYellow);
+        gameWorld.AreTrafficLightsForced.Should().BeTrue();
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
     public void AreTrafficLightsLocked_ReturnsFalseByDefault(
         AssertDataProvider assertDataProvider,
         IMtaServer sut)
@@ -795,6 +867,120 @@ public class WorldTests
         gameWorld.Gravity = 0.05f;
 
         sut.RunLuaScript("resetWorldProperties()");
+
+        gameWorld.Gravity.Should().BeApproximately(0.008f, 0.0001f);
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void ResetMapInfo_ResetsGravityAndGameSpeed(IMtaServer sut)
+    {
+        var gameWorld = sut.GetRequiredService<IGameWorld>();
+        gameWorld.Gravity = 0.05f;
+        gameWorld.GameSpeed = 3.0f;
+
+        sut.RunLuaScript("""
+            local result = resetMapInfo()
+            assert(result == true, "resetMapInfo should return true")
+            """);
+
+        gameWorld.Gravity.Should().BeApproximately(0.008f, 0.0001f);
+        gameWorld.GameSpeed.Should().BeApproximately(1.0f, 0.001f);
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void ResetMapInfo_ResetsJetpackAndAircraftLimits(IMtaServer sut)
+    {
+        var gameWorld = sut.GetRequiredService<IGameWorld>();
+        gameWorld.MaxJetpackHeight = 500.0f;
+        gameWorld.AircraftMaxHeight = 2000.0f;
+        gameWorld.AircraftMaxVelocity = 5.0f;
+
+        sut.RunLuaScript("resetMapInfo()");
+
+        gameWorld.MaxJetpackHeight.Should().BeApproximately(100.0f, 0.1f);
+        gameWorld.AircraftMaxHeight.Should().BeApproximately(800.0f, 0.1f);
+        gameWorld.AircraftMaxVelocity.Should().BeApproximately(1.5f, 0.001f);
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void ResetMapInfo_ResetsWeatherEffects(IMtaServer sut)
+    {
+        var gameWorld = sut.GetRequiredService<IGameWorld>();
+        gameWorld.RainLevel = 5.0f;
+        gameWorld.SunSize = 10;
+        gameWorld.WindVelocity = new Vector3(5, 5, 5);
+        gameWorld.MoonSize = 10;
+        gameWorld.CloudsEnabled = false;
+
+        sut.RunLuaScript("resetMapInfo()");
+
+        gameWorld.RainLevel.Should().BeApproximately(0f, 0.001f);
+        gameWorld.SunSize.Should().Be(1);
+        gameWorld.WindVelocity.Should().Be(Vector3.Zero);
+        gameWorld.MoonSize.Should().Be(3);
+        gameWorld.CloudsEnabled.Should().BeTrue();
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void ResetMapInfo_ClearsNullableWorldProperties(IMtaServer sut)
+    {
+        var gameWorld = sut.GetRequiredService<IGameWorld>();
+        gameWorld.WaterColor = Color.FromArgb(255, 0, 128, 255);
+        gameWorld.FarClipDistance = 1000.0f;
+        gameWorld.FogDistance = 200.0f;
+
+        sut.RunLuaScript("resetMapInfo()");
+
+        gameWorld.WaterColor.Should().BeNull();
+        gameWorld.FarClipDistance.Should().BeNull();
+        gameWorld.FogDistance.Should().BeNull();
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void ResetMapInfo_ResetsTrafficLightsAndInteriorSounds(IMtaServer sut)
+    {
+        var gameWorld = sut.GetRequiredService<IGameWorld>();
+        gameWorld.SetTrafficLightState(TrafficLightState.AllRed, true);
+        gameWorld.AreInteriorSoundsEnabled = false;
+
+        sut.RunLuaScript("resetMapInfo()");
+
+        gameWorld.AreTrafficLightsForced.Should().BeFalse();
+        gameWorld.TrafficLightState.Should().Be(TrafficLightState.GreenRed);
+        gameWorld.AreInteriorSoundsEnabled.Should().BeTrue();
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void ResetMapInfo_ResetsHeatHazeAndWaterLevel(IMtaServer sut)
+    {
+        var gameWorld = sut.GetRequiredService<IGameWorld>();
+        gameWorld.HeatHaze = new HeatHaze { Intensity = 100 };
+        gameWorld.WaveHeight = 3.0f;
+
+        sut.RunLuaScript("resetMapInfo()");
+
+        gameWorld.HeatHaze.Should().BeNull();
+        gameWorld.WaveHeight.Should().BeApproximately(0.0f, 0.001f);
+        gameWorld.WaterLevels.SeaLevel.Should().BeApproximately(0.0f, 0.001f);
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void ResetMapInfo_WithPlayerArg_StillResetsGlobalState(IMtaServer sut)
+    {
+        var gameWorld = sut.GetRequiredService<IGameWorld>();
+        gameWorld.Gravity = 0.05f;
+
+        sut.RunLuaScript("""
+            local result = resetMapInfo(root)
+            assert(result == true, "resetMapInfo(root) should return true")
+            """);
 
         gameWorld.Gravity.Should().BeApproximately(0.008f, 0.0001f);
     }

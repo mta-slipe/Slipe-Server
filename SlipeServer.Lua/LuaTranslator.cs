@@ -238,6 +238,7 @@ public class LuaTranslator
             catch (ScriptRuntimeException e)
             {
                 this.logger.LogError(e, "Error while executing Lua callback: {decoratedMessage}", e.DecoratedMessage);
+                ScriptErrored?.Invoke(e.DecoratedMessage);
             }
             finally
             {
@@ -398,6 +399,7 @@ public class LuaTranslator
                 catch (ScriptRuntimeException e)
                 {
                     this.logger.LogError(e, "Error while executing Lua event callback: {decoratedMessage}", e.DecoratedMessage);
+                    ScriptErrored?.Invoke(e.DecoratedMessage);
                 }
                 finally
                 {
@@ -493,4 +495,6 @@ public class LuaTranslator
 
         return true;
     }
+
+    public event Action<string>? ScriptErrored;
 }

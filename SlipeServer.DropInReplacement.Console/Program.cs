@@ -1,4 +1,5 @@
 ﻿using SlipeServer.DropInReplacement;
+using SlipeServer.DropInReplacement.MixedResources.Behaviour;
 using SlipeServer.Server;
 
 var server = MtaServer.Create(x =>
@@ -9,7 +10,7 @@ var server = MtaServer.Create(x =>
         HttpPort = 22005,
 
 #if DEBUG
-        ResourceDirectory = Path.Join(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.Parent.FullName, "SlipeServer.DropInReplacement.Console", "Resources")
+        ResourceDirectory = Path.Join(Directory.GetParent(Environment.CurrentDirectory)!.Parent!.Parent!.Parent!.FullName, "SlipeServer.DropInReplacement.Console", "Resources")
 #else
         ResourceDirectory = "./mods/deathmatch/resources"
 #endif
@@ -19,4 +20,8 @@ var server = MtaServer.Create(x =>
 });
 
 server.Start();
+
+var service = server.GetRequiredService<IDropInReplacementResourceService>();
+service.StartResource("freeroam");
+service.StartResource("play");
 await Task.Delay(-1);

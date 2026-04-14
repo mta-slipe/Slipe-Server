@@ -631,8 +631,8 @@ public class MtaServer : IMtaServer
     /// <param name="player"></param>
     public virtual void HandlePlayerJoin(Player player)
     {
-        player.TriggerJoined();
         PlayerJoined?.Invoke(player);
+        player.TriggerJoined();
     }
 
     /// <summary>

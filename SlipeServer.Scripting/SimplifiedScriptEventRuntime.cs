@@ -121,6 +121,7 @@ public class SimplifiedScriptEventRuntime : IScriptEventRuntime
     public void RemoveEventHandlersOwnedBy(object owner) => throw new NotImplementedException();
     public void AddCustomEvent(string eventName, bool allowRemoteTrigger = false) => throw new NotImplementedException();
     public bool TriggerCustomEvent(string eventName, Element element, params object[] arguments) => throw new NotImplementedException();
+    public bool TriggerCustomEventFromClient(string eventName, Element element, Player client, params object[] arguments) => throw new NotImplementedException();
     public void CancelEvent(bool cancel = true, string reason = "") => throw new NotImplementedException();
     public bool WasEventCancelled() => throw new NotImplementedException();
     public string GetCancelReason() => throw new NotImplementedException();

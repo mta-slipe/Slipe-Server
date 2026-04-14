@@ -1,3 +1,6 @@
+using SlipeServer.Server.Elements;
+using SlipeServer.Server.Enums;
+using SlipeServer.Server.Structs;
 using System.Drawing;
 using System.Numerics;
 
@@ -142,6 +145,32 @@ public partial class WorldScriptDefinitions
         {
             gameWorld.AreInteriorSoundsEnabled = true;
         }
+    }
+
+    [ScriptFunctionDefinition("resetMapInfo")]
+    public bool ResetMapInfo(Element? player = null)
+    {
+        gameWorld.Gravity = 0.008f;
+        gameWorld.GameSpeed = 1.0f;
+        gameWorld.MaxJetpackHeight = 100.0f;
+        gameWorld.AircraftMaxHeight = 800.0f;
+        gameWorld.AircraftMaxVelocity = 1.5f;
+        gameWorld.WaterLevels = new WaterLevels();
+        gameWorld.WaveHeight = 0.0f;
+        gameWorld.SetSkyGradient(Color.FromArgb(0, 0, 0), Color.FromArgb(0, 0, 0));
+        gameWorld.HeatHaze = null;
+        gameWorld.CloudsEnabled = true;
+        gameWorld.SetTrafficLightState(TrafficLightState.GreenRed, false);
+        gameWorld.WaterColor = null;
+        gameWorld.AreInteriorSoundsEnabled = true;
+        gameWorld.FarClipDistance = null;
+        gameWorld.FogDistance = null;
+        gameWorld.RainLevel = 0;
+        gameWorld.SetSunColor(Color.FromArgb(255, 255, 255), Color.FromArgb(255, 200, 150));
+        gameWorld.SunSize = 1;
+        gameWorld.WindVelocity = Vector3.Zero;
+        gameWorld.MoonSize = 3;
+        return true;
     }
 
     [ScriptFunctionDefinition("removeGameWorld")]
