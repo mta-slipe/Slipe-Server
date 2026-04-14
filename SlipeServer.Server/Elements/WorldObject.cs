@@ -177,7 +177,7 @@ public class WorldObject : Element
         this.Position = position;
     }
 
-    public new WorldObject AssociateWith(IMtaServer server)
+    public override WorldObject AssociateWith(IMtaServer server)
     {
         base.AssociateWith(server);
         return this;

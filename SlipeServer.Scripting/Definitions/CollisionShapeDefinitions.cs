@@ -134,7 +134,7 @@ public class CollisionShapeDefinitions(IMtaServer server)
         return element switch
         {
             Pickup pickup => pickup.CollisionShape,
-            //Marker marker => marker.CollisionShape,
+            Marker marker => marker.ColShape,
             _ => null
         };
     }

@@ -225,7 +225,7 @@ public class Pickup : Element
         };
     }
 
-    public new Pickup AssociateWith(IMtaServer server)
+    public override Pickup AssociateWith(IMtaServer server)
     {
         this.CollisionShape.AssociateWith(server);
         base.AssociateWith(server);

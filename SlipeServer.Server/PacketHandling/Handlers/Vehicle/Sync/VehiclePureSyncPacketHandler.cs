@@ -100,6 +100,7 @@ public class VehiclePureSyncPacketHandler(
                 vehicle.TurretRotation = packet.TurretRotation;
                 vehicle.AdjustableProperty = packet.AdjustableProperty;
                 vehicle.IsSirenActive = packet.VehiclePureSyncFlags.IsSirenOrAlarmActive;
+                vehicle.IsOnGround = packet.VehiclePureSyncFlags.IsOnGround;
 
                 vehicle.DoorRatios = packet.DoorOpenRatios;
 

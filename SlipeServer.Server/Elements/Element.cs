@@ -526,7 +526,7 @@ public class Element : IElement
     /// Associates an element with the server, causing the element to be created for all players on the server
     /// </summary>
     /// <param name="server">The server to associate the element with</param>
-    public Element AssociateWith(IMtaServer server)
+    public virtual Element AssociateWith(IMtaServer server)
     {
         this.associations.Add(new ElementAssociation(this, server));
         server.AssociateElement(this);

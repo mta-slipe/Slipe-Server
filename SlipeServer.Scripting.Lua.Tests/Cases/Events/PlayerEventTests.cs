@@ -3,6 +3,7 @@ using SlipeServer.Packets.Enums;
 using SlipeServer.Scripting.Lua.Tests.Tools;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Structs;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Tests.Tools;
@@ -326,5 +327,27 @@ public class PlayerEventTests
         player.Team = team;
 
         assertDataProvider.AssertPrints.Should().ContainSingle().Which.Should().Be("teamchanged");
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData(false)]
+    public void OnPlayerStealthKill_FiresWhenPlayerTriggersStealthKill(
+        LightTestPlayer player,
+        AssertDataProvider assertDataProvider,
+        IMtaServer sut)
+    {
+        var target = new Ped(PedModel.Cj, Vector3.Zero).AssociateWith(sut);
+
+        sut.AddGlobal("testPlayer", player);
+
+        sut.RunLuaScript("""
+            addEventHandler("onPlayerStealthKill", testPlayer, function(targetPlayer)
+                assertPrint("stealthkill")
+            end)
+            """);
+
+        player.TriggerStealthKill(target);
+
+        assertDataProvider.AssertPrints.Should().ContainSingle().Which.Should().Be("stealthkill");
     }
 }

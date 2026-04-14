@@ -61,10 +61,12 @@ public class LuaEnvironment
         catch (ScriptRuntimeException exception)
         {
             this.logger.LogError("{Lua error}", FormatLuaError(exception));
+            throw;
         }
         catch (LuaException exception)
         {
             this.logger.LogError("{Lua error}", exception.Message);
+            throw;
         }
         finally
         {

@@ -8,7 +8,9 @@ using SlipeServer.Server.Clients;
 using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Enums;
+using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
+using System.Numerics;
 using SlipeServer.Server.PacketHandling.Factories;
 using System;
 using System.Linq;
@@ -51,6 +53,10 @@ public class RpcPacketHandler(
 
             case RpcFunctions.CURSOR_EVENT:
                 HandlePlayerCursorEvent(client, packet);
+                break;
+
+            case RpcFunctions.REQUEST_STEALTH_KILL:
+                HandlePlayerStealthKill(client, packet);
                 break;
 
             default:
@@ -237,5 +243,28 @@ public class RpcPacketHandler(
                 throw new Exception($"Unsupported CURSOR_EVENT button {buttonByte}");
         }
         client.Player.TriggerCursorClicked(button, isDown, new(x, y), worldPosition, element);
+    }
+
+    private const float StealthKillRange = 2.5f;
+
+    private void HandlePlayerStealthKill(IClient client, RpcPacket packet)
+    {
+        var id = packet.Reader.GetElementId();
+        var element = elementCollection.Get(id);
+
+        if (element is not Ped target)
+            return;
+
+        if (client.Player.Health <= 0 || target.Health <= 0)
+            return;
+
+        if (client.Player.Weapons.FirstOrDefault(w => w.Slot == WeaponSlot.Melee)?.Type != WeaponId.Knife)
+            return;
+
+        if (Vector3.Distance(client.Player.Position, target.Position) > StealthKillRange)
+            return;
+
+        client.Player.TriggerStealthKill(target);
+        target.Kill(client.Player, DamageType.WEAPONTYPE_KNIFE, BodyPart.Head);
     }
 }

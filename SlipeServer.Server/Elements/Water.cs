@@ -15,7 +15,7 @@ public class Water(IEnumerable<Vector3> vertices) : Element()
     public IEnumerable<Vector3> Vertices { get; set; } = vertices;
     public bool IsShallow { get; set; } = false;
 
-    public new Water AssociateWith(IMtaServer server)
+    public override Water AssociateWith(IMtaServer server)
     {
         base.AssociateWith(server);
         return this;

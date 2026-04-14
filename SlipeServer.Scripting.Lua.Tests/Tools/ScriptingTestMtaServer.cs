@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using SlipeServer.Lua;
 using SlipeServer.Net.Wrappers;
+using SlipeServer.Scripting;
 using SlipeServer.Scripting.Definitions;
 using SlipeServer.Server;
 using SlipeServer.Server.ElementCollections;
@@ -17,9 +18,9 @@ public class ScriptingTestMtaServer : MtaServer<LightTestPlayer>
     private readonly INetWrapper wrapper;
     private ulong address;
 
-    public ScriptingTestMtaServer(INetWrapper wrapper, IElementCollection elementCollection, ScriptingAssertDefinitions definitions, ITextItemService textItemService, IAclService? aclService = null) : base(builder =>
+    public ScriptingTestMtaServer(INetWrapper wrapper, IElementCollection elementCollection, ScriptingAssertDefinitions definitions, ITextItemService textItemService, IAclService? aclService = null, ISettingsRegistry? settingsRegistry = null) : base(builder =>
     {
-        builder.ConfigureServices(x => ConfigureOverrides(x, elementCollection, textItemService, aclService));
+        builder.ConfigureServices(x => ConfigureOverrides(x, elementCollection, textItemService, aclService, settingsRegistry));
     })
     {
         this.AddNetWrapper(wrapper);
@@ -48,7 +49,7 @@ public class ScriptingTestMtaServer : MtaServer<LightTestPlayer>
     }
 
 
-    public static void ConfigureOverrides(IServiceCollection services, IElementCollection elementCollection, ITextItemService textItemService, IAclService? aclService = null)
+    public static void ConfigureOverrides(IServiceCollection services, IElementCollection elementCollection, ITextItemService textItemService, IAclService? aclService = null, ISettingsRegistry? settingsRegistry = null)
     {
         var httpServerMock = new Mock<IResourceServer>();
         services.AddSingleton<IResourceServer>(httpServerMock.Object);
@@ -59,6 +60,8 @@ public class ScriptingTestMtaServer : MtaServer<LightTestPlayer>
         services.AddSingleton<IAccountService>(new SqliteAccountService(":memory:"));
         if (aclService != null)
             services.AddSingleton<IAclService>(aclService);
+        if (settingsRegistry != null)
+            services.AddSingleton<ISettingsRegistry>(settingsRegistry);
         services.AddScripting(withAcl: aclService != null);
         services.AddLua();
         services.AddSingleton<ITextItemService>(textItemService);

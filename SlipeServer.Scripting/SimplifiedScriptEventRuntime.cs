@@ -16,6 +16,7 @@ public class SimplifiedScriptEventRuntime : IScriptEventRuntime
 
     private readonly List<RegisteredEventHandler> registeredEventHandlers;
     private readonly Dictionary<string, RegisteredEvent> registeredEvents;
+    private bool defaultEventsLoaded;
 
     public SimplifiedScriptEventRuntime(IMtaServer server, IElementCollection elementCollection)
     {
@@ -105,6 +106,10 @@ public class SimplifiedScriptEventRuntime : IScriptEventRuntime
 
     public void LoadDefaultEvents()
     {
+        if (this.defaultEventsLoaded)
+            return;
+        this.defaultEventsLoaded = true;
+
         foreach (var type in typeof(ScriptEventRuntime).Assembly.DefinedTypes
             .Where(type => typeof(IEventDefinitions).IsAssignableFrom(type) && type.IsClass))
         {

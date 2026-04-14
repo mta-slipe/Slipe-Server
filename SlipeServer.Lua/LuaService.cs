@@ -29,6 +29,7 @@ public class LuaService(
     private readonly Dictionary<string, object> globalValues = [];
     private readonly LuaTranslator translator = new(logger);
     private bool callDefinitionsLoaded;
+    private bool defaultDefinitionsLoaded;
 
     public void LoadDefinitions(object methodSet)
     {
@@ -100,7 +101,10 @@ public class LuaService(
                     return this.translator.ToDynValues(result).ToArray();
                 } catch (Exception e)
                 {
-                    throw new ScriptRuntimeException($"Failed to load definitions for {attribute?.NiceName} {e.Message}\n {e.StackTrace}", e);
+                    if (e is ScriptRuntimeException)
+                        throw;
+
+                    throw new ScriptRuntimeException($"Failed to invoke {attribute?.NiceName} {(e.InnerException ?? e).Message}\n {(e.InnerException ?? e).StackTrace}", e);
                 }
             };
         }
@@ -113,6 +117,10 @@ public class LuaService(
 
     public void LoadDefaultDefinitions()
     {
+        if (this.defaultDefinitionsLoaded)
+            return;
+        this.defaultDefinitionsLoaded = true;
+
         foreach (var type in typeof(ScriptFunctionDefinitionAttribute).Assembly.DefinedTypes
             .Where(type => type.GetMethods()
                 .Any(method => method.CustomAttributes

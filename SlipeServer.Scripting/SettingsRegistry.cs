@@ -1,4 +1,6 @@
 using SlipeServer.Packets.Definitions.Lua;
+using SlipeServer.Scripting.Definitions;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,6 +12,8 @@ public interface ISettingsRegistry
 {
     LuaValue? Get(string settingName);
     void Set(string settingName, LuaValue value);
+
+    event EventHandler<SettingChangedEventArgs>? SettingChanged;
 }
 
 public class SettingsRegistry : ISettingsRegistry
@@ -18,8 +22,13 @@ public class SettingsRegistry : ISettingsRegistry
     private readonly string settingsFilePath;
 
     public SettingsRegistry()
+        : this(Path.Combine(Directory.GetCurrentDirectory(), "settings.json"))
     {
-        this.settingsFilePath = Path.Combine(Directory.GetCurrentDirectory(), "settings.json");
+    }
+
+    public SettingsRegistry(string filePath)
+    {
+        this.settingsFilePath = filePath;
         LoadFromFile();
     }
 
@@ -31,8 +40,10 @@ public class SettingsRegistry : ISettingsRegistry
 
     public void Set(string settingName, LuaValue value)
     {
+        this.settings.TryGetValue(settingName, out var oldValue);
         this.settings[settingName] = value;
         SaveToFile();
+        SettingChanged?.Invoke(this, new SettingChangedEventArgs(settingName, value, oldValue ?? LuaValue.Nil));
     }
 
     private void LoadFromFile()
@@ -98,4 +109,6 @@ public class SettingsRegistry : ISettingsRegistry
             _ => LuaValue.Nil,
         };
     }
+
+    public event EventHandler<SettingChangedEventArgs>? SettingChanged;
 }

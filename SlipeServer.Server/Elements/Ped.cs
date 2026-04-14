@@ -400,7 +400,7 @@ public class Ped : Element
         this.Clothing.Changed += (sender, args) => this.ClothingChanged?.Invoke(this, args);
     }
 
-    public new Ped AssociateWith(IMtaServer server)
+    public override Ped AssociateWith(IMtaServer server)
     {
         base.AssociateWith(server);
         return this;

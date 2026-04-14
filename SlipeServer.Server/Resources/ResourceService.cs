@@ -1,5 +1,6 @@
 ﻿using SlipeServer.Server.Elements;
 using SlipeServer.Server.Resources.Providers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,7 +9,7 @@ namespace SlipeServer.Server.Resources;
 /// <summary>
 /// Service that allows simple ways to start and stop resources (for all players)
 /// </summary>
-public class ResourceService
+public class ResourceService : IResourceService
 {
     private readonly IMtaServer server;
     private readonly IRootElement root;
@@ -40,8 +41,10 @@ public class ResourceService
         if (!this.startedResources.Any(r => r.Name == name))
         {
             var resource = this.resourceProvider.GetResource(name);
+            this.ResourceStarting?.Invoke(resource);
             resource.Start();
             this.startedResources.Add(resource);
+            this.ResourceStarted?.Invoke(resource);
 
             return resource;
         }
@@ -53,11 +56,17 @@ public class ResourceService
         var resource = this.startedResources.Single(r => r.Name == name);
         this.startedResources.Remove(resource);
         resource.Stop();
+        this.ResourceStopped?.Invoke(resource);
     }
 
     public void StopResource(Resource resource)
     {
         this.startedResources.Remove(resource);
         resource.Stop();
+        this.ResourceStopped?.Invoke(resource);
     }
+
+    public event Action<Resource>? ResourceStarting;
+    public event Action<Resource>? ResourceStarted;
+    public event Action<Resource>? ResourceStopped;
 }

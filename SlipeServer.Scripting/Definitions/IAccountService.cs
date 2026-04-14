@@ -1,4 +1,5 @@
 using SlipeServer.Packets.Definitions.Lua;
+using SlipeServer.Server.Elements;
 using System;
 using System.Collections.Generic;
 
@@ -24,7 +25,14 @@ public interface IAccountService
     void UpdateSerial(AccountHandle account, string? serial);
     void UpdateIp(AccountHandle account, string? ip);
 
+    AccountHandle GetPlayerAccount(Player player);
+    Player? GetAccountPlayer(AccountHandle account);
+    bool LogIn(Player player, AccountHandle account, string password);
+    bool LogOut(Player player);
+
     event EventHandler<AccountEventArgs>? AccountCreated;
     event EventHandler<AccountEventArgs>? AccountRemoved;
     event EventHandler<AccountDataChangedEventArgs>? AccountDataChanged;
+    event EventHandler<PlayerLoggedInEventArgs>? PlayerLoggedIn;
+    event EventHandler<PlayerLoggedOutEventArgs>? PlayerLoggedOut;
 }

@@ -601,6 +601,8 @@ public class Vehicle : Element
         }
     }
 
+    public bool IsOnGround { get; set; }
+
     public VehicleType VehicleType => VehicleConstants.VehicleTypesPerModel[(VehicleModel)this.model];
 
     private string DebuggerDisplay => $"{(VehicleModel)this.model} ({this.Id})";
@@ -632,7 +634,7 @@ public class Vehicle : Element
 
     }
 
-    public new Vehicle AssociateWith(IMtaServer server)
+    public override Vehicle AssociateWith(IMtaServer server)
     {
         base.AssociateWith(server);
         return this;

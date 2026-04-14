@@ -529,5 +529,65 @@ public class PlayerEventDefinitions(IMtaServer server) : IEventDefinitions
                 };
             }
         );
+
+        eventRuntime.RegisterEvent<Player>(
+            "onPlayerBan",
+            (callback) =>
+            {
+                void callbackProxy(Player sender, PlayerBannedEventArgs e)
+                    => callback.CallbackDelegate(sender, e.Ban, e.ResponsibleElement);
+
+                return new EventHandlerActions<Player>()
+                {
+                    Add = (element) => element.Banned += callbackProxy,
+                    Remove = (element) => element.Banned -= callbackProxy
+                };
+            }
+        );
+
+        eventRuntime.RegisterEvent<Player>(
+            "onPlayerMarkerHit",
+            (callback) =>
+            {
+                void callbackProxy(Player sender, MarkerHitEventArgs e)
+                    => callback.CallbackDelegate(sender, e.HitElement, e.MatchingDimension);
+
+                return new EventHandlerActions<Player>()
+                {
+                    Add = (element) => element.MarkerHit += callbackProxy,
+                    Remove = (element) => element.MarkerHit -= callbackProxy
+                };
+            }
+        );
+
+        eventRuntime.RegisterEvent<Player>(
+            "onPlayerMarkerLeave",
+            (callback) =>
+            {
+                void callbackProxy(Player sender, MarkerLeftEventArgs e)
+                    => callback.CallbackDelegate(sender, e.LeftElement, e.MatchingDimension);
+
+                return new EventHandlerActions<Player>()
+                {
+                    Add = (element) => element.MarkerLeft += callbackProxy,
+                    Remove = (element) => element.MarkerLeft -= callbackProxy
+                };
+            }
+        );
+
+        eventRuntime.RegisterEvent<Player>(
+            "onPlayerStealthKill",
+            (callback) =>
+            {
+                void callbackProxy(Player sender, PlayerStealthKillEventArgs e)
+                    => callback.CallbackDelegate(sender, e.Target);
+
+                return new EventHandlerActions<Player>()
+                {
+                    Add = (element) => element.StealthKilled += callbackProxy,
+                    Remove = (element) => element.StealthKilled -= callbackProxy
+                };
+            }
+        );
     }
 }

@@ -3,10 +3,11 @@ using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Providers;
+using System;
 
 namespace SlipeServer.DropInReplacement.MixedResources.Behaviour;
 
-public class DropInReplacementResourceService : IDropInReplacementResourceService
+public class DropInReplacementResourceService : IDropInReplacementResourceService, IResourceService
 {
     private readonly IMtaServer server;
     private readonly IResourceProvider resourceProvider;
@@ -45,6 +46,7 @@ public class DropInReplacementResourceService : IDropInReplacementResourceServic
         if (!this.startedResources.Any(r => r.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)))
         {
             var resource = this.resourceProvider.GetResource(name);
+            this.ResourceStarting?.Invoke(resource);
             resource.Start();
             this.startedResources.Add(resource);
 
@@ -53,6 +55,7 @@ public class DropInReplacementResourceService : IDropInReplacementResourceServic
             else
                 logger.LogWarning("Resource {resource} does is not a valid MixedResource", name);
 
+            this.ResourceStarted?.Invoke(resource);
             logger.LogInformation("Started {resource}", name);
 
             return resource;
@@ -74,6 +77,7 @@ public class DropInReplacementResourceService : IDropInReplacementResourceServic
         else
             logger.LogWarning("Resource {resource} does is not a valid MixedResource", name);
 
+        this.ResourceStopped?.Invoke(resource);
         logger.LogInformation("Stopped {resource}", name);
     }
 
@@ -83,15 +87,20 @@ public class DropInReplacementResourceService : IDropInReplacementResourceServic
 
         this.startedResources.Remove(resource);
         resource.Stop();
+        this.ResourceStopped?.Invoke(resource);
     }
 
     public void RestartResource(string name)
     {
-        logger.LogInformation("Stopped {resource}", name);
+        logger.LogInformation("Restarting {resource}", name);
 
         StopResource(name);
         StartResource(name);
     }
+
+    public event Action<Resource>? ResourceStarting;
+    public event Action<Resource>? ResourceStarted;
+    public event Action<Resource>? ResourceStopped;
 }
 
 public interface IDropInReplacementResourceService

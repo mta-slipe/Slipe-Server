@@ -1,8 +1,11 @@
 using Microsoft.Data.Sqlite;
 using SlipeServer.Packets.Definitions.Lua;
+using SlipeServer.Server.Elements;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -13,6 +16,8 @@ public class SqliteAccountService : IAccountService, IDisposable
 {
     private readonly SqliteConnection connection;
     private readonly Lock dbLock = new();
+    private readonly ConcurrentDictionary<Player, AccountHandle> playerAccounts = new();
+    private readonly ConcurrentDictionary<Player, AccountHandle> guestAccounts = new();
 
     // MTA password format: sha256_hex(64) + type(1) + salt_hex(32) = 97 chars
     // type "0" = plain text, type "1" = MD5 (legacy)
@@ -461,6 +466,47 @@ public class SqliteAccountService : IAccountService, IDisposable
 
     private static string? NullIfEmpty(string value) => string.IsNullOrEmpty(value) ? null : value;
 
+    private AccountHandle GetOrCreateGuestAccount(Player player)
+        => this.guestAccounts.GetOrAdd(player, p => new AccountHandle($"guest_{p.Name}"));
+
+    public AccountHandle GetPlayerAccount(Player player)
+        => this.playerAccounts.TryGetValue(player, out var account) ? account : GetOrCreateGuestAccount(player);
+
+    public Player? GetAccountPlayer(AccountHandle account)
+        => this.playerAccounts.FirstOrDefault(kvp => kvp.Value == account).Key;
+
+    public bool LogIn(Player player, AccountHandle account, string password)
+    {
+        if (account.IsGuest)
+            return false;
+
+        if (!VerifyPassword(account, password))
+            return false;
+
+        var serial = player.Client.Serial;
+        var ip = player.Client.IPAddress?.ToString();
+
+        if (serial != null)
+            UpdateSerial(account, serial);
+        if (ip != null)
+            UpdateIp(account, ip);
+
+        var previousAccount = GetOrCreateGuestAccount(player);
+        this.playerAccounts[player] = account;
+        this.PlayerLoggedIn?.Invoke(this, new PlayerLoggedInEventArgs(player, previousAccount, account));
+        return true;
+    }
+
+    public bool LogOut(Player player)
+    {
+        if (!this.playerAccounts.TryRemove(player, out var previousAccount))
+            return false;
+
+        var guestAccount = GetOrCreateGuestAccount(player);
+        this.PlayerLoggedOut?.Invoke(this, new PlayerLoggedOutEventArgs(player, previousAccount, guestAccount));
+        return true;
+    }
+
     public void Dispose()
     {
         this.connection.Dispose();
@@ -469,4 +515,6 @@ public class SqliteAccountService : IAccountService, IDisposable
     public event EventHandler<AccountEventArgs>? AccountCreated;
     public event EventHandler<AccountEventArgs>? AccountRemoved;
     public event EventHandler<AccountDataChangedEventArgs>? AccountDataChanged;
+    public event EventHandler<PlayerLoggedInEventArgs>? PlayerLoggedIn;
+    public event EventHandler<PlayerLoggedOutEventArgs>? PlayerLoggedOut;
 }

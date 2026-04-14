@@ -8,6 +8,7 @@ using SlipeServer.Packets.Definitions.Commands;
 using SlipeServer.Packets.Definitions.Join;
 using SlipeServer.Packets.Definitions.Vehicles;
 using SlipeServer.Scripting;
+using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.ServerBuilders;
 
@@ -42,7 +43,9 @@ public static class DropInReplacementExtensions
             builder.ConfigureServices((services) =>
             {
                 services.AddSingleton<IResourceProvider, DropInReplacementResourceProvider>();
-                services.AddSingleton<IDropInReplacementResourceService, DropInReplacementResourceService>();
+                services.AddSingleton<DropInReplacementResourceService>();
+                services.AddSingleton<IDropInReplacementResourceService>(sp => sp.GetRequiredService<DropInReplacementResourceService>());
+                services.AddSingleton<IResourceService>(sp => sp.GetRequiredService<DropInReplacementResourceService>());
                 services.AddSingleton<IDropInReplacementResourceLuaService, DropInReplacementResourceLuaService>();
 
                 services.AddScripting();

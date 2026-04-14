@@ -1,6 +1,5 @@
 using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Server.Elements;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,14 +7,6 @@ namespace SlipeServer.Scripting.Definitions;
 
 public class AccountScriptDefinitions(IAccountService accountService)
 {
-    private readonly ConcurrentDictionary<Player, AccountHandle> playerAccounts = new();
-    private readonly ConcurrentDictionary<Player, AccountHandle> guestAccounts = new();
-
-    private AccountHandle GetOrCreateGuestAccount(Player player)
-    {
-        return this.guestAccounts.GetOrAdd(player, p => new AccountHandle($"guest_{p.Name}"));
-    }
-
     [ScriptFunctionDefinition("addAccount")]
     public AccountHandle AddAccount(string name, string password, bool allowCaseVariations = false)
     {
@@ -170,48 +161,17 @@ public class AccountScriptDefinitions(IAccountService accountService)
 
     [ScriptFunctionDefinition("getPlayerAccount")]
     public AccountHandle GetPlayerAccount(Player player)
-    {
-        if (this.playerAccounts.TryGetValue(player, out var account))
-            return account;
-        return GetOrCreateGuestAccount(player);
-    }
+        => accountService.GetPlayerAccount(player);
 
     [ScriptFunctionDefinition("getAccountPlayer")]
     public Player? GetAccountPlayer(AccountHandle account)
-    {
-        return this.playerAccounts
-            .FirstOrDefault(kvp => kvp.Value == account)
-            .Key;
-    }
+        => accountService.GetAccountPlayer(account);
 
     [ScriptFunctionDefinition("logIn")]
     public bool LogIn(Player player, AccountHandle account, string password)
-    {
-        if (account.IsGuest)
-            return false;
-
-        if (!accountService.VerifyPassword(account, password))
-            return false;
-
-        var serial = player.Client.Serial;
-        var ip = player.Client.IPAddress?.ToString();
-
-        if (serial != null)
-            accountService.UpdateSerial(account, serial);
-        if (ip != null)
-            accountService.UpdateIp(account, ip);
-
-        this.playerAccounts[player] = account;
-        return true;
-    }
+        => accountService.LogIn(player, account, password);
 
     [ScriptFunctionDefinition("logOut")]
     public bool LogOut(Player player)
-    {
-        if (!this.playerAccounts.ContainsKey(player))
-            return false;
-
-        this.playerAccounts.TryRemove(player, out _);
-        return true;
-    }
+        => accountService.LogOut(player);
 }

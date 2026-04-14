@@ -96,7 +96,7 @@ public class Blip : Element
         this.Ordering = ordering;
     }
 
-    public new Blip AssociateWith(IMtaServer server)
+    public override Blip AssociateWith(IMtaServer server)
     {
         base.AssociateWith(server);
         return this;

@@ -53,7 +53,7 @@ public class Team(string name, Color color) : Element(), IEnumerable
         RemovePlayer(sender);
     }
 
-    public new Team AssociateWith(IMtaServer server)
+    public override Team AssociateWith(IMtaServer server)
     {
         base.AssociateWith(server);
         return this;

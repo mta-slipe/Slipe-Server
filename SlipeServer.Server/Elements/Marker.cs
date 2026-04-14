@@ -1,8 +1,8 @@
-﻿using SlipeServer.Server.Elements.Enums;
+﻿using SlipeServer.Server.Elements.ColShapes;
+using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
 using System.Drawing;
 using System.Numerics;
-
 namespace SlipeServer.Server.Elements;
 
 /// <summary>
@@ -13,6 +13,9 @@ public class Marker : Element
 {
     public override ElementType ElementType => ElementType.Marker;
 
+
+    private IMtaServer? associatedServer;
+    public CollisionShape? ColShape { get; private set; }
 
     private MarkerType markerType;
     public MarkerType MarkerType
@@ -26,6 +29,8 @@ public class Marker : Element
             var args = new ElementChangedEventArgs<Marker, MarkerType>(this, this.markerType, value, this.IsSync);
             this.markerType = value;
             MarkerTypeChanged?.Invoke(this, args);
+            if (this.ColShape != null)
+                RecreateCollisionShape();
         }
     }
 
@@ -56,6 +61,16 @@ public class Marker : Element
             var args = new ElementChangedEventArgs<Marker, float>(this, this.size, value, this.IsSync);
             this.size = value;
             SizeChanged?.Invoke(this, args);
+
+            if (this.ColShape is CollisionCircle circle)
+                circle.Radius = value;
+            else if (this.ColShape is CollisionTube tube)
+            {
+                tube.Radius = value;
+                tube.Height = value <= 1.5f ? value + 1f : value;
+            }
+            else if (this.ColShape is CollisionSphere sphere)
+                sphere.Radius = value;
         }
     }
 
@@ -129,17 +144,60 @@ public class Marker : Element
         }
     }
 
-    public Marker(Vector3 position, MarkerType markerType)
+    public Marker(Vector3 position, MarkerType markerType, bool withCollisionShape = true)
     {
         this.Position = position;
         this.MarkerType = markerType;
+        this.PositionChanged += (_, args) =>
+        {
+            if (this.ColShape is CollisionCircle circle)
+                circle.Position2 = new Vector2(args.NewValue.X, args.NewValue.Y);
+            else if (this.ColShape != null)
+                this.ColShape.Position = args.NewValue;
+        };
+        if (withCollisionShape)
+            this.ColShape = CreateCollisionShape();
     }
 
-    public new Marker AssociateWith(IMtaServer server)
+    public override Marker AssociateWith(IMtaServer server)
     {
+        this.associatedServer = server;
         base.AssociateWith(server);
+        this.ColShape?.AssociateWith(server);
         return this;
     }
+
+    public void RecreateCollisionShape()
+    {
+        if (this.ColShape != null)
+        {
+            this.ColShape.ElementEntered -= HandleColShapeEntered;
+            this.ColShape.ElementLeft -= HandleColShapeLeft;
+            this.ColShape.Destroy();
+        }
+        this.ColShape = CreateCollisionShape();
+        if (this.associatedServer != null)
+            this.ColShape.AssociateWith(this.associatedServer);
+    }
+
+    private CollisionShape CreateCollisionShape()
+    {
+        CollisionShape colShape = this.markerType switch
+        {
+            MarkerType.Checkpoint => new CollisionCircle(new Vector2(this.Position.X, this.Position.Y), this.size),
+            MarkerType.Cylinder => new CollisionTube(this.Position, this.size, this.size <= 1.5f ? this.size + 1f : this.size),
+            _ => new CollisionSphere(this.Position, this.size),
+        };
+        colShape.ElementEntered += HandleColShapeEntered;
+        colShape.ElementLeft += HandleColShapeLeft;
+        return colShape;
+    }
+
+    private void HandleColShapeEntered(CollisionShape sender, CollisionShapeHitEventArgs e)
+        => this.ElementHit?.Invoke(this, new MarkerHitEventArgs(e.Element, e.Element.Dimension == this.Dimension));
+
+    private void HandleColShapeLeft(CollisionShape sender, CollisionShapeLeftEventArgs e)
+        => this.ElementLeft?.Invoke(this, new MarkerLeftEventArgs(e.Element, e.Element.Dimension == this.Dimension));
 
     public event ElementChangedEventHandler<Marker, MarkerType>? MarkerTypeChanged;
     public event ElementChangedEventHandler<Marker, MarkerIcon>? MarkerIconChanged;
@@ -149,4 +207,7 @@ public class Marker : Element
     public event ElementChangedEventHandler<Marker, Color?>? TargetArrowColorChanged;
     public event ElementChangedEventHandler<Marker, float?>? TargetArrowSizeChanged;
     public event ElementChangedEventHandler<Marker, bool>? IgnoreAlphaLimitsChanged;
+
+    public event ElementEventHandler<Marker, MarkerHitEventArgs>? ElementHit;
+    public event ElementEventHandler<Marker, MarkerLeftEventArgs>? ElementLeft;
 }

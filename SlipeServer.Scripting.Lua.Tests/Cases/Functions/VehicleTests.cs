@@ -642,4 +642,32 @@ public class VehicleTests
 
         vehicle.Position.Should().Be(new Vector3(0, 0, 0));
     }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void IsVehicleOnGroundReturnsTrue(IMtaServer sut)
+    {
+        var vehicle = new Vehicle(VehicleModel.Taxi, Vector3.Zero).AssociateWith(sut);
+        sut.AddGlobal("testVehicle", vehicle);
+
+        vehicle.IsOnGround = true;
+
+        sut.RunLuaScript("""
+            assert(isVehicleOnGround(testVehicle) == true)
+            """);
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void IsVehicleOnGroundReturnsFalse(IMtaServer sut)
+    {
+        var vehicle = new Vehicle(VehicleModel.Taxi, Vector3.Zero).AssociateWith(sut);
+        sut.AddGlobal("testVehicle", vehicle);
+
+        vehicle.IsOnGround = false;
+
+        sut.RunLuaScript("""
+            assert(isVehicleOnGround(testVehicle) == false)
+            """);
+    }
 }

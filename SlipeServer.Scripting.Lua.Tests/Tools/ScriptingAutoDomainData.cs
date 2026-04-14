@@ -3,12 +3,15 @@ using AutoFixture.AutoMoq;
 using AutoFixture.Xunit2;
 using Moq;
 using SlipeServer.Net.Wrappers;
+using SlipeServer.Scripting;
 using SlipeServer.Server;
 using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.ElementCollections.Concurrent;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Services;
 using SlipeServer.Server.Tests.Tools;
+using System;
+using System.IO;
 
 namespace SlipeServer.Scripting.Lua.Tests.Tools;
 
@@ -39,9 +42,14 @@ public class ScriptingAutoDomainData(bool mockElementCollection = true) : AutoDa
 
         var wrapper = new LightTestNetWrapper();
         var textItemService = new TextItemService();
-        var server = new ScriptingTestMtaServer(wrapper, elementCollection, customDefinitions, textItemService);
+        var settingsFilePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.json");
+        var settingsRegistry = new SettingsRegistry(settingsFilePath);
+        var server = new ScriptingTestMtaServer(wrapper, elementCollection, customDefinitions, textItemService, settingsRegistry: settingsRegistry);
         var context = new TestPacketContext(wrapper);
 
+
+        fixture.Register<ISettingsRegistry>(() => settingsRegistry);
+        fixture.Register<SettingsRegistry>(() => settingsRegistry);
 
         fixture.Register<INetWrapper>(() => wrapper);
         fixture.Register<IMtaServer<LightTestPlayer>>(() => server);

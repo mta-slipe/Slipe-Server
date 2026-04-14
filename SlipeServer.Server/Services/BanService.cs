@@ -4,6 +4,7 @@ using System.Net;
 using System;
 using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements.Events;
 using System.Linq;
 using SlipeServer.Packets.Enums;
 
@@ -35,6 +36,7 @@ public class BanService(IBanRepository banRepository, IElementCollection element
         foreach (var player in playersToDisconnect)
         {
             var disconnectType = player.ban?.Serial != null ? PlayerDisconnectType.BANNED_SERIAL : PlayerDisconnectType.BANNED_IP;
+            player.player.TriggerBanned(new PlayerBannedEventArgs(ban));
             player.player.Kick(ban.Reason ?? "Unknown", disconnectType);
         }
 

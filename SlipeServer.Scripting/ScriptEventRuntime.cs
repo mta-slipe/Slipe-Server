@@ -23,6 +23,7 @@ public class ScriptEventRuntime : IScriptEventRuntime
     private readonly ILogger<ScriptEventRuntime> logger;
     private bool lastEventCancelled = false;
     private string lastCancelReason = string.Empty;
+    private bool defaultEventsLoaded;
 
     private readonly Lock handlerLock = new();
 
@@ -283,6 +284,10 @@ public class ScriptEventRuntime : IScriptEventRuntime
 
     public void LoadDefaultEvents()
     {
+        if (this.defaultEventsLoaded)
+            return;
+        this.defaultEventsLoaded = true;
+
         foreach (var type in typeof(ScriptEventRuntime).Assembly.DefinedTypes
             .Where(type => typeof(IEventDefinitions).IsAssignableFrom(type) && type.IsClass))
         {

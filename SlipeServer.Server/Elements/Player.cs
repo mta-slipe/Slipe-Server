@@ -589,6 +589,18 @@ public class Player : Ped
     public void TriggerExplosionCreated(Vector3 position, ExplosionType explosionType)
         => this.ExplosionCreated?.Invoke(this, new PlayerExplosionEventArgs(this, position, explosionType));
 
+    public void TriggerBanned(PlayerBannedEventArgs args)
+        => this.Banned?.Invoke(this, args);
+
+    public void TriggerMarkerHit(Marker marker, bool matchingDimension)
+        => this.MarkerHit?.Invoke(this, new MarkerHitEventArgs(marker, matchingDimension));
+
+    public void TriggerMarkerLeft(Marker marker, bool matchingDimension)
+        => this.MarkerLeft?.Invoke(this, new MarkerLeftEventArgs(marker, matchingDimension));
+
+    public void TriggerStealthKill(Ped target)
+        => this.StealthKilled?.Invoke(this, new PlayerStealthKillEventArgs(target));
+
     public event ElementChangedEventHandler<Player, byte>? WantedLevelChanged;
     public event ElementChangedEventHandler<Player, string>? NametagTextChanged;
     public event ElementChangedEventHandler<Player, bool>? IsNametagShowingChanged;
@@ -624,4 +636,8 @@ public class Player : Ped
     public event ElementEventHandler<Player, PlayerWeaponFiredEventArgs>? WeaponFired;
     public event ElementEventHandler<Player, EventArgs>? SatchelsDetonated;
     public event ElementEventHandler<Player, PlayerExplosionEventArgs>? ExplosionCreated;
+    public event ElementEventHandler<Player, PlayerBannedEventArgs>? Banned;
+    public event ElementEventHandler<Player, MarkerHitEventArgs>? MarkerHit;
+    public event ElementEventHandler<Player, MarkerLeftEventArgs>? MarkerLeft;
+    public event ElementEventHandler<Player, PlayerStealthKillEventArgs>? StealthKilled;
 }

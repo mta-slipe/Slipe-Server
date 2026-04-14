@@ -9,7 +9,7 @@ public class RootElement : Element, IRootElement
 {
     public override ElementType ElementType => ElementType.Root;
 
-    public new RootElement AssociateWith(IMtaServer server)
+    public override RootElement AssociateWith(IMtaServer server)
     {
         base.AssociateWith(server);
         return this;

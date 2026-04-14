@@ -124,4 +124,47 @@ public class AccountEventTests
         assertDataProvider.AssertPrints[1].Should().Be("Second");
         assertDataProvider.AssertPrints[2].Should().Be("Third");
     }
+
+    [Theory]
+    [ScriptingAutoDomainData(false)]
+    public void OnPlayerLogin_FiresWhenPlayerLogsIn(
+        LightTestPlayer player,
+        AssertDataProvider assertDataProvider,
+        IMtaServer sut)
+    {
+        sut.AddGlobal("testPlayer", player);
+
+        sut.RunLuaScript("""
+            addAccount("LoginUser", "pass")
+            addEventHandler("onPlayerLogin", testPlayer, function(previousAccount, currentAccount)
+                assertPrint(getAccountName(currentAccount))
+            end)
+            local account = getAccount("LoginUser")
+            logIn(testPlayer, account, "pass")
+            """);
+
+        assertDataProvider.AssertPrints.Should().ContainSingle().Which.Should().Be("LoginUser");
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData(false)]
+    public void OnPlayerLogout_FiresWhenPlayerLogsOut(
+        LightTestPlayer player,
+        AssertDataProvider assertDataProvider,
+        IMtaServer sut)
+    {
+        sut.AddGlobal("testPlayer", player);
+
+        sut.RunLuaScript("""
+            addAccount("LogoutUser", "pass")
+            local account = getAccount("LogoutUser")
+            logIn(testPlayer, account, "pass")
+            addEventHandler("onPlayerLogout", testPlayer, function(previousAccount, currentAccount)
+                assertPrint(getAccountName(previousAccount))
+            end)
+            logOut(testPlayer)
+            """);
+
+        assertDataProvider.AssertPrints.Should().ContainSingle().Which.Should().Be("LogoutUser");
+    }
 }

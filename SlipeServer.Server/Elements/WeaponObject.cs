@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 
 namespace SlipeServer.Server.Elements;
 
@@ -10,7 +11,7 @@ public class WeaponObject(ushort model, Vector3 position) : WorldObject(model, p
 {
     public override ElementType ElementType => ElementType.Weapon;
 
-    public WeaponTargetType TargetType { get; set; }
+    public WeaponTargetType TargetType { get; set; } = WeaponTargetType.Fixed;
     public Element? TargetElement { get; set; }
     public byte? BoneTarget { get; set; }
     public byte? WheelTarget { get; set; }
@@ -38,9 +39,14 @@ public class WeaponObject(ushort model, Vector3 position) : WorldObject(model, p
     public ushort ClipAmmo { get; set; } = 0;
     public Element? Owner { get; set; }
 
-    public new WeaponObject AssociateWith(IMtaServer server)
+    public override WeaponObject AssociateWith(IMtaServer server)
     {
         base.AssociateWith(server);
         return this;
     }
+
+    public void TriggerFired()
+        => this.Fired?.Invoke(this);
+
+    public event Action<WeaponObject>? Fired;
 }

@@ -268,5 +268,46 @@ public class MarkerTests
         marker.TargetArrowColor.Should().Be(Color.FromArgb(200, 0, 255, 0));
         marker.TargetArrowSize.Should().Be(3.0f);
     }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void GetElementColShape_ReturnsColShapeForMarker(
+        [Frozen] Mock<IElementCollection> elementCollectionMock,
+        AssertDataProvider assertDataProvider,
+        IMtaServer sut)
+    {
+        elementCollectionMock.Setup(x => x.Add(It.IsAny<Marker>()));
+
+        var marker = new Marker(Vector3.Zero, MarkerType.Checkpoint).AssociateWith(sut);
+        sut.AddGlobal("testMarker", marker);
+
+        sut.RunLuaScript("""
+            local colshape = getElementColShape(testMarker)
+            assert(colshape ~= nil, "colshape should not be nil")
+            assert(isElement(colshape), "colshape should be an element")
+            assertPrint("pass")
+            """);
+
+        marker.ColShape.Should().NotBeNull();
+        assertDataProvider.AssertPrints.Should().ContainSingle().Which.Should().Be("pass");
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void GetElementColShape_ReturnsNilForNonMarkerElement(
+        AssertDataProvider assertDataProvider,
+        IMtaServer sut)
+    {
+        var ped = new Ped(PedModel.Cj, Vector3.Zero).AssociateWith(sut);
+        sut.AddGlobal("testPed", ped);
+
+        sut.RunLuaScript("""
+            local colshape = getElementColShape(testPed)
+            assert(colshape == nil, "colshape should be nil for non-marker element")
+            assertPrint("pass")
+            """);
+
+        assertDataProvider.AssertPrints.Should().ContainSingle().Which.Should().Be("pass");
+    }
 }
 

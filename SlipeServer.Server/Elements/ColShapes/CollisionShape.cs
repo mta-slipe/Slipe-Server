@@ -64,7 +64,7 @@ public abstract class CollisionShape : Element
         element.TriggerColShapeLeft(leftArgs);
     }
 
-    public new CollisionShape AssociateWith(IMtaServer server)
+    public override CollisionShape AssociateWith(IMtaServer server)
     {
         base.AssociateWith(server);
         return this;

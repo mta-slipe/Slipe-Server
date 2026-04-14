@@ -39,6 +39,7 @@ using SlipeServer.Server.PacketHandling.Handlers.Vehicle;
 using SlipeServer.Server.PacketHandling.Handlers.Vehicle.Sync;
 using SlipeServer.Server.PacketHandling.Handlers.Voice;
 using SlipeServer.Server.PacketHandling.QueueHandlers;
+using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.ServerBuilders;
 using SlipeServer.Server.Services;
@@ -89,6 +90,8 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<ITimerService, TimerService>();
         services.TryAddSingleton<IBanRepository, JsonFileBanRepository>();
+        services.TryAddSingleton<ResourceService>();
+        services.TryAddSingleton<IResourceService, ResourceService>();
 
         return services;
     }

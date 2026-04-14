@@ -61,7 +61,7 @@ public partial class VehicleScriptDefinitions
     public bool IsVehicleBlown(Vehicle vehicle) => vehicle.BlownState == VehicleBlownState.BlownUp;
 
     [ScriptFunctionDefinition("isVehicleOnGround")]
-    public bool IsVehicleOnGround(Vehicle vehicle) => false;
+    public bool IsVehicleOnGround(Vehicle vehicle) => vehicle.IsOnGround;
 
     [ScriptFunctionDefinition("getVehiclesOfType")]
     public IEnumerable<Vehicle> GetVehiclesOfType(int model)
