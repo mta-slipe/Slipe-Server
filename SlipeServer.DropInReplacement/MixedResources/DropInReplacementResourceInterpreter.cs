@@ -61,7 +61,9 @@ public class DropInReplacementResourceInterpreter : IResourceInterpreter
             Exports = [.. GetExportsForMetaXmlResource(meta.Value)],
             ServerExports = [.. GetServerExportsForMetaXmlResource(meta.Value)],
             NoClientScripts = GetNoCacheFiles(meta.Value, files),
-            IsOopEnabled = meta.Value.oops != null && meta.Value.oops.Any(x => x.Data.ToLower() == "true")
+            IsOopEnabled = meta.Value.oops != null && meta.Value.oops.Any(x => x.Data.ToLower() == "true"),
+            Settings = GetSettingsForMetaXmlResource(meta.Value),
+            Info = GetInfoForMetaXmlResource(meta.Value)
         };
         return resource;
     }
@@ -134,6 +136,22 @@ public class DropInReplacementResourceInterpreter : IResourceInterpreter
             .Select(x => x.Function);
     }
 
+    private Dictionary<string, string> GetSettingsForMetaXmlResource(MetaXml meta)
+    {
+        if (meta.settings == null)
+            return [];
+
+        return meta.settings
+            .ToDictionary(s => StripSettingPrefix(s.Name), s => s.Value);
+    }
+
+    private static string StripSettingPrefix(string name)
+    {
+        if (name.StartsWith('*') || name.StartsWith('@'))
+            return name.Substring(1);
+        return name;
+    }
+
     private IEnumerable<string> GetServerExportsForMetaXmlResource(MetaXml meta)
     {
         if (meta.exports == null)
@@ -142,5 +160,14 @@ public class DropInReplacementResourceInterpreter : IResourceInterpreter
         return meta.exports
             .Where(x => x.Type == "server" || x.Type == "shared")
             .Select(x => x.Function);
+    }
+
+    private static Dictionary<string, string> GetInfoForMetaXmlResource(MetaXml meta)
+    {
+        if (meta.info?.Attributes == null)
+            return [];
+
+        return meta.info.Attributes
+            .ToDictionary(a => a.LocalName, a => a.Value);
     }
 }

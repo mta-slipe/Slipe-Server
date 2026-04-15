@@ -21,12 +21,16 @@ public class LuaTranslator
 {
     private readonly ILogger logger;
     private readonly ConditionalWeakTable<Closure, EventDelegate> eventDelegateCache = [];
+    private readonly ConditionalWeakTable<Script, LuaEnvironment> scriptEnvironments = [];
+
+    internal void RegisterEnvironment(Script script, LuaEnvironment environment) => this.scriptEnvironments.Add(script, environment);
+    private LuaEnvironment? GetEnvironment(Script script) => this.scriptEnvironments.TryGetValue(script, out var env) ? env : null;
 
     public LuaTranslator(ILogger logger)
     {
         this.logger = logger;
 
-        UserData.RegisterType<Element>(InteropAccessMode.Hardwired);
+        UserData.RegisterType<Element>(new ElementLuaDescriptor());
         UserData.RegisterType<Resource>(InteropAccessMode.HideMembers);
         UserData.RegisterType<ScriptFile>(InteropAccessMode.Hardwired);
         UserData.RegisterType<ScriptXmlNode>(InteropAccessMode.Hardwired);
@@ -220,6 +224,7 @@ public class LuaTranslator
     {
         var callback = callbackValue.Function;
         var context = Scripting.ScriptExecutionContext.Current;
+        var environment = GetEnvironment(callback.OwnerScript);
 
         return new ScriptCallbackDelegateWrapper(parameters =>
         {
@@ -231,6 +236,7 @@ public class LuaTranslator
             var previous = Scripting.ScriptExecutionContext.Current;
             Scripting.ScriptExecutionContext.Current = context;
 
+            environment?.EnterScriptLock();
             try
             {
                 callback.Call(values);
@@ -242,6 +248,7 @@ public class LuaTranslator
             }
             finally
             {
+                environment?.ExitScriptLock();
                 Scripting.ScriptExecutionContext.Current = previous;
             }
         }, callback);
@@ -378,11 +385,10 @@ public class LuaTranslator
                 return cached;
 
             var context = Scripting.ScriptExecutionContext.Current;
+            var environment = GetEnvironment(closure.OwnerScript);
 
             EventDelegate eventDelegate = (element, parameters) => {
                 var source = UserData.Create(element);
-
-                closure.OwnerScript.Globals["source"] = source;
 
                 var values = parameters
                     .Select(ToDynValues)
@@ -392,9 +398,12 @@ public class LuaTranslator
                 var previous = Scripting.ScriptExecutionContext.Current;
                 Scripting.ScriptExecutionContext.Current = context;
 
+                environment?.EnterScriptLock();
                 try
                 {
-                    closure.Call(values);
+                    closure.OwnerScript.Globals["source"] = source;
+                    try { closure.Call(values); }
+                    finally { closure.OwnerScript.Globals.Remove("source"); }
                 }
                 catch (ScriptRuntimeException e)
                 {
@@ -403,10 +412,9 @@ public class LuaTranslator
                 }
                 finally
                 {
+                    environment?.ExitScriptLock();
                     Scripting.ScriptExecutionContext.Current = previous;
                 }
-
-                closure.OwnerScript.Globals.Remove("source");
             };
 
             this.eventDelegateCache.Add(closure, eventDelegate);
@@ -443,8 +451,25 @@ public class LuaTranslator
             return dynValues.Dequeue()?.UserData?.Object as TextDisplay;
         if (targetType == typeof(Resource))
             return dynValues.Dequeue()?.UserData?.Object as Resource;
+        if (targetType == typeof(ElementTarget))
+        {
+            var dynValue = dynValues.Dequeue();
+            if (dynValue.Type == DataType.Nil)
+                return null;
+            if (dynValue.Type == DataType.Table)
+            {
+                var players = dynValue.Table.Values
+                    .Where(v => v.Type == DataType.UserData)
+                    .Select(v => v.UserData?.Object as Player)
+                    .Where(p => p != null)
+                    .Cast<Player>()
+                    .ToList();
+                return new ElementTarget(players);
+            }
+            return new ElementTarget(dynValue.UserData?.Object as Element);
+        }
         if (targetType == typeof(DynValue))
-            return dynValues.Dequeue();
+            return dynValues.Dequeue(); 
 
         if (targetType.IsGenericType && targetType.GetGenericTypeDefinition() == typeof(Nullable<>))
         {
@@ -478,6 +503,8 @@ public class LuaTranslator
 
         if (targetType == typeof(Resource))
             return value.Type == DataType.UserData;
+        if (targetType == typeof(ElementTarget))
+            return value.Type == DataType.UserData || value.Type == DataType.Table || value.Type == DataType.Nil;
         if (targetType == typeof(DynValue))
             return true;
         if (targetType == typeof(ScriptFile) || targetType == typeof(ScriptXmlNode) ||

@@ -28,6 +28,7 @@ public class Resource
     public string Name { get; }
     public string Path { get; }
     public bool IsOopEnabled { get; set; }
+    public Dictionary<string, string> Info { get; init; } = [];
 
     public Resource(
         IMtaServer server, 

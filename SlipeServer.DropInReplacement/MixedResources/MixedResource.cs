@@ -9,6 +9,7 @@ public class MixedResource(IMtaServer server, IRootElement root, string name, st
 {
     public List<ServerResourceFile> ServerFiles { get; init; } = [];
     public List<string> ServerExports { get; init; } = [];
+    public Dictionary<string, string> Settings { get; init; } = [];
 
     public readonly struct ServerResourceFile
     {

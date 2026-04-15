@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace SlipeServer.Lua;
 
@@ -13,6 +14,7 @@ public class LuaEnvironment
 {
     private readonly Script script;
     private readonly LuaTranslator translator;
+    private readonly object scriptLock = new();
     private readonly ILogger logger;
     private readonly ScriptTransformationPipeline scriptTransformationPipeline;
     private readonly IScriptEventRuntime scriptEventRuntime;
@@ -39,19 +41,26 @@ public class LuaEnvironment
         this.script = script;
         this.translator = translator;
         this.logger = logger;
+        translator.RegisterEnvironment(this.script, this);
         this.scriptTransformationPipeline = scriptTransformationPipeline;
         this.scriptEventRuntime = scriptEventRuntime;
         this.scriptTimerService = scriptTimerService;
         this.scriptInputRuntime = scriptInputRuntime;
 
         if (executionContext.Owner != null)
+        {
+            SetGlobal("resource", executionContext.Owner);
             SetGlobal("resourceRoot", executionContext.Owner.Root);
+        }
 
         executionContext.SetGlobal = (key, value) => SetGlobal(key, value);
         executionContext.RemoveGlobal = (key) => RemoveGlobal(key);
 
         this.script.DoString(MtaOopPrelude.Full, null, "mta-oop-prelude");
     }
+
+    internal void EnterScriptLock() => Monitor.Enter(this.scriptLock);
+    internal void ExitScriptLock() => Monitor.Exit(this.scriptLock);
 
     public void LoadString(string code, string? codeFriendlyName = null)
     {

@@ -53,8 +53,10 @@ public interface IGameWorld
     void SetGlitchEnabled(GlitchType glitchType, bool enabled);
     void SetJetpackWeaponEnabled(WeaponId weapon, bool isEnabled);
     void SetSkyGradient(Color top, Color bottom);
+    void ResetSkyGradient();
     void SetSpecialPropertyEnabled(WorldSpecialProperty property, bool enabled);
     void SetSunColor(Color core, Color corona);
+    void ResetSunColor();
     void SetTime(byte hour, byte minute);
     TrafficLightState TrafficLightState { get; }
     bool AreTrafficLightsForced { get; }

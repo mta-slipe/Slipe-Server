@@ -1,0 +1,47 @@
+using FluentAssertions;
+using SlipeServer.DropInReplacement.MixedResources.Behaviour;
+using SlipeServer.Scripting.Lua.Tests.Tools;
+
+namespace SlipeServer.Scripting.Lua.Tests.Cases.DropInReplacement;
+
+public class ResourceInfoTests
+{
+    private static string ResourceDirectory => Path.Combine(AppContext.BaseDirectory, "Resources");
+
+    [Fact]
+    public void StartGetResourceInfoTestResource_DoesNotThrow()
+    {
+        var server = new DropInReplacementTestingServer(ResourceDirectory);
+        var service = server.GetRequiredService<IDropInReplacementResourceService>();
+
+        var exception = Record.Exception(() => service.StartResource("getresourceinfo_test"));
+
+        if (exception != null)
+            throw new Exception(
+                $"Starting 'getresourceinfo_test' resource failed with {exception.GetType().Name}: {exception.Message}",
+                exception);
+    }
+
+    [Fact]
+    public void StartGetResourceInfoTestResource_HasNoScriptErrors()
+    {
+        var server = new DropInReplacementTestingServer(ResourceDirectory);
+        var service = server.GetRequiredService<IDropInReplacementResourceService>();
+        service.StartResource("getresourceinfo_test");
+
+        server.ScriptErrors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void StartGetResourceInfoTestResource_InfoIsParsedFromMetaXml()
+    {
+        var server = new DropInReplacementTestingServer(ResourceDirectory);
+        var resourceService = server.GetRequiredService<IDropInReplacementResourceService>();
+        var resource = resourceService.StartResource("getresourceinfo_test");
+
+        resource.Should().NotBeNull();
+        resource!.Info.Should().ContainKey("version").WhoseValue.Should().Be("2.5");
+        resource.Info.Should().ContainKey("author").WhoseValue.Should().Be("TestAuthor");
+        resource.Info.Should().ContainKey("type").WhoseValue.Should().Be("script");
+    }
+}

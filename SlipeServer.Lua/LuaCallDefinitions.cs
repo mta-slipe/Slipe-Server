@@ -45,6 +45,13 @@ public class LuaCallDefinitions(LuaEnvironmentService environmentService)
         return Scripting.ScriptExecutionContext.Current?.Owner;
     }
 
+    [Scripting.ScriptFunctionDefinition("getResourceInfo")]
+    public string? GetResourceInfo(Resource resource, string attribute)
+    {
+        resource.Info.TryGetValue(attribute, out var value);
+        return value;
+    }
+
     internal void LoadExports(Script script)
     {
         script.DoString("""

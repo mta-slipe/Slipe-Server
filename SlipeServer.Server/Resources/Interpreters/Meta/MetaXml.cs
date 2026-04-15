@@ -1,10 +1,14 @@
-﻿using System.Xml.Serialization;
+﻿using System.Xml;
+using System.Xml.Serialization;
 
 namespace SlipeServer.Server.Resources.Interpreters.Meta;
 
 [XmlRoot("meta")]
 public struct MetaXml
 {
+    [XmlElement("info")]
+    public MetaXmlInfo? info;
+
     [XmlElement("file")]
     public MetaXmlFile[] files;
 
@@ -22,6 +26,10 @@ public struct MetaXml
 
     [XmlElement("download_priority_group")]
     public MetaXmlDownloadPriorityGroup[] downloadPriorityGroup;
+
+    [XmlArray("settings")]
+    [XmlArrayItem("setting")]
+    public MetaXmlSetting[] settings;
 }
 
 public struct MetaXmlFile
@@ -70,4 +78,19 @@ public struct MetaXmlExport
 
     [XmlAttribute("type")]
     public string Type { get; set; }
+}
+
+public struct MetaXmlSetting
+{
+    [XmlAttribute("name")]
+    public string Name { get; set; }
+
+    [XmlAttribute("value")]
+    public string Value { get; set; }
+}
+
+public class MetaXmlInfo
+{
+    [XmlAnyAttribute]
+    public XmlAttribute[]? Attributes { get; set; }
 }

@@ -157,7 +157,7 @@ public partial class WorldScriptDefinitions
         gameWorld.AircraftMaxVelocity = 1.5f;
         gameWorld.WaterLevels = new WaterLevels();
         gameWorld.WaveHeight = 0.0f;
-        gameWorld.SetSkyGradient(Color.FromArgb(0, 0, 0), Color.FromArgb(0, 0, 0));
+        gameWorld.ResetSkyGradient();
         gameWorld.HeatHaze = null;
         gameWorld.CloudsEnabled = true;
         gameWorld.SetTrafficLightState(TrafficLightState.GreenRed, false);
@@ -166,7 +166,7 @@ public partial class WorldScriptDefinitions
         gameWorld.FarClipDistance = null;
         gameWorld.FogDistance = null;
         gameWorld.RainLevel = 0;
-        gameWorld.SetSunColor(Color.FromArgb(255, 255, 255), Color.FromArgb(255, 200, 150));
+        gameWorld.ResetSunColor();
         gameWorld.SunSize = 1;
         gameWorld.WindVelocity = Vector3.Zero;
         gameWorld.MoonSize = 3;

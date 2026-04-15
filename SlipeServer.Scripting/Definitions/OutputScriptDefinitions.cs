@@ -50,16 +50,25 @@ public class OutputScriptDefinitions(IDebugLog debugLog, ILogger logger, IChatBo
     }
 
     [ScriptFunctionDefinition("outputChatBox")]
-    public void OutputChatBox(string text, Player? player = null, int red = 231, int green = 217, int blue = 176, bool colorCoded = false)
+    public void OutputChatBox(string text, ElementTarget? visibleTo = null, int red = 231, int green = 217, int blue = 176, bool colorCoded = false)
     {
         var color = Color.FromArgb(red, green, blue);
-        if (player == null)
+
+        if (visibleTo?.Players != null)
         {
-            chatBox.Output(text, color, colorCoded);
-        } else
+            foreach (var p in visibleTo.Players)
+                chatBox.OutputTo(p, text, color, colorCoded);
+
+            return;
+        }
+
+        if (visibleTo?.Element is Player player)
         {
             chatBox.OutputTo(player, text, color, colorCoded);
+            return;
         }
+
+        chatBox.Output(text, color, colorCoded);
     }
 
     [ScriptFunctionDefinition("showChat")]

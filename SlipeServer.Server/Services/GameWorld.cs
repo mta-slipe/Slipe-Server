@@ -494,6 +494,14 @@ public class GameWorld : IGameWorld
         this.server.BroadcastPacket(new SetSkyGradientPacket(top, bottom));
     }
 
+    public void ResetSkyGradient()
+    {
+        this.skyGradientTopColor = null;
+        this.skyGradientBottomColor = null;
+
+        this.server.BroadcastPacket(new ResetSkyGradientPacket());
+    }
+
     public (Color, Color)? GetSkyGradient()
     {
         return (this.skyGradientTopColor != null && this.skyGradientBottomColor != null) ?
@@ -507,6 +515,14 @@ public class GameWorld : IGameWorld
         this.sunCoronaColor = corona;
 
         this.server.BroadcastPacket(new SetSunColorPacket(core, corona));
+    }
+
+    public void ResetSunColor()
+    {
+        this.sunCoreColor = null;
+        this.sunCoronaColor = null;
+
+        this.server.BroadcastPacket(new ResetSunColorPacket());
     }
 
     public (Color, Color)? GetSunColor()
