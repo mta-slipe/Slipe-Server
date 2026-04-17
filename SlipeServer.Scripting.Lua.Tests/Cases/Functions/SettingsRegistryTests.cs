@@ -8,7 +8,7 @@ public class SettingsRegistryTests
 {
     [Theory]
     [ScriptingAutoDomainData]
-    public void Get_NonExistentKey_ReturnsNil(
+    public void Get_NonExistentKey_ReturnsFalse(
         AssertDataProvider assertDataProvider,
         IMtaServer sut)
     {
@@ -16,7 +16,7 @@ public class SettingsRegistryTests
             assertPrint(tostring(get("nonexistent")))
             """);
 
-        assertDataProvider.AssertPrints.Should().ContainSingle().Which.Should().Be("nil");
+        assertDataProvider.AssertPrints.Should().ContainSingle().Which.Should().Be("false");
     }
 
     [Theory]

@@ -261,6 +261,16 @@ public class PedScriptDefinitions(IMtaServer server)
         return true;
     }
 
+    [ScriptFunctionDefinition("getPedRotation")]
+    public float GetPedRotation(Ped ped) => ped.Rotation.Z;
+
+    [ScriptFunctionDefinition("setPedRotation")]
+    public bool SetPedRotation(Ped ped, float rotation, bool conformPedRotation = false)
+    {
+        ped.Rotation = new Vector3(ped.Rotation.X, ped.Rotation.Y, rotation);
+        return true;
+    }
+
     [ScriptFunctionDefinition("addPedClothes")]
     public bool AddPedClothes(Ped ped, string clothesTexture, string clothesModel, int clothesType)
     {

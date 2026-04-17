@@ -1,23 +1,16 @@
 using FluentAssertions;
 using SlipeServer.DropInReplacement.MixedResources.Behaviour;
 using SlipeServer.Scripting.Lua.Tests.Tools;
-using System;
-using System.IO;
-using Xunit;
 
 namespace SlipeServer.Scripting.Lua.Tests.Cases.DropInReplacement;
 
 public class FreeroamResourceTests
 {
-    private static string ResourceDirectory => Path.Combine(AppContext.BaseDirectory, "Resources");
-
-    [Fact]
-    public void StartFreeroamResource_DoesNotThrow()
+    [Theory]
+    [DropInReplacementAutoDomainData]
+    public void StartFreeroamResource_DoesNotThrow(
+        IDropInReplacementResourceService service)
     {
-        var server = new DropInReplacementTestingServer(ResourceDirectory);
-        var service = server.GetRequiredService<IDropInReplacementResourceService>();
-        service.StartResource("freeroam");
-
         var exception = Record.Exception(() => service.StartResource("freeroam"));
 
         if (exception != null)
@@ -26,12 +19,12 @@ public class FreeroamResourceTests
                 exception);
     }
 
-    [Fact]
-    public void StartFreeroamResource_WithPlayerJoining_DoesNotThrow()
+    [Theory]
+    [DropInReplacementAutoDomainData]
+    public void StartFreeroamResource_WithPlayerJoining_DoesNotThrow(
+        DropInReplacementTestingServer server,
+        IDropInReplacementResourceService service)
     {
-        var server = new DropInReplacementTestingServer(ResourceDirectory);
-        var service = server.GetRequiredService<IDropInReplacementResourceService>();
-
         var startException = Record.Exception(() => service.StartResource("freeroam"));
 
         if (startException != null)
@@ -47,11 +40,12 @@ public class FreeroamResourceTests
                 joinException);
     }
 
-    [Fact]
-    public void StartFreeroamResource_WithPlayerJoining_HasNoScriptErrors()
+    [Theory]
+    [DropInReplacementAutoDomainData]
+    public void StartFreeroamResource_WithPlayerJoining_HasNoScriptErrors(
+        DropInReplacementTestingServer server,
+        IDropInReplacementResourceService service)
     {
-        var server = new DropInReplacementTestingServer(ResourceDirectory);
-        var service = server.GetRequiredService<IDropInReplacementResourceService>();
         service.StartResource("freeroam");
 
         server.JoinFakePlayer();
@@ -59,11 +53,12 @@ public class FreeroamResourceTests
         server.ScriptErrors.Should().BeEmpty();
     }
 
-    [Fact]
-    public void StartFreeroamResource_WithPlayerJoining_SetsNametagColor()
+    [Theory]
+    [DropInReplacementAutoDomainData]
+    public void StartFreeroamResource_WithPlayerJoining_SetsNametagColor(
+        DropInReplacementTestingServer server,
+        IDropInReplacementResourceService service)
     {
-        var server = new DropInReplacementTestingServer(ResourceDirectory);
-        var service = server.GetRequiredService<IDropInReplacementResourceService>();
         service.StartResource("freeroam");
 
         var player = server.JoinFakePlayer();

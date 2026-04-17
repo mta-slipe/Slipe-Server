@@ -4,10 +4,11 @@ using SlipeServer.Scripting;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace SlipeServer.DropInReplacement.MixedResources.Behaviour;
 
-public class DropInReplacementResourceLuaService : IDropInReplacementResourceLuaService
+public partial class DropInReplacementResourceLuaService : IDropInReplacementResourceLuaService
 {
     private readonly LuaService luaService;
     private readonly ISettingsRegistry settingsRegistry;
@@ -24,7 +25,7 @@ public class DropInReplacementResourceLuaService : IDropInReplacementResourceLua
     public void StartLuaResource(MixedResource resource)
     {
         foreach (var (name, value) in resource.Settings)
-            this.settingsRegistry.Set($"{resource.Name}.{name}", ParseSettingValue(value));
+            this.settingsRegistry.Set($"{resource.Name}.{SanitiseSettingNameRegex().Replace(name, "")}", ParseSettingValue(value));
 
         var environment = this.luaService.CreateEnvironment(resource.Name, resource);
         foreach (var file in resource.ServerFiles.Where(x => x.FileType == Server.Elements.Enums.ResourceFileType.Script))
@@ -84,6 +85,9 @@ public class DropInReplacementResourceLuaService : IDropInReplacementResourceLua
             _ => LuaValue.Nil
         };
     }
+
+    [GeneratedRegex("^[*#A]")]
+    private static partial Regex SanitiseSettingNameRegex();
 }
 
 public interface IDropInReplacementResourceLuaService

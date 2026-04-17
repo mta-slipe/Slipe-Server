@@ -34,4 +34,19 @@ public class MiscScenarioTests
 
         assertDataProvider.AssertPrints.Should().BeEquivalentTo(["hey", "there"]);
     }
+
+    [Theory]
+    [ScriptingAutoDomainData(false)]
+    public void TableGetNTests(
+        AssertDataProvider assertDataProvider,
+        IMtaServer sut)
+    {
+        sut.RunLuaScript("""    
+            local foo = { 1, 2, 3 }
+
+            assertPrint(tostring(table.getn(foo)))
+            """);
+
+        assertDataProvider.AssertPrints.Should().BeEquivalentTo(["3"]);
+    }
 }

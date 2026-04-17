@@ -18,7 +18,7 @@ public class LuaEnvironment
     private readonly ILogger logger;
     private readonly ScriptTransformationPipeline scriptTransformationPipeline;
     private readonly IScriptEventRuntime scriptEventRuntime;
-    private readonly ScriptTimerService scriptTimerService;
+    private readonly IScriptTimerService scriptTimerService;
     private readonly IScriptInputRuntime scriptInputRuntime;
 
     public string Identifier { get; }
@@ -32,7 +32,7 @@ public class LuaEnvironment
         ILogger logger,
         ScriptTransformationPipeline scriptTransformationPipeline,
         IScriptEventRuntime scriptEventRuntime,
-        ScriptTimerService scriptTimerService,
+        IScriptTimerService scriptTimerService,
         IScriptInputRuntime scriptInputRuntime
     )
     {
@@ -57,6 +57,7 @@ public class LuaEnvironment
         executionContext.RemoveGlobal = (key) => RemoveGlobal(key);
 
         this.script.DoString(MtaOopPrelude.Full, null, "mta-oop-prelude");
+        this.script.DoString(MiscStubs.All, null, "mta-stubs-prelude");
     }
 
     internal void EnterScriptLock() => Monitor.Enter(this.scriptLock);

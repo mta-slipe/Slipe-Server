@@ -6,14 +6,11 @@ namespace SlipeServer.Scripting.Lua.Tests.Cases.DropInReplacement;
 
 public class HayResourceTests
 {
-    private static string ResourceDirectory => Path.Combine(AppContext.BaseDirectory, "Resources");
-
-    [Fact]
-    public void StartHayResource_DoesNotThrow()
+    [Theory]
+    [DropInReplacementAutoDomainData]
+    public void StartHayResource_DoesNotThrow(
+        IDropInReplacementResourceService service)
     {
-        var server = new DropInReplacementTestingServer(ResourceDirectory);
-        var service = server.GetRequiredService<IDropInReplacementResourceService>();
-
         var exception = Record.Exception(() => service.StartResource("hay"));
 
         if (exception != null)
@@ -22,22 +19,23 @@ public class HayResourceTests
                 exception);
     }
 
-    [Fact]
-    public void StartHayResource_HasNoScriptErrors()
+    [Theory]
+    [DropInReplacementAutoDomainData]
+    public void StartHayResource_HasNoScriptErrors(
+        DropInReplacementTestingServer server,
+        IDropInReplacementResourceService service)
     {
-        var server = new DropInReplacementTestingServer(ResourceDirectory);
-        var service = server.GetRequiredService<IDropInReplacementResourceService>();
         service.StartResource("hay");
 
         server.ScriptErrors.Should().BeEmpty();
     }
 
-    [Fact]
-    public void StartHayResource_LoadsLevelsSettingFromMeta()
+    [Theory]
+    [DropInReplacementAutoDomainData]
+    public void StartHayResource_LoadsLevelsSettingFromMeta(
+        IDropInReplacementResourceService service,
+        ISettingsRegistry registry)
     {
-        var server = new DropInReplacementTestingServer(ResourceDirectory);
-        var registry = server.GetRequiredService<ISettingsRegistry>();
-        var service = server.GetRequiredService<IDropInReplacementResourceService>();
         service.StartResource("hay");
 
         var value = registry.Get("hay.levels");
@@ -47,12 +45,12 @@ public class HayResourceTests
         value.DoubleValue.Should().Be(50);
     }
 
-    [Fact]
-    public void StartHayResource_LoadsBlocksSettingFromMeta()
+    [Theory]
+    [DropInReplacementAutoDomainData]
+    public void StartHayResource_LoadsBlocksSettingFromMeta(
+        IDropInReplacementResourceService service,
+        ISettingsRegistry registry)
     {
-        var server = new DropInReplacementTestingServer(ResourceDirectory);
-        var registry = server.GetRequiredService<ISettingsRegistry>();
-        var service = server.GetRequiredService<IDropInReplacementResourceService>();
         service.StartResource("hay");
 
         var value = registry.Get("hay.blocks");
@@ -62,11 +60,12 @@ public class HayResourceTests
         value.DoubleValue.Should().Be(245);
     }
 
-    [Fact]
-    public void StartHayResource_WithPlayerJoining_DoesNotThrow()
+    [Theory]
+    [DropInReplacementAutoDomainData]
+    public void StartHayResource_WithPlayerJoining_DoesNotThrow(
+        DropInReplacementTestingServer server,
+        IDropInReplacementResourceService service)
     {
-        var server = new DropInReplacementTestingServer(ResourceDirectory);
-        var service = server.GetRequiredService<IDropInReplacementResourceService>();
         service.StartResource("hay");
 
         var exception = Record.Exception(() => server.JoinFakePlayer());
@@ -77,11 +76,12 @@ public class HayResourceTests
                 exception);
     }
 
-    [Fact]
-    public void StartHayResource_WithPlayerJoining_HasNoScriptErrors()
+    [Theory]
+    [DropInReplacementAutoDomainData]
+    public void StartHayResource_WithPlayerJoining_HasNoScriptErrors(
+        DropInReplacementTestingServer server,
+        IDropInReplacementResourceService service)
     {
-        var server = new DropInReplacementTestingServer(ResourceDirectory);
-        var service = server.GetRequiredService<IDropInReplacementResourceService>();
         service.StartResource("hay");
 
         server.JoinFakePlayer();

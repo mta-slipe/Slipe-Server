@@ -4,6 +4,7 @@ using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Scripting;
 using SlipeServer.Scripting.Definitions;
 using SlipeServer.Server.Concepts;
+using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Resources;
 using System;
@@ -20,14 +21,24 @@ namespace SlipeServer.Lua;
 public class LuaTranslator
 {
     private readonly ILogger logger;
+    private readonly IElementCollection elementCollection;
     private readonly ConditionalWeakTable<Closure, EventDelegate> eventDelegateCache = [];
     private readonly ConditionalWeakTable<Script, LuaEnvironment> scriptEnvironments = [];
 
     internal void RegisterEnvironment(Script script, LuaEnvironment environment) => this.scriptEnvironments.Add(script, environment);
     private LuaEnvironment? GetEnvironment(Script script) => this.scriptEnvironments.TryGetValue(script, out var env) ? env : null;
 
-    public LuaTranslator(ILogger logger)
+    private static void RestoreGlobal(Script script, string key, DynValue? previousValue)
     {
+        if (previousValue == null || previousValue.IsNil())
+            script.Globals.Remove(key);
+        else
+            script.Globals[key] = previousValue;
+    }
+
+    public LuaTranslator(ILogger logger, IElementCollection elementCollection)
+    {
+        this.elementCollection = elementCollection;
         this.logger = logger;
 
         UserData.RegisterType<Element>(new ElementLuaDescriptor());
@@ -258,6 +269,11 @@ public class LuaTranslator
     {
         if (luaValue.IsNil)
             return DynValue.Nil;
+        if (luaValue.ElementId.HasValue)
+        {
+            var element = this.elementCollection.Get(luaValue.ElementId.Value);
+            return element is not null ? UserData.Create(element) : DynValue.Nil;
+        }
         if (luaValue.BoolValue.HasValue)
             return DynValue.NewBoolean(luaValue.BoolValue.Value);
         if (luaValue.StringValue != null)
@@ -280,6 +296,9 @@ public class LuaTranslator
 
     private LuaValue DynValueToLuaValue(DynValue dynValue)
     {
+        if (dynValue.Type == DataType.UserData && dynValue.UserData?.Object is Element element)
+            return LuaValue.CreateElement(element.Id.Value);
+
         return dynValue.Type switch
         {
             DataType.Boolean => new LuaValue(dynValue.Boolean),
@@ -362,9 +381,25 @@ public class LuaTranslator
         if (targetType == typeof(AclGroup))
             return dynValues.Dequeue()?.UserData?.Object as AclGroup;
         if (typeof(Player).IsAssignableFrom(targetType))
-            return dynValues.Dequeue()?.UserData?.Object;
+        {
+            var val = dynValues.Dequeue();
+            if (val.Type != DataType.UserData)
+            {
+                if (isNullable) return null;
+                throw new LuaArgumentException(targetType.Name, targetType, 0, val.Type);
+            }
+            return val.UserData?.Object;
+        }
         if (typeof(Element).IsAssignableFrom(targetType))
-            return dynValues.Dequeue()?.UserData?.Object;
+        {
+            var val = dynValues.Dequeue();
+            if (val.Type != DataType.UserData)
+            {
+                if (isNullable) return null;
+                throw new LuaArgumentException(targetType.Name, targetType, 0, val.Type);
+            }
+            return val.UserData?.Object;
+        }
         if (targetType == typeof(ScriptCallbackDelegateWrapper))
         {
             var callbackValue = dynValues.Dequeue();
@@ -398,12 +433,40 @@ public class LuaTranslator
                 var previous = Scripting.ScriptExecutionContext.Current;
                 Scripting.ScriptExecutionContext.Current = context;
 
+                var additionalGlobals = Scripting.ScriptExecutionContext.PendingGlobals;
+                Scripting.ScriptExecutionContext.PendingGlobals = null;
+
                 environment?.EnterScriptLock();
                 try
                 {
+                    // Save previous values of source and any additional globals
+                    var previousSource = closure.OwnerScript.Globals.RawGet("source");
+                    Dictionary<string, DynValue?>? previousAdditionalValues = null;
+
+                    if (additionalGlobals != null)
+                    {
+                        previousAdditionalValues = new(additionalGlobals.Count);
+                        foreach (var kvp in additionalGlobals)
+                        {
+                            previousAdditionalValues[kvp.Key] = closure.OwnerScript.Globals.RawGet(kvp.Key);
+                            closure.OwnerScript.Globals[kvp.Key] = ToDynValues(kvp.Value).First();
+                        }
+                    }
+
                     closure.OwnerScript.Globals["source"] = source;
                     try { closure.Call(values); }
-                    finally { closure.OwnerScript.Globals.Remove("source"); }
+                    finally
+                    {
+                        // Restore source
+                        RestoreGlobal(closure.OwnerScript, "source", previousSource);
+
+                        // Restore additional globals
+                        if (previousAdditionalValues != null)
+                        {
+                            foreach (var kvp in previousAdditionalValues)
+                                RestoreGlobal(closure.OwnerScript, kvp.Key, kvp.Value);
+                        }
+                    }
                 }
                 catch (ScriptRuntimeException e)
                 {

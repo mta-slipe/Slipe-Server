@@ -11,6 +11,7 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<ScriptTransformationPipeline>();
         services.TryAddSingleton<ISettingsRegistry, SettingsRegistry>();
         services.TryAddSingleton<ScriptTimerService>();
+        services.TryAddSingleton<IScriptTimerService>(x => x.GetRequiredService<ScriptTimerService>());
         services.TryAddSingleton<IDevelopmentModeService, DevelopmentModeService>();
         services.TryAddSingleton<IScriptRefService, ScriptRefService>();
         services.TryAddSingleton<ITransferBoxService, TransferBoxService>();

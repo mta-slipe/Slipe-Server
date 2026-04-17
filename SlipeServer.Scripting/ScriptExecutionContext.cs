@@ -1,5 +1,6 @@
 using SlipeServer.Server.Resources;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace SlipeServer.Scripting;
@@ -16,5 +17,12 @@ public class ScriptExecutionContext(Resource? Owner)
     {
         get => current.Value;
         set => current.Value = value;
+    }
+
+    private readonly static AsyncLocal<Dictionary<string, object>?> pendingGlobals = new();
+    public static Dictionary<string, object>? PendingGlobals
+    {
+        get => pendingGlobals.Value;
+        set => pendingGlobals.Value = value;
     }
 }

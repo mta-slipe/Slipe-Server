@@ -211,7 +211,7 @@ public class LuaEnvironmentTests
     }
 
     [Theory]
-    [ScriptingAutoDomainData]
+    [ScriptingAutoDomainData(mockTimers: false)]
     public void Unload_KillsTimers(IMtaServer sut)
     {
         var timerService = sut.GetRequiredService<ScriptTimerService>();

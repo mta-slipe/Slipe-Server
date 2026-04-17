@@ -6,6 +6,7 @@ using SlipeServer.Server;
 using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Tests.Tools;
+using System.Numerics;
 
 namespace SlipeServer.Scripting.Lua.Tests.Cases;
 
@@ -49,6 +50,24 @@ public class ElementDataTests
             """);
 
         assertDataProvider.AssertPrints.Should().ContainSingle().Which.Should().Be("100");
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData(false)]
+    public void GetElementData_ReturnsStoredValueForElements(
+        AssertDataProvider assertDataProvider,
+        IMtaServer sut)
+    {
+        sut.RunLuaScript("""
+            local object = createObject(321, 3, 4, 5)
+            local testMarker = createMarker(1, 2, 3, "checkpoint")
+            setElementData(object, "marker", testMarker)
+
+            local value = getElementData(object, "marker")
+            assertPrint(tostring(isElement(value)))
+            """);
+
+        assertDataProvider.AssertPrints.Should().ContainSingle().Which.Should().Be("true");
     }
 
     [Theory]

@@ -2,6 +2,7 @@
 using MoonSharp.Interpreter;
 using SlipeServer.Scripting;
 using SlipeServer.Server;
+using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Resources;
 using System;
@@ -17,17 +18,18 @@ namespace SlipeServer.Lua;
 public class LuaService(
     IMtaServer server,
     ILogger logger,
+    IElementCollection elementCollection,
     IRootElement root,
     ScriptTransformationPipeline scriptTransformationPipeline,
     IScriptEventRuntime scriptEventRuntime,
-    ScriptTimerService scriptTimerService,
+    IScriptTimerService scriptTimerService,
     IScriptInputRuntime scriptInputRuntime,
     LuaEnvironmentService environmentService,
     LuaCallDefinitions callDefinitions)
 {
     private readonly Dictionary<string, LuaMethod> methods = [];
     private readonly Dictionary<string, object> globalValues = [];
-    private readonly LuaTranslator translator = new(logger);
+    private readonly LuaTranslator translator = new(logger, elementCollection);
     private bool callDefinitionsLoaded;
     private bool defaultDefinitionsLoaded;
 

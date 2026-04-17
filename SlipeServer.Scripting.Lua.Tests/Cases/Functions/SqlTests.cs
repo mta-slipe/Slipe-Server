@@ -180,7 +180,7 @@ public class SqlTests
 
     [Theory]
     [ScriptingAutoDomainData]
-    public void DbQuery_WithCallback_InvokesCallback(
+    public async Task DbQuery_WithCallback_InvokesCallback(
         AssertDataProvider assertDataProvider,
         IMtaServer sut)
     {
@@ -194,7 +194,7 @@ public class SqlTests
 
         var deadline = DateTime.UtcNow.AddSeconds(5);
         while (!assertDataProvider.AssertPrints.Any() && DateTime.UtcNow < deadline)
-            Thread.Sleep(5);
+            await Task.Delay(50);
 
         assertDataProvider.AssertPrints.Should().ContainSingle().Which.Should().Be("true");
     }

@@ -484,6 +484,37 @@ public class PedTests
 
     [Theory]
     [ScriptingAutoDomainData]
+    public void SetPedRotation_ChangesRotation(IMtaServer sut)
+    {
+        var ped = new Ped(PedModel.Male01, Vector3.Zero).AssociateWith(sut);
+        sut.AddGlobal("testPed", ped);
+
+        sut.RunLuaScript("""
+            assert(setPedRotation(testPed, 180))
+            """);
+
+        ped.Rotation.Z.Should().BeApproximately(180f, 0.001f);
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void GetPedRotation_ReturnsRotation(
+        AssertDataProvider assertDataProvider,
+        IMtaServer sut)
+    {
+        var ped = new Ped(PedModel.Male01, Vector3.Zero) { Rotation = new Vector3(0, 0, 90) }.AssociateWith(sut);
+        sut.AddGlobal("testPed", ped);
+
+        sut.RunLuaScript("""
+            assertPrint(tostring(getPedRotation(testPed)))
+            """);
+
+        assertDataProvider.AssertPrints.Should().ContainSingle().Which.Should().Contain("90");
+        ped.Rotation.Z.Should().BeApproximately(90f, 0.001f);
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
     public void RemovePedClothes_DoesNotThrow(
         IMtaServer sut)
     {

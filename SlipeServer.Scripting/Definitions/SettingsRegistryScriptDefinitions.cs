@@ -7,14 +7,16 @@ public class SettingsRegistryScriptDefinitions(ISettingsRegistry registry)
     [ScriptFunctionDefinition("get")]
     public LuaValue? Get(string settingName)
     {
+        var splits = settingName.Split('.', System.StringSplitOptions.RemoveEmptyEntries);
+        var providedResourceName = splits.Length > 1 ? splits[0] : null;
         var resourceName = ScriptExecutionContext.Current?.Owner?.Name;
-        if (resourceName != null)
+        if (providedResourceName == null && resourceName != null)
         {
             var scoped = registry.Get($"{resourceName}.{settingName}");
-            if (scoped != null && !scoped.IsNil)
-                return scoped;
+            if (scoped is not null && !scoped.IsNil)
+                return scoped ?? false;
         }
-        return registry.Get(settingName);
+        return registry.Get(settingName) ?? false;
     }
 
     [ScriptFunctionDefinition("set")]

@@ -45,6 +45,19 @@ public class LuaCallDefinitions(LuaEnvironmentService environmentService)
         return Scripting.ScriptExecutionContext.Current?.Owner;
     }
 
+    [Scripting.ScriptFunctionDefinition("getResourceName")]
+    public string? GetResourceName(Resource resource)
+    {
+        return resource.Name;
+    }
+
+    [Scripting.ScriptFunctionDefinition("getResourceRootElement")]
+    public Server.Elements.Element? GetResourceRootElement(Resource? resource = null)
+    {
+        resource ??= Scripting.ScriptExecutionContext.Current?.Owner;
+        return resource?.Root;
+    }
+
     [Scripting.ScriptFunctionDefinition("getResourceInfo")]
     public string? GetResourceInfo(Resource resource, string attribute)
     {

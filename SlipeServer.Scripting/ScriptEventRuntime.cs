@@ -312,7 +312,9 @@ public class ScriptEventRuntime : IScriptEventRuntime
         }
 
         foreach (var handler in handlers)
+        {
             handler.Delegate(element, arguments);
+        }
 
         return !this.lastEventCancelled;
     }
@@ -342,14 +344,17 @@ public class ScriptEventRuntime : IScriptEventRuntime
 
         foreach (var handler in handlers)
         {
-            handler.ExecutionContext?.SetGlobal?.Invoke("client", client);
+            ScriptExecutionContext.PendingGlobals = new Dictionary<string, object>
+            {
+                ["client"] = client
+            };
             try
             {
                 handler.Delegate(element, arguments);
             }
             finally
             {
-                handler.ExecutionContext?.RemoveGlobal?.Invoke("client");
+                ScriptExecutionContext.PendingGlobals = null;
             }
         }
 

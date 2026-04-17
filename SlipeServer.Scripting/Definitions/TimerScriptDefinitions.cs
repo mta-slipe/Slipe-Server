@@ -5,7 +5,7 @@ namespace SlipeServer.Scripting.Definitions;
 
 public readonly record struct ScriptTimerDetails(double Remaining, int ExecutesRemaining, int Interval);
 
-public class TimerScriptDefinitions(ScriptTimerService timerService)
+public class TimerScriptDefinitions(IScriptTimerService timerService)
 {
     [ScriptFunctionDefinition("setTimer")]
     public ScriptTimer SetTimer(ScriptCallbackDelegateWrapper callback, int intervalMs, int timesToExecute, params object?[] arguments)

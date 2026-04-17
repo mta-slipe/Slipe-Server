@@ -6,14 +6,11 @@ namespace SlipeServer.Scripting.Lua.Tests.Cases.DropInReplacement;
 
 public class ResourceInfoTests
 {
-    private static string ResourceDirectory => Path.Combine(AppContext.BaseDirectory, "Resources");
-
-    [Fact]
-    public void StartGetResourceInfoTestResource_DoesNotThrow()
+    [Theory]
+    [DropInReplacementAutoDomainData]
+    public void StartGetResourceInfoTestResource_DoesNotThrow(
+        IDropInReplacementResourceService service)
     {
-        var server = new DropInReplacementTestingServer(ResourceDirectory);
-        var service = server.GetRequiredService<IDropInReplacementResourceService>();
-
         var exception = Record.Exception(() => service.StartResource("getresourceinfo_test"));
 
         if (exception != null)
@@ -22,22 +19,23 @@ public class ResourceInfoTests
                 exception);
     }
 
-    [Fact]
-    public void StartGetResourceInfoTestResource_HasNoScriptErrors()
+    [Theory]
+    [DropInReplacementAutoDomainData]
+    public void StartGetResourceInfoTestResource_HasNoScriptErrors(
+        DropInReplacementTestingServer server,
+        IDropInReplacementResourceService service)
     {
-        var server = new DropInReplacementTestingServer(ResourceDirectory);
-        var service = server.GetRequiredService<IDropInReplacementResourceService>();
         service.StartResource("getresourceinfo_test");
 
         server.ScriptErrors.Should().BeEmpty();
     }
 
-    [Fact]
-    public void StartGetResourceInfoTestResource_InfoIsParsedFromMetaXml()
+    [Theory]
+    [DropInReplacementAutoDomainData]
+    public void StartGetResourceInfoTestResource_InfoIsParsedFromMetaXml(
+        IDropInReplacementResourceService service)
     {
-        var server = new DropInReplacementTestingServer(ResourceDirectory);
-        var resourceService = server.GetRequiredService<IDropInReplacementResourceService>();
-        var resource = resourceService.StartResource("getresourceinfo_test");
+        var resource = service.StartResource("getresourceinfo_test");
 
         resource.Should().NotBeNull();
         resource!.Info.Should().ContainKey("version").WhoseValue.Should().Be("2.5");

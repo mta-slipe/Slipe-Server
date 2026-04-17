@@ -22,7 +22,10 @@ public class DropInReplacementTestingServer : MtaServer<LightTestPlayer>
     private readonly LightTestNetWrapper netWrapper;
     private ulong nextAddress;
 
-    public DropInReplacementTestingServer(string resourceDirectory) : base(builder =>
+    public DropInReplacementTestingServer(string resourceDirectory, IScriptTimerService? timerService = null)
+        : this(new LightTestNetWrapper(), resourceDirectory, timerService) { }
+
+    public DropInReplacementTestingServer(LightTestNetWrapper netWrapper, string resourceDirectory, IScriptTimerService? timerService = null) : base(builder =>
     {
         builder.UseConfiguration(new Configuration
         {
@@ -45,6 +48,12 @@ public class DropInReplacementTestingServer : MtaServer<LightTestPlayer>
                 sp => sp.GetRequiredService<DropInReplacementResourceService>());
             services.AddSingleton<IDropInReplacementResourceLuaService, DropInReplacementResourceLuaService>();
 
+            if (timerService != null)
+            {
+                services.AddSingleton(timerService);
+                services.AddSingleton<IScriptTimerService>(timerService);
+            }
+
             services.AddLua();
             services.AddHttpClient();
         });
@@ -53,7 +62,7 @@ public class DropInReplacementTestingServer : MtaServer<LightTestPlayer>
         builder.AddResourceInterpreter<DropInReplacementResourceInterpreter>();
     })
     {
-        this.netWrapper = new LightTestNetWrapper();
+        this.netWrapper = netWrapper;
         this.AddNetWrapper(this.netWrapper);
         this.clients.Add(this.netWrapper, []);
         this.GetRequiredService<LuaService>().ScriptErrored += message => ScriptErrors.Add(message);

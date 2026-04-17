@@ -15,9 +15,9 @@ using System.IO;
 
 namespace SlipeServer.Scripting.Lua.Tests.Tools;
 
-public class ScriptingAutoDomainData(bool mockElementCollection = true) : AutoDataAttribute(CreateFixture(mockElementCollection))
+public class ScriptingAutoDomainData(bool mockElementCollection = true, bool mockTimers = true) : AutoDataAttribute(() => CreateFixture(mockElementCollection, mockTimers))
 {
-    private static IFixture CreateFixture(bool mockElementCollection)
+    private static IFixture CreateFixture(bool mockElementCollection, bool mockTimers)
     {
         var fixture = new Fixture();
 

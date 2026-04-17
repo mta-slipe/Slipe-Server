@@ -65,7 +65,7 @@ public class EventScriptDefinitions(
     }
 
     [ScriptFunctionDefinition("triggerClientEvent")]
-    public bool TriggerClientEvent(Element sendTo, string eventName, Element sourceElement, params LuaValue[] arguments)
+    public bool TriggerClientEvent(Element? sendTo, string eventName, Element sourceElement, params LuaValue[] arguments)
     {
         if (sendTo is Player player)
             luaEventService.TriggerEventFor(player, eventName, sourceElement, arguments);
@@ -74,4 +74,4 @@ public class EventScriptDefinitions(
         return true;
     }
 
-    }
+}

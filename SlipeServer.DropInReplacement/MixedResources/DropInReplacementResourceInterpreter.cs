@@ -7,6 +7,7 @@ using SlipeServer.Server.Resources.Interpreters;
 using SlipeServer.Server.Resources.Interpreters.Meta;
 using SlipeServer.Server.Resources.Providers;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Serialization;
 using static SlipeServer.DropInReplacement.MixedResources.MixedResource;
@@ -45,8 +46,13 @@ public class DropInReplacementResourceInterpreter : IResourceInterpreter
         var resourceFiles = new List<ResourceFile>();
 
         var metaFile = files["meta.xml"];
-        using var ms = new MemoryStream(metaFile);
-        using var xmlReader = XmlReader.Create(ms);
+        var xmlContent = Encoding.UTF8.GetString(metaFile);
+
+        if (xmlContent.Contains("edf:") && !xmlContent.Contains("xmlns:edf"))
+            xmlContent = Regex.Replace(xmlContent, @"<meta(?=[\s>])", "<meta xmlns:edf=\"urn:edf\"", RegexOptions.IgnoreCase);
+
+        using var ms = new MemoryStream(Encoding.UTF8.GetBytes(xmlContent));
+        using var xmlReader = XmlReader.Create(ms);;
         var serializer = new XmlSerializer(typeof(MetaXml));
         var meta = (MetaXml?)serializer.Deserialize(xmlReader);
 
@@ -105,7 +111,7 @@ public class DropInReplacementResourceInterpreter : IResourceInterpreter
 
         if (meta.scripts != null)
         {
-            foreach (var file in meta.scripts.Where(x => (x.Type == "server" || x.Type == "shared")))
+            foreach (var file in meta.scripts.Where(x => (x.Type == null || x.Type == "" || x.Type == "server" || x.Type == "shared")))
             {
                 resourceFiles.Add(new ServerResourceFile() 
                 { 

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace SlipeServer.Scripting;
 
-public class ScriptTimerService
+public class ScriptTimerService : IScriptTimerService
 {
     private readonly List<ScriptTimer> timers = [];
 

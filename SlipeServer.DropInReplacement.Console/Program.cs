@@ -22,7 +22,6 @@ var server = MtaServer.Create(x =>
 server.Start();
 
 var service = server.GetRequiredService<IDropInReplacementResourceService>();
-//service.StartResource("freeroam");
-//service.StartResource("play");
-service.StartResource("fallout");
+service.StartResource("freeroam");
+service.StartResource("play");
 await Task.Delay(-1);

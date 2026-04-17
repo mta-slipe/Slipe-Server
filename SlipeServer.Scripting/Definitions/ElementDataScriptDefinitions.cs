@@ -1,15 +1,28 @@
 using SlipeServer.Packets.Definitions.Lua;
+using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Enums;
 using System.Linq;
 
 namespace SlipeServer.Scripting.Definitions;
 
-public class ElementDataScriptDefinitions
+public class ElementDataScriptDefinitions(IElementCollection elementCollection)
 {
     [ScriptFunctionDefinition("getElementData")]
     public LuaValue? GetElementData(Element element, string key, bool inherit = true)
-        => element.GetData(key, inherit);
+    {
+        var value = element.GetData(key, inherit);
+        if (value?.ElementId is not null)
+        {
+            var elementValue = elementCollection.Get(value.ElementId.Value);
+            if (elementValue is not null)
+                return elementValue;
+
+            return false;
+        }
+
+        return value;
+    }
 
     [ScriptFunctionDefinition("setElementData")]
     public bool SetElementData(Element element, string key, LuaValue value, string syncMode = "broadcast")

@@ -40,6 +40,29 @@ public class ScriptTimer
         this.lastFireTime = DateTime.UtcNow;
     }
 
+    public static ScriptTimer CreateManual(ScriptCallbackDelegateWrapper callback, int intervalMs, int timesToExecute, object?[] arguments)
+    {
+        return new ScriptTimer(callback, intervalMs, timesToExecute, arguments, autoStart: false);
+    }
+
+    private ScriptTimer(ScriptCallbackDelegateWrapper callback, int intervalMs, int timesToExecute, object?[] arguments, bool autoStart)
+    {
+        this.Callback = callback;
+        this.IntervalMs = intervalMs;
+        this.TimesToExecute = timesToExecute;
+        this.ExecutionsRemaining = timesToExecute == 0 ? int.MaxValue : timesToExecute;
+        this.Arguments = arguments;
+        this.IsAlive = true;
+
+        this.timer = new Timer(intervalMs) { AutoReset = timesToExecute != 1 };
+        this.timer.Elapsed += OnElapsed;
+        if (autoStart)
+        {
+            this.timer.Start();
+            this.lastFireTime = DateTime.UtcNow;
+        }
+    }
+
     private void OnElapsed(object? sender, ElapsedEventArgs e)
     {
         if (!this.IsAlive || this.IsPaused)
@@ -66,6 +89,21 @@ public class ScriptTimer
         this.IsAlive = false;
         this.timer.Stop();
         this.timer.Dispose();
+    }
+
+    public void FireManually()
+    {
+        if (!this.IsAlive)
+            return;
+
+        this.Callback.CallbackDelegate(this.Arguments.Cast<object?>().ToArray());
+
+        if (this.TimesToExecute != 0)
+        {
+            this.ExecutionsRemaining--;
+            if (this.ExecutionsRemaining <= 0)
+                Kill();
+        }
     }
 
     public void Reset()
