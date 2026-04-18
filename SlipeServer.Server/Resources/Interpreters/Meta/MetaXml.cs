@@ -4,32 +4,32 @@ using System.Xml.Serialization;
 namespace SlipeServer.Server.Resources.Interpreters.Meta;
 
 [XmlRoot("meta")]
-public struct MetaXml
+public struct MetaXml()
 {
     [XmlElement("info")]
-    public MetaXmlInfo? info;
+    public MetaXmlInfo? info = null;
 
     [XmlElement("file")]
-    public MetaXmlFile[] files;
+    public MetaXmlFile[] files = [];
 
     [XmlElement("config")]
-    public MetaXmlConfig[] configs;
+    public MetaXmlConfig[] configs = [];
 
     [XmlElement("script")]
-    public MetaXmlScript[] scripts;
+    public MetaXmlScript[] scripts = [];
 
     [XmlElement("export")]
-    public MetaXmlExport[] exports;
+    public MetaXmlExport[] exports = [];
 
     [XmlElement("oop")]
-    public MetaXmlOop[] oops;
+    public MetaXmlOop[] oops = [];
 
     [XmlElement("download_priority_group")]
-    public MetaXmlDownloadPriorityGroup[] downloadPriorityGroup;
+    public MetaXmlDownloadPriorityGroup[] downloadPriorityGroup = [];
 
     [XmlArray("settings")]
     [XmlArrayItem("setting")]
-    public MetaXmlSetting[] settings;
+    public MetaXmlSetting[] settings = [];
 }
 
 public struct MetaXmlFile

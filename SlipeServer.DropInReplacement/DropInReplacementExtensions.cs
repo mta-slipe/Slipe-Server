@@ -1,4 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using SlipeServer.DropInReplacement.Console;
 using SlipeServer.DropInReplacement.MixedResources;
 using SlipeServer.DropInReplacement.MixedResources.Behaviour;
 using SlipeServer.DropInReplacement.PacketHandlers;
@@ -8,6 +12,7 @@ using SlipeServer.Packets.Definitions.Commands;
 using SlipeServer.Packets.Definitions.Join;
 using SlipeServer.Packets.Definitions.Vehicles;
 using SlipeServer.Scripting;
+using SlipeServer.Server;
 using SlipeServer.Server.Behaviour;
 using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Providers;
@@ -34,7 +39,8 @@ public static class DropInReplacementExtensions
                     ServerBuilderDefaultPacketHandlers.VehicleInOutPacketHandler |
                     ServerBuilderDefaultPacketHandlers.CommandPacketHandler |
                     ServerBuilderDefaultPacketHandlers.JoinDataPacketHandler,
-                includeResourceServer: false);
+                includeResourceServer: false,
+                includeLogging: false);
 
             builder.AddPacketHandler<ScriptingVehicleInOutPacketHandler, VehicleInOutPacket>();
             builder.AddPacketHandler<ScriptingCommandPacketHandler, CommandPacket>();
@@ -45,11 +51,13 @@ public static class DropInReplacementExtensions
 
             builder.ConfigureServices((services) =>
             {
-                services.AddSingleton<IResourceProvider, DropInReplacementResourceProvider>();
-                services.AddSingleton<DropInReplacementResourceService>();
-                services.AddSingleton<IDropInReplacementResourceService>(sp => sp.GetRequiredService<DropInReplacementResourceService>());
-                services.AddSingleton<IResourceService>(sp => sp.GetRequiredService<DropInReplacementResourceService>());
+                services.AddSingleton<IResourceProvider, DropInReplacementResourceProvider>();;
                 services.AddSingleton<IDropInReplacementResourceLuaService, DropInReplacementResourceLuaService>();
+                services.AddSingleton<IDropInReplacementResourceService, DropInReplacementResourceService>();
+                services.AddSingleton<IResourceService>(sp => sp.GetRequiredService<IDropInReplacementResourceService>());
+
+                services.AddSingleton<ConsoleCommandHandler>();
+                services.AddSingleton(sp => new Lazy<ConsoleCommandHandler>(sp.GetRequiredService<ConsoleCommandHandler>));
 
                 services.AddScripting();
                 services.AddLua();
@@ -57,12 +65,31 @@ public static class DropInReplacementExtensions
                 services.AddHttpClient();
             });
 
+            AddLogging(builder);
+
             builder.AddResourceServer<DropInReplacementResourceServer>();
             builder.AddResourceInterpreter<DropInReplacementResourceInterpreter>();
 
             builder.AddLuaControllers();
 
             return builder;
+        }
+
+        public void AddLogging()
+        {
+            builder.ConfigureServices(services =>
+            {
+                services.AddSingleton<InteractiveConsole>();
+
+                services.AddLogging(x =>
+                {
+                    if (Environment.UserInteractive)
+                        services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, InteractiveConsoleLoggerProvider>());
+                    else
+                        services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, NullLoggerProvider>());
+                });
+                services.TryAddSingleton<ILogger>(x => x.GetRequiredService<ILogger<MtaServer>>());
+            });
         }
     }
 }

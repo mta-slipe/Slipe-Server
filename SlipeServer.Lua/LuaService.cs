@@ -121,6 +121,7 @@ public class LuaService(
     {
         if (this.defaultDefinitionsLoaded)
             return;
+
         this.defaultDefinitionsLoaded = true;
 
         foreach (var type in typeof(ScriptFunctionDefinitionAttribute).Assembly.DefinedTypes

@@ -24,7 +24,7 @@ public class MetaXmlResourceInterpreter : IResourceInterpreter
         out Resource? resource
     )
     {
-        var files = resourceProvider.GetFilesForResource(name);
+        var files = resourceProvider.GetFilesForResource(path);
         if (!files.Contains("meta.xml"))
         {
             resource = null;
@@ -61,6 +61,14 @@ public class MetaXmlResourceInterpreter : IResourceInterpreter
         return resource;
     }
 
+    private static IEnumerable<string> ExpandGlob(string pattern, IEnumerable<string> fileKeys)
+    {
+        if (!pattern.Contains('*') && !pattern.Contains('?'))
+            return fileKeys.Contains(pattern) ? [pattern] : [];
+
+        return fileKeys.Where(key => System.IO.Enumeration.FileSystemName.MatchesSimpleExpression(pattern, key, ignoreCase: true));
+    }
+
     private List<ResourceFile> GetFilesForMetaXmlResource(MetaXml meta, Dictionary<string, byte[]> files)
     {
         List<ResourceFile> resourceFiles = new List<ResourceFile>();
@@ -69,7 +77,8 @@ public class MetaXmlResourceInterpreter : IResourceInterpreter
         {
             foreach (var file in meta.files)
             {
-                resourceFiles.Add(ResourceFileFactory.FromBytes(files[file.Source], file.Source, ResourceFileType.ClientFile));
+                foreach (var source in ExpandGlob(file.Source, files.Keys))
+                    resourceFiles.Add(ResourceFileFactory.FromBytes(files[source], source, ResourceFileType.ClientFile));
             }
         }
 
@@ -77,7 +86,8 @@ public class MetaXmlResourceInterpreter : IResourceInterpreter
         {
             foreach (var file in meta.scripts.Where(x => x.Type == "client" && x.Cache != "false"))
             {
-                resourceFiles.Add(ResourceFileFactory.FromBytes(files[file.Source], file.Source, ResourceFileType.ClientScript));
+                foreach (var source in ExpandGlob(file.Source, files.Keys))
+                    resourceFiles.Add(ResourceFileFactory.FromBytes(files[source], source, ResourceFileType.ClientScript));
             }
         }
 
@@ -85,7 +95,8 @@ public class MetaXmlResourceInterpreter : IResourceInterpreter
         {
             foreach (var file in meta.configs.Where(x => x.Type == "client"))
             {
-                resourceFiles.Add(ResourceFileFactory.FromBytes(files[file.Source], file.Source, ResourceFileType.ClientConfig));
+                foreach (var source in ExpandGlob(file.Source, files.Keys))
+                    resourceFiles.Add(ResourceFileFactory.FromBytes(files[source], source, ResourceFileType.ClientConfig));
             }
         }
 
@@ -94,9 +105,13 @@ public class MetaXmlResourceInterpreter : IResourceInterpreter
 
     private Dictionary<string, byte[]> GetNoCacheFiles(MetaXml meta, Dictionary<string, byte[]> files)
     {
-        return meta.scripts
-            .Where(x => x.Type == "client" && x.Cache == "false")
-            .ToDictionary(x => x.Source, x => files[x.Source]);
+        var result = new Dictionary<string, byte[]>();
+        foreach (var file in meta.scripts.Where(x => x.Type == "client" && x.Cache == "false"))
+        {
+            foreach (var source in ExpandGlob(file.Source, files.Keys))
+                result[source] = files[source];
+        }
+        return result;
     }
 
     private IEnumerable<string> GetExportsForMetaXmlResource(MetaXml meta)

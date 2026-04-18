@@ -280,6 +280,7 @@ public class ScriptEventRuntime : IScriptEventRuntime
     {
         if (this.defaultEventsLoaded)
             return;
+
         this.defaultEventsLoaded = true;
 
         foreach (var type in typeof(ScriptEventRuntime).Assembly.DefinedTypes

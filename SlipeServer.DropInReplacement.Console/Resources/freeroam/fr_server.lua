@@ -186,15 +186,11 @@ addEventHandler('onLoadedAtClient', resourceRoot,
 	function()
 		print("FOO")
 		if getOption('spawnmaponstart') and isPedDead(client) then
-			print("CALLING CLIENT spawnmaponstart")
 			clientCall(client, 'showWelcomeMap')
-			print("CALLED CLIENT spawnmaponstart")
 		end
 		local settings = updateSettings()
 
-		print("CALLING CLIENT freeroamSettings")
 		clientCall(client, 'freeroamSettings', settings)
-		print("CALLED CLIENT freeroamSettings")
 
 		for player,data in pairs(g_PlayerData) do
 			if player ~= client then

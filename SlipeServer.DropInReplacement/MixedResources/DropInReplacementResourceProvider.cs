@@ -4,6 +4,7 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Interpreters;
 using SlipeServer.Server.Resources.Providers;
+using System.Xml.Linq;
 
 namespace SlipeServer.DropInReplacement.MixedResources;
 
@@ -13,6 +14,7 @@ public class DropInReplacementResourceProvider(IMtaServer mtaServer, IRootElemen
 
     private readonly Dictionary<string, Resource> resources = new(StringComparer.InvariantCultureIgnoreCase);
     private readonly Dictionary<string, byte[]> resourceFileContentCache = new(StringComparer.InvariantCultureIgnoreCase);
+    private readonly Dictionary<string, string> pathsPerResourceName = [];
 
     private readonly List<IResourceInterpreter> resourceInterpreters = [];
 
@@ -48,35 +50,42 @@ public class DropInReplacementResourceProvider(IMtaServer mtaServer, IRootElemen
         var directories = Directory.EnumerateDirectories(directory, "*", SearchOption.TopDirectoryOnly);
         foreach (var subDirectory in directories)
         {
-            if (subDirectory.StartsWith("[") && subDirectory.EndsWith("]"))
+            var directoryName = Path.GetFileName(subDirectory);
+            if (directoryName.StartsWith('[') && directoryName.EndsWith(']'))
+            {
                 foreach (var resource in IndexResourceDirectory(subDirectory))
                     resources.Add(resource);
-
-            var name = Path.GetFileName(subDirectory)!;
-            if (this.resources.ContainsKey(name))
-            {
-                resources.Add(this.resources[name]);
             } else
             {
-                Resource? resource = null;
-                foreach (var resourceInterpreter in this.resourceInterpreters)
+                var name = Path.GetFileName(subDirectory)!;
+                if (this.resources.ContainsKey(name))
                 {
-                    if (resourceInterpreter.TryInterpretResource(mtaServer, rootElement, name, subDirectory, this, out resource))
+                    resources.Add(this.resources[name]);
+                } else
+                {
+                    this.pathsPerResourceName[name] = subDirectory;
+
+                    Resource? resource = null;
+                    foreach (var resourceInterpreter in this.resourceInterpreters)
                     {
-                        if (resource is not MixedResource mixedResource)
-                            continue;
+                        if (resourceInterpreter.TryInterpretResource(mtaServer, rootElement, name, subDirectory, this, out resource))
+                        {
+                            if (resource is not MixedResource mixedResource)
+                                continue;
 
-                        resource!.NetId = this.ReserveNetId();
-                        resources.Add(resource);
+                            resource!.NetId = this.ReserveNetId();
+                            resources.Add(resource);
 
-                        break;
+                            break;
+                        }
+                    }
+
+                    if (resource == null)
+                    {
+                        throw new System.Exception($"Unable to interpret resource {name}");
                     }
                 }
 
-                if (resource == null)
-                {
-                    throw new System.Exception($"Unable to interpret resource {name}");
-                }
             }
         }
 
@@ -85,7 +94,8 @@ public class DropInReplacementResourceProvider(IMtaServer mtaServer, IRootElemen
 
     public IEnumerable<string> GetFilesForResource(string name)
     {
-        var path = Path.Join(this.configuration.ResourceDirectory, name);
+        var path = this.pathsPerResourceName[name];
+        //var path = Path.Join(this.configuration.ResourceDirectory, name);
         var files = Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories);
 
         return files.Select(file => Path.GetRelativePath(path, file));
@@ -93,7 +103,8 @@ public class DropInReplacementResourceProvider(IMtaServer mtaServer, IRootElemen
 
     public byte[] GetFileContent(string resource, string file)
     {
-        return File.ReadAllBytes(Path.Join(this.configuration.ResourceDirectory, resource, file));
+        var path = this.pathsPerResourceName[resource];
+        return File.ReadAllBytes(Path.Join(path, file));
     }
 
     public ushort ReserveNetId()

@@ -8,26 +8,17 @@ using System.Text.RegularExpressions;
 
 namespace SlipeServer.DropInReplacement.MixedResources.Behaviour;
 
-public partial class DropInReplacementResourceLuaService : IDropInReplacementResourceLuaService
+public partial class DropInReplacementResourceLuaService(LuaService luaService, IScriptEventRuntime scriptEventRuntime, ISettingsRegistry settingsRegistry) : IDropInReplacementResourceLuaService
 {
-    private readonly LuaService luaService;
-    private readonly ISettingsRegistry settingsRegistry;
-
-    public DropInReplacementResourceLuaService(LuaService luaService, IScriptEventRuntime scriptEventRuntime, ISettingsRegistry settingsRegistry)
-    {
-        this.luaService = luaService;
-        this.settingsRegistry = settingsRegistry;
-
-        luaService.LoadDefaultDefinitions();
-        scriptEventRuntime.LoadDefaultEvents();
-    }
-
     public void StartLuaResource(MixedResource resource)
     {
-        foreach (var (name, value) in resource.Settings)
-            this.settingsRegistry.Set($"{resource.Name}.{SanitiseSettingNameRegex().Replace(name, "")}", ParseSettingValue(value));
+        luaService.LoadDefaultDefinitions();
+        scriptEventRuntime.LoadDefaultEvents();
 
-        var environment = this.luaService.CreateEnvironment(resource.Name, resource);
+        foreach (var (name, value) in resource.Settings)
+            settingsRegistry.Set($"{resource.Name}.{SanitiseSettingNameRegex().Replace(name, "")}", ParseSettingValue(value));
+
+        var environment = luaService.CreateEnvironment(resource.Name, resource);
         foreach (var file in resource.ServerFiles.Where(x => x.FileType == Server.Elements.Enums.ResourceFileType.Script))
         {
             environment.LoadString(Encoding.UTF8.GetString(file.Content), $"{resource.Name}/{file.Name}");
@@ -36,7 +27,7 @@ public partial class DropInReplacementResourceLuaService : IDropInReplacementRes
 
     public void StopLuaResource(MixedResource resource)
     {
-        this.luaService.UnloadScriptsFor(resource);
+        luaService.UnloadScriptsFor(resource);
     }
 
     private static LuaValue ParseSettingValue(string raw)

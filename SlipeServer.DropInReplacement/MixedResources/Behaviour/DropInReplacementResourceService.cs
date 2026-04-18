@@ -3,11 +3,10 @@ using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Providers;
-using System;
 
 namespace SlipeServer.DropInReplacement.MixedResources.Behaviour;
 
-public class DropInReplacementResourceService : IDropInReplacementResourceService, IResourceService
+public class DropInReplacementResourceService : IDropInReplacementResourceService
 {
     private readonly IMtaServer server;
     private readonly IResourceProvider resourceProvider;
@@ -18,9 +17,9 @@ public class DropInReplacementResourceService : IDropInReplacementResourceServic
     public IReadOnlyCollection<Resource> StartedResources => this.startedResources.AsReadOnly();
 
     public DropInReplacementResourceService(
-        IMtaServer server, 
-        IResourceProvider resourceProvider, 
-        ILogger<DropInReplacementResourceProvider> logger, 
+        IMtaServer server,
+        IResourceProvider resourceProvider,
+        ILogger<DropInReplacementResourceProvider> logger,
         IDropInReplacementResourceLuaService luaResourceService)
     {
         this.server = server;
@@ -103,10 +102,7 @@ public class DropInReplacementResourceService : IDropInReplacementResourceServic
     public event Action<Resource>? ResourceStopped;
 }
 
-public interface IDropInReplacementResourceService
+public interface IDropInReplacementResourceService : IResourceService
 {
-    Resource? StartResource(string name);
-    void StopResource(string name);
-    void StopResource(Resource resource);
     void RestartResource(string name);
 }

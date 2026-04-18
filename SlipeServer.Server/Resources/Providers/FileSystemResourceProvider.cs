@@ -79,9 +79,9 @@ public class FileSystemResourceProvider(IMtaServer mtaServer, IRootElement rootE
         return resources;
     }
 
-    public IEnumerable<string> GetFilesForResource(string name)
+    public IEnumerable<string> GetFilesForResource(string path)
     {
-        var path = Path.Join(this.configuration.ResourceDirectory, name);
+        //var path = Path.Join(this.configuration.ResourceDirectory, name);
         var files = Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories);
 
         return files.Select(file => Path.GetRelativePath(path, file));

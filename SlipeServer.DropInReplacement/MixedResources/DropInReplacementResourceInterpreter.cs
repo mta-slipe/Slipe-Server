@@ -74,6 +74,14 @@ public class DropInReplacementResourceInterpreter : IResourceInterpreter
         return resource;
     }
 
+    private static IEnumerable<string> ExpandGlob(string pattern, IEnumerable<string> fileKeys)
+    {
+        if (!pattern.Contains('*') && !pattern.Contains('?'))
+            return fileKeys.Contains(pattern) ? [pattern] : [];
+
+        return fileKeys.Where(key => System.IO.Enumeration.FileSystemName.MatchesSimpleExpression(pattern, key, ignoreCase: true));
+    }
+
     private List<ResourceFile> GetFilesForMetaXmlResource(MetaXml meta, Dictionary<string, byte[]> files)
     {
         var resourceFiles = new List<ResourceFile>();
@@ -82,7 +90,8 @@ public class DropInReplacementResourceInterpreter : IResourceInterpreter
         {
             foreach (var file in meta.files)
             {
-                resourceFiles.Add(ResourceFileFactory.FromBytes(files[file.Source], file.Source, ResourceFileType.ClientFile));
+                foreach (var source in ExpandGlob(file.Source, files.Keys))
+                    resourceFiles.Add(ResourceFileFactory.FromBytes(files[source], source, ResourceFileType.ClientFile));
             }
         }
 
@@ -90,7 +99,8 @@ public class DropInReplacementResourceInterpreter : IResourceInterpreter
         {
             foreach (var file in meta.scripts.Where(x => (x.Type == "client" || x.Type == "shared") && x.Cache != "false"))
             {
-                resourceFiles.Add(ResourceFileFactory.FromBytes(files[file.Source], file.Source, ResourceFileType.ClientScript));
+                foreach (var source in ExpandGlob(file.Source, files.Keys))
+                    resourceFiles.Add(ResourceFileFactory.FromBytes(files[source], source, ResourceFileType.ClientScript));
             }
         }
 
@@ -98,7 +108,8 @@ public class DropInReplacementResourceInterpreter : IResourceInterpreter
         {
             foreach (var file in meta.configs.Where(x => (x.Type == "client" || x.Type == "shared")))
             {
-                resourceFiles.Add(ResourceFileFactory.FromBytes(files[file.Source], file.Source, ResourceFileType.ClientConfig));
+                foreach (var source in ExpandGlob(file.Source, files.Keys))
+                    resourceFiles.Add(ResourceFileFactory.FromBytes(files[source], source, ResourceFileType.ClientConfig));
             }
         }
 
@@ -113,12 +124,13 @@ public class DropInReplacementResourceInterpreter : IResourceInterpreter
         {
             foreach (var file in meta.scripts.Where(x => (x.Type == null || x.Type == "" || x.Type == "server" || x.Type == "shared")))
             {
-                resourceFiles.Add(new ServerResourceFile() 
-                { 
-                    Content = files[file.Source],
-                    FileType = ResourceFileType.Script,
-                    Name = file.Source
-                });
+                foreach (var source in ExpandGlob(file.Source, files.Keys))
+                    resourceFiles.Add(new ServerResourceFile()
+                    {
+                        Content = files[source],
+                        FileType = ResourceFileType.Script,
+                        Name = source
+                    });
             }
         }
 
@@ -127,9 +139,16 @@ public class DropInReplacementResourceInterpreter : IResourceInterpreter
 
     private Dictionary<string, byte[]> GetNoCacheFiles(MetaXml meta, Dictionary<string, byte[]> files)
     {
-        return meta.scripts
-            .Where(x => (x.Type == "client" || x.Type == "shared") && x.Cache == "false")
-            .ToDictionary(x => x.Source, x => files[x.Source]);
+        if (meta.scripts == null)
+            return [];
+
+        var result = new Dictionary<string, byte[]>();
+        foreach (var file in meta.scripts.Where(x => (x.Type == "client" || x.Type == "shared") && x.Cache == "false"))
+        {
+            foreach (var source in ExpandGlob(file.Source, files.Keys))
+                result[source] = files[source];
+        }
+        return result;
     }
 
     private IEnumerable<string> GetExportsForMetaXmlResource(MetaXml meta)
