@@ -21,6 +21,24 @@ public struct MetaXml()
     [XmlElement("export")]
     public MetaXmlExport[] exports = [];
 
+    [XmlElement("map")]
+    public MetaXmlMap[] maps = [];
+
+    [XmlElement("include")]
+    public MetaXmlInclude[] includes = [];
+
+    [XmlElement("html")]
+    public MetaXmlHtml[] htmls = [];
+
+    [XmlElement("min_mta_version")]
+    public MetaXmlMinMtaVersion[] minMtaVersions = [];
+
+    [XmlElement("aclrequest")]
+    public MetaXmlAclRequest[] aclRequests = [];
+
+    [XmlElement("sync_map_element_data")]
+    public MetaXmlSyncMapElementData[] syncMapElementData = [];
+
     [XmlElement("oop")]
     public MetaXmlOop[] oops = [];
 
@@ -36,6 +54,9 @@ public struct MetaXmlFile
 {
     [XmlAttribute("src")]
     public string Source { get; set; }
+
+    [XmlAttribute("download")]
+    public string Download { get; set; }
 }
 
 public struct MetaXmlConfig
@@ -45,6 +66,72 @@ public struct MetaXmlConfig
 
     [XmlAttribute("type")]
     public string Type { get; set; }
+}
+
+public struct MetaXmlMap
+{
+    [XmlAttribute("src")]
+    public string Source { get; set; }
+
+    [XmlAttribute("dimension")]
+    public string Dimension { get; set; }
+}
+
+public struct MetaXmlInclude
+{
+    [XmlAttribute("resource")]
+    public string Resource { get; set; }
+
+    [XmlAttribute("minversion")]
+    public string MinVersion { get; set; }
+
+    [XmlAttribute("maxversion")]
+    public string MaxVersion { get; set; }
+}
+
+public struct MetaXmlHtml
+{
+    [XmlAttribute("src")]
+    public string Source { get; set; }
+
+    [XmlAttribute("default")]
+    public string Default { get; set; }
+
+    [XmlAttribute("raw")]
+    public string Raw { get; set; }
+}
+
+public struct MetaXmlMinMtaVersion
+{
+    [XmlAttribute("client")]
+    public string Client { get; set; }
+
+    [XmlAttribute("server")]
+    public string Server { get; set; }
+
+    [XmlAttribute("both")]
+    public string Both { get; set; }
+}
+
+public struct MetaXmlAclRequest
+{
+    [XmlElement("right")]
+    public MetaXmlAclRight[] Rights { get; set; }
+}
+
+public struct MetaXmlAclRight
+{
+    [XmlAttribute("name")]
+    public string Name { get; set; }
+
+    [XmlAttribute("access")]
+    public string Access { get; set; }
+}
+
+public struct MetaXmlSyncMapElementData
+{
+    [XmlText]
+    public string Data { get; set; }
 }
 
 public struct MetaXmlOop
@@ -69,6 +156,9 @@ public struct MetaXmlScript
 
     [XmlAttribute("cache")]
     public string Cache { get; set; }
+
+    [XmlAttribute("validate")]
+    public string Validate { get; set; }
 }
 
 public struct MetaXmlExport
@@ -78,6 +168,9 @@ public struct MetaXmlExport
 
     [XmlAttribute("type")]
     public string Type { get; set; }
+
+    [XmlAttribute("http")]
+    public string Http { get; set; }
 }
 
 public struct MetaXmlSetting

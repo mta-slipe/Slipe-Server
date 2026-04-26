@@ -20,6 +20,20 @@ public class OutputTests
 
     [Theory]
     [ScriptingAutoDomainData]
+    public void OutputDebugString_WithNumericLevel_DoesNotThrow(IMtaServer sut)
+    {
+        var act = () => sut.RunLuaScript("""
+            outputDebugString("test debug message", 3, 0, 255, 0)
+            outputDebugString("warning debug message", 2, 255, 255, 0)
+            outputDebugString("error debug message", 1, 255, 0, 0)
+            outputDebugString("custom debug message", 0, 255, 255, 255)
+            """);
+
+        act.Should().NotThrow();
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
     public void OutputServerLog_DoesNotThrow(IMtaServer sut)
     {
         var act = () => sut.RunLuaScript("""

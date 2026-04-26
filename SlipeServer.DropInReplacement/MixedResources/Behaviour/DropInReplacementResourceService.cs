@@ -42,25 +42,48 @@ public class DropInReplacementResourceService : IDropInReplacementResourceServic
     {
         logger.LogInformation("Starting {resource}", name);
 
-        if (!this.startedResources.Any(r => r.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)))
+        if (this.startedResources.Any(r => r.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)))
+            return null;
+
+        return StartResourceInternal(name, new HashSet<string>(StringComparer.InvariantCultureIgnoreCase));
+    }
+
+    private Resource StartResourceInternal(string name, HashSet<string> startupStack)
+    {
+        if (this.startedResources.FirstOrDefault(r => r.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)) is Resource alreadyStarted)
+            return alreadyStarted;
+
+        if (!startupStack.Add(name))
+            throw new InvalidOperationException($"Circular resource include detected while starting '{name}'.");
+
+        try
         {
             var resource = this.resourceProvider.GetResource(name);
+
+            if (resource is MixedResource mixedResource)
+            {
+                foreach (var include in mixedResource.IncludedResources)
+                    StartResourceInternal(include.ResourceName, startupStack);
+            }
+
             this.ResourceStarting?.Invoke(resource);
             resource.Start();
             this.startedResources.Add(resource);
 
-            if (resource is MixedResource mixedResource)
-                luaResourceService.StartLuaResource(mixedResource);
+            if (resource is MixedResource startedMixedResource)
+                this.luaResourceService.StartLuaResource(startedMixedResource);
             else
-                logger.LogWarning("Resource {resource} does is not a valid MixedResource", name);
+                this.logger.LogWarning("Resource {resource} does is not a valid MixedResource", name);
 
             this.ResourceStarted?.Invoke(resource);
-            logger.LogInformation("Started {resource}", name);
+            this.logger.LogInformation("Started {resource}", name);
 
             return resource;
         }
-
-        return null;
+        finally
+        {
+            startupStack.Remove(name);
+        }
     }
 
     public void StopResource(string name)

@@ -15,32 +15,36 @@ public class InteractiveConsole
     private int spinnerIndex = 0;
     private readonly char[] spinner = ['/', '-', '\\', '|', '/', '-', '\\', '|'];
 
-    private readonly Task runTask;
-    private readonly Task inputTask;
+    private Task? runTask;
+    private Task? inputTask;
 
     private readonly ConcurrentQueue<string> queuedOutputs = [];
 
+    private readonly Lock writeLock = new();
+
     public InteractiveConsole(IMtaServer server, Configuration configuration, Lazy<ConsoleCommandHandler> consoleCommandHandler)
     {
-        server.Started += OutputInitial;
         this.server = server;
         this.configuration = configuration;
         this.consoleCommandHandler = consoleCommandHandler;
-        this.runTask = RunTask();
-        this.inputTask = InputTask();
+
+        server.Started += Initialise;
     }
 
     private async Task RunTask()
     {
         while (true)
         {
-            while (this.queuedOutputs.TryDequeue(out var line))
+            lock (this.writeLock)
             {
-                WriteNewLine(line);
-            }
+                while (this.queuedOutputs.TryDequeue(out var line))
+                {
+                    WriteNewLine(line);
+                }
 
-            WriteHeader();
-            WriteConsoleInput();
+                WriteHeader();
+                WriteConsoleInput();
+            }
 
             await Task.Delay(50);
         }
@@ -50,13 +54,18 @@ public class InteractiveConsole
     {
         while (true)
         {
-            while (System.Console.KeyAvailable)
+            lock (this.writeLock)
             {
-                var key = System.Console.ReadKey(false);
-                if (key.Key == ConsoleKey.Enter)
-                    SubmitInput();
-                else
-                    this.input += key.KeyChar;
+                while (System.Console.KeyAvailable)
+                {
+                    var key = System.Console.ReadKey(false);
+                    if (key.Key == ConsoleKey.Enter)
+                        SubmitInput();
+                    else if (key.Key == ConsoleKey.Backspace)
+                        this.input = this.input.Length > 0 ? this.input.Substring(0, this.input.Length - 1) : "";
+                    else if (key.KeyChar != '\u0000')
+                        this.input += key.KeyChar;
+                }
             }
 
             await Task.Delay(10);
@@ -67,7 +76,7 @@ public class InteractiveConsole
     {
         var input = this.input;
         this.input = "";
-        this.WriteLine("");
+        this.WriteLine(input);
 
         try
         {
@@ -79,7 +88,7 @@ public class InteractiveConsole
 
     }
 
-    private void OutputInitial(IMtaServer obj)
+    private void Initialise(IMtaServer obj)
     {
         System.Console.ResetColor();
         System.Console.Clear();
@@ -104,6 +113,9 @@ public class InteractiveConsole
             = Bandwidth saving : N/A
             =======================================================
             """);
+
+        this.runTask = RunTask();
+        this.inputTask = InputTask();
     }
 
     public void WriteLine(string line)
@@ -126,11 +138,11 @@ public class InteractiveConsole
 
     private void WriteHeader()
     {
+        System.Console.BackgroundColor = ConsoleColor.Gray;
+        System.Console.ForegroundColor = ConsoleColor.DarkBlue;
+
         System.Console.CursorLeft = 0;
         System.Console.CursorTop = 0;
-        System.Console.BackgroundColor = ConsoleColor.Gray;
-
-        System.Console.ForegroundColor = ConsoleColor.Blue;
         System.Console.Write($"[{this.spinner[++this.spinnerIndex % this.spinner.Length]}]");
 
         System.Console.ForegroundColor = ConsoleColor.Black;
@@ -154,6 +166,10 @@ public class InteractiveConsole
         System.Console.ForegroundColor = ConsoleColor.Black;
         System.Console.Write($"{0} fps ({0})");
 
+        var spaceCount = System.Console.WindowWidth - System.Console.CursorLeft;
+        System.Console.Write($"{new string(' ', spaceCount)}");
+
+
         System.Console.ResetColor();
     }
 
@@ -161,11 +177,12 @@ public class InteractiveConsole
     {
         System.Console.ResetColor();
 
-        System.Console.CursorTop = Math.Min(this.lineCount, System.Console.WindowHeight);
+        System.Console.CursorTop = Math.Min(this.lineCount, System.Console.WindowHeight - 1);
         System.Console.CursorLeft = 0;
 
         var spaceCount = System.Console.WindowWidth - this.input.Length;
 
+        System.Console.ForegroundColor = ConsoleColor.DarkYellow;
         System.Console.Write($"{this.input}{new string(' ', spaceCount)}");
         System.Console.CursorLeft = this.input.Length;
     }

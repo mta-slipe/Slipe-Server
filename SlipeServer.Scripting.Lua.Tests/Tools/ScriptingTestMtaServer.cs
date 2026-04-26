@@ -7,6 +7,8 @@ using SlipeServer.Scripting;
 using SlipeServer.Scripting.Definitions;
 using SlipeServer.Server;
 using SlipeServer.Server.ElementCollections;
+using SlipeServer.Server.Elements;
+using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.Resources.Serving;
 using SlipeServer.Server.Services;
 using SlipeServer.Server.Tests.Tools;
@@ -57,6 +59,8 @@ public class ScriptingTestMtaServer : MtaServer<LightTestPlayer>
         services.AddLogging();
         services.AddSingleton<ILogger>(x => x.GetRequiredService<ILogger<MtaServer>>());
         services.AddSingleton<IElementCollection>(elementCollection);
+        services.AddSingleton<TestResourceProvider>();
+        services.AddSingleton<IResourceProvider>(x => x.GetRequiredService<TestResourceProvider>());
 
         services.AddSingleton<IAccountService>(new SqliteAccountService(":memory:"));
         if (aclService != null)

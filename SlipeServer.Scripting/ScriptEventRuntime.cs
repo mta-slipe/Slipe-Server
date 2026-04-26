@@ -105,25 +105,24 @@ public class ScriptEventRuntime : IScriptEventRuntime
     {
         if (!this.registeredEvents.TryGetValue(eventName, out var registeredEvent))
         {
-            if (this.customEvents.ContainsKey(eventName))
+            if (!this.customEvents.ContainsKey(eventName))
             {
-                lock (this.handlerLock)
-                {
-                    this.customEventHandlers.Add(new CustomEventHandlerEntry
-                    {
-                        EventName = eventName,
-                        AttachedTo = attachedTo,
-                        Delegate = callbackDelegate,
-                        Owner = owner,
-                        ExecutionContext = ScriptExecutionContext.Current
-                    });
-                }
-                return;
+                AddCustomEvent(eventName);
+                this.logger.LogWarning("Adding an handler for non-existent event {eventName}", eventName);
             }
 
-            this.logger.LogError("Attempt to add event handler for non-existent event {eventName}", eventName);
-
-            throw new Exception($"Attempt to add event handler for non-existent event {eventName}");
+            lock (this.handlerLock)
+            {
+                this.customEventHandlers.Add(new CustomEventHandlerEntry
+                {
+                    EventName = eventName,
+                    AttachedTo = attachedTo,
+                    Delegate = callbackDelegate,
+                    Owner = owner,
+                    ExecutionContext = ScriptExecutionContext.Current
+                });
+            }
+            return;
         }
 
         lock (this.handlerLock)
@@ -294,7 +293,10 @@ public class ScriptEventRuntime : IScriptEventRuntime
     {
         lock (this.handlerLock)
         {
-            this.customEvents[eventName] = allowRemoteTrigger;
+            if (this.customEvents.TryGetValue(eventName, out var current))
+                this.customEvents[eventName] = current || allowRemoteTrigger;
+            else 
+                this.customEvents[eventName] = allowRemoteTrigger;
         }
     }
 

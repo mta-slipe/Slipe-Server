@@ -11,6 +11,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -101,6 +102,8 @@ public class LuaTranslator
             return [UserData.Create(resource)];
         if (obj is Element element)
             return [UserData.Create(element)];
+        if (obj.GetType().IsEnum)
+            return [DynValue.NewNumber(Convert.ToDouble(obj, CultureInfo.InvariantCulture))];
         if (obj is byte int8)
             return [DynValue.NewNumber(int8)];
         if (obj is short int16)
@@ -348,6 +351,19 @@ public class LuaTranslator
             return new Point(GetInt32FromDynValue(dynValues.Dequeue()), GetInt32FromDynValue(dynValues.Dequeue()));
         if (targetType == typeof(Color))
             return Color.FromArgb(255, GetInt32FromDynValue(dynValues.Dequeue()), GetInt32FromDynValue(dynValues.Dequeue()), GetInt32FromDynValue(dynValues.Dequeue()));
+        if (targetType.IsEnum)
+        {
+            var value = dynValues.Dequeue();
+            if (value.Type != DataType.Number)
+            {
+                if (isNullable) return null;
+                throw new LuaArgumentException(targetType.Name, targetType, 0, value.Type);
+            }
+
+            var underlyingType = Enum.GetUnderlyingType(targetType);
+            var numericValue = Convert.ChangeType(value.Number, underlyingType, CultureInfo.InvariantCulture)!;
+            return Enum.ToObject(targetType, numericValue);
+        }
         if (targetType == typeof(float))
             return GetSingleFromDynValue(dynValues.Dequeue());
         if (targetType == typeof(double))

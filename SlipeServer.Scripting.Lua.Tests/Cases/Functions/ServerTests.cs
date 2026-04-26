@@ -21,6 +21,38 @@ public class ServerTests
 
     [Theory]
     [ScriptingAutoDomainData]
+    public void SetGameType_UpdatesGameType(
+        AssertDataProvider assertDataProvider,
+        IMtaServer sut)
+    {
+        sut.RunLuaScript("""
+            local result = setGameType("Freeroam")
+            assert(result == true)
+            assertPrint(tostring(result))
+            """);
+
+        assertDataProvider.AssertPrints.Should().ContainSingle().Which.Should().Be("true");
+        sut.GameType.Should().Be("Freeroam");
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
+    public void SetMapName_UpdatesMapName(
+        AssertDataProvider assertDataProvider,
+        IMtaServer sut)
+    {
+        sut.RunLuaScript("""
+            local result = setMapName("Los Santos")
+            assert(result == true)
+            assertPrint(tostring(result))
+            """);
+
+        assertDataProvider.AssertPrints.Should().ContainSingle().Which.Should().Be("true");
+        sut.MapName.Should().Be("Los Santos");
+    }
+
+    [Theory]
+    [ScriptingAutoDomainData]
     public void GetServerPort_ReturnsConfiguredPort(
         AssertDataProvider assertDataProvider,
         IMtaServer sut)

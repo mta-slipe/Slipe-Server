@@ -69,7 +69,13 @@ public class DropInReplacementResourceInterpreter : IResourceInterpreter
             NoClientScripts = GetNoCacheFiles(meta.Value, files),
             IsOopEnabled = meta.Value.oops != null && meta.Value.oops.Any(x => x.Data.ToLower() == "true"),
             Settings = GetSettingsForMetaXmlResource(meta.Value),
-            Info = GetInfoForMetaXmlResource(meta.Value)
+            Info = GetInfoForMetaXmlResource(meta.Value),
+            IncludedResources = [.. GetIncludesForMetaXmlResource(meta.Value)],
+            Maps = [.. GetMapsForMetaXmlResource(meta.Value)],
+            HtmlFiles = [.. GetHtmlFilesForMetaXmlResource(meta.Value)],
+            MinimumMtaVersion = GetMinMtaVersionForMetaXmlResource(meta.Value),
+            AclRequestRights = [.. GetAclRequestRightsForMetaXmlResource(meta.Value)],
+            SyncMapElementData = GetSyncMapElementData(meta.Value),
         };
         return resource;
     }
@@ -195,4 +201,92 @@ public class DropInReplacementResourceInterpreter : IResourceInterpreter
         return meta.info.Attributes
             .ToDictionary(a => a.LocalName, a => a.Value);
     }
+
+    private static IEnumerable<IncludedResource> GetIncludesForMetaXmlResource(MetaXml meta)
+    {
+        if (meta.includes == null)
+            return [];
+
+        return meta.includes
+            .Where(x => !string.IsNullOrWhiteSpace(x.Resource))
+            .Select(x => new IncludedResource
+            {
+                ResourceName = x.Resource,
+                MinimumVersion = string.IsNullOrWhiteSpace(x.MinVersion) ? null : x.MinVersion,
+                MaximumVersion = string.IsNullOrWhiteSpace(x.MaxVersion) ? null : x.MaxVersion,
+            });
+    }
+
+    private static IEnumerable<MapDefinition> GetMapsForMetaXmlResource(MetaXml meta)
+    {
+        if (meta.maps == null)
+            return [];
+
+        return meta.maps
+            .Where(x => !string.IsNullOrWhiteSpace(x.Source))
+            .Select(x => new MapDefinition
+            {
+                Source = x.Source,
+                Dimension = int.TryParse(x.Dimension, out var dimension) ? dimension : null,
+            });
+    }
+
+    private static IEnumerable<HtmlDefinition> GetHtmlFilesForMetaXmlResource(MetaXml meta)
+    {
+        if (meta.htmls == null)
+            return [];
+
+        return meta.htmls
+            .Where(x => !string.IsNullOrWhiteSpace(x.Source))
+            .Select(x => new HtmlDefinition
+            {
+                Source = x.Source,
+                IsDefault = IsTrue(x.Default),
+                IsRaw = IsTrue(x.Raw),
+            });
+    }
+
+    private static MinMtaVersion? GetMinMtaVersionForMetaXmlResource(MetaXml meta)
+    {
+        if (meta.minMtaVersions == null || meta.minMtaVersions.Length == 0)
+            return null;
+
+        var value = meta.minMtaVersions[0];
+        return new MinMtaVersion
+        {
+            Client = string.IsNullOrWhiteSpace(value.Client) ? null : value.Client,
+            Server = string.IsNullOrWhiteSpace(value.Server) ? null : value.Server,
+            Both = string.IsNullOrWhiteSpace(value.Both) ? null : value.Both,
+        };
+    }
+
+    private static IEnumerable<AclRight> GetAclRequestRightsForMetaXmlResource(MetaXml meta)
+    {
+        if (meta.aclRequests == null)
+            return [];
+
+        return meta.aclRequests
+            .SelectMany(request => request.Rights ?? [])
+            .Where(right => !string.IsNullOrWhiteSpace(right.Name))
+            .Select(right => new AclRight
+            {
+                Name = right.Name,
+                Access = IsTrue(right.Access),
+            });
+    }
+
+    private static bool? GetSyncMapElementData(MetaXml meta)
+    {
+        if (meta.syncMapElementData == null || meta.syncMapElementData.Length == 0)
+            return null;
+
+        var value = meta.syncMapElementData[0].Data;
+        if (bool.TryParse(value, out var parsed))
+            return parsed;
+
+        return null;
+    }
+
+    private static bool IsTrue(string? value)
+        => string.Equals(value, "true", StringComparison.OrdinalIgnoreCase) || value == "1";
 }

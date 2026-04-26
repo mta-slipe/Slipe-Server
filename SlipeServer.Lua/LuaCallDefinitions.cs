@@ -1,10 +1,11 @@
 using MoonSharp.Interpreter;
 using SlipeServer.Server.Resources;
+using SlipeServer.Server.Resources.Providers;
 using System.Linq;
 
 namespace SlipeServer.Lua;
 
-public class LuaCallDefinitions(LuaEnvironmentService environmentService)
+public class LuaCallDefinitions(LuaEnvironmentService environmentService, IResourceProvider? resourceProvider = null)
 {
     [Scripting.ScriptFunctionDefinition("call")]
     public DynValue[] Call(Resource? resource, string? functionName, params DynValue[] args)
@@ -36,7 +37,8 @@ public class LuaCallDefinitions(LuaEnvironmentService environmentService)
     {
         return environmentService.GetAllEnvironments()
             .FirstOrDefault(e => e.ExecutionContext.Owner?.Name == name)
-            ?.ExecutionContext.Owner;
+            ?.ExecutionContext.Owner
+            ?? resourceProvider?.GetResources().FirstOrDefault(r => r.Name == name);
     }
 
     [Scripting.ScriptFunctionDefinition("getThisResource")]
