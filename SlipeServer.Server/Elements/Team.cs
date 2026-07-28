@@ -15,7 +15,7 @@ public class Team(string name, Color color) : Element(), IEnumerable
 
     public string TeamName { get; set; } = name;
     public Color Color { get; set; } = color;
-    public bool IsFriendlyFireEnabled { get; set; }
+    public bool IsFriendlyFireEnabled { get; set; } = true;
 
     private readonly Lock playersLock = new();
     private readonly List<Player> players = [];
