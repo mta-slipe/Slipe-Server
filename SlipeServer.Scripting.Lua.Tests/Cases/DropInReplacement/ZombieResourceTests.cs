@@ -1,6 +1,5 @@
 using FluentAssertions;
 using SlipeServer.DropInReplacement.MixedResources.Behaviour;
-using SlipeServer.Scripting;
 using SlipeServer.Scripting.Lua.Tests.Tools;
 using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
@@ -13,7 +12,7 @@ namespace SlipeServer.Scripting.Lua.Tests.Cases.DropInReplacement;
 
 public class ZombieResourceTests
 {
-    [Theory]
+    [Theory(Skip = "Resource not provided")]
     [DropInReplacementAutoDomainData]
     public void StartZombiesResource_DoesNotThrow(
         DropInReplacementTestingServer server,
@@ -27,7 +26,7 @@ public class ZombieResourceTests
                 exception);
     }
 
-    [Theory]
+    [Theory(Skip = "Resource not provided")]
     [DropInReplacementAutoDomainData]
     public void StartZombiesResource_HasNoScriptErrors(
         DropInReplacementTestingServer server,
@@ -38,7 +37,7 @@ public class ZombieResourceTests
         server.ScriptErrors.Should().BeEmpty();
     }
 
-    [Theory]
+    [Theory(Skip = "Resource not provided")]
     [DropInReplacementAutoDomainData]
     public void StartZombiesResource_LoadsMaxZombiesSettingFromMeta(
         DropInReplacementTestingServer server,
@@ -54,7 +53,7 @@ public class ZombieResourceTests
         value.DoubleValue.Should().Be(100);
     }
 
-    [Theory]
+    [Theory(Skip = "Resource not provided")]
     [DropInReplacementAutoDomainData]
     public void StartZombiesResource_LoadsStreamMethodSettingFromMeta(
         DropInReplacementTestingServer server,
@@ -70,7 +69,7 @@ public class ZombieResourceTests
         value.DoubleValue.Should().Be(1);
     }
 
-    [Theory]
+    [Theory(Skip = "Resource not provided")]
     [DropInReplacementAutoDomainData]
     public void StartZombiesResource_LoadsSpeedSettingFromMeta(
         DropInReplacementTestingServer server,
@@ -86,7 +85,7 @@ public class ZombieResourceTests
         value.DoubleValue.Should().Be(1);
     }
 
-    [Theory]
+    [Theory(Skip = "Resource not provided")]
     [DropInReplacementAutoDomainData]
     public void StartZombiesResource_WithPlayerJoining_DoesNotThrow(
         DropInReplacementTestingServer server,
@@ -102,7 +101,7 @@ public class ZombieResourceTests
                 exception);
     }
 
-    [Theory]
+    [Theory(Skip = "Resource not provided")]
     [DropInReplacementAutoDomainData]
     public void StartZombiesResource_WithPlayerJoining_HasNoScriptErrors(
         DropInReplacementTestingServer server,
@@ -115,7 +114,7 @@ public class ZombieResourceTests
         server.ScriptErrors.Should().BeEmpty();
     }
 
-    [Theory]
+    [Theory(Skip = "Resource not provided")]
     [DropInReplacementAutoDomainData]
     public void StartZombiesResource_WhenPlayerSpawns_HasNoScriptErrors(
         DropInReplacementTestingServer server,
@@ -129,7 +128,7 @@ public class ZombieResourceTests
         server.ScriptErrors.Should().BeEmpty();
     }
 
-    [Theory]
+    [Theory(Skip = "Resource not provided")]
     [DropInReplacementAutoDomainData]
     public void ZombiesResource_WhenZombieStatusChangesToChasing_SetsZombieSyncerToTarget(
         DropInReplacementTestingServer server,
@@ -147,7 +146,7 @@ public class ZombieResourceTests
         zombie.Syncer.Should().Be(player);
     }
 
-    [Theory]
+    [Theory(Skip = "Resource not provided")]
     [DropInReplacementAutoDomainData]
     public void ZombiesResource_WhenHeadboomEventTriggered_KillsZombieAndMakesItHeadless(
         DropInReplacementTestingServer server,
@@ -166,7 +165,7 @@ public class ZombieResourceTests
         ped.IsAlive.Should().BeFalse();
     }
 
-    [Theory]
+    [Theory(Skip = "Resource not provided")]
     [DropInReplacementAutoDomainData]
     public void ZombiesResource_WhenPlayereatenEventTriggered_KillsPlayer(
         DropInReplacementTestingServer server,
@@ -184,7 +183,7 @@ public class ZombieResourceTests
         player.IsAlive.Should().BeFalse();
     }
 
-    [Theory]
+    [Theory(Skip = "Resource not provided")]
     [DropInReplacementAutoDomainData]
     public void ZombiesResource_WhenOnZombieSpawnEventTriggered_CreatesZombiePedInWorld(
         DropInReplacementTestingServer server,
@@ -204,7 +203,7 @@ public class ZombieResourceTests
         elements.GetByType<Ped>().Should().Contain(p => p.GetData("zombie") == true);
     }
 
-    [Theory]
+    [Theory(Skip = "Resource not provided")]
     [DropInReplacementAutoDomainData]
     public void ZombiesResource_WhenOnZombieLostPlayerEventTriggered_StoresLastKnownTargetCoordsOnZombie(
         DropInReplacementTestingServer server,
@@ -223,7 +222,7 @@ public class ZombieResourceTests
         zombie.GetData("Tz")?.DoubleValue.Should().Be(5);
     }
 
-    [Theory]
+    [Theory(Skip = "Resource not provided")]
     [DropInReplacementAutoDomainData]
     public void ZombiesResource_WhenZombiePedWastedByPlayer_IncrementsPlayerZombieKillCount(
         DropInReplacementTestingServer server,
@@ -242,7 +241,7 @@ public class ZombieResourceTests
 
     // --- Timer-based background behaviour tests ---
 
-    [Theory]
+    [Theory(Skip = "Resource not provided")]
     [DropInReplacementAutoDomainData]
     public void ZombiesResource_SetangleTimer_UpdatesZombieRotationToFaceTarget(
         DropInReplacementTestingServer server,
@@ -273,7 +272,7 @@ public class ZombieResourceTests
         zombie.PedRotation.Should().BeApproximately(270f, 1f);
     }
 
-    [Theory]
+    [Theory(Skip = "Resource not provided")]
     [DropInReplacementAutoDomainData]
     public void ZombiesResource_ClearFarZombiesTimer_RemovesZombiesFarFromAllPlayers(
         DropInReplacementTestingServer server,
@@ -302,7 +301,7 @@ public class ZombieResourceTests
         pedsAfter.Should().BeLessThan(pedsBefore);
     }
 
-    [Theory]
+    [Theory(Skip = "Resource not provided")]
     [DropInReplacementAutoDomainData]
     public void ZombiesResource_SpawnZombieTimer_SpawnsNewZombiesNearPlayer(
         DropInReplacementTestingServer server,
@@ -326,7 +325,7 @@ public class ZombieResourceTests
             .Should().Contain(e => e.Name == "Spawn_Placement" && e.Address == player.GetAddress());
     }
 
-    [Theory]
+    [Theory(Skip = "Resource not provided")]
     [DropInReplacementAutoDomainData]
     public void ZombiesResource_ZombIdleTimer_TransitionsZombieToIdleStatus(
         DropInReplacementTestingServer server,
@@ -350,7 +349,7 @@ public class ZombieResourceTests
         zombie!.GetData("status")?.StringValue.Should().Be("idle");
     }
 
-    [Theory]
+    [Theory(Skip = "Resource not provided")]
     [DropInReplacementAutoDomainData]
     public void ZombiesResource_ZombieDeleteTimer_RemovesDeadZombieAfterDelay(
         DropInReplacementTestingServer server,
