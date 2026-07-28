@@ -118,7 +118,7 @@ public class TeamTests
 
     [Theory]
     [ScriptingAutoDomainData]
-    public void GetTeamFriendlyFire_ReturnsFalseByDefault(
+    public void GetTeamFriendlyFire_ReturnsTrueByDefault(
         [Frozen] Mock<IElementCollection> elementCollectionMock,
         AssertDataProvider assertDataProvider,
         IMtaServer sut)
@@ -132,7 +132,7 @@ public class TeamTests
             assertPrint(tostring(getTeamFriendlyFire(testTeam)))
             """);
 
-        assertDataProvider.AssertPrints.Should().ContainSingle().Which.Should().Be("false");
+        assertDataProvider.AssertPrints.Should().ContainSingle().Which.Should().Be("true");
     }
 
     [Theory]
