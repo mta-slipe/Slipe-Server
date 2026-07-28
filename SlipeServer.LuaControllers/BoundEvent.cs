@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using SlipeServer.LuaControllers.Attributes;
 using SlipeServer.LuaControllers.Results;
 using SlipeServer.Server.Events;
 using System.Reflection;
@@ -17,6 +18,7 @@ public class BoundEvent(
     public Type ControllerType { get; set; } = controllerType;
     public BaseLuaController? ControllerInstance { get; set; } = controllerInstance;
     public MethodInfo Method { get; set; } = method;
+    public TimeSpan? RateLimit { get; set; } = method.GetCustomAttribute<RateLimitAttribute>()?.TimeSpan;
 
     public LuaResult? HandleEvent(LuaEvent luaEvent, object?[] parameters)
     {

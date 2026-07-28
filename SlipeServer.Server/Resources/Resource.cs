@@ -13,11 +13,12 @@ namespace SlipeServer.Server.Resources;
 /// <summary>
 /// Represents a client-side Lua resource
 /// </summary>
-public class Resource
+public class Resource : IResource
 {
     private readonly IMtaServer server;
 
     public DummyElement Root { get; init; }
+    Element IResource.Root => this.Root;
     public DummyElement DynamicRoot { get; init; }
     public ushort NetId { get; set; }
     public int PriorityGroup { get; set; }

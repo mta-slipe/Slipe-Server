@@ -1,9 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlipeServer.LuaControllers.Attributes;
 using SlipeServer.Server;
+using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Events;
 using SlipeServer.Server.Services;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Reflection;
 using System.Text.Json;
 
@@ -20,7 +23,8 @@ public class CommandControllerLogic
     private readonly IMtaServer server;
     private readonly ICommandService commandService;
     private readonly ILogger logger;
-    private readonly Dictionary<string, List<BoundCommand>> handlers = new();
+    private readonly Dictionary<string, List<BoundCommand>> handlers = [];
+    private readonly ConcurrentDictionary<Player, ConcurrentDictionary<BoundCommand, DateTime>> rateLimitTimes = [];
 
     public CommandControllerLogic(
         IMtaServer server,
@@ -32,6 +36,20 @@ public class CommandControllerLogic
         this.logger = logger;
 
         IndexControllers();
+
+        server.PlayerJoined += HandlePlayerJoin;
+    }
+
+    private void HandlePlayerJoin(Player player)
+    {
+        this.rateLimitTimes[player] = [];
+
+        player.Disconnected += HandlePlayerDisconnect;
+    }
+
+    private void HandlePlayerDisconnect(Player player, PlayerQuitEventArgs e)
+    {
+        this.rateLimitTimes.TryRemove(player, out _);
     }
 
     private void IndexControllers()
@@ -144,6 +162,17 @@ public class CommandControllerLogic
         {
             try
             {
+                var hasRateLimit = handler.RateLimit != null;
+                var isRateLimited = hasRateLimit &&
+                    this.rateLimitTimes.TryGetValue(e.Player, out var playerRateLimitTimes) &&
+                    playerRateLimitTimes.TryGetValue(handler, out var availableAfter) &&
+                    availableAfter > DateTime.UtcNow;
+                if (isRateLimited)
+                    continue;
+
+                if (hasRateLimit)
+                    this.rateLimitTimes[e.Player][handler] = DateTime.UtcNow.Add(handler.RateLimit!.Value);
+
                 var parameters = MapParameters(e.Arguments.ToArray(), handler.Method);
                 handler.HandleCommand(e.Player, command, parameters);
             }

@@ -115,28 +115,32 @@ public class LuaValue
         return new LuaValue(value);
     }
 
+    private bool IsNumeric() => this.IntegerValue.HasValue || this.FloatValue.HasValue || this.DoubleValue.HasValue;
+
     public override bool Equals(object? obj)
     {
         if (obj is LuaValue luaValue)
-            return 
-                (luaValue.IntegerValue != null && luaValue.IntegerValue == this.IntegerValue) ||
-                (luaValue.DoubleValue != null && luaValue.DoubleValue == this.DoubleValue) ||
-                (luaValue.FloatValue != null && luaValue.FloatValue == this.FloatValue) ||
+        {
+            if (this.IsNumeric() && luaValue.IsNumeric())
+                return (double)this == (double)luaValue;
+
+            return
                 (luaValue.BoolValue != null && luaValue.BoolValue == this.BoolValue) ||
                 (luaValue.ElementId != null && luaValue.ElementId == this.ElementId) ||
                 (luaValue.StringValue != null && luaValue.StringValue == this.StringValue) ||
                 (luaValue.IsNil && this.IsNil) ||
                 base.Equals(obj);
+        }
 
         return base.Equals(obj);
     }
 
     public override int GetHashCode()
     {
+        if (this.IsNumeric())
+            return ((double)this).GetHashCode();
+
         return
-            this.IntegerValue?.GetHashCode() ??
-            this.DoubleValue?.GetHashCode() ??
-            this.FloatValue?.GetHashCode() ??
             this.BoolValue?.GetHashCode() ??
             this.ElementId?.GetHashCode() ??
             this.StringValue?.GetHashCode() ??

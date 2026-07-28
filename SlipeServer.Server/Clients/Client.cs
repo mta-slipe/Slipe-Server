@@ -46,7 +46,7 @@ public class Client<TPlayer>(ulong binaryAddress, INetWrapper netWrapper, TPlaye
     /// <summary>
     /// Player serial, this can be null early on in the connection process
     /// </summary>
-    public string? Serial { get; private set; }
+    public string? Serial { get; protected set; }
 
     /// <summary>
     /// Player's extra data (data received durring connection), this can be null early on in the connection process

@@ -136,6 +136,7 @@ public partial class Program
                 builder.AddScopedLogic<ScopedTestLogic1>();
                 builder.AddScopedLogic<ScopedTestLogic2>();
                 builder.AddLogic<VehicleEntityAddTestLogic>();
+                builder.AddLogic<AttachmentTestLogic>();
                 builder.AddLogic(typeof(TestLogic));
                 builder.AddLogic(typeof(NotVisibleToAllTestLogic));
                 //builder.AddBehaviour<VelocityBehaviour>();

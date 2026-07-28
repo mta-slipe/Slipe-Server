@@ -34,6 +34,7 @@ public class TestController : BaseLuaController<CustomPlayer>
     }
 
     [LuaEvent("Ui")]
+    [RateLimit(10_000)]
     public void OutputUiStates(UiActiveStateLuaValue uiStates)
     {
         this.chatBox.Output($"{this.Context.Player.Name}'s UI states are:");

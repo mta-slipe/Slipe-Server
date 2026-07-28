@@ -35,7 +35,6 @@ public static class CollisionShapePropertyRelayingExtensions
         }
     }
 
-
     private static void HandlePointAdded(Element sender, CollisionPolygonPointAddedChangedArgs args)
     {
         sender.RelayChange(CollisionShapePacketFactory.CreatePointAdded(args.Polygon, args.Position, args.Index));

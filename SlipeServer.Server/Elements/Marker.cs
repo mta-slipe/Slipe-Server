@@ -199,6 +199,12 @@ public class Marker : Element
     private void HandleColShapeLeft(CollisionShape sender, CollisionShapeLeftEventArgs e)
         => this.ElementLeft?.Invoke(this, new MarkerLeftEventArgs(e.Element, e.Element.Dimension == this.Dimension));
 
+    public void TriggerElementHit(Element element, bool matchingDimension)
+        => this.ElementHit?.Invoke(this, new MarkerHitEventArgs(element, matchingDimension));
+
+    public void TriggerElementLeft(Element element, bool matchingDimension)
+        => this.ElementLeft?.Invoke(this, new MarkerLeftEventArgs(element, matchingDimension));
+
     public event ElementChangedEventHandler<Marker, MarkerType>? MarkerTypeChanged;
     public event ElementChangedEventHandler<Marker, MarkerIcon>? MarkerIconChanged;
     public event ElementChangedEventHandler<Marker, float>? SizeChanged;

@@ -899,6 +899,8 @@ public class Element : IElement
     {
         if (this.Attachment != null && (element == null || this.Attachment.Target == element))
         {
+            this.GetAndIncrementTimeContext();
+
             this.Detached?.Invoke(this, new ElementDetachedEventArgs(this, this.Attachment.Target));
             (element ?? this.Attachment.Target).RemoveElementAttachment(this.Attachment);
 

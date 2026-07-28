@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using SlipeServer.LuaControllers.Attributes;
 using SlipeServer.Server.Elements;
 using System.Reflection;
 
@@ -16,6 +17,7 @@ public class BoundCommand(
     public Type ControllerType { get; set; } = controllerType;
     public BaseCommandController? ControllerInstance { get; set; } = controllerInstance;
     public MethodInfo Method { get; set; } = method;
+    public TimeSpan? RateLimit { get; set; } = method.GetCustomAttribute<RateLimitAttribute>()?.TimeSpan;
 
     public void HandleCommand(Player player, string command, IEnumerable<object?> args)
     {

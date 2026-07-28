@@ -1,12 +1,16 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SlipeServer.LuaControllers.Attributes;
+using SlipeServer.LuaControllers.Commands;
 using SlipeServer.LuaControllers.Results;
 using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Server;
+using SlipeServer.Server.Elements;
+using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Events;
 using SlipeServer.Server.Mappers;
 using SlipeServer.Server.Services;
+using System.Collections.Concurrent;
 using System.Reflection;
 
 namespace SlipeServer.LuaControllers;
@@ -21,6 +25,7 @@ public class LuaControllerLogic
     private readonly IServiceProvider serviceProvider;
     private readonly ILogger logger;
     private readonly Dictionary<string, List<BoundEvent>> handlers = [];
+    private readonly ConcurrentDictionary<Player, ConcurrentDictionary<BoundEvent, DateTime>> rateLimitTimes = [];
 
     public LuaControllerLogic(
         IMtaServer server,
@@ -40,6 +45,20 @@ public class LuaControllerLogic
         this.logger = logger;
 
         IndexControllers();
+
+        server.PlayerJoined += HandlePlayerJoin;
+    }
+
+    private void HandlePlayerJoin(Player player)
+    {
+        this.rateLimitTimes[player] = [];
+
+        player.Disconnected += HandlePlayerDisconnect;
+    }
+
+    private void HandlePlayerDisconnect(Player player, PlayerQuitEventArgs e)
+    {
+        this.rateLimitTimes.TryRemove(player, out _);
     }
 
     private void IndexControllers()
@@ -132,6 +151,17 @@ public class LuaControllerLogic
         {
             try
             {
+                var hasRateLimit = handler.RateLimit != null;
+                var isRateLimited = hasRateLimit &&
+                    this.rateLimitTimes.TryGetValue(luaEvent.Player, out var playerRateLimitTimes) &&
+                    playerRateLimitTimes.TryGetValue(handler, out var availableAfter) &&
+                    availableAfter > DateTime.UtcNow;
+                if (isRateLimited)
+                    continue;
+
+                if (hasRateLimit)
+                    this.rateLimitTimes[luaEvent.Player][handler] = DateTime.UtcNow.Add(handler.RateLimit!.Value);
+
                 var parameters = MapParameters(luaEvent.Parameters, handler.Method);
                 var result = handler.HandleEvent(luaEvent, parameters);
                 if (result != null)
