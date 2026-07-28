@@ -35,7 +35,7 @@ public class SlipeLuaResourceInterpreter : IResourceInterpreter
         out Resource? resource
     )
     {
-        var files = resourceProvider.GetFilesForResource(path);
+        var files = resourceProvider.GetFilesForResource(name);
         if (!files.Contains("entrypoint.slipe"))
         {
             resource = null;

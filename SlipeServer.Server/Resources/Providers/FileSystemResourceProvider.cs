@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Xml.Linq;
 
 namespace SlipeServer.Server.Resources.Providers;
 
@@ -15,6 +16,7 @@ public class FileSystemResourceProvider(IMtaServer mtaServer, IRootElement rootE
     private readonly Configuration configuration = mtaServer.Configuration;
     private readonly Dictionary<string, Resource> resources = [];
     private readonly List<IResourceInterpreter> resourceInterpreters = [];
+    private readonly Dictionary<string, string> pathsPerResourceName = [];
 
     private readonly Lock netIdLock = new();
     private ushort netId = 0;
@@ -58,6 +60,8 @@ public class FileSystemResourceProvider(IMtaServer mtaServer, IRootElement rootE
                 resources.Add(this.resources[name]);
             } else
             {
+                this.pathsPerResourceName[name] = subDirectory;
+
                 Resource? resource = null;
                 foreach (var resourceInterpreter in this.resourceInterpreters)
                 {
@@ -79,9 +83,9 @@ public class FileSystemResourceProvider(IMtaServer mtaServer, IRootElement rootE
         return resources;
     }
 
-    public IEnumerable<string> GetFilesForResource(string path)
+    public IEnumerable<string> GetFilesForResource(string name)
     {
-        //var path = Path.Join(this.configuration.ResourceDirectory, name);
+        var path = this.pathsPerResourceName[name];
         var files = Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories);
 
         return files.Select(file => Path.GetRelativePath(path, file));

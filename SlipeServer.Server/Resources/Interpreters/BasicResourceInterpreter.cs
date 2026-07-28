@@ -20,7 +20,7 @@ public class BasicResourceInterpreter : IResourceInterpreter
     {
         List<ResourceFile> resourceFiles = new List<ResourceFile>();
 
-        foreach (var file in resourceProvider.GetFilesForResource(path))
+        foreach (var file in resourceProvider.GetFilesForResource(name))
         {
             byte[] content = resourceProvider.GetFileContent(name, file);
             resourceFiles.Add(ResourceFileFactory.FromBytes(content, file));
