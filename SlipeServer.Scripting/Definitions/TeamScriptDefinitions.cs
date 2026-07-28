@@ -34,7 +34,7 @@ public class TeamScriptDefinitions(MtaServer server, IElementCollection elementC
     }
 
     [ScriptFunctionDefinition("getTeamName")]
-    public string GetTeamName(Team team) => team.TeamName;
+    public string? GetTeamName(Team? team) => team?.TeamName;
 
     [ScriptFunctionDefinition("setTeamColor")]
     public bool SetTeamColor(Team team, int colorR, int colorG, int colorB)

@@ -12,13 +12,9 @@ namespace SlipeServer.Server.Tests.Integration.Interpreters;
 
 public class MetaXmlResourceInterpreterTests
 {
-    private readonly MetaXmlResourceInterpreter metaXmlResourceInterpreter;
-    private readonly Mock<IResourceProvider> resourceProviderMock = new(MockBehavior.Strict);
+    private readonly MetaXmlResourceInterpreter metaXmlResourceInterpreter = new();
+    private readonly Mock<IResourceProvider> resourceProviderMock = new();
     private readonly TestingServer testingServer = new();
-    public MetaXmlResourceInterpreterTests()
-    {
-        metaXmlResourceInterpreter = new();
-    }
 
     [Fact]
     public void TestTryInterpretResourceWithMinimalResource()

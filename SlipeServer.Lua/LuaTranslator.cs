@@ -206,6 +206,18 @@ public class LuaTranslator
                 dictTable.Set(key, val == null ? DynValue.Nil : DynValue.NewString(val));
             return [DynValue.NewTable(dictTable)];
         }
+        if (obj is System.Collections.IDictionary nonGenericDict)
+        {
+            var dictTable = new Table(null);
+            foreach (System.Collections.DictionaryEntry entry in nonGenericDict)
+            {
+                var keyValues = ToDynValues(entry.Key).ToArray();
+                var valValues = entry.Value == null ? [DynValue.Nil] : ToDynValues(entry.Value).ToArray();
+                if (keyValues.Length == 1 && valValues.Length == 1)
+                    dictTable.Set(keyValues[0], valValues[0]);
+            }
+            return [DynValue.NewTable(dictTable)];
+        }
         if (obj is IEnumerable<string> stringEnumerable)
         {
             var enumerableTable = new Table(null);
@@ -330,8 +342,17 @@ public class LuaTranslator
 
     public object? FromDynValue(Type targetType, Queue<DynValue> dynValues, bool isNullable = false)
     {
-        if (isNullable && dynValues.Count > 0 && !IsCompatibleWith(targetType, dynValues.Peek()))
-            return null;
+        if (isNullable && dynValues.Count > 0)
+        {
+            var peeked = dynValues.Peek();
+            if (peeked.IsNil())
+            {
+                dynValues.Dequeue(); // consume explicitly-passed nil
+                return null;
+            }
+            if (!IsCompatibleWith(targetType, peeked))
+                return null; // incompatible non-nil value; don't consume (optional param omitted)
+        }
 
         if (targetType == typeof(Color) || targetType == typeof(Color?))
         {
@@ -418,10 +439,16 @@ public class LuaTranslator
         }
         if (targetType == typeof(ScriptCallbackDelegateWrapper))
         {
-            var callbackValue = dynValues.Dequeue();
+            if (!dynValues.Any())
+                return null;
+            var callbackValue = dynValues.Peek();
             if (callbackValue.Type != DataType.Function)
+            {
+                if (isNullable) return null; // leave value in queue for next param
+                dynValues.Dequeue();
                 throw new ScriptRuntimeException($"Expected a function for callback argument, got {callbackValue.Type}");
-
+            }
+            dynValues.Dequeue();
             return CreateCallbackWrapper(callbackValue);
         }
         if (targetType == typeof(EventDelegate))
@@ -469,7 +496,9 @@ public class LuaTranslator
                         }
                     }
 
-                    closure.OwnerScript.Globals["source"] = source;
+                    // Only set source automatically if not overridden by additionalGlobals
+                    if (additionalGlobals == null || !additionalGlobals.ContainsKey("source"))
+                        closure.OwnerScript.Globals["source"] = source;
                     try { closure.Call(values); }
                     finally
                     {
@@ -530,6 +559,10 @@ public class LuaTranslator
             return dynValues.Dequeue()?.UserData?.Object as TextDisplay;
         if (targetType == typeof(Resource))
             return dynValues.Dequeue()?.UserData?.Object as Resource;
+        if (targetType == typeof(IServerSideResource))
+            return dynValues.Dequeue()?.UserData?.Object as IServerSideResource;
+        if (targetType == typeof(IResource))
+            return dynValues.Dequeue()?.UserData?.Object as IResource;
         if (targetType == typeof(ElementTarget))
         {
             var dynValue = dynValues.Dequeue();
@@ -582,6 +615,10 @@ public class LuaTranslator
 
         if (targetType == typeof(Resource))
             return value.Type == DataType.UserData;
+        if (targetType == typeof(IServerSideResource))
+            return value.Type == DataType.UserData || value.Type == DataType.Nil;
+        if (targetType == typeof(IResource))
+            return value.Type == DataType.UserData || value.Type == DataType.Nil;
         if (targetType == typeof(ElementTarget))
             return value.Type == DataType.UserData || value.Type == DataType.Table || value.Type == DataType.Nil;
         if (targetType == typeof(DynValue))

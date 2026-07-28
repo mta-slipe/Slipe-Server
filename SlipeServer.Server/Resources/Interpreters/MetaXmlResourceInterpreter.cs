@@ -24,7 +24,7 @@ public class MetaXmlResourceInterpreter : IResourceInterpreter
         out Resource? resource
     )
     {
-        var files = resourceProvider.GetFilesForResource(path);
+        var files = resourceProvider.GetFilesForResource(name);
         if (!files.Contains("meta.xml"))
         {
             resource = null;

@@ -137,11 +137,15 @@ public static class MtaOopPrelude
 
     public const string Markers = """
         -- Marker constructor (OOP alias for createMarker)
+        -- Supports two call styles:
+        --   Marker(Vector3pos, markerType, size, r, g, b, a)  -- OOP style
+        --   Marker(x, y, z, markerType, size, r, g, b, a)     -- flat style
         if createMarker then
             Marker = function(x, y, z, markerType, size, r, g, b, a)
                 if type(x) == "table" then
+                    -- OOP style: x=pos, y=markerType, z=size, markerType=r, size=g, r=b, g=a
                     local pos = x
-                    return createMarker(pos.x or 0, pos.y or 0, pos.z or 0, y, z, rot, g, b, a)
+                    return createMarker(pos.x or 0, pos.y or 0, pos.z or 0, y, z, markerType, size, r, g)
                 end
                 return createMarker(x or 0, y or 0, z or 0, markerType, size, r, g, b, a)
             end
@@ -183,6 +187,15 @@ public static class MtaOopPrelude
 
         """;
 
+    public const string ElementClass = """
+        -- Element static class: map Element.getAllByType → getElementsByType
+        Element = {}
+        Element.getAllByType = function(elementType, startAt, streamedIn)
+            return getElementsByType(elementType, startAt, streamedIn)
+        end
+
+        """;
+
     public const string Full =
         Vectors +
         Matrices +
@@ -190,5 +203,6 @@ public static class MtaOopPrelude
         Peds +
         Markers +
         Objects +
-        ColShapes;
+        ColShapes +
+        ElementClass;
 }
