@@ -1,10 +1,14 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MoonSharp.Interpreter;
 using Moq;
 using SlipeServer.DropInReplacement.MixedResources;
 using SlipeServer.DropInReplacement.MixedResources.Behaviour;
 using SlipeServer.Lua;
+using SlipeServer.Scripting.Definitions;
+using SlipeServer.Scripting.Lua.Tests.Mocks;
 using SlipeServer.Server;
+using SlipeServer.Server.Elements;
 using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.Resources.Serving;
@@ -41,7 +45,13 @@ public class DropInReplacementTestingServer : MtaServer<LightTestPlayer>
             services.AddSingleton<ILogger>(sp => sp.GetRequiredService<ILogger<MtaServer>>());
 
             services.AddSingleton<IResourceProvider, DropInReplacementResourceProvider>();
-            services.AddSingleton<DropInReplacementResourceService>();
+            services.AddSingleton<DropInReplacementResourceService>(sp =>
+                new DropInReplacementResourceService(
+                    sp.GetRequiredService<IMtaServer>(),
+                    sp.GetRequiredService<IResourceProvider>(),
+                    sp.GetRequiredService<ILogger<DropInReplacementResourceProvider>>(),
+                    sp.GetRequiredService<IDropInReplacementResourceLuaService>(),
+                    allowMissingIncludes: true));
             services.AddSingleton<IDropInReplacementResourceService>(
                 sp => sp.GetRequiredService<DropInReplacementResourceService>());
             services.AddSingleton<IResourceService>(
@@ -53,6 +63,9 @@ public class DropInReplacementTestingServer : MtaServer<LightTestPlayer>
                 services.AddSingleton(timerService);
                 services.AddSingleton<IScriptTimerService>(timerService);
             }
+
+            services.AddSingleton<MockSqlExecutor>();
+            services.AddSingleton<ISqlExecutor>(sp => sp.GetRequiredService<MockSqlExecutor>());
 
             services.AddLua();
             services.AddHttpClient();
@@ -69,6 +82,45 @@ public class DropInReplacementTestingServer : MtaServer<LightTestPlayer>
     }
 
     public List<string> ScriptErrors { get; } = [];
+    public MockSqlExecutor SqlExecutor => this.GetRequiredService<MockSqlExecutor>();
+    public LightTestNetWrapper NetWrapper => this.netWrapper;
+    public RootElement GetRootElement() => this.RootElement;
+
+    /// <summary>
+    /// Calls an exported Lua function from a resource and returns the first result cast to <typeparamref name="T"/>.
+    /// </summary>
+    public T? CallLuaExport<T>(string resourceName, string functionName, params object[] args)
+    {
+        var envService = this.GetRequiredService<LuaEnvironmentService>();
+        var env = envService.GetAllEnvironments()
+            .FirstOrDefault(e => e.ExecutionContext.Owner?.Name == resourceName);
+
+        if (env == null)
+            throw new InvalidOperationException($"No Lua environment found for resource '{resourceName}'");
+
+        var results = env.CallFunction(functionName, args);
+        if (results.Length == 0)
+            return default;
+
+        var first = results[0];
+        if (first.Type == DataType.Boolean)
+            return (T?)(object)first.Boolean;
+        if (first.Type == DataType.Nil || first.IsNil())
+            return default;
+        if (first.Type == DataType.Number)
+        {
+            if (typeof(T) == typeof(long) || typeof(T) == typeof(long?))
+                return (T?)(object)(long)first.Number;
+            if (typeof(T) == typeof(int) || typeof(T) == typeof(int?))
+                return (T?)(object)(int)first.Number;
+            return (T?)(object)first.Number;
+        }
+        if (first.Type == DataType.String)
+            return (T?)(object)first.String;
+        if (first.UserData?.Object is T typed)
+            return typed;
+        return (T?)first.ToObject();
+    }
 
     /// <summary>
     /// Creates a new player and fires the PlayerJoined event, simulating a full join.
@@ -82,6 +134,7 @@ public class DropInReplacementTestingServer : MtaServer<LightTestPlayer>
 
         this.clients[this.netWrapper].Add(player.Address, player.Client);
         player.AssociateWith(this);
+        player.Parent = this.RootElement;
         this.HandlePlayerJoin(player);
 
         return player;

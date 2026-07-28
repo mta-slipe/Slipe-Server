@@ -9,7 +9,7 @@ public class ResourceScriptDefinitions(IMtaServer server)
 {
     [ScriptFunctionDefinition("startResource")]
     public bool StartResource(
-        Resource resource,
+        Resource? resource,
         bool persistent = false,
         bool startIncludedResources = true,
         bool loadServerConfigs = true,
@@ -20,13 +20,18 @@ public class ResourceScriptDefinitions(IMtaServer server)
         bool loadClientScripts = true,
         bool loadFiles = true)
     {
+        if (resource == null)
+            return false;
+
         var resourceService = server.GetService<IResourceService>();
         return resourceService?.StartResource(resource.Name) != null;
     }
 
     [ScriptFunctionDefinition("stopResource")]
-    public bool StopResource(Resource resource)
+    public bool StopResource(Resource? resource)
     {
+        if (resource == null)
+            return false;
         var resourceService = server.GetService<IResourceService>();
         if (resourceService == null || !resourceService.StartedResources.Any(r => r.Name == resource.Name))
             return false;
@@ -56,8 +61,11 @@ public class ResourceScriptDefinitions(IMtaServer server)
     }
 
     [ScriptFunctionDefinition("getResourceState")]
-    public string GetResourceState(Resource resource)
+    public string? GetResourceState(Resource? resource)
     {
+        if (resource == null)
+            return null;
+
         var resourceService = server.GetService<IResourceService>();
         if (resourceService?.StartedResources.Any(r => r.Name == resource.Name) == true)
             return "running";

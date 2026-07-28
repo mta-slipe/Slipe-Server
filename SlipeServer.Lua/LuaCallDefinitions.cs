@@ -1,6 +1,7 @@
 using MoonSharp.Interpreter;
 using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Providers;
+using System;
 using System.Linq;
 
 namespace SlipeServer.Lua;
@@ -8,12 +9,12 @@ namespace SlipeServer.Lua;
 public class LuaCallDefinitions(LuaEnvironmentService environmentService, IResourceProvider? resourceProvider = null)
 {
     [Scripting.ScriptFunctionDefinition("call")]
-    public DynValue[] Call(Resource? resource, string? functionName, params DynValue[] args)
+    public DynValue[] Call(IServerSideResource? resource, string? functionName, params DynValue[] args)
     {
         if (resource == null || functionName == null)
             return [DynValue.False];
 
-        if (!resource.Exports.Contains(functionName))
+        if (!resource.ServerExports.Contains(functionName))
             return [DynValue.False];
 
         var env = environmentService.GetEnvironment(resource);
@@ -36,9 +37,9 @@ public class LuaCallDefinitions(LuaEnvironmentService environmentService, IResou
     public Resource? GetResourceFromName(string name)
     {
         return environmentService.GetAllEnvironments()
-            .FirstOrDefault(e => e.ExecutionContext.Owner?.Name == name)
+            .FirstOrDefault(e => string.Equals(e.ExecutionContext.Owner?.Name, name, StringComparison.OrdinalIgnoreCase))
             ?.ExecutionContext.Owner
-            ?? resourceProvider?.GetResources().FirstOrDefault(r => r.Name == name);
+            ?? resourceProvider?.GetResources().FirstOrDefault(r => string.Equals(r.Name, name, StringComparison.OrdinalIgnoreCase));
     }
 
     [Scripting.ScriptFunctionDefinition("getThisResource")]

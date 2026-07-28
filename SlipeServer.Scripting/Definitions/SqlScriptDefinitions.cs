@@ -3,32 +3,18 @@ using MySqlConnector;
 using SlipeServer.Packets.Definitions.Lua;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace SlipeServer.Scripting.Definitions;
 
-public class SqlScriptDefinitions : IDisposable
+public class SqlScriptDefinitions
 {
-    private SqliteConnection? internalConnection;
-    private readonly Lock internalLock = new();
+    private readonly ISqlExecutor sqlExecutor;
 
-    private SqliteConnection GetInternalConnection()
+    public SqlScriptDefinitions(ISqlExecutor sqlExecutor)
     {
-        if (this.internalConnection == null)
-        {
-            lock (this.internalLock)
-            {
-                if (this.internalConnection == null)
-                {
-                    this.internalConnection = new SqliteConnection("Data Source=internal.db");
-                    this.internalConnection.Open();
-                }
-            }
-        }
-        return this.internalConnection;
+        this.sqlExecutor = sqlExecutor;
     }
 
     [ScriptFunctionDefinition("dbConnect")]
@@ -42,7 +28,7 @@ public class SqlScriptDefinitions : IDisposable
     public DbQueryHandle DbQuery(ScriptCallbackDelegateWrapper? callback, DbConnectionHandle connection, string query, params LuaValue[] queryParams)
     {
         var (preparedQuery, parameters) = PrepareParameterizedQuery(query, queryParams);
-        var task = Task.Run(() => ExecuteQuery(connection, preparedQuery, parameters));
+        var task = this.sqlExecutor.ExecuteQueryAsync(connection, preparedQuery, parameters);
         var handle = new DbQueryHandle(task);
 
         if (callback != null)
@@ -61,14 +47,7 @@ public class SqlScriptDefinitions : IDisposable
     public bool DbExec(DbConnectionHandle connection, string query, params LuaValue[] queryParams)
     {
         var (preparedQuery, parameters) = PrepareParameterizedQuery(query, queryParams);
-        connection.Execute(conn =>
-        {
-            using var cmd = conn.CreateCommand();
-            cmd.CommandText = preparedQuery;
-            AddParameters(cmd, parameters);
-            cmd.ExecuteNonQuery();
-            return true;
-        });
+        _ = this.sqlExecutor.ExecuteQueryAsync(connection, preparedQuery, parameters);
         return true;
     }
 
@@ -84,7 +63,10 @@ public class SqlScriptDefinitions : IDisposable
         }
         else if (timeout == 0)
         {
-            return task.IsCompleted ? task.Result : null;
+            if (!task.IsCompleted)
+                return null;
+
+            return task.Result;
         }
         else
         {
@@ -109,54 +91,9 @@ public class SqlScriptDefinitions : IDisposable
     public DbQueryResult ExecuteSQLQuery(string query, params LuaValue[] queryParams)
     {
         var (preparedQuery, parameters) = PrepareParameterizedQuery(query, queryParams);
-        var conn = GetInternalConnection();
-        lock (this.internalLock)
-        {
-            using var cmd = conn.CreateCommand();
-            cmd.CommandText = preparedQuery;
-            AddParameters(cmd, parameters);
-            return ReadQueryResult(cmd, "sqlite");
-        }
+        return this.sqlExecutor.ExecuteNonConnectionQuery(preparedQuery, parameters);
     }
 
-    private static DbQueryResult ExecuteQuery(DbConnectionHandle connectionHandle, string query, List<(string Name, object? Value)> parameters)
-    {
-        return connectionHandle.Execute(conn =>
-        {
-            using var cmd = conn.CreateCommand();
-            cmd.CommandText = query;
-            AddParameters(cmd, parameters);
-            return ReadQueryResult(cmd, connectionHandle.DatabaseType);
-        });
-    }
-
-    private static DbQueryResult ReadQueryResult(IDbCommand cmd, string dbType)
-    {
-        var rows = new List<Dictionary<string, object?>>();
-        long affectedRows;
-        long lastInsertId = 0;
-
-        using (var reader = cmd.ExecuteReader())
-        {
-            while (reader.Read())
-            {
-                var row = new Dictionary<string, object?>();
-                for (int i = 0; i < reader.FieldCount; i++)
-                    row[reader.GetName(i)] = reader.IsDBNull(i) ? null : reader.GetValue(i);
-                rows.Add(row);
-            }
-            affectedRows = reader.RecordsAffected;
-        }
-
-        if (affectedRows > 0)
-        {
-            using var lastIdCmd = cmd.Connection!.CreateCommand();
-            lastIdCmd.CommandText = dbType == "mysql" ? "SELECT LAST_INSERT_ID()" : "SELECT last_insert_rowid()";
-            lastInsertId = Convert.ToInt64(lastIdCmd.ExecuteScalar() ?? 0L);
-        }
-
-        return new DbQueryResult(rows, affectedRows < 0 ? 0 : affectedRows, lastInsertId);
-    }
 
     private static (string Query, List<(string Name, object? Value)> Parameters) PrepareParameterizedQuery(string query, LuaValue[] args)
     {
@@ -267,16 +204,6 @@ public class SqlScriptDefinitions : IDisposable
         return null;
     }
 
-    private static void AddParameters(IDbCommand cmd, List<(string Name, object? Value)> parameters)
-    {
-        foreach (var item in parameters)
-        {
-            var param = cmd.CreateParameter();
-            param.ParameterName = item.Name;
-            param.Value = item.Value ?? DBNull.Value;
-            cmd.Parameters.Add(param);
-        }
-    }
 
     private static string BuildConnectionString(string dbType, string host, string username, string password, string options)
     {
@@ -355,18 +282,16 @@ public class SqlScriptDefinitions : IDisposable
         return builder.ToString();
     }
 
-    private static IEnumerable<(string Key, string Value)> ParseOptions(string options)
+    private static IEnumerable<(string Key, string Value)> ParseOptions(string? options)
     {
+        if (string.IsNullOrEmpty(options))
+            yield break;
+
         foreach (var part in options.Split(';', StringSplitOptions.RemoveEmptyEntries))
         {
             var kv = part.Split('=', 2);
             if (kv.Length == 2)
                 yield return (kv[0].Trim(), kv[1].Trim());
         }
-    }
-
-    public void Dispose()
-    {
-        this.internalConnection?.Dispose();
     }
 }

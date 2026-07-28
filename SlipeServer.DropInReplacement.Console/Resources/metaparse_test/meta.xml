@@ -1,0 +1,12 @@
+<meta>
+    <script src="test_s.lua" type="server" />
+    <map src="maps/test.map" dimension="7" />
+    <include resource="getresourceinfo_test" minversion="1.0" maxversion="2.0" />
+    <html src="web/index.html" default="true" raw="false" />
+    <min_mta_version client="1.6.0-9.22279.0" server="1.6.0-9.22279.0" />
+    <aclrequest>
+        <right name="function.startResource" access="true" />
+        <right name="function.stopResource" access="false" />
+    </aclrequest>
+    <sync_map_element_data>false</sync_map_element_data>
+</meta>

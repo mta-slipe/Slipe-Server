@@ -3,6 +3,7 @@ using MySqlConnector;
 using System;
 using System.Data;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace SlipeServer.Scripting.Definitions;
 
@@ -13,6 +14,9 @@ public class DbConnectionHandle(string databaseType, string connectionString) : 
 
     private IDbConnection? connection;
     private readonly Lock connectionLock = new();
+
+    private Task lastTask = Task.CompletedTask;
+    private readonly Lock queueLock = new();
 
     public T Execute<T>(Func<IDbConnection, T> action)
     {
@@ -25,6 +29,19 @@ public class DbConnectionHandle(string databaseType, string connectionString) : 
                 this.connection.Open();
             }
             return action(this.connection);
+        }
+    }
+
+    /// <summary>
+    /// Enqueue an async operation so that operations submitted in order are also executed in order.
+    /// </summary>
+    public Task<T> EnqueueAsync<T>(Func<IDbConnection, T> action)
+    {
+        lock (this.queueLock)
+        {
+            var next = this.lastTask.ContinueWith(_ => Execute(action), TaskContinuationOptions.None);
+            this.lastTask = next;
+            return next;
         }
     }
 
@@ -49,3 +66,4 @@ public class DbConnectionHandle(string databaseType, string connectionString) : 
         }
     }
 }
+

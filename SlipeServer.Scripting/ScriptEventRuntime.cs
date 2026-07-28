@@ -349,7 +349,8 @@ public class ScriptEventRuntime : IScriptEventRuntime
         {
             ScriptExecutionContext.PendingGlobals = new Dictionary<string, object>
             {
-                ["client"] = client
+                ["client"] = client,
+                ["source"] = element
             };
             try
             {

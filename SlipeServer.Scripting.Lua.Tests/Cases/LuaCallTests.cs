@@ -2,6 +2,7 @@ using FluentAssertions;
 using MoonSharp.Interpreter;
 using SlipeServer.Lua;
 using SlipeServer.Scripting.Lua.Tests.Tools;
+using SlipeServer.DropInReplacement.MixedResources;
 using SlipeServer.Server;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Resources;
@@ -17,8 +18,8 @@ public class LuaCallTests
         IMtaServer sut)
     {
         var root = sut.GetRequiredService<IRootElement>();
-        var resource = new Resource(sut, root, "callee");
-        resource.Exports.Add("greet");
+        var resource = new MixedResource(sut, root, "callee");
+        resource.ServerExports.Add("greet");
 
         var calleeEnv = sut.CreateEnvironment("callee", resource);
         calleeEnv.LoadString("function greet() assertPrint('hello from callee') end");
@@ -39,8 +40,8 @@ public class LuaCallTests
         IMtaServer sut)
     {
         var root = sut.GetRequiredService<IRootElement>();
-        var resource = new Resource(sut, root, "callee");
-        resource.Exports.Add("echo");
+        var resource = new MixedResource(sut, root, "callee");
+        resource.ServerExports.Add("echo");
 
         var calleeEnv = sut.CreateEnvironment("callee", resource);
         calleeEnv.LoadString("function echo(a, b) assertPrint(tostring(a) .. ':' .. b) end");
@@ -61,8 +62,8 @@ public class LuaCallTests
         IMtaServer sut)
     {
         var root = sut.GetRequiredService<IRootElement>();
-        var resource = new Resource(sut, root, "callee");
-        resource.Exports.Add("add");
+        var resource = new MixedResource(sut, root, "callee");
+        resource.ServerExports.Add("add");
 
         var calleeEnv = sut.CreateEnvironment("callee", resource);
         calleeEnv.LoadString("function add(a, b) return a + b end");
@@ -81,8 +82,8 @@ public class LuaCallTests
     public void Call_ReturnsMultipleValuesFromExportedFunction(IMtaServer sut)
     {
         var root = sut.GetRequiredService<IRootElement>();
-        var resource = new Resource(sut, root, "callee");
-        resource.Exports.Add("multi");
+        var resource = new MixedResource(sut, root, "callee");
+        resource.ServerExports.Add("multi");
 
         var calleeEnv = sut.CreateEnvironment("callee", resource);
         calleeEnv.LoadString("function multi() return 1, 2, 3 end");
@@ -109,8 +110,8 @@ public class LuaCallTests
         IMtaServer sut)
     {
         var root = sut.GetRequiredService<IRootElement>();
-        var resource = new Resource(sut, root, "callee");
-        // Note: "secret" is NOT added to Exports
+        var resource = new MixedResource(sut, root, "callee");
+        // Note: "secret" is NOT added to ServerExports
 
         var calleeEnv = sut.CreateEnvironment("callee", resource);
         calleeEnv.LoadString("function secret() return 'hidden' end");
@@ -148,8 +149,8 @@ public class LuaCallTests
     {
         var root = sut.GetRequiredService<IRootElement>();
 
-        var calleeResource = new Resource(sut, root, "callee");
-        calleeResource.Exports.Add("whoCalledMe");
+        var calleeResource = new MixedResource(sut, root, "callee");
+        calleeResource.ServerExports.Add("whoCalledMe");
         var calleeEnv = sut.CreateEnvironment("callee", calleeResource);
         calleeEnv.LoadString("""
             function whoCalledMe()
@@ -161,7 +162,7 @@ public class LuaCallTests
             end
             """);
 
-        var callerResource = new Resource(sut, root, "caller");
+        var callerResource = new MixedResource(sut, root, "caller");
         var callerEnv = sut.CreateEnvironment("caller", callerResource);
         callerEnv.LoadString("""
             call(getResourceFromName("callee"), "whoCalledMe")
@@ -178,8 +179,8 @@ public class LuaCallTests
     {
         var root = sut.GetRequiredService<IRootElement>();
 
-        var calleeResource = new Resource(sut, root, "callee");
-        calleeResource.Exports.Add("noop");
+        var calleeResource = new MixedResource(sut, root, "callee");
+        calleeResource.ServerExports.Add("noop");
         var calleeEnv = sut.CreateEnvironment("callee", calleeResource);
         calleeEnv.LoadString("function noop() end");
 
@@ -294,8 +295,8 @@ public class LuaCallTests
         IMtaServer sut)
     {
         var root = sut.GetRequiredService<IRootElement>();
-        var resource = new Resource(sut, root, "callee");
-        resource.Exports.Add("greet");
+        var resource = new MixedResource(sut, root, "callee");
+        resource.ServerExports.Add("greet");
 
         var calleeEnv = sut.CreateEnvironment("callee", resource);
         calleeEnv.LoadString("function greet() assertPrint('hello via exports') end");
@@ -311,8 +312,8 @@ public class LuaCallTests
     public void Exports_ColonSyntax_PassesArgumentsAndReturnsValues(IMtaServer sut)
     {
         var root = sut.GetRequiredService<IRootElement>();
-        var resource = new Resource(sut, root, "callee");
-        resource.Exports.Add("add");
+        var resource = new MixedResource(sut, root, "callee");
+        resource.ServerExports.Add("add");
 
         var calleeEnv = sut.CreateEnvironment("callee", resource);
         calleeEnv.LoadString("function add(a, b) return a + b end");
@@ -336,8 +337,8 @@ public class LuaCallTests
         IMtaServer sut)
     {
         var root = sut.GetRequiredService<IRootElement>();
-        var resource = new Resource(sut, root, "callee");
-        resource.Exports.Add("exportedFunction");
+        var resource = new MixedResource(sut, root, "callee");
+        resource.ServerExports.Add("exportedFunction");
 
         var calleeEnv = sut.CreateEnvironment("callee", resource);
         calleeEnv.LoadString("""
@@ -359,7 +360,7 @@ public class LuaCallTests
         IMtaServer sut)
     {
         var root = sut.GetRequiredService<IRootElement>();
-        var resource = new Resource(sut, root, "callee");
+        var resource = new MixedResource(sut, root, "callee");
 
         var calleeEnv = sut.CreateEnvironment("callee", resource);
         calleeEnv.LoadString("function secret() return 'hidden' end");

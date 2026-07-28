@@ -25,7 +25,7 @@ public class LuaEnvironmentService
         return this.environments.TryGetValue(identifier, out var env) ? env : null;
     }
 
-    public LuaEnvironment? GetEnvironment(Resource resource)
+    public LuaEnvironment? GetEnvironment(IResource resource)
     {
         return this.environments.Values.FirstOrDefault(e => e.ExecutionContext.Owner == resource);
     }

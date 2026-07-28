@@ -65,7 +65,7 @@ public class PlayerScriptDefinitions(IElementCollection elementCollection, IDebu
     [ScriptFunctionDefinition("getPlayerIP")]
     public string GetPlayerIp(Player player)
     {
-        return player.Client.IPAddress?.ToString() ?? "UNKNOWN";
+        return player.Client.IPAddress?.ToString() ?? "0.0.0.0";
     }
 
     [ScriptFunctionDefinition("getPlayerVersion")]
@@ -155,19 +155,24 @@ public class PlayerScriptDefinitions(IElementCollection elementCollection, IDebu
     }
 
     [ScriptFunctionDefinition("setPlayerBlurLevel")]
-    public int SetPlayerBlurLevel(Player player, int level)
+    public bool SetPlayerBlurLevel(Element element, int level)
     {
-        return player.BlurLevel = (byte)level;
+        if (element is Player player)
+        {
+            player.BlurLevel = (byte)level;
+            return true;
+        }
+
+        foreach (var p in elementCollection.GetByType<Player>())
+            p.BlurLevel = (byte)level;
+        return true;
     }
 
 
     [ScriptFunctionDefinition("getPlayerSerial")]
     public string GetPlayerSerial(Player player)
     {
-        if (player.Client.Serial == null)
-            throw new Exception($"Player {player.Name} has null serial. This shouldn't happen");
-
-        return player.Client.Serial;
+        return player.Client.Serial ?? string.Empty;
     }
 
 
@@ -420,5 +425,17 @@ public class PlayerScriptDefinitions(IElementCollection elementCollection, IDebu
     public void SetPlayerVoiceIgnoreFrom(Player player, Element? ignoreFrom)
     {
         player.VoiceIgnoreFrom = ignoreFrom;
+    }
+
+    [ScriptFunctionDefinition("getPlayerUserName")]
+    public string GetPlayerUserName(Player player)
+    {
+        return string.Empty;
+    }
+
+    [ScriptFunctionDefinition("getPlayerCountry")]
+    public string GetPlayerCountry(Player player)
+    {
+        return string.Empty;
     }
 }

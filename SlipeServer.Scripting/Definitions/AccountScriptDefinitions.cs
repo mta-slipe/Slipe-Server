@@ -163,6 +163,13 @@ public class AccountScriptDefinitions(IAccountService accountService)
     public AccountHandle GetPlayerAccount(Player player)
         => accountService.GetPlayerAccount(player);
 
+    [ScriptFunctionDefinition("getPlayerAccountName")]
+    public string? GetPlayerAccountName(Player player)
+    {
+        var account = accountService.GetPlayerAccount(player);
+        return account?.IsGuest == false ? account.Name : null;
+    }
+
     [ScriptFunctionDefinition("getAccountPlayer")]
     public Player? GetAccountPlayer(AccountHandle account)
         => accountService.GetAccountPlayer(account);

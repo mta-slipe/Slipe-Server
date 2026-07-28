@@ -5,10 +5,11 @@ using SlipeServer.Server.Resources;
 
 namespace SlipeServer.DropInReplacement.MixedResources;
 
-public class MixedResource(IMtaServer server, IRootElement root, string name, string? path = null) : Resource(server, root, name, path)
+public class MixedResource(IMtaServer server, IRootElement root, string name, string? path = null) : Resource(server, root, name, path), IServerSideResource
 {
     public List<ServerResourceFile> ServerFiles { get; init; } = [];
     public List<string> ServerExports { get; init; } = [];
+    IReadOnlyList<string> IServerSideResource.ServerExports => this.ServerExports;
     public Dictionary<string, string> Settings { get; init; } = [];
     public List<IncludedResource> IncludedResources { get; init; } = [];
     public List<MapDefinition> Maps { get; init; } = [];

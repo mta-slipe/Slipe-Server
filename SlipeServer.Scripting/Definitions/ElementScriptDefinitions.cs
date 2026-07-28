@@ -59,7 +59,14 @@ public class ElementScriptDefinitions(IElementCollection elementCollection, IMta
     }
 
     [ScriptFunctionDefinition("isElement")]
-    public bool IsElement(Element? element = null) => element != null && !element.IsDestroyed;
+    public bool IsElement(object? obj = null)
+    {
+        if (obj is Element element)
+            return !element.IsDestroyed;
+        if (obj is DbConnectionHandle)
+            return true;
+        return false;
+    }
 
     [ScriptFunctionDefinition("getRootElement")]
     public Element GetRootElement() => server.RootElement;

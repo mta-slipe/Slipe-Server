@@ -12,6 +12,7 @@ public class DropInReplacementResourceService : IDropInReplacementResourceServic
     private readonly IResourceProvider resourceProvider;
     private readonly ILogger<DropInReplacementResourceProvider> logger;
     private readonly IDropInReplacementResourceLuaService luaResourceService;
+    private readonly bool allowMissingIncludes;
     private readonly List<Resource> startedResources = [];
 
     public IReadOnlyCollection<Resource> StartedResources => this.startedResources.AsReadOnly();
@@ -20,12 +21,14 @@ public class DropInReplacementResourceService : IDropInReplacementResourceServic
         IMtaServer server,
         IResourceProvider resourceProvider,
         ILogger<DropInReplacementResourceProvider> logger,
-        IDropInReplacementResourceLuaService luaResourceService)
+        IDropInReplacementResourceLuaService luaResourceService,
+        bool allowMissingIncludes = false)
     {
         this.server = server;
         this.resourceProvider = resourceProvider;
         this.logger = logger;
         this.luaResourceService = luaResourceService;
+        this.allowMissingIncludes = allowMissingIncludes;
 
         this.server.PlayerJoined += HandlePlayerJoin;
     }
@@ -61,10 +64,22 @@ public class DropInReplacementResourceService : IDropInReplacementResourceServic
             var resource = this.resourceProvider.GetResource(name);
 
             if (resource is MixedResource mixedResource)
-            {
-                foreach (var include in mixedResource.IncludedResources)
-                    StartResourceInternal(include.ResourceName, startupStack);
-            }
+                {
+                    foreach (var include in mixedResource.IncludedResources)
+                    {
+                        try
+                        {
+                            StartResourceInternal(include.ResourceName, startupStack);
+                        }
+                        catch (KeyNotFoundException)
+                        {
+                            if (this.allowMissingIncludes)
+                                this.logger.LogWarning("Included resource '{include}' (required by '{name}') was not found and will be skipped.", include.ResourceName, name);
+                            else
+                                throw new MissingResourceException(include.ResourceName, name);
+                        }
+                    }
+                }
 
             this.ResourceStarting?.Invoke(resource);
             resource.Start();

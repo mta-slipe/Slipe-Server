@@ -18,6 +18,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IScriptEventRuntime, ScriptEventRuntime>();
         services.AddSingleton<IScriptInputRuntime, ScriptInputRuntime>();
         services.TryAddSingleton<IAccountService, SqliteAccountService>();
+        services.TryAddSingleton<ISqlExecutor, SqlExecutor>();
 
         if (withAcl)
             services.TryAddSingleton<IAclService, XmlAclService>();

@@ -13,5 +13,6 @@ public class LightTestClient : Client<Player>
     {
         this.Address = address;
         this.ConnectionState = Enums.ClientConnectionState.Joined;
+        this.Serial = $"{address:X16}{address:X16}";
     }
 }
