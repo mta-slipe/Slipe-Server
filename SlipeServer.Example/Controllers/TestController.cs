@@ -27,6 +27,28 @@ public class TestController : BaseLuaController<CustomPlayer>
         this.logger.LogInformation("Instantiating {type}", typeof(TestController));
     }
 
+    [Init]
+    public void Init()
+    {
+        this.logger.LogInformation("Init method called on {type}", nameof(TestController));
+    }
+
+    [AsyncInit]
+    public async Task AsyncInit()
+    {
+        await Task.Delay(1000);
+        this.logger.LogInformation("AsyncInit method called on {type}", nameof(TestController));
+    }
+
+    [AsyncInit]
+    public async Task AsyncInitTwo()
+    {
+        await Task.Delay(500);
+        this.logger.LogInformation("AsyncInitTwo method called on {type} #1", nameof(TestController));
+        await Task.Delay(500);
+        this.logger.LogInformation("AsyncInitTwo method called on {type} #2", nameof(TestController));
+    }
+
     [LuaEvent("BlurLevel")]
     public void HandleblurLevel(int level)
     {

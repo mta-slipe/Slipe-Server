@@ -185,8 +185,8 @@ public class Marker : Element
         CollisionShape colShape = this.markerType switch
         {
             MarkerType.Checkpoint => new CollisionCircle(new Vector2(this.Position.X, this.Position.Y), this.size / 2f),
-            MarkerType.Cylinder => new CollisionTube(this.Position, this.size, this.size <= 1.5f ? this.size + 1f : this.size / 2f),
-            _ => new CollisionSphere(this.Position, this.size),
+            MarkerType.Cylinder => new CollisionTube(this.Position, this.size / 2, this.size <= 1.5f ? this.size + 1f : this.size),
+            _ => new CollisionSphere(this.Position, this.size / 2),
         };
         colShape.ElementEntered += HandleColShapeEntered;
         colShape.ElementLeft += HandleColShapeLeft;

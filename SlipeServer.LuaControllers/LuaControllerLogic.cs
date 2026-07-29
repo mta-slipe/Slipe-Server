@@ -85,6 +85,8 @@ public class LuaControllerLogic
                 {
                     var eventAttributes = method.GetCustomAttributes<LuaEventAttribute>();
                     var timedAttributes = method.GetCustomAttributes<TimedAttribute>();
+                    var initAttribute = method.GetCustomAttribute<InitAttribute>();
+                    var asyncInitAttribute = method.GetCustomAttribute<AsyncInitAttribute>();
 
                     foreach (var attribute in eventAttributes)
                         AddHandler(prefix + attribute.EventName, controllerType, method, controller);
@@ -94,6 +96,28 @@ public class LuaControllerLogic
 
                     if (!eventAttributes.Any() && !timedAttributes.Any())
                         AddHandler(prefix + method.Name, controllerType, method, controller);
+
+                    if (initAttribute != null)
+                    {
+                        var initController = controller ?? (BaseLuaController)this.server.InstantiateScoped(controllerType);
+                        method.Invoke(initController, []);
+                    }
+
+                    if (asyncInitAttribute != null)
+                    {
+                        var initController = controller ?? (BaseLuaController)this.server.InstantiateScoped(controllerType);
+                        _ = Task.Run(async () =>
+                        {
+                            try
+                            {
+                                await (Task)method.Invoke(initController, [])!;
+                            }
+                            catch (Exception e)
+                            {
+                                this.logger.LogError(e, "An error occured while attempting to handle an async init event {Error}", e.Message);
+                            }
+                        });
+                    }
                 }
             }
         }
