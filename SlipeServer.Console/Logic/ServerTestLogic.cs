@@ -88,6 +88,8 @@ public class ServerTestLogic
     private Vehicle? Roadtrain { get; set; }
     private Vehicle? Trailer1 { get; set; }
     private Vehicle? Trailer2 { get; set; }
+    private Vehicle? Dft30 { get; set; }
+    private Vehicle? DftPassenger { get; set; }
     private Ped? Ped { get; set; }
     private Ped? Ped2 { get; set; }
     private Ped? CJ { get; set; }
@@ -296,6 +298,10 @@ public class ServerTestLogic
         this.Club = new Vehicle(589, new Vector3(54, -20, 3)).AssociateWith(this.server);
         this.Slamvan = new Vehicle(535, new Vector3(58, -20, 3)).AssociateWith(this.server);
         this.Remmington = new Vehicle(534, new Vector3(62, -20, 3)).AssociateWith(this.server);
+
+        this.Dft30 = new Vehicle(VehicleModel.DFT30, new Vector3(68, -20, 3)).AssociateWith(this.server);
+        this.DftPassenger = new Vehicle(VehicleModel.Infernus, new Vector3(68, -20, 3)).AssociateWith(this.server);
+        this.DftPassenger.AttachTo(this.Dft30, new Vector3(0, -1.5f, 0.5f), new Vector3(0, 0, 180));
 
         var forklift2 = new Vehicle(530, new Vector3(22, 5, 3)).AssociateWith(this.server);
         var firetruck = new Vehicle(407, new Vector3(30, 5, 3)).AssociateWith(this.server);
