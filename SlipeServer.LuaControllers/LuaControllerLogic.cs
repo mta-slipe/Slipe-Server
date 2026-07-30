@@ -114,7 +114,7 @@ public class LuaControllerLogic
                             }
                             catch (Exception e)
                             {
-                                this.logger.LogError(e, "An error occured while attempting to handle an async init event {Error}", e.Message);
+                                this.logger.LogError(e, "An error occured while attempting to handle an async init event {Error}\n{StackTrace}", e.Message, e.StackTrace);
                             }
                         });
                     }
