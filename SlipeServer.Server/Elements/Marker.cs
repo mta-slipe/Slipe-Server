@@ -148,15 +148,22 @@ public class Marker : Element
     {
         this.Position = position;
         this.MarkerType = markerType;
-        this.PositionChanged += (_, args) =>
-        {
-            if (this.ColShape is CollisionCircle circle)
-                circle.Position2 = new Vector2(args.NewValue.X, args.NewValue.Y);
-            else if (this.ColShape != null)
-                this.ColShape.Position = args.NewValue;
-        };
+
         if (withCollisionShape)
+        {
             this.ColShape = CreateCollisionShape();
+
+            this.PositionChanged += (_, args) =>
+            {
+                if (this.ColShape is CollisionCircle circle)
+                    circle.Position2 = new Vector2(args.NewValue.X, args.NewValue.Y);
+                else if (this.ColShape != null)
+                    this.ColShape.Position = args.NewValue;
+            };
+
+            this.DimensionChanged += (_, args) => this.ColShape?.Dimension = args.NewValue;
+            this.InteriorChanged += (_, args) => this.ColShape?.Interior = args.NewValue;
+        }
     }
 
     public override Marker AssociateWith(IMtaServer server)
@@ -192,8 +199,12 @@ public class Marker : Element
 
             _ => new CollisionSphere(this.Position, this.size / 2),
         };
+
         colShape.ElementEntered += HandleColShapeEntered;
         colShape.ElementLeft += HandleColShapeLeft;
+        colShape.Interior = this.interior;
+        colShape.Dimension = this.dimension;
+
         return colShape;
     }
 
