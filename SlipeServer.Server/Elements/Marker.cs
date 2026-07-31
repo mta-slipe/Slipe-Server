@@ -2,6 +2,7 @@
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
 using System.Drawing;
+using System.Linq;
 using System.Numerics;
 namespace SlipeServer.Server.Elements;
 
@@ -14,7 +15,6 @@ public class Marker : Element
     public override ElementType ElementType => ElementType.Marker;
 
 
-    private IMtaServer? associatedServer;
     public CollisionShape? ColShape { get; private set; }
 
     private MarkerType markerType;
@@ -63,14 +63,14 @@ public class Marker : Element
             SizeChanged?.Invoke(this, args);
 
             if (this.ColShape is CollisionCircle circle)
-                circle.Radius = value;
+                circle.Radius = value / 2;
             else if (this.ColShape is CollisionTube tube)
             {
-                tube.Radius = value;
+                tube.Radius = value / 2 + 0.15f;
                 tube.Height = value <= 1.5f ? value + 1f : value;
             }
             else if (this.ColShape is CollisionSphere sphere)
-                sphere.Radius = value;
+                sphere.Radius = value / 2;
         }
     }
 
@@ -161,7 +161,6 @@ public class Marker : Element
 
     public override Marker AssociateWith(IMtaServer server)
     {
-        this.associatedServer = server;
         base.AssociateWith(server);
         this.ColShape?.AssociateWith(server);
         return this;
@@ -176,8 +175,10 @@ public class Marker : Element
             this.ColShape.Destroy();
         }
         this.ColShape = CreateCollisionShape();
-        if (this.associatedServer != null)
-            this.ColShape.AssociateWith(this.associatedServer);
+
+        foreach (var association in this.Associations.Where(x => x.IsGlobal))
+            if (association.Server != null)
+                this.ColShape.AssociateWith(association.Server);
     }
 
     private CollisionShape CreateCollisionShape()
@@ -185,7 +186,10 @@ public class Marker : Element
         CollisionShape colShape = this.markerType switch
         {
             MarkerType.Checkpoint => new CollisionCircle(new Vector2(this.Position.X, this.Position.Y), this.size / 2f),
-            MarkerType.Cylinder => new CollisionTube(this.Position, this.size / 2, this.size <= 1.5f ? this.size + 1f : this.size),
+
+            // Cylinder col tubes are made slightly larger than the marker itself because the marker's visual rendering is slightly different
+            MarkerType.Cylinder => new CollisionTube(this.Position, this.size / 2 + .15f, this.size <= 1.5f ? this.size + 1f : this.size),
+
             _ => new CollisionSphere(this.Position, this.size / 2),
         };
         colShape.ElementEntered += HandleColShapeEntered;

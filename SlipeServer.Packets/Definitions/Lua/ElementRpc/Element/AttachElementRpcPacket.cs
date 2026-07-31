@@ -30,7 +30,7 @@ public sealed class AttachElementRpcPacket(ElementId elementId, ElementId attach
         builder.Write(this.ElementId);
         builder.Write(this.AttachedToElementId);
         builder.Write(this.OffsetPosition);
-        builder.Write(this.OffsetRotation * 180 / MathF.PI);
+        builder.Write(this.OffsetRotation * MathF.PI / 180);
 
         return builder.Build();
     }
