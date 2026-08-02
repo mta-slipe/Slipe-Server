@@ -88,12 +88,24 @@ public class Resource : IResource
     {
         cancelationToken.ThrowIfCancellationRequested();
 
-        var source = new TaskCompletionSource();
+        var source = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var cleanupDone = 0;
+        var cancellationRegistration = new CancellationTokenRegistration();
 
-        cancelationToken.Register(() =>
+        void Cleanup()
         {
+            if (Interlocked.Exchange(ref cleanupDone, 1) != 0)
+                return;
+
             player.ResourceStarted -= HandleResourceStart;
             player.Disconnected -= HandlePlayerDisconnected;
+            cancellationRegistration.Dispose();
+        }
+
+        cancellationRegistration = cancelationToken.Register(() =>
+        {
+            Cleanup();
+            source.TrySetCanceled(cancelationToken);
         });
 
         player.ResourceStarted += HandleResourceStart;
@@ -104,10 +116,8 @@ public class Resource : IResource
             if (e.NetId != this.NetId)
                 return;
 
-            player.ResourceStarted -= HandleResourceStart;
-            player.Disconnected -= HandlePlayerDisconnected;
-
-            source.SetResult();
+            Cleanup();
+            source.TrySetResult();
         }
 
         void HandlePlayerDisconnected(Player disconnectingPlayer, PlayerQuitEventArgs e)
@@ -115,10 +125,8 @@ public class Resource : IResource
             if(player != disconnectingPlayer)
                 return;
 
-            player.ResourceStarted -= HandleResourceStart;
-            player.Disconnected -= HandlePlayerDisconnected;
-
-            source.SetException(new PlayerQuitDuringResourceStartException(player));
+            Cleanup();
+            source.TrySetException(new PlayerQuitDuringResourceStartException(player));
         }
 
         StartFor(player);
