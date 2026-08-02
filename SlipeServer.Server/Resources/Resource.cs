@@ -3,7 +3,10 @@ using SlipeServer.Packets.Structs;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Extensions;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -115,12 +118,29 @@ public class Resource : IResource
             player.ResourceStarted -= HandleResourceStart;
             player.Disconnected -= HandlePlayerDisconnected;
 
-            source.SetException(new System.Exception("Player disconnected."));
+            source.SetException(new PlayerQuitDuringResourceStartException(player));
         }
 
         StartFor(player);
 
         return source.Task;
+    }
+
+    public async Task<bool> TryStartForAsync(Player player, CancellationToken cancelationToken = default)
+    {
+        try
+        {
+            await StartForAsync(player, cancelationToken);
+            return true;
+        } 
+        catch (PlayerQuitDuringResourceStartException)
+        {
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
 
     public void StopFor(Player player)
@@ -130,8 +150,8 @@ public class Resource : IResource
 
     private byte[] CompressFile(byte[] input)
     {
-        using var output = new System.IO.MemoryStream();
-        using (var compressor = new System.IO.Compression.DeflateStream(output, System.IO.Compression.CompressionLevel.Optimal, true))
+        using var output = new MemoryStream();
+        using (var compressor = new ZLibStream(output, CompressionLevel.Optimal, true))
         {
             compressor.Write(input, 0, input.Length);
         }
@@ -139,11 +159,13 @@ public class Resource : IResource
 
         var result = new byte[] {
                 (byte)((input.Length >> 24) & 0xFF),
+                (byte)((input.Length >> 16) & 0xFF),
                 (byte)((input.Length >> 8) & 0xFF),
-                (byte)((input.Length >> 24) & 0xFF),
                 (byte)(input.Length & 0xFF)
             }.Concat(compressed).ToArray();
 
         return result;
     }
 }
+
+public class PlayerQuitDuringResourceStartException(Player player) : Exception($"Player {player.Name} disconnected during resource start.") { }

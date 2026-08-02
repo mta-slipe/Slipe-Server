@@ -458,6 +458,11 @@ public class ServerTestLogic
 
         this.commandService.AddCommand("night").Triggered += (source, args) => this.worldService.SetTime(0, 0);
         this.commandService.AddCommand("day").Triggered += (source, args) => this.worldService.SetTime(13, 37);
+        this.commandService.AddCommand("meta").Triggered += (source, args) =>
+        {
+            this.thirdTestResource?.StopFor(args.Player);
+            this.thirdTestResource?.StartForAsync(args.Player);
+        };
 
         bool flip = false;
         this.commandService.AddCommand("blip").Triggered += (source, args) =>

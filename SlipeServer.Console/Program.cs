@@ -139,6 +139,7 @@ public partial class Program
                 builder.AddLogic<AttachmentTestLogic>();
                 builder.AddLogic(typeof(TestLogic));
                 builder.AddLogic(typeof(NotVisibleToAllTestLogic));
+                builder.AddLogic(typeof(ColCuboidTestLogic));
                 //builder.AddBehaviour<VelocityBehaviour>();
                 builder.AddBehaviour<EventLoggingBehaviour>();
 
