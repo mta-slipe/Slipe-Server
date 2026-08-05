@@ -66,7 +66,7 @@ public class ConsoleLogger : ILogger
 
     public IDisposable BeginScope<TState>(TState state) where TState : notnull
     {
-        this.prefix += "  ";
+        //this.prefix += "  ";
         //System.Console.WriteLine($"{this.prefix}{state}:");
 
         return new ConsoleLoggerScope(() => this.prefix = this.prefix[^2..]);
