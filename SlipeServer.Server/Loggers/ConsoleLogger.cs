@@ -69,7 +69,8 @@ public class ConsoleLogger : ILogger
         //this.prefix += "  ";
         //System.Console.WriteLine($"{this.prefix}{state}:");
 
-        return new ConsoleLoggerScope(() => this.prefix = this.prefix[^2..]);
+        //return new ConsoleLoggerScope(() => this.prefix = this.prefix[^2..]);
+        return new ConsoleLoggerScope(() => { });
     }
 
     public bool IsEnabled(LogLevel logLevel) => true;
