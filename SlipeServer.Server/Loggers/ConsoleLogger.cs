@@ -7,6 +7,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Collections;
 
 namespace SlipeServer.Server.Loggers;
 
@@ -66,7 +67,7 @@ public class ConsoleLogger : ILogger
     public IDisposable BeginScope<TState>(TState state) where TState : notnull
     {
         this.prefix += "  ";
-        System.Console.WriteLine($"{this.prefix}{state}:");
+        //System.Console.WriteLine($"{this.prefix}{state}:");
 
         return new ConsoleLoggerScope(() => this.prefix = this.prefix[^2..]);
     }

@@ -29,7 +29,7 @@ public class CommandControllerLogic
     public CommandControllerLogic(
         IMtaServer server,
         ICommandService commandService,
-        ILogger logger)
+        ILogger<CommandControllerLogic> logger)
     {
         this.server = server;
         this.commandService = commandService;
@@ -93,7 +93,10 @@ public class CommandControllerLogic
             this.commandService.AddCommand(command, isCaseSensitive).Triggered += (_, args) => HandleCommand(command, args);
         }
 
-        this.handlers[command].Add(new BoundCommand(this.server.Services, command, type, method, controller));
+        this.handlers[command].Add(new BoundCommand(this.server.Services, command, type, method, controller)
+        {
+            Logger = this.logger
+        });
     }
 
     private object? MapParameter(Type targetType, string value)

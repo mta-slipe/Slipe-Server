@@ -34,7 +34,7 @@ public class LuaControllerLogic
         IFromLuaValueMapper fromLuaValueMapper,
         ITimerService timerService,
         IServiceProvider serviceProvider,
-        ILogger logger)
+        ILogger<LuaControllerLogic> logger)
     {
         this.server = server;
         this.luaEventService = luaEventService;
@@ -131,13 +131,20 @@ public class LuaControllerLogic
             this.luaEventService.AddEventHandler(name, HandleLuaEvent);
         }
 
-        this.handlers[name].Add(new BoundEvent(this.server.Services, name, type, method, controller));
+        this.handlers[name].Add(new BoundEvent(this.server.Services, name, type, method, controller)
+        {
+            Logger = this.logger
+        });
     }
 
     private void AddTimedHandler(TimeSpan interval, Type type, MethodInfo method, BaseLuaController? controller)
     {
+        var usesLogScope = method.GetCustomAttribute<WithLogScopeAttribute>() != null;
+
         this.timerService.CreateTimer(() =>
         {
+            IDisposable? logScope = null;
+
             try
             {
                 var instance = controller;
@@ -147,10 +154,23 @@ public class LuaControllerLogic
                     instance = (BaseLuaController)ActivatorUtilities.CreateInstance(scope.ServiceProvider, type);
                 }
 
+                if (usesLogScope)
+                    logScope = this.logger.BeginScope(new Dictionary<string, object>
+                    {
+                        ["LuaController"] = type.Name,
+                        ["ControllerMethod"] = method.Name,
+                        ["ControllerInterval"] = interval
+                    });
+
                 method.Invoke(instance, Array.Empty<object>());
+
             } catch (Exception e)
             {
                 this.logger.LogError(e, "An error occured while handling a timed event");
+            }
+            finally
+            {
+                logScope?.Dispose();
             }
         }, interval);
     }

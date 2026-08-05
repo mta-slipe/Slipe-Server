@@ -28,12 +28,14 @@ public class TestController : BaseLuaController<CustomPlayer>
     }
 
     [Init]
+    [WithLogScope]
     public void Init()
     {
         this.logger.LogInformation("Init method called on {type}", nameof(TestController));
     }
 
     [AsyncInit]
+    [WithLogScope]
     public async Task AsyncInit()
     {
         await Task.Delay(1000);
@@ -41,6 +43,7 @@ public class TestController : BaseLuaController<CustomPlayer>
     }
 
     [AsyncInit]
+    [WithLogScope]
     public async Task AsyncInitTwo()
     {
         await Task.Delay(500);
@@ -50,6 +53,7 @@ public class TestController : BaseLuaController<CustomPlayer>
     }
 
     [LuaEvent("BlurLevel")]
+    [WithLogScope]
     public void HandleblurLevel(int level)
     {
         this.testService.HandleBlurLevel(this.Context.Player, level);
@@ -57,6 +61,7 @@ public class TestController : BaseLuaController<CustomPlayer>
 
     [LuaEvent("Ui")]
     [RateLimit(10_000)]
+    [WithLogScope]
     public void OutputUiStates(UiActiveStateLuaValue uiStates)
     {
         this.chatBox.Output($"{this.Context.Player.Name}'s UI states are:");
@@ -69,38 +74,45 @@ public class TestController : BaseLuaController<CustomPlayer>
     }
 
     [Timed(10_000)]
+    [WithLogScope]
     public void EveryTenSeconds()
     {
         this.logger.LogInformation("{name} method called on {type} at {time}", nameof(EveryTenSeconds), nameof(TestController), DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"));
     }
 
     [Timed(60_000)]
+    [WithLogScope]
     public void EveryMinute()
     {
         this.logger.LogInformation("{name} method called on {type} at {time}", nameof(EveryMinute), nameof(TestController), DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"));
     }
 
+    [WithLogScope]
     public string GetServerTime()
     {
         return DateTime.Now.ToString();
     }
 
+    [WithLogScope]
     public void ThrowError()
     {
         throw new Exception();
     }
 
+    [WithLogScope]
     public void OutputCursorPosition(Vector2 position)
     {
         this.chatBox.Output($"{this.Context.Player.Name}'s cursor is at  {position}");
     }
 
+    [WithLogScope]
     public void EnumTest(WeaponId weapon, BodyPart bodyPart)
     {
         this.chatBox.Output($"Weapon : {weapon}");
         this.chatBox.Output($"BodyPart : {bodyPart}");
     }
 
+    [WithLogScope]
     public void GenericTest(GenericDto<string> dto)
     {
         this.chatBox.Output(dto.Value);

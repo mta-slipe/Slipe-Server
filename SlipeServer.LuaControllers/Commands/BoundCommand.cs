@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using SlipeServer.LuaControllers.Attributes;
 using SlipeServer.Server.Elements;
 using System.Reflection;
@@ -19,15 +20,34 @@ public class BoundCommand(
     public MethodInfo Method { get; set; } = method;
     public TimeSpan? RateLimit { get; set; } = method.GetCustomAttribute<RateLimitAttribute>()?.TimeSpan;
 
+    public bool WithLogScope { get; set; } = method.GetCustomAttribute<WithLogScopeAttribute>() != null;
+    public ILogger? Logger { get; set; }
+
     public void HandleCommand(Player player, string command, IEnumerable<object?> args)
     {
-        var controller = this.ControllerInstance;
-        if (controller == null)
+        IDisposable? logScope = null;
+        try
         {
-            var scope = this.ServiceProvider.CreateScope();
-            controller = (BaseCommandController)ActivatorUtilities.CreateInstance(scope.ServiceProvider, this.ControllerType);
-        }
+            var controller = this.ControllerInstance;
+            if (controller == null)
+            {
+                var scope = this.ServiceProvider.CreateScope();
+                controller = (BaseCommandController)ActivatorUtilities.CreateInstance(scope.ServiceProvider, this.ControllerType);
+            }
 
-        controller.HandleCommand(player, command, args, (values) => this.Method.Invoke(controller, values.ToArray()));
+            if (this.WithLogScope)
+                logScope = this.Logger?.BeginScope(new List<KeyValuePair<string, object?>>()
+                {
+                    new("CommandController", this.Method.DeclaringType?.Name),
+                    new("CommandTriggered", command),
+                    new("CommandTriggeredBy", player.Name)
+                });
+
+            controller.HandleCommand(player, command, args, (values) => this.Method.Invoke(controller, values.ToArray()));
+        }
+        finally
+        {
+            logScope?.Dispose();
+        }
     }
 }
