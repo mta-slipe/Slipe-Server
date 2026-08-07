@@ -24,7 +24,7 @@ public class PhysicsTestLogic
     private readonly IElementCollection elementCollection;
     private readonly PhysicsService physicsService;
     private readonly ICommandService commandService;
-    private readonly ILogger logger;
+    private readonly ILogger<PhysicsTestLogic> logger;
 
     private PhysicsWorld? physicsWorld;
     private StaticPhysicsElement? ufoInnMesh1;
@@ -43,7 +43,7 @@ public class PhysicsTestLogic
         IElementCollection elementCollection,
         PhysicsService physicsService,
         ICommandService commandService,
-        ILogger logger)
+        ILogger<PhysicsTestLogic> logger)
     {
         this.server = server;
         this.elementCollection = elementCollection;

@@ -23,7 +23,7 @@ public class LuaControllerLogic
     private readonly IFromLuaValueMapper fromLuaValueMapper;
     private readonly ITimerService timerService;
     private readonly IServiceProvider serviceProvider;
-    private readonly ILogger logger;
+    private readonly ILogger<LuaControllerLogic> logger;
     private readonly Dictionary<string, List<BoundEvent>> handlers = [];
     private readonly ConcurrentDictionary<Player, ConcurrentDictionary<BoundEvent, DateTime>> rateLimitTimes = [];
 

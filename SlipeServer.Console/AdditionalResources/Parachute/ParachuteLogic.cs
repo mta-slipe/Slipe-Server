@@ -11,13 +11,13 @@ public class ParachuteLogic
 {
     private readonly IMtaServer server;
     private readonly ILuaEventService luaEventService;
-    private readonly ILogger logger;
+    private readonly ILogger<ParachuteLogic> logger;
     private readonly IElementCollection elementCollection;
     private readonly ParachuteResource resource;
 
     public ParachuteLogic(IMtaServer server,
         ILuaEventService luaEventService,
-        ILogger logger,
+        ILogger<ParachuteLogic> logger,
         IElementCollection elementCollection)
     {
         this.server = server;

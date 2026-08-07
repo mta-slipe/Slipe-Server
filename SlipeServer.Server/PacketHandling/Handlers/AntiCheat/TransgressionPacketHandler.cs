@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.AntiCheat;
 
-public class TransgressionPacketHandler(Configuration configuration, ILogger logger) : IPacketHandler<TransgressionPacket>
+public class TransgressionPacketHandler(Configuration configuration, ILogger<TransgressionPacketHandler> logger) : IPacketHandler<TransgressionPacket>
 {
     public PacketId PacketId => PacketId.PACKET_ID_PLAYER_TRANSGRESSION;
 
@@ -16,7 +16,7 @@ public class TransgressionPacketHandler(Configuration configuration, ILogger log
         if (!configuration.AntiCheat.DisabledAntiCheat.Contains(acRule))
         {
             client.Player.Kick(packet.Message);
-            logger.LogWarning($"{client.Player.Name} has trigger anticheat detection for {acRule} {packet.Message}");
+            logger.LogWarning("{Player} has trigger anticheat detection for {Rule} {Message}", client.Player.Name, acRule, packet.Message);
         }
     }
 }

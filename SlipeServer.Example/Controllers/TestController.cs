@@ -17,9 +17,9 @@ public class TestController : BaseLuaController<CustomPlayer>
 {
     private readonly IChatBox chatBox;
     private readonly TestService testService;
-    private readonly ILogger logger;
+    private readonly ILogger<TestController> logger;
 
-    public TestController(IChatBox chatBox, ILogger logger, TestService testService)
+    public TestController(IChatBox chatBox, ILogger<TestController> logger, TestService testService)
     {
         this.chatBox = chatBox;
         this.testService = testService;

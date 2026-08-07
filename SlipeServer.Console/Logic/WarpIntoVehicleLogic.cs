@@ -8,10 +8,10 @@ namespace SlipeServer.Console.Logic;
 
 public class WarpIntoVehicleLogic
 {
-    private readonly ILogger logger;
+    private readonly ILogger<WarpIntoVehicleLogic> logger;
 
     public WarpIntoVehicleLogic(
-        ILogger logger,
+        ILogger<WarpIntoVehicleLogic> logger,
         ICommandService commandService)
     {
         this.logger = logger;

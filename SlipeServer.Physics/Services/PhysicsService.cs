@@ -9,7 +9,7 @@ using System.Numerics;
 
 namespace SlipeServer.Physics.Services;
 
-public partial class PhysicsService(ILogger logger)
+public partial class PhysicsService(ILogger<PhysicsService> logger)
 {
     public PhysicsWorld CreateEmptyPhysicsWorld(Vector3? gravity = null)
     {

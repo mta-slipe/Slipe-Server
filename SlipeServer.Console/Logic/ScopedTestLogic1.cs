@@ -5,7 +5,7 @@ namespace SlipeServer.Console.Logic;
 public class SampleScopedService
 {
     public static int _counter;
-    public SampleScopedService(ILogger logger)
+    public SampleScopedService(ILogger<SampleScopedService> logger)
     {
         Interlocked.Increment(ref _counter);
         logger.LogInformation("SampleScopedService instance id {0} created", _counter);
@@ -14,7 +14,7 @@ public class SampleScopedService
 
 public class ScopedTestLogic1
 {
-    public ScopedTestLogic1(ILogger logger, SampleScopedService sampleScopedService1, SampleScopedService sampleScopedService2)
+    public ScopedTestLogic1(ILogger<ScopedTestLogic1> logger, SampleScopedService sampleScopedService1, SampleScopedService sampleScopedService2)
     {
         logger.LogInformation("ScopedTestLogic1: {counter} {areServicesTheSame}", SampleScopedService._counter, sampleScopedService1 == sampleScopedService2);
     }
@@ -22,7 +22,7 @@ public class ScopedTestLogic1
 
 public class ScopedTestLogic2
 {
-    public ScopedTestLogic2(ILogger logger, SampleScopedService sampleScopedService1, SampleScopedService sampleScopedService2)
+    public ScopedTestLogic2(ILogger<ScopedTestLogic2> logger, SampleScopedService sampleScopedService1, SampleScopedService sampleScopedService2)
     {
         logger.LogInformation("ScopedTestLogic2: {counter} {areServicesTheSame}", SampleScopedService._counter, sampleScopedService1 == sampleScopedService2);
     }

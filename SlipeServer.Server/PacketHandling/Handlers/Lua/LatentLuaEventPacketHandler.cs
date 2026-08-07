@@ -17,7 +17,7 @@ struct LatentTransfer(ushort id, IClient source, LatentEventCategory category)
 }
 
 public class LatentLuaEventPacketHandler(
-    ILogger logger,
+    ILogger<LatentLuaEventPacketHandler> logger,
     IMtaServer server
     ) : IPacketHandler<LatentLuaEventPacket>
 {

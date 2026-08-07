@@ -11,7 +11,7 @@ public class AseBehaviour
 {
     private readonly List<AseUdpListener> aseListeners = new();
 
-    public AseBehaviour(IAseQueryService aseQueryService, Configuration configuration, ILogger logger)
+    public AseBehaviour(IAseQueryService aseQueryService, Configuration configuration, ILogger<AseBehaviour> logger)
     {
         this.aseListeners.Add(new AseUdpListener(aseQueryService, logger, (ushort)(configuration.Port + 123), false));
         if (configuration.DebugPort.HasValue)

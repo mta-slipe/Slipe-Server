@@ -22,7 +22,7 @@ public class CommandControllerLogic
 {
     private readonly IMtaServer server;
     private readonly ICommandService commandService;
-    private readonly ILogger logger;
+    private readonly ILogger<CommandControllerLogic> logger;
     private readonly Dictionary<string, List<BoundCommand>> handlers = [];
     private readonly ConcurrentDictionary<Player, ConcurrentDictionary<BoundCommand, DateTime>> rateLimitTimes = [];
 

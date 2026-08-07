@@ -3,7 +3,7 @@ using SlipeServer.Scripting;
 
 namespace SlipeServer.Console.LuaDefinitions;
 
-public class TestDefinition(ILogger logger)
+public class TestDefinition(ILogger<TestDefinition> logger)
 {
     [ScriptFunctionDefinition("callbackEqual")]
     public bool CallbackEqual(ScriptCallbackDelegateWrapper a, ScriptCallbackDelegateWrapper b)

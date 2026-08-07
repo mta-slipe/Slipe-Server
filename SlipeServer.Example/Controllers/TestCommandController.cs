@@ -14,9 +14,9 @@ public class TestCommandController : BaseCommandController<CustomPlayer>
     private readonly IChatBox chatBox;
     private readonly IElementCollection elementCollection;
     private readonly IBanService banService;
-    private readonly ILogger logger;
+    private readonly ILogger<TestCommandController> logger;
 
-    public TestCommandController(IChatBox chatBox, IElementCollection elementCollection, IBanService banService, ILogger logger)
+    public TestCommandController(IChatBox chatBox, IElementCollection elementCollection, IBanService banService, ILogger<TestCommandController> logger)
     {
         this.chatBox = chatBox;
         this.elementCollection = elementCollection;

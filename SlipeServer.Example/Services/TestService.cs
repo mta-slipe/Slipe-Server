@@ -4,9 +4,9 @@ namespace SlipeServer.Example.Services;
 
 public class TestService
 {
-    private readonly ILogger logger;
+    private readonly ILogger<TestService> logger;
 
-    public TestService(ILogger logger)
+    public TestService(ILogger<TestService> logger)
     {
         this.logger = logger;
         logger.LogInformation("TestService instantiated");

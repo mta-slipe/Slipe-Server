@@ -18,10 +18,10 @@ public class PacketReplayerService
 
     private readonly HashSet<Player> pureSyncCapturingPlayers = [];
     private readonly HashSet<Player> keySyncCapturingPlayers = [];
-    private readonly ILogger logger;
+    private readonly ILogger<PacketReplayerService> logger;
     private readonly IChatBox chatBox;
 
-    public PacketReplayerService(IMtaServer server, ILogger logger, IChatBox chatBox)
+    public PacketReplayerService(IMtaServer server, ILogger<PacketReplayerService> logger, IChatBox chatBox)
     {
         this.logger = logger;
         this.chatBox = chatBox;

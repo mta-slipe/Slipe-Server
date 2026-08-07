@@ -16,14 +16,14 @@ public class BasicHttpServer : IResourceServer
     private readonly HttpListener httpListener;
     private readonly string rootDirectory;
     private readonly Configuration configuration;
-    private readonly ILogger logger;
+    private readonly ILogger<BasicHttpServer> logger;
     private readonly string httpAddress;
     private readonly string listenerHost;
     private readonly Dictionary<string, byte[]> additionalFiles;
 
     private bool isRunning;
 
-    public BasicHttpServer(Configuration configuration, ILogger logger)
+    public BasicHttpServer(Configuration configuration, ILogger<BasicHttpServer> logger)
     {
         // If the configured host is '*' or '0.0.0.0', HttpListener requires the '+' wildcard for prefixes
         this.listenerHost = configuration.HttpHost == "*" || configuration.HttpHost == "0.0.0.0" ? "+" : configuration.HttpHost;

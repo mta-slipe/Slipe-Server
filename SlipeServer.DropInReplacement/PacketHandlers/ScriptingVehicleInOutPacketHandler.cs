@@ -17,7 +17,7 @@ namespace SlipeServer.DropInReplacement.PacketHandlers;
 public class ScriptingVehicleInOutPacketHandler(
     IElementCollection elementCollection,
     IMtaServer server,
-    ILogger logger,
+    ILogger<ScriptingVehicleInOutPacketHandler> logger,
     IScriptEventRuntime eventRuntime
     ) : VehicleInOutPacketHandler(elementCollection, server, logger)
 {

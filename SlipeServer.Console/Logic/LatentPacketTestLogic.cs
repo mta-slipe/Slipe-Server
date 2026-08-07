@@ -6,11 +6,11 @@ namespace SlipeServer.Console.Logic;
 
 public class LatentPacketTestLogic
 {
-    private readonly ILogger logger;
+    private readonly ILogger<LatentPacketTestLogic> logger;
 
     public LatentPacketTestLogic(
         ILuaEventService luaService,
-        ILogger logger
+        ILogger<LatentPacketTestLogic> logger
     )
     {
         this.logger = logger;

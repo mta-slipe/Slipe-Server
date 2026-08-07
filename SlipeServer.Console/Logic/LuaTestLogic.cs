@@ -19,7 +19,7 @@ public class LuaTestLogic
     private readonly IScriptEventRuntime eventRuntime;
     private readonly LuaService luaService;
     private readonly ICommandService commandService;
-    private readonly ILogger logger;
+    private readonly ILogger<LuaTestLogic> logger;
     private readonly IResourceProvider resourceProvider;
 
     public LuaTestLogic(
@@ -28,7 +28,7 @@ public class LuaTestLogic
         IScriptEventRuntime eventRuntime, 
         LuaService luaService,
         ICommandService commandService,
-        ILogger logger,
+        ILogger<LuaTestLogic> logger,
         IResourceProvider resourceProvider
         )
     {

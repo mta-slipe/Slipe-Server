@@ -9,7 +9,7 @@ namespace SlipeServer.Server.PacketHandling.Handlers.Lua;
 
 public class LuaEventPacketHandler(
     IElementCollection elementCollection,
-    ILogger logger,
+    ILogger<LuaEventPacketHandler> logger,
     IMtaServer server
     ) : IPacketHandler<LuaEventPacket>
 {

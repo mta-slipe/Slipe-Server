@@ -6,7 +6,7 @@ using System.Drawing;
 
 namespace SlipeServer.Scripting.Definitions;
 
-public class OutputScriptDefinitions(IDebugLog debugLog, ILogger logger, IChatBox chatBox, IClientConsole clientConsole)
+public class OutputScriptDefinitions(IDebugLog debugLog, ILogger<OutputScriptDefinitions> logger, IChatBox chatBox, IClientConsole clientConsole)
 {
     [ScriptFunctionDefinition("outputDebugString")]
     public void OutputDebugString(string message, DebugLevel level = DebugLevel.Information, int red = 255, int green = 255, int blue = 255)

@@ -47,7 +47,7 @@ public class ServerTestLogic
     private readonly IRootElement root;
     private readonly IGameWorld worldService;
     private readonly IDebugLog debugLog;
-    private readonly ILogger logger;
+    private readonly ILogger<ServerTestLogic> logger;
     private readonly IChatBox chatBox;
     private readonly IClientConsole console;
     private readonly ILuaEventService luaService;
@@ -101,7 +101,7 @@ public class ServerTestLogic
         IRootElement root,
         IGameWorld world,
         IDebugLog debugLog,
-        ILogger logger,
+        ILogger<ServerTestLogic> logger,
         IChatBox chatBox,
         IClientConsole console,
         ILuaEventService luaService,

@@ -13,9 +13,9 @@ namespace SlipeServer.Server.Behaviour;
 public class PlayerJoinElementBehaviour
 {
     private readonly IElementCollection elementCollection;
-    private readonly ILogger logger;
+    private readonly ILogger<PlayerJoinElementBehaviour> logger;
 
-    public PlayerJoinElementBehaviour(IElementCollection elementCollection, IMtaServer server, ILogger logger)
+    public PlayerJoinElementBehaviour(IElementCollection elementCollection, IMtaServer server, ILogger<PlayerJoinElementBehaviour> logger)
     {
         this.elementCollection = elementCollection;
         this.logger = logger;

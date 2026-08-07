@@ -14,7 +14,7 @@ using System.Linq;
 namespace SlipeServer.Server.PacketHandling.Handlers.Player.Sync;
 
 public class PlayerPureSyncPacketHandler(
-    ILogger logger,
+    ILogger<PlayerPureSyncPacketHandler> logger,
     ISyncHandlerMiddleware<PlayerPureSyncPacket> pureSyncMiddleware,
     IElementCollection elementCollection,
     Configuration configuration

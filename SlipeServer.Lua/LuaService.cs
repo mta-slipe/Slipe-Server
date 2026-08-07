@@ -17,7 +17,7 @@ namespace SlipeServer.Lua;
 
 public class LuaService(
     IMtaServer server,
-    ILogger logger,
+    ILogger<LuaService> logger,
     IElementCollection elementCollection,
     IRootElement root,
     ScriptTransformationPipeline scriptTransformationPipeline,

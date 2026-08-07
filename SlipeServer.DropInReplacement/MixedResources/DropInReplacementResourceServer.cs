@@ -15,7 +15,7 @@ public class DropInReplacementResourceServer : IResourceServer
     private readonly HttpListener httpListener;
     private readonly string rootDirectory;
     private readonly Configuration configuration;
-    private readonly ILogger logger;
+    private readonly ILogger<DropInReplacementResourceServer> logger;
     private readonly IResourceProvider resourceProvider;
     private readonly string httpAddress;
     private readonly string listenerHost;
@@ -23,7 +23,7 @@ public class DropInReplacementResourceServer : IResourceServer
 
     private bool isRunning;
 
-    public DropInReplacementResourceServer(Configuration configuration, ILogger logger, IResourceProvider resourceProvider)
+    public DropInReplacementResourceServer(Configuration configuration, ILogger<DropInReplacementResourceServer> logger, IResourceProvider resourceProvider)
     {
         // If the configured host is '*' or '0.0.0.0', HttpListener requires the '+' wildcard for prefixes
         this.listenerHost = configuration.HttpHost == "*" || configuration.HttpHost == "0.0.0.0" ? "+" : configuration.HttpHost;

@@ -8,11 +8,11 @@ namespace SlipeServer.Console.Logic;
 
 public class NotVisibleToAllTestLogic
 {
-    private readonly ILogger logger;
+    private readonly ILogger<NotVisibleToAllTestLogic> logger;
     private readonly WorldObject invisibleWorldObject;
 
     public NotVisibleToAllTestLogic(
-        ILogger logger,
+        ILogger<NotVisibleToAllTestLogic> logger,
         CommandService commandService,
         IMtaServer server)
     {

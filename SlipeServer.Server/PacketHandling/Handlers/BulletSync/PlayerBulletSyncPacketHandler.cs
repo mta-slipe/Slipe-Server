@@ -12,7 +12,7 @@ namespace SlipeServer.Server.PacketHandling.Handlers.BulletSync;
 
 public class PlayerBulletSyncPacketHandler(
     ISyncHandlerMiddleware<PlayerBulletSyncPacket> middleware,
-    ILogger logger,
+    ILogger<PlayerBulletSyncPacketHandler> logger,
     IElementCollection elementCollection
     ) : IPacketHandler<PlayerBulletSyncPacket>
 {
