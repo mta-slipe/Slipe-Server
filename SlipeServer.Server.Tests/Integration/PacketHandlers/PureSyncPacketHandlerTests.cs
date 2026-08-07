@@ -23,7 +23,7 @@ public class PureSyncPacketHandlerTests
         var sourcePlayer = server.AddFakePlayer();
         var otherPlayers = new TestingPlayer[] { server.AddFakePlayer(), server.AddFakePlayer(), server.AddFakePlayer() };
 
-        Mock<ILogger> loggerMock = new();
+        Mock<ILogger<PlayerPureSyncPacketHandler>> loggerMock = new();
 
         Mock<ISyncHandlerMiddleware<PlayerPureSyncPacket>> middlewareMock = new();
         middlewareMock.Setup(x => x.GetPlayersToSyncTo(sourcePlayer, It.IsAny<PlayerPureSyncPacket>())).Returns(otherPlayers);
@@ -48,7 +48,7 @@ public class PureSyncPacketHandlerTests
         var sourcePlayer = server.AddFakePlayer();
         var otherPlayers = new TestingPlayer[] { server.AddFakePlayer(), server.AddFakePlayer(), server.AddFakePlayer() };
 
-        Mock<ILogger> loggerMock = new();
+        Mock<ILogger<PlayerPureSyncPacketHandler>> loggerMock = new();
 
         Mock<ISyncHandlerMiddleware<PlayerPureSyncPacket>> middlewareMock = new();
         middlewareMock.Setup(x => x.GetPlayersToSyncTo(sourcePlayer, It.IsAny<PlayerPureSyncPacket>())).Returns(otherPlayers);
@@ -71,7 +71,7 @@ public class PureSyncPacketHandlerTests
         var server = new TestingServer();
         var sourcePlayer = server.AddFakePlayer();
 
-        Mock<ILogger> loggerMock = new();
+        Mock<ILogger<PlayerPureSyncPacketHandler>> loggerMock = new();
         Mock<ISyncHandlerMiddleware<PlayerPureSyncPacket>> middlewareMock = new();
         Mock<IElementCollection> elementCollectionMock = new();
 

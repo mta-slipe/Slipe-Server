@@ -27,7 +27,7 @@ public class VehicleInOutCancellationTests
         new(
             sut.GetRequiredService<IElementCollection>(),
             sut,
-            sut.GetRequiredService<ILogger>(),
+            sut.GetRequiredService<ILogger<ScriptingVehicleInOutPacketHandler>>(),
             sut.GetRequiredService<IScriptEventRuntime>()
         );
 

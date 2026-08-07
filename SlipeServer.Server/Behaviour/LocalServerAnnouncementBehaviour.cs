@@ -14,9 +14,9 @@ namespace SlipeServer.Server.Behaviour;
 public class LocalServerAnnouncementBehaviour
 {
     private readonly Configuration configuration;
-    private readonly ILogger logger;
+    private readonly ILogger<LocalServerAnnouncementBehaviour> logger;
 
-    public LocalServerAnnouncementBehaviour(Configuration configuration, ILogger logger)
+    public LocalServerAnnouncementBehaviour(Configuration configuration, ILogger<LocalServerAnnouncementBehaviour> logger)
     {
         this.configuration = configuration;
         this.logger = logger;
