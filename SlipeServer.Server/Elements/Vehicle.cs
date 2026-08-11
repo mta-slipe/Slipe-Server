@@ -886,7 +886,7 @@ public class Vehicle : Element
 
             foreach (var occupant in this.Occupants)
             {
-                RemovePassenger(occupant.Value);
+                RemovePassenger(occupant.Value, false);
             }
             this.occupants.Clear();
             return true;

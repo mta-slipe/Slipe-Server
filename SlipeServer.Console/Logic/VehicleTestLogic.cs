@@ -112,5 +112,13 @@ public class VehicleTestLogic
 
             args.Player.Vehicle.Health = health;
         };
+
+        this.commandService.AddCommand("destroyvehicle").Triggered += (source, args) =>
+        {
+            if (args.Player.Vehicle == null)
+                return;
+
+            args.Player.Vehicle.Destroy();
+        };
     }
 }
