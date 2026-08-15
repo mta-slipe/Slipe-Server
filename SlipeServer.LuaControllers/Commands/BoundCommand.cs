@@ -20,7 +20,10 @@ public class BoundCommand(
     public MethodInfo Method { get; set; } = method;
     public TimeSpan? RateLimit { get; set; } = method.GetCustomAttribute<RateLimitAttribute>()?.TimeSpan;
 
-    public bool WithLogScope { get; set; } = method.GetCustomAttribute<WithLogScopeAttribute>() != null;
+    public bool WithLogScope { get; set; } = (
+        method.GetCustomAttribute<WithLogScopeAttribute>() ??
+        method.DeclaringType?.GetCustomAttribute<WithLogScopeAttribute>()) != null;
+
     public ILogger? Logger { get; set; }
 
     public void HandleCommand(Player player, string command, IEnumerable<object?> args)
