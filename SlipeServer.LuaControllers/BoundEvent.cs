@@ -20,8 +20,15 @@ public class BoundEvent(
     public BaseLuaController? ControllerInstance { get; set; } = controllerInstance;
     public MethodInfo Method { get; set; } = method;
     public TimeSpan? RateLimit { get; set; } = method.GetCustomAttribute<RateLimitAttribute>()?.TimeSpan;
-    public bool WithLogScope { get; set; } = method.GetCustomAttribute<WithLogScopeAttribute>() != null;
-    public bool SurpressErrorResponse { get; set; } = method.GetCustomAttribute<SurpressErrorResponseAttribute>() != null;
+
+    public bool WithLogScope { get; set; } = (
+        method.GetCustomAttribute<WithLogScopeAttribute>() ?? 
+        method.DeclaringType?.GetCustomAttribute<WithLogScopeAttribute>()) != null;
+
+    public bool SurpressErrorResponse { get; set; } = (
+        method.GetCustomAttribute<SurpressErrorResponseAttribute>() ??
+        method.DeclaringType?.GetCustomAttribute<SurpressErrorResponseAttribute>()) != null;
+
     public ILogger? Logger { get; set; }
 
     public LuaResult? HandleEvent(LuaEvent luaEvent, object?[] parameters)

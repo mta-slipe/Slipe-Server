@@ -117,4 +117,19 @@ public class TestController : BaseLuaController<CustomPlayer>
     {
         this.chatBox.Output(dto.Value);
     }
+
+    [LuaEvent("Error")]
+    [WithLogScope]
+    public void Error()
+    {
+        throw new Exception();
+    }
+
+    [LuaEvent("SecretError")]
+    [SurpressErrorResponse]
+    [WithLogScope]
+    public void SecretError()
+    {
+        throw new Exception();
+    }
 }
