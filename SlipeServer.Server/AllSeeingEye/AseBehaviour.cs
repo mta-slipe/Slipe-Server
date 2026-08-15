@@ -9,12 +9,12 @@ namespace SlipeServer.Server.AllSeeingEye;
 /// </summary>
 public class AseBehaviour
 {
-    private readonly List<AseUdpListener> aseListeners = new();
+    private readonly List<AseUdpListener> aseListeners = [];
 
     public AseBehaviour(IAseQueryService aseQueryService, Configuration configuration, ILogger<AseBehaviour> logger)
     {
-        this.aseListeners.Add(new AseUdpListener(aseQueryService, logger, (ushort)(configuration.Port + 123), false));
+        this.aseListeners.Add(new AseUdpListener(aseQueryService, logger, (ushort)(configuration.Port + 123), false, configuration.BlockedAseIpAddresses));
         if (configuration.DebugPort.HasValue)
-            this.aseListeners.Add(new AseUdpListener(aseQueryService, logger, (ushort)(configuration.DebugPort + 123), true));
+            this.aseListeners.Add(new AseUdpListener(aseQueryService, logger, (ushort)(configuration.DebugPort + 123), true, configuration.BlockedAseIpAddresses));
     }
 }

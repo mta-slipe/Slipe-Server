@@ -15,16 +15,18 @@ public class AseUdpListener
     private const int cacheTime = 10 * 1000;
     private readonly IAseQueryService aseQueryService;
     private readonly ILogger logger;
+    private readonly IEnumerable<IPAddress> blockedIpAddresses;
 
     private readonly Cache<byte[]> fullCache;
     private readonly Cache<byte[]> lightCache;
     private readonly Cache<byte[]> xFireCache;
     private readonly Dictionary<string, string> rules = new();
 
-    public AseUdpListener(IAseQueryService aseQueryService, ILogger logger, ushort port, bool isDebug)
+    public AseUdpListener(IAseQueryService aseQueryService, ILogger logger, ushort port, bool isDebug, IEnumerable<IPAddress> blockedIpAddresses)
     {
         this.aseQueryService = aseQueryService;
         this.logger = logger;
+        this.blockedIpAddresses = blockedIpAddresses;
 
         this.lightCache = new Cache<byte[]>(() => 
             aseQueryService.QueryLight(port, isDebug ? Enums.VersionType.Custom : Enums.VersionType.Release)
@@ -55,6 +57,12 @@ public class AseUdpListener
                 AseQueryType queryType = (AseQueryType)(message[0]);
 
                 this.logger.LogTrace("ASE request received for query type {aseQueryType}", queryType);
+
+                if (source?.Address != null && this.blockedIpAddresses.Contains(source.Address))
+                {
+                    this.logger.LogTrace("Blocked ASE request from {ipAddress}", source.Address);
+                    return;
+                }
 
                 byte[] data = queryType switch
                 {

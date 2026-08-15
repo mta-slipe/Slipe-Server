@@ -1,7 +1,10 @@
 ﻿using SlipeServer.Net.Wrappers.Enums;
 using SlipeServer.Server.Enums;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 
 namespace SlipeServer.Server;
 
@@ -168,6 +171,8 @@ public class Configuration
     public SyncIntervals SyncIntervals { get; set; } = new();
 
     public DebugConfiguration Debug { get; set; } = new();
+
+    public IEnumerable<IPAddress> BlockedAseIpAddresses { get; set; } = [];
 }
 
 /// <summary>
