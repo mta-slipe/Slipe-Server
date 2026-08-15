@@ -11,10 +11,10 @@ public class PacketReaderTests
     [Fact]
     public void WriteIntTest()
     {
-        var reader = new PacketReader(new byte[]
-        {
+        var reader = new PacketReader(
+        [
                 0, 0x10, 0, 0
-        });
+        ]);
 
         var value = reader.GetInt16();
 
@@ -83,14 +83,14 @@ public class PacketReaderTests
     [Fact]
     public void ReadBitsTest()
     {
-        var reader = new PacketReader(new byte[] { 0b11001010 });
+        var reader = new PacketReader([0b11001010]);
 
         var value = reader.GetBits(8);
 
-        value.Should().Equal(new bool[]
-        {
+        value.Should().Equal(
+        [
                 true, true, false, false, true, false, true, false
-        });
+        ]);
     }
 
     [Theory]
@@ -134,6 +134,19 @@ public class PacketReaderTests
         new byte[] { one, two, three }.Should().Equal(expectedOutput);
     }
 
+    [Fact]
+    public void AlignToByteBoundaryDoesNotCauseMisalignedFastPathByteRead()
+    {
+        var reader = new PacketReader([0b10000000, 0b10101010, 0b11001100, 0b00000000]);
+
+        reader.GetByteCapped(1);
+        reader.AlignToByteBoundary();
+        reader.GetBits(7);
+
+        var value = reader.GetByte();
+
+        value.Should().Be(0b01100110);
+    }
 
     [Theory]
     [InlineData(new byte[] { 0b10000000, 0b10000000, 0b10000000 }, new byte[] { 128, 128, 128 })]

@@ -209,5 +209,6 @@ public class PacketReader(byte[] data)
 
         this.byteIndex = 128;
         this.dataIndex++;
+        this.Counter += 8 - (this.Counter % 8);
     }
 }
