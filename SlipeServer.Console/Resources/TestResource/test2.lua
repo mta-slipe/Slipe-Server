@@ -4,6 +4,18 @@ addCommandHandler("blurlevel", function()
 	triggerServerEvent("SlipeServer.Test.BlurLevel", root, getBlurLevel())
 end)
 
+addCommandHandler("error", function()
+	triggerServerEvent("SlipeServer.Test.Error", root)
+end)
+
+addCommandHandler("secreterror", function()
+	triggerServerEvent("SlipeServer.Test.SecretError", root)
+end)
+
+addCommandHandler("unhandled", function()
+	triggerServerEvent("SlipeServer.Test.Unhandled", root)
+end)
+
 addCommandHandler("ui", function()
 	triggerServerEvent("SlipeServer.Test.Ui", root, {
 		IsChatBoxInputActive = isChatBoxInputActive(),

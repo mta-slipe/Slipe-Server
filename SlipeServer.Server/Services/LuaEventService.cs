@@ -162,6 +162,15 @@ public class LuaEventService : ILuaEventService
             {
                 handler.Invoke(luaEvent);
             }
+        } else
+        {
+            this.UnhandledEventReceived?.Invoke(luaEvent);
         }
     }
+
+    /// <summary>
+    /// This event is triggered when an event is received that is not handled by a handler registered with the LuaEventService.
+    /// Note this does not neccesarily mean that there is nothing handling this event, as events can also be handled directly via server.LuaEventTriggered.
+    /// </summary>
+    public event Action<LuaEvent>? UnhandledEventReceived;
 }

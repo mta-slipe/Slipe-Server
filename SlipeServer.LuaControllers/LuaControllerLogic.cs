@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SlipeServer.LuaControllers.Attributes;
-using SlipeServer.LuaControllers.Commands;
 using SlipeServer.LuaControllers.Results;
 using SlipeServer.Packets.Definitions.Lua;
 using SlipeServer.Server;
