@@ -21,6 +21,7 @@ public class BoundEvent(
     public MethodInfo Method { get; set; } = method;
     public TimeSpan? RateLimit { get; set; } = method.GetCustomAttribute<RateLimitAttribute>()?.TimeSpan;
     public bool WithLogScope { get; set; } = method.GetCustomAttribute<WithLogScopeAttribute>() != null;
+    public bool SurpressErrorResponse { get; set; } = method.GetCustomAttribute<SurpressErrorResponseAttribute>() != null;
     public ILogger? Logger { get; set; }
 
     public LuaResult? HandleEvent(LuaEvent luaEvent, object?[] parameters)

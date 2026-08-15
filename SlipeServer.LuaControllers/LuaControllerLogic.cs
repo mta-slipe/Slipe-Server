@@ -220,7 +220,9 @@ public class LuaControllerLogic
             }
             catch (Exception exception)
             {
-                this.luaEventService.TriggerEventFor(luaEvent.Player, luaEvent.Name + ".Error", luaEvent.Player);
+                if (!handler.SurpressErrorResponse)
+                    this.luaEventService.TriggerEventFor(luaEvent.Player, luaEvent.Name + ".Error", luaEvent.Player);
+
                 this.logger.LogError(exception, "An error occured while handling the event {event}", luaEvent.Name);
             }
         }
