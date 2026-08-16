@@ -156,7 +156,7 @@ public class CommandControllerLogic
         return objects.ToArray();
     }
 
-    private void HandleCommand(string command, CommandTriggeredEventArgs e)
+    private async void HandleCommand(string command, CommandTriggeredEventArgs e)
     {
         if (!this.handlers.TryGetValue(command, out var handlers))
             return;
@@ -177,7 +177,7 @@ public class CommandControllerLogic
                     this.rateLimitTimes[e.Player][handler] = DateTime.UtcNow.Add(handler.RateLimit!.Value);
 
                 var parameters = MapParameters(e.Arguments.ToArray(), handler.Method);
-                handler.HandleCommand(e.Player, command, parameters);
+                await handler.HandleCommandAsync(e.Player, command, parameters).ConfigureAwait(false);
             }
             catch (Exception exception)
             {

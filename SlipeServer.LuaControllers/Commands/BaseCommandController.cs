@@ -23,12 +23,12 @@ public abstract class BaseCommandController
         this.context.Value = context;
     }
 
-    internal virtual void HandleCommand(Player player, string command, IEnumerable<object?> args, Func<IEnumerable<object?>, object?> handler)
+    internal virtual async Task HandleCommandAsync(Player player, string command, IEnumerable<object?> args, Func<Task> handler)
     {
         this.SetContext(new CommandContext(player, command));
         try
         {
-            handler.Invoke(args);
+            await handler.Invoke().ConfigureAwait(false);
         }
         finally
         {
@@ -42,7 +42,7 @@ public abstract class BaseCommandController<TPlayer> : BaseCommandController whe
 {
     public new CommandContext<TPlayer> Context => (base.Context as CommandContext<TPlayer>)!;
 
-    internal override void HandleCommand(Player player, string command, IEnumerable<object?> args, Func<IEnumerable<object?>, object?> handler)
+    internal override async Task HandleCommandAsync(Player player, string command, IEnumerable<object?> args, Func<Task> handler)
     {
         if (player is not TPlayer tPlayer)
             return;
@@ -50,7 +50,7 @@ public abstract class BaseCommandController<TPlayer> : BaseCommandController whe
         this.SetContext(new CommandContext<TPlayer>(tPlayer, command));
         try
         {
-            handler.Invoke(args);
+            await handler.Invoke().ConfigureAwait(false);
         }
         finally
         {

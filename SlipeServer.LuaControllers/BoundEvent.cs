@@ -31,7 +31,7 @@ public class BoundEvent(
 
     public ILogger? Logger { get; set; }
 
-    public LuaResult? HandleEvent(LuaEvent luaEvent, object?[] parameters)
+    public async Task<LuaResult?> HandleEventAsync(LuaEvent luaEvent, object?[] parameters)
     {
         IDisposable? logScope = null;
         try
@@ -51,18 +51,33 @@ public class BoundEvent(
                     new("LuaEventTriggeredByPlayer", luaEvent.Player.Name)
                 });
 
-            var result = controller.HandleEvent(luaEvent, (values) => this.Method.Invoke(controller, parameters));
-
-            if (this.Method.ReturnType == typeof(void) || this.Method.ReturnType == typeof(Task))
-                return null;
+            var result = await controller.HandleEventAsync(luaEvent, () => InvokeMethodAsync(controller, parameters)).ConfigureAwait(false);
 
             if (result is LuaResult luaResult)
                 return luaResult;
 
-            return LuaResult<object?>.Success(result);
-        } finally
+            return result != null ? LuaResult<object?>.Success(result) : null;
+        }
+        finally
         {
             logScope?.Dispose();
         }
+    }
+
+    private async Task<object?> InvokeMethodAsync(BaseLuaController controller, object?[] parameters)
+    {
+        var invokeResult = this.Method.Invoke(controller, parameters);
+
+        if (invokeResult is Task task)
+        {
+            await task.ConfigureAwait(false);
+
+            if (task.GetType().IsGenericType)
+                return task.GetType().GetProperty("Result")?.GetValue(task);
+
+            return null;
+        }
+
+        return invokeResult;
     }
 }

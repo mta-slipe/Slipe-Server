@@ -26,7 +26,7 @@ public class BoundCommand(
 
     public ILogger? Logger { get; set; }
 
-    public void HandleCommand(Player player, string command, IEnumerable<object?> args)
+    public async Task HandleCommandAsync(Player player, string command, IEnumerable<object?> args)
     {
         IDisposable? logScope = null;
         try
@@ -46,11 +46,19 @@ public class BoundCommand(
                     new("CommandTriggeredBy", player.Name)
                 });
 
-            controller.HandleCommand(player, command, args, (values) => this.Method.Invoke(controller, values.ToArray()));
+            await controller.HandleCommandAsync(player, command, args, () => InvokeMethodAsync(controller, args)).ConfigureAwait(false);
         }
         finally
         {
             logScope?.Dispose();
         }
+    }
+
+    private async Task InvokeMethodAsync(BaseCommandController controller, IEnumerable<object?> args)
+    {
+        var invokeResult = this.Method.Invoke(controller, args.ToArray());
+
+        if (invokeResult is Task task)
+            await task.ConfigureAwait(false);
     }
 }

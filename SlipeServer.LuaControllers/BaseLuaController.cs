@@ -25,12 +25,17 @@ public abstract class BaseLuaController
         this.context.Value = context;
     }
 
-    internal virtual object? HandleEvent(LuaEvent luaEvent, Func<LuaValue[], object?> handler)
+    internal virtual async Task<object?> HandleEventAsync(LuaEvent luaEvent, Func<Task<object?>> handler)
     {
         this.SetContext(new LuaEventContext(luaEvent.Player, luaEvent.Source, luaEvent.Name));
-        var result = handler.Invoke(luaEvent.Parameters);
-        this.SetContext(null);
-        return result;
+        try
+        {
+            return await handler.Invoke().ConfigureAwait(false);
+        }
+        finally
+        {
+            this.SetContext(null);
+        }
     }
 }
 
@@ -39,14 +44,19 @@ public abstract class BaseLuaController<TPlayer> : BaseLuaController where TPlay
 {
     public new LuaEventContext<TPlayer> Context => (base.Context as LuaEventContext<TPlayer>)!;
 
-    internal override object? HandleEvent(LuaEvent luaEvent, Func<LuaValue[], object?> handler)
+    internal override async Task<object?> HandleEventAsync(LuaEvent luaEvent, Func<Task<object?>> handler)
     {
         if (luaEvent.Player is not TPlayer tPlayer)
             return null;
 
         this.SetContext(new LuaEventContext<TPlayer>(tPlayer, luaEvent.Source, luaEvent.Name));
-        var result = handler.Invoke(luaEvent.Parameters);
-        this.SetContext(null);
-        return result;
+        try
+        {
+            return await handler.Invoke().ConfigureAwait(false);
+        }
+        finally
+        {
+            this.SetContext(null);
+        }
     }
 }

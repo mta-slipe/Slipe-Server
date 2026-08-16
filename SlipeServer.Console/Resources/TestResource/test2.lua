@@ -12,6 +12,10 @@ addCommandHandler("secreterror", function()
 	triggerServerEvent("SlipeServer.Test.SecretError", root)
 end)
 
+addCommandHandler("asyncerror", function()
+	triggerServerEvent("SlipeServer.Test.AsyncError", root)
+end)
+
 addCommandHandler("unhandled", function()
 	triggerServerEvent("SlipeServer.Test.Unhandled", root)
 end)

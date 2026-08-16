@@ -185,7 +185,7 @@ public class LuaControllerLogic
         return objects.ToArray();
     }
 
-    private void HandleLuaEvent(LuaEvent luaEvent)
+    private async void HandleLuaEvent(LuaEvent luaEvent)
     {
         if (!this.handlers.TryGetValue(luaEvent.Name, out var handlers))
             return;
@@ -206,7 +206,7 @@ public class LuaControllerLogic
                     this.rateLimitTimes[luaEvent.Player][handler] = DateTime.UtcNow.Add(handler.RateLimit!.Value);
 
                 var parameters = MapParameters(luaEvent.Parameters, handler.Method);
-                var result = handler.HandleEvent(luaEvent, parameters);
+                var result = await handler.HandleEventAsync(luaEvent, parameters).ConfigureAwait(false);
                 if (result != null)
                     if (result is LuaResult<object> objectResult)
                         this.luaEventService.TriggerEventFor(
