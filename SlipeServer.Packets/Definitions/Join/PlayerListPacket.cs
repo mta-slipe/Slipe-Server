@@ -125,6 +125,10 @@ public sealed class PlayerListPacket : Packet
                 this.builder.WriteWeaponType(weapons[i]);
             }
         }
+
+        // Animation data is not synchronized by the player list packet, but the client
+        // always reads the "is animating" flag, so it must be written to stay bit-aligned.
+        this.builder.Write(false);
     }
 
     public override void Read(byte[] bytes)

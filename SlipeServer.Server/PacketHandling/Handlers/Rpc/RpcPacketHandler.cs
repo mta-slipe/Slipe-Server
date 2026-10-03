@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlipeServer.Packets.Constants;
 using SlipeServer.Packets.Definitions.Join;
+using SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
 using SlipeServer.Packets.Rpc;
@@ -84,12 +85,9 @@ public class RpcPacketHandler(
         var packet = AddEntityPacketFactory.CreateAddEntityPacket([.. elements, .. otherPlayers]);
         client.SendPacket(packet);
 
-        using (var scope = new ClientPacketScope(client.Player))
-        {
-            foreach (var player in otherPlayers)
-                if (player.Vehicle != null && player.Seat.HasValue)
-                    player.WarpIntoVehicle(player.Vehicle, player.Seat.Value);
-        }
+        foreach (var player in otherPlayers)
+            if (player.Vehicle != null && player.Seat.HasValue)
+                client.SendPacket(new WarpIntoVehicleRpcPacket(player.Id, player.Vehicle.Id, player.Seat.Value, player.TimeContext));
 
         var newPlayerListPacket = PlayerPacketFactory.CreatePlayerListPacket([client.Player], false);
         newPlayerListPacket.SendTo(otherPlayers);
