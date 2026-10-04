@@ -22,7 +22,11 @@ public sealed class SetElementPositionRpcPacket : Packet
 
     }
 
-    public SetElementPositionRpcPacket(ElementId elementId, byte timeContext, Vector3 position, bool isWarp = false)
+    /// <param name="isWarp">
+    /// Whether the client should teleport the element instead of just moving it. This defaults to true, matching
+    /// the default of MTA's setElementPosition, and is signalled by not writing the warp byte at all.
+    /// </param>
+    public SetElementPositionRpcPacket(ElementId elementId, byte timeContext, Vector3 position, bool isWarp = true)
     {
         this.ElementId = elementId;
         this.TimeContext = timeContext;

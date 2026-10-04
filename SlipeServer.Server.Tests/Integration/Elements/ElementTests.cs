@@ -29,8 +29,8 @@ public class ElementTests
         expectedPacketBuilder.Write((byte)ElementRpcFunction.SET_ELEMENT_POSITION);
         expectedPacketBuilder.Write(element.Id);
         expectedPacketBuilder.Write(Vector3.One);
+        // A warp is signalled by the packet ending after the time context, with no warp byte.
         expectedPacketBuilder.Write(element.TimeContext);
-        expectedPacketBuilder.Write((byte)0);
 
         server.VerifyPacketSent(PacketId.PACKET_ID_LUA_ELEMENT_RPC, player, expectedPacketBuilder.Build());
     }

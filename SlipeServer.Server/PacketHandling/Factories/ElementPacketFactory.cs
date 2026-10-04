@@ -9,7 +9,7 @@ namespace SlipeServer.Server.PacketHandling.Factories;
 
 public static class ElementPacketFactory
 {
-    public static SetElementPositionRpcPacket CreateSetPositionPacket(Element element, Vector3 position, bool isWarp = false)
+    public static SetElementPositionRpcPacket CreateSetPositionPacket(Element element, Vector3 position, bool isWarp = true)
     {
         return new SetElementPositionRpcPacket(element.Id, element.GetAndIncrementTimeContext(), position, isWarp);
     }
