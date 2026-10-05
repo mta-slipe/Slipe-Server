@@ -408,7 +408,23 @@ public class Ped : Element
 
     public void RemoveFromVehicle(bool warpOut = true)
     {
-        this.Vehicle?.RemovePassenger(this, warpOut);
+        if (this.Vehicle != null)
+        {
+            this.Vehicle.RemovePassenger(this, warpOut);
+            return;
+        }
+
+        // A ped that is still entering is not an occupant yet, but its client is performing the
+        // enter action, so the enter has to be aborted for the clients.
+        var enteringVehicle = this.EnteringVehicle;
+        if (enteringVehicle == null)
+            return;
+
+        this.JackingVehicle = null;
+        this.EnteringVehicle = null;
+        this.VehicleAction = VehicleAction.None;
+
+        enteringVehicle.AbortEntering(this);
     }
 
     public void WarpIntoVehicle(Vehicle vehicle, byte seat = 0)
@@ -485,6 +501,12 @@ public class Ped : Element
         this.health = 0;
         this.JackingVehicle = null;
         this.EnteringVehicle = null;
+
+        // The ped has to be removed from the occupants of its vehicle without relaying a removal
+        // and without generating a new sync time context: the wasted packet already informs the
+        // clients, and MTA does not generate a sync time context for this case either.
+        this.Vehicle?.RemovePassenger(this, false);
+
         this.Vehicle = null;
         this.Seat = null;
         this.VehicleAction = VehicleAction.None;

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using SlipeServer.Packets.Constants;
 using SlipeServer.Packets.Definitions.Join;
+using SlipeServer.Packets.Definitions.Lua.ElementRpc.Ped;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
 using SlipeServer.Packets.Rpc;
@@ -84,11 +85,20 @@ public class RpcPacketHandler(
         var packet = AddEntityPacketFactory.CreateAddEntityPacket([.. elements, .. otherPlayers]);
         client.SendPacket(packet);
 
-        using (var scope = new ClientPacketScope(client.Player))
+        foreach (var player in otherPlayers)
         {
-            foreach (var player in otherPlayers)
-                if (player.Vehicle != null && player.Seat.HasValue)
-                    player.WarpIntoVehicle(player.Vehicle, player.Seat.Value);
+            if (player.Vehicle == null || !player.Seat.HasValue)
+                continue;
+
+            // The player is already an occupant, only the client of the joining player needs to be
+            // told about it. The existing sync time context is sent along instead of generating a
+            // new one, since the other clients would not receive the new context.
+            new WarpIntoVehicleRpcPacket(
+                player.Id,
+                player.Vehicle.Id,
+                player.Seat.Value,
+                player.TimeContext
+            ).SendTo(client.Player);
         }
 
         var newPlayerListPacket = PlayerPacketFactory.CreatePlayerListPacket([client.Player], false);
