@@ -1,0 +1,5 @@
+[submodule "Reference/mtasa-blue"]
+	path = Reference/mtasa-blue
+	url = https://github.com/multitheftauto/mtasa-blue
+	branch = master
+	shallow = true
