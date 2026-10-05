@@ -77,6 +77,8 @@ public class VehicleDetachTimeContextTestLogic
         this.commandService.AddCommand("tchelp").Triggered += (source, args) => this.OutputHelp(args.Player);
         this.commandService.AddCommand("tcinfo").Triggered += (source, args) => this.OutputState(args.Player);
         this.commandService.AddCommand("tcdump").Triggered += (source, args) => this.DumpState(args.Player);
+        this.commandService.AddCommand("tcspawn").Triggered += (source, args) => this.SpawnVehicle(args.Player, args.Arguments);
+        this.commandService.AddCommand("tcattach").Triggered += (source, args) => this.AttachToVehicle(args.Player, args.Arguments);
         this.commandService.AddCommand("tcsnapshot").Triggered += (source, args) => this.Snapshot(args.Player);
         this.commandService.AddCommand("tccompare").Triggered += (source, args) => this.Compare(args.Player);
         this.commandService.AddCommand("tckill").Triggered += (source, args) => this.KillWhileInVehicle(args.Player);
@@ -91,6 +93,8 @@ public class VehicleDetachTimeContextTestLogic
         this.Output(player, "Vehicle detach sync time context tests:");
         this.Output(player, "  tcinfo      - show your time context, vehicle and the occupants of that vehicle");
         this.Output(player, "  tcdump      - show the time context of every ped and vehicle on the server");
+        this.Output(player, "  tcspawn     - spawn a vehicle next to you, tcspawn <model> to pick one");
+        this.Output(player, "  tcattach    - attach yourself to a vehicle, tcattach <seat> [nowarp]");
         this.Output(player, "  tcsnapshot  - store the current time contexts of every ped");
         this.Output(player, "  tccompare   - list the time contexts that changed since the snapshot");
         this.Output(player, "  tckill      - kill yourself while seated in a vehicle");
@@ -102,6 +106,7 @@ public class VehicleDetachTimeContextTestLogic
         this.Output(player, "Entering or leaving a vehicle with warpsIn/warpsOut relayed also generates a time");
         this.Output(player, "context. Run tcsnapshot, perform an action, then tccompare to see which contexts moved.");
         this.Output(player, "A late joining player must not move any context: snapshot, let someone join, then compare.");
+        this.Output(player, "Start with tcattach to put yourself in a vehicle, then use tckill, tctoss, tcenter, tcleave or tcjack.");
     }
 
     private void OutputState(Player player)
@@ -129,7 +134,7 @@ public class VehicleDetachTimeContextTestLogic
         foreach (var vehicle in this.elementCollection.GetByType<Vehicle>())
             this.logger.LogInformation("[tc] {vehicle}", this.Describe(vehicle));
 
-        this.Output(player, $"Dumped the time context of every ped and vehicle to the server console.");
+        this.Output(player, "Dumped the time context of every ped and vehicle to the server console.");
     }
 
     private void Snapshot(Player player)
@@ -169,6 +174,56 @@ public class VehicleDetachTimeContextTestLogic
         this.Output(player, changed == 0
             ? "No time context changed since the snapshot."
             : $"{changed} time context change(s) since the snapshot.");
+    }
+
+    private void SpawnVehicle(Player player, string[] arguments)
+    {
+        var model = VehicleModel.Landstalker;
+        if (arguments.Length > 0 && Enum.TryParse<VehicleModel>(arguments[0], true, out var parsedModel) && Enum.IsDefined(parsedModel))
+            model = parsedModel;
+
+        var vehicle = new Vehicle(model, player.Position).AssociateWith(this.server);
+        this.Output(player, $"Spawned {this.Describe(vehicle)} at your position.");
+    }
+
+    private void AttachToVehicle(Player player, string[] arguments)
+    {
+        byte seat = 0;
+        if (arguments.Length > 0 && byte.TryParse(arguments[0], out var parsedSeat))
+            seat = parsedSeat;
+
+        var warpsIn = !arguments.Any(x => string.Equals(x, "nowarp", StringComparison.OrdinalIgnoreCase));
+
+        var vehicle = player.Vehicle ?? player.EnteringVehicle ?? this.FindNearestVehicle(player);
+        if (vehicle == null)
+        {
+            vehicle = new Vehicle(VehicleModel.Landstalker, player.Position).AssociateWith(this.server);
+            this.Output(player, $"No vehicle nearby, spawned {this.Describe(vehicle)}.");
+        }
+
+        if (player.Vehicle != null && player.Seat != seat)
+            player.RemoveFromVehicle();
+
+        var contextBefore = player.TimeContext;
+        this.Output(player, $"Before: {this.Describe(player)}");
+        this.Output(player, $"Attaching to {this.Describe(vehicle)} in seat {seat}, which holds {this.DescribeSeat(vehicle, seat)} (warpsIn: {warpsIn}).");
+
+        if (warpsIn)
+            player.WarpIntoVehicle(vehicle, seat);
+        else
+            vehicle.AddPassenger(seat, player, false);
+
+        if (player.Vehicle != vehicle)
+        {
+            this.Output(player, "The attach was refused, most likely because you are dead. Respawn and try again.");
+            return;
+        }
+
+        this.Output(player, $"After: {this.Describe(player)}");
+        this.OutputOccupants(player, vehicle);
+        this.Output(player, warpsIn
+            ? $"Your time context went from {contextBefore} to {player.TimeContext}, expected exactly one increment."
+            : $"Your time context went from {contextBefore} to {player.TimeContext}, expected no change, a finished enter relays no warp.");
     }
 
     private void KillWhileInVehicle(Player player)
