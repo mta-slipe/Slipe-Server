@@ -75,9 +75,9 @@ public static class ElementPacketFactory
         return new AttachElementRpcPacket(element.Id, attachedTo.Id, offsetPosition, offsetRotation);
     }
 
-    public static DetachElementRpcPacket CreateDetachElementPacket(Element element, Vector3 offsetPosition)
+    public static DetachElementRpcPacket CreateDetachElementPacket(Element element, Vector3 position, Vector3 rotation, byte timeContext)
     {
-        return new DetachElementRpcPacket(element.Id, offsetPosition);
+        return new DetachElementRpcPacket(element.Id, position, rotation, timeContext);
     }
 
     public static SetElementAttachedOffsetsRpcPacket CreateSetElementAttachedOffsetsPacket(Element element, Vector3 offsetPosition, Vector3 offsetRotation)

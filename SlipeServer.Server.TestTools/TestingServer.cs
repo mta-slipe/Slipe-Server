@@ -162,6 +162,13 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
         ).Should().Be(count);
     }
 
+    public byte[] LastLuaElementRpcPacketData(ElementRpcFunction packetId, TPlayer to)
+        => this.sendPacketCalls.Last(x =>
+            x.PacketId == PacketId.PACKET_ID_LUA_ELEMENT_RPC &&
+            x.Address == to.GetAddress() &&
+            x.Data[0] == (byte)packetId
+        ).Data;
+
     public void VerifyLuaEventTriggered(string eventName, TPlayer to, Element source, LuaValue[] luaValues, int expectedCount = 1)
     {
         var luaEventPacket = new LuaEventPacket();

@@ -29,7 +29,7 @@ public sealed class SetElementAttachedOffsetsRpcPacket(ElementId elementId, Vect
         builder.Write(this.ElementId);
 
         builder.Write(this.Position);
-        builder.Write(this.Rotation);
+        builder.Write(this.Rotation * MathF.PI / 180);
 
         return builder.Build();
     }

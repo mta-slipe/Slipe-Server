@@ -1,4 +1,5 @@
 ﻿using SlipeServer.Packets.Definitions.Entities.Structs;
+using SlipeServer.Packets.Definitions.Vehicles;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Concepts;
 using SlipeServer.Server.Constants;
@@ -6,6 +7,7 @@ using SlipeServer.Server.ElementConcepts;
 using SlipeServer.Server.Elements.Enums;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Enums;
+using SlipeServer.Server.Extensions.Relaying;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -679,9 +681,28 @@ public class Vehicle : Element
                 ped.EnteringVehicle = null;
                 this.LastMovedAtUtc = DateTime.UtcNow;
 
-                this.PedLeft?.Invoke(this, new VehicleLeftEventArgs(ped, this, item.Key, ped.VehicleAction == VehicleAction.Jacked ? false : warpsOut));
+                this.PedLeft?.Invoke(this, new VehicleLeftEventArgs(ped, this, item.Key, warpsOut));
             }
         }
+    }
+
+    /// <summary>
+    /// Aborts the enter action a ped is currently performing on this vehicle, notifying clients so
+    /// that they stop the enter action. This does not generate a new sync time context, mirroring
+    /// MTA's removePedFromVehicle behaviour for peds that are still entering.
+    /// </summary>
+    public void AbortEntering(Ped ped)
+    {
+        if (this.JackingPed == ped)
+            this.JackingPed = null;
+
+        this.RelayChange(new VehicleInOutPacket()
+        {
+            PedId = ped.Id,
+            VehicleId = this.Id,
+            Seat = ped.Seat ?? 0,
+            OutActionId = VehicleInOutActionReturns.NotifyInAbortReturn,
+        });
     }
 
     public byte GetMaxPassengers()
