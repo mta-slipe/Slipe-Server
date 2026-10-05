@@ -169,10 +169,10 @@ public static class ElementPropertyRelayingExtensions
         => RelayChange(sender, ElementPacketFactory.CreateAttachElementPacket(args.Source, args.AttachedTo, args.OffsetPosition, args.OffsetRotation));
 
     private static void RelayDetached(Element sender, ElementDetachedEventArgs args)
-        => RelayChange(sender, ElementPacketFactory.CreateDetachElementPacket(args.Source, args.Source.Position));
+        => RelayChange(sender, ElementPacketFactory.CreateDetachElementPacket(args.Source, args.Source.Position, args.Source.Rotation, args.Source.TimeContext));
 
     private static void RelayAttachedOffsetChanged(Element sender, ElementAttachOffsetsChangedArgs args)
-        => RelayChange(sender, ElementPacketFactory.CreateSetElementAttachedOffsetsPacket(args.Source, args.OffsetPosition, args.OffsetPosition));
+        => RelayChange(sender, ElementPacketFactory.CreateSetElementAttachedOffsetsPacket(args.Source, args.OffsetPosition, args.OffsetRotation));
 
     private static void RelayElementDestroy(Element element)
     {

@@ -6,14 +6,16 @@ using System.Numerics;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 
-public sealed class DetachElementRpcPacket(ElementId elementId, Vector3 offsetPosition) : Packet
+public sealed class DetachElementRpcPacket(ElementId elementId, Vector3 position, Vector3 rotation, byte timeContext) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
     public ElementId ElementId { get; set; } = elementId;
-    public Vector3 OffsetPosition { get; set; } = offsetPosition;
+    public Vector3 Position { get; set; } = position;
+    public Vector3 Rotation { get; set; } = rotation;
+    public byte TimeContext { get; set; } = timeContext;
 
     public override void Read(byte[] bytes)
     {
@@ -26,7 +28,9 @@ public sealed class DetachElementRpcPacket(ElementId elementId, Vector3 offsetPo
 
         builder.Write((byte)ElementRpcFunction.DETACH_ELEMENTS);
         builder.Write(this.ElementId);
-        builder.Write(this.OffsetPosition);
+        builder.Write(this.TimeContext);
+        builder.Write(this.Position);
+        builder.Write(this.Rotation);
 
         return builder.Build();
     }
