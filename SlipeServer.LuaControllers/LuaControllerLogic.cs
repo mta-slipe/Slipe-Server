@@ -109,7 +109,13 @@ public class LuaControllerLogic
                         {
                             try
                             {
-                                await (Task)method.Invoke(initController, [])!;
+                                var result = method.Invoke(initController, []);
+                                if (result is Task task)
+                                    await task;
+                                else
+                                    this.logger.LogWarning(
+                                        "Async init method {Method} on {Type} does not return a Task, and is treated as a synchronous init method",
+                                        method.Name, controllerType.Name);
                             }
                             catch (Exception e)
                             {
