@@ -11,7 +11,7 @@ namespace SlipeServer.Server.Concepts;
 /// </summary>
 public class Colors(Vehicle vehicle, Color? primary = null, Color? secondary = null, Color? color3 = null, Color? color4 = null)
 {
-    private Color primary = primary ?? Color.Black;
+    private Color primary = primary ?? Color.White;
     public Color Primary
     {
         get => this.primary;
@@ -25,7 +25,7 @@ public class Colors(Vehicle vehicle, Color? primary = null, Color? secondary = n
         }
     }
 
-    private Color secondary = secondary ?? Color.Black;
+    private Color secondary = secondary ?? Color.White;
     public Color Secondary
     {
         get => this.secondary;
