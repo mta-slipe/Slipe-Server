@@ -1,5 +1,6 @@
 using SlipeServer.Packets.Definitions.Resources;
 using SlipeServer.Packets.Structs;
+using SlipeServer.Server.Clients;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Elements.Events;
 using SlipeServer.Server.Extensions;
@@ -123,8 +124,34 @@ public class Resource : IResource
                 .SendTo(player);
     }
 
-    public Task StartForAsync(Player player, CancellationToken cancelationToken = default)
+    /// <summary>
+    /// The amount of time <see cref="StartForAsync"/> waits for the client to acknowledge a resource start
+    /// before giving up, so that a client which never responds cannot keep a start pending forever.
+    /// </summary>
+    public static TimeSpan DefaultStartTimeout { get; } = TimeSpan.FromMinutes(5);
+
+    /// <summary>
+    /// Starts this resource for a single player and waits until that player has acknowledged the resource start.
+    /// </summary>
+    /// <param name="player">The player to start this resource for.</param>
+    /// <param name="cancelationToken">Token used to stop waiting for the resource to start.</param>
+    /// <param name="timeout">
+    /// Amount of time to wait for the acknowledgement, defaults to <see cref="DefaultStartTimeout"/>.
+    /// </param>
+    /// <exception cref="InvalidOperationException">The player is not connected.</exception>
+    /// <exception cref="PlayerUnavailableDuringResourceStartException">
+    /// The player disconnected or was destroyed while the resource was starting.
+    /// </exception>
+    /// <exception cref="ResourceStartTimeoutException">
+    /// The player did not acknowledge the resource start within <paramref name="timeout"/>.
+    /// </exception>
+    public async Task StartForAsync(Player player, CancellationToken cancelationToken = default, TimeSpan? timeout = null)
     {
+        if (player.IsDestroyed)
+            throw new PlayerDestroyedDuringResourceStartException(player);
+        if (player.Client is TemporaryClient || !player.Client.IsConnected)
+            throw new InvalidOperationException($"Cannot start resource '{this.Name}' for {player.Name}, the player is not connected to the server.");
+
         cancelationToken.ThrowIfCancellationRequested();
 
         var source = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -138,17 +165,9 @@ public class Resource : IResource
 
             player.ResourceStarted -= HandleResourceStart;
             player.Disconnected -= HandlePlayerDisconnected;
+            player.Destroyed -= HandlePlayerDestroyed;
             cancellationRegistration.Dispose();
         }
-
-        cancellationRegistration = cancelationToken.Register(() =>
-        {
-            Cleanup();
-            source.TrySetCanceled(cancelationToken);
-        });
-
-        player.ResourceStarted += HandleResourceStart;
-        player.Disconnected += HandlePlayerDisconnected;
 
         void HandleResourceStart(Player sender, PlayerResourceStartedEventArgs e)
         {
@@ -168,9 +187,46 @@ public class Resource : IResource
             source.TrySetException(new PlayerQuitDuringResourceStartException(player));
         }
 
-        StartFor(player);
+        void HandlePlayerDestroyed(Element destroyedElement)
+        {
+            if (player != destroyedElement)
+                return;
 
-        return source.Task;
+            Cleanup();
+            source.TrySetException(new PlayerDestroyedDuringResourceStartException(player));
+        }
+
+        using var timeoutSource = new CancellationTokenSource(timeout ?? DefaultStartTimeout);
+        using var linkedSource = CancellationTokenSource.CreateLinkedTokenSource(cancelationToken, timeoutSource.Token);
+
+        player.ResourceStarted += HandleResourceStart;
+        player.Disconnected += HandlePlayerDisconnected;
+        player.Destroyed += HandlePlayerDestroyed;
+
+        cancellationRegistration = linkedSource.Token.Register(() =>
+        {
+            Cleanup();
+
+            if (cancelationToken.IsCancellationRequested)
+                source.TrySetCanceled(cancelationToken);
+            else
+                source.TrySetException(new ResourceStartTimeoutException(player, this, timeout ?? DefaultStartTimeout));
+        });
+
+        // Registering a callback on an already cancelled token invokes it immediately, in which case the
+        // registration itself has not been assigned yet when the cleanup above ran.
+        if (linkedSource.IsCancellationRequested)
+            cancellationRegistration.Dispose();
+
+        try
+        {
+            StartFor(player);
+            await source.Task;
+        }
+        finally
+        {
+            Cleanup();
+        }
     }
 
     public async Task<bool> TryStartForAsync(Player player, CancellationToken cancelationToken = default)
@@ -180,7 +236,7 @@ public class Resource : IResource
             await StartForAsync(player, cancelationToken);
             return true;
         } 
-        catch (PlayerQuitDuringResourceStartException)
+        catch (PlayerUnavailableDuringResourceStartException)
         {
             return true;
         }
@@ -223,4 +279,28 @@ public class Resource : IResource
     }
 }
 
-public class PlayerQuitDuringResourceStartException(Player player) : Exception($"Player {player.Name} disconnected during resource start.") { }
+/// <summary>
+/// Thrown when a resource start for a player cannot complete because the player is no longer available.
+/// </summary>
+public abstract class PlayerUnavailableDuringResourceStartException(Player player, string message) : Exception(message)
+{
+    public Player Player { get; } = player;
+}
+
+/// <summary>
+/// Thrown when a player disconnects while a resource is starting for them.
+/// </summary>
+public class PlayerQuitDuringResourceStartException(Player player)
+    : PlayerUnavailableDuringResourceStartException(player, $"Player {player.Name} disconnected during resource start.") { }
+
+/// <summary>
+/// Thrown when a player is destroyed while a resource is starting for them.
+/// </summary>
+public class PlayerDestroyedDuringResourceStartException(Player player)
+    : PlayerUnavailableDuringResourceStartException(player, $"Player {player.Name} was destroyed during resource start.") { }
+
+/// <summary>
+/// Thrown when a player does not acknowledge a resource start within the allotted time.
+/// </summary>
+public class ResourceStartTimeoutException(Player player, IResource resource, TimeSpan timeout)
+    : Exception($"Resource '{resource.Name}' was not started for player {player.Name} within {timeout}.") { }
