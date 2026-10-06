@@ -218,7 +218,7 @@ public class PlayerTests
         var startTask = resource.StartForAsync(player);
         player.TriggerDisconnected(QuitReason.Quit);
 
-        await FluentActions.Awaiting(() => startTask).Should().ThrowAsync<PlayerUnavailableDuringResourceStartException>();
+        await FluentActions.Awaiting(() => startTask).Should().ThrowAsync<PlayerQuitDuringResourceStartException>();
 
         var destroyedPlayer = server.AddFakePlayer();
         destroyedPlayer.Destroy();

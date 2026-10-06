@@ -139,8 +139,11 @@ public class Resource : IResource
     /// Amount of time to wait for the acknowledgement, defaults to <see cref="DefaultStartTimeout"/>.
     /// </param>
     /// <exception cref="InvalidOperationException">The player is not connected.</exception>
-    /// <exception cref="PlayerUnavailableDuringResourceStartException">
-    /// The player disconnected or was destroyed while the resource was starting.
+    /// <exception cref="PlayerQuitDuringResourceStartException">
+    /// The player disconnected while the resource was starting.
+    /// </exception>
+    /// <exception cref="PlayerDestroyedDuringResourceStartException">
+    /// The player was destroyed while the resource was starting.
     /// </exception>
     /// <exception cref="ResourceStartTimeoutException">
     /// The player did not acknowledge the resource start within <paramref name="timeout"/>.
@@ -236,7 +239,11 @@ public class Resource : IResource
             await StartForAsync(player, cancelationToken);
             return true;
         } 
-        catch (PlayerUnavailableDuringResourceStartException)
+        catch (PlayerQuitDuringResourceStartException)
+        {
+            return true;
+        }
+        catch (PlayerDestroyedDuringResourceStartException)
         {
             return true;
         }
@@ -280,24 +287,22 @@ public class Resource : IResource
 }
 
 /// <summary>
-/// Thrown when a resource start for a player cannot complete because the player is no longer available.
+/// Thrown when a player disconnects while a resource is starting for them.
 /// </summary>
-public abstract class PlayerUnavailableDuringResourceStartException(Player player, string message) : Exception(message)
+public class PlayerQuitDuringResourceStartException(Player player)
+    : Exception($"Player {player.Name} disconnected during resource start.")
 {
     public Player Player { get; } = player;
 }
 
 /// <summary>
-/// Thrown when a player disconnects while a resource is starting for them.
-/// </summary>
-public class PlayerQuitDuringResourceStartException(Player player)
-    : PlayerUnavailableDuringResourceStartException(player, $"Player {player.Name} disconnected during resource start.") { }
-
-/// <summary>
 /// Thrown when a player is destroyed while a resource is starting for them.
 /// </summary>
 public class PlayerDestroyedDuringResourceStartException(Player player)
-    : PlayerUnavailableDuringResourceStartException(player, $"Player {player.Name} was destroyed during resource start.") { }
+    : Exception($"Player {player.Name} was destroyed during resource start.")
+{
+    public Player Player { get; } = player;
+}
 
 /// <summary>
 /// Thrown when a player does not acknowledge a resource start within the allotted time.
