@@ -49,8 +49,6 @@ public class DropInReplacementResourceService : IDropInReplacementResourceServic
     {
         foreach (var startupResource in this.configuration.StartupResources)
         {
-            // MTA applies `protected` independently of `startup`, so a resource that is not
-            // started automatically is still protected from being stopped.
             if (startupResource.Protected)
                 this.protectedResourceNames.Add(startupResource.Name);
 
