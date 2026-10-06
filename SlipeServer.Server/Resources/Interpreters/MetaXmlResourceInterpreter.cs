@@ -50,14 +50,23 @@ public class MetaXmlResourceInterpreter : IResourceInterpreter
         if (meta == null)
             throw new System.Exception($"Unable to parse meta file for resource {name}");
 
+        var minMtaVersion = meta.Value.minMtaVersions?.FirstOrDefault() ?? default;
+        var (minServerVersion, minClientVersion) = Resource.ResolveMinMtaVersion(
+            minMtaVersion.Server, minMtaVersion.Client, minMtaVersion.Both);
+
         var resource = new Resource(mtaServer, rootElement, name, path)
         {
             PriorityGroup = (meta.Value.downloadPriorityGroup != null && meta.Value.downloadPriorityGroup.Length > 0) ? meta.Value.downloadPriorityGroup.First().Data : 0,
             Files = GetFilesForMetaXmlResource(meta.Value, files),
             Exports = GetExportsForMetaXmlResource(meta.Value).ToList(),
-            NoClientScripts = GetNoCacheFiles(meta.Value, files),
-            IsOopEnabled = meta.Value.oops != null && meta.Value.oops.Any(x => x.Data.ToLower() == "true")
+            IsOopEnabled = meta.Value.oops != null && meta.Value.oops.Any(x => x.Data.ToLower() == "true"),
+            MinServerVersion = minServerVersion,
+            MinClientVersion = minClientVersion,
         };
+
+        foreach (var (scriptName, scriptSource) in GetNoCacheFiles(meta.Value, files))
+            resource.AddNoClientScript(scriptName, scriptSource);
+
         return resource;
     }
 

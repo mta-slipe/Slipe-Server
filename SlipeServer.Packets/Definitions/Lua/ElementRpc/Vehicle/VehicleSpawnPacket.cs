@@ -27,9 +27,7 @@ public sealed class VehicleSpawnPacket(IEnumerable<VehicleSpawnInfo> vehiclesToR
             builder.Write(vehicleToSpawn.TimeContext);
             builder.Write(vehicleToSpawn.Position);
             builder.Write(vehicleToSpawn.Rotation);
-            builder.WriteCapped(vehicleToSpawn.Colors.Length, 2);
-            foreach (var color in vehicleToSpawn.Colors)
-                builder.Write(color);
+            builder.WriteVehicleColors(vehicleToSpawn.Colors);
         }
         return builder.Build();
     }

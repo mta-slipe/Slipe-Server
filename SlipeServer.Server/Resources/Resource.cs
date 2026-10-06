@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,12 +28,31 @@ public class Resource : IResource
     public int PriorityGroup { get; set; }
     public List<string> Exports { get; init; } = [];
     public List<ResourceFile> Files { get; init; } = [];
-    public Dictionary<string, byte[]> NoClientScripts { get; init; } = [];
-    private Dictionary<string, byte[]> SanitisedNoClientScripts => this.NoClientScripts.Where(x => x.Value.Length > 0).ToDictionary(x => x.Key, x => x.Value);
+
+    private readonly Dictionary<string, byte[]> noClientScripts = [];
+
+    /// <summary>
+    /// The client scripts of this resource that the client is not allowed to cache, keyed by file name.
+    /// The values are the zlib compressed script sources, exactly as they are sent to the client.
+    /// </summary>
+    public IReadOnlyDictionary<string, byte[]> NoClientScripts => this.noClientScripts.AsReadOnly();
+
     public string Name { get; }
     public string Path { get; }
     public bool IsOopEnabled { get; set; }
     public Dictionary<string, string> Info { get; init; } = [];
+
+    /// <summary>
+    /// Minimum MTA server version this resource requires, from the <c>min_mta_version</c> element of its
+    /// meta.xml. Null when the resource does not specify a requirement.
+    /// </summary>
+    public string? MinServerVersion { get; set; }
+
+    /// <summary>
+    /// Minimum MTA client version this resource requires, from the <c>min_mta_version</c> element of its
+    /// meta.xml. Null when the resource does not specify a requirement.
+    /// </summary>
+    public string? MinClientVersion { get; set; }
 
     public Resource(
         IMtaServer server, 
@@ -58,15 +78,34 @@ public class Resource : IResource
         }.AssociateWith(server);
     }
 
+    /// <summary>
+    /// Adds a client script that the client is not allowed to cache. The script source is compressed once,
+    /// here, so that starting the resource or a player joining does not recompress it every time.
+    /// Zero length sources are ignored.
+    /// </summary>
+    /// <exception cref="ArgumentException">A script with the same name was already added.</exception>
+    public void AddNoClientScript(string name, string source) =>
+        this.AddNoClientScript(name, Encoding.UTF8.GetBytes(source));
+
+    /// <inheritdoc cref="AddNoClientScript(string, string)"/>
+    public void AddNoClientScript(string name, byte[] source)
+    {
+        if (source.Length == 0)
+            return;
+
+        if (this.noClientScripts.ContainsKey(name))
+            throw new ArgumentException($"A client script with the name '{name}' already exists in the collection.", nameof(name));
+
+        this.noClientScripts[name] = CompressFile(source);
+    }
+
     public void Start()
     {
         this.server.BroadcastPacket(new ResourceStartPacket(
-            this.Name, this.NetId, this.Root.Id, this.DynamicRoot.Id, (ushort)this.SanitisedNoClientScripts.Count, null, null, this.IsOopEnabled, this.PriorityGroup, this.Files, this.Exports)
+            this.Name, this.NetId, this.Root.Id, this.DynamicRoot.Id, (ushort)this.noClientScripts.Count, this.MinServerVersion, this.MinClientVersion, this.IsOopEnabled, this.PriorityGroup, this.Files, this.Exports)
         );
 
-        this.server.BroadcastPacket(new ResourceClientScriptsPacket(
-            this.NetId, this.SanitisedNoClientScripts.ToDictionary(x => x.Key, x => CompressFile(x.Value)))
-        );
+        this.server.BroadcastPacket(new ResourceClientScriptsPacket(this.NetId, this.noClientScripts));
     }
 
     public void Stop()
@@ -76,11 +115,11 @@ public class Resource : IResource
 
     public void StartFor(Player player)
     {
-        new ResourceStartPacket(this.Name, this.NetId, this.Root.Id, this.DynamicRoot.Id, (ushort)this.SanitisedNoClientScripts.Count, null, null, this.IsOopEnabled, this.PriorityGroup, this.Files, this.Exports)
+        new ResourceStartPacket(this.Name, this.NetId, this.Root.Id, this.DynamicRoot.Id, (ushort)this.noClientScripts.Count, this.MinServerVersion, this.MinClientVersion, this.IsOopEnabled, this.PriorityGroup, this.Files, this.Exports)
             .SendTo(player);
 
-        if (this.SanitisedNoClientScripts.Any())
-            new ResourceClientScriptsPacket(this.NetId, this.SanitisedNoClientScripts.ToDictionary(x => x.Key, x => CompressFile(x.Value)))
+        if (this.noClientScripts.Count > 0)
+            new ResourceClientScriptsPacket(this.NetId, this.noClientScripts)
                 .SendTo(player);
     }
 
@@ -156,7 +195,15 @@ public class Resource : IResource
         new ResourceStopPacket(this.NetId).SendTo(player);
     }
 
-    private byte[] CompressFile(byte[] input)
+    /// <summary>
+    /// Resolves the effective server and client version requirements from the attributes of MTA's
+    /// <c>min_mta_version</c> element, where <c>both</c> takes precedence over the individual
+    /// <c>server</c> and <c>client</c> attributes.
+    /// </summary>
+    public static (string? Server, string? Client) ResolveMinMtaVersion(string? server, string? client, string? both) =>
+        both is not null ? (both, both) : (server, client);
+
+    public static byte[] CompressFile(byte[] input)
     {
         using var output = new MemoryStream();
         using (var compressor = new ZLibStream(output, CompressionLevel.Optimal, true))
