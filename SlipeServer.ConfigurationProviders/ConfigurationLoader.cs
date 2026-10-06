@@ -18,6 +18,8 @@ public static class ConfigurationLoader
         {
             ".json" => new JsonConfigurationProvider(configPath),
             ".xml" => new XmlConfigurationProvider(configPath),
+            // MTA's own configuration file is XML with a .conf extension, so it is parsed as such.
+            ".conf" => new XmlConfigurationProvider(configPath),
             ".toml" => new TomlConfigurationProvider(configPath),
             _ => throw new NotSupportedException($"Unsupported configuration extension {extension}"),
         };

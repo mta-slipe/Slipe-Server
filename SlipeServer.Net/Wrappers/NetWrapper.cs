@@ -186,12 +186,19 @@ public class NetWrapper : IDisposable, INetWrapper
 
     protected virtual void PacketInterceptor(byte packetId, ulong binaryAddress, IntPtr payload, uint payloadSize, bool hasPing, uint ping)
     {
-        byte[] data = new byte[payloadSize];
-        Marshal.Copy(payload, data, 0, (int)payloadSize);
+        try
+        {
+            byte[] data = new byte[payloadSize];
+            Marshal.Copy(payload, data, 0, (int)payloadSize);
 
-        PacketId parsedPacketId = (PacketId)packetId;
+            PacketId parsedPacketId = (PacketId)packetId;
 
-        this.PacketReceived?.Invoke(this, binaryAddress, parsedPacketId, data, hasPing ? ping : (uint?)null);
+            this.PacketReceived?.Invoke(this, binaryAddress, parsedPacketId, data, hasPing ? ping : (uint?)null);
+        }
+        catch (Exception exception)
+        {
+            Debug.WriteLine($"Exception thrown while handling packet {(PacketId)packetId} (id {packetId}) received from {binaryAddress}: {exception}");
+        }
     }
 
     public event Action<INetWrapper, ulong, PacketId, byte[], uint?>? PacketReceived;

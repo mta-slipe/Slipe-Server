@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Moq;
+using SlipeServer.Server.Resources;
 using SlipeServer.Server.Resources.Interpreters;
 using SlipeServer.Server.Resources.Providers;
 using SlipeServer.Server.TestTools;
@@ -46,7 +47,7 @@ public class MetaXmlResourceInterpreterTests
         resource.PriorityGroup.Should().Be(0);
         resource.NoClientScripts.Should().BeEquivalentTo(new Dictionary<string, byte[]>
         {
-            ["script.lua"] = "420"u8.ToArray(),
+            ["script.lua"] = Resource.CompressFile("420"u8.ToArray()),
         });
     }
 
@@ -91,7 +92,41 @@ public class MetaXmlResourceInterpreterTests
         resource.PriorityGroup.Should().Be(1234);
         resource.NoClientScripts.Should().BeEquivalentTo(new Dictionary<string, byte[]>
         {
-            ["script1.lua"] = "420"u8.ToArray(),
+            ["script1.lua"] = Resource.CompressFile("420"u8.ToArray()),
         });
+    }
+
+    [Theory]
+    [InlineData("""<min_mta_version client="1.6.0-9.0" server="1.6.0-9.1"/>""", "1.6.0-9.1", "1.6.0-9.0")]
+    [InlineData("""<min_mta_version both="1.6.0-9.2"/>""", "1.6.0-9.2", "1.6.0-9.2")]
+    // `both` takes precedence over the individual attributes, matching MTA's CResource.
+    [InlineData("""<min_mta_version both="1.6.0-9.2" client="1.6.0-9.0" server="1.6.0-9.1"/>""", "1.6.0-9.2", "1.6.0-9.2")]
+    [InlineData("""<min_mta_version/>""", null, null)]
+    [InlineData("", null, null)]
+    public void TestTryInterpretResourceWithMinMtaVersion(string minMtaVersionElement, string? expectedServerVersion, string? expectedClientVersion)
+    {
+        this.resourceProviderMock.Setup(x => x.GetFilesForResource("testResource")).Returns(new List<string>
+        {
+            "meta.xml",
+            "script.lua",
+        });
+
+        var metaXmlContent = $"""
+            <meta>
+                <script src="script.lua" type="client" cache="false"/>
+                {minMtaVersionElement}
+            </meta>
+            """;
+
+        this.resourceProviderMock.Setup(x => x.GetFileContent("testResource", "meta.xml"))
+            .Returns(System.Text.Encoding.UTF8.GetBytes(metaXmlContent));
+        this.resourceProviderMock.Setup(x => x.GetFileContent("testResource", "script.lua")).Returns("420"u8.ToArray());
+
+        var result = this.metaXmlResourceInterpreter.TryInterpretResource(this.testingServer, null, "testResource", ".", this.resourceProviderMock.Object, out var resource);
+
+        result.Should().BeTrue();
+        resource.Should().NotBeNull();
+        resource!.MinServerVersion.Should().Be(expectedServerVersion);
+        resource.MinClientVersion.Should().Be(expectedClientVersion);
     }
 }

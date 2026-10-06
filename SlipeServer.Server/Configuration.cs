@@ -173,6 +173,33 @@ public class Configuration
     public DebugConfiguration Debug { get; set; } = new();
 
     public IEnumerable<IPAddress> BlockedAseIpAddresses { get; set; } = [];
+
+    /// <summary>
+    /// Resources that are started when the server starts, and optionally protected from being stopped.
+    /// Equivalent to the <c>&lt;resource&gt;</c> entries in MTA's mtaserver.conf.
+    /// </summary>
+    public StartupResource[] StartupResources { get; set; } = [];
+}
+
+/// <summary>
+/// A resource declared in the server configuration, equivalent to a <c>&lt;resource&gt;</c> entry in MTA's mtaserver.conf.
+/// </summary>
+public class StartupResource
+{
+    /// <summary>
+    /// Name of the resource, as it appears in the resource directory.
+    /// </summary>
+    public string Name { get; set; } = "";
+
+    /// <summary>
+    /// Whether the resource is started when the server starts.
+    /// </summary>
+    public bool Start { get; set; }
+
+    /// <summary>
+    /// Whether the resource is protected from being stopped or restarted.
+    /// </summary>
+    public bool Protected { get; set; }
 }
 
 /// <summary>
