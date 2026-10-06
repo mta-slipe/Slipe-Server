@@ -37,8 +37,6 @@ public class DropInReplacementResourceService : IDropInReplacementResourceServic
         this.server.PlayerJoined += HandlePlayerJoin;
         this.server.Started += HandleServerStarted;
 
-        // The service is resolved lazily, so the server may already have started by the time this
-        // is constructed. Startup resources would otherwise never be started.
         if (this.server.IsRunning)
             HandleServerStarted(this.server);
     }
