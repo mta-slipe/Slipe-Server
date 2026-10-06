@@ -10,27 +10,75 @@ public class DropInReplacementResourceService : IDropInReplacementResourceServic
 {
     private readonly IMtaServer server;
     private readonly IResourceProvider resourceProvider;
+    private readonly Configuration configuration;
     private readonly ILogger<DropInReplacementResourceProvider> logger;
     private readonly IDropInReplacementResourceLuaService luaResourceService;
     private readonly bool allowMissingIncludes;
     private readonly List<Resource> startedResources = [];
+    private readonly HashSet<string> protectedResourceNames = new(StringComparer.InvariantCultureIgnoreCase);
 
     public IReadOnlyCollection<Resource> StartedResources => this.startedResources.AsReadOnly();
 
     public DropInReplacementResourceService(
         IMtaServer server,
         IResourceProvider resourceProvider,
+        Configuration configuration,
         ILogger<DropInReplacementResourceProvider> logger,
         IDropInReplacementResourceLuaService luaResourceService,
         bool allowMissingIncludes = false)
     {
         this.server = server;
         this.resourceProvider = resourceProvider;
+        this.configuration = configuration;
         this.logger = logger;
         this.luaResourceService = luaResourceService;
         this.allowMissingIncludes = allowMissingIncludes;
 
         this.server.PlayerJoined += HandlePlayerJoin;
+        this.server.Started += HandleServerStarted;
+
+        // The service is resolved lazily, so the server may already have started by the time this
+        // is constructed. Startup resources would otherwise never be started.
+        if (this.server.IsRunning)
+            HandleServerStarted(this.server);
+    }
+
+    /// <summary>
+    /// Starts the resources configured as startup resources, equivalent to the `startup` attribute
+    /// of MTA's mtaserver.conf `resource` entries.
+    /// </summary>
+    private void HandleServerStarted(IMtaServer server)
+    {
+        foreach (var startupResource in this.configuration.StartupResources)
+        {
+            // MTA applies `protected` independently of `startup`, so a resource that is not
+            // started automatically is still protected from being stopped.
+            if (startupResource.Protected)
+                this.protectedResourceNames.Add(startupResource.Name);
+
+            if (!startupResource.Start)
+                continue;
+
+            try
+            {
+                StartResource(startupResource.Name);
+            }
+            catch (Exception exception)
+            {
+                this.logger.LogError(exception, "Failed to start startup resource {resource}", startupResource.Name);
+            }
+        }
+    }
+
+    public bool IsProtected(string name) => this.protectedResourceNames.Contains(name);
+
+    private bool IsProtectedInternal(string name, string action)
+    {
+        if (!this.protectedResourceNames.Contains(name))
+            return false;
+
+        this.logger.LogWarning("Resource {resource} is protected and cannot be {action}", name, action);
+        return true;
     }
 
     private void HandlePlayerJoin(Player player)
@@ -103,6 +151,9 @@ public class DropInReplacementResourceService : IDropInReplacementResourceServic
 
     public void StopResource(string name)
     {
+        if (this.IsProtectedInternal(name, "stopped"))
+            return;
+
         logger.LogInformation("Stopping {resource}", name);
 
         var resource = this.startedResources.Single(r => string.Equals(r.Name, name, StringComparison.InvariantCultureIgnoreCase));
@@ -120,6 +171,9 @@ public class DropInReplacementResourceService : IDropInReplacementResourceServic
 
     public void StopResource(Resource resource)
     {
+        if (this.IsProtectedInternal(resource.Name, "stopped"))
+            return;
+
         logger.LogInformation("Stopped {resource}", resource.Name);
 
         this.startedResources.Remove(resource);
@@ -129,6 +183,9 @@ public class DropInReplacementResourceService : IDropInReplacementResourceServic
 
     public void RestartResource(string name)
     {
+        if (this.IsProtectedInternal(name, "restarted"))
+            return;
+
         logger.LogInformation("Restarting {resource}", name);
 
         StopResource(name);
@@ -143,4 +200,10 @@ public class DropInReplacementResourceService : IDropInReplacementResourceServic
 public interface IDropInReplacementResourceService : IResourceService
 {
     void RestartResource(string name);
+
+    /// <summary>
+    /// Whether the resource is protected from being stopped or restarted, as configured by the
+    /// `protected` attribute of a mtaserver.conf `resource` entry.
+    /// </summary>
+    bool IsProtected(string name);
 }

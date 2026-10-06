@@ -186,12 +186,22 @@ public class NetWrapper : IDisposable, INetWrapper
 
     protected virtual void PacketInterceptor(byte packetId, ulong binaryAddress, IntPtr payload, uint payloadSize, bool hasPing, uint ping)
     {
-        byte[] data = new byte[payloadSize];
-        Marshal.Copy(payload, data, 0, (int)payloadSize);
+        // This is invoked as a callback from net.dll, so an exception escaping here would propagate
+        // into native code, which is undefined behaviour. Swallowing the exception keeps the server
+        // alive, the packet is simply dropped.
+        try
+        {
+            byte[] data = new byte[payloadSize];
+            Marshal.Copy(payload, data, 0, (int)payloadSize);
 
-        PacketId parsedPacketId = (PacketId)packetId;
+            PacketId parsedPacketId = (PacketId)packetId;
 
-        this.PacketReceived?.Invoke(this, binaryAddress, parsedPacketId, data, hasPing ? ping : (uint?)null);
+            this.PacketReceived?.Invoke(this, binaryAddress, parsedPacketId, data, hasPing ? ping : (uint?)null);
+        }
+        catch (Exception exception)
+        {
+            Debug.WriteLine($"Exception thrown while handling packet {(PacketId)packetId} (id {packetId}) received from {binaryAddress}: {exception}");
+        }
     }
 
     public event Action<INetWrapper, ulong, PacketId, byte[], uint?>? PacketReceived;
