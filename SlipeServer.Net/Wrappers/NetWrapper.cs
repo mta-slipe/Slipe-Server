@@ -186,9 +186,6 @@ public class NetWrapper : IDisposable, INetWrapper
 
     protected virtual void PacketInterceptor(byte packetId, ulong binaryAddress, IntPtr payload, uint payloadSize, bool hasPing, uint ping)
     {
-        // This is invoked as a callback from net.dll, so an exception escaping here would propagate
-        // into native code, which is undefined behaviour. Swallowing the exception keeps the server
-        // alive, the packet is simply dropped.
         try
         {
             byte[] data = new byte[payloadSize];
