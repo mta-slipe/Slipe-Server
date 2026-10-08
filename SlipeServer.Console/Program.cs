@@ -125,6 +125,7 @@ public partial class Program
                 builder.AddLogic<PhysicsTestLogic>();
                 builder.AddLogic<ElementPoolingTestLogic>();
                 builder.AddLogic<WarpIntoVehicleLogic>();
+                builder.AddLogic<WarpVisibilityTestLogic>();
                 builder.AddLogic<LuaEventTestLogic>();
                 builder.AddLogic<ServiceUsageTestLogic>();
                 builder.AddLogic<NametagTestLogic>();
