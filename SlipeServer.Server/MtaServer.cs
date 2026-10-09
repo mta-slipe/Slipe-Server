@@ -35,6 +35,8 @@ public class MtaServer : IMtaServer
     private readonly List<Resource> additionalResources;
     protected IPacketReducer packetReducer;
     protected readonly Dictionary<INetWrapper, Dictionary<ulong, IClient>> clients;
+
+    private readonly Dictionary<ushort, INetWrapper> netWrappersByPort = new();
     protected readonly IServiceCollection? serviceCollection;
     protected readonly IServiceProvider serviceProvider;
     protected readonly IElementCollection elementCollection;
@@ -213,8 +215,15 @@ public class MtaServer : IMtaServer
     /// <returns></returns>
     public INetWrapper AddNetWrapper(string directory, string netDllPath, string host, ushort port, uint expectedVersion, uint expectedVersionType = 0x09, AntiCheatConfiguration? configuration = null)
     {
+        if (this.netWrappersByPort.ContainsKey(port))
+        {
+            throw new InvalidOperationException(
+                $"A network wrapper is already registered for port {port}.");
+        }
+
         var wrapper = CreateNetWrapper(directory, netDllPath, host, port, expectedVersion, expectedVersionType);
         this.netWrappers.Add(wrapper);
+        this.netWrappersByPort.Add(port, wrapper);
 
         ConfigureAntiCheat(wrapper, configuration ?? new AntiCheatConfiguration());
 
@@ -242,6 +251,14 @@ public class MtaServer : IMtaServer
         return wrapper;
     }
 
+    public INetWrapper GetNetWrapper(ushort gamePort)
+    {
+        if (this.netWrappersByPort.TryGetValue(gamePort, out var wrapper))
+            return wrapper;
+
+        throw new InvalidOperationException(
+            $"No network wrapper is registered for game port {gamePort}.");
+    }
 
     private void ConfigureAntiCheat(INetWrapper netWrapper, AntiCheatConfiguration configuration)
     {

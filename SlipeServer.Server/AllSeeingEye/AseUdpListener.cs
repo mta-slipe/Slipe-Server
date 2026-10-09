@@ -4,92 +4,185 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 
 namespace SlipeServer.Server.AllSeeingEye;
 
 /// <summary>
-/// UDP listeners responsible for handling ASE query requests
+/// Handles ASE queries on the game port + 123.
 /// </summary>
 public class AseUdpListener
 {
     private const int cacheTime = 10 * 1000;
+    private const int asePortOffset = 123;
+
     private readonly IAseQueryService aseQueryService;
     private readonly ILogger logger;
-    private readonly IEnumerable<IPAddress> blockedIpAddresses;
+    private readonly HashSet<IPAddress> blockedIpAddresses;
 
     private readonly Cache<byte[]> fullCache;
     private readonly Cache<byte[]> lightCache;
     private readonly Cache<byte[]> xFireCache;
-    private readonly Dictionary<string, string> rules = new();
 
-    public AseUdpListener(IAseQueryService aseQueryService, ILogger logger, ushort port, bool isDebug, IEnumerable<IPAddress> blockedIpAddresses)
+    public AseUdpListener(
+        IAseQueryService aseQueryService,
+        ILogger logger,
+        ushort port,
+        bool isDebug,
+        IEnumerable<IPAddress> blockedIpAddresses)
     {
+        if (port <= asePortOffset)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(port),
+                port,
+                "The ASE port must be greater than 123.");
+        }
+
         this.aseQueryService = aseQueryService;
         this.logger = logger;
-        this.blockedIpAddresses = blockedIpAddresses;
+        this.blockedIpAddresses = new HashSet<IPAddress>(
+            blockedIpAddresses);
 
-        this.lightCache = new Cache<byte[]>(() => 
-            aseQueryService.QueryLight(port, isDebug ? Enums.VersionType.Custom : Enums.VersionType.Release)
-        , cacheTime);
-        this.xFireCache = new Cache<byte[]>(() => aseQueryService.QueryXFireLight(), cacheTime);
-        this.fullCache = new Cache<byte[]>(() => aseQueryService.QueryFull(port), cacheTime);
+        // The listener uses the ASE port, but responses contain the game port.
+        ushort gamePort = checked((ushort)(port - asePortOffset));
+
+        this.lightCache = new Cache<byte[]>(
+            () => this.aseQueryService.QueryLight(
+                gamePort,
+                isDebug
+                    ? Enums.VersionType.Custom
+                    : Enums.VersionType.Release),
+            cacheTime);
+
+        this.xFireCache = new Cache<byte[]>(
+            () => this.aseQueryService.QueryXFireLight(),
+            cacheTime);
+
+        this.fullCache = new Cache<byte[]>(
+            () => this.aseQueryService.QueryFull(gamePort),
+            cacheTime);
 
         StartListening(port);
     }
 
-    public void SetRule(string key, string value)
-    {
-        this.rules[key] = value;
-    }
+    public void SetRule(string key, string value) =>
+        this.aseQueryService.SetRule(key, value);
 
-    public bool RemoveRule(string key) => this.aseQueryService.RemoveRule(key);
+    public bool RemoveRule(string key) =>
+        this.aseQueryService.RemoveRule(key);
 
-    public string? GetRule(string key) => this.aseQueryService.GetRule(key);
+    public string? GetRule(string key) =>
+        this.aseQueryService.GetRule(key);
 
     private void OnUdpData(IAsyncResult result)
     {
-        if (result.AsyncState is UdpClient socket)
+        if (result.AsyncState is not UdpClient socket)
+            return;
+
+        try
+        {
+            IPEndPoint? source = new IPEndPoint(IPAddress.Any, 0);
+            byte[] message = socket.EndReceive(result, ref source);
+
+            if (source is null)
+                return;
+
+            if (this.blockedIpAddresses.Contains(source.Address))
+            {
+                this.logger.LogTrace(
+                    "Blocked ASE request from {ipAddress}",
+                    source.Address);
+
+                return;
+            }
+
+            if (message.Length == 0)
+                return;
+
+            AseQueryType queryType = (AseQueryType)message[0];
+
+            this.logger.LogTrace(
+                "ASE request received for query type {aseQueryType}",
+                queryType);
+
+            byte[]? data;
+
+            switch (queryType)
+            {
+                case AseQueryType.Full:
+                    data = this.fullCache.Get();
+                    break;
+
+                case AseQueryType.Light:
+                case AseQueryType.LightRelease:
+                    data = this.lightCache.Get();
+                    break;
+
+                case AseQueryType.XFire:
+                    data = this.xFireCache.Get();
+                    break;
+
+                case AseQueryType.Version:
+                    data = Encoding.ASCII.GetBytes(
+                        this.aseQueryService.GetVersion());
+                    break;
+
+                default:
+                    this.logger.LogTrace(
+                        "Ignored unknown ASE query byte {queryByte}",
+                        message[0]);
+
+                    return;
+            }
+
+            if (data is null || data.Length == 0)
+                return;
+
+            socket.Send(data, data.Length, source);
+        }
+        catch (ObjectDisposedException)
+        {
+            // The listener socket has been closed.
+        }
+        catch (Exception exception)
+        {
+            this.logger.LogError(
+                exception,
+                "ASE request failed: {ExceptionDetails}",
+                exception.ToString());
+        }
+        finally
         {
             try
             {
-                IPEndPoint? source = new IPEndPoint(0, 0);
-                byte[] message = socket.EndReceive(result, ref source);
-                AseQueryType queryType = (AseQueryType)(message[0]);
-
-                this.logger.LogTrace("ASE request received for query type {aseQueryType}", queryType);
-
-                if (source?.Address != null && this.blockedIpAddresses.Contains(source.Address))
-                {
-                    this.logger.LogTrace("Blocked ASE request from {ipAddress}", source.Address);
-                    return;
-                }
-
-                byte[] data = queryType switch
-                {
-                    AseQueryType.Full => this.fullCache.Get(),
-                    AseQueryType.Light => this.lightCache.Get(),
-                    AseQueryType.LightRelease => this.lightCache.Get(),
-                    AseQueryType.XFire => this.xFireCache.Get(),
-                    AseQueryType.Version => this.aseQueryService.GetVersion().Select(c => (byte)c).ToArray(),
-                    _ => throw new NotImplementedException($"'{message[0]}' is not a valid ASE query"),
-                } ?? Array.Empty<byte>();
-
-                socket.Send(data, data.Length, source);
+                socket.BeginReceive(OnUdpData, socket);
             }
-            catch (Exception e)
+            catch (ObjectDisposedException)
             {
-                this.logger.LogError(e, "ASE request failed");
+                // A closed socket cannot receive another request.
             }
-            finally
+            catch (Exception exception)
             {
-                socket.BeginReceive(new AsyncCallback(OnUdpData), socket);
+                this.logger.LogError(
+                    exception,
+                    "Unable to resume receiving ASE requests");
             }
         }
     }
 
     private void StartListening(ushort port)
     {
-        UdpClient socket = new UdpClient(port);
-        socket.BeginReceive(new AsyncCallback(OnUdpData), socket);
+        var socket = new UdpClient(port);
+
+        try
+        {
+            socket.BeginReceive(OnUdpData, socket);
+        }
+        catch
+        {
+            socket.Dispose();
+            throw;
+        }
     }
 }
