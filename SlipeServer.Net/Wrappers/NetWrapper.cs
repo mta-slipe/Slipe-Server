@@ -57,6 +57,28 @@ public class NetWrapper : IDisposable, INetWrapper
     [DllImport(wrapperDllpath, EntryPoint = "resendPlayerACInfo", CallingConvention = CallingConvention.StdCall)]
     private static extern void ResendPlayerACInfo(ushort id, ulong binaryAddress);
 
+    [DllImport(
+    wrapperDllpath,
+    EntryPoint = "getAsePingStatus",
+    ExactSpelling = true,
+    CallingConvention = CallingConvention.StdCall)]
+    private static extern int GetAsePingStatusNative(
+    ushort id,
+    [Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 2)]
+    byte[] buffer,
+    int capacity);
+
+    [DllImport(
+        wrapperDllpath,
+        EntryPoint = "getAseNetRoute",
+        ExactSpelling = true,
+        CallingConvention = CallingConvention.StdCall)]
+    private static extern int GetAseNetRouteNative(
+        ushort id,
+        [Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 2)]
+    byte[] buffer,
+        int capacity);
+
 #pragma warning restore CA2101 // Specify marshaling for P/Invoke string arguments
 
     private readonly PacketCallback packetInterceptorDelegate;
@@ -138,6 +160,50 @@ public class NetWrapper : IDisposable, INetWrapper
         GetClientSerialAndVersion(this.id, binaryAddress, serial, extra, version);
 
         return new Tuple<string, string, string>(serial.ToString(), extra.ToString(), version.ToString());
+    }
+
+    public byte[] GetAsePingStatus()
+    {
+        byte[] buffer = new byte[32];
+
+        int length = GetAsePingStatusNative(
+            this.id,
+            buffer,
+            buffer.Length);
+
+        return CopyAseResult(buffer, length, "GetPingStatus");
+    }
+
+    public byte[] GetAseNetRoute()
+    {
+        byte[] buffer = new byte[32];
+
+        int length = GetAseNetRouteNative(
+            this.id,
+            buffer,
+            buffer.Length);
+
+        return CopyAseResult(buffer, length, "GetNetRoute");
+    }
+
+    private static byte[] CopyAseResult(
+        byte[] buffer,
+        int length,
+        string operation)
+    {
+        if (length < 0)
+        {
+            throw new InvalidOperationException(
+                $"Native ASE operation {operation} failed: {length}.");
+        }
+
+        if (length > buffer.Length)
+        {
+            throw new InvalidOperationException(
+                $"Native ASE operation {operation} returned an invalid length: {length}.");
+        }
+
+        return buffer.AsSpan(0, length).ToArray();
     }
 
     public IPAddress GetPlayerIp(ulong binaryAddress)

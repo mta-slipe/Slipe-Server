@@ -25,6 +25,8 @@ public interface INetWrapper
         IEnumerable<SpecialDetection> enabledSpecialDetections,
         DataFile disallowedDataFiles
     );
+    byte[] GetAsePingStatus();
+    byte[] GetAseNetRoute();
 
     void Start();
     void Stop();
