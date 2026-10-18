@@ -1,0 +1,154 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<Platforms>AnyCPU;x64;x86;ARM64;ARM32</Platforms>
+		<Nullable>enable</Nullable>
+		<Authors>Slipe</Authors>
+		<Company></Company>
+		<Product>Slipe Server</Product>
+		<PackageProjectUrl>https://github.com/mta-slipe/Slipe-server</PackageProjectUrl>
+		<PackageIcon>slipe-logo.png</PackageIcon>
+		<RepositoryUrl>https://github.com/mta-slipe/Slipe-server</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<Description>MTA San Andreas net library binaries and NetWrapper implementation for Slipe Server</Description>
+	</PropertyGroup>
+
+	<ItemGroup Condition="'$(Platform)' == 'x64' OR ('$(Platform)' == 'AnyCPU' AND '$(Configuration)' == 'Release')">
+		<ContentWithTargetPath Include="Binaries\x64\net_d.dll" Pack="true" PackagePath="\build\x64">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<TargetPath>net_d.dll</TargetPath>
+		</ContentWithTargetPath>
+		<ContentWithTargetPath Include="Binaries\x64\net.dll" Pack="true" PackagePath="\build\x64">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<TargetPath>net.dll</TargetPath>
+		</ContentWithTargetPath>
+		<ContentWithTargetPath Include="Binaries\x64\net.so" Pack="true" PackagePath="\build\x64">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<TargetPath>net.so</TargetPath>
+		</ContentWithTargetPath>
+		<ContentWithTargetPath Include="Binaries\x64\NetModuleWrapper.so" Pack="true" PackagePath="\build\x64">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<TargetPath>NetModuleWrapper.so</TargetPath>
+		</ContentWithTargetPath>
+		<ContentWithTargetPath Include="Binaries\x64\NetModuleWrapper.dll" Pack="true" PackagePath="\build\x64">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<TargetPath>NetModuleWrapper.dll</TargetPath>
+		</ContentWithTargetPath>
+		<ContentWithTargetPath Include="Binaries\x64\pthread.dll" Pack="true" PackagePath="\build\x64">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<TargetPath>pthread.dll</TargetPath>
+		</ContentWithTargetPath>
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(Platform)' == 'ARM64'">
+		<ContentWithTargetPath Include="Binaries\arm64\net.dll" Pack="true" PackagePath="\build\arm64">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<TargetPath>net.dll</TargetPath>
+		</ContentWithTargetPath>
+		<ContentWithTargetPath Include="Binaries\arm64\net.so" Pack="true" PackagePath="\build\arm64">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<TargetPath>net.so</TargetPath>
+		</ContentWithTargetPath>
+		<ContentWithTargetPath Include="Binaries\arm64\NetModuleWrapper.so" Pack="true" PackagePath="\build\arm64">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<TargetPath>NetModuleWrapper.so</TargetPath>
+		</ContentWithTargetPath>
+		<ContentWithTargetPath Include="Binaries\arm64\pthread.dll" Pack="true" PackagePath="\build\arm64">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<TargetPath>pthread.dll</TargetPath>
+		</ContentWithTargetPath>
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(Platform)' == 'x86' OR ('$(Platform)' == 'AnyCPU' AND '$(Configuration)' == 'Debug')">
+		<ContentWithTargetPath Include="Binaries\x86\net_d.dll" Pack="true" PackagePath="\build\x86">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<TargetPath>net_d.dll</TargetPath>
+		</ContentWithTargetPath>
+		<ContentWithTargetPath Include="Binaries\x86\net.dll" Pack="true" PackagePath="\build\x86">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<TargetPath>net.dll</TargetPath>
+		</ContentWithTargetPath>
+		<ContentWithTargetPath Include="Binaries\x86\net.so" Pack="true" PackagePath="\build\x86">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<TargetPath>net.so</TargetPath>
+		</ContentWithTargetPath>
+		<ContentWithTargetPath Include="Binaries\x86\NetModuleWrapper.so" Pack="true" PackagePath="\build\x86">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<TargetPath>NetModuleWrapper.so</TargetPath>
+		</ContentWithTargetPath>
+		<ContentWithTargetPath Include="Binaries\x86\NetModuleWrapper.dll" Pack="true" PackagePath="\build\x86">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<TargetPath>NetModuleWrapper.dll</TargetPath>
+		</ContentWithTargetPath>
+		<ContentWithTargetPath Include="Binaries\x86\pthread.dll" Pack="true" PackagePath="\build\x86">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<TargetPath>pthread.dll</TargetPath>
+		</ContentWithTargetPath>
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(Platform)' == 'ARM32'">
+		<ContentWithTargetPath Include="Binaries\arm32\net.so" Pack="true" PackagePath="\build\arm32">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<TargetPath>net.so</TargetPath>
+		</ContentWithTargetPath>
+		<ContentWithTargetPath Include="Binaries\arm32\NetModuleWrapper.so" Pack="true" PackagePath="\build\arm32">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<TargetPath>NetModuleWrapper.so</TargetPath>
+		</ContentWithTargetPath>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="Binaries\x86\net.dll" Pack="true" PackagePath="\runtimes\win-x86\native"></Content>
+		<Content Include="Binaries\x86\net_d.dll" Pack="true" PackagePath="\runtimes\win-x86\native"></Content>
+		<Content Include="Binaries\x86\NetModuleWrapper.dll" Pack="true" PackagePath="\runtimes\win-x86\native"></Content>
+		<Content Include="Binaries\x86\pthread.dll" Pack="true" PackagePath="\runtimes\win-x86\native"></Content>
+
+		<Content Include="Binaries\x86\net.so" Pack="true" PackagePath="\runtimes\linux-x86\native"></Content>
+		<Content Include="Binaries\x86\NetModuleWrapper.so" Pack="true" PackagePath="\runtimes\linux-x86\native"></Content>
+
+		<Content Include="Binaries\arm32\net.so" Pack="true" PackagePath="\runtimes\linux-arm32\native"></Content>
+		<Content Include="Binaries\arm32\NetModuleWrapper.so" Pack="true" PackagePath="\runtimes\linux-arm32\native"></Content>
+
+
+		<Content Include="Binaries\x64\net.dll" Pack="true" PackagePath="\runtimes\win-x64\native"></Content>
+		<Content Include="Binaries\x64\net_d.dll" Pack="true" PackagePath="\runtimes\win-x64\native"></Content>
+		<Content Include="Binaries\x64\NetModuleWrapper.dll" Pack="true" PackagePath="\runtimes\win-x64\native"></Content>
+		<Content Include="Binaries\x64\pthread.dll" Pack="true" PackagePath="\runtimes\win-x64\native"></Content>
+
+		<Content Include="Binaries\arm64\pthread.dll" Pack="true" PackagePath="\runtimes\win-arm64\native"></Content>
+		<Content Include="Binaries\arm64\net.dll" Pack="true" PackagePath="\runtimes\win-arm64\native"></Content>
+
+		<Content Include="Binaries\x64\net.so" Pack="true" PackagePath="\runtimes\linux-x64\native"></Content>
+		<Content Include="Binaries\x64\NetModuleWrapper.so" Pack="true" PackagePath="\runtimes\linux-x64\native"></Content>
+
+		<Content Include="Binaries\arm64\net.so" Pack="true" PackagePath="\runtimes\linux-arm64\native"></Content>
+		<Content Include="Binaries\arm64\NetModuleWrapper.so" Pack="true" PackagePath="\runtimes\linux-arm64\native"></Content>
+
+
+		<Content Include="SlipeServer.Net.MtaBinaries.targets" Pack="true" PackagePath="\build\net9.0\SlipeServer.Net.MtaBinaries.targets"></Content>
+		<Content Include="SlipeServer.Net.MtaBinaries.targets" Pack="true" PackagePath="\buildTransitive\net9.0\SlipeServer.Net.MtaBinaries.targets"></Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\SlipeServer.Net.Core\SlipeServer.Net.Core.csproj" />
+		<ProjectReference Include="..\SlipeServer.Packets\SlipeServer.Packets.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\LICENSE">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+		<None Include="..\slipe-logo.png">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Binaries\arm32\" />
+		<Folder Include="Binaries\arm64\" />
+	</ItemGroup>
+
+</Project>
