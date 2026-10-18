@@ -1,10 +1,11 @@
-﻿using SlipeServer.Server.Clients;
+using SlipeServer.Server.Clients;
 using SlipeServer.Server.ElementCollections;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -27,54 +28,38 @@ public class AseQueryService(
     private const int LightPacketBudget = 1340;
 
     private readonly AseVersion aseVersion = AseVersion.v1_6;
-    private readonly Dictionary<string, string> rules = [];
-    private readonly object rulesLock = new();
+    private readonly ConcurrentDictionary<string, string> rules = new();
 
     public bool ShowPlayers { get; set; } = true;
 
-    public void SetRule(string key, string value)
-    {
-        lock (this.rulesLock)
-        {
-            this.rules[key] = value;
-        }
-    }
+    public void SetRule(string key, string value) => this.rules[key] = value;
 
-    public bool RemoveRule(string key)
-    {
-        lock (this.rulesLock)
-        {
-            return this.rules.Remove(key);
-        }
-    }
+    public bool RemoveRule(string key) => this.rules.TryRemove(key, out _);
 
-    public string? GetRule(string key)
-    {
-        lock (this.rulesLock)
-        {
-            this.rules.TryGetValue(key, out string? value);
-            return value;
-        }
-    }
+    public string? GetRule(string key) =>
+        this.rules.TryGetValue(key, out string? value) ? value : null;
 
-    private KeyValuePair<string, string>[] GetRules()
-    {
-        lock (this.rulesLock)
-        {
-            return this.rules.ToArray();
-        }
-    }
+    private KeyValuePair<string, string>[] GetRules() => this.rules.ToArray();
 
-    private Player[] GetPlayers()
+    private Player[] GetPlayers(ushort port)
     {
         if (!this.ShowPlayers)
             return [];
+
+        var wrapper = configuration.AsePlayerCountMode switch
+        {
+            AsePlayerCountMode.VerifiedPerWrapper => mtaServer.GetNetWrapper(port),
+            AsePlayerCountMode.Aggregate => null,
+            _ => throw new ArgumentOutOfRangeException(nameof(configuration.AsePlayerCountMode))
+        };
 
         return elementCollection
             .GetByType<Player>(ElementType.Player)
             .Where(player =>
                 player.Client is not FakeClient &&
-                player.Client.ConnectionState == ClientConnectionState.Joined)
+                player.Client.IsConnected &&
+                player.Client.ConnectionState == ClientConnectionState.Joined &&
+                (wrapper is null || ReferenceEquals(player.Client.NetWrapper, wrapper)))
             .ToArray();
     }
 
@@ -155,7 +140,7 @@ public class AseQueryService(
 
     public byte[] QueryFull(ushort port)
     {
-        Player[] players = GetPlayers();
+        Player[] players = GetPlayers(port);
         KeyValuePair<string, string>[] ruleSnapshot = GetRules();
 
         using var stream = new MemoryStream();
@@ -203,9 +188,9 @@ public class AseQueryService(
         return stream.ToArray();
     }
 
-    public byte[] QueryXFireLight()
+    public byte[] QueryXFireLight(ushort? port = null)
     {
-        int playerCount = GetPlayers().Length;
+        int playerCount = GetPlayers(port ?? configuration.Port).Length;
 
         byte[] countBytes = Encoding.ASCII.GetBytes(
             $"{Number(playerCount)}/{Number(configuration.MaxPlayerCount)}");
@@ -249,7 +234,7 @@ public class AseQueryService(
         ushort port,
         VersionType version = VersionType.Release)
     {
-        Player[] players = GetPlayers();
+        Player[] players = GetPlayers(port);
 
         byte[][] playerNames = players
             .Select(GetPlayerName)
@@ -268,13 +253,20 @@ public class AseQueryService(
 
         string buildType = Number((byte)version);
 
-        // TODO: Use metadata matching the actual network module/build.
-        string buildNumber = "0";
+        string buildNumber = Number(configuration.AseBuildNumber);
 
-        var netWrapper = mtaServer.GetNetWrapper(port);
+        // Hidden players must not be revealed again by native verification data.
+        var netWrapper = this.ShowPlayers &&
+            configuration.AsePlayerCountMode == AsePlayerCountMode.VerifiedPerWrapper
+                ? mtaServer.GetNetWrapper(port)
+                : null;
 
-        byte[] pingStatus = netWrapper.GetAsePingStatus();
-        byte[] netRouteBytes = netWrapper.GetAseNetRoute();
+        byte[] pingStatus = netWrapper is null
+            ? Array.Empty<byte>()
+            : netWrapper.GetAsePingStatus();
+        byte[] netRouteBytes = netWrapper is null
+            ? Array.Empty<byte>()
+            : netWrapper.GetAseNetRoute();
 
         string strUpTime = Number(
             mtaServer.Uptime.Ticks / TimeSpan.TicksPerSecond);

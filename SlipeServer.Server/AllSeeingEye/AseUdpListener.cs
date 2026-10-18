@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -56,7 +55,7 @@ public class AseUdpListener
             cacheTime);
 
         this.xFireCache = new Cache<byte[]>(
-            () => this.aseQueryService.QueryXFireLight(),
+            () => this.aseQueryService.QueryXFireLight(gamePort),
             cacheTime);
 
         this.fullCache = new Cache<byte[]>(
@@ -106,35 +105,14 @@ public class AseUdpListener
                 "ASE request received for query type {aseQueryType}",
                 queryType);
 
-            byte[]? data;
-
-            switch (queryType)
+            byte[]? data = queryType switch
             {
-                case AseQueryType.Full:
-                    data = this.fullCache.Get();
-                    break;
-
-                case AseQueryType.Light:
-                case AseQueryType.LightRelease:
-                    data = this.lightCache.Get();
-                    break;
-
-                case AseQueryType.XFire:
-                    data = this.xFireCache.Get();
-                    break;
-
-                case AseQueryType.Version:
-                    data = Encoding.ASCII.GetBytes(
-                        this.aseQueryService.GetVersion());
-                    break;
-
-                default:
-                    this.logger.LogTrace(
-                        "Ignored unknown ASE query byte {queryByte}",
-                        message[0]);
-
-                    return;
-            }
+                AseQueryType.Full => this.fullCache.Get(),
+                AseQueryType.Light or AseQueryType.LightRelease => this.lightCache.Get(),
+                AseQueryType.XFire => this.xFireCache.Get(),
+                AseQueryType.Version => Encoding.ASCII.GetBytes(this.aseQueryService.GetVersion()),
+                _ => null
+            };
 
             if (data is null || data.Length == 0)
                 return;

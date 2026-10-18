@@ -32,6 +32,7 @@ public class AseQuerySerializationTests
         return new AseQueryService(server.Object, new Configuration
         {
             ServerName = name,
+            AsePlayerCountMode = SlipeServer.Server.Enums.AsePlayerCountMode.VerifiedPerWrapper,
             Port = 22003,
             HttpPort = 22005,
             MaxPlayerCount = 32
