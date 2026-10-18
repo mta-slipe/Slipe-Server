@@ -128,8 +128,12 @@ public static class ElementPropertyRelayingExtensions
 
     private static void RelayPositionChange(Element sender, ElementChangedEventArgs<Vector3> args)
     {
+        // Server-side position changes are warps, matching the default of MTA's setElementPosition. The
+        // client only teleports an element, moving it within the game world and resetting its interpolation,
+        // when the warp byte is absent; a non-warp move only writes the position matrix, which leaves the
+        // element at its old position as far as the game world is concerned, making it invisible.
         if (!args.IsSync) 
-            RelayChange(sender, ElementPacketFactory.CreateSetPositionPacket(sender, args.NewValue));
+            RelayChange(sender, ElementPacketFactory.CreateSetPositionPacket(sender, args.NewValue, isWarp: true));
     }
 
     private static void RelayRotationChange(Element sender, ElementChangedEventArgs<Vector3> args)
