@@ -200,6 +200,8 @@ public class TestingServer<TPlayer> : MtaServer<TPlayer>
 
     public void ResetPacketCountVerification() => this.sendPacketCalls.Clear();
 
+    public IEnumerable<SendPacketCall> GetSentPackets(Player to) => this.sendPacketCalls.Where(x => x.Address == to.GetAddress()).ToArray();
+
     public uint GenerateBinaryAddress() => ++this.binaryAddressCounter;
 
 

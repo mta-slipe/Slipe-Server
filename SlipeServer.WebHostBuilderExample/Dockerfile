@@ -13,6 +13,8 @@ COPY ["SlipeServer.ConfigurationProviders/SlipeServer.ConfigurationProviders.csp
 COPY ["SlipeServer.Hosting/SlipeServer.Hosting.csproj", "SlipeServer.Hosting/"]
 COPY ["SlipeServer.Server/SlipeServer.Server.csproj", "SlipeServer.Server/"]
 COPY ["SlipeServer.Net/SlipeServer.Net.csproj", "SlipeServer.Net/"]
+COPY ["SlipeServer.Net.Core/SlipeServer.Net.Core.csproj", "SlipeServer.Net.Core/"]
+COPY ["SlipeServer.Net.MtaBinaries/SlipeServer.Net.MtaBinaries.csproj", "SlipeServer.Net.MtaBinaries/"]
 COPY ["SlipeServer.Packets/SlipeServer.Packets.csproj", "SlipeServer.Packets/"]
 COPY ["SlipeServer.SourceGenerators/SlipeServer.SourceGenerators.csproj", "SlipeServer.SourceGenerators/"]
 COPY ["SlipeServer.LuaControllers/SlipeServer.LuaControllers.csproj", "SlipeServer.LuaControllers/"]

@@ -280,8 +280,8 @@ static string ResolveOutputDir(string[] args)
         string dir = root;
         for (int i = 0; i <= 4; i++)
         {
-            if (Directory.Exists(Path.Combine(dir, "SlipeServer.Net")))
-                return Path.Combine(dir, "SlipeServer.Net", "Binaries");
+            if (Directory.Exists(Path.Combine(dir, "SlipeServer.Net.MtaBinaries")))
+                return Path.Combine(dir, "SlipeServer.Net.MtaBinaries", "Binaries");
 
             string? parent = Path.GetDirectoryName(dir);
             if (parent is null) break;
@@ -289,7 +289,7 @@ static string ResolveOutputDir(string[] args)
         }
     }
 
-    return Path.Combine(Directory.GetCurrentDirectory(), "..", "SlipeServer.Net", "Binaries");
+    return Path.Combine(Directory.GetCurrentDirectory(), "..", "SlipeServer.Net.MtaBinaries", "Binaries");
 }
 
 static BuildSource[] FilterSources(BuildSource[] all, string[] args)
@@ -315,7 +315,7 @@ static string FormatBytes(long bytes) => bytes switch
 static void PrintHelp()
 {
     Console.WriteLine("""
-        NetDllUpdater -- Downloads MTA:SA net binaries into SlipeServer.Net/Binaries
+        NetDllUpdater -- Downloads MTA:SA net binaries into SlipeServer.Net.MtaBinaries/Binaries
 
         Usage:
           NetDllUpdater [options] [platforms...]

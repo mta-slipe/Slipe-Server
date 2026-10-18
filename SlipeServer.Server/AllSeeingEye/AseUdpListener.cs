@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 
 namespace SlipeServer.Server.AllSeeingEye;
 
@@ -105,17 +105,15 @@ public class AseUdpListener
                 "ASE request received for query type {aseQueryType}",
                 queryType);
 
-            byte[]? data = queryType switch
+            byte[] data = queryType switch
             {
                 AseQueryType.Full => this.fullCache.Get(),
-                AseQueryType.Light or AseQueryType.LightRelease => this.lightCache.Get(),
+                AseQueryType.Light => this.lightCache.Get(),
+                AseQueryType.LightRelease => this.lightCache.Get(),
                 AseQueryType.XFire => this.xFireCache.Get(),
-                AseQueryType.Version => Encoding.ASCII.GetBytes(this.aseQueryService.GetVersion()),
-                _ => null
-            };
-
-            if (data is null || data.Length == 0)
-                return;
+                AseQueryType.Version => this.aseQueryService.GetVersion().Select(c => (byte)c).ToArray(),
+                _ => throw new NotImplementedException($"'{message[0]}' is not a valid ASE query"),
+            } ?? Array.Empty<byte>();
 
             socket.Send(data, data.Length, source);
         }

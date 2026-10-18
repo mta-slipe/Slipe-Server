@@ -28,6 +28,7 @@ public class AsePlayerCountModeTests
         public Mock<IMtaServer> Server { get; } = new(MockBehavior.Strict);
         public Mock<INetWrapper> Primary { get; } = new();
         public Mock<INetWrapper> Secondary { get; } = new();
+        public System.Collections.Generic.List<Player> Players { get; } = new();
         public AseQueryService Service { get; }
 
         public Scenario(AsePlayerCountMode? mode = null)
@@ -61,8 +62,9 @@ public class AsePlayerCountModeTests
             };
 
             var elements = new Mock<IElementCollection>(MockBehavior.Strict);
+            Players.AddRange(new Player[] { primaryPlayer, secondaryPlayer, disconnected, joining, fake });
             elements.Setup(x => x.GetByType<Player>(ElementType.Player))
-                .Returns(new Player[] { primaryPlayer, secondaryPlayer, disconnected, joining, fake });
+                .Returns(() => Players);
             Service = new AseQueryService(Server.Object, Configuration, elements.Object);
         }
     }
@@ -113,9 +115,9 @@ public class AsePlayerCountModeTests
         Assert.Equal(new[] { "Primary", "Secondary" }, response.Names);
         string[] fields = MetadataFields(response.Metadata);
         Assert.Equal("2/32", fields[1]);
-        // Missing native fields keep the advertised total explicitly unverified.
+        // Preserve the legacy count carrier rather than an empty status.
         byte[] expected = Encoding.ASCII.GetBytes("None\0" + "2/32\0" + "9\0" + "24025\0")
-            .Concat(new byte[] { 0, 0 })
+            .Concat(new byte[] { 0x8D, 0x72, 2, 0, 0xFF, 0xFF, 0, 0 })
             .Concat(Encoding.ASCII.GetBytes("500\0" + "40680")).ToArray();
         Assert.Equal(expected, response.Metadata);
         scenario.Server.Verify(x => x.GetNetWrapper(It.IsAny<ushort>()), Times.Never);
@@ -135,6 +137,29 @@ public class AsePlayerCountModeTests
         Assert.Equal("0/32", MetadataFields(response.Metadata)[1]);
         scenario.Server.Verify(x => x.GetNetWrapper(It.IsAny<ushort>()), Times.Never);
         scenario.Primary.Verify(x => x.GetAsePingStatus(), Times.Never);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(255)]
+    [InlineData(256)]
+    public void AggregateUsesLegacyUnverifiedCountCarrier(int count)
+    {
+        var scenario = new Scenario();
+        scenario.Configuration.MaxPlayerCount = 2000;
+        scenario.Players.Clear();
+        for (int index = 0; index < count; index++)
+            scenario.Players.Add(new LightTestPlayer(scenario.Primary.Object, (ulong)index) { Name = "Player" });
+
+        var response = ReadLight(scenario.Service.QueryLight(22999));
+        int statusOffset = Encoding.ASCII.GetByteCount($"None\0{count}/2000\0" + "9\0" + "24025\0");
+        Assert.Equal(new byte[] { 0x8D, 0x72, (byte)(count & 0xFF), (byte)(count >> 8), 0xFF, 0xFF },
+            response.Metadata.Skip(statusOffset).Take(6).ToArray());
+        Assert.Equal(Math.Min(count, 255), response.Count);
+        Assert.Equal(count, response.Names.Length);
+        scenario.Server.Verify(x => x.GetNetWrapper(It.IsAny<ushort>()), Times.Never);
     }
 
     [Theory]

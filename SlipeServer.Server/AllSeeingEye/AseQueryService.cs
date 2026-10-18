@@ -4,6 +4,7 @@ using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
 using SlipeServer.Server.Extensions;
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Globalization;
@@ -65,6 +66,15 @@ public class AseQueryService(
 
     private static string Number(long value) =>
         value.ToString(CultureInfo.InvariantCulture);
+
+    private static byte[] CreateUnverifiedPingStatus(int playerCount)
+    {
+        // Preserve Slipe's legacy, unverified count carrier. An empty status
+        // is interpreted as one player by the tested MTA client.
+        byte[] status = [0x8D, 0x72, 0, 0, 0xFF, 0xFF];
+        BinaryPrimitives.WriteUInt16LittleEndian(status.AsSpan(2, 2), checked((ushort)playerCount));
+        return status;
+    }
 
     private static string GetPlayerName(Player player)
     {
@@ -262,7 +272,7 @@ public class AseQueryService(
                 : null;
 
         byte[] pingStatus = netWrapper is null
-            ? Array.Empty<byte>()
+            ? CreateUnverifiedPingStatus(playerCount)
             : netWrapper.GetAsePingStatus();
         byte[] netRouteBytes = netWrapper is null
             ? Array.Empty<byte>()
