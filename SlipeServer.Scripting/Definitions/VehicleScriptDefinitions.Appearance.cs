@@ -12,8 +12,8 @@ public partial class VehicleScriptDefinitions
         var c = vehicle.Colors;
         return (c.Primary.R, c.Primary.G, c.Primary.B,
                 c.Secondary.R, c.Secondary.G, c.Secondary.B,
-                c.Color3.R, c.Color3.G, c.Color3.B,
-                c.Color4.R, c.Color4.G, c.Color4.B);
+                c.Color3?.R ?? 0, c.Color3?.G ?? 0, c.Color3?.B ?? 0,
+                c.Color4?.R ?? 0, c.Color4?.G ?? 0, c.Color4?.B ?? 0);
     }
 
     [ScriptFunctionDefinition("setVehicleColor")]

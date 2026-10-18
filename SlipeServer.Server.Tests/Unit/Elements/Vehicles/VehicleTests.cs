@@ -2,6 +2,7 @@
 using FluentAssertions.Execution;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
+using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using Xunit;
@@ -53,5 +54,38 @@ public class VehicleTests
         monitor.Clear();
         vehicle.Fix();
         monitor.OccurredEvents.Select(x => x.EventName).Should().BeEquivalentTo(["HealthChanged", "DoorStateChanged", "WheelStateChanged", "PanelStateChanged", "Fixed"]);
+    }
+
+    [Fact]
+    public void VehicleColors_UnusedColorsAreNull()
+    {
+        var vehicle = new Vehicle(VehicleModel.Alpha, Vector3.Zero);
+
+        vehicle.Colors.AsArray().Should().Equal([Color.White, Color.White, null, null]);
+    }
+
+    [Fact]
+    public void VehicleColors_DoNotRaiseColorChangedWhenColorIsUnchanged()
+    {
+        var vehicle = new Vehicle(VehicleModel.Alpha, Vector3.Zero);
+        using var monitor = vehicle.Monitor();
+
+        var primary = vehicle.Colors.Primary;
+        vehicle.Colors.Primary = primary;
+        vehicle.Colors.Color3 = null;
+
+        monitor.OccurredEvents.Select(x => x.EventName).Should().NotContain("ColorChanged");
+    }
+
+    [Fact]
+    public void VehicleColors_RaiseColorChangedWhenColorChanges()
+    {
+        var vehicle = new Vehicle(VehicleModel.Alpha, Vector3.Zero);
+        using var monitor = vehicle.Monitor();
+
+        vehicle.Colors.Primary = Color.Red;
+        vehicle.Colors.Color3 = Color.Blue;
+
+        monitor.OccurredEvents.Select(x => x.EventName).Should().Equal("ColorChanged", "ColorChanged");
     }
 }

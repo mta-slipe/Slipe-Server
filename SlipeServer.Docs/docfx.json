@@ -6,7 +6,9 @@
           "src": "../",
           "files": [
             "**SlipeServer.Packets.csproj",
-            "**SlipeServer.Net.csproj"
+            "**SlipeServer.Net.csproj",
+            "**SlipeServer.Net.Core.csproj",
+            "**SlipeServer.Net.MtaBinaries.csproj"
           ]
         }
       ],

@@ -49,6 +49,7 @@ public class DropInReplacementTestingServer : MtaServer<LightTestPlayer>
                 new DropInReplacementResourceService(
                     sp.GetRequiredService<IMtaServer>(),
                     sp.GetRequiredService<IResourceProvider>(),
+                    sp.GetRequiredService<Configuration>(),
                     sp.GetRequiredService<ILogger<DropInReplacementResourceProvider>>(),
                     sp.GetRequiredService<IDropInReplacementResourceLuaService>(),
                     allowMissingIncludes: true));

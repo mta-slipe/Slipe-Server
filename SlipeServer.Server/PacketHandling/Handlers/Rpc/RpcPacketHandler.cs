@@ -86,8 +86,20 @@ public class RpcPacketHandler(
         client.SendPacket(packet);
 
         foreach (var player in otherPlayers)
-            if (player.Vehicle != null && player.Seat.HasValue)
-                client.SendPacket(new WarpIntoVehicleRpcPacket(player.Id, player.Vehicle.Id, player.Seat.Value, player.TimeContext));
+        {
+            if (player.Vehicle == null || !player.Seat.HasValue)
+                continue;
+
+            // The player is already an occupant, only the client of the joining player needs to be
+            // told about it. The existing sync time context is sent along instead of generating a
+            // new one, since the other clients would not receive the new context.
+            new WarpIntoVehicleRpcPacket(
+                player.Id,
+                player.Vehicle.Id,
+                player.Seat.Value,
+                player.TimeContext
+            ).SendTo(client.Player);
+        }
 
         var newPlayerListPacket = PlayerPacketFactory.CreatePlayerListPacket([client.Player], false);
         newPlayerListPacket.SendTo(otherPlayers);

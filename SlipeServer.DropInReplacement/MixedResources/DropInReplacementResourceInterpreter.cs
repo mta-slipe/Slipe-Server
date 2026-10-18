@@ -59,6 +59,10 @@ public class DropInReplacementResourceInterpreter : IResourceInterpreter
         if (meta == null)
             throw new Exception($"Unable to parse meta file for resource {name}");
 
+        var minMtaVersion = GetMinMtaVersionForMetaXmlResource(meta.Value);
+        var (minServerVersion, minClientVersion) = Resource.ResolveMinMtaVersion(
+            minMtaVersion?.Server, minMtaVersion?.Client, minMtaVersion?.Both);
+
         var resource = new MixedResource(mtaServer, rootElement, name, path)
         {
             PriorityGroup = (meta.Value.downloadPriorityGroup != null && meta.Value.downloadPriorityGroup.Length > 0) ? meta.Value.downloadPriorityGroup.First().Data : 0,
@@ -66,17 +70,22 @@ public class DropInReplacementResourceInterpreter : IResourceInterpreter
             ServerFiles = GetServerFilesForMetaXmlResource(meta.Value, files),
             Exports = [.. GetExportsForMetaXmlResource(meta.Value)],
             ServerExports = [.. GetServerExportsForMetaXmlResource(meta.Value)],
-            NoClientScripts = GetNoCacheFiles(meta.Value, files),
             IsOopEnabled = meta.Value.oops != null && meta.Value.oops.Any(x => x.Data.ToLower() == "true"),
             Settings = GetSettingsForMetaXmlResource(meta.Value),
             Info = GetInfoForMetaXmlResource(meta.Value),
             IncludedResources = [.. GetIncludesForMetaXmlResource(meta.Value)],
             Maps = [.. GetMapsForMetaXmlResource(meta.Value)],
             HtmlFiles = [.. GetHtmlFilesForMetaXmlResource(meta.Value)],
-            MinimumMtaVersion = GetMinMtaVersionForMetaXmlResource(meta.Value),
+            MinimumMtaVersion = minMtaVersion,
+            MinServerVersion = minServerVersion,
+            MinClientVersion = minClientVersion,
             AclRequestRights = [.. GetAclRequestRightsForMetaXmlResource(meta.Value)],
             SyncMapElementData = GetSyncMapElementData(meta.Value),
         };
+
+        foreach (var (scriptName, scriptSource) in GetNoCacheFiles(meta.Value, files))
+            resource.AddNoClientScript(scriptName, scriptSource);
+
         return resource;
     }
 

@@ -127,7 +127,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>copy ..\Debug\NetModuleWrapper.dll ..\SlipeServer.Net\Binaries\x86\NetModuleWrapper.dll /y</Command>
+      <Command>copy ..\Debug\NetModuleWrapper.dll ..\SlipeServer.Net.MtaBinaries\Binaries\x86\NetModuleWrapper.dll /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -141,11 +141,11 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <PostBuildEvent>
-        <Command>copy ..\x64\Debug\NetModuleWrapper.dll ..\SlipeServer.Net\Binaries\x64\NetModuleWrapper.dll /y</Command>
+        <Command>copy ..\x64\Debug\NetModuleWrapper.dll ..\SlipeServer.Net.MtaBinaries\Binaries\x64\NetModuleWrapper.dll /y</Command>
       </PostBuildEvent>
     </Link>
     <PostBuildEvent>
-      <Command>copy ..\x64\Debug\NetModuleWrapper.dll ..\SlipeServer.Net\Binaries\x64\NetModuleWrapper.dll /y</Command>
+      <Command>copy ..\x64\Debug\NetModuleWrapper.dll ..\SlipeServer.Net.MtaBinaries\Binaries\x64\NetModuleWrapper.dll /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
@@ -159,11 +159,11 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <PostBuildEvent>
-        <Command xmlns="http://schemas.microsoft.com/developer/msbuild/2003">copy ..\x64\Debug\NetModuleWrapper.dll ..\SlipeServer.Net\Binaries\x64\NetModuleWrapper.dll /y</Command>
+        <Command xmlns="http://schemas.microsoft.com/developer/msbuild/2003">copy ..\x64\Debug\NetModuleWrapper.dll ..\SlipeServer.Net.MtaBinaries\Binaries\x64\NetModuleWrapper.dll /y</Command>
       </PostBuildEvent>
     </Link>
     <PostBuildEvent>
-      <Command>copy ..\x64\Debug\NetModuleWrapper.dll ..\SlipeServer.Net\Binaries\x64\NetModuleWrapper.dll /y</Command>
+      <Command>copy ..\x64\Debug\NetModuleWrapper.dll ..\SlipeServer.Net.MtaBinaries\Binaries\x64\NetModuleWrapper.dll /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -184,7 +184,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>copy ..\Release\NetModuleWrapper.dll ..\SlipeServer.Net\Binaries\x86\NetModuleWrapper.dll /y</Command>
+      <Command>copy ..\Release\NetModuleWrapper.dll ..\SlipeServer.Net.MtaBinaries\Binaries\x86\NetModuleWrapper.dll /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -203,7 +203,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>copy ..\x64\Release\NetModuleWrapper.dll ..\SlipeServer.Net\Binaries\x64\NetModuleWrapper.dll /y</Command>
+      <Command>copy ..\x64\Release\NetModuleWrapper.dll ..\SlipeServer.Net.MtaBinaries\Binaries\x64\NetModuleWrapper.dll /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
@@ -222,7 +222,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>copy ..\x64\Release\NetModuleWrapper.dll ..\SlipeServer.Net\Binaries\x64\NetModuleWrapper.dll /y</Command>
+      <Command>copy ..\x64\Release\NetModuleWrapper.dll ..\SlipeServer.Net.MtaBinaries\Binaries\x64\NetModuleWrapper.dll /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

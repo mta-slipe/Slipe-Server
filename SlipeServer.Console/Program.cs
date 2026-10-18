@@ -138,6 +138,7 @@ public partial class Program
                 builder.AddScopedLogic<ScopedTestLogic2>();
                 builder.AddLogic<VehicleEntityAddTestLogic>();
                 builder.AddLogic<AttachmentTestLogic>();
+                builder.AddLogic<VehicleDetachTimeContextTestLogic>();
                 builder.AddLogic(typeof(TestLogic));
                 builder.AddLogic(typeof(NotVisibleToAllTestLogic));
                 builder.AddLogic(typeof(ColCuboidTestLogic));

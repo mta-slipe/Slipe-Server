@@ -4,8 +4,9 @@ using SlipeServer.Packets.Rpc;
 using SlipeServer.Server.PacketHandling.QueueHandlers;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
+using Timer = System.Timers.Timer;
 
 namespace SlipeServer.Server.PacketHandling.Handlers.QueueHandlers;
 
@@ -16,22 +17,37 @@ public class ScalingPacketQueueHandler<T> : BasePacketQueueHandler<T> where T : 
     private readonly ILogger logger;
     private readonly IPacketHandler<T> packetHandler;
     private readonly Timer timer;
-    private readonly Stack<Worker> workers;
-    protected TaskCompletionSource<int>? pulseTaskCompletionSource;
-    private readonly System.Threading.CancellationTokenSource stopCancellationTokenSource = new();
+    private readonly Stack<Worker> workers = [];
+    private readonly Lock workersLock = new();
+    private readonly CancellationTokenSource stopCancellationTokenSource = new();
+    private TaskCompletionSource<int>? pulseTaskCompletionSource;
+    private int activeWorkerCount;
+    private bool disposed;
 
-    protected struct Worker
+    /// <summary>
+    /// The number of worker loops that are currently running. This can briefly differ from the
+    /// configured worker count, since workers are started asynchronously and stop after their
+    /// current iteration.
+    /// </summary>
+    public int ActiveWorkerCount => Volatile.Read(ref this.activeWorkerCount);
+
+    private sealed class Worker
     {
-        public bool Active { get; set; }
+        public volatile bool Active = true;
+        public Task LoopTask = Task.CompletedTask;
     }
 
     public ScalingPacketQueueHandler(ILogger logger, IPacketHandler<T> packetHandler, QueueHandlerScalingConfig? config = null, int sleepTime = 10)
     {
+        if (sleepTime < 1)
+            throw new ArgumentOutOfRangeException(nameof(sleepTime), sleepTime, "Sleep time must be at least 1 millisecond.");
+
         this.logger = logger;
         this.packetHandler = packetHandler;
         this.config = config ?? new();
         this.sleepTime = sleepTime;
-        this.workers = new();
+
+        this.config.Validate();
 
         for (int i = 0; i < this.config.MinWorkerCount; i++)
         {
@@ -42,10 +58,8 @@ public class ScalingPacketQueueHandler<T> : BasePacketQueueHandler<T> where T : 
         {
             AutoReset = true,
         };
-        this.timer.Start();
         this.timer.Elapsed += (sender, args) => CheckWorkerCount();
-
-        this.pulseTaskCompletionSource = new();
+        this.timer.Start();
     }
 
     public ScalingPacketQueueHandler(ILogger logger, IPacketHandler<T> packetHandler)
@@ -55,98 +69,133 @@ public class ScalingPacketQueueHandler<T> : BasePacketQueueHandler<T> where T : 
 
     public void CheckWorkerCount()
     {
-        if (this.packetQueue.Count < this.config.QueueLowThreshold)
+        if (this.disposed)
+            return;
+
+        var queueCount = this.packetQueue.Count;
+        lock (this.workersLock)
         {
-            if (this.workers.Count > this.config.MinWorkerCount)
-                RemoveWorker();
-        } else if (this.packetQueue.Count > this.config.QueueHighThreshold)
-        {
-            if (this.workers.Count < this.config.MaxWorkerCount)
-                AddWorker();
+            if (queueCount < this.config.QueueLowThreshold)
+            {
+                if (this.workers.Count > this.config.MinWorkerCount)
+                    RemoveWorker();
+            }
+            else if (queueCount > this.config.QueueHighThreshold)
+            {
+                if (this.workers.Count < this.config.MaxWorkerCount)
+                    AddWorker();
+            }
         }
     }
 
     private void AddWorker()
     {
-        var worker = new Worker()
+        lock (this.workersLock)
         {
-            Active = true
-        };
-        this.workers.Push(worker);
-        Task.Run(() => PulsePacketTask(worker));
+            var worker = new Worker();
+            this.workers.Push(worker);
+            worker.LoopTask = Task.Run(() => PulsePacketTask(worker));
+        }
     }
 
     private void RemoveWorker()
     {
-        var worker = this.workers.Pop();
-        worker.Active = false;
-    }
-    
-    private bool TryRemoveWorker()
-    {
-        if(this.workers.TryPop(out var worker))
+        lock (this.workersLock)
         {
-            worker.Active = false;
-            return true;
+            if (this.workers.TryPop(out var worker))
+                worker.Active = false;
         }
-        return false;
     }
 
     private async Task PulsePacketTask(Worker worker)
     {
-        while (worker.Active)
+        using var ticker = new PeriodicTimer(TimeSpan.FromMilliseconds(this.sleepTime));
+        Interlocked.Increment(ref this.activeWorkerCount);
+        try
         {
-            while (this.packetQueue.TryDequeue(out var queueEntry))
+            while (worker.Active)
             {
-                try
+                while (this.packetQueue.TryDequeue(out var queueEntry))
                 {
-                    ClientContext.Current = queueEntry.Client;
-                    this.packetHandler.HandlePacket(queueEntry.Client, queueEntry.Packet);
-                    TriggerPacketHandled(queueEntry.Packet);
+                    try
+                    {
+                        ClientContext.Current = queueEntry.Client;
+                        this.packetHandler.HandlePacket(queueEntry.Client, queueEntry.Packet);
+                        TriggerPacketHandled(queueEntry.Packet);
+                    }
+                    catch (Exception e)
+                    {
+                        if (queueEntry.Packet is RpcPacket rpcPacket)
+                            this.logger.LogError(e, "Handling rpc packet ({FunctionId}) failed.", rpcPacket.FunctionId);
+                        else
+                            this.logger.LogError(e, "Handling packet ({Packet}) failed.", queueEntry.Packet);
+                    }
+                    finally
+                    {
+                        ClientContext.Current = null;
+                    }
                 }
-                catch (Exception e)
-                {
-                    if (queueEntry.Packet is RpcPacket rpcPacket)
-                        this.logger.LogError($"Handling rpcPacket ({rpcPacket.FunctionId}) failed.\n{e.Message}\n{e.StackTrace}");
-                    else
-                        this.logger.LogError($"Handling packet ({queueEntry.Packet}) failed.\n{e.Message}\n{e.StackTrace}");
-                }
-                finally
-                {
-                    ClientContext.Current = null;
-                }
-            }
 
-            if (this.pulseTaskCompletionSource != null)
-            {
-                this.pulseTaskCompletionSource.SetResult(0);
-                this.pulseTaskCompletionSource = null;
-            }
+                var pulse = Interlocked.Exchange(ref this.pulseTaskCompletionSource, null);
+                pulse?.TrySetResult(0);
 
-            try
-            {
-                await Task.Delay(this.sleepTime, this.stopCancellationTokenSource.Token);
+                if (!await ticker.WaitForNextTickAsync(this.stopCancellationTokenSource.Token))
+                    break;
             }
-            catch (Exception)
-            {
-                break;
-            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Cancellation is the normal shutdown path.
+        }
+        finally
+        {
+            Interlocked.Decrement(ref this.activeWorkerCount);
         }
     }
 
     public Task GetPulseTask()
     {
-        this.pulseTaskCompletionSource = new TaskCompletionSource<int>();
-        return this.pulseTaskCompletionSource.Task;
+        var pulse = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
+        Interlocked.Exchange(ref this.pulseTaskCompletionSource, pulse);
+        return pulse.Task;
     }
 
     public override void Dispose()
     {
-        this.timer.Stop();
-        while (TryRemoveWorker()) { }
-        this.stopCancellationTokenSource.Cancel();
-        base.Dispose();
+        if (this.disposed)
+            return;
+        this.disposed = true;
 
-        GC.SuppressFinalize(this);
+        this.timer.Stop();
+        this.timer.Dispose();
+
+        Worker[] remainingWorkers;
+        lock (this.workersLock)
+        {
+            remainingWorkers = this.workers.ToArray();
+            this.workers.Clear();
+        }
+
+        foreach (var worker in remainingWorkers)
+            worker.Active = false;
+
+        this.stopCancellationTokenSource.Cancel();
+
+        var workerTasks = new Task[remainingWorkers.Length];
+        for (int i = 0; i < remainingWorkers.Length; i++)
+            workerTasks[i] = remainingWorkers[i].LoopTask;
+
+        try
+        {
+            if (!Task.WaitAll(workerTasks, this.config.WorkerShutdownTimeout))
+                this.logger.LogWarning("Timed out waiting for {WorkerCount} packet queue worker(s) to stop.", workerTasks.Length);
+        }
+        catch (AggregateException e)
+        {
+            this.logger.LogError(e, "Packet queue worker(s) faulted while stopping.");
+        }
+
+        this.stopCancellationTokenSource.Dispose();
+        base.Dispose();
     }
 }

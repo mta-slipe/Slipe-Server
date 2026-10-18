@@ -280,7 +280,7 @@ public sealed class AddEntityPacket : Packet
         ushort dimension, ElementAttachment? attachment, bool areCollisionsEnabled,
         bool isCallPropagationEnabled, CustomData customData, string name,
         byte timeContext, Vector3 position, Vector3 rotation, ushort model,
-        float health, byte blownState, Color[] colors, byte paintJob, VehicleDamage damage,
+        float health, byte blownState, Color?[] colors, byte paintJob, VehicleDamage damage,
         byte variant1, byte variant2, Vector2? turret, ushort? adjustableProperty,
         float[] doorRatios, byte[] upgrades, string plateText, byte overrideLights,
         bool isLandingGearDown, bool isSirenActive, bool isFuelTankExplodable,
@@ -303,11 +303,7 @@ public sealed class AddEntityPacket : Packet
 
         this.builder.WriteCapped(blownState, 2);
 
-        this.builder.WriteCapped((byte)colors.Length - 1, 2);
-        foreach (var color in colors)
-        {
-            this.builder.Write(color);
-        }
+        this.builder.WriteVehicleColors(colors);
         this.builder.WriteCapped(paintJob, 2);
 
         WriteVehicleDamage(damage.Doors, 3);

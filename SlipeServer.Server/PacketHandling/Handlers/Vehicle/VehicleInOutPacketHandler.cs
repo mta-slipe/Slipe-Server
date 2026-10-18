@@ -380,6 +380,14 @@ public class VehicleInOutPacketHandler(
         var jackedPed = vehicle.Driver;
 
         vehicle.JackingPed = null;
+
+        if (jackedPed != null)
+        {
+            // The jacked ped is tossed out without relaying a removal to the clients, the notify
+            // jack return packet tells them instead.
+            vehicle.RemovePassenger(jackedPed, false);
+        }
+
         vehicle.AddPassenger(0, client.Player, false);
 
         if (jackedPed == null)

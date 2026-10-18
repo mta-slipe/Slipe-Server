@@ -9,6 +9,8 @@ namespace SlipeServer.Packets.Builder;
 
 public class PacketBuilder
 {
+    private const int MaxVehicleColors = 4;
+
     private readonly List<byte> data;
     private byte byteIndex;
 
@@ -175,6 +177,23 @@ public class PacketBuilder
         Write(color.G);
         Write(color.R);
         Write(color.A);
+    }
+
+    /// <summary>
+    /// Writes the amount of used vehicle colors, followed by the colors themselves.
+    /// A null color marks an unused color slot, and unused colors are expected to be trailing: they are
+    /// not written at all, since MTA uses black for colors that are not used (as a bandwidth saving).
+    /// </summary>
+    public void WriteVehicleColors(Color?[] colors)
+    {
+        var usedColorCount = Array.IndexOf(colors, null);
+        if (usedColorCount < 0)
+            usedColorCount = colors.Length;
+        usedColorCount = Math.Clamp(usedColorCount, 1, MaxVehicleColors);
+
+        WriteCapped((byte)(usedColorCount - 1), 2);
+        for (var i = 0; i < usedColorCount; i++)
+            Write(i < colors.Length ? colors[i] ?? Color.Black : Color.Black);
     }
 
     private byte[] GetBytesFromInt(long value, int byteCount)
