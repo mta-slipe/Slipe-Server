@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using SlipeServer.Net.Managed;
 using SlipeServer.Packets;
 using SlipeServer.Server.PacketHandling.Handlers;
 using SlipeServer.Server.PacketHandling.Handlers.QueueHandlers;
@@ -189,6 +190,21 @@ public class ServerBuilder(bool withDependencyLoaders = true)
             expectedVersionType,
             antiCheatConfiguration
         ));
+    }
+
+    public void AddManagedNetworking(
+        string? host = null,
+        ushort? port = null)
+    {
+        AddBuildStep(server =>
+        {
+            var wrapper = new MtaNetWrapper(
+                port ?? this.Configuration.Port,
+                host ?? this.Configuration.Host);
+
+            server.RegisterNetWrapper(wrapper);
+            server.AddNetWrapper(wrapper);
+        });
     }
 
     /// <summary>

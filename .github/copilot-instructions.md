@@ -11,7 +11,7 @@ Slipe Server is a C# implementation of an [MTA: San Andreas](https://mtasa.com) 
 
 The code is split into layers to keep the project maintainable. A single packet flows through them like this:
 
-- **Network layer** — receives and sends packets. Contains the wrapper around MTA's net library (`SlipeServer.Net`) and the queue handlers. Queue handlers handle a packet, usually by updating element properties and triggering events on them, and in some cases relay messages to other players (e.g. sync queue handlers).
+- **Network layer** — receives and sends packets. Contains the wrapper around MTA's net library (`SlipeServer.Net`), a pure managed implementation of the same layer (`SlipeServer.Net.Managed`, no native dependency), and the queue handlers. Queue handlers handle a packet, usually by updating element properties and triggering events on them, and in some cases relay messages to other players (e.g. sync queue handlers).
 - **Packet layer** (`SlipeServer.Packets`) — only reads and writes packets in accordance with MTA's packet definitions. It knows no MTA-specific types such as element classes, and works with native types plus some relatively simple structs/enums.
 - **Element layer** (`SlipeServer.Server`, element classes) — contains the MTA-specific concepts and logic: element classes with their events and properties.
 - **Behaviour layer** — handles some of the events triggered on element classes and sends packets to other players to relay the change/event.
