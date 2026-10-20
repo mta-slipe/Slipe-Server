@@ -27,6 +27,8 @@
 	<ItemGroup>
 		<!-- The test suite drives internal receive-path state (InboundOrdering, MtaNetSession) directly. -->
 		<InternalsVisibleTo Include="SlipeServer.Net.Managed.Tests" />
+		<!-- Wire-capture tests that stay in mta-slipe/netdll-decompile need the same access. -->
+		<InternalsVisibleTo Include="MtaNet.Tests" />
 	</ItemGroup>
 
 	<ItemGroup>
