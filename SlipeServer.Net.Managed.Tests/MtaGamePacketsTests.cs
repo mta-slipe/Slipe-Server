@@ -5,8 +5,8 @@ using Xunit;
 namespace SlipeServer.Net.Managed.Tests;
 
 /// <summary>
-/// Pins the packet-2 (<c>SERVER_JOIN_COMPLETE</c>) layout from findings/transport-core.md
-/// §20.8–§20.13, including the two version gates at 0x60 and 0x66.
+/// Pins the packet-2 (<c>SERVER_JOIN_COMPLETE</c>) layout, including the two version gates at 0x60
+/// and 0x66.
 /// </summary>
 public class MtaGamePacketsTests
 {
@@ -407,16 +407,21 @@ public class MtaGamePacketsTests
 
     /// <summary>
     /// The serial is a net-layer field, not a mod-level one: it precedes the 95-byte join body and
-    /// travels XOR-obfuscated as 32 ASCII hex characters. The reference capture's client reported
-    /// 5DDE026C7AD482CF6D73B7B3B460FD5E from a stock server, which is the same machine that produced
-    /// this payload.
+    /// travels XOR-obfuscated as 32 ASCII hex characters. The recording was produced by a stock
+    /// server, so the prefix is genuine client output and not something this port wrote.
     /// </summary>
     [Fact]
     public void TryReadPlayerJoinDataSerial_ReadsTheRealClientSerialFromTheNetLayerPrefix()
     {
-        Assert.True(MtaGamePackets.TryReadPlayerJoinDataSerial(RealClientJoinDataPayload(), out byte[] serial));
+        byte[] payload = RealClientJoinDataPayload();
+        Assert.True(MtaGamePackets.TryReadPlayerJoinDataSerial(payload, out byte[] serial));
 
-        Assert.Equal("5DDE026C7AD482CF6D73B7B3B460FD5E", Encoding.ASCII.GetString(serial));
+        // The recorded value is a real machine's hardware digest, so it is deliberately not pinned
+        // here. What is pinned is that the reader de-obfuscated: the recovered text must differ from
+        // the raw 32 bytes sitting in the prefix, which still carry the client's per-index shift.
+        Assert.NotEqual(
+            Encoding.ASCII.GetString(payload, 2, MtaGamePackets.ClientSerialLength),
+            Encoding.ASCII.GetString(serial));
     }
 
     /// <summary>

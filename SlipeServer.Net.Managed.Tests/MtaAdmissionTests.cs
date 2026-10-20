@@ -5,7 +5,7 @@ using Xunit;
 namespace SlipeServer.Net.Managed.Tests;
 
 /// <summary>
-/// Pins the receive-side admission policy from findings/transport-core.md §21.10–§21.11.
+/// Pins the receive-side admission policy.
 /// The load-bearing property is that the policy is a DISJUNCTION: a gate-3 pass delivers
 /// immediately, skipping gate 4 and the whitelist.
 /// </summary>
@@ -133,7 +133,7 @@ public class MtaAdmissionTests
         // Locks the egress id and the ingress swap together: whatever ToWireId emits for an mtaId
         // must be admitted as that same mtaId. Without this, PLAYER_JOINDATA went out as 0x67 and
         // came back in as mtaId 0x13 (PACKET_ID_MTA_RESERVED_13). mtaId 0 is excluded because the
-        // native path drops it outright (mtaId != 0 && mtaId != 0xFF, §5.1).
+        // native path drops it outright (mtaId != 0 && mtaId != 0xFF).
         foreach (byte mtaId in new byte[] { 2, 3, 4, 23, 0x13, 103 })
         {
             var session = BypassSession();

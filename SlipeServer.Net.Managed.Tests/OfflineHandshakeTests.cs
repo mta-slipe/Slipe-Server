@@ -4,8 +4,7 @@ using Xunit;
 namespace SlipeServer.Net.Managed.Tests;
 
 /// <summary>
-/// Pins the offline-handshake geometry from findings/offline-handshake.md §8.1 and the
-/// reply byte counts proven from <c>binaries/net.dll</c> assembly.
+/// Pins the offline-handshake geometry and the reply byte counts.
 /// </summary>
 public class OfflineHandshakeTests
 {
@@ -118,7 +117,7 @@ public class OfflineHandshakeTests
         var reply = OfflineHandshake.BuildOpenConnectionReply(ServerGuid);
 
         // [0x0A][magic 16 B][our GUID 16 B] — no config block, because the serializer's
-        // guard reads the cipher's permanently-zero encryption flag (§8.9).
+        // guard reads the cipher's permanently-zero encryption flag.
         Assert.Equal(33, reply.Length);
         Assert.Equal(MtaProtocol.Rid.OpenConnectionReply, reply[0]);
         Assert.Equal(MtaProtocol.OfflineMagic, reply.Skip(1).Take(16).ToArray());
@@ -170,7 +169,7 @@ public class OfflineHandshakeTests
 
         Assert.Equal(26, reply.Length);
         Assert.Equal(MtaProtocol.Rid.MtaHandshake38, reply[0]);
-        // findings/offline-handshake.md §8.8.4: the reply writes WriteBits(0x02, 8) at 0x10044967.
+        // The reply writes a single 0x02 byte after the GUID.
         Assert.Equal(0x02, reply[17]);
         Assert.Equal(MtaProtocol.OfflineMagic, reply.Skip(1).Take(16).ToArray());
         Assert.Equal(0xDD, reply[18]);
@@ -239,8 +238,8 @@ public class OfflineHandshakeTests
 
     /// <summary>
     /// The client emits <c>RID_CONNECTION_REQUEST</c> as
-    /// <c>[0x04][magic 16 B][GUID 16 B]</c> = 33 bytes (findings/offline-handshake.md §8.8.2), which
-    /// is exactly §8.1's case-4 geometry. The router must classify it as offline even when the caller
+    /// <c>[0x04][magic 16 B][GUID 16 B]</c> = 33 bytes, which is exactly the offline case-4
+    /// geometry. The router must classify it as offline even when the caller
     /// hands it a reused, over-sized receive buffer — the socket path always does, and measuring with
     /// <c>Array.Length</c> there made every fixed-length id fail its geometry guard.
     /// </summary>

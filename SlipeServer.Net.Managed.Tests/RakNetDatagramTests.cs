@@ -5,7 +5,7 @@ namespace SlipeServer.Net.Managed.Tests;
 
 /// <summary>
 /// Round-trips our own datagram writer through our own parser, and pins the documented
-/// byte-level shapes from findings/reliability-datagram-framing.md §13.1–§13.3.
+/// byte-level shapes of the datagram bit ladder.
 /// </summary>
 public class RakNetDatagramTests
 {
@@ -169,7 +169,7 @@ public class RakNetDatagramTests
     public void Build_StillRefusesASingleOversizePacket()
     {
         // Production never reaches this: SendWirePayload runs payloads through Split first. The
-        // guard stays as a last-ditch assertion on the per-part limit from §13.3.
+        // guard stays as a last-ditch assertion on the per-part limit.
         var tooBig = new byte[0x5D4];
         Assert.Throws<ArgumentException>(() => RakNetDatagramWriter.Build(
             0,
