@@ -95,10 +95,12 @@ public partial class Program
 
 #if DEBUG
                 //builder.AddDefaults();
-                builder.AddDefaults(exceptBehaviours: ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour);
+                builder.AddDefaults(exceptBehaviours: ServerBuilderDefaultBehaviours.MasterServerAnnouncementBehaviour, includeWrappedNetworking: false);
 #else
-                builder.AddDefaults();
+                builder.AddDefaults(includeWrappedNetworking: false);
 #endif
+
+                builder.AddManagedNetWrapper();
 
                 builder.ConfigureServices(services =>
                 {

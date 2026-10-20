@@ -15,6 +15,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\SlipeServer.Net.Core\SlipeServer.Net.Core.csproj" />
+		<ProjectReference Include="..\SlipeServer.Net.Managed\SlipeServer.Net.Managed.csproj" />
 		<ProjectReference Include="..\SlipeServer.Net.MtaBinaries\SlipeServer.Net.MtaBinaries.csproj" />
 	</ItemGroup>
 
