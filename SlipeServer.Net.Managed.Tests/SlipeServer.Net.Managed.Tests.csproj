@@ -19,4 +19,11 @@
 		<ProjectReference Include="..\SlipeServer.Net.Managed\SlipeServer.Net.Managed.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<!-- The wire oracle: two recorded real-client sessions, replayed from the output directory so
+		     the tests do not depend on the working directory. The peer address in it is a
+		     documentation address; the golden vectors never assert on it. -->
+		<None Include="..\capture.log" Link="capture.log" CopyToOutputDirectory="PreserveNewest" />
+	</ItemGroup>
+
 </Project>

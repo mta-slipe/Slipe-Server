@@ -7,8 +7,7 @@ namespace SlipeServer.Net.Managed.Tests;
 /// <summary>
 /// Pins the whole admission predicate as a cross-product rather than as a set of examples:
 /// <c>admit ⟺ gate2 ∧ (gate3 ∨ (gate4 ∧ whitelisted))</c>, evaluated over every reachable session
-/// state and every whitelist class, and then tightened by the one receive-side version gate
-/// (findings/transport-core.md §21.11).
+/// state and every whitelist class, and then tightened by the one receive-side version gate.
 /// </summary>
 /// <remarks>
 /// The predicate is computed twice — once by calling the public gate methods directly, once by
@@ -20,7 +19,7 @@ public class MtaAdmissionTruthTableTests
 {
     private const uint ClientIp = 0xC0A8B21Eu;
 
-    private static IPEndPoint EndPoint => new(IPAddress.Parse("192.168.178.30"), 58057);
+    private static IPEndPoint EndPoint => new(IPAddress.Parse("192.0.2.10"), 58057);
 
     /// <summary>
     /// The named session states, chosen so that gate 3 and gate 4 hit every reachable combination.

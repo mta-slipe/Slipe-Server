@@ -4,9 +4,9 @@ using Xunit;
 namespace SlipeServer.Net.Managed.Tests;
 
 /// <summary>
-/// Static self-checks for the <c>BitStream</c> port (findings/bitstream-wire-format.md §12).
+/// Static self-checks for the <c>BitStream</c> port.
 /// These prove internal consistency of our reader/writer pair. They do NOT prove wire
-/// compatibility with a real client — only a real client can do that (poc-plan.md §22.7).
+/// compatibility with a real client — only a real client can do that.
 /// </summary>
 public class BitStreamTests
 {
@@ -70,7 +70,7 @@ public class BitStreamTests
         bs.Write(0xDEADBEEFu);
         bs.Write(0x0123456789ABCDEFul);
 
-        // Little-endian on the wire (§12.5).
+        // Little-endian on the wire.
         var raw = bs.ToArray();
         Assert.Equal(0x5A, raw[0]);
         Assert.Equal(0x34, raw[1]);
@@ -180,7 +180,7 @@ public class BitStreamTests
     [InlineData(0x123456)]
     public void LengthLadder_RoundTrips(int value)
     {
-        // §12.1: <= 0x7F -> 1 byte; <= 0x7EFF -> 2 bytes; else 0xFF + uint32.
+        // <= 0x7F -> 1 byte; <= 0x7EFF -> 2 bytes; else 0xFF + uint32.
         var bs = new BitStream();
         bs.WriteLength(value);
 
