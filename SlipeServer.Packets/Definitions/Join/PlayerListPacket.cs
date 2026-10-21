@@ -126,9 +126,10 @@ public sealed class PlayerListPacket : Packet
             }
         }
 
-        // Animation data is not synchronized by the player list packet, but the client
-        // always reads the "is animating" flag, so it must be written to stay bit-aligned.
-        this.builder.Write(false);
+        // Nothing follows the 16 weapon slots. The client's entry loop ends here, so any trailing
+        // bit pushes a byte-aligned entry into an extra byte and leaves the client with 8 unread
+        // bits: enough to re-enter the loop, fail the 17-bit player id read and raise protocol
+        // error 8. A joining client's one-entry roster is exactly that byte-aligned case.
     }
 
     public override void Read(byte[] bytes)
