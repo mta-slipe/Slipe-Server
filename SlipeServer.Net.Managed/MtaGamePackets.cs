@@ -74,8 +74,10 @@ public static class MtaGamePackets
 
     /// <summary>
     /// <c>PACKET_ID_PLAYER_JOINDATA</c> — the mod-level join request the client sends once the
-    /// RakNet connection is up. Wire id <c>0x76</c>: ids 4 and <c>0x13</c> are swapped in both
-    /// directions, so mtaId 4 travels as <c>0x13 + 99</c>.
+    /// RakNet connection is up. The wire id depends on the client build: a release client
+    /// (<c>net.dll</c>) remaps 4 to <c>0x13</c> on egress, so it arrives as <c>0x13 + 99</c> = 0x76,
+    /// while a debug client (<c>net_d.dll</c>) has no remap and arrives as <c>4 + 99</c> = 0x67. The
+    /// dialect resolves both to this id.
     /// </summary>
     public const byte PlayerJoinDataMtaId = 4;
 

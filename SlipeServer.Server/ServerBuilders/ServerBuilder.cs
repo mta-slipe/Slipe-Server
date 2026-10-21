@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SlipeServer.Net.Managed;
+using SlipeServer.Net.Wrappers;
 using SlipeServer.Packets;
 using SlipeServer.Server.PacketHandling.Handlers;
 using SlipeServer.Server.PacketHandling.Handlers.QueueHandlers;
@@ -192,15 +193,34 @@ public class ServerBuilder(bool withDependencyLoaders = true)
         ));
     }
 
+    /// <summary>
+    /// Adds the managed networking interface, the C# port of net.dll
+    /// </summary>
+    /// <param name="host">host ip for the server</param>
+    /// <param name="port">UDP port for incoming traffic to the server, this is what port players connect to</param>
+    /// <param name="asePerPeerVersion">
+    /// Whether ASE probes are answered in the version family of whichever client build is connecting,
+    /// so a release client (net.dll, expects "1.6") and a debug client (net_d.dll, expects "1.6n") can
+    /// share one game port. A client aborts the connect unless the ver string it reads equals the one
+    /// its own build was compiled with, so a single fixed answer only ever admits one of the two.
+    /// Omit to use <see cref="Configuration.AsePerPeerVersion"/>, which defaults to false.
+    /// </param>
     public void AddManagedNetworking(
         string? host = null,
-        ushort? port = null)
+        ushort? port = null,
+        bool? asePerPeerVersion = null)
     {
+        if (asePerPeerVersion.HasValue)
+            this.Configuration.AsePerPeerVersion = asePerPeerVersion.Value;
+
         AddBuildStep(server =>
         {
             var wrapper = new MtaNetWrapper(
                 port ?? this.Configuration.Port,
-                host ?? this.Configuration.Host);
+                host ?? this.Configuration.Host,
+                peerVersionHints: this.Configuration.AsePerPeerVersion
+                    ? server.Services.GetService<IPeerVersionHints>()
+                    : null);
 
             server.RegisterNetWrapper(wrapper);
             server.AddNetWrapper(wrapper);

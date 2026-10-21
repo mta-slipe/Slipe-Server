@@ -80,6 +80,9 @@ public class OfflineHandshakeTests
     [InlineData(103, 0xCA)]  // PACKET_ID_PLAYER_NETWORK_STATUS
     public void OutboundWireId_AppliesTheOffsetAndTheSwap(byte mtaId, byte expected)
     {
+        // The release build's remap is bidirectional: a release client's join data is on the wire as
+        // 0x76, which requires 4 -> 0x13 before the offset. This arm is inert for a server, since no
+        // server-to-client packet uses mtaId 4 or 0x13.
         Assert.Equal(expected, MtaProtocol.ToWireId(mtaId));
     }
 
@@ -90,11 +93,32 @@ public class OfflineHandshakeTests
     [InlineData(0x13)]
     [InlineData(23)]
     [InlineData(0x63)]
-    public void OutboundWireId_RoundTripsThroughTheInboundPath(byte mtaId)
+    public void OutboundWireId_RoundTripsThroughTheReleaseInboundPath(byte mtaId)
     {
+        // Under the release dialect the egress remap and the ingress remap are the same involution, so
+        // every id survives the round trip. The debug and mixed dialects are covered separately.
         byte wireId = MtaProtocol.ToWireId(mtaId);
-        byte recovered = MtaProtocol.SwapIds((byte)(wireId - MtaProtocol.MtaIdToWireId));
+        byte recovered = MtaProtocol.ResolveInboundId((byte)(wireId - MtaProtocol.MtaIdToWireId), MtaIdDialect.Release);
         Assert.Equal(mtaId, recovered);
+    }
+
+    [Theory]
+    // A release client puts join data on the wire as 0x76 (capture.log seq 12) and a debug client as
+    // 0x67 (cap4.log); both must land on mtaId 4 in the modes that accept them.
+    [InlineData(MtaIdDialect.Release, 0x13, 4)]   // release client join data
+    [InlineData(MtaIdDialect.Release, 4, 0x13)]
+    [InlineData(MtaIdDialect.Debug, 4, 4)]        // debug client join data
+    [InlineData(MtaIdDialect.Debug, 0x13, 0x13)]
+    [InlineData(MtaIdDialect.Both, 0x13, 4)]      // either build
+    [InlineData(MtaIdDialect.Both, 4, 4)]
+    [InlineData(MtaIdDialect.Auto, 0x13, 4)]      // no latch yet: behaves like Both
+    [InlineData(MtaIdDialect.Auto, 4, 4)]
+    [InlineData(MtaIdDialect.Release, 5, 5)]      // unaffected ids
+    [InlineData(MtaIdDialect.Debug, 5, 5)]
+    [InlineData(MtaIdDialect.Both, 5, 5)]
+    public void InboundIdResolution(MtaIdDialect dialect, byte resolved, byte expected)
+    {
+        Assert.Equal(expected, MtaProtocol.ResolveInboundId(resolved, dialect));
     }
 
     [Fact]

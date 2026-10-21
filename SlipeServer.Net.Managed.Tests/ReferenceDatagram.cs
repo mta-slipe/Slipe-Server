@@ -174,20 +174,39 @@ internal static class ReferenceDatagram
     }
 
     /// <summary>
-    /// <c>mtaId = SwapIds(wireId - 99)</c>, the inverse of <c>ToWireId</c>. Returns null for ids the
-    /// MTA layer never sees:
-    /// everything below <c>RID_USER_PACKET_ENUM</c>, and the two reserved MTA ids.
+    /// <c>mtaId = ResolveInboundId(wireId - 99)</c>: the <c>+99</c> offset, then the build-dependent
+    /// <c>4 ⇄ 0x13</c> step. Returns null for ids the MTA layer never sees: everything below
+    /// <c>RID_USER_PACKET_ENUM</c>, and the two reserved MTA ids.
     /// </summary>
-    internal static byte? MtaIdOf(byte wireId)
+    internal static byte? MtaIdOf(byte wireId, MtaIdDialect dialect = MtaIdDialect.Release)
     {
         if (wireId < RakNetUserPacketEnum)
             return null;
 
-        byte mtaId = SwapIds((byte)(wireId - RakNetUserPacketEnum));
+        byte mtaId = ResolveInboundId((byte)(wireId - RakNetUserPacketEnum), dialect);
         return mtaId is 0 or 0xFF ? null : mtaId;
     }
 
-    /// <summary>The <c>0x13 ⇄ 4</c> swap, applied identically in both directions.</summary>
+    /// <summary>
+    /// The inbound id step, written out independently of <c>MtaProtocol.ResolveInboundId</c> so that a
+    /// change to one cannot silently validate itself through the other.
+    /// </summary>
+    internal static byte ResolveInboundId(byte resolved, MtaIdDialect dialect)
+    {
+        if (dialect == MtaIdDialect.Debug)
+            return resolved;
+
+        // Release swaps, Both collapses 0x13 onto 4, and Auto's pre-latch behaviour is Both.
+        if (dialect == MtaIdDialect.Release)
+            return SwapIds(resolved);
+
+        return resolved == 0x13 ? (byte)4 : resolved;
+    }
+
+    /// <summary>
+    /// The release build's <c>4 ⇄ 0x13</c> remap, an involution. The debug build has no such step, and
+    /// egress applies no remap in either build.
+    /// </summary>
     internal static byte SwapIds(byte id) => id switch
     {
         4 => 0x13,

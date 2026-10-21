@@ -194,13 +194,14 @@ internal sealed class WrapperHarness : IDisposable
         ushort port = 50666,
         string host = "0.0.0.0",
         int playerCount = 1024,
-        IMonotonicClock? clock = null)
+        IMonotonicClock? clock = null,
+        IPeerVersionHints? peerVersionHints = null)
     {
         this.directory = Path.Combine(Path.GetTempPath(), "mtanet-tests", Guid.NewGuid().ToString("n"));
         Directory.CreateDirectory(this.directory);
         this.CapturePath = Path.Combine(this.directory, "capture.log");
 
-        this.Wrapper = new MtaNetWrapper(port, host, playerCount, clock: clock);
+        this.Wrapper = new MtaNetWrapper(port, host, playerCount, clock: clock, peerVersionHints: peerVersionHints);
         this.Capture = new PacketCapture(this.CapturePath);
         this.Wrapper.Capture = this.Capture;
         this.Wrapper.Trace = this.Trace.Add;

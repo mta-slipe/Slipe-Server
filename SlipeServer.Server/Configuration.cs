@@ -45,6 +45,21 @@ public class Configuration
     public ushort? DebugPort { get; set; } = null;
 
     /// <summary>
+    /// Advertise the ASE version family of whichever build is currently connecting from a given IP,
+    /// instead of a single fixed family for the whole listener.
+    /// <para>
+    /// MTA clients abort the connection when the ASE <c>ver</c> string they read does not equal the
+    /// one their own build was compiled with ("1.6" for release, "1.6n" for debug), so a listener
+    /// that always answers "1.6" can never admit debug clients. Enabling this lets both builds join
+    /// <see cref="Port"/> by holding each ASE probe briefly until the peer's join data identifies
+    /// its build, then answering in that build's family.
+    /// </para>
+    /// Requires the managed networking implementation; other implementations never report builds,
+    /// so every probe falls back to <see cref="Port"/>'s family after the hold expires.
+    /// </summary>
+    public bool AsePerPeerVersion { get; set; } = false;
+
+    /// <summary>
     /// Maximum player count
     /// </summary>
     public ushort MaxPlayerCount { get; set; } = 64;

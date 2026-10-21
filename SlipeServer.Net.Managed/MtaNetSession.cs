@@ -32,6 +32,12 @@ public sealed class MtaNetSession
     /// </summary>
     public ushort NegotiatedBitStreamVersion { get; set; }
 
+    /// <summary>
+    /// The id dialect this peer speaks, latched by <see cref="MtaIdDialect.Auto"/> from the wire id of
+    /// its first join-data packet. Null means "not yet determined".
+    /// </summary>
+    public MtaIdDialect? DetectedDialect { get; set; }
+
     /// <summary>Post-handshake latch that makes gate 3 admit everything.</summary>
     public bool HandshakeComplete { get; set; }
 
@@ -350,6 +356,14 @@ public sealed class MtaAdmissionOptions
 
     /// <summary>Gate 2's per-id packet-count budgets. 0 = unlimited.</summary>
     public ushort[] Gate2PacketBudgets { get; } = new ushort[256];
+
+    /// <summary>
+    /// Which client build this listener accepts. <see cref="MtaIdDialect.Release"/> (the default) is
+    /// <c>net.dll</c>, <see cref="MtaIdDialect.Debug"/> is <c>net_d.dll</c>, and
+    /// <see cref="MtaIdDialect.Both"/> / <see cref="MtaIdDialect.Auto"/> serve either build on one
+    /// port.
+    /// </summary>
+    public MtaIdDialect PeerDialect { get; set; } = MtaIdDialect.Release;
 }
 
 /// <summary>
@@ -504,8 +518,25 @@ public static class MtaAdmission
             return MtaAdmissionResult.Drop;
         }
 
-        // The 4 <-> 0x13 id swap happens before any gate.
-        byte id = MtaProtocol.SwapIds((byte)resolved);
+        // The 4 <-> 0x13 remap is the single point where the two shipped builds disagree. Release
+        // (net.dll) applies it, debug (net_d.dll) does not, and MtaIdDialect picks which behaviour this
+        // listener implements. It happens before any gate, because every gate below keys on the
+        // server-side mtaId.
+        MtaIdDialect dialect = options.PeerDialect;
+        if (dialect == MtaIdDialect.Auto)
+        {
+            // Latch from the first id that can only mean one build. A joining client's first game
+            // packet is its join data, and the two builds put that on different wire ids, so the first
+            // such packet is unambiguous.
+            if (session.DetectedDialect is null && (resolved == 4 || resolved == 0x13))
+            {
+                session.DetectedDialect = resolved == 0x13 ? MtaIdDialect.Release : MtaIdDialect.Debug;
+            }
+
+            dialect = session.DetectedDialect ?? MtaIdDialect.Both;
+        }
+
+        byte id = MtaProtocol.ResolveInboundId((byte)resolved, dialect);
         if (id == 0 || id == 0xff)
         {
             reason = $"mta id {id}";
@@ -544,10 +575,11 @@ public static class MtaAdmission
             }
         }
 
-        // The one receive-side version gate, applied to the post-swap id: id 4 (join data; wire id 0x76)
-        // is valid only before a bitstream version has been negotiated for the connection. The negotiated
-        // version is set when the join data is processed, so a repeat join-data packet on the same
-        // connection is silently dropped like any other gate failure.
+        // The one receive-side version gate, applied to the post-dialect id: id 4 (join data; wire id
+        // 0x76 from a release client, 0x67 from a debug client) is valid only before a bitstream version
+        // has been negotiated for the connection. The negotiated version is set when the join data is
+        // processed, so a repeat join-data packet on the same connection is silently dropped like any
+        // other gate failure.
         if (id == 4 && session.NegotiatedBitStreamVersion != 0)
         {
             reason = "mta id 4 with a negotiated bitstream version";

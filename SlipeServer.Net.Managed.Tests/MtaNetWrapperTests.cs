@@ -316,6 +316,37 @@ public class MtaNetWrapperTests
         Assert.Equal("1.6.0-9.24149.0", identity.Item3);
     }
 
+    /// <summary>
+    /// The version the join packet carries is also what tells the ASE listener which version family
+    /// to advertise to this peer, because a client aborts unless the <c>ver</c> string it reads
+    /// matches the one its own build was compiled with. <c>capture.log</c>'s record 12 states
+    /// <c>1.6.0-9.24149.0</c>, whose version type <c>9</c> is the release family.
+    /// </summary>
+    [Fact]
+    public void JoinPacketRecordsThePeerBuildForTheAseListener()
+    {
+        var hints = new PeerVersionHints();
+        using var harness = new WrapperHarness(peerVersionHints: hints);
+        harness.ConnectSession();
+
+        harness.Inject(WireTestKit.CaptureLogRecord(12).Bytes);
+
+        Assert.True(hints.TryGet(harness.Wrapper.GetPlayerIp(harness.Address), out var build));
+        Assert.Equal(MtaPeerBuildType.Release, build);
+    }
+
+    /// <summary>A wrapper built without a hint store must not fail or record anything.</summary>
+    [Fact]
+    public void JoinPacketWithoutAHintStoreIsStillDelivered()
+    {
+        using var harness = new WrapperHarness();
+        harness.ConnectSession();
+
+        harness.Inject(WireTestKit.CaptureLogRecord(12).Bytes);
+
+        Assert.Contains(harness.Received, received => received.Id == PacketId.PACKET_ID_PLAYER_JOINDATA);
+    }
+
     [Fact]
     public void GetPlayerIpReturnsTheSessionAddress()
     {
