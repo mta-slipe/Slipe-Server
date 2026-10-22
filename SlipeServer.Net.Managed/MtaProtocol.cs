@@ -166,7 +166,9 @@ public static class MtaProtocol
     };
 
     /// <summary>
-    /// The <c>mtaId 4 &lt;=&gt; 0x13</c> swap, applied before every gate and in both directions.
+    /// The ingress remap that <c>net.dll</c> (release) applies to a post-offset wire id: an involution
+    /// over <c>4</c> and <c>0x13</c>. <c>net_d.dll</c> (debug) has no such remap; see
+    /// <see cref="MtaIdDialect"/>.
     /// </summary>
     public static byte SwapIds(byte mtaId) => mtaId switch
     {
@@ -176,9 +178,69 @@ public static class MtaProtocol
     };
 
     /// <summary>
-    /// The wire id for an outbound game packet: the <c>+99</c> offset plus the <c>4 &lt;=&gt; 0x13</c>
-    /// swap, which applies in both directions. So Slipe's
-    /// <c>PACKET_ID_PLAYER_JOINDATA</c> (mtaId 4) goes out as <c>0x76</c>, not <c>0x67</c>.
+    /// Resolves a post-offset inbound wire id to the server-side mtaId under <paramref name="dialect"/>.
+    ///
+    /// This is the one place the two shipped builds disagree. Disassembling the inbound game-packet
+    /// handler in both binaries yields one shared instruction sequence; <c>net.dll</c> carries two extra
+    /// compares that <c>net_d.dll</c> does not (<c>cmp al,13h</c> / <c>mov al,4</c> and <c>cmp al,4</c> /
+    /// <c>mov al,13h</c>). The twelve later id compares in the same handler are identical, as is the
+    /// outbound function that applies the <c>+99</c> offset.
+    ///
+    /// A release client therefore puts join data on the wire as <c>0x76</c> (resolved <c>0x13</c>) and a
+    /// debug client as <c>0x67</c> (resolved <c>4</c>). Both must land on mtaId 4 server-side.
+    /// </summary>
+    public static byte ResolveInboundId(byte resolved, MtaIdDialect dialect) => dialect switch
+    {
+        MtaIdDialect.Release => SwapIds(resolved),
+        MtaIdDialect.Debug => resolved,
+        // 0x13 is MTA_RESERVED_13, so collapsing it onto 4 costs nothing and admits either build.
+        _ => resolved == 0x13 ? (byte)4 : resolved,
+    };
+
+    /// <summary>
+    /// The wire id for an outbound game packet: the <c>+99</c> offset plus the release build's
+    /// <c>4 ⇄ 0x13</c> remap.
+    ///
+    /// The remap is bidirectional in <c>net.dll</c>: a release client's join data appears on the wire as
+    /// <c>0x76</c>, which is only possible if its send path applied <c>4 → 0x13</c> before the offset,
+    /// and its own ingress turns <c>0x76</c> back into mtaId 4. A debug client's egress does not remap,
+    /// so the same packet appears as <c>0x67</c>. The outbound function that carries the offset is
+    /// instruction-identical in both builds, so the remap is applied elsewhere on the send path rather
+    /// than at the offset site; its location is open (§17.2 row 2). This arm is inert for a server
+    /// either way, because no server-to-client packet uses mtaId 4 or <c>0x13</c>.
     /// </summary>
     public static byte ToWireId(byte mtaId) => (byte)(SwapIds(mtaId) + MtaIdToWireId);
+}
+
+/// <summary>
+/// Which client build a listener accepts, i.e. which of the two shipped <c>net</c> DLLs it speaks to.
+///
+/// The builds differ in exactly one instruction pair, in the inbound game-packet handler: release
+/// remaps the <c>4</c> / <c>0x13</c> id pair, debug does not. Nothing else on the wire is
+/// build-dependent, so supporting both costs one branch on the two affected ids.
+/// </summary>
+public enum MtaIdDialect
+{
+    /// <summary>
+    /// <c>net.dll</c>: inbound <c>0x13</c> becomes 4 and inbound 4 becomes <c>0x13</c>. This is the
+    /// default, and reproduces the previously hardcoded behaviour exactly.
+    /// </summary>
+    Release = 0,
+
+    /// <summary><c>net_d.dll</c>: the inbound id is used verbatim.</summary>
+    Debug = 1,
+
+    /// <summary>
+    /// One listener serves either build. <c>0x13</c> collapses onto 4 on ingress, which is free because
+    /// <c>0x13</c> is <c>MTA_RESERVED_13</c>. A release client that sent a genuine resolved 4 would be
+    /// read as join data, so prefer <see cref="Auto"/> when the ambiguity matters.
+    /// </summary>
+    Both = 2,
+
+    /// <summary>
+    /// One listener serves either build, and latches the dialect per session from the peer's first
+    /// join-data wire id. Preferred over <see cref="Both"/> because the latch removes the ambiguity
+    /// for every packet after the first.
+    /// </summary>
+    Auto = 3,
 }

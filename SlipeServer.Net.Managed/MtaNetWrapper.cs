@@ -32,6 +32,7 @@ public sealed class MtaNetWrapper : INetWrapper, IDisposable
     private readonly int playerCount;
     private readonly IMonotonicClock clock;
     private readonly Gate1RateLimiter gate1;
+    private readonly IPeerVersionHints? peerVersionHints;
 
     private Socket? socket;
     private CancellationTokenSource? cancellation;
@@ -52,17 +53,23 @@ public sealed class MtaNetWrapper : INetWrapper, IDisposable
     /// The monotonic clock every behavioural time read uses. Omit for the system clock; a test passes
     /// a manual clock so a timeout boundary can be reached without sleeping.
     /// </param>
+    /// <param name="peerVersionHints">
+    /// Where each session's client build is published so the ASE listener can advertise the matching
+    /// version family. Omit to skip publishing.
+    /// </param>
     public MtaNetWrapper(
         ushort port = 50666,
         string host = "0.0.0.0",
         int playerCount = 1024,
         string serverName = "C# server",
-        IMonotonicClock? clock = null)
+        IMonotonicClock? clock = null,
+        IPeerVersionHints? peerVersionHints = null)
     {
         this.port = port;
         this.host = host;
         this.playerCount = playerCount;
         this.ServerName = serverName;
+        this.peerVersionHints = peerVersionHints;
 
         this.clock = clock ?? SystemMonotonicClock.Instance;
         this.gate1 = new Gate1RateLimiter(this.clock);
@@ -86,6 +93,18 @@ public sealed class MtaNetWrapper : INetWrapper, IDisposable
 
     /// <summary>Inbound admission tunables. Every limit defaults to the protocol's "unlimited" encoding.</summary>
     public MtaAdmissionOptions AdmissionOptions { get; } = new();
+
+    /// <summary>
+    /// Which client build this server accepts: <see cref="MtaIdDialect.Release"/> for <c>net.dll</c>
+    /// (the default), <see cref="MtaIdDialect.Debug"/> for <c>net_d.dll</c>, or
+    /// <see cref="MtaIdDialect.Both"/> / <see cref="MtaIdDialect.Auto"/> to serve either build on one
+    /// port. Forwarded to <see cref="AdmissionOptions"/>.
+    /// </summary>
+    public MtaIdDialect PeerDialect
+    {
+        get => this.AdmissionOptions.PeerDialect;
+        set => this.AdmissionOptions.PeerDialect = value;
+    }
 
     /// <summary>
     /// The inputs to the join-complete packet (packet 2). Each is a per-server-configuration value;
@@ -897,7 +916,17 @@ public sealed class MtaNetWrapper : INetWrapper, IDisposable
             // PLAYER_INGAME_NOTICE RPC later needs the version to reach SERVER_JOINEDGAME.
             bool haveVersion = MtaGamePackets.TryReadPlayerJoinDataVersion(data, out string playerVersion);
             if (haveVersion)
+            {
                 session.ClientVersion = playerVersion;
+
+                // The ASE listener needs to know which version family to advertise to this peer,
+                // because a client aborts unless the ver string it reads matches its own build.
+                if (this.peerVersionHints != null
+                    && MtaPeerBuildTypeParser.TryParsePlayerVersion(playerVersion, out MtaPeerBuildType build))
+                {
+                    this.peerVersionHints.Record(session.EndPoint.Address, build);
+                }
+            }
 
             if (haveSerial)
                 session.Serial = Encoding.ASCII.GetString(serialBytes);
@@ -1157,8 +1186,9 @@ public sealed class MtaNetWrapper : INetWrapper, IDisposable
             return;
         }
 
-        // wire_id = 99 + mta_id (RID_USER_PACKET_ENUM), except that ids 4 and 0x13 are swapped in
-        // both directions. Packet 2 therefore travels as 0x65 and PLAYER_JOINDATA as 0x76.
+        // wire_id = 99 + mta_id (RID_USER_PACKET_ENUM), with no remap: egress is a bare `add al,63h`
+        // in both net.dll and net_d.dll. Packet 2 therefore travels as 0x65 and PLAYER_JOINDATA as
+        // 0x67; the client's own ingress decides whether that means 4 or 0x13 on its side.
         byte wireId = MtaProtocol.ToWireId((byte)(int)packetId);
 
         // Packet 2 is the one packet whose wire body is not the mod-level packet body: a

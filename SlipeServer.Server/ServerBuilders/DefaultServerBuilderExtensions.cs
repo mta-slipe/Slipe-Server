@@ -147,10 +147,11 @@ public static class DefaultServerBuilderExtensions
             builder.AddNetWrapper(dllPath: "net_d", port: builder.Configuration.DebugPort.Value, expectedVersion: 0xAB, expectedVersionType: 0x09);
     }
 
-    public static void AddManagedNetWrapper(this ServerBuilder builder)
+    public static void AddManagedNetWrapper(this ServerBuilder builder, bool? asePerPeerVersion = null)
     {
         builder.AddManagedNetworking(
             builder.Configuration.Host,
-            builder.Configuration.Port);
+            builder.Configuration.Port,
+            asePerPeerVersion);
     }
 }

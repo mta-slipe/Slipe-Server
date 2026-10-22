@@ -173,9 +173,9 @@ public class EndToEndWireTests
     // ================================================================ stage 2: wire id -> MTA id
 
     /// <summary>
-    /// The wire-id to MTA-id mapping plus <c>MtaProtocol.SwapIds</c>: the first payload byte is the wire id, the MTA
-    /// id is <c>wire - 99</c> with the <c>4 ⇄ 0x13</c> pair swapped back. The wire ids are the ones
-    /// the recording actually contains, so a refactor that reorders the swap or changes the offset
+    /// The wire-id to MTA-id mapping under the release dialect: the first payload byte is the wire id,
+    /// the MTA id is <c>wire - 99</c> with the <c>4 ⇄ 0x13</c> pair swapped back. The wire ids are the
+    /// ones the recording actually contains, so a refactor that reorders the swap or changes the offset
     /// fails here.
     /// </summary>
     [Theory]
@@ -183,7 +183,7 @@ public class EndToEndWireTests
     [InlineData(0x65, 2)]     // SERVER_JOIN_COMPLETE — capture.log seq 14
     [InlineData(0x66, 3)]     // PLAYER_JOIN — capture.log seq 6 delivers this via RakNet 0x11
     [InlineData(0x76, 4)]     // PLAYER_JOINDATA — capture.log seq 12 (0x76 -> swap -> 0x13 -> +99)
-    [InlineData(0x67, 19)]    // RakNet DISCONNECTION_NOTIFICATION (0x13) after the swap
+    [InlineData(0x67, 19)]    // the 0x13 side of the pair (0x67 -> 4 -> swap -> 0x13)
     [InlineData(0x7C, 25)]    // PLAYER_LIST — capture.log seq 12 and 16
     [InlineData(0x7B, 24)]    // RPC — capture.log seq 18 and 23
     [InlineData(0x83, 32)]    // PLAYER_PURESYNC — capture.log seq 20
@@ -200,9 +200,9 @@ public class EndToEndWireTests
     }
 
     /// <summary>
-    /// The swap is an involution on the two ids it touches and the identity everywhere else, which is
-    /// what makes <c>wire - 99</c> reversible. Pinned because a refactor that replaces the swap with
-    /// a table can easily lose the identity arm.
+    /// The release dialect's remap is an involution on the two ids it touches and the identity
+    /// everywhere else, which is what makes <c>wire - 99</c> reversible under that dialect. Pinned
+    /// because a refactor that replaces the remap with a table can easily lose the identity arm.
     /// </summary>
     [Fact]
     public void TheIdSwapTouchesOnlyFourAndNineteen()

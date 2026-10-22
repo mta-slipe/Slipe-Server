@@ -96,54 +96,169 @@ public class MtaAdmissionTests
         // The only receive-side version gate: 0x10025488 CMP word [EDI+0x938],0 / 0x10025490 JNZ
         // 0x10025894, where 0x10025894 is the shared silent-drop epilogue (both branch targets read:
         // the accept arm calls FUN_1002a280 to raise the packet). mtaId 4 is not whitelisted, so it can
-        // only reach this gate through the gate-3 bypass; and because Evaluate swaps 4 <-> 0x13 before
-        // the gates, the wire id must be 0x13 + 99 to resolve to mtaId 4.
+        // only reach this gate through the gate-3 bypass; and because the release dialect remaps
+        // 4 <-> 0x13 before the gates, a release client's wire id must be 0x13 + 99 to resolve to
+        // mtaId 4. The debug dialect needs no remap, so 4 + 99 works there.
         var session = BypassSession();
-        var wireId = (byte)(0x13 + MtaProtocol.MtaIdToWireId);
+        var releaseWireId = (byte)(0x13 + MtaProtocol.MtaIdToWireId);
+        var debugWireId = (byte)(4 + MtaProtocol.MtaIdToWireId);
 
         session.NegotiatedBitStreamVersion = 0;
         Assert.Equal(
             MtaAdmissionResult.Deliver,
-            MtaAdmission.Evaluate(session, wireId, Payload(wireId), 72, new MtaAdmissionOptions(), out var mtaId, out _));
+            MtaAdmission.Evaluate(session, releaseWireId, Payload(releaseWireId), 72, new MtaAdmissionOptions(), out var mtaId, out _));
         Assert.Equal(4, mtaId);
+
+        Assert.Equal(
+            MtaAdmissionResult.Deliver,
+            MtaAdmission.Evaluate(
+                BypassSession(),
+                debugWireId,
+                Payload(debugWireId),
+                72,
+                new MtaAdmissionOptions { PeerDialect = MtaIdDialect.Debug },
+                out var debugMtaId,
+                out _));
+        Assert.Equal(4, debugMtaId);
 
         session.NegotiatedBitStreamVersion = 0x90;
         Assert.Equal(
             MtaAdmissionResult.Drop,
-            MtaAdmission.Evaluate(session, wireId, Payload(wireId), 72, new MtaAdmissionOptions(), out _, out var reason));
+            MtaAdmission.Evaluate(session, releaseWireId, Payload(releaseWireId), 72, new MtaAdmissionOptions(), out _, out var reason));
         Assert.Contains("version", reason);
     }
 
     [Fact]
-    public void IdSwapHappensBeforeTheGates()
+    public void IdResolutionHappensBeforeTheGates()
     {
-        // Wire 0x13 + 99 resolves to mtaId 4 after the swap.
-        var session = BypassSession();
-        var wireId = (byte)(0x13 + MtaProtocol.MtaIdToWireId);
-
+        // Wire 0x13 + 99 resolves to mtaId 4 under the release dialect; wire 4 + 99 resolves to mtaId 4
+        // under the debug dialect. Both are the same join-data packet from different builds.
+        var releaseWireId = (byte)(0x13 + MtaProtocol.MtaIdToWireId);
         Assert.Equal(
             MtaAdmissionResult.Deliver,
-            MtaAdmission.Evaluate(session, wireId, Payload(wireId), 72, new MtaAdmissionOptions(), out var mtaId, out _));
+            MtaAdmission.Evaluate(BypassSession(), releaseWireId, Payload(releaseWireId), 72, new MtaAdmissionOptions(), out var mtaId, out _));
         Assert.Equal(4, mtaId);
+
+        var debugWireId = (byte)(4 + MtaProtocol.MtaIdToWireId);
+        Assert.Equal(
+            MtaAdmissionResult.Deliver,
+            MtaAdmission.Evaluate(
+                BypassSession(),
+                debugWireId,
+                Payload(debugWireId),
+                72,
+                new MtaAdmissionOptions { PeerDialect = MtaIdDialect.Debug },
+                out var debugMtaId,
+                out _));
+        Assert.Equal(4, debugMtaId);
+
+        // And the same debug wire id under the release dialect resolves to 0x13 instead -- which is
+        // exactly why a debug client cannot join a release-only server.
+        Assert.Equal(
+            MtaAdmissionResult.Deliver,
+            MtaAdmission.Evaluate(BypassSession(), debugWireId, Payload(debugWireId), 72, new MtaAdmissionOptions(), out var misread, out _));
+        Assert.Equal(0x13, misread);
     }
 
     [Fact]
-    public void TheOutboundWireIdRoundTripsThroughEvaluate()
+    public void TheOutboundWireIdIsAdmittedUnderTheMatchingDialect()
     {
-        // Locks the egress id and the ingress swap together: whatever ToWireId emits for an mtaId
-        // must be admitted as that same mtaId. Without this, PLAYER_JOINDATA went out as 0x67 and
-        // came back in as mtaId 0x13 (PACKET_ID_MTA_RESERVED_13). mtaId 0 is excluded because the
-        // native path drops it outright (mtaId != 0 && mtaId != 0xFF).
-        foreach (byte mtaId in new byte[] { 2, 3, 4, 23, 0x13, 103 })
+        // Locks egress and ingress together per dialect. The port's egress always applies the release
+        // encoding, so an mtaId outside the 4 / 0x13 pair must survive every dialect unchanged; this
+        // only fails if the two paths drift apart again. mtaId 0 is excluded because the native path
+        // drops it outright (mtaId != 0 && mtaId != 0xFF).
+        foreach (byte mtaId in new byte[] { 2, 3, 23, 103 })
         {
-            var session = BypassSession();
-            byte wireId = MtaProtocol.ToWireId(mtaId);
+            foreach (MtaIdDialect dialect in new[] { MtaIdDialect.Release, MtaIdDialect.Debug, MtaIdDialect.Both, MtaIdDialect.Auto })
+            {
+                var session = BypassSession();
+                byte wireId = MtaProtocol.ToWireId(mtaId);
 
-            Assert.Equal(
-                MtaAdmissionResult.Deliver,
-                MtaAdmission.Evaluate(session, wireId, Payload(wireId), 72, new MtaAdmissionOptions(), out var admitted, out _));
-            Assert.Equal(mtaId, admitted);
+                Assert.Equal(
+                    MtaAdmissionResult.Deliver,
+                    MtaAdmission.Evaluate(
+                        session,
+                        wireId,
+                        Payload(wireId),
+                        72,
+                        new MtaAdmissionOptions { PeerDialect = dialect },
+                        out var admitted,
+                        out _));
+                Assert.Equal(mtaId, admitted);
+            }
         }
+
+        // The 4 / 0x13 pair is the one place the round trip is not the identity everywhere. Egress
+        // swaps, so mtaId 0x13 leaves as 0x67 (the debug client's join data) and mtaId 4 leaves as
+        // 0x76 (the release client's). Only the release dialect reads both back unchanged, because
+        // its ingress is the same involution as the egress.
+        Assert.Equal(0x67, MtaProtocol.ToWireId(0x13));
+        Assert.Equal(0x76, MtaProtocol.ToWireId(4));
+
+        AssertAdmitted(MtaIdDialect.Release, MtaProtocol.ToWireId(0x13), 0x13);
+        AssertAdmitted(MtaIdDialect.Release, MtaProtocol.ToWireId(4), 4);
+
+        // The debug dialect is the mirror image: it leaves the resolved id alone, so it reads the
+        // release client's 0x76 as the reserved id and the debug client's 0x67 as join data.
+        AssertAdmitted(MtaIdDialect.Debug, MtaProtocol.ToWireId(0x13), 4);
+        AssertAdmitted(MtaIdDialect.Debug, MtaProtocol.ToWireId(4), 0x13);
+
+        // The mixed modes cannot tell the two builds apart on the wire, so they collapse both sides of
+        // the pair onto the join-data id. 0x13 is PACKET_ID_MTA_RESERVED_13, so nothing else is lost.
+        foreach (MtaIdDialect dialect in new[] { MtaIdDialect.Both, MtaIdDialect.Auto })
+        {
+            AssertAdmitted(dialect, MtaProtocol.ToWireId(0x13), 4);
+            AssertAdmitted(dialect, MtaProtocol.ToWireId(4), 4);
+        }
+
+        // A release-only receiver misreads a debug client's join data as the reserved id and never
+        // runs the join-data handler -- the silent stall this dialect option exists to fix.
+        AssertAdmitted(MtaIdDialect.Release, 0x67, 0x13);
+    }
+
+    private static void AssertAdmitted(MtaIdDialect dialect, byte wireId, byte expectedMtaId)
+    {
+        var session = BypassSession();
+        Assert.Equal(
+            MtaAdmissionResult.Deliver,
+            MtaAdmission.Evaluate(
+                session,
+                wireId,
+                Payload(wireId),
+                72,
+                new MtaAdmissionOptions { PeerDialect = dialect },
+                out var admitted,
+                out _));
+        Assert.Equal(expectedMtaId, admitted);
+    }
+
+    [Fact]
+    public void AutoLatchesFromTheFirstJoinDataId()
+    {
+        // A release client's join data arrives as 0x13+99 and a debug client's as 4+99, and no client
+        // sends both, so the first one seen settles the dialect for the rest of the session.
+        var release = BypassSession();
+        var options = new MtaAdmissionOptions { PeerDialect = MtaIdDialect.Auto };
+        byte releaseJoinData = MtaProtocol.ToWireId(4);
+        byte debugJoinData = MtaProtocol.ToWireId(0x13);
+        Assert.Equal(0x76, releaseJoinData);
+        Assert.Equal(0x67, debugJoinData);
+
+        MtaAdmission.Evaluate(release, releaseJoinData, Payload(releaseJoinData), 72, options, out var first, out _);
+        Assert.Equal(4, first);
+        Assert.Equal(MtaIdDialect.Release, release.DetectedDialect);
+
+        // After the latch the other build's join-data id is read the release way.
+        MtaAdmission.Evaluate(release, debugJoinData, Payload(debugJoinData), 72, options, out var later, out _);
+        Assert.Equal(0x13, later);
+
+        var debug = BypassSession();
+        MtaAdmission.Evaluate(debug, debugJoinData, Payload(debugJoinData), 72, options, out var debugFirst, out _);
+        Assert.Equal(4, debugFirst);
+        Assert.Equal(MtaIdDialect.Debug, debug.DetectedDialect);
+
+        MtaAdmission.Evaluate(debug, releaseJoinData, Payload(releaseJoinData), 72, options, out var debugLater, out _);
+        Assert.Equal(0x13, debugLater);
     }
 
     [Fact]
