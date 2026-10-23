@@ -25,6 +25,10 @@ public interface INetWrapper
         IEnumerable<SpecialDetection> enabledSpecialDetections,
         DataFile disallowedDataFiles
     );
+    /// <summary>Returns null when native ASE data is unavailable; callers must fall back.</summary>
+    byte[]? GetAsePingStatus();
+    /// <summary>Returns null when native ASE data is unavailable; callers must fall back.</summary>
+    byte[]? GetAseNetRoute();
 
     void Start();
     void Stop();

@@ -1,4 +1,5 @@
-﻿using SlipeServer.Packets;
+using SlipeServer.Net.Wrappers;
+using SlipeServer.Packets;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Server.Elements;
 using SlipeServer.Server.Enums;
@@ -9,6 +10,12 @@ namespace SlipeServer.Server.Clients;
 public interface IClient
 {
     public Player Player { get; set; }
+
+    /// <summary>
+    /// Network wrapper serving this client, or null for clients without a native wrapper.
+    /// Custom clients participating in verified ASE counts should expose their wrapper.
+    /// </summary>
+    INetWrapper? NetWrapper => null;
 
     public string? Serial { get; }
     public string? Extra { get; }

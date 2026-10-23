@@ -22,9 +22,25 @@ public class AseBehaviour : IDisposable
         if (!configuration.AsePerPeerVersion)
             peerVersionHints = null;
 
-        this.aseListeners.Add(new AseUdpListener(aseQueryService, logger, (ushort)(configuration.Port + 123), false, configuration.BlockedAseIpAddresses, peerVersionHints));
+        this.aseListeners.Add(new AseUdpListener(aseQueryService, logger, ToAsePort(configuration.Port, nameof(configuration.Port)), false, configuration.BlockedAseIpAddresses, peerVersionHints));
         if (configuration.DebugPort.HasValue)
-            this.aseListeners.Add(new AseUdpListener(aseQueryService, logger, (ushort)(configuration.DebugPort + 123), true, configuration.BlockedAseIpAddresses, peerVersionHints));
+            this.aseListeners.Add(new AseUdpListener(aseQueryService, logger, ToAsePort(configuration.DebugPort.Value, nameof(configuration.DebugPort)), true, configuration.BlockedAseIpAddresses, peerVersionHints));
+    }
+
+    /// <summary>Maps a game port to its ASE port, failing rather than wrapping past the UDP port range.</summary>
+    internal static ushort ToAsePort(ushort gamePort, string parameterName)
+    {
+        int asePort = gamePort + AseUdpListener.AsePortOffset;
+
+        if (asePort > ushort.MaxValue)
+        {
+            throw new ArgumentOutOfRangeException(
+                parameterName,
+                gamePort,
+                $"The game port must be at most {ushort.MaxValue - AseUdpListener.AsePortOffset} so its ASE port ({AseUdpListener.AsePortOffset} higher) fits in a UDP port.");
+        }
+
+        return (ushort)asePort;
     }
 
     public void Dispose()

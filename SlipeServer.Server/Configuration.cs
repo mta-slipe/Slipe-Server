@@ -1,4 +1,4 @@
-﻿using SlipeServer.Net.Wrappers.Enums;
+using SlipeServer.Net.Wrappers.Enums;
 using SlipeServer.Server.Enums;
 using System;
 using System.Collections;
@@ -63,6 +63,18 @@ public class Configuration
     /// Maximum player count
     /// </summary>
     public ushort MaxPlayerCount { get; set; } = 64;
+
+    /// <summary>
+    /// Aggregate is the default and advertises players across all wrappers without verification.
+    /// Opt in to VerifiedPerWrapper to advertise verified players of the queried game port only.
+    /// </summary>
+    public AsePlayerCountMode AsePlayerCountMode { get; set; } = AsePlayerCountMode.Aggregate;
+
+    /// <summary>
+    /// MTA build number advertised by ASE. Zero explicitly means unknown.
+    /// Set this to the build of the deployed network module; it is not the Slipe version.
+    /// </summary>
+    public uint AseBuildNumber { get; set; } = 0;
 
     /// <summary>
     /// Server password

@@ -29,6 +29,9 @@ public class LightTestNetWrapper : INetWrapper
     public void Start(){ }
     public void Stop() { }
 
+    public byte[]? GetAsePingStatus() => null;
+    public byte[]? GetAseNetRoute() => null;
+
     public void SendPacket(ulong binaryAddress, PacketId packetId, ushort bitStreamVersion, byte[] data, PacketPriority priority = PacketPriority.High, PacketReliability reliability = PacketReliability.ReliableSequenced)
     {
         this.sentPackets.Push(new SendPacketCall

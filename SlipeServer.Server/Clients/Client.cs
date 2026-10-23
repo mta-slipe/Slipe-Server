@@ -1,4 +1,4 @@
-﻿using SlipeServer.Net.Wrappers;
+using SlipeServer.Net.Wrappers;
 using SlipeServer.Packets;
 using SlipeServer.Packets.Constants;
 using SlipeServer.Packets.Enums;
@@ -25,6 +25,8 @@ public class Client<TPlayer>(ulong binaryAddress, INetWrapper netWrapper, TPlaye
     where TPlayer : Player
 {
     private ushort bitStreamVersion;
+
+    public INetWrapper NetWrapper => netWrapper;
 
     protected TPlayer Player { get; set; } = player;
     TPlayer IClient<TPlayer>.Player

@@ -40,6 +40,7 @@ public interface IMtaServer
     void AddAdditionalResource(Resource resource, Dictionary<string, byte[]> files);
     INetWrapper AddNetWrapper(INetWrapper wrapper, AntiCheatConfiguration? configuration = null);
     INetWrapper AddNetWrapper(string directory, string netDllPath, string host, ushort port, uint expectedVersion, uint expectedVersionType = 9, AntiCheatConfiguration? configuration = null);
+    INetWrapper GetNetWrapper(ushort gamePort);
     void AddResourceServer(IResourceServer resourceServer);
     T AssociateElement<T>(T element) where T : Element;
     void BroadcastPacket(Packet packet);

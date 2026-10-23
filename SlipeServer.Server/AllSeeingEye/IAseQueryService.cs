@@ -1,4 +1,4 @@
-﻿using SlipeServer.Server.Enums;
+using SlipeServer.Server.Enums;
 
 namespace SlipeServer.Server.AllSeeingEye;
 
@@ -12,5 +12,5 @@ public interface IAseQueryService
     string GetVersion(AseVersion version = AseVersion.v1_6);
     byte[] QueryFull(ushort port);
     byte[] QueryLight(ushort port, VersionType version = VersionType.Release);
-    byte[] QueryXFireLight();
+    byte[] QueryXFireLight(ushort? port = null);
 }

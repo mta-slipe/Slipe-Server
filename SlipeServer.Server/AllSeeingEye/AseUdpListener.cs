@@ -12,11 +12,12 @@ using System.Threading;
 namespace SlipeServer.Server.AllSeeingEye;
 
 /// <summary>
-/// UDP listeners responsible for handling ASE query requests
+/// Handles ASE queries on the game port + 123.
 /// </summary>
 public class AseUdpListener : IDisposable
 {
     private const int cacheTime = 10 * 1000;
+    internal const int AsePortOffset = 123;
 
     /// <summary>
     /// How long a version-bearing query is held while its peer's build is still unknown. A client
@@ -29,7 +30,7 @@ public class AseUdpListener : IDisposable
 
     private readonly IAseQueryService aseQueryService;
     private readonly ILogger logger;
-    private readonly IEnumerable<IPAddress> blockedIpAddresses;
+    private readonly HashSet<IPAddress> blockedIpAddresses;
     private readonly IPeerVersionHints? peerVersionHints;
     private readonly MtaPeerBuildType defaultBuild;
 
@@ -37,13 +38,13 @@ public class AseUdpListener : IDisposable
     private readonly Cache<byte[]> releaseLightCache;
     private readonly Cache<byte[]> debugLightCache;
     private readonly Cache<byte[]> xFireCache;
-    private readonly Dictionary<string, string> rules = new();
     private readonly AsePendingReplies? pendingReplies;
     private readonly Timer? holdTimer;
 
     private UdpClient? socket;
-    private bool disposed;
+    private volatile bool disposed;
 
+    /// <param name="port">The ASE port, which is the game port + 123.</param>
     /// <param name="peerVersionHints">
     /// When supplied, a light query from a peer whose build is not yet known is held for
     /// <see cref="HintHoldDuration"/> so the reply can advertise that peer's version family instead
@@ -60,20 +61,31 @@ public class AseUdpListener : IDisposable
     /// </param>
     internal AseUdpListener(IAseQueryService aseQueryService, ILogger logger, ushort port, bool isDebug, IEnumerable<IPAddress> blockedIpAddresses, IPeerVersionHints? peerVersionHints, Func<ulong>? clock)
     {
+        if (port <= AsePortOffset)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(port),
+                port,
+                $"The ASE port must be greater than {AsePortOffset}.");
+        }
+
         this.aseQueryService = aseQueryService;
         this.logger = logger;
-        this.blockedIpAddresses = blockedIpAddresses;
+        this.blockedIpAddresses = new HashSet<IPAddress>(blockedIpAddresses);
         this.peerVersionHints = peerVersionHints;
         this.defaultBuild = isDebug ? MtaPeerBuildType.Debug : MtaPeerBuildType.Release;
 
+        // The listener uses the ASE port, but responses contain the game port.
+        ushort gamePort = checked((ushort)(port - AsePortOffset));
+
         this.releaseLightCache = new Cache<byte[]>(() =>
-            aseQueryService.QueryLight(port, VersionType.Release)
+            aseQueryService.QueryLight(gamePort, VersionType.Release)
         , cacheTime);
         this.debugLightCache = new Cache<byte[]>(() =>
-            aseQueryService.QueryLight(port, VersionType.Custom)
+            aseQueryService.QueryLight(gamePort, VersionType.Custom)
         , cacheTime);
-        this.xFireCache = new Cache<byte[]>(() => aseQueryService.QueryXFireLight(), cacheTime);
-        this.fullCache = new Cache<byte[]>(() => aseQueryService.QueryFull(port), cacheTime);
+        this.xFireCache = new Cache<byte[]>(() => aseQueryService.QueryXFireLight(gamePort), cacheTime);
+        this.fullCache = new Cache<byte[]>(() => aseQueryService.QueryFull(gamePort), cacheTime);
 
         if (peerVersionHints != null)
         {
@@ -84,44 +96,67 @@ public class AseUdpListener : IDisposable
         StartListening(port);
     }
 
-    public void SetRule(string key, string value)
-    {
-        this.rules[key] = value;
-    }
+    public void SetRule(string key, string value) =>
+        this.aseQueryService.SetRule(key, value);
 
-    public bool RemoveRule(string key) => this.aseQueryService.RemoveRule(key);
+    public bool RemoveRule(string key) =>
+        this.aseQueryService.RemoveRule(key);
 
-    public string? GetRule(string key) => this.aseQueryService.GetRule(key);
+    public string? GetRule(string key) =>
+        this.aseQueryService.GetRule(key);
 
     private void OnUdpData(IAsyncResult result)
     {
-        if (result.AsyncState is UdpClient socket)
+        if (result.AsyncState is not UdpClient socket)
+            return;
+
+        try
         {
-            try
+            IPEndPoint? source = new IPEndPoint(IPAddress.Any, 0);
+            byte[] message = socket.EndReceive(result, ref source);
+
+            if (source is null)
+                return;
+
+            if (this.blockedIpAddresses.Contains(source.Address))
             {
-                IPEndPoint? source = new IPEndPoint(0, 0);
-                byte[] message = socket.EndReceive(result, ref source);
-                AseQueryType queryType = (AseQueryType)(message[0]);
+                this.logger.LogTrace("Blocked ASE request from {ipAddress}", source.Address);
+                return;
+            }
 
-                this.logger.LogTrace("ASE request received for query type {aseQueryType}", queryType);
+            if (message.Length == 0)
+                return;
 
-                if (source?.Address != null && this.blockedIpAddresses.Contains(source.Address))
+            AseQueryType queryType = (AseQueryType)message[0];
+
+            this.logger.LogTrace("ASE request received for query type {aseQueryType}", queryType);
+
+            this.HandleQuery(queryType, source, data => socket.Send(data, data.Length, source));
+        }
+        catch (ObjectDisposedException)
+        {
+            // The listener socket has been closed.
+        }
+        catch (Exception exception)
+        {
+            this.logger.LogError(exception, "ASE request failed: {ExceptionDetails}", exception.ToString());
+        }
+        finally
+        {
+            if (!this.disposed)
+            {
+                try
                 {
-                    this.logger.LogTrace("Blocked ASE request from {ipAddress}", source.Address);
-                    return;
+                    socket.BeginReceive(OnUdpData, socket);
                 }
-
-                if (source != null)
-                    this.HandleQuery(queryType, source, data => socket.Send(data, data.Length, source));
-            }
-            catch (Exception e)
-            {
-                this.logger.LogError(e, "ASE request failed");
-            }
-            finally
-            {
-                if (!this.disposed)
-                    socket.BeginReceive(new AsyncCallback(OnUdpData), socket);
+                catch (ObjectDisposedException)
+                {
+                    // A closed socket cannot receive another request.
+                }
+                catch (Exception exception)
+                {
+                    this.logger.LogError(exception, "Unable to resume receiving ASE requests");
+                }
             }
         }
     }
@@ -161,9 +196,12 @@ public class AseUdpListener : IDisposable
         if (this.pendingReplies == null)
             return;
 
-        try
+        foreach (PendingAseQuery pending in this.pendingReplies.TakeExpired())
         {
-            foreach (PendingAseQuery pending in this.pendingReplies.TakeExpired())
+            if (this.disposed)
+                return;
+
+            try
             {
                 MtaPeerBuildType build = this.defaultBuild;
 
@@ -180,10 +218,12 @@ public class AseUdpListener : IDisposable
 
                 send(this.GetQueryData(pending.QueryType, build), pending.Source);
             }
-        }
-        catch (Exception e)
-        {
-            this.logger.LogError(e, "Sending a held ASE reply failed");
+            catch (Exception e)
+            {
+                // One failed send must not drop the replies still held behind it.
+                if (!this.disposed)
+                    this.logger.LogError(e, "Sending a held ASE reply to {ipAddress} failed", pending.Source.Address);
+            }
         }
     }
 
@@ -215,7 +255,17 @@ public class AseUdpListener : IDisposable
     private void StartListening(ushort port)
     {
         this.socket = new UdpClient(port);
-        this.socket.BeginReceive(new AsyncCallback(OnUdpData), this.socket);
+
+        try
+        {
+            this.socket.BeginReceive(OnUdpData, this.socket);
+        }
+        catch
+        {
+            this.socket.Dispose();
+            this.socket = null;
+            throw;
+        }
     }
 
     public void Dispose()
@@ -224,7 +274,15 @@ public class AseUdpListener : IDisposable
             return;
 
         this.disposed = true;
-        this.holdTimer?.Dispose();
+
+        // Wait for a flush already in progress so it cannot touch the socket after it is closed.
+        if (this.holdTimer != null)
+        {
+            using ManualResetEvent timerStopped = new(false);
+            this.holdTimer.Dispose(timerStopped);
+            timerStopped.WaitOne();
+        }
+
         this.socket?.Dispose();
         GC.SuppressFinalize(this);
     }

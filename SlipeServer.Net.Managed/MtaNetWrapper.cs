@@ -1537,6 +1537,10 @@ public sealed class MtaNetWrapper : INetWrapper, IDisposable
     /// <summary><see cref="AcInfoText"/> as the raw bytes written on the wire.</summary>
     public byte[] AcInfoBytes => Encoding.UTF8.GetBytes(this.AcInfoText);
 
+    public byte[]? GetAsePingStatus() => null;
+
+    public byte[]? GetAseNetRoute() => null;
+
     /// <summary>
     /// The block's second string. Empty by default, which is what a server with no special-detection
     /// map sends.

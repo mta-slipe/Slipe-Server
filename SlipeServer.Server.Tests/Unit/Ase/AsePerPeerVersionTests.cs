@@ -51,7 +51,7 @@ public class AsePerPeerVersionTests
             return [(byte)'E', (byte)'Y', (byte)'E', (byte)'2', .. ver];
         }
 
-        public byte[] QueryXFireLight() => [(byte)'E', (byte)'Y', (byte)'E', (byte)'1'];
+        public byte[] QueryXFireLight(ushort? port = null) => [(byte)'E', (byte)'Y', (byte)'E', (byte)'1'];
     }
 
     private static string Describe(byte[] data) => System.Text.Encoding.ASCII.GetString(data);
@@ -62,9 +62,9 @@ public class AsePerPeerVersionTests
         bool isDebug,
         Func<ulong>? clock)
     {
-        // Port 0 binds an ephemeral port: the listener needs a socket to exist, but these tests
-        // drive the reply path through the send callback and never put anything on the wire.
-        return new AseUdpListener(queryService, NullLogger.Instance, 0, isDebug, [], hints, clock);
+        // These tests drive the reply path through the send callback and never put anything on the
+        // wire; the listener only needs a valid ASE port (greater than 123) to bind.
+        return new AseUdpListener(queryService, NullLogger.Instance, ReserveAsePort(), isDebug, [], hints, clock);
     }
 
     /// <summary>
@@ -413,5 +413,63 @@ public class AsePerPeerVersionTests
         builder.AddManagedNetWrapper(asePerPeerVersion: true);
 
         builder.Configuration.AsePerPeerVersion.Should().BeTrue();
+    }
+
+    // ---- hardening: flush isolation, disposal, port range -------------------------------
+
+    [Fact]
+    public void AFailingSendDoesNotDropTheRepliesHeldBehindIt()
+    {
+        ulong now = 0;
+        FakeAseQueryService queryService = new();
+        using AseUdpListener listener = CreateListener(queryService, new PeerVersionHints(), false, () => now);
+        listener.HandleQuery(AseQueryType.LightRelease, new IPEndPoint(peerA, 1234), _ => { });
+        listener.HandleQuery(AseQueryType.LightRelease, new IPEndPoint(peerB, 1234), _ => { });
+        now = 500;
+
+        List<IPAddress> delivered = [];
+        listener.FlushExpiredReplies((data, endpoint) =>
+        {
+            if (endpoint.Address.Equals(peerA))
+                throw new System.IO.IOException("send failed");
+
+            delivered.Add(endpoint.Address);
+        });
+
+        delivered.Should().Equal(peerB);
+        listener.PendingReplyCount.Should().Be(0);
+    }
+
+    [Fact]
+    public void FlushSendsNothingOnceTheListenerIsDisposed()
+    {
+        ulong now = 0;
+        FakeAseQueryService queryService = new();
+        AseUdpListener listener = CreateListener(queryService, new PeerVersionHints(), false, () => now);
+        listener.HandleQuery(AseQueryType.LightRelease, new IPEndPoint(peerA, 1234), _ => { });
+        now = 500;
+
+        listener.Dispose();
+
+        List<IPAddress> delivered = [];
+        listener.FlushExpiredReplies((data, endpoint) => delivered.Add(endpoint.Address));
+
+        delivered.Should().BeEmpty();
+    }
+
+    [Theory]
+    [InlineData(65413)]
+    [InlineData(ushort.MaxValue)]
+    public void GamePortWhoseAsePortOverflowsIsRejected(ushort gamePort)
+    {
+        Action act = () => AseBehaviour.ToAsePort(gamePort, "port");
+
+        act.Should().Throw<ArgumentOutOfRangeException>().WithParameterName("port");
+    }
+
+    [Fact]
+    public void HighestGamePortWithAnAsePortIsAccepted()
+    {
+        AseBehaviour.ToAsePort(65412, "port").Should().Be(65535);
     }
 }

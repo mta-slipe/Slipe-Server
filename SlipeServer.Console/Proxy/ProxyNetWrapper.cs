@@ -45,6 +45,10 @@ public class ProxyNetWrapper(ProxyService proxyService) : INetWrapper
 
     public void SetVersion(ulong binaryAddress, ushort version) { }
 
+    public byte[]? GetAsePingStatus() => null;
+
+    public byte[]? GetAseNetRoute() => null;
+
     public void SetAntiCheatConfig(
         IEnumerable<AntiCheat> disabledAntiCheats,
         bool hideAntiCheatFromClient,
