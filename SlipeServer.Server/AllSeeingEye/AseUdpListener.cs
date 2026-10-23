@@ -17,7 +17,7 @@ namespace SlipeServer.Server.AllSeeingEye;
 public class AseUdpListener : IDisposable
 {
     private const int cacheTime = 10 * 1000;
-    private const int asePortOffset = 123;
+    internal const int AsePortOffset = 123;
 
     /// <summary>
     /// How long a version-bearing query is held while its peer's build is still unknown. A client
@@ -42,7 +42,7 @@ public class AseUdpListener : IDisposable
     private readonly Timer? holdTimer;
 
     private UdpClient? socket;
-    private bool disposed;
+    private volatile bool disposed;
 
     /// <param name="port">The ASE port, which is the game port + 123.</param>
     /// <param name="peerVersionHints">
@@ -61,12 +61,12 @@ public class AseUdpListener : IDisposable
     /// </param>
     internal AseUdpListener(IAseQueryService aseQueryService, ILogger logger, ushort port, bool isDebug, IEnumerable<IPAddress> blockedIpAddresses, IPeerVersionHints? peerVersionHints, Func<ulong>? clock)
     {
-        if (port <= asePortOffset)
+        if (port <= AsePortOffset)
         {
             throw new ArgumentOutOfRangeException(
                 nameof(port),
                 port,
-                "The ASE port must be greater than 123.");
+                $"The ASE port must be greater than {AsePortOffset}.");
         }
 
         this.aseQueryService = aseQueryService;
@@ -76,7 +76,7 @@ public class AseUdpListener : IDisposable
         this.defaultBuild = isDebug ? MtaPeerBuildType.Debug : MtaPeerBuildType.Release;
 
         // The listener uses the ASE port, but responses contain the game port.
-        ushort gamePort = checked((ushort)(port - asePortOffset));
+        ushort gamePort = checked((ushort)(port - AsePortOffset));
 
         this.releaseLightCache = new Cache<byte[]>(() =>
             aseQueryService.QueryLight(gamePort, VersionType.Release)
@@ -196,9 +196,12 @@ public class AseUdpListener : IDisposable
         if (this.pendingReplies == null)
             return;
 
-        try
+        foreach (PendingAseQuery pending in this.pendingReplies.TakeExpired())
         {
-            foreach (PendingAseQuery pending in this.pendingReplies.TakeExpired())
+            if (this.disposed)
+                return;
+
+            try
             {
                 MtaPeerBuildType build = this.defaultBuild;
 
@@ -215,10 +218,12 @@ public class AseUdpListener : IDisposable
 
                 send(this.GetQueryData(pending.QueryType, build), pending.Source);
             }
-        }
-        catch (Exception e)
-        {
-            this.logger.LogError(e, "Sending a held ASE reply failed");
+            catch (Exception e)
+            {
+                // One failed send must not drop the replies still held behind it.
+                if (!this.disposed)
+                    this.logger.LogError(e, "Sending a held ASE reply to {ipAddress} failed", pending.Source.Address);
+            }
         }
     }
 
@@ -269,7 +274,15 @@ public class AseUdpListener : IDisposable
             return;
 
         this.disposed = true;
-        this.holdTimer?.Dispose();
+
+        // Wait for a flush already in progress so it cannot touch the socket after it is closed.
+        if (this.holdTimer != null)
+        {
+            using ManualResetEvent timerStopped = new(false);
+            this.holdTimer.Dispose(timerStopped);
+            timerStopped.WaitOne();
+        }
+
         this.socket?.Dispose();
         GC.SuppressFinalize(this);
     }

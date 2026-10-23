@@ -414,4 +414,62 @@ public class AsePerPeerVersionTests
 
         builder.Configuration.AsePerPeerVersion.Should().BeTrue();
     }
+
+    // ---- hardening: flush isolation, disposal, port range -------------------------------
+
+    [Fact]
+    public void AFailingSendDoesNotDropTheRepliesHeldBehindIt()
+    {
+        ulong now = 0;
+        FakeAseQueryService queryService = new();
+        using AseUdpListener listener = CreateListener(queryService, new PeerVersionHints(), false, () => now);
+        listener.HandleQuery(AseQueryType.LightRelease, new IPEndPoint(peerA, 1234), _ => { });
+        listener.HandleQuery(AseQueryType.LightRelease, new IPEndPoint(peerB, 1234), _ => { });
+        now = 500;
+
+        List<IPAddress> delivered = [];
+        listener.FlushExpiredReplies((data, endpoint) =>
+        {
+            if (endpoint.Address.Equals(peerA))
+                throw new System.IO.IOException("send failed");
+
+            delivered.Add(endpoint.Address);
+        });
+
+        delivered.Should().Equal(peerB);
+        listener.PendingReplyCount.Should().Be(0);
+    }
+
+    [Fact]
+    public void FlushSendsNothingOnceTheListenerIsDisposed()
+    {
+        ulong now = 0;
+        FakeAseQueryService queryService = new();
+        AseUdpListener listener = CreateListener(queryService, new PeerVersionHints(), false, () => now);
+        listener.HandleQuery(AseQueryType.LightRelease, new IPEndPoint(peerA, 1234), _ => { });
+        now = 500;
+
+        listener.Dispose();
+
+        List<IPAddress> delivered = [];
+        listener.FlushExpiredReplies((data, endpoint) => delivered.Add(endpoint.Address));
+
+        delivered.Should().BeEmpty();
+    }
+
+    [Theory]
+    [InlineData(65413)]
+    [InlineData(ushort.MaxValue)]
+    public void GamePortWhoseAsePortOverflowsIsRejected(ushort gamePort)
+    {
+        Action act = () => AseBehaviour.ToAsePort(gamePort, "port");
+
+        act.Should().Throw<ArgumentOutOfRangeException>().WithParameterName("port");
+    }
+
+    [Fact]
+    public void HighestGamePortWithAnAsePortIsAccepted()
+    {
+        AseBehaviour.ToAsePort(65412, "port").Should().Be(65535);
+    }
 }
