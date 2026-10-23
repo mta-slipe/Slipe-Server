@@ -2,6 +2,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using SlipeServer.Packets.Builder;
+using SlipeServer.Packets.Definitions.Join;
 using SlipeServer.Packets.Definitions.Lua.ElementRpc;
 using SlipeServer.Packets.Enums;
 using SlipeServer.Packets.Reader;
@@ -184,7 +185,7 @@ public class PlayerJoinTests
                 if (reader.GetBit())
                     reader.GetWeaponType();
 
-            reader.GetBit();
+            // No trailing flag: the client's entry loop ends immediately after the 16th weapon slot.
 
             entries.Add(new PlayerListEntry(playerId, timeContext, isInVehicle, vehicleId, seat));
         }
@@ -218,5 +219,64 @@ public class PlayerJoinTests
         entries.Select(x => x.PlayerId).Should().Equal(players.Select(x => x.Id));
         entries.Single(x => x.PlayerId == playerA.Id).Should().Be(new PlayerListEntry(playerA.Id, playerA.TimeContext, true, vehicle.Id, 0));
         entries.Single(x => x.PlayerId == playerB.Id).IsInVehicle.Should().BeFalse();
+    }
+
+    /// <summary>
+    /// A joining client's roster holds exactly one entry, and a spawned on-foot entry is a whole
+    /// number of bytes wide. Any trailing bit therefore pushes the payload into an extra byte and
+    /// leaves the client with 8 unread bits — enough for CPacketHandler::Packet_PlayerList to
+    /// re-enter its entry loop, fail the 17-bit player id read, and raise protocol error 8.
+    /// </summary>
+    /// <remarks>
+    /// This asserts exactly zero unread bits rather than "fewer than 8". A trailing bit is only
+    /// observable when the entry content is a whole number of bytes: then the padding grows from 0
+    /// to 7 bits and the unread count jumps from 0 to 8. At any other alignment the extra bit merely
+    /// eats into the padding and the unread count is unchanged, so a threshold assertion cannot see
+    /// it. The field values below are the ones from the failing capture, where the entry content is
+    /// 432 bits = 54 bytes.
+    /// </remarks>
+    [Theory]
+    [InlineData(1)]
+    [InlineData(4)]
+    [InlineData(11)]
+    [InlineData(15)]
+    [InlineData(20)]
+    public void PlayerList_SingleSpawnedPlayer_LeavesNoFullByteUnread(int nickLength)
+    {
+        var nick = new string('n', nickLength);
+        var packet = new PlayerListPacket(true);
+        packet.AddPlayer(
+            playerId: (ElementId)1024,
+            timeContext: 3,
+            nickname: nick,
+            bitsreamVersion: 343,
+            buildNumber: 0,
+            isDead: false,
+            isInVehicle: false,
+            hasJetpack: false,
+            isNametagShowing: true,
+            isHeadless: false,
+            isFrozen: false,
+            nametagText: nick,
+            nametagColor: null,
+            moveAnimation: 0,
+            model: 7,
+            teamId: null,
+            vehicleId: null,
+            seat: null,
+            position: Vector3.Zero,
+            rotation: 0f,
+            dimension: 0,
+            fightingStyle: 4,
+            alpha: 155,
+            interior: 0,
+            weapons: new byte[16]);
+
+        var data = packet.Write();
+
+        var entries = ReadPlayerList(data, out var unreadBits);
+
+        unreadBits.Should().Be(0);
+        entries.Should().ContainSingle().Which.PlayerId.Should().Be((ElementId)1024);
     }
 }

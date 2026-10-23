@@ -162,7 +162,7 @@ public class NetWrapper : IDisposable, INetWrapper
         return new Tuple<string, string, string>(serial.ToString(), extra.ToString(), version.ToString());
     }
 
-    public byte[] GetAsePingStatus()
+    public byte[]? GetAsePingStatus()
     {
         byte[] buffer = new byte[32];
 
@@ -171,10 +171,10 @@ public class NetWrapper : IDisposable, INetWrapper
             buffer,
             buffer.Length);
 
-        return CopyAseResult(buffer, length, "GetPingStatus");
+        return CopyAseResult(buffer, length);
     }
 
-    public byte[] GetAseNetRoute()
+    public byte[]? GetAseNetRoute()
     {
         byte[] buffer = new byte[32];
 
@@ -183,24 +183,14 @@ public class NetWrapper : IDisposable, INetWrapper
             buffer,
             buffer.Length);
 
-        return CopyAseResult(buffer, length, "GetNetRoute");
+        return CopyAseResult(buffer, length);
     }
 
-    private static byte[] CopyAseResult(
-        byte[] buffer,
-        int length,
-        string operation)
+    private static byte[]? CopyAseResult(byte[] buffer, int length)
     {
-        if (length < 0)
+        if (length < 0 || length > buffer.Length)
         {
-            throw new InvalidOperationException(
-                $"Native ASE operation {operation} failed: {length}.");
-        }
-
-        if (length > buffer.Length)
-        {
-            throw new InvalidOperationException(
-                $"Native ASE operation {operation} returned an invalid length: {length}.");
+            return null;
         }
 
         return buffer.AsSpan(0, length).ToArray();

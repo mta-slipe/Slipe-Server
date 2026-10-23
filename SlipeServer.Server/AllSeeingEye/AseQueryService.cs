@@ -271,12 +271,11 @@ public class AseQueryService(
                 ? mtaServer.GetNetWrapper(port)
                 : null;
 
-        byte[] pingStatus = netWrapper is null
-            ? CreateUnverifiedPingStatus(playerCount)
-            : netWrapper.GetAsePingStatus();
-        byte[] netRouteBytes = netWrapper is null
-            ? Array.Empty<byte>()
-            : netWrapper.GetAseNetRoute();
+        // Native data is optional: when unavailable, fall back to the unverified count and an empty route.
+        byte[] pingStatus = netWrapper?.GetAsePingStatus()
+            ?? CreateUnverifiedPingStatus(playerCount);
+        byte[] netRouteBytes = netWrapper?.GetAseNetRoute()
+            ?? Array.Empty<byte>();
 
         string strUpTime = Number(
             mtaServer.Uptime.Ticks / TimeSpan.TicksPerSecond);

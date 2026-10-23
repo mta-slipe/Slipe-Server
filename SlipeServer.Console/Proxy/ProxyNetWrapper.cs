@@ -45,13 +45,9 @@ public class ProxyNetWrapper(ProxyService proxyService) : INetWrapper
 
     public void SetVersion(ulong binaryAddress, ushort version) { }
 
-    public byte[] GetAsePingStatus() =>
-    throw new NotSupportedException(
-        "ASE ping status is unavailable through ProxyNetWrapper.");
+    public byte[]? GetAsePingStatus() => null;
 
-    public byte[] GetAseNetRoute() =>
-        throw new NotSupportedException(
-            "ASE network route is unavailable through ProxyNetWrapper.");
+    public byte[]? GetAseNetRoute() => null;
 
     public void SetAntiCheatConfig(
         IEnumerable<AntiCheat> disabledAntiCheats,

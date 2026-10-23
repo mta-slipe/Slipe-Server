@@ -83,7 +83,8 @@ public static class DefaultServerBuilderExtensions
         ServerBuilderDefaultMiddleware exceptMiddleware = ServerBuilderDefaultMiddleware.None,
         ServerBuilderDefaultResourceInterpreters exceptResourceInterpreters = ServerBuilderDefaultResourceInterpreters.None,
         bool includeResourceServer = true,
-        bool includeLogging = true)
+        bool includeLogging = true,
+        bool includeWrappedNetworking = true)
     {
         builder.AddDefaultPacketHandler(exceptPacketHandlers);
         builder.AddDefaultBehaviours(exceptBehaviours);
@@ -95,7 +96,8 @@ public static class DefaultServerBuilderExtensions
 
         builder.AddDefaultResourceInterpreters(exceptResourceInterpreters);
 
-        builder.AddDefaultNetWrapper();
+        if (includeWrappedNetworking)
+            builder.AddDefaultNetWrapper();
 
         if (includeLogging)
             AddDefaultLogging(builder);
@@ -143,5 +145,13 @@ public static class DefaultServerBuilderExtensions
 
         if (builder.Configuration.DebugPort.HasValue && !Environment.Is64BitProcess)
             builder.AddNetWrapper(dllPath: "net_d", port: builder.Configuration.DebugPort.Value, expectedVersion: 0xAB, expectedVersionType: 0x09);
+    }
+
+    public static void AddManagedNetWrapper(this ServerBuilder builder, bool? asePerPeerVersion = null)
+    {
+        builder.AddManagedNetworking(
+            builder.Configuration.Host,
+            builder.Configuration.Port,
+            asePerPeerVersion);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MTAServerWrapper.Packets.Outgoing.Connection;
+using SlipeServer.Net.Wrappers;
 using SlipeServer.Packets.Definitions.Commands;
 using SlipeServer.Packets.Definitions.CustomElementData;
 using SlipeServer.Packets.Definitions.Explosions;
@@ -54,6 +55,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IResourceProvider, FileSystemResourceProvider>();
         services.AddSingleton<IElementIdGenerator, CollectionBasedElementIdGenerator>();
         services.AddSingleton<IAseQueryService, AseQueryService>();
+        services.AddSingleton<IPeerVersionHints, PeerVersionHints>();
         services.AddSingleton(typeof(ISyncHandlerMiddleware<>), typeof(BasicSyncHandlerMiddleware<>));
 
         // These are maintained for backwards compatibility, before the interfaces were defined

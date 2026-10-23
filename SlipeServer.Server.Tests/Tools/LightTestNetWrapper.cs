@@ -29,8 +29,8 @@ public class LightTestNetWrapper : INetWrapper
     public void Start(){ }
     public void Stop() { }
 
-    public byte[] GetAsePingStatus() => throw new NotSupportedException("Native ASE data is unavailable in this test wrapper.");
-    public byte[] GetAseNetRoute() => throw new NotSupportedException("Native ASE data is unavailable in this test wrapper.");
+    public byte[]? GetAsePingStatus() => null;
+    public byte[]? GetAseNetRoute() => null;
 
     public void SendPacket(ulong binaryAddress, PacketId packetId, ushort bitStreamVersion, byte[] data, PacketPriority priority = PacketPriority.High, PacketReliability reliability = PacketReliability.ReliableSequenced)
     {
