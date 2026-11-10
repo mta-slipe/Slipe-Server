@@ -8,6 +8,7 @@ public class Ban
     public Guid Id { get; set; }
     public string? Serial { get; set; }
     public IPAddress? IPAddress { get; set; }
+    public DateTime BannedDateUtc { get; set; }
     public DateTime? ExpiryDateUtc { get; set; }
     public string? Reason { get; set; }
     public string? BannedPlayerName { get; set; }
@@ -29,7 +30,8 @@ public class Ban
             ExpiryDateUtc = expiryTimeUtc,
             Reason = reason,
             BannedPlayerName = bannedPlayerName,
-            BannerName = bannerName
+            BannerName = bannerName,
+            BannedDateUtc = DateTime.UtcNow
         };
     }
 
