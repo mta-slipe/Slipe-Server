@@ -8,8 +8,21 @@ public class AnnouncementDefinitions(IMtaServer server, IAseQueryService aseServ
     [ScriptFunctionDefinition("getGameType")]
     public string GetGameType() => server.GameType;
 
+    [ScriptFunctionDefinition("setGameType")]
+    public bool SetGameType(string gameType)
+    {
+        server.GameType = gameType;
+        return true;
+    }
+
     [ScriptFunctionDefinition("getMapName")]
     public string GetMapName() => server.MapName;
+
+    [ScriptFunctionDefinition("setMapName")]
+    public string SetMapName(string mapName)
+    {
+        return server.MapName;
+    }
 
     [ScriptFunctionDefinition("getRuleValue")]
     public string? GetRuleValue(string ruleName)
@@ -18,8 +31,15 @@ public class AnnouncementDefinitions(IMtaServer server, IAseQueryService aseServ
     }
 
     [ScriptFunctionDefinition("setRuleValue")]
-    public void SetRuleValue(string ruleName, string ruleValue)
+    public bool SetRuleValue(string ruleName, string ruleValue)
     {
         aseService.SetRule(ruleName, ruleValue);
+        return true;
+    }
+
+    [ScriptFunctionDefinition("removeRuleValue")]
+    public bool RemoveRuleValue(string ruleName)
+    {
+        return aseService.RemoveRule(ruleName);
     }
 }
