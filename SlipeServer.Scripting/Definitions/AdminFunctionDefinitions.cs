@@ -82,9 +82,9 @@ public class AdminFunctionDefinitions(IMtaServer server, IBanService banService)
     }
 
     [ScriptFunctionDefinition("kickPlayer")]
-    public bool KickPlayer(Player player, Element? responsibleElement, string? reason)
+    public bool KickPlayer(Player player, string? reason, Player? responsiblePlayer = null)
     {
-        player.Kick(reason ?? "Unknown", PlayerDisconnectType.KICK, responsibleElement);
+        player.Kick(reason ?? "Unknown", PlayerDisconnectType.KICK, responsiblePlayer);
         return true;
     }
 
