@@ -19,9 +19,10 @@ public class AnnouncementDefinitions(IMtaServer server, IAseQueryService aseServ
     public string GetMapName() => server.MapName;
 
     [ScriptFunctionDefinition("setMapName")]
-    public string SetMapName(string mapName)
+    public bool SetMapName(string mapName)
     {
-        return server.MapName;
+        server.MapName = mapName;
+        return true;
     }
 
     [ScriptFunctionDefinition("getRuleValue")]
