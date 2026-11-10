@@ -39,13 +39,6 @@ public class ServerScriptDefinitions(IMtaServer server)
     [ScriptFunctionDefinition("getServerName")]
     public string GetServerName() => server.Configuration.ServerName;
 
-    [ScriptFunctionDefinition("setMapName")]
-    public bool SetMapName(string mapName)
-    {
-        server.MapName = mapName;
-        return true;
-    }
-
     [ScriptFunctionDefinition("getServerPassword")]
     public string? GetServerPassword() => server.Password;
 
