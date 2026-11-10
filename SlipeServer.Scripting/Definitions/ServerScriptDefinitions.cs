@@ -39,13 +39,6 @@ public class ServerScriptDefinitions(IMtaServer server)
     [ScriptFunctionDefinition("getServerName")]
     public string GetServerName() => server.Configuration.ServerName;
 
-    [ScriptFunctionDefinition("setGameType")]
-    public bool SetGameType(string gameType)
-    {
-        server.GameType = gameType;
-        return true;
-    }
-
     [ScriptFunctionDefinition("setMapName")]
     public bool SetMapName(string mapName)
     {
