@@ -395,7 +395,7 @@ public class PlayerScriptDefinitions(IElementCollection elementCollection, IDebu
     }
 
 
-    [ScriptFunctionDefinition("kickPlayer")]
+    //[ScriptFunctionDefinition("kickPlayer")]
     public void KickPlayer(Player player, string reason = "", Player? responsiblePlayer = null)
     {
         player.Kick(reason, responsibleElement: responsiblePlayer);
