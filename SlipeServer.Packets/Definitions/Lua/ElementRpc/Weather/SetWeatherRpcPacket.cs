@@ -9,7 +9,7 @@ public sealed class SetWeatherRpcPacket(byte weatherId) : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public byte weatherId { get; } = weatherId;
+    public byte WeatherId { get; } = weatherId;
 
     public override void Read(byte[] bytes) => throw new System.NotImplementedException();
 
@@ -17,7 +17,7 @@ public sealed class SetWeatherRpcPacket(byte weatherId) : Packet
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRPCFunction.SET_WEATHER);
-        builder.Write(this.weatherId);
+        builder.Write(this.WeatherId);
 
         return builder.Build();
     } 

@@ -10,7 +10,7 @@ public sealed class SetAllElementWaterLevelRpcPacket(float level) : Packet
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public float level { get; } = level;
+    public float Level { get; } = level;
 
     public override void Read(byte[] bytes) => throw new System.NotImplementedException();
 
@@ -18,7 +18,7 @@ public sealed class SetAllElementWaterLevelRpcPacket(float level) : Packet
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRpcFunction.SET_ALL_ELEMENT_WATER_LEVEL);
-        builder.Write(this.level);
+        builder.Write(this.Level);
        
         return builder.Build();
     }

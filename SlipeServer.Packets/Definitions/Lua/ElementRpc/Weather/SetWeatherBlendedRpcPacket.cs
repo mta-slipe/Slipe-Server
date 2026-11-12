@@ -9,8 +9,8 @@ public sealed class SetWeatherBlendedRpcPacket(byte weatherId, byte currentHour)
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public byte currentHour { get; } = currentHour;
-    public byte weatherId { get; } = weatherId;
+    public byte CurrentHour { get; } = currentHour;
+    public byte WeatherId { get; } = weatherId;
     
     public override void Read(byte[] bytes) => throw new System.NotImplementedException();
 
@@ -18,8 +18,8 @@ public sealed class SetWeatherBlendedRpcPacket(byte weatherId, byte currentHour)
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRPCFunction.SET_WEATHER_BLENDED);
-        builder.Write(this.weatherId);
-        builder.Write((byte)(this.currentHour+1));
+        builder.Write(this.WeatherId);
+        builder.Write((byte)(this.CurrentHour+1));
 
         return builder.Build();
     } 

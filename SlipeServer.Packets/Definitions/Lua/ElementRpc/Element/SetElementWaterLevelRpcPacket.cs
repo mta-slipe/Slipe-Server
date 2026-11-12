@@ -4,14 +4,14 @@ using SlipeServer.Packets.Structs;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Element;
 
-public sealed class SetElementWaterLevelRpcPacket(ElementId theWaterElement, float level) : Packet
+public sealed class SetElementWaterLevelRpcPacket(ElementId waterElement, float level) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ElementId theElement { get; } = theWaterElement;
-    public float level { get; } = level;
+    public ElementId Element { get; } = waterElement;
+    public float Level { get; } = level;
 
     public override void Read(byte[] bytes) => throw new System.NotImplementedException();
 
@@ -19,8 +19,8 @@ public sealed class SetElementWaterLevelRpcPacket(ElementId theWaterElement, flo
     {
         var builder = new PacketBuilder();
         builder.Write((byte)ElementRpcFunction.SET_ELEMENT_WATER_LEVEL);
-        builder.Write(this.theElement);
-        builder.Write(this.level);
+        builder.Write(this.Element);
+        builder.Write(this.Level);
        
         return builder.Build();
     }

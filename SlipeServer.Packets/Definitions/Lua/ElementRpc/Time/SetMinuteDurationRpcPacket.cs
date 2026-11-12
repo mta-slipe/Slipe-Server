@@ -3,13 +3,13 @@ using SlipeServer.Packets.Enums;
 
 namespace SlipeServer.Packets.Definitions.Lua.ElementRpc.Time;
 
-public sealed class SetMinuteDurationRpcPacket(ulong duration) : Packet
+public sealed class SetMinuteDurationRpcPacket(uint duration) : Packet
 {
     public override PacketId PacketId => PacketId.PACKET_ID_LUA_ELEMENT_RPC;
     public override PacketReliability Reliability => PacketReliability.ReliableSequenced;
     public override PacketPriority Priority => PacketPriority.High;
 
-    public ulong duration { get; } = duration;
+    public uint duration { get; } = duration;
 
     public override void Read(byte[] bytes) => throw new System.NotImplementedException();
 
